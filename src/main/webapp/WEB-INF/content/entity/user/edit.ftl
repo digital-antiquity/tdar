@@ -70,27 +70,27 @@
     <div class="">
         <h2 id="archive">Archival Information</h2>
 
-            <p>Who should we contact if there's a question or problem in the future with records you've submitted? Please provide the name of an institution we
-                can contact if we cannot contact you about a question or issue with a record you uploaded.
-                Examples might include:
-            <ul>
-                <li>A request for access to a confidential record</li>
-                <li>Clarification of a copyright or ownership question</li>
-                <li>Other issues</li>
-            </ul>
-            </p>
-            <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Proxy Institution"       name="proxyInstitutionName"     maxlength="255" value="${person.proxyInstitution!}"/>
+        <p>Who should we contact if there's a question or problem in the future with records you've submitted? Please provide the name of an institution we
+            can contact if we cannot contact you about a question or issue with a record you uploaded.
+            Examples might include:
+        <ul>
+            <li>A request for access to a confidential record</li>
+            <li>Clarification of a copyright or ownership question</li>
+            <li>Other issues</li>
+        </ul>
+        </p>
+        <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Proxy Institution"       name="proxyInstitutionName"     maxlength="255" value="${person.proxyInstitution!}"/>
 
-            <p>If there are specific instructions, such as a person or position within the organization to contact, please provide additional information
-                here</p>
-            <@s.textarea label="Proxy Note" rows=6 cols='50' name='proxyNote' cssClass="input-xxlarge"  />
+        <p>If there are specific instructions, such as a person or position within the organization to contact, please provide additional information
+            here</p>
+        <@s.textarea label="Proxy Note" rows=6 cols='50' name='proxyNote' cssClass="input-xxlarge"  />
     </div>
     </#if>
 
     <@entityEdit.contactInfo />
-<div class="">
-        <@common.billingAccountList accounts />
-</div>
+    <div class="">
+            <@common.billingAccountList accounts />
+    </div>
 
 <div class="">
         <h2 id="password">Password</h2>
@@ -108,7 +108,7 @@
         </#if>
 
         <@edit.submit "Save" false />
-
+    </div>
     <div class="callout">
         <p>
             <#assign commentEmail = commentUrl?replace("mailto:", "")>
