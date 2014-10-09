@@ -44,9 +44,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -368,10 +367,10 @@ public class CommandLineAPITool {
                 logger.debug(tdarIPAuth.getRequestLine());
                 HttpResponse response = httpclient.execute(tdarIPAuth);
                 HttpEntity entity = response.getEntity();
-                entity.consumeContent();
+                EntityUtils.consume(entity);
             }
             // make tdar authentication call
-            HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/login/process");
+            HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/api/login");
             List<NameValuePair> postNameValuePairs = new ArrayList<>();
             postNameValuePairs.add(new BasicNameValuePair("userLogin.loginUsername", getUsername()));
             postNameValuePairs.add(new BasicNameValuePair("userLogin.loginPassword", getPassword()));
@@ -399,7 +398,7 @@ public class CommandLineAPITool {
                 exit(-1);
             }
             logger.trace(EntityUtils.toString(entity));
-            entity.consumeContent();
+            EntityUtils.consume(entity);
 
             for (File file : files) {
                 out.print("*"); // give the user some sort of visual indicator as to progress
@@ -468,33 +467,33 @@ public class CommandLineAPITool {
         try {
             HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "="
                     + URLEncoder.encode(path, "UTF-8"));
-            MultipartEntity reqEntity = new MultipartEntity();
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             if (seen.contains(path)) {
                 logger.warn("skipping: " + path);
             }
-            reqEntity.addPart(API_FIELD_RECORD, new StringBody(FileUtils.readFileToString(record)));
+            builder.addTextBody(API_FIELD_RECORD, FileUtils.readFileToString(record));
 
             if (projectId != null) {
                 logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
-                reqEntity.addPart(API_FIELD_PROJECT_ID, new StringBody(projectId.toString()));
+                builder.addTextBody(API_FIELD_PROJECT_ID, projectId.toString());
             }
             if (accountId != null) {
                 logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
-                reqEntity.addPart(API_FIELD_ACCOUNT_ID, new StringBody(accountId.toString()));
+                builder.addTextBody(API_FIELD_ACCOUNT_ID, accountId.toString());
             }
 
-            reqEntity.addPart(API_FIELD_FILE_ACCESS_RESTRICTION, new StringBody(getFileAccessRestriction().name()));
+            builder.addTextBody(API_FIELD_FILE_ACCESS_RESTRICTION, getFileAccessRestriction().name());
 
             if (!CollectionUtils.isEmpty(attachments)) {
                 for (int i = 0; i < attachments.size(); i++) {
-                    reqEntity.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
+                    builder.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
                     if (getFileAccessRestriction().isRestricted()) {
-                        reqEntity.addPart(API_FIELD_RESTRICTED_FILES, new StringBody(attachments.get(i).getName()));
+                        builder.addTextBody(API_FIELD_RESTRICTED_FILES, attachments.get(i).getName());
                     }
                 }
             }
 
-            apicall.setEntity(reqEntity);
+            apicall.setEntity(builder.build());
             logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
             HttpResponse response = httpclient.execute(apicall);
@@ -513,7 +512,7 @@ public class CommandLineAPITool {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
-                entity.consumeContent();
+                EntityUtils.consume(entity);
                 if (StringUtils.isNotBlank(resp)) {
                     logger.info(resp);
                 }
