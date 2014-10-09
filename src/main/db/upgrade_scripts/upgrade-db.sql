@@ -229,3 +229,13 @@ alter table email_queue add column user_generated boolean default true;
 
 -- insert into file_download_day_agg (information_resource_file_id, count, date_accessed)  select information_resource_file_id, count(id), date_trunc('day', date_accessed) from information_resource_file_download_statistics group by information_resource_file_id, date_trunc('day', date_accessed);
 -- update file_download_day_agg set year = date_part('year', date_accessed);
+
+-- abrin 09/10/2014 adding index and column for month
+alter table resource_access_day_agg add column month int;
+update resource_access_day_agg set month=date_part('month',date_accessed);
+create index agg_res_month on resource_access_day_agg (month);
+create index agg_res_month_year on resource_access_day_agg (year, month);
+
+alter table file_download_day_agg add column month int;
+update file_download_day_agg set month=date_part('month',date_accessed);
+create index agg_dwnld_month on file_download_day_agg (month);

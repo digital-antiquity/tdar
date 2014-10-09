@@ -39,6 +39,10 @@ public class AggregateDownloadStatistic extends Base implements Serializable {
     @JoinColumn(nullable = true, name = "information_resource_file_id")
     private InformationResourceFile file;
 
+    private Integer month;
+    
+    private Integer year;
+    
     @Transient
     private String filename;
     @Transient
@@ -109,5 +113,21 @@ public class AggregateDownloadStatistic extends Base implements Serializable {
 
     public void setFile(InformationResourceFile file) {
         this.file = file;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Integer getMonth() {
+        return month;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
     }
 }
