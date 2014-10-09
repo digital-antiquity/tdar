@@ -21,12 +21,32 @@
 </head>
 <body>
 <h1>${pageTitle}</h1>
-    <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
+    <@s.form name='personForm' id='frmPerson'  cssClass="form-vertical"  method='post' enctype='multipart/form-data' action='save'>
     <@common.chromeAutofillWorkaround />
     <@s.token name='struts.csrf.token' />
     <@common.jsErrorLog />
-    <div class="row">
-        <h2>Personal Details</h2>
+        
+    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
+        <div class="">
+            <div class="container">
+                <ul class="nav">
+                    <li class="alwaysHidden"><a href="#top">top</a></li>
+                    <li class="active"><a href="#profile">Basic</a></li>
+                    <#if contributor><li><a href="#archive">Archival</a></li></#if>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#billingSection">Billing</a></li>
+                    <li><a href="#password">Change Password</a></li>
+                </ul>
+                <div id="fakeSubmitDiv" class="pull-right">
+                    <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
+                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="">
+        <h2 id="profile">Personal Details</h2>
 
         <div class="">
             <#if editor>
@@ -51,39 +71,61 @@
             </#if>
 
             <@s.hidden name="id" />
-            <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" />
-
-            <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
+            <div class="row">
+                <div class="span5">
+                        <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
+                </div>
+                <div class="span5">
+                        <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" />
+                </div>
+            </div>
             <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
             <#assign registered = "" />
-            <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
 
-            <#if privacyControlsEnabled>
-                <@s.checkbox label='Make email public?' name="person.emailPublic" id="email-public"  />
-                <p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search
-                    engines, spammers, and visitors who are not logged in.</em></p>
-            </#if>
 
-            <#if RPAEnabled><@s.textfield  cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 /></#if>
+        <div class="row">
+            <div class="span5">
+                <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
+    
+                <#if privacyControlsEnabled>
+                    <@s.checkbox label='Make email public?' name="person.emailPublic" id="email-public"  />
+                    <p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search
+                        engines, spammers, and visitors who are not logged in.</em></p>
+                </#if>
+            </div>
+            <div class="span5">
+                <@s.textfield name="person.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
+            </div>
+        </div>
+            <@s.textarea label="Please provide a brief description of yourself" rows=6 cols='50' name='person.description' cssClass="input-xxlarge" id='description-id' />
 
-            <@s.textfield name="person.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
 
-            <@s.textfield name="person.orcidId" label="ORCID Id" id="orcidId" cssClass="input-xlarge"  maxlength=50 placeholder="XXXX-XXXX-XXXX-XXXX" />
 
-            <@s.textfield  label="Phone" cssClass="phoneUS input-xlarge" name="person.phone"  maxlength=255 />
+            <div class="row">
+                <div class="span5">
+                    <@s.textfield name="person.orcidId" label="ORCID Id" id="orcidId" cssClass="input-xlarge"  maxlength=50 placeholder="XXXX-XXXX-XXXX-XXXX" />
+                    <a href="http://orcid.org/about/what-is-orcid">About ORCID</a>                
+                </div>
+                <div class="span5">
+                    <#if RPAEnabled>
+                    <@s.textfield  cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 />
+                    <a href="http://rpanet.org/">About RPA</a>                
+                    </#if>
+                </div>
+            </div>
 
-            <#if privacyControlsEnabled>
-                <@s.checkbox label='Make phone public?' name="person.phonePublic" id="phone-public" />
-                <p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits ${siteAcronym}, this includes search engines,
-                    and visitors who are not logged in.</em></p>
-            </#if>
+            <h3>Contributor</h3>
+
             <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />
 
             <@s.textarea label="Please briefly describe the geographical areas, time periods, or other subjects for which you would like to contribute information"
             rows=6 cols='50' cssClass="input-xxlarge" name='contributorReason' id='contributorReasonId'  maxlength=512 />
-            <@s.textarea label="Please provide a brief description of yourself" rows=6 cols='50' name='person.description' cssClass="input-xxlarge" id='description-id' />
+    </div>
 
-            <p><b>Proxy Contact Information</b></p>
+    </div>
+    <#if contributor>
+    <div class="">
+        <h2 id="archive">Archival Information</h2>
 
             <p>Who should we contact if there's a question or problem in the future with records you've submitted? Please provide the name of an institution we
                 can contact if we cannot contact you about a question or issue with a record you uploaded.
@@ -99,17 +141,32 @@
             <p>If there are specific instructions, such as a person or position within the organization to contact, please provide additional information
                 here</p>
             <@s.textarea label="Proxy Note" rows=6 cols='50' name='proxyNote' cssClass="input-xxlarge"  />
-        </div>
     </div>
+    </#if>
+
+<div class="">
+        <h2 id="contact">Contact</h2>
+            <@s.textfield  label="Phone" cssClass="phoneUS input-xlarge" name="person.phone"  maxlength=255 />
+
+            <#if privacyControlsEnabled>
+                <@s.checkbox label='Make phone public?' name="person.phonePublic" id="phone-public" />
+                <p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits ${siteAcronym}, this includes search engines,
+                    and visitors who are not logged in.</em></p>
+            </#if>
 
     <h3>Address List</h3>
         <@common.listAddresses person />
+</div>
 
+<div class="">
         <@common.billingAccountList accounts />
+</div>
+
+<div class="">
+        <h2 id="password">Password</h2>
 
         <#if editingSelf && person.registered >
         <div class="glide" id="divChangePassword">
-            <h2>Change Your Password</h2>
             <@s.password name="password" id="txtPassword" label="New password"  autocomplete="off" />
             <@s.password name="confirmPassword" id="txtConfirmPassword" label="Confirm password"  autocomplete="off"  />
         </div>
