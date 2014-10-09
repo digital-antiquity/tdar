@@ -1414,7 +1414,7 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>com.cenqua.clover</groupId>
+                        <groupId>com.atlassian.clover</groupId>
                         <artifactId>clover</artifactId>
                         <version>${clover.version}</version>
                     </dependency>
@@ -2185,7 +2185,7 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>com.cenqua.clover</groupId>
+                    <groupId>com.atlassian.clover</groupId>
                     <artifactId>clover</artifactId>
                     <version>${clover.version}</version>
                 </dependency>
