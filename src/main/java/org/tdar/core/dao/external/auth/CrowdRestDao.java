@@ -137,7 +137,9 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             httpAuthenticator.authenticate(request, response, name, password);
             String token = httpAuthenticator.getToken(request);
             logger.debug("{}", token);
-            return new AuthenticationResult(AuthenticationResultType.VALID, token);
+            AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.VALID, token);
+            result.setTokenUsername(name);
+            return result;
         } catch (InvalidAuthenticationException e) {
             // this is the only exception that should be DEBUG level only.
             logger.debug("++++ CROWD: Invalid authentication for " + name);

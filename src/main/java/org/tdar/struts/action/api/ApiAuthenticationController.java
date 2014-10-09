@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -96,9 +97,11 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
     }
 
     @Action(value = "logout",
+            interceptorRefs = { @InterceptorRef("authenticatedStack") },
             results = {
                 @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "200" })
             })
+    @PostOnly
     @SkipValidation
     public String logout() {
         String token = getServletRequest().getParameter(TdarConfiguration.getInstance().getRequestTokenName());
