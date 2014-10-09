@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.queryParser.ParseException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
@@ -19,9 +20,12 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -34,7 +38,11 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.junit.TdarAssert;
+import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
+import org.tdar.search.query.SortOption;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.CreatorOwnerQueryPart;
 import org.tdar.struts.data.DateRange;
 import org.tdar.utils.MessageHelper;
 
@@ -73,6 +81,56 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
     }
 
+    
+    @Test
+    @Rollback(true)
+    public void testCreatorOwnerQueryPart() throws ParseException {
+        CreatorOwnerQueryPart caqp = new CreatorOwnerQueryPart(getAdminUser());
+        Document authorDocument = new Document();
+        authorDocument.setTitle(REASON);
+        authorDocument.setDescription(REASON);
+        authorDocument.markUpdated(getBasicUser());
+        genericService.saveOrUpdate(authorDocument);
+        authorDocument.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.AUTHOR));
+        genericService.saveOrUpdate(authorDocument);
+        searchIndexService.index(authorDocument);
+
+        Document contribDocument = new Document();
+        contribDocument.setTitle(REASON);
+        contribDocument.setDescription(REASON);
+        contribDocument.markUpdated(getBasicUser());
+        genericService.saveOrUpdate(contribDocument);
+        contribDocument.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.CONTACT));
+        genericService.saveOrUpdate(contribDocument);
+        searchIndexService.index(contribDocument);
+
+        
+        Document ownerDocument = new Document();
+        ownerDocument.setTitle(REASON);
+        ownerDocument.setDescription(REASON);
+        ownerDocument.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(ownerDocument);
+        searchIndexService.index(ownerDocument);
+
+        ResourceQueryBuilder rqb = new ResourceQueryBuilder();
+        rqb.append(caqp);
+        assertFalse(rqb.isEmpty());
+        SearchResult result = new SearchResult();
+        result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        result.setSortField(SortOption.RELEVANCE);
+        searchService.handleSearch(rqb, result, MessageHelper.getInstance());
+        for (Resource r : (List<Resource>)(List<?>)result.getResults()) {
+            List<Long> authorIds = new ArrayList<Long>();
+            for (ResourceCreator cr : r.getContentOwners()) {
+                authorIds.add(cr.getCreator().getId());
+            }
+            logger.debug("result: id:{} [s:{} | {}]", r.getId(), r.getSubmitter().getId(), authorIds);
+        }
+        assertFalse(result.getResults().contains(contribDocument));
+        assertTrue(result.getResults().contains(authorDocument));
+        assertTrue(result.getResults().contains(ownerDocument));
+    }
+    
     @Test
     @Rollback(true)
     public void testResourceTypeSearchPhrase() {

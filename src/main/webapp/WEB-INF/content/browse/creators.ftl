@@ -8,14 +8,13 @@
 <head>
 <#-- @search.initResultPagination/ -->
     <@search.headerLinks includeRss=false />
-<#--
+
 	<#if creator.creatorType.person > 
-    	<#assign rssUrl = "?groups[0].operator=AND&groups[0].fieldTypes[0]=RESOURCE_CREATOR_PERSON&groups[0].resourceCreatorProxies[0].person.id=${creator.id?c}&groups[0].resourceCreatorProxies[0].person.lastName=${creator.lastName}&groups[0].resourceCreatorProxies[0].person.firstName=${creator.firstName}&groups[0].resourceCreatorProxies[0].role=">
+    	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
 	<#else>
-    	<#assign rssUrl = "?groups[0].operator=AND&groups[0].fieldTypes[0]=RESOURCE_CREATOR_INSTITUTION&groups[0].resourceCreatorProxies[0].institution.id=${creator.id?c}&groups[0].resourceCreatorProxies[0].institution.name=${creator.properName}&groups[0].resourceCreatorProxies[0].role=">
+    	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.institution.id=${creator.id?c}&groups[0].creatorOwner.institution.name=${creator.name}">
 	</#if>
     <@search.rssUrlTag url=rssUrl />
--->
 
     <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
