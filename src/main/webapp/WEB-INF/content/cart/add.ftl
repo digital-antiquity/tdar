@@ -35,19 +35,29 @@
         <@common.jsErrorLog />
         <h1>What would you like to put into tDAR?</h1>
 
-        <h3>About Invoices and Accounts</h3>
-        <p>
-            In tDAR, billing accounts are used to manage resources. Each resource must be associated with an account. tDAR is run by Digital Antiquity, a
-            not-for-profit organization dedicated to the preservation of archaeological information. The fees related to upload are used to ensure the proper
-            preservation of materials uploaded to tDAR.
-        </p>
-
-        <#--<h3>Account Management</h3>-->
-        <p>
-            Accounts can be shared between users, and users can grant access to modify or manage resources to any tDAR user
-            they choose.
-        </p>
-
+<div class="row">
+    <div class="span8">
+        <p>tDAR is operated thanks to the generous support of the National Science Foundation, The Andrew W. Mellon Foundation, and our paying clients. &nbsp;
+        Uploads to tDAR carry a modest, one-time fee to ensure the long-term preservation of and permanent shared access to archaeological files stored in the repository. &nbsp;</p>
+        <p>Our prices&nbsp;are based upon the number of files uploaded.&nbsp; Each file comes with 10MB of storage space.&nbsp; File price is based on a sliding scale&mdash;the more
+            files purchased the lower the cost per file.&nbsp; Allotted space is &ldquo;pooled&rdquo; meaning that if you buy more than one file, the associated space in MB can be distributed between 
+            those files in any way you choose. We accept debit and major credit cards including MasterCard, Visa, and American Express.&nbsp;</p>
+        <p>&nbsp;</p>
+    </div>
+    <div class="span4">
+        <div>
+            <p><i class="icon-ok">&nbsp;</i> Designed to preserve files in perpetuity (<a href="http://www.tdar.org/why-tdar/preservation/">Learn More</a>)</p>
+        </div>
+        <div>
+            <p><i class="icon-ok">&nbsp;</i> Publish &amp; Share materials (<a href="http://www.tdar.org/why-tdar/preservation/">Learn More</a>)</p>
+        </div>
+        <div>
+            <p><i class="icon-ok">&nbsp;</i> Contribute Documents, Data Sets, Images &amp;&nbsp;more&nbsp;(<a href="http://www.tdar.org/why-tdar/preservation/">Learn More</a>)</p>
+        </div>
+    </div>
+    
+    
+</div>
 
     <#assign showSuggested=!administrator && actionName != 'modify'/>
 
@@ -119,6 +129,18 @@
         </div>
     </div>
 
+        <h3>About Invoices and Accounts</h3>
+        <p>
+            In tDAR, billing accounts are used to manage resources. Each resource must be associated with an account. tDAR is run by Digital Antiquity, a
+            not-for-profit organization dedicated to the preservation of archaeological information. The fees related to upload are used to ensure the proper
+            preservation of materials uploaded to tDAR.
+        </p>
+
+        <#--<h3>Account Management</h3>-->
+        <p>
+            Accounts can be shared between users, and users can grant access to modify or manage resources to any tDAR user
+            they choose.
+        </p>
 
     <#if administrator || billingManager>
     <div class="divAdminLand admin-well">
