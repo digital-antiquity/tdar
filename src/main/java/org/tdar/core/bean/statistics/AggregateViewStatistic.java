@@ -37,8 +37,9 @@ public class AggregateViewStatistic extends Base implements Serializable {
     @JoinColumn(nullable = false, name = "resource_id")
     private Resource resource;
 
-    // @Transient
-    // private Long resourceId;
+    private Integer year;
+    
+    private Integer month;
 
     @XmlElement(name = "date")
     public Date getAggregateDate() {
@@ -67,17 +68,24 @@ public class AggregateViewStatistic extends Base implements Serializable {
         this.resource = resource;
     }
 
-    // @XmlElement(name = "id")
-    // public Long getResourceId() {
-    // return resourceId;
-    // }
-
-    // public void setResourceId(Long resourceId) {
-    // this.resourceId = resourceId;
-    // }
-
     @Override
     public String toString() {
         return String.format("%s %s (%s)", aggregateDate, resource.getId(), count);
+    }
+
+    public Integer getMonth() {
+        return month;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
     }
 }

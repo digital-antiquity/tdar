@@ -18,6 +18,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
 import org.tdar.search.query.QueryFieldNames;
@@ -40,7 +41,8 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     @Autowired
     private transient SearchService searchService;
-
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
@@ -133,6 +135,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         try {
             setSortField(SortOption.TITLE);
             searchService.handleSearch(rqb, this, this);
+            bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }

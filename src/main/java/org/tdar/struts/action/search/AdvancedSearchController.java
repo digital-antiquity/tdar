@@ -982,7 +982,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "download", results = { @Result(name = SUCCESS, type = "stream", params = {
             "contentType", "application/vnd.ms-excel", "inputName",
             "inputStream", "contentDisposition",
-            "attachment;filename=\"report.xls", "contentLength",
+            "attachment;filename=\"report.xls\"", "contentLength",
             "${contentLength}" }) })
     public String viewExcelReport() throws ParseException, TdarActionException {
         if (!isAuthenticated()) {

@@ -91,6 +91,17 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
         map.put(ResourceType.PROJECT, Arrays.asList(PRINCIPAL_INVESTIGATOR, PROJECT_DIRECTOR, SPONSOR));
         return new HashSet<>(map.get(resourceType));
     }
+    
+    public static Set<ResourceCreatorRole> getResourceCreatorRolesForProfilePage() {
+        HashSet<ResourceCreatorRole> roles = new HashSet<ResourceCreatorRole>();
+        roles.add(CREATOR);
+        roles.add(EDITOR);
+        roles.add(PRINCIPAL_INVESTIGATOR);
+        roles.add(PROJECT_DIRECTOR);
+        roles.add(AUTHOR);
+        roles.add(RESOURCE_PROVIDER);
+        return roles;
+    }
 
     private ResourceCreatorRole(String label, ResourceCreatorRoleType type) {
         this(label, type, null, new ResourceType[0]);

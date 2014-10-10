@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.CreatorOwnerQueryPart;
 import org.tdar.search.query.part.CreatorQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
@@ -91,6 +92,7 @@ public class SearchParameters {
     private List<String> contents = new ArrayList<String>();
     private List<String> filenames = new ArrayList<String>();
 
+    private ResourceCreatorProxy creatorOwner;
     private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<ResourceCreatorProxy>();
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
@@ -310,6 +312,15 @@ public class SearchParameters {
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"),
                 getOperator(), filenames));
+
+        if (creatorOwner != null) {
+            if (Persistable.Base.isNotNullOrTransient(creatorOwner.getPerson())) {
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson()));
+            }
+            if (Persistable.Base.isNotNullOrTransient(creatorOwner.getInstitution())) {
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution()));
+            }
+        }
 
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, KeywordType.OTHER_KEYWORD, Arrays.asList(this.getOtherKeywords()));
@@ -557,6 +568,14 @@ public class SearchParameters {
         lists.add(sparseProjects);
         lists.add(sparseCollections);
         return lists;
+    }
+
+    public ResourceCreatorProxy getCreatorOwner() {
+        return creatorOwner;
+    }
+
+    public void setCreatorOwner(ResourceCreatorProxy creatorOwner) {
+        this.creatorOwner = creatorOwner;
     }
 
 }
