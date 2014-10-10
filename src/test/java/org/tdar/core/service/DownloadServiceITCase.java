@@ -56,8 +56,36 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         DownloadTransferObject dto = new DownloadTransferObject(downloadService);
         dto.setAuthenticatedUser(getBillingUser());
         List<File> files = new ArrayList<>();
+        long i = 1l;
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
-            dto.getDownloads().add(new DownloadFile(file, file.getName()));
+            dto.getDownloads().add(new DownloadFile(file, file.getName(),i++));
+            files.add(file);
+        }
+        File dest = new File(ROOT_DEST, "everything.zip");
+        InputStream inputStream = dto.getInputStream();
+        IOUtils.copy(inputStream, new FileOutputStream(dest));
+        IOUtils.closeQuietly(inputStream);
+        logger.debug("{}", dest);
+
+         assertTrue("file should have been created", dest.exists());
+         assertTrue("file should be non-empty", dest.length() > 0);
+         assertArchiveContents(files, dest);
+    }
+
+    // get some files from the test dir and put them into an archive stream
+    @Test
+    @Rollback
+    public void testDownloadArchiveWithDups() throws Exception {
+        DownloadTransferObject dto = new DownloadTransferObject(downloadService);
+        dto.setAuthenticatedUser(getBillingUser());
+        List<File> files = new ArrayList<>();
+        long i = 1l;
+        for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
+            dto.getDownloads().add(new DownloadFile(file, file.getName(),i++));
+            files.add(file);
+        }
+        for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
+            dto.getDownloads().add(new DownloadFile(file, file.getName(),i++));
             files.add(file);
         }
         File dest = new File(ROOT_DEST, "everything.zip");

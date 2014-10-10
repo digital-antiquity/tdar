@@ -6,11 +6,14 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +24,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.struts.action.download.DownloadLockInputStream;
 
+import com.healthmarketscience.jackcess.impl.CompoundOleUtil;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -129,15 +133,29 @@ public class DownloadTransferObject implements Serializable {
                 new Runnable() {
                     public void run() {
                         try {
+                            Set<String> filenames = new HashSet<>();
+                            List<String> messages = new ArrayList<String>();
                             for (DownloadFile df : downloadFiles) {
                                 String filename = df.getFileName();
-
+                                if (filenames.contains(filename)) {
+                                    String newFilename = String.format("%s-%s.%s", FilenameUtils.getBaseName(filename), df.getInformationResourceId(),
+                                            FilenameUtils.getExtension(filename));
+                                    messages.add(String.format("Renamed %s (%s bytes) to %s", filename, df.getFileLength(), newFilename));
+                                    filename = newFilename;
+                                }
+                                filenames.add(filename);
                                 ZipEntry zentry = new ZipEntry(filename);
                                 zout.putNextEntry(zentry);
                                 InputStream fin = df.getInputStream();
                                 logger.debug("adding to archive: {}", df.getFileName());
                                 IOUtils.copy(fin, zout);
                                 IOUtils.closeQuietly(fin);
+                            }
+
+                            if (!messages.isEmpty()) {
+                                ZipEntry zentry = new ZipEntry("tdar-changes.txt");
+                                zout.putNextEntry(zentry);
+                                IOUtils.write(StringUtils.join(messages,"\n"), zout);
                             }
                         } catch (Exception e) {
                             logger.error("exception when processing zip file: {}", e.getMessage(), e);

@@ -19,10 +19,9 @@
         <!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
         <apache.cxf.version>3.0.1</apache.cxf.version>
         <jena.version>2.12.0</jena.version>
-        <clover.version>3.2.2</clover.version>
+        <clover.version>4.0.1</clover.version>
         <!-- /end managed versions -->
-        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m
-            -XX:MaxPermSize=512m</jvm.args>
+        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
         <generated.schema.dir>target/generated/db</generated.schema.dir>
         <generated.schema.file>schema.sql</generated.schema.file>
         <wro4j.version>1.7.6</wro4j.version>
@@ -1232,13 +1231,12 @@
                 <artifactId>maven-clover2-plugin</artifactId>
                 <version>${clover.version}</version>
                 <configuration>
-                    <license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
-                                      mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
-                                      QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
-                                      xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
-                                      mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-                                      bZloaUUnmm
-					]]></license>
+                    <license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
+                                    mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
+                                    rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
+                                    umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
+                                    mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+                                    bZloaUUnmm]]></license>
                     <configuration>
                         <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
                         <!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
@@ -1415,7 +1413,7 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>com.cenqua.clover</groupId>
+                        <groupId>com.atlassian.clover</groupId>
                         <artifactId>clover</artifactId>
                         <version>${clover.version}</version>
                     </dependency>
@@ -2186,7 +2184,7 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>com.cenqua.clover</groupId>
+                    <groupId>com.atlassian.clover</groupId>
                     <artifactId>clover</artifactId>
                     <version>${clover.version}</version>
                 </dependency>
