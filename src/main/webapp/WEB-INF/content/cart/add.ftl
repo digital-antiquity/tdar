@@ -129,19 +129,6 @@
         </div>
     </div>
 
-        <h3>About Invoices and Accounts</h3>
-        <p>
-            In tDAR, billing accounts are used to manage resources. Each resource must be associated with an account. tDAR is run by Digital Antiquity, a
-            not-for-profit organization dedicated to the preservation of archaeological information. The fees related to upload are used to ensure the proper
-            preservation of materials uploaded to tDAR.
-        </p>
-
-        <#--<h3>Account Management</h3>-->
-        <p>
-            Accounts can be shared between users, and users can grant access to modify or manage resources to any tDAR user
-            they choose.
-        </p>
-
     <#if administrator || billingManager>
     <div class="divAdminLand admin-well">
             <@s.hidden name="accountId" value="${(accountId!-1)?c}" />
@@ -208,6 +195,8 @@
     <div class="row">
         <div class="span12">
             <@s.textfield name="code" label="Redeem Code" cssClass="input-xxlarge" />
+
+
             <div class="form-actions">
                 <input type="submit" class="tdar-button" name="submitAction"
                        value="Next: Review & Choose Payment Method">

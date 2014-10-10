@@ -21,8 +21,7 @@
         <jena.version>2.12.0</jena.version>
         <clover.version>4.0.1</clover.version>
         <!-- /end managed versions -->
-        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m
-            -XX:MaxPermSize=512m</jvm.args>
+        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
         <generated.schema.dir>target/generated/db</generated.schema.dir>
         <generated.schema.file>schema.sql</generated.schema.file>
         <wro4j.version>1.7.6</wro4j.version>
