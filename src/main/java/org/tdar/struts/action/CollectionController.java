@@ -226,7 +226,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         } else {
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
-        bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
         return SUCCESS;
     }
@@ -321,6 +320,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         try {
             searchService.handleSearch(qb, this, this);
+            bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
