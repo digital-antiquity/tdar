@@ -55,7 +55,7 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
         parent.append(new FieldQueryPart<>(QueryFieldNames.IR_CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
 
         String generateQueryString = parent.generateQueryString();
-        logger.error(generateQueryString);
+        logger.trace(generateQueryString);
         return generateQueryString;
     }
 
