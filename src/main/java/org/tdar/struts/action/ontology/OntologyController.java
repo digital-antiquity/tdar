@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.ontology;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 

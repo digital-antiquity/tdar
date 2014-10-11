@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.geospatial;
 
 import java.util.Collections;
 import java.util.Set;
@@ -12,6 +12,7 @@ import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.resource.AbstractDatasetController;
 
 /**
  * $Id$

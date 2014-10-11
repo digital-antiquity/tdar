@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.sensoryData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
 
 /**
  * $Id$

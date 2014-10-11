@@ -43,6 +43,9 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UploadController;
+import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts.action.document.DocumentViewAction;
+import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 

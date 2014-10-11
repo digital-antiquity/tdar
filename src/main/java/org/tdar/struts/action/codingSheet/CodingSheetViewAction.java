@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.codingSheet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.struts.action.resource.AbstractResourceViewAction;
 
 
 @Component

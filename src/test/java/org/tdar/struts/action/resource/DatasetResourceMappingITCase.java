@@ -24,6 +24,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.image.ImageController;
 
 public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCase {
 

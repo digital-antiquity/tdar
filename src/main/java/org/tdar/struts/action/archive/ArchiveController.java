@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.archive;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.data.FileProxy;
 
 /**

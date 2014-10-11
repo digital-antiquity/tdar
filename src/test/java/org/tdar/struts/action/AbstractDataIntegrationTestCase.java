@@ -49,8 +49,8 @@ import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.resource.CodingSheetController;
-import org.tdar.struts.action.resource.DatasetController;
+import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
 

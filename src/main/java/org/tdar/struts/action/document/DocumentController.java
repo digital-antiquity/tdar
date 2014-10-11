@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.document;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
 
 /**
  * $Id$

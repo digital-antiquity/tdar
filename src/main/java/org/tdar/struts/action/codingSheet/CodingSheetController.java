@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.codingSheet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;

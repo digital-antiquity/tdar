@@ -16,7 +16,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.struts.action.resource.DatasetController;
+import org.tdar.struts.action.dataset.DatasetController;
 
 import com.opensymphony.xwork2.Action;
 

@@ -54,6 +54,9 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.collection.CollectionDeleteAction;
 import org.tdar.struts.action.collection.CollectionViewAction;
+import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.search.BrowseCollectionController;
 
 import com.opensymphony.xwork2.Action;

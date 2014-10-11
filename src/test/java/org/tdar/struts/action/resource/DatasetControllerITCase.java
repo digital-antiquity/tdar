@@ -43,6 +43,8 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.dataset.DatasetController;
 
 /**
  * $Id$

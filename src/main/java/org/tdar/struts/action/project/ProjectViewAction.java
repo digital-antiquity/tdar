@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.project;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +26,7 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 

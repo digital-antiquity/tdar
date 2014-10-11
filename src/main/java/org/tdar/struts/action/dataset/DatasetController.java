@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.dataset;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.resource.AbstractDatasetController;
 
 /**
  * $Id$

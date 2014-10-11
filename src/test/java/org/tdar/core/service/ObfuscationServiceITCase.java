@@ -27,8 +27,8 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.resource.DocumentController;
-import org.tdar.struts.action.resource.DocumentViewAction;
+import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts.action.document.DocumentViewAction;
 
 /**
  * @author Adam Brin

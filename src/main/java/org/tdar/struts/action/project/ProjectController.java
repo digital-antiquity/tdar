@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.project;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.utils.PaginationHelper;

@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.video;
 
 import java.util.Set;
 
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
 
 /**
  * $Id$
