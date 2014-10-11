@@ -12,7 +12,7 @@ import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.resource.AbstractDatasetController;
+import org.tdar.struts.action.dataset.AbstractDatasetController;
 
 /**
  * $Id$

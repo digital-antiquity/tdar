@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.dataset;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractResourceViewAction;
 
 public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dataset> {
 

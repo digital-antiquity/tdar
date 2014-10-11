@@ -50,7 +50,7 @@ import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
-import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
 
@@ -210,9 +210,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         Assert.assertNotSame(0, toSave.size());
     }
 
-    public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws TdarActionException {
+    public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws Exception {
         logger.info("{}", dataTable);
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
         controller.setDataTableId(dataTable.getId());
         controller.setId(dataset.getId());
         controller.prepare();

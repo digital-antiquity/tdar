@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.resource.AbstractDatasetController;
 
 /**
  * $Id$

@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -45,6 +46,7 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.dataset.TableXMLDownloadAction;
 
 /**
  * $Id$
@@ -184,29 +186,29 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void tableAsXmlReturnsErrorIfXmlExportNotEnabled() {
-        controller = generateNewInitializedController(DatasetController.class);
-        assertSame(com.opensymphony.xwork2.Action.ERROR, controller.getTableAsXml());
+        TableXMLDownloadAction controller_ = generateNewInitializedController(TableXMLDownloadAction.class);
+        assertSame(com.opensymphony.xwork2.Action.ERROR, controller_.getTableAsXml());
     }
 
     @Test
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
-    public void tableAsXml() throws IOException {
+    public void tableAsXml() throws Exception {
         Dataset dataset = setupAndLoadResource(TRUNCATED_HARP_EXCEL_FILENAME, Dataset.class);
         DataTable dataTable = dataset.getDataTables().iterator().next();
-        controller = generateNewInitializedController(DatasetController.class);
-        controller.setId(dataset.getId());
-        controller.setDataTableId(dataTable.getId());
-        controller.prepare();
-        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.getTableAsXml());
-        InputStream xmlStream = controller.getXmlStream();
+        TableXMLDownloadAction controller_ = generateNewInitializedController(TableXMLDownloadAction.class);
+        controller_.setId(dataset.getId());
+        controller_.setDataTableId(dataTable.getId());
+        controller_.prepare();
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller_.getTableAsXml());
+        InputStream xmlStream = controller_.getXmlStream();
         String xml = IOUtils.toString(xmlStream, "UTF-8");
         assertTrue(xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
     }
 
     @Test
     @Rollback
-    public void testDatasetReplaceWithMappings() throws TdarActionException {
+    public void testDatasetReplaceWithMappings() throws Exception {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
 

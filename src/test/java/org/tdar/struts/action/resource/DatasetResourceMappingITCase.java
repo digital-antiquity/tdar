@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.image.ImageController;
 
@@ -69,14 +70,14 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
 
         assertEquals(3, projectService.findAllResourcesInProject(project).size());
 
-        controller = generateNewInitializedController(DatasetController.class);
-        controller.setId(dataset.getId());
+        ColumnMetadataController columnController = generateNewInitializedController(ColumnMetadataController.class);
+        columnController.setId(dataset.getId());
         dataset = null;
-        controller.prepare();
-        controller.editColumnMetadata();
+        columnController.prepare();
+        columnController.editColumnMetadata();
         boolean seenMappingColumn = false;
 
-        List<DataTableColumn> dataTableColumns = controller.getDataset().getDataTables().iterator().next().getDataTableColumns();
+        List<DataTableColumn> dataTableColumns = columnController.getPersistable().getDataTables().iterator().next().getDataTableColumns();
         List<DataTableColumn> dataTableColumns_ = new ArrayList<DataTableColumn>();
         for (DataTableColumn column_ : dataTableColumns) {
             DataTableColumn column = (DataTableColumn) BeanUtils.cloneBean(column_);
@@ -87,10 +88,10 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
                 column.setIgnoreFileExtension(false);
             }
         }
-        controller.setDataTableColumns(dataTableColumns_);
+        columnController.setDataTableColumns(dataTableColumns_);
         assertTrue(seenMappingColumn);
-        controller.setAsync(false);
-        controller.saveColumnMetadata();
+        columnController.setAsync(false);
+        columnController.saveColumnMetadata();
 
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override

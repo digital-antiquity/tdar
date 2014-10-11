@@ -254,18 +254,18 @@
     </outbound-rule>
 
     <rule>
-        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(edit|delete|columns|mapping)\??(.*)$
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(edit|delete|mapping)\??(.*)$
         </from>
         <to>/$1/$3?id=$2</to>
         <!-- was &amp;$3 aat end -->
     </rule>
     <outbound-rule>
-        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(edit|delete|columns|mapping)\?id=([0-9]+)$
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(edit|delete|mapping)\?id=([0-9]+)$
         </from>
         <to>/$1/$3/$2</to>
     </outbound-rule>
     <outbound-rule>
-        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(edit|delete|columns|mapping)\?id=([0-9]+)(.+)$
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(edit|delete|mapping)\?id=([0-9]+)(.+)$
         </from>
         <to>/$1/$3/$2?$4</to>
     </outbound-rule>
@@ -305,6 +305,17 @@
         </from>
         <to>/$1/$2</to>
     </outbound-rule>
+
+    <rule>
+        <from>^/(sensory-data|geospatial)/([0-9]+)/columns$
+        </from>
+        <to>/dataset/columns?id=$2</to>
+    </rule>
+
+    <rule>
+        <from>^/(sensory-data|geospatial)/view-row(.*)</from>
+        <to>/dataset/view-row$1</to>
+    </rule>
 
     <rule>
         <from>^/(billing|cart|collection)/([0-9]+)$

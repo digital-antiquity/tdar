@@ -5,10 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -16,7 +13,6 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.web.SessionDataAware;
 

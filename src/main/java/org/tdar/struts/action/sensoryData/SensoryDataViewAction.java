@@ -5,7 +5,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.struts.action.resource.AbstractDatasetViewAction;
+import org.tdar.struts.action.dataset.AbstractDatasetViewAction;
 
 
 @Component
