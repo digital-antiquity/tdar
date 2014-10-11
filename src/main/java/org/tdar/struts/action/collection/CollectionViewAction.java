@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -61,6 +62,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private transient ResourceService resourceService;
     @Autowired
     private transient AuthorizationService authorizationService;
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
 
     private Long parentId;
     private List<ResourceCollection> collections = new LinkedList<>();
@@ -178,6 +181,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
         try {
             searchService.handleSearch(qb, this, this);
+            bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }

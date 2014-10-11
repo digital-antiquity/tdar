@@ -714,16 +714,17 @@ with that datapoint -->
 <#-- @param accountList:List<Account> list of accounts to render -->
     <#macro billingAccountList accountList>
         <#if (payPerIngestEnabled!false)>
-        <h2>Billing Accounts</h2>
+        <h2 id="billingSection">Billing Accounts</h2>
         <ul>
             <#list accountList as account>
                 <li>
                     <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
                 </li>
             </#list>
+<#--
             <#if billingManager>
                 <li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
-            </#if>
+            </#if> -->
             <li><a href="/cart/add">Create a new account or add more to an existing one</a></li>
         </ul>
         </#if>

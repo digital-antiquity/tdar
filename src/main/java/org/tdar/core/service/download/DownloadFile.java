@@ -21,10 +21,12 @@ public class DownloadFile implements Serializable {
 
     private File file;
     private String originalFilename;
+    private Long informationResourceId;
 
-    public DownloadFile(File file, String string) {
+    public DownloadFile(File file, String string, Long id) {
         this.file = file;
         this.originalFilename = string;
+        this.informationResourceId = id;
     }
 
     public InputStream getInputStream() throws Exception {
@@ -47,5 +49,13 @@ public class DownloadFile implements Serializable {
     public Long getFileLength() {
         return this.file.length();
 
+    }
+
+    public Long getInformationResourceId() {
+        return informationResourceId;
+    }
+
+    public void setInformationResourceId(Long informationResourceId) {
+        this.informationResourceId = informationResourceId;
     }
 }

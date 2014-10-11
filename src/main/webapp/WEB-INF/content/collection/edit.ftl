@@ -166,7 +166,7 @@
             </div>
 
             <div id="divToRemove">
-                <h3>The folllwing resources will be removed from the collection</h3>
+                <h3>The following resources will be removed from the collection</h3>
                 <table id="tblToRemove" class="table table-condensed"></table>
             </div>
         </div>

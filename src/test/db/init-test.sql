@@ -38,7 +38,7 @@ INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institu
 INSERT INTO tdar_user(id, username, contributor) VALUES (8092, 'test@tdar.org', true);
 INSERT INTO tdar_user(id, username, contributor) VALUES (8093, 'admin@tdar.org', true);
 INSERT INTO tdar_user(id, username, contributor) VALUES (8094, 'editor@tdar.org', true);
-INSERT INTO tdar_user(id, username, contributor) VALUES (8095, 'billingAdmin', true);
+INSERT INTO tdar_user(id, username, contributor) VALUES (8095, 'billing@tdar.org', true);
 INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
 INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',3,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Test''s Independent Resources', 8092, 8092, NULL);
 INSERT INTO project (id) VALUES (1);
@@ -2740,4 +2740,5 @@ update pos_billing_activity set activity_type = 'TEST' where name in ('good','er
 --update user_info set tos_version = 99, contributor_agreement_version = 99;
 insert into user_notification(date_created, message_key,message_type,display_type) VALUES(now(), 'lithic.announce','SYSTEM_BROADCAST','NORMAL');
 SELECT setval('user_notification_id_seq', (SELECT MAX(id) FROM user_notification)+1);
-update information_resource_file set restriction='EMBARGOED_FIVE_YEARS' where restriction='EMBARGOED';
+alter table resource_access_day_agg add month int;
+alter table file_download_day_agg add month int;
