@@ -176,6 +176,10 @@ public class LocalizationTestCase {
                     logger.trace(line);
                     String key = m.group(4);
                     logger.trace(key);
+                    if (line.trim().startsWith("//")) {
+                        logger.debug("ignoring comments: {}", line);
+                        continue;
+                    }
                     if (matchingMap.get(key) == null) {
                         matchingMap.put(key, new ArrayList<String>());
                     }
