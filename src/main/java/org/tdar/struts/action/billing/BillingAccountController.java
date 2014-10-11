@@ -177,11 +177,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return SUCCESS;
     }
 
-    @Override
-    protected void delete(Account persistable) {
-        // TODO Auto-generated method stub
-    }
-
     @SkipValidation
     @WriteableSession
     @Action(value = UPDATE_QUOTAS, results = {

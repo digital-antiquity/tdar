@@ -14,7 +14,6 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -68,8 +67,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private AntiSpamHelper h = new AntiSpamHelper();
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
-    private String delete;
-    private String deletionReason;
     private String submitAction;
     private P persistable;
     private Long id;
@@ -131,56 +128,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return null;
     }
 
-    /**
-     * Override to provide custom deletion logic for the specific kind of
-     * Resource this ResourceController is managing.
-     * 
-     * @param persistable
-     */
-    protected abstract void delete(P persistable);
-
-    protected String deleteCustom() {
-        return SUCCESS;
-    }
-
     protected void loadListData() {
-    }
-
-    public Collection<? extends Persistable> getDeleteIssues() {
-        return Collections.emptyList();
-    }
-
-    @SkipValidation
-    @HttpsOnly
-    @Action(value = DELETE,
-            // FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
-            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
-                    @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")
-            })
-    public String delete() throws TdarActionException {
-        getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
-        checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
-        getLogger().trace("post: {} ; delete: {}", isPostRequest(), getDelete());
-        if (isPostRequest() && DELETE.equals(getDelete())) {
-            if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
-                addActionError(getText("abstractPersistableController.cannot_delete"));
-                return CONFIRM;
-            }
-            logAction("DELETING");
-            // FIXME: deleteCustom might as well just return a boolean in this current implementation
-            // should we return the result name specified by deleteCustom() instead?
-            if (deleteCustom() != SUCCESS) {
-                return ERROR;
-            }
-
-            delete(persistable);
-            getGenericService().delete(persistable);
-            return SUCCESS;
-        }
-
-        return CONFIRM;
     }
 
     @SkipValidation
@@ -394,7 +342,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public enum RequestType {
         EDIT(true),
         CREATE(true),
-        DELETE(true),
+//        DELETE(true),
         MODIFY_EXISTING(true),
         SAVE(true),
 //        VIEW(false),
@@ -453,25 +401,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
     }
 
-    /**
-     * Used to signal confirmation of deletion requests.
-     * 
-     * @param delete
-     *            the delete to set
-     */
-    public void setDelete(String delete) {
-        this.delete = delete;
-    }
-
-    /**
-     * this is the "override" that gets set when a user clicks on the "confirm" button to confirm
-     * they want to delete a record
-     * 
-     * @return the delete
-     */
-    public String getDelete() {
-        return delete;
-    }
 
     @Override
     public P getPersistable() {
@@ -652,14 +581,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setSubmitAction(String submitAction) {
         this.submitAction = submitAction;
-    }
-
-    public String getDeletionReason() {
-        return deletionReason;
-    }
-
-    public void setDeletionReason(String deletionReason) {
-        this.deletionReason = deletionReason;
     }
 
     public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {

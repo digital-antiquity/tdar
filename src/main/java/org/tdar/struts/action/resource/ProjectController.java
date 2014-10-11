@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -18,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
@@ -116,10 +113,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return SUCCESS;
     }
 
-    @Override
-    public Collection<? extends Persistable> getDeleteIssues() {
-        return projectService.findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
-    }
 
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {

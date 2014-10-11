@@ -158,25 +158,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
     }
 
-    @Override
-    public List<? extends Persistable> getDeleteIssues() {
-        List<ResourceCollection> findAllChildCollections = resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED);
-        getLogger().info("we still have children: {}", findAllChildCollections);
-        return findAllChildCollections;
-    }
-
-    @Override
-    protected void delete(ResourceCollection persistable) {
-        // should I do something special?
-        for (Resource resource : persistable.getResources()) {
-            resource.getResourceCollections().remove(persistable);
-            getGenericService().saveOrUpdate(resource);
-        }
-        getGenericService().delete(persistable.getAuthorizedUsers());
-        // FIXME: need to handle parents and children
-        // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
-    }
-
     public ResourceCollection getResourceCollection() {
         if (getPersistable() == null) {
             setPersistable(new ResourceCollection());

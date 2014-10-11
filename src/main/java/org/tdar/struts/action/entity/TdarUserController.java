@@ -179,12 +179,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     }
 
     @Override
-    protected void delete(TdarUser persistable) {
-
-        // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
-    }
-
-    @Override
     public Class<TdarUser> getPersistableClass() {
         return TdarUser.class;
     }

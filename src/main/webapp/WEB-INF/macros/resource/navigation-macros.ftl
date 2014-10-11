@@ -32,7 +32,7 @@ navigation freemarker macros
         <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-                    <@makeLink namespace "delete" "delete" "delete" current true _deleteable />
+                    <@makeLink "resource" "delete?id=${resource.id}" "delete" "delete" current true _deleteable />
         </#if>
         <#if persistable.resourceType??>
                     <@list.bookmark resource true true />

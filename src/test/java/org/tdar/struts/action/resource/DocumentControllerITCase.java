@@ -354,18 +354,21 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertTrue("a deletion note should have been added", seen);
     }
 
-    private DocumentViewAction deleteResource(Long newId, String deletionReason) throws TdarActionException {
+    private DocumentViewAction deleteResource(Long newId, String deletionReason) throws Exception {
         DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
         rva.setId(newId);
         rva.prepare();
         rva.view();
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
-        controller.setServletRequest(getServletPostRequest());
-        controller.setId(newId);
-        controller.prepare();
-        controller.setDelete(DocumentController.DELETE);
-        controller.setDeletionReason(deletionReason);
-        String delete = controller.delete();
+        
+        
+        ResourceDeleteAction deleteAction = generateNewInitializedController(ResourceDeleteAction.class);
+        deleteAction.setId(newId);
+        deleteAction.prepare();
+
+        Resource res = deleteAction.getPersistable();
+        Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, res.getId());
+        deleteAction.setDeletionReason(deletionReason);
+        String delete = deleteAction.delete();
         assertEquals(TdarActionSupport.SUCCESS, delete);
         logger.debug("status: {}", delete);
         genericService.synchronize();
@@ -455,20 +458,19 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // now reload the document and see if the institution was saved.
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
-        controller = generateNewInitializedController(DocumentController.class);
-        controller.setId(newId);
-        controller.prepare();
-        controller.edit();
+        ResourceDeleteAction deleteAction = generateNewInitializedController(ResourceDeleteAction.class);
+        deleteAction.setId(newId);
+        deleteAction.prepare();
 
-        d = controller.getResource();
-        Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
-        Set<ResourceCreator> resourceCreators = d.getResourceCreators();
+        Resource res = deleteAction.getPersistable();
+        Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, res.getId());
+        Set<ResourceCreator> resourceCreators = res.getResourceCreators();
         Assert.assertTrue(resourceCreators.size() > 0);
         ResourceCreator actualCreator = (ResourceCreator) d.getResourceCreators().toArray()[0];
         Assert.assertNotNull(actualCreator);
         Assert.assertEquals(CreatorType.PERSON, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains("newLast"));
-        controller.delete(controller.getDocument());
+        deleteAction.delete(controller.getDocument());
 
         // FIXME: should add and replace items here to really test
 

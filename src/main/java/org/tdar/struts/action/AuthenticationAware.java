@@ -148,11 +148,6 @@ public interface AuthenticationAware extends SessionDataAware {
                         return;
                     }
                     break;
-                case DELETE:
-                    if (action.isDeleteable()) {
-                        return;
-                    }
-                    break;
                 default:
                     break;
             }

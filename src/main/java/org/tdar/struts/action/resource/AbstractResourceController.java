@@ -338,22 +338,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @Override
-    public void delete(R resource) {
-        String reason = getDeletionReason();
-        if (StringUtils.isNotEmpty(reason)) {
-            ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, getDeletionReason());
-            resource.getResourceNotes().add(note);
-            getGenericService().save(note);
-        } else {
-            reason = "reason not specified";
-        }
-        String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(),
-                getAuthenticatedUser(), reason);
-
-        resourceService.logResourceModification(resource, getAuthenticatedUser(), logMessage);
-    }
-
-    @Override
     protected void postSaveCallback(String actionMessage) {
         // if user has single billing account, use that (ignore the form);
         setupAccountForSaving();

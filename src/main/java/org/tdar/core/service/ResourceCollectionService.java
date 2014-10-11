@@ -39,6 +39,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * @author Adam Brin
  * 
@@ -703,5 +705,30 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (ineligibleToRemove.size() > 0) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_remove", ineligibleToRemove);
         }
+    }
+
+    @Transactional(readOnly=false)
+    public void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser) {
+        // should I do something special?
+        for (Resource resource : persistable.getResources()) {
+            resource.getResourceCollections().remove(persistable);
+            getDao().saveOrUpdate(resource);
+        }
+        getDao().delete(persistable.getAuthorizedUsers());
+        // FIXME: need to handle parents and children
+        // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
+        
+    }
+
+    @Transactional(readOnly=true)
+    public DeleteIssue getDeletionIssues(TextProvider provider, ResourceCollection persistable) {
+        List<ResourceCollection> findAllChildCollections = findDirectChildCollections(persistable.getId(), null, CollectionType.SHARED);
+        getLogger().info("we still have children: {}", findAllChildCollections);
+        if (CollectionUtils.isNotEmpty(findAllChildCollections)) {
+            DeleteIssue issue = new DeleteIssue();
+            issue.getRelatedItems().addAll(findAllChildCollections);
+            issue.setIssue(provider.getText("resourceCollectionService.cannot_delete_collection"));
+        }
+        return null;
     }
 }

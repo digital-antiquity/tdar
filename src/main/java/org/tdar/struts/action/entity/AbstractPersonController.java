@@ -99,12 +99,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
                 || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }
 
-    @Override
-    protected void delete(Person persistable) {
-        // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
-    }
-
-
     public String getInstitutionName() {
         return institutionName;
     }

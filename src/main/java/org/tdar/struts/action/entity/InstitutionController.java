@@ -56,10 +56,6 @@ public class InstitutionController extends AbstractCreatorController<Institution
     }
 
     @Override
-    protected void delete(Institution persistable) {
-    }
-
-    @Override
     public Class<Institution> getPersistableClass() {
         return Institution.class;
     }

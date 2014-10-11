@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.persister.walking.spi.CollectionDefinition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +52,7 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.collection.CollectionController;
+import org.tdar.struts.action.collection.CollectionDeleteAction;
 import org.tdar.struts.action.collection.CollectionViewAction;
 import org.tdar.struts.action.search.BrowseCollectionController;
 
@@ -400,16 +402,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // okay, now let's try to remove the resources from the collection via the
         // controller.
         Long rcid = resourceCollection.getId();
-        controller = generateNewController(CollectionController.class);
-        controller.setId(rcid);
+        CollectionDeleteAction deleteAction = generateNewController(CollectionDeleteAction.class);
+        deleteAction.setId(rcid);
         resourceCollection = null;
-        init(controller, owner);
-        controller.prepare();
-        assertNotNull(controller.getPersistable());
-        assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
+        init(deleteAction, owner);
+        deleteAction.prepare();
+        assertNotNull(deleteAction.getPersistable());
+        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(TdarActionSupport.DELETE);
-        controller.delete();
+        deleteAction.setDelete(TdarActionSupport.DELETE);
+        deleteAction.delete();
 
         // now load our resource collection again. the resources should be gone.
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
@@ -422,19 +424,19 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         }
         evictCache();
 
-        controller = generateNewController(CollectionController.class);
-        controller.setId(rcid);
+        deleteAction = generateNewController(CollectionDeleteAction.class);
+        deleteAction.setId(rcid);
         resourceCollection = null;
-        controller.prepare();
-        init(controller, owner);
-        assertNotNull(controller.getPersistable());
-        assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
+        deleteAction.prepare();
+        init(deleteAction, owner);
+        assertNotNull(deleteAction.getPersistable());
+        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
         // resourceCollection.setParent(parent)
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(TdarActionSupport.DELETE);
-        controller.delete();
+        deleteAction.setDelete(TdarActionSupport.DELETE);
+        deleteAction.delete();
         evictCache();
-        assertEquals(0, controller.getDeleteIssues().size());
+        assertEquals(0, deleteAction.getDeleteIssue().getRelatedItems().size());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
@@ -475,34 +477,34 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // okay, now let's try to remove the resources from the collection via the
         // controller.
         Long rcid = resourceCollection.getId();
-        controller = generateNewController(CollectionController.class);
-        controller.setId(rcid);
+        CollectionDeleteAction deleteAction = generateNewController(CollectionDeleteAction.class);
+        deleteAction.setId(rcid);
         resourceCollection = null;
-        init(controller, owner);
-        controller.prepare();
-        assertNotNull(controller.getPersistable());
-        assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
-        assertTrue("user list should not be empty", !controller.getPersistable().getAuthorizedUsers().isEmpty());
+        init(deleteAction, owner);
+        deleteAction.prepare();
+        assertNotNull(deleteAction.getPersistable());
+        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
+        assertTrue("user list should not be empty", !deleteAction.getPersistable().getAuthorizedUsers().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(TdarActionSupport.DELETE);
-        controller.delete();
+        deleteAction.setDelete(TdarActionSupport.DELETE);
+        deleteAction.delete();
 
         // now load our resource collection again. the resources should be gone.
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
-        controller = generateNewController(CollectionController.class);
-        controller.setId(rcid);
+        deleteAction = generateNewController(CollectionDeleteAction.class);
+        deleteAction.setId(rcid);
         resourceCollection = null;
-        init(controller, owner);
-        controller.prepare();
-        assertNotNull(controller.getPersistable());
-        assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
+        init(deleteAction, owner);
+        deleteAction.prepare();
+        assertNotNull(deleteAction.getPersistable());
+        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(TdarActionSupport.DELETE);
-        controller.delete();
+        deleteAction.setDelete(TdarActionSupport.DELETE);
+        deleteAction.delete();
         evictCache();
-        assertEquals(0, controller.getDeleteIssues().size());
+        assertEquals(0, deleteAction.getDeleteIssue().getRelatedItems().size());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
@@ -1167,13 +1169,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(project);
         evictCache();
         // okay now lets delete the resource
-        ProjectController projectController = generateNewInitializedController(ProjectController.class);
-        projectController.setServletRequest(getServletPostRequest());
-        projectController.setId(pid);
-        projectController.prepare();
-        projectController.setDelete(TdarActionSupport.DELETE);
-        projectController.setAsync(false);
-        projectController.delete();
+        ResourceDeleteAction resourceDeleteAction = generateNewInitializedController(ResourceDeleteAction.class);
+        resourceDeleteAction.setServletRequest(getServletPostRequest());
+        resourceDeleteAction.setId(pid);
+        resourceDeleteAction.prepare();
+        resourceDeleteAction.setDelete(TdarActionSupport.DELETE);
+        resourceDeleteAction.delete();
+        resourceDeleteAction.setAsync(false);
         genericService.synchronize();
         searchIndexService.flushToIndexes();
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
@@ -1188,7 +1190,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // so far so good. but lets make sure that the resource *is* actually in the collection
         rc = genericService.find(ResourceCollection.class, rcid);
         assertTrue(rc.getResources().contains(project));
-        logger.info("{}", projectController.getProject().getResourceCollections());
+        logger.info("{}", resourceDeleteAction.getPersistable().getResourceCollections());
     }
 
     @Test
