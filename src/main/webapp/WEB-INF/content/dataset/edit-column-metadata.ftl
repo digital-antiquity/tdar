@@ -319,7 +319,8 @@
         ontologies to faciliate research.
     </span>
     <span class="hidden" id="columnTypeToolTip">
-        Select the option that best describes the data in this column. The form will display fields relevant to your selection. 
+        Select the option that best describes the data in this column. The form will display fields relevant to your selection. <br/>
+        <b>Note:</b> measurement and count cannot be selected for fields that have any non-numerical data.
     </span>
     <span class="hidden" id="displayNameToolTip">
         If needed, edit the name displayed for the column to help users understand the column's contents.

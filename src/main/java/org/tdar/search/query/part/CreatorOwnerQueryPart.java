@@ -25,6 +25,7 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
 
     public CreatorOwnerQueryPart(Creator term) {
         this.setTerm(term);
+        setAllowInvalid(true);
         add(term);
     }
 
