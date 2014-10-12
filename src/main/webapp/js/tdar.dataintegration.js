@@ -470,7 +470,7 @@
             var errors = "";
             $(".integrationTable").each(function () {
                 if ($(":checked ", $(this)).length == 0) {
-                    errors = "at least one table does not have any filter values checked";
+                    errors = "At least one integration column does not have any filter values checked";
                 }
             });
 
