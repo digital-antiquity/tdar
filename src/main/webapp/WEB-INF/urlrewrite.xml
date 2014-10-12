@@ -307,7 +307,7 @@
     </outbound-rule>
 
     <rule>
-        <from>^/(sensory-data|geospatial)/([0-9]+)/columns$
+        <from>^/(dataset|sensory-data|geospatial)/([0-9]+)/columns$
         </from>
         <to>/dataset/columns?id=$2</to>
     </rule>

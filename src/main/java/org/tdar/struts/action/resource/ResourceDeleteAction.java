@@ -45,12 +45,12 @@ public class ResourceDeleteAction extends AbstractDeleteAction<Resource> impleme
     }
 
     @Override
-    protected void canDelete() {
+    protected boolean canDelete() {
         if (authorizationService.can(InternalTdarRights.DELETE_RESOURCES, getAuthenticatedUser())) {
-            return;
+            return true;
         }
 
-        authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_RECORD);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_RECORD);
 
     }
 

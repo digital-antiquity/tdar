@@ -42,11 +42,12 @@ public class EntityDeleteAction extends AbstractDeleteAction<Creator> implements
     }
 
     @Override
-    protected void canDelete() {
+    protected boolean canDelete() {
         if (authorizationService.can(InternalTdarRights.DELETE_ANYTHING, getAuthenticatedUser())) {
-            return;
+            return true;
         }
-        authorizationService.canEdit(getAuthenticatedUser(), getPersistable());
+        
+        return authorizationService.canEdit(getAuthenticatedUser(), getPersistable());
     }
 
 }

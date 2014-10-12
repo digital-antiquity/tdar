@@ -47,11 +47,11 @@ public class CollectionDeleteAction extends AbstractDeleteAction<ResourceCollect
     }
 
     @Override
-    protected void canDelete() {
+    protected boolean canDelete() {
         if (authorizationService.can(InternalTdarRights.DELETE_COLLECTIONS, getAuthenticatedUser())) {
-            return;
+            return true;
         }
-        authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
+        return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
 }

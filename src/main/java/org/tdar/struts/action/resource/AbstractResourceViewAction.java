@@ -303,7 +303,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
                     getText("abstractPersistableController.cannot_recognize_request", getResource().getClass().getSimpleName()));
         }
         boolean result = authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
-        getLogger().debug("is viewable: {}, status: {}",result, getResource().getStatus());
         if (result == false) {
             if (getResource().isDeleted()) {
                 getLogger().debug("resource not viewable because it is deleted: {}", getResource());

@@ -766,9 +766,12 @@ public class ResourceService extends GenericService {
         switch (persistable.getResourceType()) {
             case PROJECT:
                 Set<InformationResource> inProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DELETED);
-                issue.getRelatedItems().addAll(inProject);
-                issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
-                return issue;
+                if (CollectionUtils.isNotEmpty(inProject)) {
+                    issue.getRelatedItems().addAll(inProject);
+                    issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
+                    return issue;
+                }
+                return null;
             case CODING_SHEET:
             case ONTOLOGY:
                 for (DataTable table : dataTableDao.findDataTablesUsingResource(persistable)) {

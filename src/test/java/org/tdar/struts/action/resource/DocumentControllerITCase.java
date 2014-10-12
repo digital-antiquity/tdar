@@ -50,6 +50,7 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
+import com.sun.tools.classfile.Annotation.element_value;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
@@ -371,6 +372,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Resource res = deleteAction.getPersistable();
         Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, res.getId());
         deleteAction.setDeletionReason(deletionReason);
+        deleteAction.setServletRequest(getServletPostRequest());
+        deleteAction.setDelete(deleteAction.DELETE);
         String delete = deleteAction.delete();
         assertEquals(TdarActionSupport.SUCCESS, delete);
         logger.debug("status: {}", delete);
@@ -479,16 +482,17 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
         // FIXME: issues with hydrating resources with Institutions
 
-        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
+        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class, getAdminUser());
         rva.setId(newId);
         rva.prepare();
         rva.view();
         // assert my authorproxies have what i think they should have (rendering
         // edit page)
-        controller = generateNewInitializedController(DocumentController.class);
+        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
         controller.setId(newId);
         controller.prepare();
         controller.edit();
+        controller.getPersistable().setStatus(Status.DRAFT);
         controller.setAuthorshipProxies(new ArrayList<ResourceCreatorProxy>());
         // deleting all authorship resource creators
         controller.setServletRequest(getServletPostRequest());

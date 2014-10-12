@@ -49,7 +49,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/resource")
+@Namespace("/dataset")
 public class ColumnMetadataController extends AuthenticationAware.Base implements Preparable, CrudAction<Dataset> {
 
     private static final long serialVersionUID = 657544410406621681L;

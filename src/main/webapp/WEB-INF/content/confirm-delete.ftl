@@ -26,14 +26,14 @@
 
         <#if !deleteable>
         <h4>This ${whatamideleting} cannot be deleted because it is still referenced by the following: </h4>
-        <ul>
             <#if deleteIssue?has_content>
 				<p><b>${deleteIssue.issue}</b></p>
+		        <ul>
                 <#list deleteIssue.relatedItems as rsc>
                         <li>${rsc.id?c} - ${rsc.name?html} </li>
                 </#list>
+				</ul>
             </#if>
-
         <#else>
             <@s.form name='deleteForm' id='deleteForm'  method='post' action='delete'>
                 <@s.token name='struts.csrf.token' />

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,7 +166,11 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         // first check the session
         if (!(getAuthenticatedUser() == null)) {
             // don't log anonymous users
-            getLogger().info("user {} is TRYING to VIEW a {}", msg);
+            String status = "";
+            if (getPersistable() instanceof HasStatus) {
+                status = ((HasStatus)getPersistable()).getStatus().toString();
+            }
+            getLogger().info(String.format(msg, getAuthenticatedUser().getUsername(), "VIEWING", getPersistableClass().getSimpleName(), getId(),status));
         }
     }
     

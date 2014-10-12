@@ -175,7 +175,9 @@ public abstract class AbstractDeleteAction<P extends Persistable> extends Authen
             return;
         }
 
-        canDelete();
+        if (canDelete()) {
+            return;
+        }
         String errorMessage = getText("abstractPersistableController.no_permissions");
         addActionError(errorMessage);
         abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
@@ -185,7 +187,7 @@ public abstract class AbstractDeleteAction<P extends Persistable> extends Authen
 
     abstract protected DeleteIssue getDeletionIssues();
 
-    abstract protected void canDelete();
+    abstract protected boolean canDelete();
 
     abstract protected P loadPersistable();
 

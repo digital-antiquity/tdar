@@ -57,6 +57,46 @@ navigation freemarker macros
         </#if>
     </#macro>
 
+
+    <#macro collectionToolbar namespace current="view">
+        <#if persistable??>
+        <#if (sessionData.authenticated)!false>
+        <div class="span12 resource-nav  screen " id="toolbars" parse="true">
+            <ul>
+        <@makeLink namespace "view" "view" "view" current />
+        <#if editable>
+                    <@makeLink namespace "edit" "edit" "edit" current />
+                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+                    <@makeLink "collection" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+        </#if>
+        <#nested>
+			</ul>
+		</div>
+
+			</#if>
+		</#if>
+    </#macro>
+
+
+    <#macro billingToolbar namespace current="view">
+        <#if persistable??>
+        <#if (sessionData.authenticated)!false>
+        <div class="span12 resource-nav  screen " id="toolbars" parse="true">
+            <ul>
+        <@makeLink namespace "view" "view" "view" current />
+        <#if editable>
+                    <@makeLink namespace "edit" "edit" "edit" current />
+                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+                    <@makeLink "account" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+        </#if>
+        <#nested>
+			</ul>
+		</div>
+
+			</#if>
+		</#if>
+    </#macro>
+
 <#-- emit toolbar for use on a "creator" page
     @param current:string name of the current struts action (e.g. edit/view/save)
     @requires creator.creatorType:string either "institution" or "person"

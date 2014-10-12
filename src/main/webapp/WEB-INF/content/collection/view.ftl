@@ -32,7 +32,7 @@
 </div>
 
     <#if editable>
-        <@nav.toolbar "collection" "view">
+        <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
             namespace="collection"
             action="add?parentId=${id?c}"
@@ -42,7 +42,7 @@
             includeResourceId=false
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
-        </@nav.toolbar>
+        </@nav.collectionToolbar>
     <#else>
         <@nav.toolbar "collection" "view" />
     </#if>

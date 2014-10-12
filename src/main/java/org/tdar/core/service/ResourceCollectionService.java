@@ -716,6 +716,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         getDao().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
+        getDao().delete(persistable);
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
         
     }
@@ -723,11 +724,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly=true)
     public DeleteIssue getDeletionIssues(TextProvider provider, ResourceCollection persistable) {
         List<ResourceCollection> findAllChildCollections = findDirectChildCollections(persistable.getId(), null, CollectionType.SHARED);
-        getLogger().info("we still have children: {}", findAllChildCollections);
         if (CollectionUtils.isNotEmpty(findAllChildCollections)) {
+            getLogger().info("we still have children: {}", findAllChildCollections);
             DeleteIssue issue = new DeleteIssue();
             issue.getRelatedItems().addAll(findAllChildCollections);
             issue.setIssue(provider.getText("resourceCollectionService.cannot_delete_collection"));
+            return issue;
         }
         return null;
     }

@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.persister.walking.spi.CollectionDefinition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -427,11 +426,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         }
         evictCache();
 
-        deleteAction = generateNewController(CollectionDeleteAction.class);
+        deleteAction = generateNewInitializedController(CollectionDeleteAction.class);
         deleteAction.setId(rcid);
         resourceCollection = null;
-        deleteAction.prepare();
         init(deleteAction, owner);
+        deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
         assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
         // resourceCollection.setParent(parent)
@@ -439,7 +438,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
         evictCache();
-        assertEquals(0, deleteAction.getDeleteIssue().getRelatedItems().size());
+        assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
@@ -507,7 +506,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
         evictCache();
-        assertEquals(0, deleteAction.getDeleteIssue().getRelatedItems().size());
+        assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
@@ -1177,8 +1176,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceDeleteAction.setId(pid);
         resourceDeleteAction.prepare();
         resourceDeleteAction.setDelete(TdarActionSupport.DELETE);
-        resourceDeleteAction.delete();
         resourceDeleteAction.setAsync(false);
+        resourceDeleteAction.delete();
         genericService.synchronize();
         searchIndexService.flushToIndexes();
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
