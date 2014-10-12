@@ -23,6 +23,19 @@
 
 <div id="sidebar-right" parse="true">
     <div>
+    	<div id="myProfile">
+            <h2>About ${authenticatedUser.firstName}</h2>
+            <strong>Profile:</strong>
+			<a href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.properName}</a>
+			<#if authenticatedUser.institution??>
+			<br/><strong>Institution:</strong> 
+<a href="<@s.url value="/browse/creators/${authenticatedUser.institution.id?c}"/>">${authenticatedUser.institution.properName}</a></#if><br/>
+            <#if authenticatedUser.penultimateLogin??>
+                <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
+            </#if><br/>
+            <a class="button btn" href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
+            <hr/>
+    	</div>
         <#if contributor>
             <#if (activeResourceCount != 0)>
                 <@resourcePieChart />
@@ -268,7 +281,7 @@
             <#if authenticatedUser.penultimateLogin??>
                 <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
             </#if>
-            <a href="<@s.url value='/entity/person/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
+            <a href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
         </div>
 
         <div class="span5" id="billing">

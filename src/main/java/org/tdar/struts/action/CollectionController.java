@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
@@ -69,7 +70,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient ResourceService resourceService;
     @Autowired
     private transient AuthorizationService authorizationService;
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
 
+    
     private static final long serialVersionUID = 5710621983240752457L;
     // private List<Resource> resources = new ArrayList<>();
     private List<ResourceCollection> allResourceCollections = new LinkedList<>();
@@ -222,6 +226,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         } else {
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
+
         return SUCCESS;
     }
 
@@ -315,6 +320,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         try {
             searchService.handleSearch(qb, this, this);
+            bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }

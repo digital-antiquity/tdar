@@ -53,7 +53,6 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -720,15 +719,8 @@ public class SearchService {
     public QueryBuilder generateQueryForRelatedResources(Creator creator, TdarUser user, TextProvider provider) {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
-
-        SearchParameters params = new SearchParameters(Operator.OR);
-        // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
-        for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
-            if (role == ResourceCreatorRole.UPDATER) {
-                continue;
-            }
-            params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
-        }
+        SearchParameters params = new SearchParameters(Operator.AND);
+        params.setCreatorOwner(new ResourceCreatorProxy(creator, null));
         queryBuilder.append(params, provider);
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);

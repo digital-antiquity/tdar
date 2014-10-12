@@ -22,4 +22,36 @@
             constraintName="uk_9grdn54hea5ns8ahq4yogpb7u" deferrable="false"
             disabled="false" initiallyDeferred="false" tableName="institution" />
     </changeSet>
+
+    <changeSet id="munsell-03" author="abrin">
+		
+        <addColumn tableName="resource_access_day_agg">
+            <column name="month" type="INT4" />
+        </addColumn>
+        <addColumn tableName="file_download_day_agg">
+            <column name="month" type="INT4" />
+        </addColumn>
+		<createIndex indexName="agg_res_month" tableName="resource_access_day_agg" unique="false">
+			<column name="month" />
+		</createIndex>
+		<createIndex indexName="agg_dwnld_month" tableName="file_download_day_agg" unique="false">
+			<column name="month" />
+		</createIndex>
+		<createIndex indexName="agg_res_month_year" tableName="resource_access_day_agg" unique="false">
+			<column name="year" />
+			<column name="month" />
+		</createIndex>
+		<createIndex indexName="agg_dwnld_month_year" tableName="file_download_day_agg" unique="false">
+			<column name="year" />
+			<column name="month" />
+		</createIndex>
+
+        <update tableName="resource_access_day_agg">
+            <column name="month" valueNumeric="date_part('month',date_accessed)" />
+        </update>
+        <update tableName="file_download_day_agg">
+            <column name="month" valueNumeric="date_part('month',date_accessed)" />
+        </update>
+    </changeSet>
+
 </databaseChangeLog>

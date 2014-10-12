@@ -28,6 +28,10 @@ public class Email extends Persistable.Base {
         QUEUED,
         ERROR,
         SENT;
+
+        public boolean isInReview() {
+            return this == IN_REVIEW;
+        }
     }
 
     @Enumerated(EnumType.STRING)

@@ -33,6 +33,7 @@ public class AdminEmailController extends AuthenticationAware.Base implements Pr
 
     private static final long serialVersionUID = 7908324276339775315L;
     private List<Email> emails = new ArrayList<>();
+    private List<Email> emailsToReview = new ArrayList<>();
     private List<Long> ids = new ArrayList<>();
     private Status emailAction;
 
@@ -46,7 +47,7 @@ public class AdminEmailController extends AuthenticationAware.Base implements Pr
 
             @Override
             public int compare(Email o1, Email o2) {
-                if (o1.getId() > o2.getId()) {
+                if (o1.getId() < o2.getId()) {
                     return 0;
                 }
                 else {
@@ -54,6 +55,13 @@ public class AdminEmailController extends AuthenticationAware.Base implements Pr
                 }
             }
         });
+        
+        for (Email email : emails) {
+            if (email.getStatus().isInReview()) {
+                emailsToReview.add(email);
+            }
+        }
+        
         return SUCCESS;
     }
 
@@ -106,6 +114,14 @@ public class AdminEmailController extends AuthenticationAware.Base implements Pr
 
     public void setEmailAction(Status emailAction) {
         this.emailAction = emailAction;
+    }
+
+    public List<Email> getEmailsToReview() {
+        return emailsToReview;
+    }
+
+    public void setEmailsToReview(List<Email> emailsToReview) {
+        this.emailsToReview = emailsToReview;
     }
 
 }

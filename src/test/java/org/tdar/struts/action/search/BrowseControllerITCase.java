@@ -119,7 +119,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     private void testBrowseController(Creator creator) throws Exception {
         Document doc = genericService.find(Document.class, setupDatedDocument());
-        ResourceCreator rc = new ResourceCreator(creator, ResourceCreatorRole.CONTRIBUTOR);
+        ResourceCreator rc = new ResourceCreator(creator, ResourceCreatorRole.AUTHOR);
         assertTrue(rc.isValidForResource(doc));
         doc.getResourceCreators().add(rc);
         genericService.saveOrUpdate(rc);
