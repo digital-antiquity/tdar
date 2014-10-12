@@ -774,13 +774,17 @@ public class ResourceService extends GenericService {
                 return null;
             case CODING_SHEET:
             case ONTOLOGY:
-                for (DataTable table : dataTableDao.findDataTablesUsingResource(persistable)) {
-                    if (!table.getDataset().isDeleted()) {
-                        issue.getRelatedItems().add(table.getDataset());
+                List<DataTable> related = dataTableDao.findDataTablesUsingResource(persistable);
+                if (CollectionUtils.isNotEmpty(related)) {
+                    for (DataTable table : related) {
+                        if (!table.getDataset().isDeleted()) {
+                            issue.getRelatedItems().add(table.getDataset());
+                        }
                     }
+                    issue.setIssue(provider.getText("abstractSupportingInformationResourceController.remove_mappings"));
+                    return issue;
                 }
-                issue.setIssue(provider.getText("abstractSupportingInformationResourceController.remove_mappings"));
-                return issue;
+                return null;
             default:
                 return null;
         }

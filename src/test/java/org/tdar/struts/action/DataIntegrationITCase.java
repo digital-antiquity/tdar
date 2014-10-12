@@ -52,8 +52,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         DataTableColumn spitalSpeciesColumn = spitalTable.getColumnByName(SPECIES_COMMON_NAME_COL);
         ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
         controller.setId(spitalDb.getId());
-        controller.prepare();
         controller.setDataTableId(spitalTable.getId());
+        controller.prepare();
         controller.setDataTableColumns(spitalTable.getDataTableColumns());
         spitalSpeciesColumn.setDefaultOntology(taxonOntology);
         controller.saveColumnMetadata();
