@@ -2,11 +2,7 @@ package org.tdar.struts.result;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,18 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.XmlService;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.Result;
 
 @Component
-public class JsonDocumentResult implements Result {
+public class JsonDocumentResult extends AbstractContainerResult {
 
-    private static final String FIELD_ERRORS = "fieldErrors";
-    private static final String ACTION_ERRORS = "actionErrors";
-    private static final String ERRORS_KEY = "errors";
     private static final long serialVersionUID = -869094415533475014L;
     public static final String UTF_8 = "UTF-8";
     public static final String CONTENT_TYPE = "application/json";
@@ -80,26 +71,7 @@ public class JsonDocumentResult implements Result {
         }
 
         if (jsonObject_ != null) {
-            if (jsonObject_ instanceof Map && invocation.getAction() instanceof TdarActionSupport) {
-                TdarActionSupport tas = (TdarActionSupport) invocation.getAction();
-                Map<String, Object> result = (Map<String, Object>) jsonObject_;
-                Map<String, Object> errors = (Map<String, Object>) result.get(ERRORS_KEY);
-                if (errors == null) {
-                    errors = new HashMap<>();
-                    result.put(ERRORS_KEY, errors);
-                }
-
-                if (tas.hasActionErrors()) {
-                    List<String> actionErrors = new ArrayList<>();
-                    for (String actionError : tas.getActionErrors()) {
-                        actionErrors.add(tas.getText(actionError));
-                    }
-                    errors.put(ACTION_ERRORS, actionErrors);
-                }
-                if (tas.hasFieldErrors()) {
-                    errors.put(FIELD_ERRORS, tas.getFieldErrors());
-                }
-            }
+            processErrors(invocation, jsonObject_, false);
 
             String jsonForStream = xmlService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());

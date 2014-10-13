@@ -43,6 +43,10 @@ import com.opensymphony.xwork2.Validateable;
 @HttpForbiddenErrorResponseOnly
 public class ApiAuthenticationController extends AuthenticationAware.Base implements Validateable, Preparable {
 
+    public static final String API_TOKEN_KEY_NAME = "apiTokenKeyName";
+    public static final String API_TOKEN = "apiToken";
+    public static final String USERNAME = "username";
+
     private static final long serialVersionUID = -7766515866713996249L;
 
     private AntiSpamHelper h = new AntiSpamHelper();
@@ -74,10 +78,12 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
             AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(), getSessionData());
-            status = result.getStatus();
-            xmlResultObject.put("username", result.getTokenUsername());
-            xmlResultObject.put("apiToken", result.getToken());
-            xmlResultObject.put("apiTokenKeyName", getTdarConfiguration().getRequestTokenName());
+            if (authorizationService.isMember(result.getPerson(), TdarGroup.TDAR_API_USER)) {
+                status = result.getStatus();
+                xmlResultObject.put(USERNAME, result.getTokenUsername());
+                xmlResultObject.put(API_TOKEN, result.getToken());
+                xmlResultObject.put(API_TOKEN_KEY_NAME, getTdarConfiguration().getRequestTokenName());
+            }
         } catch (Exception e) {
             addActionError(e.getMessage());
             status = AuthenticationStatus.ERROR;
@@ -99,13 +105,15 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
     @Action(value = "logout",
             interceptorRefs = { @InterceptorRef("authenticatedStack") },
             results = {
-                @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "200" })
+                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "200" })
             })
     @PostOnly
     @SkipValidation
     public String logout() {
         String token = getServletRequest().getParameter(TdarConfiguration.getInstance().getRequestTokenName());
-        if (getSessionData().isAuthenticated() || authenticationService.checkToken(token, getSessionData(), ServletActionContext.getRequest()).getType().isValid()) {
+        getLogger().debug("{} {} {}", getSessionData().isAuthenticated(), getAuthenticatedUser(), token);
+        if (getSessionData().isAuthenticated()
+                || authenticationService.checkToken(token, getSessionData(), ServletActionContext.getRequest()).getType().isValid()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse());
         }
         xmlResultObject.put("status", "success");
@@ -118,6 +126,7 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
         processErrorObject(errors);
 
         if (!isPostRequest() || errors.isNotEmpty()) {
+            getLogger().debug("errors: {}", errors);
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
         }
     }

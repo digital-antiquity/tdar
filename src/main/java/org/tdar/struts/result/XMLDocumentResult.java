@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
 
 @Component
-public class XMLDocumentResult implements Result {
+public class XMLDocumentResult extends AbstractContainerResult {
 
     private static final long serialVersionUID = 7102433466724795537L;
     public static final String UTF_8 = "UTF-8";
@@ -59,6 +59,7 @@ public class XMLDocumentResult implements Result {
             logger.error(msg);
             throw new IllegalArgumentException(msg);
         }
+        processErrors(invocation, object_, true);
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
         resp.setStatus(getStatusCode());
