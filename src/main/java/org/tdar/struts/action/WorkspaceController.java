@@ -187,6 +187,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
 
     @Actions({
         @Action("filter-ng"),
+        @Action("filter-ang"),
         @Action("select-columns-ng")
     })
 

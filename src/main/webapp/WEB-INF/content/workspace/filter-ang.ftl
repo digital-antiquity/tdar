@@ -11,7 +11,7 @@
 </head>
 <body class="filter-ontology">
 
-
+<div ng-app="integration"><div ng-controller="IntegrationController as integration">
 <div class="inthead">
     <div id="divIntegrationNav" class="">
         <ol class="breadcrumb">
@@ -20,7 +20,7 @@
             <li><a href="select-columns-ng">Display Integration Results</a></li>
         </ol>
     </div>
-    <h1><b>Editing Integration</b>:
+    <h1><b>Editing Integration</b>
     Jim's Cool Dataset integration
     </h1>
     <h2><b>Step 1 of 3</b>: Choose Ontologies and Datasets</h2>
@@ -28,50 +28,40 @@
 
 <ul class="nav nav-tabs"  id="ulOntologyTabs">
     <button class="btn pull-right">Add Ontology</button>
-    <!-- ko foreach:ontologies -->
-    <li><a data-toggle="tab" data-bind="attr: {href:'#ont' + id}, text:title">Loading...</a></li>
-    <!-- /ko -->
-    <li><a >add new</a></li>
+    <li ng-repeat="ontology in integration.ontologies"><a data-toggle="tab" href="#ont{{ontology.id}}">{{ontology.title}}</a></li>
 </ul>
-<div class="tab-content" data-bind="foreach:ontologies">
-    <div class="tab-pane" data-bind="attr:{id: 'ont'+id}">
+<div class="tab-content">
+    <div class="tab-pane" ng-repeat="ontology in integration.ontologies" id="ont{{ontology.id}}">
         <h2 data-bind="text:title"></h2>
         <table class="table table-bordered table-condensed">
             <thead>
                 <tr>
                     <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
                     <th rowspan="2" style="width:99%">Node Value</th>
-                    <th rowspan="1" style="white-space: nowrap;" data-bind="attr:{colspan: integrationColumns.length}">
+                    <th rowspan="1" style="white-space: nowrap;" colspan="{{integration.integrationColumns.length}}">
                         Datasets
                         <button class="btn btn-mini">Add Dataset</button>
                     </th>
                 </tr>
                 <tr data-bind="foreach: integrationColumns">
-                    <th data-bind="text: data_table_display_name"></th>
+                    <th ng-repeat="column in ontology.integrationColumns">{{column.data_table_display_name}}</th>
                 </tr>
             </thead>
-            <tbody data-bind="foreach: nodes">
-                <tr>
-                    <td><input type="checkbox" name="tbd" data-bind="checked: selected, attr:{id: 'cbont_' + id}"></td>
+            <tbody>
+                <tr ng-repeat="node in ontology.nodes">
+                    <td><input type="checkbox" name="tbd" ng-checked="node.selected" ng-model="node.selected" id="cbont_{{node.id}}"></td>
                     <td style="white-space: nowrap;">
-                        <div data-bind="text:display_name, attr:{class:'nodechild'+index.split('.').length}"></div>
+                        <div class="nodechild{{node.index.split('.').length}}">{{node.display_name}}</div>
                     </td>
-                    <!-- ko foreach: participation -->
-                    <td data-bind="text:$data">0</td>
-                    <!-- /ko -->
+                    <td ng-repeat="val in node.participation track by $index">{{val}}</td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
+</div></div>
 
-<script>
-//    $(function(){
-//        $("#ulOntologyTabs a:first").tab('show');
-//    });
-</script>
-<script src='//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js'></script>
-<script src='/includes/knockout.mapping.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-rc.5/angular.min.js'></script>
 <script id="jsonFilterData" type="text/plain">
 {"ontologies":[{"id":6029,"title":"Fauna Element Ontology","integrationColumns":[{"id":4742,"name":"element","display_name":"Element","default_ontology_id":6029,"dataset_id":420,
 "dataset_title":"Ojo Bonito Faunal Database","data_table_id":4735,"data_table_name":"e_321876_obap","data_table_display_name":"OBAP"},{"id":43046,"name":"element","display_name":"element",
@@ -423,7 +413,7 @@
 "dataset_title":"Ojo Bonito Faunal Database","data_table_id":4735,"data_table_name":"e_321876_obap","data_table_display_name":"OBAP"},{"id":43039,"name":"context",
 "display_name":"Context","default_ontology_id":null,"dataset_id":392595,"dataset_title":"Guadalupe Ruin Fauna","data_table_id":7850,"data_table_name":"e_318592_prpfauna","data_table_display_name":"PRPFAUNA"}]}
 </script>
-<script src="/js/tdar.filter-ng.js"></script>
+<script src="/js/tdar.filter-ang.js"></script>
 <script>
     $(function(){
         $("#ulOntologyTabs a:first").tab('show');
