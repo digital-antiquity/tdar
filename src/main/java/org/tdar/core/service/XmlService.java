@@ -49,7 +49,7 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.jaxb.JaxbMapResultContainer;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
@@ -87,7 +87,7 @@ public class XmlService {
     private static final String XSD = ".xsd";
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
-    private static final Class<Class>[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbMapResultContainer.class, ResourceCollection.class};
+    private static final Class<Class>[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class};
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 

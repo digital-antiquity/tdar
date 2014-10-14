@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.XmlService;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.jaxb.JaxbMapResultContainer;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
@@ -64,7 +64,7 @@ public class XMLDocumentResult implements Result {
         resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
         if (object_ instanceof Map) {
-            JaxbMapResultContainer container = new JaxbMapResultContainer();
+            JaxbResultContainer container = new JaxbResultContainer();
             container.convert((Map<String,Object>)object_, invocation);
             object_ = container;
         }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -39,6 +40,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 
 @SuppressWarnings("serial")
@@ -80,7 +82,7 @@ public class APIController extends AuthenticationAware.Base {
     private FileAccessRestriction fileAccessRestriction;
     private Long id;
     private InputStream inputStream;
-    private Map<String, Object> xmlResultObject = new HashMap<>();
+    private JaxbResultContainer xmlResultContainer = new JaxbResultContainer();
 
     private Long accountId;
     public final static String msg_ = "%s is %s %s (%s): %s";
@@ -98,7 +100,7 @@ public class APIController extends AuthenticationAware.Base {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            getXmlResultObject().put("resource", resource);
+            getXmlResultContainer().setResult(resource);
             return SUCCESS;
         }
         return INPUT;
@@ -136,7 +138,7 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            getXmlResultObject().put("recordId", incoming.getId());
+            xmlResultContainer.setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
             // getGenericService().detachFromSession(getAuthenticatedUser());
@@ -147,12 +149,14 @@ public class APIController extends AuthenticationAware.Base {
             setId(loadedRecord.getId());
 
             message = "updated:" + loadedRecord.getId();
+            getXmlResultContainer().setMessage(message);
             StatusCode code = StatusCode.UPDATED;
             status = StatusCode.UPDATED.getResultName();
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
-                getXmlResultObject().put("message", "created:" + loadedRecord.getId());
+                message = "created:" + loadedRecord.getId();
+                getXmlResultContainer().setMessage(message);
                 code = StatusCode.CREATED;
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
@@ -160,7 +164,7 @@ public class APIController extends AuthenticationAware.Base {
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
-            getXmlResultObject().put("message", SUCCESS);
+            xmlResultContainer.setMessage(SUCCESS);
             getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
@@ -168,25 +172,29 @@ public class APIController extends AuthenticationAware.Base {
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<JaxbValidationEvent> events = ((JaxbParsingException) e).getEvents();
+                List<String> errors = new ArrayList<>();
                 for (JaxbValidationEvent event : events) {
-                    message = message + event.toString() + "\r\n";
+                    errors.add(event.toString());
                 }
 
                 errorResponse(StatusCode.BAD_REQUEST);
-                getXmlResultObject().put("message", message);
-                getXmlResultObject().put("errors", events);
+                getXmlResultContainer().setMessage(message);
+                getXmlResultContainer().setErrors(errors);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
             Throwable exp = e;
+            List<String> stackTraces = new ArrayList<>();
+            List<String> errors = new ArrayList<>();
             do {
-                message = message + ((exp.getMessage() == null) ? " ? " : exp.getMessage());
+                errors.add(((exp.getMessage() == null) ? " ? " : exp.getMessage()));
                 exp = exp.getCause();
-                message = message + ((exp == null) ? "" : "\r\n");
+                stackTraces.add(ExceptionUtils.getFullStackTrace(exp));
             } while (exp != null);
             if (e instanceof APIException) {
-                getXmlResultObject().put("message", message);
-                getXmlResultObject().put("errors", e.getMessage());
+                getXmlResultContainer().setMessage(e.getMessage());
+                getXmlResultContainer().setStackTraces(stackTraces);
+                getXmlResultContainer().setErrors(errors);
                 errorResponse(((APIException) e).getCode());
                 return ERROR;
             }
@@ -198,7 +206,7 @@ public class APIController extends AuthenticationAware.Base {
 
     private String errorResponse(StatusCode statusCode) {
         status = statusCode.getResultName();
-        getXmlResultObject().put("status", status);
+        xmlResultContainer.setStatus(status);
         return ERROR;
     }
 
@@ -348,12 +356,11 @@ public class APIController extends AuthenticationAware.Base {
         }
     }
 
-    public Map<String, Object> getXmlResultObject() {
-        return xmlResultObject;
+    public JaxbResultContainer getXmlResultContainer() {
+        return xmlResultContainer;
     }
 
-    public void setXmlResultObject(Map<String, Object> xmlResultObject) {
-        this.xmlResultObject = xmlResultObject;
+    public void setXmlResultContainer(JaxbResultContainer xmlResultContainer) {
+        this.xmlResultContainer = xmlResultContainer;
     }
-
 }

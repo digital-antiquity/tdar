@@ -23,7 +23,7 @@ import com.opensymphony.xwork2.ActionInvocation;
 @XmlRootElement(name = "resultContainer")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "resultContainer")
-public class JaxbMapResultContainer implements Serializable, TdarResultHeader {
+public class JaxbResultContainer implements Serializable, TdarResultHeader {
 
     private static final long serialVersionUID = -8255546475402578411L;
     private List<String> errors = new ArrayList<>();
@@ -34,7 +34,10 @@ public class JaxbMapResultContainer implements Serializable, TdarResultHeader {
     @XmlAttribute
     private String apiToken;
     private Resource result;
-    private String stackTrace;
+    private List<String> stackTraces;
+    private String message;
+    private String status;
+    private Long recordId;
     
     public void convert(Map<String, Object> object_, ActionInvocation invocation) {
 
@@ -110,13 +113,36 @@ public class JaxbMapResultContainer implements Serializable, TdarResultHeader {
         this.result = result;
     }
 
-    public String getStackTrace() {
-        return stackTrace;
+    public List<String> getStackTraces() {
+        return stackTraces;
     }
 
-    public void setStackTrace(String stackTrace) {
-        this.stackTrace = stackTrace;
+    public void setStackTraces(List<String> stackTraces) {
+        this.stackTraces = stackTraces;
     }
 
-    
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Long getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(Long recordId) {
+        this.recordId = recordId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

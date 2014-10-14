@@ -32,7 +32,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
-import org.tdar.utils.jaxb.JaxbMapResultContainer;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 
 import com.sun.media.rtsp.protocol.StatusCode;
 
@@ -51,11 +51,11 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         apiLogout();
     }
 
-    private JaxbMapResultContainer setupValidLogin() {
+    private JaxbResultContainer setupValidLogin() {
         try {
-            Pair<Integer, JaxbMapResultContainer> apiLogin = apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+            Pair<Integer, JaxbResultContainer> apiLogin = apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
             assertEquals(StatusCode.OK, apiLogin.getFirst().intValue());
-            JaxbMapResultContainer result = apiLogin.getSecond();
+            JaxbResultContainer result = apiLogin.getSecond();
             assertNotNull(result.getApiToken());
             assertEquals(TdarConfiguration.getInstance().getRequestTokenName(), result.getSessionKeyName());
             assertNotNull(result.getUsername());
@@ -68,7 +68,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testValidRequestWithoutCookie() throws IllegalStateException, Exception {
-        JaxbMapResultContainer login = setupValidLogin();
+        JaxbResultContainer login = setupValidLogin();
         CloseableHttpClient client2 = SimpleHttpUtils.createClient();
         HttpGet get = new HttpGet(CONFIG.getBaseSecureUrl()  + "/api/view?id=4231");
         CloseableHttpResponse execute = client2.execute(get);
@@ -87,15 +87,15 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testInvalidLogin() throws IllegalStateException, Exception {
-        Pair<Integer, JaxbMapResultContainer> apiLogin = apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
+        Pair<Integer, JaxbResultContainer> apiLogin = apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
         assertEquals(StatusCode.BAD_REQUEST, apiLogin.getFirst().intValue());
-        JaxbMapResultContainer result = apiLogin.getSecond();
+        JaxbResultContainer result = apiLogin.getSecond();
         assertNull(result.getApiToken());
         assertNull(result.getUsername());
         assertEquals(getText("apiAuthenticationController.invalid_user"), result.getErrors().get(0));
     }
 
-    public Pair<Integer, JaxbMapResultContainer> apiLogin(String username, String password) throws IllegalStateException, Exception {
+    public Pair<Integer, JaxbResultContainer> apiLogin(String username, String password) throws IllegalStateException, Exception {
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/login");
         List<NameValuePair> postNameValuePairs = new ArrayList<>();
         postNameValuePairs.add(new BasicNameValuePair("userLogin.loginUsername", username));
@@ -106,7 +106,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         HttpEntity entity = response.getEntity();
         String result = IOUtils.toString(entity.getContent());
         logger.debug(result);
-        return Pair.create(response.getStatusLine().getStatusCode(), (JaxbMapResultContainer) xmlService.parseXml(new StringReader(result)));
+        return Pair.create(response.getStatusLine().getStatusCode(), (JaxbResultContainer) xmlService.parseXml(new StringReader(result)));
     }
 
     public void apiLogout() throws ClientProtocolException, IOException {
