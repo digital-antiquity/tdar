@@ -13,9 +13,11 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
@@ -54,16 +56,15 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
     private Map<String, Object> xmlResultObject = new HashMap<>();
 
     @Autowired
-    private AuthenticationService authenticationService;
-
+    private transient AuthenticationService authenticationService;
     @Autowired
-    private RecaptchaService recaptchaService;
-
+    private transient RecaptchaService recaptchaService;
     @Autowired
-    private AuthorizationService authorizationService;
-
+    private transient AuthorizationService authorizationService;
     @Autowired
-    private GenericService genericService;
+    private transient EntityService entityService;
+    @Autowired
+    private transient GenericService genericService;
 
     @Action(value = "login",
             results = {
@@ -77,8 +78,13 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(), getSessionData());
-            if (authorizationService.isMember(result.getPerson(), TdarGroup.TDAR_API_USER)) {
+            TdarUser user = entityService.findByUsername(getUserLogin().getLoginUsername());
+            getLogger().debug("user:{}", user);
+            if (!authorizationService.isMember(user, TdarGroup.TDAR_API_USER)) {
+                addActionError(getText("apiAuthenticationController.invalid_user"));
+            } else {
+                AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
+                        getSessionData());
                 status = result.getStatus();
                 xmlResultObject.put(USERNAME, result.getTokenUsername());
                 xmlResultObject.put(API_TOKEN, result.getToken());

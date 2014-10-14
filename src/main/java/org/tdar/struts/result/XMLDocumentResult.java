@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
 
 @Component
-public class XMLDocumentResult extends AbstractContainerResult {
+public class XMLDocumentResult implements Result {
 
     private static final long serialVersionUID = 7102433466724795537L;
     public static final String UTF_8 = "UTF-8";
@@ -59,13 +59,14 @@ public class XMLDocumentResult extends AbstractContainerResult {
             logger.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        processErrors(invocation, object_, true);
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
         resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
         if (object_ instanceof Map) {
-            object_ = new JaxbMapResultContainer((Map)object_);
+            JaxbMapResultContainer container = new JaxbMapResultContainer();
+            container.convert((Map<String,Object>)object_, invocation);
+            object_ = container;
         }
         xmlService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
     }

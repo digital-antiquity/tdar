@@ -17,11 +17,11 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.XmlService;
-import org.tdar.struts.action.api.ApiAuthenticationController;
 import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
@@ -48,25 +47,52 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testValidLogin() throws IllegalStateException, Exception {
+        setupValidLogin();
+        apiLogout();
+    }
+
+    private JaxbMapResultContainer setupValidLogin() {
         try {
-        Pair<Integer, JaxbMapResultContainer> apiLogin = apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
-        assertEquals(StatusCode.OK, apiLogin.getFirst().intValue());
-        JaxbMapResultContainer result = apiLogin.getSecond();
-        assertNotNull(result.getResult().get(ApiAuthenticationController.API_TOKEN));
-        assertEquals(TdarConfiguration.getInstance().getRequestTokenName(), result.getResult().get(ApiAuthenticationController.API_TOKEN_KEY_NAME));
-        assertNotNull(result.getResult().get(ApiAuthenticationController.USERNAME));
+            Pair<Integer, JaxbMapResultContainer> apiLogin = apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+            assertEquals(StatusCode.OK, apiLogin.getFirst().intValue());
+            JaxbMapResultContainer result = apiLogin.getSecond();
+            assertNotNull(result.getApiToken());
+            assertEquals(TdarConfiguration.getInstance().getRequestTokenName(), result.getSessionKeyName());
+            assertNotNull(result.getUsername());
+            return result;
         } catch (Exception e) {
-            logger.debug("exception",e );
+            logger.debug("exception", e);
         }
+        return null;
     }
 
     @Test
-    public void testInValidLogin() throws IllegalStateException, Exception {
+    public void testValidRequestWithoutCookie() throws IllegalStateException, Exception {
+        JaxbMapResultContainer login = setupValidLogin();
+        CloseableHttpClient client2 = SimpleHttpUtils.createClient();
+        HttpGet get = new HttpGet(CONFIG.getBaseSecureUrl()  + "/api/view?id=4231");
+        CloseableHttpResponse execute = client2.execute(get);
+        int statusCode = execute.getStatusLine().getStatusCode();
+        logger.debug("status:{}", statusCode);
+        assertEquals(HttpStatus.SC_FORBIDDEN, statusCode);
+        logger.debug(IOUtils.toString(execute.getEntity().getContent()));
+        get = new HttpGet(String.format("%s/api/view?id=4231&%s=%s",CONFIG.getBaseSecureUrl() , login.getSessionKeyName(), login.getApiToken()));
+        execute = client2.execute(get);
+        logger.debug("status:{}", statusCode);
+        statusCode = execute.getStatusLine().getStatusCode();
+        assertEquals(HttpStatus.SC_OK, statusCode);
+        logger.debug(IOUtils.toString(execute.getEntity().getContent()));
+        apiLogout();
+    }
+
+    @Test
+    public void testInvalidLogin() throws IllegalStateException, Exception {
         Pair<Integer, JaxbMapResultContainer> apiLogin = apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
-        assertEquals(StatusCode.OK, apiLogin.getFirst().intValue());
+        assertEquals(StatusCode.BAD_REQUEST, apiLogin.getFirst().intValue());
         JaxbMapResultContainer result = apiLogin.getSecond();
-        assertNull(result.getResult().get(ApiAuthenticationController.API_TOKEN));
-        assertNull(result.getResult().get(ApiAuthenticationController.USERNAME));
+        assertNull(result.getApiToken());
+        assertNull(result.getUsername());
+        assertEquals(getText("apiAuthenticationController.invalid_user"), result.getErrors().get(0));
     }
 
     public Pair<Integer, JaxbMapResultContainer> apiLogin(String username, String password) throws IllegalStateException, Exception {
@@ -83,7 +109,6 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         return Pair.create(response.getStatusLine().getStatusCode(), (JaxbMapResultContainer) xmlService.parseXml(new StringReader(result)));
     }
 
-    @After
     public void apiLogout() throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/logout");
         CloseableHttpResponse response = httpClient.execute(post);

@@ -87,7 +87,7 @@ public class XmlService {
     private static final String XSD = ".xsd";
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
-    private static final Class[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbMapResultContainer.class, ResourceCollection.class};
+    private static final Class<Class>[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbMapResultContainer.class, ResourceCollection.class};
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
