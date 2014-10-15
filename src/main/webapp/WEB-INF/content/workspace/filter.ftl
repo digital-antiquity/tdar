@@ -68,7 +68,7 @@
                         <span class="autocheck btn  "><i class=" icon-ok"></i> Select Shared Values</span>
                         <span class="button  btn " onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'><i
                                 class=" icon-remove-circle"></i> Clear All</span>
-                        <span class="button btn  hideElements"><i class=" icon-remove"></i> Hide/Show Unmapped</span>
+                        <span class="button btn  hideElements"><i class=" icon-remove"></i>Hide Empty Ontology Branches</span>
                     </div>
                     <h3>${integrationColumn.sharedOntology.title} [${integrationColumn.name}]</h3>
                     <table class='tableFormat table table-striped integrationTable'>

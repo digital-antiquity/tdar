@@ -26,6 +26,7 @@ import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasLabel;
@@ -37,7 +38,14 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -570,6 +578,18 @@ public class AuthorityManagementService {
             updateReferrers(user, (Class<? extends Dedupable>) cls, Persistable.Base.extractIds(entry.getValue()), entry.getKey().getId(),
                     DupeMode.MARK_DUPS_ONLY, false);
         }
+    }
+
+    @Async
+    @Transactional(readOnly=false)
+    public void cleanupKeywordDups(final TdarUser authenticatedUser) {
+        findPluralDups(CultureKeyword.class, authenticatedUser, false);
+        findPluralDups(GeographicKeyword.class, authenticatedUser, false);
+        findPluralDups(OtherKeyword.class, authenticatedUser, false);
+        findPluralDups(SiteNameKeyword.class, authenticatedUser, false);
+        findPluralDups(SiteTypeKeyword.class, authenticatedUser, false);
+        findPluralDups(TemporalKeyword.class, authenticatedUser, false);
+        logger.debug("done pluralization");
     }
 
 }

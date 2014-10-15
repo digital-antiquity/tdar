@@ -54,7 +54,7 @@
 </thead>
 <#list emails as email>
     <tr>
-        <td>{email.id?c} </td>
+        <td>${email.id?c} </td>
         <td>${email.to!''}</td>
         <td>${email.from!''}</td>
         <td>${email.date?string.short}</td>
