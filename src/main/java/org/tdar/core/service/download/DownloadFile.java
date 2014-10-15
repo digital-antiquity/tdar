@@ -24,13 +24,13 @@ public class DownloadFile implements Serializable {
     private Long informationResourceId;
 
     public DownloadFile(File file, String string, Long id) {
-        this.file = file;
+        this.setFile(file);
         this.originalFilename = string;
         this.informationResourceId = id;
     }
 
     public InputStream getInputStream() throws Exception {
-        return new FileInputStream(file);
+        return new FileInputStream(getFile());
     }
 
     public String getFileName() {
@@ -43,11 +43,11 @@ public class DownloadFile implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s (%s) ", file.getName(), file.length());
+        return String.format("%s (%s) ", getFile().getName(), getFile().length());
     }
 
     public Long getFileLength() {
-        return this.file.length();
+        return this.getFile().length();
 
     }
 
@@ -57,5 +57,13 @@ public class DownloadFile implements Serializable {
 
     public void setInformationResourceId(Long informationResourceId) {
         this.informationResourceId = informationResourceId;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }
