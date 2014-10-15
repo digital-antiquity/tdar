@@ -232,6 +232,14 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
+    @Action(value = "fix-institutions", results = {
+            @Result(name = SUCCESS, type = REDIRECT, location = "/admin/internal") })
+    @WriteableSession
+    public String cleanupInstitutionNames() {
+        authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());
+        return SUCCESS;
+    }
+
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         if (uncontrolledCultureKeywordStats == null) {
             uncontrolledCultureKeywordStats = genericKeywordService.getUncontrolledCultureKeywordStats();

@@ -8,6 +8,7 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 
 /**
@@ -38,5 +39,9 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
         } else {
             return find(result.get(0).longValue());
         }
+    }
+    
+    public List<Institution> findInstitutionsWIthSpaces() {
+        return getCriteria().add(Restrictions.and(Restrictions.eq("status", Status.ACTIVE),Restrictions.or(Restrictions.like("name", " %"),Restrictions.like("name", "% ")))).list();
     }
 }
