@@ -82,7 +82,7 @@ public class APIController extends AuthenticationAware.Base {
     private FileAccessRestriction fileAccessRestriction;
     private Long id;
     private InputStream inputStream;
-    private JaxbResultContainer xmlResultContainer = new JaxbResultContainer();
+    private JaxbResultContainer xmlResultObject = new JaxbResultContainer();
 
     private Long accountId;
     public final static String msg_ = "%s is %s %s (%s): %s";
@@ -100,7 +100,7 @@ public class APIController extends AuthenticationAware.Base {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            getXmlResultContainer().setResult(resource);
+            getXmlResultObject().setResult(resource);
             return SUCCESS;
         }
         return INPUT;
@@ -138,7 +138,7 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            xmlResultContainer.setRecordId(incoming.getId());
+            xmlResultObject.setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
             // getGenericService().detachFromSession(getAuthenticatedUser());
@@ -149,14 +149,14 @@ public class APIController extends AuthenticationAware.Base {
             setId(loadedRecord.getId());
 
             message = "updated:" + loadedRecord.getId();
-            getXmlResultContainer().setMessage(message);
+            getXmlResultObject().setMessage(message);
             StatusCode code = StatusCode.UPDATED;
             status = StatusCode.UPDATED.getResultName();
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
-                getXmlResultContainer().setMessage(message);
+                getXmlResultObject().setMessage(message);
                 code = StatusCode.CREATED;
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
@@ -164,7 +164,7 @@ public class APIController extends AuthenticationAware.Base {
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
-            xmlResultContainer.setMessage(SUCCESS);
+            xmlResultObject.setMessage(SUCCESS);
             getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
@@ -178,8 +178,8 @@ public class APIController extends AuthenticationAware.Base {
                 }
 
                 errorResponse(StatusCode.BAD_REQUEST);
-                getXmlResultContainer().setMessage(message);
-                getXmlResultContainer().setErrors(errors);
+                getXmlResultObject().setMessage(message);
+                getXmlResultObject().setErrors(errors);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -192,9 +192,9 @@ public class APIController extends AuthenticationAware.Base {
                 stackTraces.add(ExceptionUtils.getFullStackTrace(exp));
             } while (exp != null);
             if (e instanceof APIException) {
-                getXmlResultContainer().setMessage(e.getMessage());
-                getXmlResultContainer().setStackTraces(stackTraces);
-                getXmlResultContainer().setErrors(errors);
+                getXmlResultObject().setMessage(e.getMessage());
+                getXmlResultObject().setStackTraces(stackTraces);
+                getXmlResultObject().setErrors(errors);
                 errorResponse(((APIException) e).getCode());
                 return ERROR;
             }
@@ -206,7 +206,7 @@ public class APIController extends AuthenticationAware.Base {
 
     private String errorResponse(StatusCode statusCode) {
         status = statusCode.getResultName();
-        xmlResultContainer.setStatus(status);
+        xmlResultObject.setStatus(status);
         return ERROR;
     }
 
@@ -356,11 +356,11 @@ public class APIController extends AuthenticationAware.Base {
         }
     }
 
-    public JaxbResultContainer getXmlResultContainer() {
-        return xmlResultContainer;
+    public JaxbResultContainer getXmlResultObject() {
+        return xmlResultObject;
     }
 
-    public void setXmlResultContainer(JaxbResultContainer xmlResultContainer) {
-        this.xmlResultContainer = xmlResultContainer;
+    public void setXmlResultObject(JaxbResultContainer xmlResultContainer) {
+        this.xmlResultObject = xmlResultContainer;
     }
 }
