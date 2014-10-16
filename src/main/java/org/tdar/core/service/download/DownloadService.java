@@ -76,23 +76,14 @@ public class DownloadService {
 
     @Transactional(readOnly = true)
     public DownloadTransferObject constructDownloadTransferObject(DownloadTransferObject dto) {
-        Set<String> files = new HashSet<>();
         for (InformationResourceFileVersion irFileVersion : dto.getVersionsToDownload()) {
-
-            String fileToDownload = addFileToDownload(irFileVersion, dto);
-            if (files.contains(fileToDownload)) {
-                throw new TdarRecoverableRuntimeException("downloadService.duplicate_file_in_zip");
-            }
-            files.add(fileToDownload);
             dto.setFileName(irFileVersion.getFilename());
             if (!irFileVersion.isDerivative()) {
                 logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance()
                         .getSiteAcronym(),
                         irFileVersion.getInformationResourceFile().getInformationResource().getId());
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
-
                 addStatistics(dto, irFile);
-
             }
         }
         return dto;
