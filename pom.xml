@@ -1248,11 +1248,11 @@
                 <version>${clover.version}</version>
                 <configuration>
                     <license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
-                                    mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
-                                    rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
-                                    umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
-                                    mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-                                    bZloaUUnmm]]></license>
+									mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
+									rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
+									umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
+									mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+									bZloaUUnmm]]></license>
                     <configuration>
                         <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
                         <!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
@@ -1413,13 +1413,12 @@
                 <artifactId>maven-clover2-plugin</artifactId>
                 <version>${clover.version}</version>
                 <configuration>
-                    <license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
-                            mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
-                            QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
-                            xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
-                            mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-                            bZloaUUnmm
-					]]></license>
+                    <license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
+									mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
+									rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
+									umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
+									mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+									bZloaUUnmm]]></license>
                     <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
                     <!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
                     <includes>
