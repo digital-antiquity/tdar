@@ -765,7 +765,7 @@ public class ResourceService extends GenericService {
         DeleteIssue issue = new DeleteIssue();
         switch (persistable.getResourceType()) {
             case PROJECT:
-                Set<InformationResource> inProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DELETED);
+                Set<InformationResource> inProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
                 if (CollectionUtils.isNotEmpty(inProject)) {
                     issue.getRelatedItems().addAll(inProject);
                     issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
