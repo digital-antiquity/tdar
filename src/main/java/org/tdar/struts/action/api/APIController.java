@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +35,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.jaxb.JaxbParsingException;
@@ -50,6 +49,7 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 @ParentPackage("secured")
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @HttpForbiddenErrorResponseOnly
+@HttpsOnly
 public class APIController extends AuthenticationAware.Base {
 
     @Autowired
