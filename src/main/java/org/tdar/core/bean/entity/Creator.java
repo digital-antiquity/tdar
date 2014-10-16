@@ -204,7 +204,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Address> addresses = new LinkedHashSet<>();
 
-    @Column(nullable = false, name = "hidden_if_unreferenced", columnDefinition = "boolean default FALSE")
+//    @Column(nullable = false, name = "hidden_if_unreferenced", columnDefinition = "boolean default FALSE")
     private transient Float score = -1f;
     private transient Explanation explanation;
     private transient boolean readyToIndex = true;
