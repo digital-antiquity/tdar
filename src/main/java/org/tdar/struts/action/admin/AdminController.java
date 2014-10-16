@@ -44,6 +44,7 @@ import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.Pair;
@@ -225,8 +226,17 @@ public class AdminController extends AuthenticationAware.Base {
     @Action(value = "fix-pluralization", results = {
             @Result(name = SUCCESS, type = REDIRECT, location = "/admin/internal") })
     @WriteableSession
+    @PostOnly
     public String cleanupPluralization() {
         authorityManagementService.cleanupKeywordDups(getAuthenticatedUser());
+        return SUCCESS;
+    }
+
+    @Action(value = "fix-institutions", results = {
+            @Result(name = SUCCESS, type = REDIRECT, location = "/admin/internal") })
+    @WriteableSession
+    public String cleanupInstitutionNames() {
+        authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());
         return SUCCESS;
     }
 
