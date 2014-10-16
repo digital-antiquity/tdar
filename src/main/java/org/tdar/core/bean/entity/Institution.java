@@ -18,7 +18,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +42,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * $Id$
@@ -136,6 +139,8 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return name;
     }
 
+    @XmlElement(name = "parentRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Institution getParentInstitution() {
         return parentInstitution;
     }
@@ -169,6 +174,9 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
     @Override
+    @XmlElementWrapper(name = "synonyms")
+    @XmlElement(name = "synonymRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<Institution> getSynonyms() {
         return synonyms;
     }

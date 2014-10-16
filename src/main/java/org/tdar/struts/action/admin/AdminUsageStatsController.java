@@ -65,7 +65,9 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
         setDownloadStats(resourceService.getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
         for (AggregateDownloadStatistic download : getDownloadStats()) {
             InformationResourceFile irf = getGenericService().find(InformationResourceFile.class, download.getInformationResourceFileId());
-            download.setInformationResource(irf.getInformationResource());
+            if (download != null && irf != null) {
+                download.setInformationResource(irf.getInformationResource());
+            }
         }
         return SUCCESS;
     }
