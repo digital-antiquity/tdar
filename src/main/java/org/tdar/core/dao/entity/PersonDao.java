@@ -175,12 +175,13 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     public void updateOccuranceValues() {
         Session session = getCurrentSession();
+        String roles = getFormattedRoles();
         logger.info("clearing creator occurrence values");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
         logger.info("beginning updates - resource");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE)).executeUpdate();
         logger.info("beginning updates - resource - inherited");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED)).executeUpdate();
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
         logger.info("beginning updates - copyright");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
         logger.info("beginning updates - provider");
@@ -193,8 +194,6 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_INSTITUTION)).executeUpdate();
         logger.info("completed updates");
 
-        Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
-        String roles = String.format("'%s'",StringUtils.join(roleSet, "','"));
 //        logger.info("beginning updates (2) - resource");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_BROWSE_CREATOR_OCCURRENCE, roles)).executeUpdate();
         logger.info("beginning updates - resource - inherited");
@@ -205,6 +204,12 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER,Creator.BROWSE_OCCURRENCE , Creator.BROWSE_OCCURRENCE)).executeUpdate();
         logger.info("completed updates");
 
+    }
+
+    private String getFormattedRoles() {
+        Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
+        String roles = String.format("'%s'",StringUtils.join(roleSet, "','"));
+        return roles;
     }
 
     public Long getCreatorViewCount(Creator creator) {
