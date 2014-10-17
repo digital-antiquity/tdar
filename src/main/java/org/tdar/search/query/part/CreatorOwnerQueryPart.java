@@ -38,6 +38,7 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
         Set<ResourceCreatorRole> roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
         if (term instanceof Person) {
             roles.remove(ResourceCreatorRole.RESOURCE_PROVIDER);
+            roles.remove(ResourceCreatorRole.PUBLISHER);
         }
         
         FieldQueryPart<ResourceCreatorRole> notRoles = new FieldQueryPart<ResourceCreatorRole>("activeResourceCreators.role",Operator.AND, roles);

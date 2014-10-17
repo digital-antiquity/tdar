@@ -94,6 +94,8 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     private transient boolean obfuscated;
     private transient Boolean obfuscatedObjectDifferent;
     private transient boolean readyToStore = true;
+    public static final String OCCURRENCE = "occurrence";
+    public static final String BROWSE_OCCURRENCE = "browse_occurrence";
 
     @Transient
     @XmlTransient
@@ -148,7 +150,13 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     }
 
+    @Column(nullable = false, name = "hidden", columnDefinition = "boolean default FALSE")
+    private boolean hidden = false;
+    
+    @Column(name = Creator.OCCURRENCE)
     private Long occurrence = 0L;
+    @Column(name = Creator.BROWSE_OCCURRENCE)
+    private Long browseOccurrence = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -204,7 +212,6 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Address> addresses = new LinkedHashSet<>();
 
-//    @Column(nullable = false, name = "hidden_if_unreferenced", columnDefinition = "boolean default FALSE")
     private transient Float score = -1f;
     private transient Explanation explanation;
     private transient boolean readyToIndex = true;
@@ -477,4 +484,23 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         this.occurrence = occurrence;
     }
 
+    public Long getBrowseOccurrence() {
+        return browseOccurrence;
+    }
+
+    public void setBrowseOccurrence(Long browse_occurrence) {
+        this.browseOccurrence = browse_occurrence;
+    }
+
+    public boolean isBrowsePageVisible() {
+        return !hidden && (getCreatorType() == CreatorType.PERSON && getBrowseOccurrence() < 1);
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
 }

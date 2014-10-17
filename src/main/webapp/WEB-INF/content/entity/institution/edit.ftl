@@ -42,6 +42,8 @@
         <h3>Address List</h3>
         <@common.listAddresses entity=institution entityType="institution" />
 
+        <@entityEdit.hidden />
+
 
     </div>
         <@edit.submit "Save" false />
