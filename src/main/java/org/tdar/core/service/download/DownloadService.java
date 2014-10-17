@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,6 +75,7 @@ public class DownloadService {
     @Transactional(readOnly = true)
     public DownloadTransferObject constructDownloadTransferObject(DownloadTransferObject dto) {
         for (InformationResourceFileVersion irFileVersion : dto.getVersionsToDownload()) {
+            addFileToDownload(irFileVersion, dto);
             dto.setFileName(irFileVersion.getFilename());
             if (!irFileVersion.isDerivative()) {
                 logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance()
