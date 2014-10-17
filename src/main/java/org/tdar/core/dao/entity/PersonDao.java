@@ -197,7 +197,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 //        logger.info("beginning updates (2) - resource");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_BROWSE_CREATOR_OCCURRENCE, roles)).executeUpdate();
         logger.info("beginning updates - resource - inherited");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_BROWSE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
         logger.info("beginning updates - provider");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER,Creator.BROWSE_OCCURRENCE , Creator.BROWSE_OCCURRENCE)).executeUpdate();
         logger.info("beginning updates - publisher");

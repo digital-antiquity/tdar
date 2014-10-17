@@ -484,6 +484,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         this.occurrence = occurrence;
     }
 
+    @XmlTransient
     public Long getBrowseOccurrence() {
         return browseOccurrence;
     }
@@ -492,10 +493,12 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         this.browseOccurrence = browse_occurrence;
     }
 
+    @XmlTransient
     public boolean isBrowsePageVisible() {
         return !hidden && (getCreatorType() == CreatorType.PERSON && getBrowseOccurrence() < 1);
     }
 
+    @XmlTransient
     public boolean isHidden() {
         return hidden;
     }

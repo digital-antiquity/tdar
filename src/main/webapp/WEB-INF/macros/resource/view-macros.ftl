@@ -364,7 +364,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
 
-        <#if c?? && (c.browsePageVisible > 0)> <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a></#if>
+        <#if c?? && c.browsePageVisible > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a></#if>
     </#compress>
     </#macro>
 
