@@ -36,6 +36,13 @@ public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<OtherKeyword> synonyms = new HashSet<OtherKeyword>();
 
+    public OtherKeyword() {
+    }
+
+    public OtherKeyword(String name) {
+        setLabel(name);
+    }
+
     @Override
     public Set<OtherKeyword> getSynonyms() {
         return synonyms;

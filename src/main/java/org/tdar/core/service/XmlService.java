@@ -165,8 +165,8 @@ public class XmlService {
     public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
-        mapper.registerModules(new JaxbAnnotationModule(), new Hibernate4Module());
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+//        mapper.registerModules(new JaxbAnnotationModule(), new Hibernate4Module());
         ObjectWriter objectWriter = mapper.writer();
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
