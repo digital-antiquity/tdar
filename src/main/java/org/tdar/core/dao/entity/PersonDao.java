@@ -196,7 +196,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
         String roles = String.format("'%s'",StringUtils.join(roleSet, "','"));
 //        logger.info("beginning updates (2) - resource");
-//        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_BROWSE_CREATOR_OCCURRENCE, roles)).executeUpdate();
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_BROWSE_CREATOR_OCCURRENCE, roles)).executeUpdate();
         logger.info("beginning updates - resource - inherited");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
         logger.info("beginning updates - provider");
