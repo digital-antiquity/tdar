@@ -176,7 +176,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
     public String browseCreators() throws ParseException, TdarActionException {
 
         if (Persistable.Base.isTransient(getAuthenticatedUser()) && !creator.isBrowsePageVisible() && !Objects.equals(getAuthenticatedUser(), creator)) {
-            throw new TdarActionException(StatusCode.FORBIDDEN, "Creator page does not exist");
+            throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
 
         QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);

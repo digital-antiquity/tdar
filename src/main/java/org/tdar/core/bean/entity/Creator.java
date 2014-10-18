@@ -495,7 +495,13 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @XmlTransient
     public boolean isBrowsePageVisible() {
-        return !hidden && (getCreatorType() == CreatorType.PERSON && getBrowseOccurrence() < 1);
+        if (hidden || getCreatorType() == null || getBrowseOccurrence() == null) {
+            return false;
+        }
+        if (getCreatorType().isInstitution()) {
+            return true;
+        }
+        return getBrowseOccurrence() < 1;
     }
 
     @XmlTransient

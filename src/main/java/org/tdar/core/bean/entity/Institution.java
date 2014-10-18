@@ -66,7 +66,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
-            "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence","browseOccurrence","hidden" };
+            "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence", "browseOccurrence", "hidden" };
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")

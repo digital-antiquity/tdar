@@ -2742,3 +2742,4 @@ insert into user_notification(date_created, message_key,message_type,display_typ
 SELECT setval('user_notification_id_seq', (SELECT MAX(id) FROM user_notification)+1);
 alter table resource_access_day_agg add month int;
 alter table file_download_day_agg add month int;
+update creator set browse_occurrence=10 where id=8161 or id=8092;
