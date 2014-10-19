@@ -501,7 +501,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         if (getCreatorType().isInstitution()) {
             return true;
         }
-        return getBrowseOccurrence() < 1;
+        return getBrowseOccurrence() > 1;
     }
 
     @XmlTransient
