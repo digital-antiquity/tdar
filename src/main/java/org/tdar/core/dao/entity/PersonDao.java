@@ -195,13 +195,13 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         logger.info("completed updates");
 
 //        logger.info("beginning updates (2) - resource");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_BROWSE_CREATOR_OCCURRENCE, roles)).executeUpdate();
-        logger.info("beginning updates - resource - inherited");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_BROWSE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
-        logger.info("beginning updates - provider");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER,Creator.BROWSE_OCCURRENCE , Creator.BROWSE_OCCURRENCE)).executeUpdate();
-        logger.info("beginning updates - publisher");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER,Creator.BROWSE_OCCURRENCE , Creator.BROWSE_OCCURRENCE)).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_CREATE_TEMP).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_ACTIVE_USERS_1).executeUpdate();
+        session.createSQLQuery(String.format(BROWSE_CREATOR_ROLES_2, roles)).executeUpdate();
+        session.createSQLQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles)).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_IR_FIELDS_4).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_CREATOR_TEMP_5).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_UPDATE_CREATOR_6).executeUpdate();
         logger.info("completed updates");
 
     }
