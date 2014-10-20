@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.struts.action.download.DownloadLockInputStream;
 
-import com.healthmarketscience.jackcess.impl.CompoundOleUtil;
 import com.opensymphony.xwork2.TextProvider;
 
 /**

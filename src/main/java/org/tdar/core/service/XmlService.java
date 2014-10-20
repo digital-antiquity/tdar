@@ -61,8 +61,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;

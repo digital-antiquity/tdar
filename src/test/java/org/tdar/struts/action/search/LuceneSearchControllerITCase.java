@@ -20,7 +20,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;

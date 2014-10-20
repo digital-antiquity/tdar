@@ -12,8 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.bean.resource.Dataset;
 
-import com.hp.hpl.jena.sparql.procedure.library.debug;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "Placeholder-context.xml" })
 public class TDataTableFeedRequestIntegrationITCase extends AbstractLightFitTest {

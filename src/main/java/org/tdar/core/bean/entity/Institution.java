@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -41,7 +40,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
