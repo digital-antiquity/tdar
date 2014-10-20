@@ -1534,6 +1534,7 @@
                  </configuration>
                  <executions>
                      <execution>
+                     <!--  in the "test" context, drop the database contents, and reload it -->
                      <id>test-liquibase</id>
                      <configuration>
                          <changeLogFile>src/test/db/changelog.xml</changeLogFile>
@@ -1547,6 +1548,7 @@
                      </execution>
                     <execution>
                      <id>upgrade-liquibase</id>
+                     <!--  if the liquibase profile is active (default context) run the upgrade  -->
                      <configuration>
                          <changeLogFile>src/main/db/changelog.xml</changeLogFile>
                          <skip>${skipUpgradeLiquibase}</skip>
