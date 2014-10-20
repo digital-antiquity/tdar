@@ -156,7 +156,7 @@ public class DownloadService {
         File transientFile = irFileVersion.getTransientFile();
         // setting original filename on file
         String actualFilename = irFileVersion.getInformationResourceFile().getFilename();
-        DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename, irFileVersion.getInformationResourceId());
+        DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename, irFileVersion);
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {

@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.struts.action.download.DownloadLockInputStream;
 
-import com.healthmarketscience.jackcess.impl.CompoundOleUtil;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -138,7 +137,7 @@ public class DownloadTransferObject implements Serializable {
                             for (DownloadFile df : downloadFiles) {
                                 String filename = df.getFileName();
                                 if (filenames.contains(filename)) {
-                                    String newFilename = String.format("%s-%s.%s", FilenameUtils.getBaseName(filename), df.getInformationResourceId(),
+                                    String newFilename = String.format("%s-%s.%s", FilenameUtils.getBaseName(filename), df.getInformationResourceFileId(),
                                             FilenameUtils.getExtension(filename));
                                     messages.add(String.format("Renamed %s (%s bytes) to %s", filename, df.getFileLength(), newFilename));
                                     filename = newFilename;
