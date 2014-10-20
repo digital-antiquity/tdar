@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
@@ -176,10 +175,9 @@ public class BrowseCreatorController extends AbstractLookupController implements
     @Action(value = CREATORS, results = { @Result(location = "creators.ftl") })
     public String browseCreators() throws ParseException, TdarActionException {
 
-        // if (Persistable.Base.isTransient(getAuthenticatedUser()) &&
-        // creator.getOccurrence() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
-        // throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");
-        // }
+        if (Persistable.Base.isTransient(getAuthenticatedUser()) && !creator.isBrowsePageVisible() && !Objects.equals(getAuthenticatedUser(), creator)) {
+            throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
+        }
 
         QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
@@ -229,11 +227,6 @@ public class BrowseCreatorController extends AbstractLookupController implements
                 getLogger().warn("search parse exception", e);
             }
 
-        }
-        // hide creator pages from public for contributors with no resources contributed
-        if (Persistable.Base.isTransient(getAuthenticatedUser()) && !(creator instanceof Institution) && 
-                getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
-            throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
 
         FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);

@@ -239,3 +239,7 @@ create index agg_res_month_year on resource_access_day_agg (year, month);
 alter table file_download_day_agg add column month int;
 update file_download_day_agg set month=date_part('month',date_accessed);
 create index agg_dwnld_month on file_download_day_agg (month);
+
+-- abrin 10/17/2014 -- creator cleanup issues
+alter table creator add column browse_occurrence bigint default 0;
+alter table creator add column hidden boolean default false;

@@ -17,6 +17,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.download.DownloadFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
@@ -56,9 +60,12 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         DownloadTransferObject dto = new DownloadTransferObject(downloadService);
         dto.setAuthenticatedUser(getBillingUser());
         List<File> files = new ArrayList<>();
-        long i = 1l;
+        InformationResourceFile irf = new InformationResourceFile();
+        irf.setInformationResource(new Document());
+        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.ARCHIVAL, "test.txt", irf);
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
-            dto.getDownloads().add(new DownloadFile(file, file.getName(),i++));
+            dto.getDownloads().add(new DownloadFile(file, file.getName(), version));
+            irf.setId(irf.getId()+1);
             files.add(file);
         }
         File dest = new File(ROOT_DEST, "everything.zip");
@@ -79,13 +86,17 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         DownloadTransferObject dto = new DownloadTransferObject(downloadService);
         dto.setAuthenticatedUser(getBillingUser());
         List<File> files = new ArrayList<>();
-        long i = 1l;
+        InformationResourceFile irf = new InformationResourceFile();
+        irf.setInformationResource(new Document());
+        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.ARCHIVAL, "test.txt", irf);
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
-            dto.getDownloads().add(new DownloadFile(file, file.getName(),i++));
+            dto.getDownloads().add(new DownloadFile(file, file.getName(),version));
+            irf.setId(irf.getId()+1);
             files.add(file);
         }
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
-            dto.getDownloads().add(new DownloadFile(file, file.getName(),i++));
+            dto.getDownloads().add(new DownloadFile(file, file.getName(),version));
+            irf.setId(irf.getId()+1);
             files.add(file);
         }
         File dest = new File(ROOT_DEST, "everything.zip");

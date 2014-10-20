@@ -61,6 +61,10 @@
             </div>
     </#macro>
 
+    <#macro hidden>
+            <@s.checkbox label='Hide page from logged-out users' name="creator.hidden" id="hidden-page"  />
+    </#macro>
+
     <#macro contactInfo>
         <div class="">
                 <h2 id="contact">Contact</h2>
