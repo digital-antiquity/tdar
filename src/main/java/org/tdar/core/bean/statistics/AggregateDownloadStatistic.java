@@ -30,7 +30,7 @@ public class AggregateDownloadStatistic extends Base implements Serializable {
     private static final long serialVersionUID = 1698960536676588440L;
 
     @Column(name = "date_accessed")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date aggregateDate;
 
     private Long count;

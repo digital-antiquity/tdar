@@ -53,5 +53,21 @@
             <column name="month" valueNumeric="date_part('month',date_accessed)" />
         </update>
     </changeSet>
-
+    <changeSet id="munsell-04" author="abrin">
+        <comment>Changing database to match hibernate validation requirements</comment>
+        <modifyDataType tableName="coding_sheet" columnName="category_variable_id" newDataType="int8"/>
+        <modifyDataType tableName="ontology" columnName="category_variable_id" newDataType="int8"/>
+        <modifyDataType tableName="data_table_column" columnName="category_variable_id" newDataType="int8"/>
+        <modifyDataType tableName="category_variable_synonyms" columnName="categoryvariable_id" newDataType="int8"/>
+        <modifyDataType tableName="resource_collection_statistics" columnName="date_accessed" newDataType="date"/>
+        <modifyDataType tableName="creator_view_statistics" columnName="date_accessed" newDataType="date"/>
+        <modifyDataType tableName="resource_access_statistics" columnName="date_accessed" newDataType="date"/>
+        <modifyDataType tableName="information_resource_file_download_statistics" columnName="date_accessed" newDataType="date"/>
+        <modifyDataType tableName="information_resource_file" columnName="number_of_parts" newDataType="int4"/>
+        <modifyDataType tableName="source_collection" columnName="text" newDataType="text"/>
+        <modifyDataType tableName="related_comparative_collection" columnName="text" newDataType="text"/>
+        <modifyDataType tableName="sensory_data_image" columnName="sequence_number" newDataType="int4"/>
+        <modifyDataType tableName="sensory_data_scan" columnName="sequence_number" newDataType="int4"/>
+        <modifyDataType tableName="sensory_data_scan" columnName="resolution" newDataType="float8" />
+    </changeSet>
 </databaseChangeLog>
