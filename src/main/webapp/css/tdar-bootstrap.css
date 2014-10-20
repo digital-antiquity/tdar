@@ -1282,7 +1282,6 @@ p.copyright-notice {
 #notice {
     font-family: 'ff-tisa-web-pro', serif;
     background-color: #f0eeeb;
-    z-index: -1;
 }
 
 #notice h2 {
