@@ -68,7 +68,7 @@ public interface Persistable extends Serializable {
     @MappedSuperclass
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "base")
-    public abstract static class Base implements Persistable, JsonModel {
+    public abstract static class Base implements Persistable {
 
         private static final long serialVersionUID = -458438238558572364L;
 

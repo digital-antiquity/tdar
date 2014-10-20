@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.NotFound;
@@ -18,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * Tracks administrative changes. When the UI changes a resource, a log entry should be added.
@@ -64,7 +67,9 @@ public class ResourceRevisionLog extends Persistable.Base {
     @Column(name = "payload", nullable = true)
     private String payload;
 
-    public Resource getResource() {
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlAttribute(name = "resourceRef")
+   public Resource getResource() {
         return resource;
     }
 
@@ -88,6 +93,8 @@ public class ResourceRevisionLog extends Persistable.Base {
         this.logMessage = action;
     }
 
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlAttribute(name = "personRef")
     public TdarUser getPerson() {
         return person;
     }
