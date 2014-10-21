@@ -36,6 +36,7 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
     private Resource result;
     private List<String> stackTraces;
     private String message;
+    private int StatusCode;
     private String status;
     private Long recordId;
     
@@ -135,6 +136,14 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
 
     public void setRecordId(Long recordId) {
         this.recordId = recordId;
+    }
+
+    public int getStatusCode() {
+        return StatusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        StatusCode = statusCode;
     }
 
     public String getStatus() {

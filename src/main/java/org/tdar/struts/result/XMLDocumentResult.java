@@ -61,13 +61,21 @@ public class XMLDocumentResult implements Result {
         }
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
-        resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
         if (object_ instanceof Map) {
             JaxbResultContainer container = new JaxbResultContainer();
-            container.convert((Map<String,Object>)object_, invocation);
+            container.convert((Map<String, Object>) object_, invocation);
             object_ = container;
         }
+
+        if (object_ instanceof JaxbResultContainer) {
+            JaxbResultContainer result = (JaxbResultContainer) object_;
+            if (result.getStatusCode() != -1) {
+                setStatusCode(result.getStatusCode());
+            }
+        }
+ 
+        resp.setStatus(getStatusCode());
         xmlService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
     }
 

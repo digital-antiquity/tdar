@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -115,7 +116,7 @@ public class APIController extends AuthenticationAware.Base {
     @PostOnly
     public String upload() {
 
-        if (fileAccessRestriction == null) {
+        if (CollectionUtils.isNotEmpty(uploadFile) && fileAccessRestriction == null) {
             // If there is an error setting this field in the OGNL layer this method is still called...
             // This check means that if there was such an error, then we are not going to default to a weaker access restriction.
             getLogger().info("file access restrictions not set");
@@ -149,22 +150,23 @@ public class APIController extends AuthenticationAware.Base {
             setId(loadedRecord.getId());
 
             message = "updated:" + loadedRecord.getId();
-            getXmlResultObject().setMessage(message);
             StatusCode code = StatusCode.UPDATED;
             status = StatusCode.UPDATED.getResultName();
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
-                getXmlResultObject().setMessage(message);
                 code = StatusCode.CREATED;
+                getXmlResultObject().setRecordId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
 
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
+            getXmlResultObject().setStatusCode(statuscode);
+            getXmlResultObject().setStatus(code.toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
-            xmlResultObject.setMessage(SUCCESS);
+            xmlResultObject.setMessage(message);
             getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
@@ -206,7 +208,8 @@ public class APIController extends AuthenticationAware.Base {
 
     private String errorResponse(StatusCode statusCode) {
         status = statusCode.getResultName();
-        xmlResultObject.setStatus(status);
+        xmlResultObject.setStatus(statusCode.toString());
+        xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
         return ERROR;
     }
 
