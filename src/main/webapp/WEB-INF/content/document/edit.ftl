@@ -22,6 +22,11 @@
             <@s.radio name='document.documentType' emptyOption='false' listValue="label"
             list='%{documentTypes}' label="Document Type"  />
         </div>
+
+        <div class="doctypeToggle thesis" id="t-degree">
+            <@s.radio name='document.degree' label="Degree" emptyOption='false' listValue="label"  list='%{degrees}' />
+        </div>
+
     </#macro>
 
     <#macro citationInformation>
@@ -72,10 +77,6 @@
                 <@s.textfield theme="tdar" id='endPage'  placeholder="End#" name='document.endPage' cssClass="span1" maxlength=9 />
             </div>
         </div>
-    </div>
-
-    <div class="doctypeToggle thesis" id="t-degree">
-        <@s.radio name='document.degree' label="Degree" emptyOption='false' listValue="label"  list='%{degrees}' />
     </div>
 
     <div data-tooltipcontent="Actual physical location of a copy of the document, e.g. an agency, repository, or library." data-tiplabel="Copy Location">
