@@ -226,7 +226,7 @@ View freemarker macros
 
             </#if>
             <#if (resource.totalNumberOfFiles == 0)>
-                <li class="citationNote">This resource is a citation<#if resource.copyLocation?has_content> a physical copy is located
+                <li class="citationNote"><b>This resource is a citation</b><#if resource.copyLocation?has_content> a physical copy is located
                     at ${resource.copyLocation}</#if></li>
             </#if>
         </ul>
