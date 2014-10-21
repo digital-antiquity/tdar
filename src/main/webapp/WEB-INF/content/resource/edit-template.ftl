@@ -176,7 +176,7 @@
             </span>
 	
 	        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
-                  conference_presentation="Location" thesis="Department" other="Publisher Loc.">
+                  conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
                 <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='input-xxlarge' />
             </span>
                 </div>
