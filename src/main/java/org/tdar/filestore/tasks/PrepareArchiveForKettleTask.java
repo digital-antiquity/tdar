@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
@@ -64,7 +65,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * @param kettleInputPath
      *            the control file output directory: allows us to override the one read from the property file.
      */
-    protected void setKettleInputPath(String kettleInputPath) {
+    protected void setKettleInputPathOverride(String kettleInputPath) {
         this.kettleInputPath = kettleInputPath;
     }
 
@@ -147,7 +148,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
         controlFileOuputDir = new File(kettleInputPath);
         if (!isDirectoryWritable(controlFileOuputDir)) {
-            recordErrorAndExit("Can not write to kettle input directory: " + controlFileOuputDir);
+            recordErrorAndExit("Can not write to kettle input directory: " + controlFileOuputDir.getCanonicalPath());
         }
 
         // do we have a directory to write our copies to?

@@ -40,7 +40,6 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         task = new PrepareArchiveForKettleTask();
         archive = new Archive();
         archive.setDoImportContent(true);
-        task.setKettleInputPath(System.getProperty("java.io.tmpdir"));
         WorkflowContext contextForArchive = getContextForArchive(archive);
         task.setWorkflowContext(contextForArchive);
     }
@@ -92,26 +91,13 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @Test
     public void mustHaveValidControlFileDir() {
         archive.setProject(new Project(1L, "test"));
-        task.setKettleInputPath("");
+        task.setKettleInputPathOverride("");
         try {
             task.run();
             assertTrue("Should not be here", false);
         } catch (Exception e) {
             assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
             assertTrue(e.getMessage(), e.getMessage().startsWith("Can not write to kettle input directory:"));
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void mustHaveValidCopyFileDir() {
-        archive.setProject(new Project(1L, "test"));
-        try {
-            task.run();
-            assertTrue("Should not be here", false);
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("Can not write to directory for file output:"));
         }
     }
 
