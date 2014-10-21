@@ -56,7 +56,7 @@ import com.opensymphony.xwork2.Preparable;
  * @version $Rev$
  */
 @ParentPackage("secured")
-@Namespace("/workspace")
+@Namespace("/forkspace")
 @Component
 @Scope("prototype")
 public class WorkspaceController extends AuthenticationAware.Base implements Preparable {

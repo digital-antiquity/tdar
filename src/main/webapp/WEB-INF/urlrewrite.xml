@@ -41,7 +41,6 @@
         <to>/$1/new</to>
     </rule>
 
-
     <rule>
         <from>^/(document)s?/?$</from>
         <to type="redirect">/search/results?resourceTypes=DOCUMENT&amp;startRecord=0
@@ -380,22 +379,11 @@
         <to>/account/new</to>
     </rule>
 
-
     <rule>
         <name>remove version hash</name>
         <from>^(/[a-z]+)/vc/[0-9\.a-f]+/(.*)$</from>
         <to>/$1/$2</to>
     </rule>
-
-    <rule>
-        <from>^/workspace$</from>
-        <to>/workspace/select-tables</to>
-    </rule>
-    <rule>
-        <from>^/workspace/list$</from>
-        <to>/workspace/select-tables</to>
-    </rule>
-
 
     <rule>
         <from>^/entity/(person|user|institution)/([0-9]+)/(edit|address)$</from>

@@ -20,5 +20,8 @@ vim:sts=2:sw=2:
     <decorator name="main" page="layout-bootstrap.dec">
         <pattern>/*</pattern>
     </decorator>
+    <decorator name="integration" page="WEB-INF/content/workspace/integration-layout.dec">
+        <pattern>/workspace/*</pattern>
+    </decorator>
 </decorators>
 

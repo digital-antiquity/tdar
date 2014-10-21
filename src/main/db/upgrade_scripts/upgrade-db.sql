@@ -253,5 +253,4 @@ create table download_authorization (
   referer_regex varchar(50),
   primary key (id)
 );
-
 drop table download_authorization;
