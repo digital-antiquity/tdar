@@ -28,7 +28,6 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.UrlUtils;
-import org.tdar.core.service.UrlService;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
@@ -226,6 +225,10 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
         public void setOccurrence(Long occurrence) {
             this.occurrence = occurrence;
+        }
+
+        public String getDetailUrl() {
+            return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
         }
     }
 }

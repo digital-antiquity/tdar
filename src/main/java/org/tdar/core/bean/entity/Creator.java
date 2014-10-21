@@ -512,4 +512,8 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
+
+    public String getDetailUrl() {
+        return String.format("/%s/%s", getUrlNamespace(), getId());
+    }
 }
