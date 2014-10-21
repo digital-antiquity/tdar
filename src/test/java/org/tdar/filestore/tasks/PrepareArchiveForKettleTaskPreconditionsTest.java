@@ -42,7 +42,6 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         archive.setDoImportContent(true);
         task.setKettleInputPath(System.getProperty("java.io.tmpdir"));
         WorkflowContext contextForArchive = getContextForArchive(archive);
-        contextForArchive.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
         task.setWorkflowContext(contextForArchive);
     }
 
@@ -107,7 +106,6 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @Test
     public void mustHaveValidCopyFileDir() {
         archive.setProject(new Project(1L, "test"));
-        task.getWorkflowContext().setWorkingDirectory(new File(""));
         try {
             task.run();
             assertTrue("Should not be here", false);

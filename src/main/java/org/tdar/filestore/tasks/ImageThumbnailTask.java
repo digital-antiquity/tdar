@@ -212,7 +212,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 resolution);
 
         FileOutputStream outputStream = null;
-        mkParentDirs(outputFile);
+        getLogger().debug("outputFile: {} ", outputFile.getAbsolutePath());
         try {
             outputStream = new FileOutputStream(outputFile);
         } catch (FileNotFoundException e) {
