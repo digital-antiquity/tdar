@@ -393,7 +393,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (collection.getSortBy() == null) {
                     collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
                 }
-                collection.setVisible(true);
+                collection.setHidden(false);
                 collectionToAdd = collection;
             }
         } else if (collection.isInternal()) {

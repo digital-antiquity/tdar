@@ -523,7 +523,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         ResourceCollection rc = controller.getResourceCollection();
         rc.setName("test delete w/ redundant rights");
         rc.setDescription("a tragedy in three acts");
-        rc.setVisible(true);
+        rc.setHidden(false);
         rc.setSortBy(SortOption.ID);
         rc.setOrientation(DisplayOrientation.LIST);
 
@@ -624,7 +624,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertEquals(1, testFile.getResourceCollections().size());
 
         assertTrue(parentCollection.isShared());
-        assertTrue(parentCollection.isVisible());
+        assertTrue(parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
 
         assertTrue(String.format("collections %s should contain %s", collections, parentCollection), collections.contains(parentCollection));
