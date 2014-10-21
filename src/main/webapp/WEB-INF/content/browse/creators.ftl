@@ -40,7 +40,12 @@
                         <h3>Related Creators</h3>
                         <ul>
                             <#list collaborators as collab>
-                                <li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
+                                <li>
+                                   <#if authenticatedUser?has_content>
+                                    <a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
+                                    <#else>
+                                    ${collab.@name}
+                                    </#if>
                                 </li>
                             </#list>
                         </ul>

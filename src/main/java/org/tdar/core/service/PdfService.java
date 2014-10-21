@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,7 +27,6 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
-import org.apache.pdfbox.util.PDFMergerUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,8 +121,8 @@ public class PdfService {
      * @throws COSVisitorException
      * @throws InterruptedException
      */
-    private PipedInputStream mergePDFs(File... files) throws IOException, COSVisitorException, InterruptedException {
-        final PDFMergerUtility merger = new PDFMergerUtility();
+    private PipedInputStream mergePDFs(File coverPage, File document) throws IOException, COSVisitorException, InterruptedException {
+        final PDFMergeWrapper wrapper = new PDFMergeWrapper();
         /*
          * FIXME:
          * only change i might suggest is to switch the initialization order to emphasize that the PipedOutputStream is where the data is coming from. At first
@@ -130,20 +130,33 @@ public class PdfService {
          */
         PipedInputStream inputStream = new PipedInputStream(2048);
         final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
-        merger.setDestinationStream(pipedOutputStream);
-        for (File file : files) {
-            merger.addSource(file);
-        }
+        wrapper.getMerger().setDestinationStream(pipedOutputStream);
+        wrapper.getMerger().addSource(coverPage);
+        wrapper.getMerger().addSource(document);
+        wrapper.setDocument(document);
 
+        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread th, Throwable ex) {
+                System.out.println("Uncaught exception: " + ex);
+            }
+        };
         // Separate thread needed here to call merge
         // FIXME: handle exceptions better
         Thread thread = new Thread(
                 new Runnable() {
                     public void run() {
                         try {
-                            merger.mergeDocuments();
+                            wrapper.getMerger().mergeDocuments();
+                            wrapper.setSuccessful(true);
                         } catch (Exception e) {
                             logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
+                            wrapper.setFailureReason(e.getMessage());
+                            // if there's a failure, then fall back and just try to copy the original
+                            try {
+                                IOUtils.copyLarge(new FileInputStream(wrapper.getDocument()), pipedOutputStream);
+                            } catch (Exception e1) {
+                                logger.error("cannot attach PDF, even w/o cover page",e1);
+                            }
                         } finally {
                             IOUtils.closeQuietly(pipedOutputStream);
                         }

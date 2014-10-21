@@ -54,6 +54,8 @@ import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.w3c.dom.Document;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -163,8 +165,8 @@ public class XmlService {
     public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
-        mapper.registerModules(new JaxbAnnotationModule(), new Hibernate4Module());
-
+        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        mapper.registerModules(new JaxbAnnotationModule());
         ObjectWriter objectWriter = mapper.writer();
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);

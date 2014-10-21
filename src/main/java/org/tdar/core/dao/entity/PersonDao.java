@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
@@ -174,23 +175,41 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     public void updateOccuranceValues() {
         Session session = getCurrentSession();
+        String roles = getFormattedRoles();
         logger.info("clearing creator occurrence values");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
         logger.info("beginning updates - resource");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE)).executeUpdate();
         logger.info("beginning updates - resource - inherited");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED)).executeUpdate();
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
         logger.info("beginning updates - copyright");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
         logger.info("beginning updates - provider");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER)).executeUpdate();
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER,Creator.OCCURRENCE , Creator.OCCURRENCE)).executeUpdate();
         logger.info("beginning updates - publisher");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER)).executeUpdate();
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER,Creator.OCCURRENCE , Creator.OCCURRENCE)).executeUpdate();
         logger.info("beginning updates - submitter");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
         logger.info("beginning updates - institution");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_INSTITUTION)).executeUpdate();
         logger.info("completed updates");
+
+//        logger.info("beginning updates (2) - resource");
+        session.createSQLQuery(BROWSE_CREATOR_CREATE_TEMP).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_ACTIVE_USERS_1).executeUpdate();
+        session.createSQLQuery(String.format(BROWSE_CREATOR_ROLES_2, roles)).executeUpdate();
+        session.createSQLQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles)).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_IR_FIELDS_4).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_CREATOR_TEMP_5).executeUpdate();
+        session.createSQLQuery(BROWSE_CREATOR_UPDATE_CREATOR_6).executeUpdate();
+        logger.info("completed updates");
+
+    }
+
+    private String getFormattedRoles() {
+        Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
+        String roles = String.format("'%s'",StringUtils.join(roleSet, "','"));
+        return roles;
     }
 
     public Long getCreatorViewCount(Creator creator) {

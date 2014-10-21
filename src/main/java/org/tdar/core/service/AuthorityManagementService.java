@@ -26,6 +26,7 @@ import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasLabel;
@@ -37,7 +38,14 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -45,6 +53,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.ReflectionDao;
+import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
@@ -91,6 +100,9 @@ public class AuthorityManagementService {
 
     @Autowired
     private ReflectionDao reflectionDao;
+
+    @Autowired
+    private InstitutionDao institutionDao;
 
     @Autowired
     private ReflectionService reflectionService;
@@ -337,6 +349,7 @@ public class AuthorityManagementService {
     private <T extends Dedupable> void processSynonyms(T authority, Set<T> dupes, DupeMode markAndConsoldiateDups) {
         for (T dup : dupes) {
             authority.getSynonyms().addAll(dup.getSynonyms());
+            authority.getSynonyms().remove(authority);
             dup.getSynonyms().clear();
             switch (markAndConsoldiateDups) {
                 case DELETE_DUPLICATES:
@@ -572,4 +585,34 @@ public class AuthorityManagementService {
         }
     }
 
+    @Async
+    @Transactional(readOnly = false)
+    public void cleanupKeywordDups(final TdarUser authenticatedUser) {
+        findPluralDups(CultureKeyword.class, authenticatedUser, false);
+        findPluralDups(GeographicKeyword.class, authenticatedUser, false);
+        findPluralDups(OtherKeyword.class, authenticatedUser, false);
+        findPluralDups(SiteNameKeyword.class, authenticatedUser, false);
+        findPluralDups(SiteTypeKeyword.class, authenticatedUser, false);
+        findPluralDups(TemporalKeyword.class, authenticatedUser, false);
+        logger.debug("done pluralization");
+    }
+
+    @Async
+    @Transactional(readOnly = false)
+    public void cleanupInstitutionsWithSpaces(final TdarUser user) {
+        try {
+            List<Institution> findInstitutionsWIthSpaces = institutionDao.findInstitutionsWIthSpaces();
+            logger.debug("institutions: {}", findInstitutionsWIthSpaces);
+            for (Institution space : findInstitutionsWIthSpaces) {
+                Institution clean = institutionDao.findByName(space.getName().trim());
+                logger.debug("working with: {} --> ", space, clean);
+                if (clean != null) {
+                    processSynonyms(clean, new HashSet<Institution>(Arrays.asList(space)), DupeMode.MARK_DUPS_AND_CONSOLDIATE);
+                    updateReferrers(user, Institution.class, Arrays.asList(space.getId()), clean.getId(), DupeMode.MARK_DUPS_AND_CONSOLDIATE, false);
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("execption in institution cleanup", e);
+        }
+    }
 }

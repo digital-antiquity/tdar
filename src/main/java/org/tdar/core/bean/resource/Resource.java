@@ -83,7 +83,6 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -166,7 +165,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
-public class Resource implements Persistable, JsonModel,
+public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
         DeHydratable, XmlLoggable {
@@ -1372,7 +1371,7 @@ public class Resource implements Persistable, JsonModel,
         }
 
         for (ResourceCollection coll : getSharedResourceCollections()) {
-            if (coll.isVisible()) {
+            if (coll.isHidden()) {
                 sb.append(coll.getName()).append(" ");
             }
         }
@@ -1581,7 +1580,7 @@ public class Resource implements Persistable, JsonModel,
     public Set<ResourceCollection> getSharedVisibleResourceCollections() {
         Set<ResourceCollection> sharedCollections = new LinkedHashSet<ResourceCollection>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.isShared() && collection.isVisible()) {
+            if (collection.isShared() && collection.isHidden()) {
                 sharedCollections.add(collection);
             }
         }

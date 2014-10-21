@@ -168,7 +168,6 @@ public class WorkflowContextService {
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
-        ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         ctx.setXmlService(xmlService);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {

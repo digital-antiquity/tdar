@@ -205,16 +205,24 @@ public interface TdarNamedQueries {
     String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT = "update %1$s set occurrence=0";
     String UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE = "update %1$s set occurrence = occurrence + coalesce((select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id and resource_id in (select project_id from information_resource where %2$s is true) group by %1$s_id),0)";
     String UPDATE_KEYWORD_OCCURRENCE_COUNT = "update %1$s set occurrence =  occurrence + coalesce((select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id group by %1$s_id),0)";
-    String UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT = "update creator set occurrence=0";
-    String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where publisher_id=creator.id group by publisher_id),0)";
-    String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where provider_institution_id=creator.id group by provider_institution_id),0)";
+    String UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT = "update creator set occurrence=0, browse_occurrence=0";
+    String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER = "update creator set %s=%s + coalesce((select count(information_resource.id) from information_resource where publisher_id=creator.id group by publisher_id),0)";
+    String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER = "update creator set %s=%s + coalesce((select count(information_resource.id) from information_resource where provider_institution_id=creator.id group by provider_institution_id),0)";
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where copyright_holder_id=creator.id group by copyright_holder_id),0) ";
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER = "update creator set occurrence=occurrence + coalesce((select count(resource.id) from resource where submitter_id=creator.id group by submitter_id),0)";
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id group by creator_id),0) ";
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id and resource_id in (select project_id from information_resource where inheriting_individual_institutional_credit is true)  group by creator_id),0) ";
     String UPDATE_CREATOR_OCCURRENCE_INSTITUTION = "update creator set occurrence = occurrence+ coalesce((select count(person.id) from person where institution_id=creator.id group by institution_id),0) ";
     String DATASETS_USING_NODES = "select id from resource where id in (select dataset_id from data_table where data_table.id in (select data_table_id from data_table_column, coding_rule, coding_sheet where data_table_column.default_coding_sheet_id=coding_sheet_id and coding_rule.coding_sheet_id=coding_sheet.id and  ontology_node_id=%s)) and status = 'ACTIVE'";
-
+    
+    String BROWSE_CREATOR_CREATE_TEMP = "create temporary table rctest (rid bigint, cid bigint, role int);create temporary table rctest_creator (cid bigint, cnt bigint)";
+    String BROWSE_CREATOR_ACTIVE_USERS_1 = "insert into rctest select resource.id, submitter_id, 0 from resource where status='ACTIVE'";
+    String BROWSE_CREATOR_ROLES_2 = "insert into rctest select resource_id, creator_id, 1000 from resource_creator where resource_id in (select rid from rctest) and role in (%1$s)";
+    String BROWSE_CREATOR_IR_ROLES_3 = "insert into rctest select resource_id, creator_id, 1000 from resource_creator where resource_id in (select project_id from rctest, information_resource ir where rid=ir.id and inheriting_individual_institutional_credit=true ) and role in (%1$s)";
+    String BROWSE_CREATOR_IR_FIELDS_4 = "insert into rctest select id, provider_institution_id, -1 from information_resource where id in (select rid from rctest) and provider_institution_id is not null union select id, publisher_id, -1 from information_resource where id in (select rid from rctest) and publisher_id is not null";
+    String BROWSE_CREATOR_CREATOR_TEMP_5 = "insert into rctest_creator (cid, cnt) select cid, count(rid) from rctest where rid in (select rid from rctest where role >= 0 group by rid having sum(role) = 0 union select rid from rctest where role!=0) group by cid";
+    String BROWSE_CREATOR_UPDATE_CREATOR_6 = "update creator SET browse_occurrence = cnt from creator c, rctest_creator where cid=c.id and c.id=creator.id";
+    
     String SELECT_RAW_IMAGE_SITEMAP_FILES = "select r.id as resourceId, r.title, r.description as resourceDescription, r.resource_type, irf.description, irfv.id from resource r, information_resource ir, information_resource_file irf, "
             + "information_resource_file_version irfv where r.id=ir.id and ir.id=irf.information_resource_id and "
             + "irf.id=irfv.information_resource_file_id and internal_type='WEB_SMALL' and resource_type in ('IMAGE','SENSORY_DATA','GEOSPATIAL') "
@@ -225,9 +233,10 @@ public interface TdarNamedQueries {
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, month, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day', date_accessed)";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
-    String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and occurrence > 0";
+    String FIND_ACTIVE_PERSON_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
+    String FIND_ACTIVE_INSTITUTION_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
 
-    String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and ras.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.count) from resource_access_day_agg rad where rad.resource_id='%1$s'),0)";
-    String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
+    String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and ras.date_accessed >= '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.count) from resource_access_day_agg rad where rad.resource_id='%1$s'),0)";
+    String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed >= '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
 }

@@ -44,6 +44,7 @@ import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.Pair;
@@ -218,8 +219,24 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action("keyword-stats")
-    @WriteableSession
     public String viewKeywordStats() {
+        return SUCCESS;
+    }
+
+    @Action(value = "fix-pluralization", results = {
+            @Result(name = SUCCESS, type = REDIRECT, location = "/admin/internal") })
+    @WriteableSession
+    @PostOnly
+    public String cleanupPluralization() {
+        authorityManagementService.cleanupKeywordDups(getAuthenticatedUser());
+        return SUCCESS;
+    }
+
+    @Action(value = "fix-institutions", results = {
+            @Result(name = SUCCESS, type = REDIRECT, location = "/admin/internal") })
+    @WriteableSession
+    public String cleanupInstitutionNames() {
+        authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());
         return SUCCESS;
     }
 
@@ -234,7 +251,6 @@ public class AdminController extends AuthenticationAware.Base {
         if (controlledCultureKeywordStats == null) {
             controlledCultureKeywordStats = genericKeywordService.getControlledCultureKeywordStats();
         }
-        authorityManagementService.findPluralDups(CultureKeyword.class, getAuthenticatedUser(), false);
         return controlledCultureKeywordStats;
     }
 
@@ -242,7 +258,6 @@ public class AdminController extends AuthenticationAware.Base {
         if (geographicKeywordStats == null) {
             geographicKeywordStats = genericKeywordService.getGeographicKeywordStats();
         }
-        authorityManagementService.findPluralDups(GeographicKeyword.class, getAuthenticatedUser(), false);
         return geographicKeywordStats;
     }
 
@@ -264,7 +279,6 @@ public class AdminController extends AuthenticationAware.Base {
         if (otherKeywordStats == null) {
             otherKeywordStats = genericKeywordService.getOtherKeywordStats();
         }
-        authorityManagementService.findPluralDups(OtherKeyword.class, getAuthenticatedUser(), false);
         return otherKeywordStats;
     }
 
@@ -272,7 +286,6 @@ public class AdminController extends AuthenticationAware.Base {
         if (siteNameKeywordStats == null) {
             siteNameKeywordStats = genericKeywordService.getSiteNameKeywordStats();
         }
-        authorityManagementService.findPluralDups(SiteNameKeyword.class, getAuthenticatedUser(), false);
         return siteNameKeywordStats;
     }
 
@@ -280,7 +293,6 @@ public class AdminController extends AuthenticationAware.Base {
         if (controlledSiteTypeKeywordStats == null) {
             controlledSiteTypeKeywordStats = genericKeywordService.getControlledSiteTypeKeywordStats();
         }
-        authorityManagementService.findPluralDups(SiteTypeKeyword.class, getAuthenticatedUser(), false);
         return controlledSiteTypeKeywordStats;
     }
 
@@ -295,7 +307,6 @@ public class AdminController extends AuthenticationAware.Base {
         if (temporalKeywordStats == null) {
             temporalKeywordStats = genericKeywordService.getTemporalKeywordStats();
         }
-        authorityManagementService.findPluralDups(TemporalKeyword.class, getAuthenticatedUser(), false);
         return temporalKeywordStats;
     }
 

@@ -98,10 +98,10 @@
                 <label class="control-label">Make this collection public?</label>
 
                 <div class="controls">
-                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible"
-                                                                            value="true" <@common.checkedif resourceCollection.visible true /> />Yes</label>
-                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible"
-                                                                             value="false" <@common.checkedif resourceCollection.visible false /> />No</label>
+                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="hidden"
+                                                                            value="true" <@common.checkedif resourceCollection.hidden true /> />Yes</label>
+                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
+                                                                             value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
                 </div>
             </div>
 

@@ -67,7 +67,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
         assertEquals(getUser(), getAdminUser());
         ResourceCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
         collection.setDescription("test");
-        collection.setVisible(visible);
+        collection.setHidden(false);
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
             AuthorizedUser authuser = new AuthorizedUser(user, GeneralPermissions.ADMINISTER_GROUP);

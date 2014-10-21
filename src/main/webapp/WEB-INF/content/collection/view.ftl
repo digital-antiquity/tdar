@@ -50,7 +50,7 @@
     <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 
-    <#if (resourceCollection.visible || viewable)>
+    <#if (!resourceCollection.hidden || viewable)>
         <#if !collections.empty>
         <!-- Don't show header if header doesn't exist -->
         <div id="sidebar-right" parse="true">
@@ -142,7 +142,7 @@
                 <@view.kvp key="Collection Type" val=resourceCollection.type.label />
             </div>
             <div class="span4">
-                <@view.kvp key="Visible" val=resourceCollection.visible?string />
+                <@view.kvp key="Visible" val=resourceCollection.hidden?string />
             </div>
         </div>
         <div class="row">

@@ -212,7 +212,6 @@ public class ImageThumbnailTask extends AbstractTask {
                 resolution);
 
         FileOutputStream outputStream = null;
-        mkParentDirs(outputFile);
         try {
             outputStream = new FileOutputStream(outputFile);
         } catch (FileNotFoundException e) {

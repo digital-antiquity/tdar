@@ -1,6 +1,7 @@
 package org.tdar.core.service.download;
 
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.tdar.core.bean.entity.TdarUser;
@@ -27,7 +28,7 @@ public class DownloadPdfFile extends DownloadFile {
     private Document document;
 
     public DownloadPdfFile(Document ir, InformationResourceFileVersion irFileVersion, PdfService pdfService, TdarUser person, TextProvider provider) {
-        super(irFileVersion.getTransientFile(), irFileVersion.getInformationResourceFile().getFilename(), irFileVersion.getInformationResourceId());
+        super(irFileVersion.getTransientFile(), irFileVersion.getInformationResourceFile().getFilename(), irFileVersion);
         this.version = irFileVersion;
         this.pdfService = pdfService;
         this.person = person;
@@ -42,7 +43,7 @@ public class DownloadPdfFile extends DownloadFile {
         try {
             inputStream = pdfService.mergeCoverPage(provider, person, version, document);
         } catch (PdfCoverPageGenerationException pcpe) {
-            inputStream = super.getInputStream();
+            inputStream = new FileInputStream(getFile());
         }
         return new BufferedInputStream(inputStream);
     }

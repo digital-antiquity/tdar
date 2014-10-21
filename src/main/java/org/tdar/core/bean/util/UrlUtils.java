@@ -1,6 +1,5 @@
 package org.tdar.core.bean.util;
 
-import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 

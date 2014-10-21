@@ -53,7 +53,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -87,13 +86,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.Creator")
-public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider, JsonModel,
+public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
         Obfuscatable, Validatable, Addressable, XmlLoggable {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
     private transient Boolean obfuscatedObjectDifferent;
     private transient boolean readyToStore = true;
+    public static final String OCCURRENCE = "occurrence";
+    public static final String BROWSE_OCCURRENCE = "browse_occurrence";
 
     @Transient
     @XmlTransient
@@ -148,7 +149,13 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     }
 
+    @Column(nullable = false, name = "hidden", columnDefinition = "boolean default FALSE")
+    private boolean hidden = false;
+    
+    @Column(name = Creator.OCCURRENCE)
     private Long occurrence = 0L;
+    @Column(name = Creator.BROWSE_OCCURRENCE)
+    private Long browseOccurrence = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -204,7 +211,6 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Address> addresses = new LinkedHashSet<>();
 
-    @Column(nullable = false, name = "hidden_if_unreferenced", columnDefinition = "boolean default FALSE")
     private transient Float score = -1f;
     private transient Explanation explanation;
     private transient boolean readyToIndex = true;
@@ -477,4 +483,32 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         this.occurrence = occurrence;
     }
 
+    @XmlTransient
+    public Long getBrowseOccurrence() {
+        return browseOccurrence;
+    }
+
+    public void setBrowseOccurrence(Long browse_occurrence) {
+        this.browseOccurrence = browse_occurrence;
+    }
+
+    @XmlTransient
+    public boolean isBrowsePageVisible() {
+        if (hidden || getCreatorType() == null || getBrowseOccurrence() == null) {
+            return false;
+        }
+        if (getCreatorType().isInstitution()) {
+            return true;
+        }
+        return getBrowseOccurrence() > 1;
+    }
+
+    @XmlTransient
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
 }
