@@ -1,14 +1,18 @@
 package org.tdar.struts.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
-public class ResultMetadataWrapper implements JsonModel {
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
+@JsonAutoDetect(getterVisibility=Visibility.PUBLIC_ONLY)
+public class ResultMetadataWrapper implements Serializable {
 
     private static final long serialVersionUID = 1524243095172930161L;
 

@@ -99,7 +99,6 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "12 0 0 * * SUN")
     public void cronGenerateWeeklyStats() {
         queue(scheduledProcessMap.get(WeeklyStatisticsLoggingProcess.class));
-        queue(scheduledProcessMap.get(OccurranceStatisticsUpdateProcess.class));
         queue(scheduledProcessMap.get(CreatorAnalysisProcess.class));
     }
 
@@ -118,6 +117,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "0 15 0 * * *")
     public void cronDailyStats() {
         logger.info("updating Daily stats");
+        queue(scheduledProcessMap.get(OccurranceStatisticsUpdateProcess.class));
         queue(scheduledProcessMap.get(DailyStatisticsUpdate.class));
     }
 

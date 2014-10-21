@@ -82,6 +82,11 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         }
 
         @Override
+        public boolean isValid() {
+            return true;
+        };
+        
+        @Override
         public Long getId() {
             return -1L;
         }

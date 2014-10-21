@@ -88,7 +88,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private String description;
 
     @Column(name = "file_created_date")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date fileCreatedDate;
 
     @Column(name = "part_of_composite", columnDefinition = "boolean default false")

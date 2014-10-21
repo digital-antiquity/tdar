@@ -205,6 +205,9 @@
 
             <#list resource.dataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
+            <#if dataTable.description?has_content>
+			<p>${dataTable.description}</p>
+			</#if>
             <table class="tableFormat table table-striped table-bordered">
                 <thead class='highlight'>
                 <tr>

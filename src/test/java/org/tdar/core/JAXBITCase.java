@@ -78,9 +78,13 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         assertTrue(sw.toString().contains(NABATAEAN));
         Project project = genericService.find(Project.class, 3805l);
         project.getCultureKeywords().add(new CultureKeyword(BEDOUIN));
+//        logger.error("{}", project.getActiveInvestigationTypes());
+//        logger.error("{}", project.getActiveMaterialKeywords().add(new MaterialKeyword()));
+//        project.getActiveOtherKeywords().add(new OtherKeyword(BEDOUIN));
         sw = new StringWriter();
         xmlService.convertToJson(project, sw, JsonProjectLookupFilter.class);
         logger.info(sw.toString());
+        assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
         assertTrue(sw.toString().contains(BEDOUIN));
     }
 

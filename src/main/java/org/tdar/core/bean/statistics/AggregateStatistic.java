@@ -93,7 +93,7 @@ public class AggregateStatistic extends Persistable.Base {
     private String comment;
 
     @Column(name = "recorded_date")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date recordedDate;
 
     @Override

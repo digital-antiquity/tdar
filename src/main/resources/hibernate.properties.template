@@ -32,3 +32,4 @@ hibernate.cache.use_second_level_cache=true
 hibernate.cache.use_query_cache=true
 hibernate.cache.use_structured_entries=true
 hibernate.cache.generate_statistics=true
+hibernate.hbm2ddl.auto=validate

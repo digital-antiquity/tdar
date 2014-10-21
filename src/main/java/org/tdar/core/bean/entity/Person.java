@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -354,6 +356,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     @Override
+    @XmlElementWrapper(name = "synonyms")
+    @XmlElement(name = "synonymRef")
     public Set<Person> getSynonyms() {
         return synonyms;
     }

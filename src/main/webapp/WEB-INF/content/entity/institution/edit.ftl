@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html >
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/content/entity/entity-edit-common.ftl" as entityEdit>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
     <#if ((institution.id)?has_content && institution.id > 0 )>
@@ -42,6 +43,8 @@
 
         <h3>Address List</h3>
         <@common.listAddresses entity=institution entityType="institution" />
+
+        <@entityEdit.hidden />
 
 
     </div>

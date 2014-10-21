@@ -26,3 +26,4 @@ tdardata.maxConnections=50
 tdargis.minConnections=10
 tdargis.maxConnections=20
 
+hibernate.hbm2ddl.auto=validate

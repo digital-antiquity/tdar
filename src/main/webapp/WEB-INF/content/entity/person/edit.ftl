@@ -32,6 +32,7 @@
     </div>
 
     <@entityEdit.contactInfo />
+    <@entityEdit.hidden />
 
         <@edit.submit "Save" false />
 

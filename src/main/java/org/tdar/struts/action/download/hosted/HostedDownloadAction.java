@@ -1,5 +1,8 @@
 package org.tdar.struts.action.download.hosted;
 
+import java.io.InputStream;
+import java.io.StringReader;
+
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -8,10 +11,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
-
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 
 /**
  * Created by jimdevos on 9/23/14.

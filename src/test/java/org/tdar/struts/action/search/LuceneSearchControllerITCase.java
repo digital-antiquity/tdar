@@ -20,7 +20,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -41,6 +40,7 @@ import org.tdar.junit.TdarAssert;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.CreatorOwnerQueryPart;
 import org.tdar.struts.data.DateRange;
@@ -85,9 +85,9 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback(true)
     public void testCreatorOwnerQueryPart() throws ParseException {
-        CreatorOwnerQueryPart caqp = new CreatorOwnerQueryPart(getAdminUser());
+        QueryBuilder rqb = searchService.generateQueryForRelatedResources(getAdminUser(), null, controller);
         Document authorDocument = new Document();
-        authorDocument.setTitle(REASON);
+        authorDocument.setTitle("author");
         authorDocument.setDescription(REASON);
         authorDocument.markUpdated(getBasicUser());
         genericService.saveOrUpdate(authorDocument);
@@ -96,7 +96,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         searchIndexService.index(authorDocument);
 
         Document contribDocument = new Document();
-        contribDocument.setTitle(REASON);
+        contribDocument.setTitle("contrib");
         contribDocument.setDescription(REASON);
         contribDocument.markUpdated(getBasicUser());
         genericService.saveOrUpdate(contribDocument);
@@ -106,14 +106,21 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
         
         Document ownerDocument = new Document();
-        ownerDocument.setTitle(REASON);
+        ownerDocument.setTitle("owner");
         ownerDocument.setDescription(REASON);
         ownerDocument.markUpdated(getAdminUser());
         genericService.saveOrUpdate(ownerDocument);
         searchIndexService.index(ownerDocument);
 
-        ResourceQueryBuilder rqb = new ResourceQueryBuilder();
-        rqb.append(caqp);
+        Document hiddenDocument = new Document();
+        hiddenDocument.setTitle("hidden");
+        hiddenDocument.setDescription(REASON);
+        hiddenDocument.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(hiddenDocument);
+        hiddenDocument.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
+        genericService.saveOrUpdate(authorDocument);
+        searchIndexService.index(hiddenDocument);
+
         assertFalse(rqb.isEmpty());
         SearchResult result = new SearchResult();
         result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
@@ -124,8 +131,9 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
             for (ResourceCreator cr : r.getContentOwners()) {
                 authorIds.add(cr.getCreator().getId());
             }
-            logger.debug("result: id:{} [s:{} | {}]", r.getId(), r.getSubmitter().getId(), authorIds);
+            logger.debug("result: {} id:{} [s:{} | {}]", r.getTitle(), r.getId(), r.getSubmitter().getId(), authorIds);
         }
+        assertFalse(result.getResults().contains(hiddenDocument));
         assertFalse(result.getResults().contains(contribDocument));
         assertTrue(result.getResults().contains(authorDocument));
         assertTrue(result.getResults().contains(ownerDocument));

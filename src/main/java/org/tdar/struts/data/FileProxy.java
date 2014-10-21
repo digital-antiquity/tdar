@@ -22,6 +22,9 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
 /**
  * $Id$
  * 
@@ -30,6 +33,8 @@ import org.tdar.core.configuration.TdarConfiguration;
  * @author $Author$
  * @version $Revision$
  */
+
+@JsonAutoDetect(getterVisibility=Visibility.PUBLIC_ONLY)
 public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExtension {
 
     private static final long serialVersionUID = 1390565134253286109L;
