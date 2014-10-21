@@ -5,6 +5,7 @@ import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.opensymphony.xwork2.interceptor.annotations.After;
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         //TODO: code that removes hosted download entry for specified apikey
     }
 
-    @Test
+    @Test @Ignore
     public void testHostedDownloadSuccess() throws IOException {
         WebClient client = new WebClient(BrowserVersion.FIREFOX_24);
         //TODO: figure out how to modify request header only for a single request only  - this call adds the header to every request.

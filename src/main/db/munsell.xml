@@ -78,4 +78,30 @@
         <column name="hidden" defaultValue="false" type="boolean"></column>
     </addColumn>
     </changeSet>
+
+
+    <changeSet id="munsell-06" author="jdevos">
+        <createTable tableName="download_authorization">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="resource_collection_id" type="bigint">
+                <constraints nullable="false" references="collection" foreignKeyName="fk_download_authorization__resource_collection_id__collection" />
+            </column>
+            <column name="institution_id" type="bigint">
+                <constraints nullable="false" references="institution" foreignKeyName="fk_download_authorization__institution_id__institution" />
+            </column>
+            <column name="api_key" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="referer_regex" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="download_authorization" />
+        </rollback>
+    </changeSet>
+
+
 </databaseChangeLog>

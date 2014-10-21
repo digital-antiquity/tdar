@@ -243,3 +243,15 @@ create index agg_dwnld_month on file_download_day_agg (month);
 -- abrin 10/17/2014 -- creator cleanup issues
 alter table creator add column browse_occurrence bigint default 0;
 alter table creator add column hidden boolean default false;
+
+-- jtdevos 20-oct-2014 adding download auth
+create table download_authorization (
+  id bigserial not null,
+  resource_collection_id bigint references collection not null,
+  institution_id bigint references institution not null,
+  api_key varchar(50),
+  referer_regex varchar(50),
+  primary key (id)
+);
+
+drop table download_authorization;
