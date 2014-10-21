@@ -43,7 +43,6 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback
     public void testBrowsePersonHiddenWithResults() throws Exception {
-        getBasicUser().setOccurrence(0L);
         genericService.saveOrUpdate(getBasicUser());
         testBrowseController(getBasicUser());
     }
@@ -55,12 +54,22 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         person.setFirstName("test");
         person.setLastName("test");
         person.markUpdated(getAdminUser());
-        person.setOccurrence(0L);
+        person.setBrowseOccurrence(0L);
         genericService.saveOrUpdate(person);
         genericService.synchronize();
-        controller = generateNewController(BrowseCreatorController.class);
-        init(controller, null);
+        testFailed(person);
+
+        person.setBrowseOccurrence(100L);
+        person.setHidden(true);
+        genericService.saveOrUpdate(person);
+        genericService.synchronize();
+        testFailed(person);
+}
+
+    private void testFailed(TdarUser person) {
         boolean expectedException = false;
+        init(controller, null);
+        controller = generateNewController(BrowseCreatorController.class);
         controller.setId(person.getId());
         try {
             controller.prepare();

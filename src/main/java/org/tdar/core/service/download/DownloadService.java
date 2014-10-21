@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -75,23 +73,15 @@ public class DownloadService {
 
     @Transactional(readOnly = true)
     public DownloadTransferObject constructDownloadTransferObject(DownloadTransferObject dto) {
-        Set<String> files = new HashSet<>();
         for (InformationResourceFileVersion irFileVersion : dto.getVersionsToDownload()) {
-
-            String fileToDownload = addFileToDownload(irFileVersion, dto);
-            if (files.contains(fileToDownload)) {
-                throw new TdarRecoverableRuntimeException("downloadService.duplicate_file_in_zip");
-            }
-            files.add(fileToDownload);
+            addFileToDownload(irFileVersion, dto);
             dto.setFileName(irFileVersion.getFilename());
             if (!irFileVersion.isDerivative()) {
                 logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance()
                         .getSiteAcronym(),
                         irFileVersion.getInformationResourceFile().getInformationResource().getId());
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
-
                 addStatistics(dto, irFile);
-
             }
         }
         return dto;
@@ -166,7 +156,7 @@ public class DownloadService {
         File transientFile = irFileVersion.getTransientFile();
         // setting original filename on file
         String actualFilename = irFileVersion.getInformationResourceFile().getFilename();
-        DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename, irFileVersion.getInformationResourceId());
+        DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename, irFileVersion);
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {

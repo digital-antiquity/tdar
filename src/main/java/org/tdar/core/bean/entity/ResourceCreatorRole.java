@@ -98,6 +98,7 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
         roles.add(EDITOR);
         roles.add(PRINCIPAL_INVESTIGATOR);
         roles.add(PROJECT_DIRECTOR);
+        roles.add(PUBLISHER);
         roles.add(AUTHOR);
         roles.add(RESOURCE_PROVIDER);
         return roles;

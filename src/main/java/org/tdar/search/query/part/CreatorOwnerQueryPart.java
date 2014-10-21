@@ -38,23 +38,27 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
         Set<ResourceCreatorRole> roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
         if (term instanceof Person) {
             roles.remove(ResourceCreatorRole.RESOURCE_PROVIDER);
+            roles.remove(ResourceCreatorRole.PUBLISHER);
         }
         
-        FieldQueryPart<ResourceCreatorRole> notRoles = new FieldQueryPart<ResourceCreatorRole>("activeResourceCreators.role",Operator.AND, roles);
+        FieldQueryPart<ResourceCreatorRole> notRoles = new FieldQueryPart<ResourceCreatorRole>("activeResourceCreators.role",Operator.OR, roles);
         notRoles.setInverse(true);
 
         notGroup.append(new FieldQueryPart<Long>(QueryFieldNames.SUBMITTER_ID, Operator.AND, term.getId()));
         notGroup.append(notRoles);
         
         QueryPartGroup parent = new QueryPartGroup(Operator.OR);
-        parent.append(notGroup);
         List<String> terms = new ArrayList<String>(); 
         for (ResourceCreatorRole role : roles) {
             terms.add(ResourceCreator.getCreatorRoleIdentifier(term, role));
         }
-        parent.append(new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
-        parent.append(new FieldQueryPart<>(QueryFieldNames.IR_CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
+        QueryPartGroup inherit = new QueryPartGroup(Operator.OR);
+        
+        inherit.append(new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
+        inherit.append(new FieldQueryPart<>(QueryFieldNames.IR_CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
 
+        parent.append(notGroup);
+        parent.append(inherit);
         String generateQueryString = parent.generateQueryString();
         logger.trace(generateQueryString);
         return generateQueryString;
