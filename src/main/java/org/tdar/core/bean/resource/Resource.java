@@ -1960,4 +1960,9 @@ public class Resource implements Persistable,
     public void setBookmarked(boolean bookmarked) {
         this.bookmarked = bookmarked;
     }
+
+    public String getDetailUrl() {
+        return String.format("/%s/%s", getUrlNamespace(), getId());
+    }
+
 }

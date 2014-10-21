@@ -501,7 +501,7 @@
     </#if>
          
         <ul class="inline">
-            <#assign txt>Request Access, Submit Correction</#assign>
+            <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
             <#if (authenticatedUser.id)?has_content>

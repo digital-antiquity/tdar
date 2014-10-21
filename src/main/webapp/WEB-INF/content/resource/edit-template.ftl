@@ -157,6 +157,9 @@
 
     <div id="citationInformation" class="well-alt">
         <h2>Additional Citation Information</h2>
+        <#if local_.citationInformationToggle?? && local_.citationInformationToggle?is_macro>
+            <@local_.citationInformationToggle />
+        </#if>
 
         <#if resource.resourceType.hasLanguage && !resource.resourceType.document >
             <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
