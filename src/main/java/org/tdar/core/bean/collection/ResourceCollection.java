@@ -758,4 +758,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public void setChangesNeedToBeLogged(boolean changesNeedToBeLogged) {
         this.changesNeedToBeLogged = changesNeedToBeLogged;
     }
+
+    public String getDetailUrl() {
+        return String.format("/%s/%s", getUrlNamespace(), getId());
+    }
 }

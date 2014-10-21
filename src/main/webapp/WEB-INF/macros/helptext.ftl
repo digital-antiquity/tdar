@@ -281,6 +281,8 @@
             <dd>Use the toggle at the left to select whether you're adding a Person or Institution</dd>
             <dt>Add Another</dt>
             <dd> Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles</dd>
+            <dt>Roles</dt>
+            <dd>View <a href="https://dev.tdar.org/confluence/display/TDAR/Resource+Creator+Roles">All Roles</a></dd>
         </dl>
     </div>
     </#macro>

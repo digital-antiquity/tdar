@@ -1124,9 +1124,17 @@ TDAR.common = function () {
      * @private
      */
     function _switchLabel(field, type) {
-        var label = "#" + $(field).attr('id') + '-label';
-        if ($(field).attr(type) != undefined && $(label) != undefined) {
-            $(label).text($(field).attr(type));
+        var $field =  $(field);
+        var $fieldId = "#" + $(field).attr("id");
+        var label =  $fieldId + '-label';
+        var $label = $(label);
+        var $labelByName = $("label",$fieldId);
+        if (($label == undefined || $label.length == 0) && ($labelByName != undefined && $labelByName.length != 0)) {
+            $label = $labelByName;
+        }
+        
+        if ($field.attr(type) != undefined && $label != undefined) {
+            $label.text($field.attr(type));
         }
     }
 

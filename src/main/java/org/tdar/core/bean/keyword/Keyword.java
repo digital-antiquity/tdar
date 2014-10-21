@@ -226,5 +226,9 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         public void setOccurrence(Long occurrence) {
             this.occurrence = occurrence;
         }
+
+        public String getDetailUrl() {
+            return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
+        }
     }
 }
