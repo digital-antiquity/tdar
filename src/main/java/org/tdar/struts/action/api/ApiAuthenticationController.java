@@ -82,6 +82,7 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
             getLogger().debug("user:{}", user);
             if (!authorizationService.isMember(user, TdarGroup.TDAR_API_USER)) {
                 addActionError(getText("apiAuthenticationController.invalid_user"));
+                
             } else {
                 AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
                         getSessionData());

@@ -70,11 +70,11 @@ public class XMLDocumentResult implements Result {
 
         if (object_ instanceof JaxbResultContainer) {
             JaxbResultContainer result = (JaxbResultContainer) object_;
-            if (result.getStatusCode() != -1) {
+            if (result.getStatusCode() != StatusCode.OK.getHttpStatusCode()) {
                 setStatusCode(result.getStatusCode());
             }
         }
- 
+        logger.debug("StatusCode: {}",getStatusCode());
         resp.setStatus(getStatusCode());
         xmlService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
     }

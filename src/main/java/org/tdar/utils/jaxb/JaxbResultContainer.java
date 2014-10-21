@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.api.ApiAuthenticationController;
 import org.tdar.struts.result.TdarResultHeader;
@@ -36,7 +37,7 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
     private Resource result;
     private List<String> stackTraces;
     private String message;
-    private int StatusCode;
+    private int statusCode = StatusCode.OK.getHttpStatusCode();
     private String status;
     private Long recordId;
     
@@ -139,11 +140,11 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
     }
 
     public int getStatusCode() {
-        return StatusCode;
+        return this.statusCode;
     }
 
     public void setStatusCode(int statusCode) {
-        StatusCode = statusCode;
+        this.statusCode = statusCode;
     }
 
     public String getStatus() {
