@@ -58,7 +58,7 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     private String triangulationDetails;
 
     @Column
-    private Double resolution;
+    private String resolution;
 
     @Column(name = "tof_return")
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -131,11 +131,11 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
         this.scannerTechnology = scannerTechnology;
     }
 
-    public Double getResolution() {
+    public String getResolution() {
         return resolution;
     }
 
-    public void setResolution(Double resolution) {
+    public void setResolution(String resolution) {
         this.resolution = resolution;
     }
 

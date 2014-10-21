@@ -139,5 +139,23 @@
             </where>
         </update>
     </changeSet>
+    
+    
+        <changeSet id="munsell-08-ab" author="abrin">
+        <comment>Changing database to match hibernate validation requirements</comment>
+        <modifyDataType tableName="resource_collection_view_statistics"
+            columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="creator_view_statistics"
+            columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="resource_access_statistics"
+            columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="information_resource_file_download_statistics"
+            columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="information_resource_file"
+            columnName="file_created_date" newDataType="date" />
+        <modifyDataType tableName="sensory_data_scan"
+            columnName="resolution" newDataType="varchar(255)" />
+    </changeSet>
+    
 
 </databaseChangeLog>

@@ -40,6 +40,8 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         task = new PrepareArchiveForKettleTask();
         archive = new Archive();
         archive.setDoImportContent(true);
+        File file = new File(TdarConfiguration.getInstance().getKettleInputPath());
+        file.mkdirs();
         WorkflowContext contextForArchive = getContextForArchive(archive);
         task.setWorkflowContext(contextForArchive);
     }
@@ -104,6 +106,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveAFileToWorkWith() {
+        
         archive.setProject(new Project(1L, "test"));
         try {
             task.run();
