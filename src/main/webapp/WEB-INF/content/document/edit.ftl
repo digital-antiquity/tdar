@@ -5,6 +5,7 @@
     <#global hideRelatedCollections=true/>
 
 
+
     <#macro basicInformation>
         <#if linkedInformationResource??>
         <div class='help-block'>
@@ -15,11 +16,15 @@
         </#if>
     </#macro>
 
+
+    <#macro citationInformationToggle>
+        <div data-tiplabel="Document Type" data-tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
+            <@s.radio name='document.documentType' emptyOption='false' listValue="label"
+            list='%{documentTypes}' label="Document Type"  />
+        </div>
+    </#macro>
+
     <#macro citationInformation>
-    <div data-tiplabel="Document Type" data-tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
-        <@s.radio name='document.documentType' emptyOption='false' listValue="label"
-        list='%{documentTypes}' label="Document Type"  />
-    </div>
 
 
     <div data-tiplabel="Additional Title" data-tooltipcontent="Enter the title of the book, report, or journal this document is part of"
