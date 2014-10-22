@@ -1,9 +1,11 @@
 package org.tdar.struts.action.workspace;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.struts2.convention.annotation.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.struts.action.AuthenticationAware;
 
 /**
  *
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Component;
  * Expect that the actual action methods will be recklessly scattered across a myriad of obtusely-named action classes. YOU HAVE
  * BEEN WARNED.
  */
-public class IntegrationController extends ActionSupport {
+public class IntegrationController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 0x01;
 
@@ -86,28 +88,10 @@ public class IntegrationController extends ActionSupport {
         return "success";
     }
 
+    @Override
+    public void prepare() {
 
-
-
-
-    /**
-     *
-     *
-     *
-     *
-     *
-     *       No.
-     *
-     *
-     *
-     *
-     *
-     */
-    public String getThemeDir() {
-        return "includes/themes/tdar/";
     }
-
-    
 }
 
 

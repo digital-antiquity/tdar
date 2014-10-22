@@ -408,4 +408,5 @@
         <to>/$1/$2?$3</to> </outbound-rule> <outbound-rule> <from>^/(search|project|collection)/(.+)\.action$</from> 
         <to>/$1/$2</to> </outbound-rule> -->
 
+
 </urlrewrite>
