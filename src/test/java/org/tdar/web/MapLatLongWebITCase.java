@@ -34,7 +34,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
         setInput("resourceCollection.description", "test for map secuity");
         setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
-        setInput("resourceCollection.visible", "true");
+        setInput("resourceCollection.hidden", "false");
         setInput("authorizedUsers[0].user.id", getBasicUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
