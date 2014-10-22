@@ -27,35 +27,35 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     @Test
     @Rollback
     public void testSearchForPublicReosurceCollection() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(true, null);
+        ResourceCollection collection = setupCollection(false, null);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAnonymous() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, null);
+        ResourceCollection collection = setupCollection(true, null);
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithRights() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, getBasicUser(), true);
+        ResourceCollection collection = setupCollection(true, getBasicUser(), true);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithoutRights() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, getBasicUser());
+        ResourceCollection collection = setupCollection(true, getBasicUser());
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsAdmin() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, getAdminUser());
+        ResourceCollection collection = setupCollection(true, getAdminUser());
         assertTrue(controller.getResults().contains(collection));
     }
 
@@ -67,7 +67,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
         assertEquals(getUser(), getAdminUser());
         ResourceCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
         collection.setDescription("test");
-        collection.setHidden(false);
+        collection.setHidden(visible);
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
             AuthorizedUser authuser = new AuthorizedUser(user, GeneralPermissions.ADMINISTER_GROUP);

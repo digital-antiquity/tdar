@@ -219,6 +219,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
+    @Field
     @Column(name="hidden", nullable = false)
     private boolean hidden = false;
 
@@ -326,7 +327,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.parent = parent;
     }
 
-    @Field
     @XmlAttribute
     public boolean isHidden() {
         return hidden;
@@ -335,7 +335,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Field
     @XmlTransient
     public boolean isTopLevel() {
-        if ((getParent() == null) || (getParent().isHidden() == false)) {
+        if ((getParent() == null) || (getParent().isHidden() == true)) {
             return true;
         }
         return false;
