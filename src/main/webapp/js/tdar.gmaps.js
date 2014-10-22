@@ -621,7 +621,7 @@ TDAR.maps = function ($, TDAR) {
                     var marker = new google.maps.Marker({
                         position: new google.maps.LatLng(lat, long),
                         map: myMap,
-                        icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|7a1501|FFFFFF',
+                        icon: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|7a1501|FFFFFF',
                         title: $("a.resourceLink", $this).text()
                     });
                     var config = {
