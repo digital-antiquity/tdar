@@ -81,8 +81,14 @@ public class IntegrationController extends AuthenticationAware.Base implements P
 //
 //    })
 
-    @Action(value="add", results={
-            @Result(name="success", location="edit.ftl")
+
+    @Actions({
+            @Action(value="add", results={
+                    @Result(name="success", location="edit.ftl")
+            }),
+            @Action(value="add-angular", results={
+                    @Result(name="success", location="edit-angular.ftl")
+            })
     })
     public String thisIsMyMethod() {
         return "success";
