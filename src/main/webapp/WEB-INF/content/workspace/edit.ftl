@@ -49,8 +49,8 @@
                         <div class="controls">
                             <div class="btn-group">
                                 <button type="button" class="btn"  id="btnAddDataset" data-bind="click: addDatasetsClicked">Add Datasets...</button>
-                                <button type="button" class="btn"  id="btnAddIntegrationColumn" data-bind="click: addIntegrationColumnsClicked">Add Integration Columns...</button>
-                                <button type="button" class="btn" id="btnAddDisplayColumn" data-bind="click: addDisplayColumnClicked">Add Display Column</button>
+                                <button type="button" class="btn"  id="btnAddIntegrationColumn" data-bind="click: integration.addColumn">Add Integration Columns...</button>
+                                <button type="button" class="btn" id="btnAddDisplayColumn" data-bind="click: integration.addColumn">Add Display Column</button>
                             </div>
                         </div>
                     </div>
