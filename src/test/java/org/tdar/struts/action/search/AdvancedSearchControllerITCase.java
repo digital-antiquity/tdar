@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -67,6 +68,10 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
+
+    private static final String USAF_LOWER_CASE = "us air force archaeology and cultural resources archive";
+
+    private static final String USAF_TITLE_CASE = "US Air Force Archaeology and Cultural Resources Archive";
 
     private static final String CONSTANTINOPLE = "Constantinople";
 
@@ -128,6 +133,62 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
     }
 
+    @Test
+    public void testResourceCaseSensitivity() {
+        Document doc = createAndSaveNewResource(Document.class);
+        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE,"test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        titleCase.markUpdated(getAdminUser());
+        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE,"test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        lowerCase.markUpdated(getAdminUser());
+        ResourceCollection upperCase = new ResourceCollection("USAF","test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        upperCase.markUpdated(getAdminUser());
+        ResourceCollection usafLowerCase = new ResourceCollection("usaf","test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        usafLowerCase.markUpdated(getAdminUser());
+        doc.setTitle("USAF");
+        genericService.saveOrUpdate(doc);
+        genericService.saveOrUpdate(titleCase);
+        genericService.saveOrUpdate(lowerCase);
+        genericService.saveOrUpdate(usafLowerCase);
+        genericService.saveOrUpdate(upperCase);
+        searchIndexService.index(doc);
+        searchIndexService.index(titleCase);
+        searchIndexService.index(lowerCase);
+        searchIndexService.index(upperCase);
+        searchIndexService.index(usafLowerCase);
+        controller.setQuery("usaf");
+        doSearch();
+        assertTrue(controller.getResults().contains(doc));
+        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        assertTrue(controller.getCollectionResults().contains(upperCase));
+        doc.setTitle("usaf");
+        resetController();
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        controller.setQuery("USAF");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        assertTrue(controller.getCollectionResults().contains(upperCase));
+        assertTrue(controller.getResults().contains(doc));
+
+        resetController();
+        controller.setQuery("us air");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        resetController();
+        controller.setQuery("US AIr");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        resetController();
+        controller.setQuery("US AIR");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+}
+    
     @Test
     @Rollback
     public void testComplexGeographicKeywords() {
