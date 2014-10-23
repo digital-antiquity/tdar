@@ -167,7 +167,11 @@ public class XmlService {
 
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.registerModules(new JaxbAnnotationModule());
+        Hibernate4Module hibernate4Module = new Hibernate4Module();
+        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+        mapper.registerModules(hibernate4Module);
         ObjectWriter objectWriter = mapper.writer();
+        
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
             objectWriter = mapper.writerWithView(view);
