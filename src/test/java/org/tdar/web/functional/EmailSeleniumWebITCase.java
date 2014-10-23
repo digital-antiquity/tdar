@@ -6,7 +6,6 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +14,7 @@ import org.slf4j.LoggerFactory;
  * Date: 7/1/13
  */
 public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
+    private static final String EMAIL_LING = "Submit Correction";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
@@ -23,7 +23,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         gotoPage(url);
         waitFor("body");
         logger.debug("on page: {}", url);
-        find(By.partialLinkText("Request Access, Submit Correction")).first().click();
+        find(By.partialLinkText(EMAIL_LING)).first().click();
         waitFor(visibilityOf(find("#messageBody").first())).sendKeys("This is a test email");
         find(By.name("send")).click();
         waitFor(visibilityOf(find("#email-close-button").first())).sendKeys("This is a test email");
@@ -40,7 +40,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         gotoPage(url);
         waitFor("body");
         logger.debug("on page: {}", url);
-        find(By.partialLinkText("Request Access, Submit Correction")).first().click();
+        find(By.partialLinkText(EMAIL_LING)).first().click();
         waitFor(By.name("send")).click();
         waitFor( visibilityOf( find("#emailErrorContainer").first()));
         assertTrue(getText().contains("An error occurred"));
@@ -55,7 +55,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         gotoPage(url);
         waitFor("body");
         logger.debug("on page: {}", url);
-        find(By.partialLinkText("Request Access, Submit Correction")).first().click();
+        find(By.partialLinkText(EMAIL_LING)).first().click();
         find(By.name("messageBody")).sendKeys("This is a test email");
         find(By.name("send")).click();
         Thread.sleep(2000);

@@ -75,8 +75,8 @@
 
         </div>
         </#if>
-
         <#if  results?has_content && results?size !=0 >
+        <br/>
 
         <div id="divResultsSortControl">
             <div class="row">
