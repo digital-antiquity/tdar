@@ -153,8 +153,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(name = QueryFieldNames.COLLECTION_NAME),
             @Field(name = QueryFieldNames.COLLECTION_NAME_PHRASE, norms = Norms.NO, store = Store.NO,
-            analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
-})
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+    })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -767,10 +767,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
-    
+
     @Fields({
-        @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
-        @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+            @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     public String getAllFieldSearch() {
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
