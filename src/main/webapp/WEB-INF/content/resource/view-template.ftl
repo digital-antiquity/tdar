@@ -147,7 +147,7 @@
 <hr/>
     <#noescape>
         <#if resource.url! != ''>
-        <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)"
+        <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
                                    title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
         </#if>
     </#noescape>

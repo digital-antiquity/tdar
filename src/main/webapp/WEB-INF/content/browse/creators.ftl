@@ -92,7 +92,7 @@
     <div itemscope itemtype="${scope}">
         <meta itemprop="name" content="${creator.properName}"/>
         <#if creator.url?has_content>
-            <a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);">${creator.url?html}</a>
+            <a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);" rel="nofollow">${creator.url?html}</a>
         </#if>
 
         <#if creator.institution??>
@@ -107,30 +107,25 @@
             </p>
         </#if>
         <br/>
+        <table class='tableFormat table'>
+        
         <#if creator.creatorType.person>
             <#if creator.url?has_content || creator.orcidId?has_content>
-                <table class='tableFormat table'>
                     <tr>
-                        <td><b>URL:</b> <#if creator.url?has_content><a href="${creator.url}">${creator.url}</a></#if></td>
+                        <td><b>URL:</b> <#if creator.url?has_content><a rel="nofollow" href="${creator.url}">${creator.url}</a></#if></td>
                         <td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if>
                         </td>
                     </tr>
-                </table>
             </#if>
             <#if showBasicInfo >
-                <table class='tableFormat table'>
                     <#assign registered = false />
                     <#if (creator.registered)?has_content>
                         <#assign registered = creator.registered>
                     </#if>
                     <#if showAdminInfo>
                         <tr>
-                            <td>
-                                <B>Registered</b>: ${registered?string}
-                            </td>
-                            <td>
-                                <B>Username</b>: ${creator.username!"N/A"}
-                            </td>
+                            <td><b>Registered</b>: ${registered?string}</td>
+                            <td><b>Username</b>: ${creator.username!"N/A"}</td>
                         </tr>
                     </#if>
                     <tr>
@@ -151,22 +146,13 @@
                     </tr>
                     <tr>
                         <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
-                            <td itemprop="email">
-                                <@_textfield "Email" creator.email />
-                            </td>
+                            <td itemprop="email"> <@_textfield "Email" creator.email /></td>
                         <#else>
-                            <td>
-                                <@_textfield "Email" "Not Shown" />
-                            </td>
-                        </#if>
+                            <td><@_textfield "Email" "Not Shown" /></#if>
                         <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
-                            <td itemprop="telephone">
-                                <@_textfield "Phone" creator.phone true />
-                            </td>
+                            <td itemprop="telephone"><@_textfield "Phone" creator.phone true /></td>
                         <#else>
-                            <td>
-                                <@_textfield "Phone" "Not Shown" />
-                            </td>
+                            <td><@_textfield "Phone" "Not Shown" /></td>
                         </#if>
                     </tr>
                     <tr>
@@ -191,8 +177,37 @@
                             </#escape>
                         </td>
                     </tr>
-                </table>
-                <#if (editor || id == authenticatedUser.id) >
+
+            </#if>
+        </#if>
+        <#if editor>
+<tr>
+<td><b>Total Occurrance Count:</b> ${creator.occurrence!0}</td>
+<td><b>Total Browse Occurrance Count:</b> ${creator.browseOccurrence!0}</td>
+</tr>
+<tr>
+<td colspan=2><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
+</tr>
+</#if>
+</table>
+
+            <#-- Institution addresses can be shown to anybody (but can only be edited by tdar-editor and above) -->
+            <#if  (editorOrSelf || creator.creatorType.institution) && creator.addresses?has_content >
+                <h3>Addresses</h3>
+
+                <div class="row">
+                    <#list creator.addresses  as address>
+                        <div class="span3">
+                            <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+                        </div>
+                    </#list>
+                </div>
+             </#if>
+       </#if>
+    </div>
+
+<#if creator.creatorType.person>
+                <#if editorOrSelf && (creator.proxyInstitution?has_content || creator.proxyNote?has_content)>
                     <h3>Future Contact Information</h3>
                     <p>The institution or person that should be contacted in the future about draft, or confidential materials you have uploaded if you are un-reachable <i>(edit profile to add or modify)</i><p>
                     <#if creator.proxyInstitution?has_content>
@@ -204,7 +219,7 @@
                 </#if>
 
                 <@common.resourceUsageInfo />
-                <#if (editor || id == authenticatedUser.id) >
+                <#if editorOrSelf>
 
                     <#if creator.registered?? >
                         <div class="row">
@@ -221,36 +236,8 @@
                             </div>
                         </div>
                     </#if>
-                    <#-- Person addresses should only be viewable/editable by tdar-editor and above -->
-                    <#if creator.addresses?has_content >
-                        <h3>Addresses</h3>
-
-                        <div class="row">
-                            <#list creator.addresses  as address>
-                                <div class="span3">
-                                    <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
-                                </div>
-                            </#list>
-                        </div>
-                    </#if>
                 </#if>
-            </#if>
-        <#else>
-            <#-- Institution addresses can be shown to anybody (but can only be edited by tdar-editor and above) -->
-            <#if creator.addresses?has_content >
-                <h3>Addresses</h3>
-
-                <div class="row">
-                    <#list creator.addresses  as address>
-                        <div class="span3">
-                            <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
-                        </div>
-                    </#list>
-                </div>
-            </#if>
-        </#if>
-    </div>
-    </#if>
+</#if>
 
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">
