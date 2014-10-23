@@ -5,15 +5,21 @@ package org.tdar.web;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * @author Adam Brin
@@ -21,6 +27,9 @@ import org.tdar.core.bean.resource.Resource;
  */
 public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuthenticatedWebTestCase {
 
+    public static final String LAT_LONG_SECURITY_TEST = "latLongSecurityTest";
+    public static final String TEST_SECURITY_COLLECTION = "test security collection";
+    
     @Before
     @Override
     public void setUp() {
@@ -66,6 +75,41 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
             Assert.fail("expecting users");
         }
         return someNonUsers;
+    }
+
+    public Long setupDocumentWithProject(String resourceName, LatitudeLongitudeBox latLong, Status status, File file, FileAccessRestriction access) {
+        String ticketId = getPersonalFilestoreTicketId();
+        if (file != null) {
+            uploadFileToPersonalFilestore(ticketId, file.getAbsolutePath());
+        }
+
+        gotoPage("/document/add");
+        setInput("document.title", resourceName);
+        setInput("document.description", "hi mom");
+        setInput("document.date", "1999");
+        setInput("document.documentType", "OTHER");
+        setInput("projectId", TestConstants.PARENT_PROJECT_ID.toString());
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+        setInput("uncontrolledSiteTypeKeywords[0]", LAT_LONG_SECURITY_TEST);
+        if (latLong != null) {
+            setInput("latitudeLongitudeBoxes[0].maximumLatitude", latLong.getMaximumLatitude());
+            setInput("latitudeLongitudeBoxes[0].maximumLongitude", latLong.getMaximumLongitude());
+            setInput("latitudeLongitudeBoxes[0].minimumLatitude", latLong.getMinimumLatitude());
+            setInput("latitudeLongitudeBoxes[0].minimumLongitude", latLong.getMinimumLongitude());
+        }
+        if (status != null) {
+            setInput("status", status.name());
+        }
+
+        setInput("resourceCollections[0].name", TEST_SECURITY_COLLECTION);
+        if (file != null) {
+            setInput("ticketId", ticketId);
+            addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, file.getName());
+        }
+        submitForm();
+        return extractTdarIdFromCurrentURL();
     }
 
 }
