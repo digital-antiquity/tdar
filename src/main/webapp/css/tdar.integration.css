@@ -4,3 +4,9 @@ These style definitions will likely go away when I'm certain that they don't scr
 
 #tabControl li.integration-column {
 }
+
+/* close button on tabs */
+.nav-tabs > li .close {
+    margin: -2px 0 0 10px;
+    font-size: 18px;
+}
