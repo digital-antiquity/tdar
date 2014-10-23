@@ -226,7 +226,7 @@ View freemarker macros
 
             </#if>
             <#if (resource.totalNumberOfFiles == 0)>
-                <li class="citationNote">This resource is a citation<#if resource.copyLocation?has_content> a physical copy is located
+                <li class="citationNote"><b>This resource is a citation</b><#if resource.copyLocation?has_content> a physical copy is located
                     at ${resource.copyLocation}</#if></li>
             </#if>
         </ul>
@@ -364,7 +364,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
 
-        <#if c?? && c.browsePageVisible > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a><#else>${c.properName}</#if>
+        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a><#else>${c.properName}</#if>
     </#compress>
     </#macro>
 

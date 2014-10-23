@@ -31,7 +31,6 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String orig = "SCIDD_Storage_Basin_Phase_2DR_redacted_pages.pdf";
         File origFile = new File(baseDir, orig);
         WorkflowContext ctx = new WorkflowContext();
-        ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         task.setWorkflowContext(ctx);
         InformationResourceFileVersion vers = new InformationResourceFileVersion(VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L);
         ctx.getOriginalFiles().add(vers);

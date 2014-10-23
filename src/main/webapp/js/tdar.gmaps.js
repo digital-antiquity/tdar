@@ -618,10 +618,11 @@ TDAR.maps = function ($, TDAR) {
                     var infowindow = new google.maps.InfoWindow({
                         content: $this.html()
                     });
+                    //https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=11%7C7a1501%7CFFFFFF
                     var marker = new google.maps.Marker({
                         position: new google.maps.LatLng(lat, long),
                         map: myMap,
-                        icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|7a1501|FFFFFF',
+                        icon: 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + i + '|7a1501|FFFFFF',
                         title: $("a.resourceLink", $this).text()
                     });
                     var config = {

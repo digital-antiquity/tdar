@@ -80,7 +80,7 @@ public interface QueryFieldNames {
     String RESOURCE_PROVIDER_ID = "resourceProviderInstitution.id";
     String CATEGORY_ID = "categoryVariable.id";
     String CATEGORY_LABEL = "categoryVariable.label";
-    String COLLECTION_VISIBLE = "visible";
+    String COLLECTION_HIDDEN = "hidden";
     String TOP_LEVEL = "topLevel";
     String RESOURCE_TYPE_SORT = "resourceTypeSort";
     String RESOURCE_OWNER = "resourceOwner";

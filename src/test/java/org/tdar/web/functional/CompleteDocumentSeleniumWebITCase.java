@@ -39,6 +39,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
@@ -170,8 +171,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     public void testAuthUser() {
         gotoPage("/document/add");
         setFieldByName("document.title", "My Sample Document");
-        setFieldByName("document.documentType", "OTHER");
+        setFieldByName("document.documentType", DocumentType.CONFERENCE_PRESENTATION.name());
         setFieldByName("document.description", "A resource description");
+        clearPageCache();
+        assertTrue(getText().contains("Conference Location"));
         setFieldByName("document.date", "1923");
         setFieldByName("projectId", "-1");
         find("#accessRightsRecordsAddAnotherButton").click();

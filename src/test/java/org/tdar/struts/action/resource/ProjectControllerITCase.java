@@ -276,7 +276,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         detachedCollection.setName(rc.getName());
         detachedCollection.setId(rc.getId());
         detachedCollection.setType(CollectionType.SHARED);
-        detachedCollection.setVisible(true);
+        detachedCollection.setHidden(false);
         detachedCollection.setSortBy(SortOption.RELEVANCE);
         detachedCollection.markUpdated(rc.getOwner());
         controller.getResourceCollections().add(detachedCollection);

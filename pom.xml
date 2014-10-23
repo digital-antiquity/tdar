@@ -554,6 +554,7 @@
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
             <version>2.15</version>
+            <scope>test</scope>
             <!-- LICENSE: APACHE 2.0 -->
             <exclusions>
                 <exclusion>

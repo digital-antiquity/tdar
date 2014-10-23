@@ -23,7 +23,7 @@ public abstract class AbstractResourceStatistic<S extends Persistable> extends P
 
     @NotNull
     @Column(name = "date_accessed")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     public abstract S getReference();

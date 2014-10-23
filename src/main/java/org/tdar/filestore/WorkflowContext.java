@@ -47,7 +47,7 @@ public final class WorkflowContext implements Serializable {
     private Long informationResourceId;
     private List<InformationResourceFileVersion> versions = new ArrayList<>();
     private List<InformationResourceFileVersion> originalFiles = new ArrayList<>();
-    private File workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
+    private File workingDirectory = null;
     private int numPages = -1;
     private transient Filestore filestore;
     private boolean processedSuccessfully = false;
@@ -107,11 +107,12 @@ public final class WorkflowContext implements Serializable {
      * temp directory
      */
     public File getWorkingDirectory() {
+        if (workingDirectory == null) {
+            workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
+            workingDirectory = new File(workingDirectory, Thread.currentThread().getName()  + "-" + System.currentTimeMillis());
+            workingDirectory.mkdirs();
+        }
         return workingDirectory;
-    }
-
-    public void setWorkingDirectory(File workingDirectory) {
-        this.workingDirectory = workingDirectory;
     }
 
     public String toXML() throws Exception {

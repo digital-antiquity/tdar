@@ -52,7 +52,7 @@
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP,
-                query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.visible) FROM ResourceCollection as col where col.id in (:ids) "),
+                query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.hidden) FROM ResourceCollection as col where col.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
@@ -183,11 +183,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_BY_PARENT,
-                query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and col.type in (:collectionTypes) and (visible=:visible or :visible is NULL)"
+                query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and col.type in (:collectionTypes) and (hidden=:visible or :visible is NULL)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
-                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.visible is true "
+                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.hidden is false "
         ),
 
         @org.hibernate.annotations.NamedQuery(
@@ -197,7 +197,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.visible=false and col.visible=true and col.type!='INTERNAL'"
+                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,

@@ -129,15 +129,6 @@ public interface Task extends Serializable {
             throw new TdarRecoverableRuntimeException(message);
         }
 
-        void mkParentDirs(File outputFile) {
-            File outputFileDirectory = getParentDirectory(outputFile);
-            try {
-                outputFileDirectory.mkdirs();
-            } catch (Exception e) {
-                getLogger().warn("cannot make parent directories", e);
-            }
-        }
-
         File getParentDirectory(File outputFile) {
             return new File(outputFile.getParent());
         }

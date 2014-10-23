@@ -219,8 +219,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
-    @Column(nullable = false)
-    private boolean visible = true;
+    @Field
+    @Column(name="hidden", nullable = false)
+    private boolean hidden = false;
 
     public ResourceCollection() {
         setDateCreated(new Date());
@@ -236,7 +237,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setDescription(description);
         setSortBy(sortBy);
         setType(type);
-        setVisible(visible);
+        setHidden(visible);
         setOwner(creator);
     }
 
@@ -326,23 +327,22 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.parent = parent;
     }
 
-    @Field
     @XmlAttribute
-    public boolean isVisible() {
-        return visible;
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Field
     @XmlTransient
     public boolean isTopLevel() {
-        if ((getParent() == null) || (getParent().isVisible() == false)) {
+        if ((getParent() == null) || (getParent().isHidden() == true)) {
             return true;
         }
         return false;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setHidden(boolean visible) {
+        this.hidden = visible;
     }
 
     /*
@@ -539,7 +539,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
         while (iterator.hasNext()) {
             ResourceCollection collection = iterator.next();
-            if (!collection.isShared() || !collection.isVisible()) {
+            if (!collection.isShared() || !collection.isHidden()) {
                 iterator.remove();
             }
         }
@@ -757,5 +757,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setChangesNeedToBeLogged(boolean changesNeedToBeLogged) {
         this.changesNeedToBeLogged = changesNeedToBeLogged;
+    }
+
+    public String getDetailUrl() {
+        return String.format("/%s/%s", getUrlNamespace(), getId());
     }
 }
