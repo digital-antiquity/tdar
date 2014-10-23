@@ -182,8 +182,8 @@
         </#if>
         <#if editor>
 <tr>
-<td><b>Total Occurrance Count:</b> ${creator.occurrence}</td>
-<td><b>Total Browse Occurrance Count:</b> ${creator.browseOccurrence}</td>
+<td><b>Total Occurrance Count:</b> ${creator.occurrence!0}</td>
+<td><b>Total Browse Occurrance Count:</b> ${creator.browseOccurrence!0}</td>
 </tr>
 <tr>
 <td colspan=2><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
@@ -192,7 +192,7 @@
 </table>
 
             <#-- Institution addresses can be shown to anybody (but can only be edited by tdar-editor and above) -->
-            <#if  (editor || id == authenticatedUser.id || creator.creatorType.institution) && creator.addresses?has_content >
+            <#if  (editorOrSelf || creator.creatorType.institution) && creator.addresses?has_content >
                 <h3>Addresses</h3>
 
                 <div class="row">
@@ -207,7 +207,7 @@
     </div>
 
 <#if creator.creatorType.person>
-                <#if (editor || id == authenticatedUser.id) && (creator.proxyInstitution?has_content || creator.proxyNote?has_content)>
+                <#if editorOrSelf && (creator.proxyInstitution?has_content || creator.proxyNote?has_content)>
                     <h3>Future Contact Information</h3>
                     <p>The institution or person that should be contacted in the future about draft, or confidential materials you have uploaded if you are un-reachable <i>(edit profile to add or modify)</i><p>
                     <#if creator.proxyInstitution?has_content>
@@ -219,7 +219,7 @@
                 </#if>
 
                 <@common.resourceUsageInfo />
-                <#if (editor || id == authenticatedUser.id) >
+                <#if editorOrSelf>
 
                     <#if creator.registered?? >
                         <div class="row">

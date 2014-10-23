@@ -420,4 +420,10 @@ public class BrowseCreatorController extends AbstractLookupController implements
         this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
     }
 
+    public boolean isEditorOrSelf() {
+        if (isEditor() || getCreator().equals(getAuthenticatedUser())) {
+            return true;
+        }
+        return false;
+    }
 }
