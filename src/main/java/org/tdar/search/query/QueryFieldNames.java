@@ -93,5 +93,6 @@ public interface QueryFieldNames {
     String SITE_CODE = "siteCode";
     String TITLE_PHRASE = "title.phrase";
     String DESCRIPTION_PHRASE = "description.phrase";
+    String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
 
 }
