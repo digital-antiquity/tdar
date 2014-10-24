@@ -5,7 +5,9 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 	<!-- setup the test database -->
+    <include file="src/main/db/db-schema.xml" />
 	<include file="src/test/db/changelog-setup.xml" />
+    <include file="src/main/db/db-keys-and-indexes.xml"/>
 	<!-- setup the integration data -->
 	<include file="src/test/db/changelog-integration-setup.xml" />
 	<!-- load the production updates -->
