@@ -878,8 +878,11 @@
             <column name="billingphone" type="INT8" />
             <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
             <column name="invoicenumber" type="VARCHAR(255)" />
+            <column name="creditcardtype" type="VARCHAR(25)" />
             <column name="number_of_files" type="INT8" />
             <column name="number_of_mb" type="INT8" />
+            <column name="expirationmonth" type="INT4" />
+            <column name="expirationyear" type="INT4" />
             <column name="otherreason" type="VARCHAR(255)" />
             <column name="transaction_type" type="VARCHAR(255)" />
             <column name="total" type="FLOAT4" />
@@ -1028,6 +1031,7 @@
             <column name="key" type="VARCHAR(128)">
                 <constraints nullable="false" />
             </column>
+            <column name="submitter_id" type="INT8" />
             <column name="resource_annotation_type" type="VARCHAR(255)" />
         </createTable>
     </changeSet>
