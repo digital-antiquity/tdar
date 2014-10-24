@@ -140,13 +140,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     public void testResourceCaseSensitivity() {
         Document doc = createAndSaveNewResource(Document.class);
-        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
         titleCase.markUpdated(getAdminUser());
-        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
         lowerCase.markUpdated(getAdminUser());
-        ResourceCollection upperCase = new ResourceCollection("USAF", "test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        ResourceCollection upperCase = new ResourceCollection("USAF", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
         upperCase.markUpdated(getAdminUser());
-        ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", SortOption.RELEVANCE, CollectionType.SHARED, true, getAdminUser());
+        ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
         usafLowerCase.markUpdated(getAdminUser());
         doc.setTitle("USAF");
         updateAndIndex(doc);
