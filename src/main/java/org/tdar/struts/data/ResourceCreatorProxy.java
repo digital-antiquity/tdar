@@ -226,4 +226,16 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         this.id = id;
     }
 
+    @Transient
+    public boolean isValidEmailContact() {
+        if (getRole() != ResourceCreatorRole.CONTACT) {
+            return false;
+        }
+
+        if (isValid() && getActualCreatorType().isPerson()) {
+            return StringUtils.isNotBlank(getPerson().getEmail());
+        }
+
+        return false;
+    }
 }
