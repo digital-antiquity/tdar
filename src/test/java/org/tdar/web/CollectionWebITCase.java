@@ -59,6 +59,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             removedResources.add(someResources.remove(i));
         }
 
+        createInput("hidden","async", "false");
         submitForm();
 
         // we should be on the view page now
