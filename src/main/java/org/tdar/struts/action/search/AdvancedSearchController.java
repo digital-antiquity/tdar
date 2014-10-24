@@ -256,6 +256,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String searchInstitutions() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
         setMinLookupLength(0);
+        setMode("INSTITUTION");
         try {
             return findInstitution(getQuery());
         } catch (TdarRecoverableRuntimeException trex) {
@@ -270,6 +271,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String searchPeople() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Person.class));
         setMinLookupLength(0);
+        setMode("PERSON");
         try {
             return findPerson(null, getQuery(), null, null, null, null);
         } catch (TdarRecoverableRuntimeException trex) {

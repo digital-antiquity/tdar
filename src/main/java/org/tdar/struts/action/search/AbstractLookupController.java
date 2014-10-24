@@ -417,6 +417,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.setLookupSource(LookupSource.PERSON);
         QueryBuilder q = new PersonQueryBuilder(Operator.AND);
         boolean valid = false;
+
         Person incomingPerson = new Person();
         if (checkMinString(firstName)) {
             incomingPerson.setFirstName(firstName);
