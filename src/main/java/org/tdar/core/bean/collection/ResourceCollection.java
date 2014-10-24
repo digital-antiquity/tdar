@@ -79,7 +79,9 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -148,8 +150,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Column
     @JsonView(JsonLookupFilter.class)
     @Fields({
-            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-            , @Field(name = QueryFieldNames.COLLECTION_NAME) })
+            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
+            @Field(name = QueryFieldNames.COLLECTION_NAME),
+            @Field(name = QueryFieldNames.COLLECTION_NAME_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+    })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -219,6 +224,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
+    @Field
     @Column(name="hidden", nullable = false)
     private boolean hidden = false;
 
@@ -326,7 +332,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.parent = parent;
     }
 
-    @Field
     @XmlAttribute
     public boolean isHidden() {
         return hidden;
@@ -335,7 +340,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Field
     @XmlTransient
     public boolean isTopLevel() {
-        if ((getParent() == null) || (getParent().isHidden() == false)) {
+        if ((getParent() == null) || (getParent().isHidden() == true)) {
             return true;
         }
         return false;
@@ -761,5 +766,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
+    }
+
+    @Fields({
+            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+            @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    public String getAllFieldSearch() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
+        return sb.toString();
     }
 }

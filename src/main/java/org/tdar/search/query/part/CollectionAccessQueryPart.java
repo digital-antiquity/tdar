@@ -54,7 +54,7 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
                     break;
                 default:
                     QueryPartGroup rightsGroup = new QueryPartGroup(Operator.OR);
-                    rightsGroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
+                    rightsGroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
                     rightsGroup.append(userAccessQueryPart);
                     group.append(rightsGroup);
                     break;

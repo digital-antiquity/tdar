@@ -197,7 +197,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=false and col.hidden=false and col.type!='INTERNAL'"
+                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,

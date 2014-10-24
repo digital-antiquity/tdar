@@ -89,8 +89,8 @@
             columnName="sequence_number" newDataType="int4" />
         <modifyDataType tableName="sensory_data_scan"
             columnName="sequence_number" newDataType="int4" />
-        <modifyDataType tableName="sensory_data_scan"
-            columnName="resolution" newDataType="float8" />
+<!--        <modifyDataType tableName="sensory_data_scan"
+            columnName="resolution" newDataType="float8" /> -->
     </changeSet>
     <changeSet id="munsell-05" author="abrin">
         <addColumn tableName="creator">
@@ -139,7 +139,9 @@
             </where>
         </update>
     </changeSet>
-    
+    <changeSet id="munsell-09" author="abrin">
+	    <dropColumn tableName="collection" columnName="visible"/>
+	</changeSet>    
     
         <changeSet id="munsell-08-ab" author="abrin">
         <comment>Changing database to match hibernate validation requirements</comment>

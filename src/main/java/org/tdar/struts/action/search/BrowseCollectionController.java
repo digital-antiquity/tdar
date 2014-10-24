@@ -110,7 +110,7 @@ public class BrowseCollectionController extends AbstractLookupController {
     public String browseCollections() throws ParseException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
         setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);

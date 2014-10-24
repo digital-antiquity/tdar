@@ -156,7 +156,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional(readOnly = true)
     public List<ResourceCollection> findAllTopLevelCollections() {
-        Set<ResourceCollection> resultSet = new HashSet<ResourceCollection>(getDao().findCollectionsOfParent(null, true, CollectionType.SHARED));
+        Set<ResourceCollection> resultSet = new HashSet<ResourceCollection>(getDao().findCollectionsOfParent(null, false, CollectionType.SHARED));
         resultSet.addAll(getDao().findPublicCollectionsWithHiddenParents());
         List<ResourceCollection> toReturn = new ArrayList<ResourceCollection>(resultSet);
         Collections.sort(toReturn, new Comparator<ResourceCollection>() {
@@ -176,8 +176,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findDirectChildCollections(Long id, Boolean visible, CollectionType... type) {
-        return getDao().findCollectionsOfParent(id, visible, type);
+    public List<ResourceCollection> findDirectChildCollections(Long id, Boolean hidden, CollectionType... type) {
+        return getDao().findCollectionsOfParent(id, hidden, type);
     }
 
     /**

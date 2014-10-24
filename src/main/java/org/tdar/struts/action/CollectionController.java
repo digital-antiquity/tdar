@@ -293,7 +293,7 @@ public class CollectionController extends AbstractPersistableController<Resource
                         Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
-            findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), true,
+            findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), false,
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
