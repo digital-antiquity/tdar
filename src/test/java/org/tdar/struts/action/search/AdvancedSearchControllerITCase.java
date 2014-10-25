@@ -388,9 +388,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         List<Person> people = new ArrayList<>();
         Person whelan = new Person("Mary", "Whelan",null);
         people.add(whelan);
-        people.add(new Person("Mary", "McCready",null));
+        Person mmc = new Person("Mary", "McCready",null);
+        Person mmc2 = new Person("McCready","Mary",null);
+        people.add(mmc);
         people.add(new Person("Doug", "Mary",null));
-        people.add(new Person("Mary", "McCready",null));
+        people.add(mmc2);
         people.add(new Person("Mary", "Robbins-Wade",null));
         people.add(new Person("Robbins-Wade", "Mary",null));
         for (Person p : people) {
@@ -401,8 +403,16 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         List<Person> results = ((List<Person>)(List<?>)controller.getResults());
         logger.debug("Results: {}", results);
         assertTrue(results.get(0).equals(whelan));
-        fail("this fails in production, but not in this test, different order");
+        assertTrue(results.size() == 1);
         
+        resetController();
+        controller.setQuery("Mary McCready");
+        controller.searchPeople();
+        results = ((List<Person>)(List<?>)controller.getResults());
+        logger.debug("Results: {}", results);
+        assertTrue(results.contains(mmc));
+        assertTrue(results.contains(mmc2));
+        assertTrue(results.size() == 2);
     }
     @Test
     @Rollback

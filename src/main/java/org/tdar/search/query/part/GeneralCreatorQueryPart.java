@@ -8,32 +8,33 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.search.query.QueryFieldNames;
 
-public class InstitutionQueryPart extends FieldQueryPart<Institution> {
+public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private boolean useProximity = true;
     protected static final float NAME_BOOST = 6f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
-    public InstitutionQueryPart(Institution institution) {
-        add(institution);
+    public GeneralCreatorQueryPart(Creator creator) {
+        add(creator);
     }
 
 
     @Override
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(getOperator());
-        for (Institution value : getFieldValues()) {
+        for (Creator value : getFieldValues()) {
             group.append(this.getQueryPart(value));
         }
         return group.generateQueryString();
     }
 
-    protected QueryPartGroup getQueryPart(Institution value) {
-        String cleanedQueryString = getCleanedQueryString(value.getName());
+    protected QueryPartGroup getQueryPart(Creator value) {
+        String cleanedQueryString = getCleanedQueryString(value.getProperName());
 
         QueryPartGroup primary = new QueryPartGroup(Operator.OR);
 
@@ -43,6 +44,7 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
 
         List<String> fields = new ArrayList<String>();
         for (String txt : StringUtils.split(cleanedQueryString)) {
+            txt = txt.replace("\"", "");
             if (!ArrayUtils.contains(QueryPart.LUCENE_RESERVED_WORDS, txt)) {
                 fields.add(txt);
             }
