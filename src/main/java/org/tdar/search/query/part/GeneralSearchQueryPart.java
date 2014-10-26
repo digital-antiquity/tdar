@@ -86,15 +86,6 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         return primary;
     }
 
-    public String getCleanedQueryString(String value) {
-        String cleanedQueryString = value.trim();
-        // if we have a leading and trailng quote, strip them
-        if (cleanedQueryString.startsWith("\"") && cleanedQueryString.endsWith("\"")) {
-            cleanedQueryString = cleanedQueryString.substring(1, cleanedQueryString.length() - 1);
-        }
-        return PhraseFormatter.ESCAPE_QUOTED.format(cleanedQueryString);
-    }
-
     @Override
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(getOperator());
