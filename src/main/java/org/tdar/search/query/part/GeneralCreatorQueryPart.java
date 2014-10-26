@@ -9,7 +9,6 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
@@ -20,6 +19,7 @@ public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
     protected static final float ANY_FIELD_BOOST = 2f;
 
     public GeneralCreatorQueryPart(Creator creator) {
+        setAllowInvalid(true);
         add(creator);
     }
 

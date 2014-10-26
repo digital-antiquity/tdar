@@ -403,8 +403,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public static Person fromName(String properName) {
         String[] split = split(properName);
-        Person person = new Person(split[0], split[1],null);
-        return person;
+        if (split.length > 1) {
+            return new Person(split[0], split[1],null);
+        } else {
+            return new Person("",properName, null);
+        }
     }
 
 }
