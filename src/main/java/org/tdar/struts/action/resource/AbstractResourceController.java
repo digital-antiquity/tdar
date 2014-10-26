@@ -202,7 +202,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 creditProxies.add(proxy);
             }
 
-            if (ResourceCreatorRole.CONTACT == proxy.getRole()) {
+            if (proxy.isValidEmailContact()) {
                 getContactProxies().add(proxy);
             }
         }

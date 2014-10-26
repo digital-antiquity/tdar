@@ -67,6 +67,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
@@ -154,6 +155,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         updateAndIndex(lowerCase);
         updateAndIndex(upperCase);
         updateAndIndex(usafLowerCase);
+        
+        // search lowercase one word
         controller.setQuery("usaf");
         doSearch();
         assertTrue(controller.getResults().contains(doc));
@@ -162,6 +165,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doc.setTitle("usaf");
         resetController();
         updateAndIndex(doc);
+        
+        // search uppercase one word
         controller.setQuery("USAF");
         doSearch();
         assertTrue(controller.getCollectionResults().contains(usafLowerCase));
@@ -169,23 +174,39 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(controller.getResults().contains(doc));
 
         resetController();
+        // search lowercase phrase
         controller.setQuery("us air");
         doSearch();
         assertTrue(controller.getCollectionResults().contains(titleCase));
         assertTrue(controller.getCollectionResults().contains(lowerCase));
 
         resetController();
+        // search titlecase phrase
         controller.setQuery("US Air");
         doSearch();
         assertTrue(controller.getCollectionResults().contains(titleCase));
         assertTrue(controller.getCollectionResults().contains(lowerCase));
 
         resetController();
+        // search uppercase phrase
         controller.setQuery("US AIR");
         doSearch();
         assertTrue(controller.getCollectionResults().contains(titleCase));
         assertTrue(controller.getCollectionResults().contains(lowerCase));
-    }
+
+    
+        // search lowercase middle word
+        controller.setQuery("force");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        // search uppercase middle word
+        controller.setQuery("FORCE");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+}
 
     @Test
     public void testTitleCaseSensitivity() {
@@ -322,6 +343,77 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     }
 
+    public List<Institution> setupInstitutionSearch() {
+        ArrayList<Institution> insts = new ArrayList<>();
+        String[] names = new String[] {"US Air Force", "Vandenberg Air Force Base", "Air Force Base"};
+        for (String name : names) {
+            Institution institution = new Institution(name);
+            updateAndIndex(institution);
+            insts.add(institution);
+        }
+        return insts;
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchWordPlacement() throws TdarActionException {
+        List<Institution> insts = setupInstitutionSearch();
+        controller.setQuery("Air Force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+
+        resetController();
+        controller.setQuery("Force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchCaseInsensitive() throws TdarActionException {
+        List<Institution> insts = setupInstitutionSearch();
+        controller.setQuery("air force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+        resetController();
+        controller.setQuery("force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+    }
+
+    @Test
+    @Rollback
+    public void testPersonRelevancy() throws TdarActionException {
+        List<Person> people = new ArrayList<>();
+        Person whelan = new Person("Mary", "Whelan",null);
+        people.add(whelan);
+        Person mmc = new Person("Mary", "McCready",null);
+        Person mmc2 = new Person("McCready","Mary",null);
+        people.add(mmc);
+        people.add(new Person("Doug", "Mary",null));
+        people.add(mmc2);
+        people.add(new Person("Mary", "Robbins-Wade",null));
+        people.add(new Person("Robbins-Wade", "Mary",null));
+        for (Person p : people) {
+            updateAndIndex(p);
+        }
+        controller.setQuery("Mary Whelan");
+        controller.searchPeople();
+        List<Person> results = ((List<Person>)(List<?>)controller.getResults());
+        logger.debug("Results: {}", results);
+        assertTrue(results.get(0).equals(whelan));
+        assertTrue(results.size() == 1);
+        
+        resetController();
+        controller.setQuery("Mary McCready");
+        controller.searchPeople();
+        results = ((List<Person>)(List<?>)controller.getResults());
+        logger.debug("Results: {}", results);
+        assertTrue(results.contains(mmc));
+        assertTrue(results.contains(mmc2));
+        assertTrue(results.size() == 2);
+    }
     @Test
     @Rollback
     public void testApprovedSiteTypeKeywords() {
