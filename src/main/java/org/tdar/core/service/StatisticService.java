@@ -2,20 +2,32 @@ package org.tdar.core.service;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
+import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.StatisticDao;
+import org.tdar.core.dao.StatsResultObject;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.struts.data.DateGranularity;
 import org.tdar.utils.Pair;
 
 import com.ibm.icu.util.GregorianCalendar;
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Helper class for running statistics and working with @link AggregatedStatistic objects
@@ -25,6 +37,12 @@ import com.ibm.icu.util.GregorianCalendar;
  */
 @Service
 public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateStatistic, StatisticDao> {
+
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
+
+    @Autowired
+    private AccountDao accountDao;
 
     private final Date startDate = new GregorianCalendar(2008, 1, 1).getTime();
 
@@ -140,4 +158,32 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
         return getDao().countWeeklyEmails();
     }
 
+    @Transactional(readOnly = true)
+    public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
+        Set<Long> ids = new HashSet<>();
+        ids.addAll(Persistable.Base.extractIds(collection.getResources()));
+        for (ResourceCollection child : resourceCollectionDao.getAllChildCollections(collection)) {
+            ids.addAll(Persistable.Base.extractIds(child.getResources()));
+        }
+        return getStats(ids, provider, granularity);
+    }
+
+    @Transactional(readOnly = true)
+    public StatsResultObject getStatsForAccount(Account account, TextProvider provider, DateGranularity granularity) {
+        Set<Long> ids = new HashSet<>();
+        ids.addAll(Persistable.Base.extractIds(account.getResources()));
+        return getStats(ids, provider, granularity);
+    }
+    
+    private StatsResultObject getStats(Collection<Long> ids, TextProvider provider, DateGranularity granularity) {
+        switch (granularity) {
+            case DAY:
+                return getDao().getDailyStats(ids, provider);
+            case MONTH:
+                return getDao().getMonthlyStats(ids,provider);
+            case YEAR:
+                return getDao().getAnnualStats(ids,provider);
+        }
+        return null;
+    }
 }

@@ -40,7 +40,7 @@ import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.InstitutionQueryPart;
+import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
@@ -417,6 +417,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.setLookupSource(LookupSource.PERSON);
         QueryBuilder q = new PersonQueryBuilder(Operator.AND);
         boolean valid = false;
+
         Person incomingPerson = new Person();
         if (checkMinString(firstName)) {
             incomingPerson.setFirstName(firstName);
@@ -509,7 +510,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.setLookupSource(LookupSource.INSTITUTION);
         QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         if (checkMinString(institution)) {
-            InstitutionQueryPart iqp = new InstitutionQueryPart();
+            InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
             Institution testInstitution = new Institution(institution);
             if (StringUtils.isNotBlank(institution)) {
                 iqp.add(testInstitution);

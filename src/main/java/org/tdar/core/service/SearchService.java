@@ -78,7 +78,7 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.InstitutionQueryPart;
+import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
@@ -684,7 +684,7 @@ public class SearchService {
         replacements.put(proxy, values);
         if (creator instanceof Institution) {
             q = new InstitutionQueryBuilder();
-            InstitutionQueryPart iqp = new InstitutionQueryPart();
+            InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
             iqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
             iqp.add((Institution) creator);
             q.append(iqp);
