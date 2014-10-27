@@ -193,6 +193,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         labelKeys.add(provider.getText("statisticsService.download_count_annual_total"));
         
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
+        getLogger().debug(sql);
         return sql;
     }
 
@@ -222,6 +223,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         labelKeys.add(provider.getText("statisticsService.download_count_annual_total"));
         
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
+        getLogger().debug(sql);
         return sql;
     }
 
@@ -243,6 +245,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         labelKeys.add(provider.getText("statisticsService.download_count_annual_total"));
         
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
+        getLogger().debug(sql);
         return sql;
     }
 

@@ -20,6 +20,10 @@
     </@nav.toolbar>
 <h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
 
+    <#if editor>
+    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="stats?id=${resource.id?c}"/>">ADMIN</a></div>
+    </#if>
+
     <@view.pageStatusCallout />
 
 

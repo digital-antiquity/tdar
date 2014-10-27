@@ -260,6 +260,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String searchInstitutions() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
         setMinLookupLength(0);
+        setLookupSource(LookupSource.INSTITUTION);
         setMode("INSTITUTION");
         InstitutionQueryBuilder iqb = new InstitutionQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
@@ -282,6 +283,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         setSortOptions(SortOption.getOptionsForContext(Person.class));
         setMinLookupLength(0);
         setMode("PERSON");
+        setLookupSource(LookupSource.PERSON);
         PersonQueryBuilder pqb = new PersonQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));

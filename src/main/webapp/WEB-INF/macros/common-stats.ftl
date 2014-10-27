@@ -1,6 +1,15 @@
 <#escape _untrusted as _untrusted?html>
 	
 <#macro table>
+
+    <div>
+    <ul class="nav nav-tabs">
+        <li><a href="<@s.url value="stats"/>?id=${id?c}&granularity=DAY">Last Week</a></li>
+        <li><a href="<@s.url value="stats"/>?id=${id?c}&granularity=MONTH">Last Year</a></li>
+        <li><a href="<@s.url value="stats"/>?id=${id?c}&granularity=YEAR">Overall</a></li>
+    </ul>
+    </div>
+    <h3>Results: <@s.text name="${granularity.localeKey}"/></h3>
 	<table class="table tableFormat" >
 		<tr>
 			<th>Id</th>
