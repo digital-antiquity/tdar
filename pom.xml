@@ -32,11 +32,11 @@
         <jetty.stop.port>12919</jetty.stop.port>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>12.0</geotools.version>
+        <geotools.version>12.0.1</geotools.version>
         <tika.version>1.6</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
-        <jersey.version>1.18.1</jersey.version>
+        <jersey.version>1.18.2</jersey.version>
         <jackson.version>2.4.3</jackson.version>
         <slf4j.version>1.7.7</slf4j.version>
         <http-components.version>4.3.3</http-components.version>
@@ -237,7 +237,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.49h</version>
+            <version>1.49j</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
         </dependency>
         <dependency>
@@ -255,7 +255,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.3</version>
         </dependency>
         <dependency>
             <groupId>javax.media.jai</groupId>
@@ -1155,7 +1155,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.43.1</version>
+            <version>2.44.0</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
