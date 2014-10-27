@@ -10,6 +10,7 @@
     </ul>
     </div>
     <h3>Results: <@s.text name="${granularity.localeKey}"/></h3>
+    <#if statsForAccount?has_content>
 	<table class="table tableFormat" >
 		<tr>
 			<th>Id</th>
@@ -38,5 +39,8 @@
 			</#list>
 	</tr>
 </table>
+<#else>
+None Yet
+    </#if>
 </#macro>
 </#escape>
