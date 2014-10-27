@@ -14,8 +14,8 @@ import org.hibernate.Query;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
@@ -180,17 +180,20 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         List<String> labelDownloadKeys = new ArrayList<>();
         DateTime start = new DateTime(startYear, startMonth, startDay, 0, 0);
         for (int i=0; i < 7; i++) {
+            if (i != 0) {
+                viewSubQuerypart.append(", ");
+            }
+            downloadSubQuerypart.append(", ");
+
             start = start.plusDays(1);
             String date = start.toString("YYYY-MM-dd");
             viewSubQuerypart.append(String.format(TdarNamedQueries.DAY_VIEW_PART, date));
             downloadSubQuerypart.append(String.format(TdarNamedQueries.DAY_DOWNLAOD_PART, date));
-            labelKeys.add(provider.getText("statisticsService.view_count_annual",Arrays.asList(date)));
-            labelDownloadKeys.add(provider.getText("statisticsService.download_count_annual",Arrays.asList(date)));
+            labelKeys.add(provider.getText("statisticsService.view_count_day",Arrays.asList(date)));
+            labelDownloadKeys.add(provider.getText("statisticsService.download_count_day",Arrays.asList(date)));
         }
         
-        labelKeys.add(provider.getText("statisticsService.view_count_annual_total"));
         labelKeys.addAll(labelDownloadKeys);
-        labelKeys.add(provider.getText("statisticsService.download_count_annual_total"));
         
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
         getLogger().debug(sql);
@@ -202,10 +205,16 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         StringBuilder viewSubQuerypart = new StringBuilder();
         StringBuilder downloadSubQuerypart = new StringBuilder();
         List<String> labelDownloadKeys = new ArrayList<>();
+        int count = 0;
         int i = startYear;
         int j = startMonth +1;
         while (i <= startYear +1) {
             while (j <= 12) {
+                if (count != 0) {
+                    viewSubQuerypart.append(", ");
+                }
+                count++;
+                downloadSubQuerypart.append(", ");
                 viewSubQuerypart.append(String.format(TdarNamedQueries.MONTH_VIEW_PART, i,j));
                 downloadSubQuerypart.append(String.format(TdarNamedQueries.MONTH_DOWNLAOD_PART, i,j));
                 labelKeys.add(provider.getText("statisticsService.view_count_month",Arrays.asList(i,j)));
@@ -218,9 +227,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
             j = 1;
             i++;
         }
-        labelKeys.add(provider.getText("statisticsService.view_count_annual_total"));
         labelKeys.addAll(labelDownloadKeys);
-        labelKeys.add(provider.getText("statisticsService.download_count_annual_total"));
         
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
         getLogger().debug(sql);
@@ -234,15 +241,17 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         StringBuilder downloadSubQuerypart = new StringBuilder();
         List<String> labelDownloadKeys = new ArrayList<>();
         while (i <= end) {
+            if (i != start) {
+                viewSubQuerypart.append(", ");
+            }
+            downloadSubQuerypart.append(", ");
             viewSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_VIEW_PART, i));
             downloadSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_DOWNLAOD_PART, i));
             labelKeys.add(provider.getText("statisticsService.view_count_annual",Arrays.asList(i)));
             labelDownloadKeys.add(provider.getText("statisticsService.download_count_annual",Arrays.asList(i)));
             i++;
         }
-        labelKeys.add(provider.getText("statisticsService.view_count_annual_total"));
         labelKeys.addAll(labelDownloadKeys);
-        labelKeys.add(provider.getText("statisticsService.download_count_annual_total"));
         
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
         getLogger().debug(sql);
