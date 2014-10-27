@@ -35,8 +35,8 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                    <button type="button" class="btn">Save</button>
-                    <button type="button" class="btn">Integrate</button>
+                    <button type="button" class="btn" data-bind="click: saveClicked">Save</button>
+                    <button type="button" class="btn" data-bind="click: integrateClicked">Integrate</button>
                 </div>
             </div>
         </div>
@@ -49,8 +49,8 @@
                         <div class="controls">
                             <div class="btn-group">
                                 <button type="button" class="btn"  id="btnAddDataset" data-bind="click: addDatasetsClicked">Add Datasets...</button>
-                                <button type="button" class="btn"  id="btnAddIntegrationColumn" data-bind="click: integration.addColumn">Add Integration Columns...</button>
-                                <button type="button" class="btn" id="btnAddDisplayColumn" data-bind="click: integration.addColumn">Add Display Column</button>
+                                <button type="button" class="btn"  id="btnAddIntegrationColumn" data-bind="click: addIntegrationColumnsClicked">Add Integration Columns...</button>
+                                <button type="button" class="btn" id="btnAddDisplayColumn" data-bind="click: addDisplayColumnClicked">Add Display Column</button>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                                 <div>
                                     <select size="10" class="input-xlarge"></select>
                                 </div>
-                                <button type="button" class="btn input-xlarge" data-bind="click: removeDatasetClicked">Remove Selected Dataset</button>
+                                <button type="button" class="btn input-xlarge" data-bind="click: removeSelectedDatasetClicked">Remove Selected Dataset</button>
                             </div>
                             <div class="span4">
                                 <label>Selected Ontologies</label>
@@ -98,8 +98,12 @@
 
                             <div id="tabControl" data-bind="if: integration.columns().length">
                                 <ul class="nav nav-tabs" data-bind="foreach: integration.columns">
-                                    <li data-bind="css:{'integration-column': type === 'integration', active: $parent.currentColumn === $index}">
-                                        <a href="#" data-bind="text: name"></a>
+                                    <li data-bind="css:{'integration-column': type === 'integration', active: $root.tab === $index}">
+                                        <a href="#" data-bind="click: function(){viewModel.setTab($index())}">
+                                            <span  data-bind="text: name"></span>
+                                            <button type="button" class="close" data-bind="click: function(){viewModel.closeTab($index())}">x</button>
+                                        </a>
+
                                     </li>
                                 </ul>
 
