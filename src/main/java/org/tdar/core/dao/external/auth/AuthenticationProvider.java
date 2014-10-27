@@ -10,7 +10,7 @@ public interface AuthenticationProvider extends Configurable {
 
     TdarGroup[] DEFAULT_GROUPS = { TdarGroup.TDAR_USERS, TdarGroup.JIRA_USERS, TdarGroup.CONFLUENCE_USERS };
 
-    void logout(HttpServletRequest request, HttpServletResponse response);
+    void logout(HttpServletRequest request, HttpServletResponse response, String token);
 
     AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name, String password);
 
@@ -31,5 +31,7 @@ public interface AuthenticationProvider extends Configurable {
     String[] findGroupMemberships(TdarUser person);
 
     String getPasswordResetURL();
+
+    AuthenticationResult checkToken(String token, HttpServletRequest request);
 
 }

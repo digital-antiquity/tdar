@@ -1,13 +1,13 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.api;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
@@ -32,10 +33,14 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 
 @SuppressWarnings("serial")
@@ -43,7 +48,9 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
+@RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @HttpForbiddenErrorResponseOnly
+@HttpsOnly
 public class APIController extends AuthenticationAware.Base {
 
     @Autowired
@@ -76,7 +83,7 @@ public class APIController extends AuthenticationAware.Base {
     private FileAccessRestriction fileAccessRestriction;
     private Long id;
     private InputStream inputStream;
-    private Map<String, Object> xmlResultObject = new HashMap<>();
+    private JaxbResultContainer xmlResultObject = new JaxbResultContainer();
 
     private Long accountId;
     public final static String msg_ = "%s is %s %s (%s): %s";
@@ -94,7 +101,7 @@ public class APIController extends AuthenticationAware.Base {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            xmlResultObject.put("resource", resource);
+            getXmlResultObject().setResult(resource);
             return SUCCESS;
         }
         return INPUT;
@@ -109,7 +116,7 @@ public class APIController extends AuthenticationAware.Base {
     @PostOnly
     public String upload() {
 
-        if (fileAccessRestriction == null) {
+        if (CollectionUtils.isNotEmpty(uploadFile) && fileAccessRestriction == null) {
             // If there is an error setting this field in the OGNL layer this method is still called...
             // This check means that if there was such an error, then we are not going to default to a weaker access restriction.
             getLogger().info("file access restrictions not set");
@@ -132,7 +139,7 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            xmlResultObject.put("recordId", incoming.getId());
+            xmlResultObject.setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
             // getGenericService().detachFromSession(getAuthenticatedUser());
@@ -148,15 +155,18 @@ public class APIController extends AuthenticationAware.Base {
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
-                xmlResultObject.put("message", "created:" + loadedRecord.getId());
+                message = "created:" + loadedRecord.getId();
                 code = StatusCode.CREATED;
+                getXmlResultObject().setRecordId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
 
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
+            getXmlResultObject().setStatusCode(statuscode);
+            getXmlResultObject().setStatus(code.toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
-            xmlResultObject.put("message", SUCCESS);
+            xmlResultObject.setMessage(message);
             getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
@@ -164,25 +174,29 @@ public class APIController extends AuthenticationAware.Base {
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<JaxbValidationEvent> events = ((JaxbParsingException) e).getEvents();
+                List<String> errors = new ArrayList<>();
                 for (JaxbValidationEvent event : events) {
-                    message = message + event.toString() + "\r\n";
+                    errors.add(event.toString());
                 }
 
                 errorResponse(StatusCode.BAD_REQUEST);
-                xmlResultObject.put("message", message);
-                xmlResultObject.put("errors", events);
+                getXmlResultObject().setMessage(message);
+                getXmlResultObject().setErrors(errors);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
             Throwable exp = e;
+            List<String> stackTraces = new ArrayList<>();
+            List<String> errors = new ArrayList<>();
             do {
-                message = message + ((exp.getMessage() == null) ? " ? " : exp.getMessage());
+                errors.add(((exp.getMessage() == null) ? " ? " : exp.getMessage()));
                 exp = exp.getCause();
-                message = message + ((exp == null) ? "" : "\r\n");
+                stackTraces.add(ExceptionUtils.getFullStackTrace(exp));
             } while (exp != null);
             if (e instanceof APIException) {
-                xmlResultObject.put("message", message);
-                xmlResultObject.put("errors", e.getMessage());
+                getXmlResultObject().setMessage(e.getMessage());
+                getXmlResultObject().setStackTraces(stackTraces);
+                getXmlResultObject().setErrors(errors);
                 errorResponse(((APIException) e).getCode());
                 return ERROR;
             }
@@ -194,7 +208,8 @@ public class APIController extends AuthenticationAware.Base {
 
     private String errorResponse(StatusCode statusCode) {
         status = statusCode.getResultName();
-        xmlResultObject.put("status", status);
+        xmlResultObject.setStatus(statusCode.toString());
+        xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
         return ERROR;
     }
 
@@ -344,4 +359,11 @@ public class APIController extends AuthenticationAware.Base {
         }
     }
 
+    public JaxbResultContainer getXmlResultObject() {
+        return xmlResultObject;
+    }
+
+    public void setXmlResultObject(JaxbResultContainer xmlResultContainer) {
+        this.xmlResultObject = xmlResultContainer;
+    }
 }

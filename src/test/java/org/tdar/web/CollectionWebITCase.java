@@ -14,7 +14,9 @@ import org.junit.Test;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -25,7 +27,10 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertNotNull(genericService);
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
-        List<? extends Resource> someResources = getSomeResources();
+        List<Document> someResources = new ArrayList<>();
+        someResources.add(createDocument());
+        someResources.add(createDocument());
+        someResources.add(createDocument());
         createTestCollection(name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
@@ -89,6 +94,15 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage(currentUrlPath);
         assertTextNotPresent("collection is not accessible");
+    }
+
+    private Document createDocument() {
+        String title1 = "ctec" + System.currentTimeMillis();
+        Long id1 = createResourceFromType(ResourceType.DOCUMENT, title1);
+        Document doc1 = new Document();
+        doc1.setId(id1);
+        doc1.setTitle(title1);
+        return doc1;
     }
 
     @Test

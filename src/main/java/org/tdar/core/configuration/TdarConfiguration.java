@@ -107,7 +107,7 @@ public class TdarConfiguration {
     public void initialize() {
         logger.debug("initializing filestore and setup");
 
-//        initializeTimeZoneInfo();
+        // initializeTimeZoneInfo();
 
         if (isProductionEnvironment()) {
             printConfig();
@@ -818,6 +818,10 @@ public class TdarConfiguration {
 
     public String getURLRewriteRefresh() {
         return Integer.toString(assistant.getIntProperty("urlRewrite.refresh", -1));
+    }
+
+    public String getRequestTokenName() {
+        return assistant.getStringProperty("auth.token.name", "session.tokenkey");
     }
 
 }

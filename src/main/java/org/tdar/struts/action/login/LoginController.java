@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
@@ -90,7 +91,6 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     @Actions(
     {
             @Action(value = "process",
-                    // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
                             @Result(name = REDIRECT, type = REDIRECT, location = "${internalReturnUrl}"),
@@ -106,8 +106,8 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            status = authenticationService.authenticatePerson(userLogin, getServletRequest(), getServletResponse(),
-                    getSessionData());
+            AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(), getSessionData());
+            status = result.getStatus();
         } catch (Exception e) {
             addActionError(e.getMessage());
             return INPUT;
