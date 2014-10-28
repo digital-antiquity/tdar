@@ -10,6 +10,7 @@ bin
 src/main/resources/*.properties
 src/main/resources/*-local-settings.xml
 src/main/webapp/wro*
+src/main/webapp/bower_components
 googlemaps-api-key.js
 logs
 *.jpage
