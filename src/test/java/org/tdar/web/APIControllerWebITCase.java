@@ -11,9 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -32,17 +30,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.APIControllerITCase;
-import org.tdar.struts.action.api.APIController;
 import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
-import com.opensymphony.xwork2.Action;
 import com.sun.media.rtsp.protocol.StatusCode;
 
 public class APIControllerWebITCase extends AbstractWebTestCase {
