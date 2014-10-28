@@ -62,11 +62,9 @@
         this.removeSelectedDatasetClicked = function(arg) {
             console.log('remove selected dataset clicked');
         }
-
-
-
-
     });
+
+
 
 
 
