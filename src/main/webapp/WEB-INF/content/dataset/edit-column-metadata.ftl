@@ -72,9 +72,7 @@
                 <#assign count=0>
                 <@s.iterator value='%{dataset.dataTables}' var='table' status="status1">
                     <#assign count=count+1 />
-                    <option value="${table.id?c}" <#if table?? && table.id == dataTable.id>selected
-                    </#if>
-                            >${count}. ${table.displayName}</option>
+                    <option value="${table.id?c}" <#if table?? && table.id == dataTable.id>selected</#if>>${count}. ${table.displayName}</option>
                 </@s.iterator>
             </select>
 
