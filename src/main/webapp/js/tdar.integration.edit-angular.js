@@ -12,7 +12,7 @@
 
 
 
-    var app = angular.module('integrationApp', []);
+    var app = angular.module('integrationApp', ['angularModalService']);
 
     app.controller('IntegrationCtrl', function(){
         var self = this,
@@ -64,7 +64,59 @@
         }
     });
 
+    //This is the controller that drives the modal window
+    app.controller('DatasetController', ['$scope', '$http', 'close',  function($scope, $http, close) {
+        var animDelay = 500, returnData = {};
+        console.info("DatasetController  close:%s", close);
+        var self = this;  //modal library doesn't support controller-as syntax yet
+        $scope.greeting = "I'm the scope";
 
+        $scope.returnData = returnData;
+
+
+        $scope.confirm  = function(result) {
+            //console.log("close  result:%s", result);
+            close(result, animDelay);
+        };
+
+        $scope.cancel = function() {
+            close('cancel', animDelay)
+        }
+
+    }]);
+
+
+    //his controller isn't necessary,  it's mostly copypasta from a tutorial. i'll refactor it soon.
+    app.controller('ModalController', function($scope, ModalService) {
+        console.info("ModalController");
+        var self = this;
+        self.buttonClicked = function() {
+            console.log('buttonClicked');
+        };
+
+        $scope.showDatasetsModal = function() {
+            console.log("showDatasetsModal:");
+            ModalService.showModal({
+                templateUrl: "workspace/add-datasets.html",
+                controller: "DatasetController"
+            }).then(function(modal){
+
+                //this is the bootstrap modal function.
+                modal.element.modal();
+
+
+                modal.close.then(function(result){
+                    modal.element.modal('hide');
+                    console.log("modal closed.  result:%s", result);
+                    $scope.message = result ? "result was yes" : "result was no";
+                });
+            }).catch(function(error){
+                console.error(error);
+            });
+        }
+    });
+
+console.log("init done");
 
 
 

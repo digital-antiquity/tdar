@@ -81,6 +81,11 @@ public class IntegrationController extends AuthenticationAware.Base implements P
 //
 //    })
 
+    @Override
+    public void prepare() {
+
+    }
+
 
     @Actions({
             @Action(value="add", results={
@@ -90,14 +95,10 @@ public class IntegrationController extends AuthenticationAware.Base implements P
                     @Result(name="success", location="edit-angular.ftl")
             })
     })
-    public String thisIsMyMethod() {
+    public String execute() {
         return "success";
     }
 
-    @Override
-    public void prepare() {
-
-    }
 }
 
 

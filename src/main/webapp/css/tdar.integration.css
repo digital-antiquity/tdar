@@ -10,3 +10,21 @@ These style definitions will likely go away when I'm certain that they don't scr
     margin: -2px 0 0 10px;
     font-size: 18px;
 }
+
+
+.modal.modal-big {
+    /* allow for 10 columns per row  */
+    width:82%;
+    left: 9%;
+    margin-left:0;
+}
+
+.modal.modal-big.fade.in {
+    top: 5%;
+}
+
+/* jtd: temporary - the bootstrap transitions bug me */
+.modal.modal-big.fade.in, .modal.modal-big.fade {
+    transition: none;
+}
+

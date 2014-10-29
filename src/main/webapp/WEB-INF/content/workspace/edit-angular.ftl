@@ -129,7 +129,31 @@
 
     </form>
 </div>
+<div id="divTempModal" ng-controller="ModalController as modalctrl">
+    <button type="button" class="btn" ng-click="showDatasetsModal()">Show Datasets</button>
+</div>
 
+
+<script type="text/ng-template" id="workspace/add-datasets.html">
+    <div id="divModalAddDatasets" class="modal modal-big hide fade" tabindex="-1" role="dialog">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="hModalHeader">Modal header</h3>
+        </div>
+        <div class="modal-body">
+            <p>Modal Body</p>
+            <p>Greeting is: {{greeting}}</p>
+
+        </div>
+        <div class="row">
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" data-dismiss="modal" ng-click="confirm(returnData)">Add</button>
+        </div>
+    </div>
+
+</script>
 
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <script src="/js/tdar.integration.edit-angular.js"></script>
