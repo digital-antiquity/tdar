@@ -54,11 +54,6 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
     UPDATER("Updater", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
     RESOURCE_PROVIDER("Resource Provider", ResourceCreatorRoleType.OTHER, CreatorType.INSTITUTION),
     PUBLISHER("Publisher", ResourceCreatorRoleType.OTHER);
-    /*
-     * SUGGESTIONS FOR:
-     * Crew Chief
-     * Sensory Data Collector
-     */
 
     private final String label;
     private final CreatorType relevantCreatorType;
