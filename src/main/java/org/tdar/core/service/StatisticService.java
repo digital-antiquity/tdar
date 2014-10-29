@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.AccountDao;
+import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.StatisticDao;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -44,6 +45,9 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     @Autowired
     private AccountDao accountDao;
+    
+    @Autowired
+    private AggregateStatisticsDao aggregateStatisticsDao;
 
     private final Date startDate = new GregorianCalendar(2008, 1, 1).getTime();
 
@@ -146,12 +150,12 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     @Transactional
     public void generateAggregateDailyResourceData(Date date) {
-        getDao().generateAggregateDailyResourceData(date);
+        aggregateStatisticsDao.generateAggregateDailyResourceData(date);
     }
 
     @Transactional
     public void generateAggregateDailyDownloadData(Date date) {
-        getDao().generateAggregateDailyDownloadData(date);
+        aggregateStatisticsDao.generateAggregateDailyDownloadData(date);
     }
 
     @Transactional
@@ -191,11 +195,11 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     private StatsResultObject getStats(Collection<Long> ids, TextProvider provider, DateGranularity granularity) {
         switch (granularity) {
             case DAY:
-                return getDao().getDailyStats(ids, provider);
+                return aggregateStatisticsDao.getDailyStats(ids, provider);
             case MONTH:
-                return getDao().getMonthlyStats(ids, provider);
+                return aggregateStatisticsDao.getMonthlyStats(ids, provider);
             case YEAR:
-                return getDao().getAnnualStats(ids, provider);
+                return aggregateStatisticsDao.getAnnualStats(ids, provider);
         }
         return null;
     }
