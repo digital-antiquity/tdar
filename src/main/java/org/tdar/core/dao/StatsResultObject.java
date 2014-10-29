@@ -4,20 +4,23 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.utils.Pair;
-
+/**
+ * Represents an aggregate statistics query result.
+ * 
+ * @author abrin
+ *
+ */
 public class StatsResultObject implements Serializable {
 
     private static final long serialVersionUID = 4215287793431994744L;
 
     private List<String> rowLabels = new ArrayList<>();
-    private List<Pair<Resource, List<Number>>> rowData = new ArrayList<>();
+    private List<ResourceStatWrapper> rowData = new ArrayList<>();
     private long[] totals;
 
-    public void addRowData(Pair<Resource, List<Number>> row) {
+    public void addRowData(ResourceStatWrapper row) {
         getRowData().add(row);
-        List<Number> counts = row.getSecond();
+        List<Number> counts = row.getData();
         if (totals == null) {
             totals = new long[counts.size()];
         }
@@ -36,11 +39,11 @@ public class StatsResultObject implements Serializable {
         this.rowLabels = rowLabels;
     }
 
-    public List<Pair<Resource, List<Number>>> getRowData() {
+    public List<ResourceStatWrapper> getRowData() {
         return rowData;
     }
 
-    public void setRowData(List<Pair<Resource, List<Number>>> rowData) {
+    public void setRowData(List<ResourceStatWrapper> rowData) {
         this.rowData = rowData;
     }
 

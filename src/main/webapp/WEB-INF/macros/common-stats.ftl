@@ -23,11 +23,11 @@
 		</tr>
 		<#list statsForAccount.rowData as row> 
 		<tr>
-			<td>${row.first.id?c}</td>
-			<td>${row.first.title}</td>
-			<td>${row.first.resourceType}</td>
-			<td>${row.first.status}</td>
-			<#list row.second as dataPoint>
+			<td>${row.resource.id?c}</td>
+			<td>${row.resource.title}</td>
+			<td>${row.resource.resourceType}</td>
+			<td>${row.resource.status}</td>
+			<#list row.data as dataPoint>
 				<td>${dataPoint!0?c}</td>
 			</#list>
 		</tr>
