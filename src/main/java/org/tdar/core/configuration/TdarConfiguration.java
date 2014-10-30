@@ -824,4 +824,18 @@ public class TdarConfiguration {
         return assistant.getStringProperty("auth.token.name", "session.tokenkey");
     }
 
+    public Boolean allowAuthentication() {
+        return assistant.getBooleanProperty("allow.authentication", true);
+    }
+
+    public List<String> getAdminUsernames() {
+        String names_ = assistant.getProperty("allow.authentication", "");
+        List<String> names = new ArrayList<>();
+        for (String name : StringUtils.split(names_, ",")) {
+            if (StringUtils.isNotBlank(name)) {
+                names.add(StringUtils.trim(name));
+            }
+        }
+        return names;
+    }
 }
