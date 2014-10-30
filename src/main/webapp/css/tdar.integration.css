@@ -28,3 +28,18 @@ These style definitions will likely go away when I'm certain that they don't scr
     transition: none;
 }
 
+.modal.modal-big .modal-header {
+    padding: 4px 8px;
+}
+
+.modal.modal-big .modal-body {
+    max-height: 500px;
+    padding: 8px;
+}
+
+.modal.modal-big .modal-footer {
+    padding: 10px 8px 10px;
+}
+
+.table-modal-results {
+}

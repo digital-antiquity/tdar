@@ -1620,6 +1620,16 @@ div.orgChart div.node.level1.special {
     margin-bottom:0;
 }
 
+.form-condensed fieldset legend {
+    margin-bottom: 10px;
+    font-size: 14pt;
+    line-height: normal;
+}
+
+.form-condensed fieldset {
+    margin-bottom: 1em;
+}
+
 .cartpane .form-actions, .authpane .form-actions {
     border: none;
 }

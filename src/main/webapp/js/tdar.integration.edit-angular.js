@@ -1,5 +1,6 @@
 (function($, angular, console){
     "use strict";
+    var _projects, _collections, _categories, _documentData;
 
     //Our integration "Model" object.
     function Integration() {
@@ -10,10 +11,36 @@
         self.columns = [];
     }
 
+    //model for search filter that can be used for datasets or ontologies
+    function SearchFilter() {
+        var self = this;
+        $.extend(self, {
+            title: "",
+            projectId: null,
+            collectionId: null,
+            categoryId: null,
+            unbookmarked: false,
+            incompatible: false
+        });
+    }
 
+    //read json embedded in script elements
+    function _loadDocumentData() {
+        var dataElements = $('[type="application/json"][id]').toArray();
+        var map = {};
+        dataElements.forEach(function(elem){
+            var key = elem.id;
+            var val = JSON.parse(elem.innerHTML);
+            map[key] = val;
+        });
+        return map;
+    }
+
+    _documentData = _loadDocumentData();
 
     var app = angular.module('integrationApp', ['angularModalService']);
 
+    //Root-level controller for the integration viewmodel
     app.controller('IntegrationCtrl', function(){
         var self = this,
             integration = new Integration();
@@ -86,7 +113,7 @@
     }]);
 
 
-    //his controller isn't necessary,  it's mostly copypasta from a tutorial. i'll refactor it soon.
+    //FIXME: this controller isn't necessary,  it's mostly copypasta from a tutorial. i'll refactor it soon.
     app.controller('ModalController', function($scope, ModalService) {
         console.info("ModalController");
         var self = this;
@@ -115,6 +142,65 @@
             });
         }
     });
+
+    //Controller that drives the add-integration-column controller
+    //FIXME: given the similarity we should probably refactor this to use one controller for both dialogs
+    app.controller('OntologyController', ['$scope', '$http', function($scope, $http){
+        $scope.title = "Add Integration Columns";
+        $scope.filter = new SearchFilter();
+        $scope.selectedItems = [];
+
+        //initialize lookup lists
+        $scope.projects = _documentData.allProjects;
+        $scope.collections = _documentData.allCollections;
+        $scope.categories = _documentData.allCategories;
+
+
+        //perform initial search
+        $scope.results = [];
+        for(var i = 0; i < 20; i++) {
+            $scope.results.push({
+                id: i,
+                title: 'sample ontology title',
+                author: 'sample ontology author',
+                date: 'mm/dd/yyyy'
+            });
+        }
+
+        //update the filter whenever user updates filter UI
+        $scope.updateFilter = function() {
+            var data = JSON.stringify($scope.filter, null, 4);
+            console.info("updateFilter:: %s", data);
+        }
+
+        //called when user clicks 'Add Selected Items'
+        $scope.confirm = function(obj) {
+            var data = JSON.stringify(obj);
+            console.info("confirm:: %s", data);
+        }
+
+        //convenience function - true if specified item is in the selecteditems list
+        $scope.isSelected = function(item) {
+            return $scope.selectedItems.indexOf(item) > -1;
+        }
+
+        //TODO:  this could be pulled out into a commmon function,  e.g.  TDAR.common.toggleArrayValue(arr, value)
+
+        //called when user selects/deslects one of the items in the select
+        $scope.toggleSelection = function(itemId, obj) {
+            console.debug("toggleSelected::");
+            var items = $scope.selectedItems,
+                    idx = items.indexOf(itemId);
+            //if in list, remove it
+            if(idx > -1 ) {
+                items.splice(idx, 1);
+            //otherwise, add it
+            } else {
+                items.push(itemId);
+            }
+
+        }
+    }]);
 
 console.log("init done");
 

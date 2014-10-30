@@ -44,13 +44,9 @@
     <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <#if useCDN>
         <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
     <#else>
         <link href="/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
     </#if>
 
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
@@ -343,18 +339,7 @@
     <script src="/includes/qunit-1.11.0.js"></script>
     </#if>
 
-    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
-    <script type="text/javascript">
-        TDAR.loadScript('${protocol}//${jiraScriptLink}');
-    </script>
-    </#if>
 
-    <#if qunit>
-    <#-- close the test fixture div -->
-    </div>
-    <script src="/test/js/tdar.commontest.js"></script>
-    <script src="/test/js${namespace}/${actionName}.qunit.js"></script>
-    </#if>
 </#if>
 
 </body>
