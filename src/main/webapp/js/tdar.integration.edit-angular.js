@@ -1,6 +1,8 @@
 (function($, angular, console){
     "use strict";
-    var _projects, _collections, _categories, _documentData;
+    var app,_projects, _collections, _categories, _documentData;
+    app = angular.module('integrationApp', ['angularModalService']);
+
 
     //Our integration "Model" object.
     function Integration() {
@@ -38,15 +40,39 @@
 
     _documentData = _loadDocumentData();
 
-    var app = angular.module('integrationApp', ['angularModalService']);
 
     //Root-level controller for the integration viewmodel
-    app.controller('IntegrationCtrl', function(){
+    app.controller('IntegrationCtrl', ['$scope', 'ModalService', function($scope, ModalService){
         var self = this,
-            integration = new Integration();
+            integration = new Integration(),
+            openModal;
+
+        openModal = function() {
+            ModalService.showModal({
+                templateUrl: "workspace/add-ontology-modal.html",
+                controller: "OntologyController"
+            }).then(function(modal){
+                //model.element is a jqSelection containing the top-level element for this control (e.g. $("#modalContainer")
+                modal.element.modal();
+
+                //model.close is a promise that is resolved when the modal closes
+                modal.close.then(function(result){
+                    modal.element.modal('hide');
+                    console.log("modal closed.  result:%s", result);
+                    $scope.message = result ? "result was yes" : "result was no";
+                });
+
+            //if the service cannot create the modal or catches an exception, the promise calls an error callback
+            }).catch(function(error) {
+                console.error("ModalService error: %s", error);
+            });
+        };
+
+        this.openDatasetModal = function() {
+            openModal();
+        }
 
         this.integration = integration;
-
 
         this.tab = 0;
 
@@ -62,7 +88,6 @@
             integration.columns.splice(idx, 1);
         }
 
-
         this.saveClicked = function() {
             console.log("Saving.")
             console.log(JSON.stringify(integration, null, 4));
@@ -74,6 +99,7 @@
 
         this.addDatasetsClicked = function(arg) {
             console.log('Add Datasets clicked');
+            openModal();
         };
 
         this.addIntegrationColumnsClicked = function(arg) {
@@ -89,62 +115,10 @@
         this.removeSelectedDatasetClicked = function(arg) {
             console.log('remove selected dataset clicked');
         }
-    });
-
-    //This is the controller that drives the modal window
-    app.controller('DatasetController', ['$scope', '$http', 'close',  function($scope, $http, close) {
-        var animDelay = 500, returnData = {};
-        console.info("DatasetController  close:%s", close);
-        var self = this;  //modal library doesn't support controller-as syntax yet
-        $scope.greeting = "I'm the scope";
-
-        $scope.returnData = returnData;
-
-
-        $scope.confirm  = function(result) {
-            //console.log("close  result:%s", result);
-            close(result, animDelay);
-        };
-
-        $scope.cancel = function() {
-            close('cancel', animDelay)
-        }
-
     }]);
 
-
-    //FIXME: this controller isn't necessary,  it's mostly copypasta from a tutorial. i'll refactor it soon.
-    app.controller('ModalController', function($scope, ModalService) {
-        console.info("ModalController");
-        var self = this;
-        self.buttonClicked = function() {
-            console.log('buttonClicked');
-        };
-
-        $scope.showDatasetsModal = function() {
-            console.log("showDatasetsModal:");
-            ModalService.showModal({
-                templateUrl: "workspace/add-datasets.html",
-                controller: "DatasetController"
-            }).then(function(modal){
-
-                //this is the bootstrap modal function.
-                modal.element.modal();
-
-
-                modal.close.then(function(result){
-                    modal.element.modal('hide');
-                    console.log("modal closed.  result:%s", result);
-                    $scope.message = result ? "result was yes" : "result was no";
-                });
-            }).catch(function(error){
-                console.error(error);
-            });
-        }
-    });
-
     //Controller that drives the add-integration-column controller
-    //FIXME: given the similarity we should probably refactor this to use one controller for both dialogs
+    //FIXME: given the similarity we should probably refactor this to use one controller for both dialogs (or at least re-use the same template)
     app.controller('OntologyController', ['$scope', '$http', function($scope, $http){
         $scope.title = "Add Integration Columns";
         $scope.filter = new SearchFilter();
@@ -204,10 +178,18 @@
 
 console.log("init done");
 
+    //FIXME: these are hacks to auto-open the various popups
+    function _hashUrl() {
+        var wlh = "" + window.location.hash;
+        return wlh.substring(1);
+    }
 
-
-
-
+    $(function() {
+        var scope = angular.element($("#divIntegrationMain")).scope();
+        //fire dataset modal if url ends in #dataset
+        if(_hashUrl() === "dataset")
+            scope.ctrl.openDatasetModal();
+    })
 
 /* global jQuery, angular  */
 })(jQuery, angular, console);
