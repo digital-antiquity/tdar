@@ -516,4 +516,6 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
+
+    abstract public Set<? extends Creator> getSynonyms(); 
 }
