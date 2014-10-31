@@ -169,17 +169,16 @@ public class BrowseCreatorController extends AbstractLookupController implements
         if (Persistable.Base.isNullOrTransient(creator)) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Action(value = CREATORS, results = { @Result(location = "creators.ftl") })
-    public String browseCreators() throws ParseException, TdarActionException {
 
         if (Persistable.Base.isTransient(getAuthenticatedUser()) && !creator.isBrowsePageVisible() && !Objects.equals(getAuthenticatedUser(), creator)) {
             throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
+        prepareLuceneQuery();
+    }
 
-        QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
+    @Action(value = CREATORS, results = { @Result(location = "creators.ftl") })
+    public String browseCreators() throws ParseException, TdarActionException {
+
 
         if (isEditor()) {
             if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
@@ -205,29 +204,6 @@ public class BrowseCreatorController extends AbstractLookupController implements
             getGenericService().saveOrUpdate(cvs);
         }
 
-        setPersistable(creator);
-        setMode("browseCreators");
-        setSortField(SortOption.RESOURCE_TYPE);
-        if (Persistable.Base.isNotNullOrTransient(creator)) {
-            String descr = getText("browseController.all_resource_from", creator.getProperName());
-            setSearchDescription(descr);
-            setSearchTitle(descr);
-            setRecordsPerPage(50);
-            try {
-                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
-                handleSearch(queryBuilder);
-                bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
-
-            } catch (SearchPaginationException spe) {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
-            } catch (TdarRecoverableRuntimeException tdre) {
-                getLogger().warn("search parse exception", tdre);
-                addActionError(tdre.getMessage());
-            } catch (ParseException e) {
-                getLogger().warn("search parse exception", e);
-            }
-
-        }
 
         FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
         try {
@@ -251,6 +227,34 @@ public class BrowseCreatorController extends AbstractLookupController implements
         // reset fields which can be broken by the searching hydration obfuscating things
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void prepareLuceneQuery() throws TdarActionException {
+        QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
+        setPersistable(creator);
+        setMode("browseCreators");
+        setSortField(SortOption.RESOURCE_TYPE);
+        if (Persistable.Base.isNotNullOrTransient(creator)) {
+            String descr = getText("browseController.all_resource_from", creator.getProperName());
+            setSearchDescription(descr);
+            setSearchTitle(descr);
+            setRecordsPerPage(50);
+            try {
+                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+                handleSearch(queryBuilder);
+                bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+
+            } catch (SearchPaginationException spe) {
+                throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
+            } catch (TdarRecoverableRuntimeException tdre) {
+                getLogger().warn("search parse exception", tdre);
+                addActionError(tdre.getMessage());
+            } catch (ParseException e) {
+                getLogger().warn("search parse exception", e);
+            }
+
+        }
     }
 
     public Creator getCreator() {
