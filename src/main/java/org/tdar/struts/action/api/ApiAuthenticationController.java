@@ -1,5 +1,6 @@
 package org.tdar.struts.action.api;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +37,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
+
 @ParentPackage("default")
 @Namespace("/api")
 @Component
@@ -43,11 +45,7 @@ import com.opensymphony.xwork2.Validateable;
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @Scope("prototype")
 @HttpForbiddenErrorResponseOnly
-public class ApiAuthenticationController extends AuthenticationAware.Base implements Validateable, Preparable {
-
-    public static final String API_TOKEN_KEY_NAME = "apiTokenKeyName";
-    public static final String API_TOKEN = "apiToken";
-    public static final String USERNAME = "username";
+public class ApiAuthenticationController extends AuthenticationAware.Base implements Validateable, Preparable, APIParameters {
 
     private static final long serialVersionUID = -7766515866713996249L;
 
@@ -90,6 +88,7 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
                 xmlResultObject.put(USERNAME, result.getTokenUsername());
                 xmlResultObject.put(API_TOKEN, result.getToken());
                 xmlResultObject.put(API_TOKEN_KEY_NAME, getTdarConfiguration().getRequestTokenName());
+                xmlResultObject.put(MESSAGE, getText("apiAuthenticationController.tos_reminder",Arrays.asList(getTdarConfiguration().getTosUrl())));
             }
         } catch (Exception e) {
             addActionError(e.getMessage());
