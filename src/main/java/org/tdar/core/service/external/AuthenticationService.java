@@ -40,8 +40,6 @@ import org.tdar.struts.data.UserRegistration;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
-import com.opensymphony.xwork2.ActionContext;
-
 @Service
 public class AuthenticationService {
 
@@ -158,6 +156,11 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResult authenticatePerson(UserLogin userLogin, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
+        // deny authentication if we've turned it off in cases of system manintance
+        if (!TdarConfiguration.getInstance().allowAuthentication() || TdarConfiguration.getInstance().getAdminUsernames().contains(userLogin.getLoginUsername())) {
+            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
+        }
+        
         if (!isPossibleValidUsername(userLogin.getLoginUsername())) {
             throw new TdarRecoverableRuntimeException("auth.username.invalid");
         }
