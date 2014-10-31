@@ -159,7 +159,7 @@ public class IntegrationController extends AuthenticationAware.Base implements P
         //pass 1: build the parentNames (we assume depth of 2 with no childless parents)
         for(CategoryVariable cat : cats) {
             if(cat.getParent() == null) {
-                parentNames.putIfAbsent(cat.getId(), cat.getName());
+                parentNames.put(cat.getId(), cat.getName());
             }
         }
 

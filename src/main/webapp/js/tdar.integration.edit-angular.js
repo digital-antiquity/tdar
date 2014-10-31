@@ -7,7 +7,6 @@
     //Our integration "Model" object.
     function Integration() {
         var self = this;
-
         self.title = "";
         self.description = "";
         self.columns = [];
@@ -41,16 +40,19 @@
     _documentData = _loadDocumentData();
 
 
-    //Root-level controller for the integration viewmodel
+    //top-level controller for the integration viewmodel
     app.controller('IntegrationCtrl', ['$scope', 'ModalService', function($scope, ModalService){
         var self = this,
             integration = new Integration(),
             openModal;
 
-        openModal = function() {
+        openModal = function(options) {
             ModalService.showModal({
-                templateUrl: "workspace/add-ontology-modal.html",
-                controller: "OntologyController"
+                templateUrl: "workspace/modal-dialog.html",
+                controller: "ModalDialogController",
+                inputs: {
+                    options: $.extend({categoryFilter: false}, options)
+                }
             }).then(function(modal){
                 //model.element is a jqSelection containing the top-level element for this control (e.g. $("#modalContainer")
                 modal.element.modal();
@@ -68,9 +70,6 @@
             });
         };
 
-        this.openDatasetModal = function() {
-            openModal();
-        }
 
         this.integration = integration;
 
@@ -99,12 +98,20 @@
 
         this.addDatasetsClicked = function(arg) {
             console.log('Add Datasets clicked');
-            openModal();
+            openModal({
+                title: "Add Datasets",
+                searchType: "dataset"
+            });
         };
 
         this.addIntegrationColumnsClicked = function(arg) {
             console.log('Add Integration Columns Clicked');
-            integration.columns.push({name: 'integration column: ' + integration.columns.length })
+            integration.columns.push({name: 'integration column: ' + integration.columns.length });
+            openModal({
+                title: "Add Ontologies",
+                searchType: "ontology",
+                categoryFilter: true
+            });
         };
 
         this.addDisplayColumnClicked = function(arg) {
@@ -119,8 +126,8 @@
 
     //Controller that drives the add-integration-column controller
     //FIXME: given the similarity we should probably refactor this to use one controller for both dialogs (or at least re-use the same template)
-    app.controller('OntologyController', ['$scope', '$http', function($scope, $http){
-        $scope.title = "Add Integration Columns";
+    app.controller('ModalDialogController', ['$scope', '$http', 'close', 'options',  function($scope, $http, close, options){
+        $scope.title = options.title;
         $scope.filter = new SearchFilter();
         $scope.selectedItems = [];
 

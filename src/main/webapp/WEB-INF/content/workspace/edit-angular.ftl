@@ -130,7 +130,7 @@
 </div>
 
 <!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->
-<script type="text/ng-template" id="workspace/add-ontology-modal.html">
+<script type="text/ng-template" id="workspace/modal-dialog.html">
     <div id="divModalContainer" class="modal modal-big hide fade" tabindex="-1" role="dialog">
         <div class="modal-header alert-info">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
