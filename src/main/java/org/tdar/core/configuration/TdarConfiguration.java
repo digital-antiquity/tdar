@@ -829,7 +829,7 @@ public class TdarConfiguration {
     }
 
     public List<String> getAdminUsernames() {
-        String names_ = assistant.getProperty("allow.authentication", "");
+        String names_ = assistant.getProperty("allow.authentication.admin.users", "");
         List<String> names = new ArrayList<>();
         for (String name : StringUtils.split(names_, ",")) {
             if (StringUtils.isNotBlank(name)) {

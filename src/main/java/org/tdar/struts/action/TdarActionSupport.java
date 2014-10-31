@@ -666,4 +666,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getContributorAgreementUrl();
     }
 
+    public boolean isAuthenticationAllowed() {
+        return getTdarConfiguration().allowAuthentication();
+    }
 }
