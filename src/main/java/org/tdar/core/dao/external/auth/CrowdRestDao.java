@@ -35,6 +35,7 @@ import com.atlassian.crowd.integration.http.util.CrowdHttpValidationFactorExtrac
 import com.atlassian.crowd.integration.rest.entity.PasswordEntity;
 import com.atlassian.crowd.integration.rest.entity.UserEntity;
 import com.atlassian.crowd.integration.rest.service.factory.RestCrowdClientFactory;
+import com.atlassian.crowd.model.authentication.ValidationFactor;
 import com.atlassian.crowd.model.group.Group;
 import com.atlassian.crowd.model.user.User;
 import com.atlassian.crowd.service.client.ClientProperties;
@@ -111,9 +112,14 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#logout(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
         try {
             httpAuthenticator.logout(request, response);
+            if (StringUtils.isBlank(token)) {
+                token = httpAuthenticator.getToken(request);
+            }
+            securityServerClient.invalidateSSOToken(token);
+            logger.debug("logged out");
         } catch (ApplicationPermissionException e) {
             logger.error("application permission exception", e);
         } catch (InvalidAuthenticationException e) {
@@ -133,7 +139,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name, String password) {
         try {
             httpAuthenticator.authenticate(request, response, name, password);
-            return new AuthenticationResult(AuthenticationResultType.VALID);
+            String token = httpAuthenticator.getToken(request);
+            AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.VALID, token);
+            result.setTokenUsername(name);
+            return result;
         } catch (InvalidAuthenticationException e) {
             // this is the only exception that should be DEBUG level only.
             logger.debug("++++ CROWD: Invalid authentication for " + name);
@@ -258,7 +267,22 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         }
 
         return new AuthenticationResult(AuthenticationResultType.VALID);
+    }
 
+    public AuthenticationResult checkToken(String token, HttpServletRequest request) {
+        try {
+            User user = securityServerClient.findUserFromSSOToken(token);
+            ArrayList<ValidationFactor> arrayList = new ArrayList<ValidationFactor>();
+            arrayList.add(new ValidationFactor("remote_address", request.getRemoteAddr()));
+            securityServerClient.validateSSOAuthentication(token, arrayList);
+            AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.VALID);
+            result.setTokenUsername(user.getName());
+            result.setToken(token);
+            return result;
+        } catch (OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException | InvalidTokenException e) {
+            logger.error("++++ CROWD: Unable to process token " + token, e);
+            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION, e);
+        }
     }
 
     /*

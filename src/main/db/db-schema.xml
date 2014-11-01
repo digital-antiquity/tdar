@@ -1475,4 +1475,23 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet author="abrin (generated)" id="1414424083020-31">
+        <createTable tableName="email_queue">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="email_queue_pkey" />
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="date_sent" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="error_message" type="VARCHAR(2048)" />
+            <column name="from_address" type="VARCHAR(255)" />
+            <column name="message" type="TEXT" />
+            <column name="number_of_tries" type="INT4" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="subject" type="VARCHAR(1024)" />
+            <column name="to_address" type="VARCHAR(1024)" />
+            <column defaultValueBoolean="true" name="user_generated"
+                type="BOOL" />
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

@@ -107,7 +107,7 @@ public class TdarConfiguration {
     public void initialize() {
         logger.debug("initializing filestore and setup");
 
-//        initializeTimeZoneInfo();
+        // initializeTimeZoneInfo();
 
         if (isProductionEnvironment()) {
             printConfig();
@@ -820,4 +820,22 @@ public class TdarConfiguration {
         return Integer.toString(assistant.getIntProperty("urlRewrite.refresh", -1));
     }
 
+    public String getRequestTokenName() {
+        return assistant.getStringProperty("auth.token.name", "session.tokenkey");
+    }
+
+    public Boolean allowAuthentication() {
+        return assistant.getBooleanProperty("allow.authentication", true);
+    }
+
+    public List<String> getAdminUsernames() {
+        String names_ = assistant.getProperty("allow.authentication", "");
+        List<String> names = new ArrayList<>();
+        for (String name : StringUtils.split(names_, ",")) {
+            if (StringUtils.isNotBlank(name)) {
+                names.add(StringUtils.trim(name));
+            }
+        }
+        return names;
+    }
 }

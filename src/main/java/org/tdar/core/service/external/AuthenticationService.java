@@ -154,8 +154,13 @@ public class AuthenticationService {
      * @param sessionData - the @SessionData object to intialize with the user's session / cookie information if logged in properly.
      */
     @Transactional
-    public AuthenticationStatus authenticatePerson(UserLogin userLogin, HttpServletRequest request, HttpServletResponse response,
+    public AuthenticationResult authenticatePerson(UserLogin userLogin, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
+        // deny authentication if we've turned it off in cases of system manintance
+        if (!TdarConfiguration.getInstance().allowAuthentication() || TdarConfiguration.getInstance().getAdminUsernames().contains(userLogin.getLoginUsername())) {
+            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
+        }
+        
         if (!isPossibleValidUsername(userLogin.getLoginUsername())) {
             throw new TdarRecoverableRuntimeException("auth.username.invalid");
         }
@@ -174,8 +179,17 @@ public class AuthenticationService {
             tdarUser.setUsername(userLogin.getLoginUsername());
             // how to pass along authentication information..?
             // username was in Crowd but not in tDAR? Redirect them to the account creation page
-            return AuthenticationStatus.NEW;
+            result.setStatus(AuthenticationStatus.NEW);
+            return result;
         }
+
+        setupAuthenticatedUser(tdarUser, sessionData, request);
+        personDao.registerLogin(tdarUser);
+        result.setStatus(AuthenticationStatus.AUTHENTICATED);
+        return result;
+    }
+
+    private void setupAuthenticatedUser(TdarUser tdarUser, SessionData sessionData, HttpServletRequest request) {
 
         if (!tdarUser.isActive()) {
             throw new TdarRecoverableRuntimeException("auth.cannot.deleted");
@@ -188,11 +202,9 @@ public class AuthenticationService {
             throw new TdarRecoverableRuntimeException("auth.cannot.notmember");
         }
 
-        logger.debug(String.format("%s (%s) logged in from %s using: %s", userLogin.getLoginUsername(), tdarUser.getEmail(), request.getRemoteAddr(),
+        logger.debug(String.format("%s (%s) logged in from %s using: %s", tdarUser.getUsername(), tdarUser.getEmail(), request.getRemoteAddr(),
                 request.getHeader("User-Agent")));
         createAuthenticationToken(tdarUser, sessionData);
-        personDao.registerLogin(tdarUser);
-        return AuthenticationStatus.AUTHENTICATED;
     }
 
     /**
@@ -245,8 +257,6 @@ public class AuthenticationService {
      * creates an authentication token (last step in authenticating); that tDAR can use for the entire session
      */
     public void createAuthenticationToken(TdarUser person, SessionData session) {
-        // AuthenticationToken token = AuthenticationToken.create(person);
-        // personDao.save(token);
         session.setTdarUser(person);
     }
 
@@ -325,8 +335,8 @@ public class AuthenticationService {
         if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
             try {
                 UserLogin userLogin = new UserLogin(findByUsername.getUsername(), reg.getPassword(), null);
-                AuthenticationStatus status = authenticatePerson(userLogin, request, response, sessionData);
-                if (status == AuthenticationStatus.AUTHENTICATED) {
+                AuthenticationResult result = authenticatePerson(userLogin, request, response, sessionData);
+                if (result.getStatus() == AuthenticationStatus.AUTHENTICATED) {
                     return new AuthenticationResult(AuthenticationResultType.VALID);
                 }
             } catch (Exception e) {
@@ -390,6 +400,16 @@ public class AuthenticationService {
         return result;
     }
 
+    public AuthenticationResult checkToken(String token, SessionData sessionData, HttpServletRequest request) {
+        AuthenticationResult result = provider.checkToken(token, request);
+        logger.debug("token check result: {}", result.getStatus());
+        if (result.getType().isValid()) {
+            TdarUser tdarUser = personDao.findByUsername(result.getTokenUsername());
+            setupAuthenticatedUser(tdarUser, sessionData, request);
+        }
+        return result;
+    }
+    
     private void sendWelcomeEmail(Person person) {
         Map<String, Object> result = new HashMap<>();
         final TdarConfiguration config = TdarConfiguration.getInstance();
@@ -444,11 +464,9 @@ public class AuthenticationService {
 
     @Transactional(readOnly = true)
     public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        // AuthenticationToken token = sessionData.getAuthenticationToken();
-        // token.setSessionEnd(new Date());
-        // personDao.update(token);
         sessionData.clearAuthenticationToken();
-        getAuthenticationProvider().logout(servletRequest, servletResponse);
+        String token = servletRequest.getParameter(TdarConfiguration.getInstance().getRequestTokenName());
+        getAuthenticationProvider().logout(servletRequest, servletResponse, token);
     }
 
     /**

@@ -181,7 +181,7 @@
                         </h3>
                         <#if result.institution?has_content><p>${result.institution.name}</p></#if>
                         <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
-                        <blockquote class="luceneScore"
+                        <blockquote class="luceneScore">
                         <b>score:</b>${result.score!""}<br> </blockquote>
                     </div>
                 </#if>

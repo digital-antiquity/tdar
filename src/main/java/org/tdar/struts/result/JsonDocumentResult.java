@@ -24,11 +24,8 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
 
 @Component
-public class JsonDocumentResult implements Result {
+public class JsonDocumentResult implements Result, TdarResultHeader {
 
-    private static final String FIELD_ERRORS = "fieldErrors";
-    private static final String ACTION_ERRORS = "actionErrors";
-    private static final String ERRORS_KEY = "errors";
     private static final long serialVersionUID = -869094415533475014L;
     public static final String UTF_8 = "UTF-8";
     public static final String CONTENT_TYPE = "application/json";
