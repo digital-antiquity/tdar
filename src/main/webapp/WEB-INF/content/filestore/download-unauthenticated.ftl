@@ -47,6 +47,7 @@
         <dd>${filename!"undefined"?html}</dd>
         </dl>
 </div>
+	<@auth.loginWarning />
 
     <div class="row">
         <div class="span9" id="divRegistrationSection">

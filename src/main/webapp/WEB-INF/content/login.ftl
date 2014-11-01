@@ -22,6 +22,7 @@ vim:sts=2:sw=2:filetype=jsp
 <div class="well">
 <#assign formAction = nav.getFormUrl("/login/process") >
 <@s.form id='loginForm' method="post" action="${formAction}" cssClass="form-horizontal}">
+	<@auth.loginWarning />
     <@auth.login>    
     <@s.hidden name="url" />
     <div class="form-actions">

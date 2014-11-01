@@ -391,3 +391,11 @@ xml.export.enabled=false
 # how often to re-read the URL Rewrite Filter
 # default: -1 (never)
 #urlRewrite.refresh= 
+
+# Allow non-admin users to login to the system -- useful for system maintenance to limit modifications
+# default:true
+#allow.authentication=false
+
+# Specify userids that are admins (for use above)
+# default:(none)
+# allow.authentication.admin.users=user1,user2

@@ -33,6 +33,8 @@
     </div>
     </@s.form>        
 <#else>
+	<@auth.loginWarning />
+
     <div class="row">
         <div class="span9" id="divRegistrationSection">
                 <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed"

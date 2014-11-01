@@ -48,6 +48,10 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
             username = username_;
         }
 
+        String message_ = (String)object_.get(ApiAuthenticationController.MESSAGE);
+        if (StringUtils.isNotBlank(message_)) {
+            setMessage(message_);;
+        }
         String apiKey_ = (String) object_.get(ApiAuthenticationController.API_TOKEN);
         if (StringUtils.isNotBlank(apiKey_)) {
             apiToken = apiKey_;
