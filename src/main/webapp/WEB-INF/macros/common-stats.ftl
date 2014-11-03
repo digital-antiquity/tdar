@@ -18,8 +18,8 @@
 			<th>Resource Type</th>
 			<th>Status</th>
 			<#list statsForAccount.rowLabels as label>
-				<#if statsForAccount.totals[label_index] != 0>
 					<th>${label}</th>
+				<#if statsForAccount.totals[label_index] != 0>
 				</#if>
 			</#list>
 		</tr>
@@ -30,8 +30,8 @@
 			<td>${row.resource.resourceType}</td>
 			<td>${row.resource.status}</td>
 			<#list row.data as dataPoint>
-				<#if statsForAccount.totals[dataPoint_index] != 0>
 					<td>${dataPoint!0?c}</td>
+				<#if statsForAccount.totals[dataPoint_index] != 0>
 				</#if>
 			</#list>
 		</tr>
@@ -39,8 +39,8 @@
 		<tr>
 			<th colspan="4">Grand Totals</th>
 			<#list statsForAccount.totals as dataPoint>
-				<#if statsForAccount.totals[dataPoint_index] != 0>
 					<th>${dataPoint!0?c}</th>
+				<#if statsForAccount.totals[dataPoint_index] != 0>
 				</#if>
 			</#list>
 	</tr>
