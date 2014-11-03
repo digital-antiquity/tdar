@@ -6,6 +6,7 @@
 
     <!-- setup the test database -->
     <include file="src/main/db/db-schema.xml" />
+    <include file="src/main/db/controlled-keywords.xml" />    
     <include file="/Users/abrin/Dropbox/da-tdar/dev-instance-data.xml" />
     <include file="src/test/db/changelog-integration-setup.xml" />
     <include file="src/main/db/db-keys-and-indexes.xml"/>
