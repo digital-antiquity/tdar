@@ -1265,7 +1265,6 @@
                         <include>**/*.java</include>
                     </includes>
                     <excludes>
-                        <exclude>**/SQLExtract.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/*.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
                         <exclude>**/PDFCombiner.java</exclude>
@@ -1424,7 +1423,6 @@
                         <include>**/*.java</include>
                     </includes>
                     <excludes>
-                        <exclude>**/SQLExtract.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/*.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
                         <exclude>**/PDFCombiner.java</exclude>
