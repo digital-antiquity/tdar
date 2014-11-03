@@ -1530,6 +1530,7 @@
                      <url>${javax.persistence.jdbc.url}</url>
                      <driver>${javax.persistence.jdbc.driver}</driver>
                      <verbose>false</verbose>
+                     <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                  </configuration>
                  <executions>
                      <execution>

@@ -13,7 +13,7 @@ hg pull
 hg update -C
 sudo rm /tmp/.wro4j/buildContext.properties
 sudo rmdir /tmp/.wro4j/
-mvn clean compile war:war -Palpha,minify-web-resources
+mvn clean compile war:war -Palpha,minify-web-resources,liquibase
 
 if [ $? -ne 0 ] 
   then
@@ -25,5 +25,6 @@ if [ $? -ne 0 ]
   else
     sudo service tomcat7 stop
     sudo rm -Rrf ~tdar/app/ROOT
+	cp /home/tdar/tdar.src/target/ROOT.war /home/tdar/app/
     sudo service tomcat7 restart
 fi
