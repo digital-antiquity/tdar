@@ -23,6 +23,8 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * <p>
@@ -434,5 +436,17 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (incomingCreator != null) {
             creator.setCreator(incomingCreator);
         }
+    }
+
+    @Transactional(readOnly=false)
+    public void deleteForController(Creator collection, String deletionReason, TdarUser authenticatedUser) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Transactional(readOnly=true)
+    public DeleteIssue getDeletionIssues(TextProvider textProvider, Creator persistable) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

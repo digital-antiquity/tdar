@@ -417,6 +417,10 @@ public class AuthorizationService implements Accessible {
      * Visible collections
      */
     public boolean canViewCollection(ResourceCollection collection, Person person) {
+        if (collection == null) {
+            return false;
+        }
+        
         if (collection.isShared() && !collection.isHidden()) {
             return true;
         }

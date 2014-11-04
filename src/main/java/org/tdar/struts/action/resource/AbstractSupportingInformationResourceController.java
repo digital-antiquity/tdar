@@ -163,11 +163,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         subcategories = new ArrayList<CategoryVariable>(categoryVariableService.find(categoryId).getSortedChildren());
     }
 
-    @Override
-    public Collection<? extends Persistable> getDeleteIssues() {
-        return getRelatedResources();
-    }
-
     public List<Resource> getRelatedResources() {
         if (relatedResources == null) {
             relatedResources = new ArrayList<Resource>();
@@ -178,18 +173,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             }
         }
         return relatedResources;
-    }
-
-    @Override
-    public String deleteCustom() {
-        List<Resource> related = getRelatedResources();
-        if (related.size() > 0) {
-            String titles = StringUtils.join(related, ',');
-            String message = getText("abstractSupportingInformationResourceController.remove_mappings", titles);
-            addActionErrorWithException(getText("abstractSupportingInformationResourceController.still_mapped"), new TdarRecoverableRuntimeException(message));
-            return ERROR;
-        }
-        return SUCCESS;
     }
 
     protected InformationResourceFileVersion getLatestUploadedTextVersion() {

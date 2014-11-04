@@ -54,6 +54,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
@@ -72,10 +73,13 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.GeneralCreatorQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.TdarActionException;
@@ -256,12 +260,20 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String searchInstitutions() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
         setMinLookupLength(0);
+        setLookupSource(LookupSource.INSTITUTION);
+        setMode("INSTITUTION");
+        InstitutionQueryBuilder iqb = new InstitutionQueryBuilder();
+        QueryPartGroup group = new QueryPartGroup(Operator.AND);
+        group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
+        group.append(new GeneralCreatorQueryPart(new Institution(getQuery())));
+        iqb.append(group);
         try {
-            return findInstitution(getQuery());
-        } catch (TdarRecoverableRuntimeException trex) {
+            handleSearch(iqb);
+        } catch (TdarRecoverableRuntimeException | ParseException trex) {
             addActionError(trex.getMessage());
             return INPUT;
         }
+        return SUCCESS;
     }
 
     @Action(value = "people", results = {
@@ -270,12 +282,21 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String searchPeople() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Person.class));
         setMinLookupLength(0);
+        setMode("PERSON");
+        setLookupSource(LookupSource.PERSON);
+        PersonQueryBuilder pqb = new PersonQueryBuilder();
+        QueryPartGroup group = new QueryPartGroup(Operator.AND);
+        group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
+        Person person = Person.fromName(getQuery());
+        group.append(new GeneralCreatorQueryPart(person));
+        pqb.append(group);
         try {
-            return findPerson(null, getQuery(), null, null, null, null);
-        } catch (TdarRecoverableRuntimeException trex) {
+            handleSearch(pqb);
+        } catch (TdarRecoverableRuntimeException | ParseException trex) {
             addActionError(trex.getMessage());
             return INPUT;
         }
+        return SUCCESS;
     }
 
     // FIXME: "explore" results belong in a separate controller.
@@ -618,12 +639,12 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             try {
                 sp.toQueryPartGroup(null);
                 getLogger().debug("inflating parameters for group {}", sp);
-            } catch(TdarRecoverableRuntimeException trex) {
+            } catch (TdarRecoverableRuntimeException trex) {
                 addActionError(trex.getMessage());
             }
         }
-        //in the situation where we could not reconstitute the search object graph, wipe out the search terms and show the error messages.
-        if(hasActionErrors()) {
+        // in the situation where we could not reconstitute the search object graph, wipe out the search terms and show the error messages.
+        if (hasActionErrors()) {
             groups.clear();
         }
 
@@ -1197,12 +1218,13 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     /**
      * Hint to view layer: true if it should display collection search results along with resource search results.
-     * @return true,  if rendering search results, the list of results is not empty, the collection search box is visible
+     * 
+     * @return true, if rendering search results, the list of results is not empty, the collection search box is visible
      */
     public boolean isShowCollectionResults() {
-       return getLookupSource() == LookupSource.RESOURCE
-               && collectionSearchBoxVisible
-               && collectionTotalRecords > 0;
+        return getLookupSource() == LookupSource.RESOURCE
+                && collectionSearchBoxVisible
+                && collectionTotalRecords > 0;
     }
 
 }

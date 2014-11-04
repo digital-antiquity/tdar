@@ -5,12 +5,15 @@ import java.util.WeakHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ReflectionService;
@@ -23,6 +26,7 @@ import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -51,18 +55,18 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     private final WeakHashMap<Method, RequiresTdarUserGroup> requiredGroupMethodCache = new WeakHashMap<>();
 
     @Autowired
-    private transient AuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authorizationService;
     @Autowired
     private transient AuthenticationService authenticationService;
     // A Spring AOP session scoped proxy is injected here that retrieves the appropriate SessionData bound to the HTTP Session.
     private SessionData sessionData;
 
-    public AuthorizationService getAuthenticationAndAuthorizationService() {
-        return authenticationAndAuthorizationService;
+    public AuthorizationService getAuthorizationService() {
+        return authorizationService;
     }
 
-    public void setAuthenticationAndAuthorizationService(AuthorizationService authenticationService) {
-        this.authenticationAndAuthorizationService = authenticationService;
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     @Autowired
@@ -70,7 +74,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     @Override
     public void destroy() {
-        authenticationAndAuthorizationService = null;
+        authorizationService = null;
         sessionData = null;
     }
 
@@ -114,7 +118,8 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             methodName = "execute";
         }
         Method method = action.getClass().getMethod(methodName);
-        if (sessionData.isAuthenticated()) {
+        Object[] token = (Object[]) ActionContext.getContext().getParameters().get(TdarConfiguration.getInstance().getRequestTokenName());
+        if (sessionData.isAuthenticated() || isValidToken(token)) {
             // FIXME: consider caching these in a local Map
             // check for group authorization
             RequiresTdarUserGroup classLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(action.getClass());
@@ -128,7 +133,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
                 group = classLevelRequiresGroupAnnotation.value();
             }
             TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
-            if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
+            if (getAuthorizationService().isMember(user, group)) {
                 // user is authenticated and authorized to perform requested action
                 return invocation.invoke();
             }
@@ -143,6 +148,20 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
         setReturnUrl(invocation);
         return Action.LOGIN;
+    }
+
+    private boolean isValidToken(Object[] token_) {
+        if (ArrayUtils.isEmpty(token_)) {
+            return false;
+        }
+        String token = (String)token_[0];
+        if (StringUtils.isNotBlank(token)) {
+            logger.debug("checking valid token: {}", token);
+            boolean result = authenticationService.checkToken((String)token, getSessionData(), ServletActionContext.getRequest()).getType().isValid();
+            logger.debug("token authentication result: {}", result);
+            return result;
+        }
+        return false;
     }
 
     protected void setReturnUrl(ActionInvocation invocation) {

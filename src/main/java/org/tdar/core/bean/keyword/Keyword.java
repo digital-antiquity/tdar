@@ -227,6 +227,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
             this.occurrence = occurrence;
         }
 
+        @JsonView(JsonLookupFilter.class)
         public String getDetailUrl() {
             return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
         }

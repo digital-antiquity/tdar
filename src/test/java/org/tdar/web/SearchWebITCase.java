@@ -158,6 +158,15 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testIdSearch() {
         gotoPage(SEARCH_RESULTS_BASE_URL + "?query=&id=" + TestConstants.PROJECT_ID);
     }
+	
+    @Test
+    public void testInstitutionSearch() {
+        gotoPage("/search/institutions?query=Arizona");
+    }
+    @Test
+    public void testPeopleSearch() {
+        gotoPage("/search/people?query=Kintigh");
+    }
 
     @Test
     public void testLatLongSearch() throws InterruptedException {

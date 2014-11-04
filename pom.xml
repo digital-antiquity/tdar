@@ -8,7 +8,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- managed versions -->
         <struts2.version>2.3.16.3</struts2.version>
-        <hibernate.version>4.3.6.Final</hibernate.version>
+        <hibernate.version>4.3.7.Final</hibernate.version>
         <hibernate.search.version>4.5.1.Final</hibernate.search.version>
         <spring.framework.version>4.1.1.RELEASE</spring.framework.version>
         <spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
@@ -32,11 +32,11 @@
         <jetty.stop.port>12919</jetty.stop.port>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>12.0</geotools.version>
+        <geotools.version>12.0.1</geotools.version>
         <tika.version>1.6</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
-        <jersey.version>1.18.1</jersey.version>
+        <jersey.version>1.18.2</jersey.version>
         <jackson.version>2.4.3</jackson.version>
         <slf4j.version>1.7.7</slf4j.version>
         <http-components.version>4.3.3</http-components.version>
@@ -237,7 +237,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.49h</version>
+            <version>1.49j</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
         </dependency>
         <dependency>
@@ -255,7 +255,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.3</version>
         </dependency>
         <dependency>
             <groupId>javax.media.jai</groupId>
@@ -1155,7 +1155,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.43.1</version>
+            <version>2.44.0</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -1265,7 +1265,6 @@
                         <include>**/*.java</include>
                     </includes>
                     <excludes>
-                        <exclude>**/SQLExtract.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/*.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
                         <exclude>**/PDFCombiner.java</exclude>
@@ -1424,7 +1423,6 @@
                         <include>**/*.java</include>
                     </includes>
                     <excludes>
-                        <exclude>**/SQLExtract.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/*.java</exclude>
                         <exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
                         <exclude>**/PDFCombiner.java</exclude>
@@ -1532,6 +1530,7 @@
                      <url>${javax.persistence.jdbc.url}</url>
                      <driver>${javax.persistence.jdbc.driver}</driver>
                      <verbose>false</verbose>
+                     <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                  </configuration>
                  <executions>
                      <execution>
@@ -2412,6 +2411,165 @@
 				</plugins>
 			</build>
         </profile>
+        <profile>
+            <id>liquibase-setup-dev-instance</id>
+                    <!--  mvn -Pliquibase-export clean compile  -->
+            <build>
+                <defaultGoal>liquibase:update</defaultGoal>
+                <resources>
+                    <resource>
+                        <!-- switch filtering off for all but the desired set -->
+                        <filtering>false</filtering>
+                        <directory>${basedir}/src/main/resources</directory>
+                        <excludes>
+                            <exclude>tdar.properties</exclude>
+                            <exclude>crowd.properties</exclude>
+                            <exclude>hibernate.properties</exclude>
+                            <exclude>local-wro-config.properties</exclude>
+                            <exclude>log4j.properties</exclude>
+                            <exclude>struts-local-settings.xml</exclude>
+                            <exclude>common.json</exclude>
+                            <exclude>liquibase.properties</exclude>
+                        </excludes>
+                    </resource>
+                    <resource>
+                        <!-- And on for the set of files -->
+                        <!-- Having to do it as mutually exclusive but that's how Maven works -->
+                        <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+                        <filtering>true</filtering>
+                        <directory>${basedir}/src/main/resources</directory>
+                        <includes>
+                            <include>liquibase.properties</include>
+                            <include>hibernate.properties</include>
+                        </includes>
+                    </resource>
+                </resources>
+                <filters>
+                    <filter>src/main/resources/hibernate.properties</filter>
+                    <filter>src/main/resources/liquibase.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/main/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <configuration>
+                            <username>${javax.persistence.jdbc.user}</username>
+                            <password>${javax.persistence.jdbc.password}</password>
+                            <url>${javax.persistence.jdbc.url}</url>
+                            <driver>${javax.persistence.jdbc.driver}</driver>
+                            <changeLogFile>src/test/db/setup-dev-instance.xml</changeLogFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>liquibase-setup-production-instance</id>
+                    <!--  mvn -Pliquibase-export clean compile  -->
+            <build>
+                <defaultGoal>liquibase:update</defaultGoal>
+                <resources>
+                    <resource>
+                        <!-- switch filtering off for all but the desired set -->
+                        <filtering>false</filtering>
+                        <directory>${basedir}/src/main/resources</directory>
+                        <excludes>
+                            <exclude>tdar.properties</exclude>
+                            <exclude>crowd.properties</exclude>
+                            <exclude>hibernate.properties</exclude>
+                            <exclude>local-wro-config.properties</exclude>
+                            <exclude>log4j.properties</exclude>
+                            <exclude>struts-local-settings.xml</exclude>
+                            <exclude>common.json</exclude>
+                            <exclude>liquibase.properties</exclude>
+                        </excludes>
+                    </resource>
+                    <resource>
+                        <!-- And on for the set of files -->
+                        <!-- Having to do it as mutually exclusive but that's how Maven works -->
+                        <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+                        <filtering>true</filtering>
+                        <directory>${basedir}/src/main/resources</directory>
+                        <includes>
+                            <include>liquibase.properties</include>
+                            <include>hibernate.properties</include>
+                        </includes>
+                    </resource>
+                </resources>
+                <filters>
+                    <filter>src/main/resources/hibernate.properties</filter>
+                    <filter>src/main/resources/liquibase.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/main/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <configuration>
+                            <username>${javax.persistence.jdbc.user}</username>
+                            <password>${javax.persistence.jdbc.password}</password>
+                            <url>${javax.persistence.jdbc.url}</url>
+                            <driver>${javax.persistence.jdbc.driver}</driver>
+                            <changeLogFile>src/main/db/setup-production-instance.xml</changeLogFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
     <profile>
         <id>liquibase</id>
             <build>

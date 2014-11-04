@@ -108,7 +108,7 @@
 
         <#else>
             <div data-tiplabel="Title"
-                 data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
+                 data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
                 title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
                 cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>

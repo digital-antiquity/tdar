@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.EntityService;
 
 /*
@@ -37,7 +38,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
     }
 
     @Override
@@ -151,4 +152,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             users.put(user.getUsername(), user.getUsername());
         }
     }
-}
+
+    @Override
+    public AuthenticationResult checkToken(String token, HttpServletRequest request) {
+        throw new TdarRuntimeException("error.not_implemented");
+    }}

@@ -512,7 +512,10 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         this.hidden = hidden;
     }
 
+    @JsonView(JsonLookupFilter.class)
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
+
+    abstract public Set<? extends Creator> getSynonyms(); 
 }

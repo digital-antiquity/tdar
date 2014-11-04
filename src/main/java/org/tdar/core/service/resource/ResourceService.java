@@ -40,17 +40,23 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
@@ -61,6 +67,7 @@ import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
+import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 
 @Service
@@ -82,6 +89,10 @@ public class ResourceService extends GenericService {
 
     @Autowired
     private DatasetDao datasetDao;
+    @Autowired
+    private ProjectDao projectDao;
+    @Autowired
+    private DataTableDao dataTableDao;
 
     @Autowired
     private AuthorizationService authenticationAndAuthorizationService;
@@ -747,5 +758,49 @@ public class ResourceService extends GenericService {
         saveHasResources(resource, shouldSaveResource, ErrorHandling.VALIDATE_SKIP_ERRORS, incomingResourceCreators,
                 resource.getResourceCreators(), ResourceCreator.class);
 
+    }
+
+    @Transactional(readOnly = true)
+    public DeleteIssue getDeletionIssues(TextProvider provider, Resource persistable) {
+        DeleteIssue issue = new DeleteIssue();
+        switch (persistable.getResourceType()) {
+            case PROJECT:
+                Set<InformationResource> inProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                if (CollectionUtils.isNotEmpty(inProject)) {
+                    issue.getRelatedItems().addAll(inProject);
+                    issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
+                    return issue;
+                }
+                return null;
+            case CODING_SHEET:
+            case ONTOLOGY:
+                List<DataTable> related = dataTableDao.findDataTablesUsingResource(persistable);
+                if (CollectionUtils.isNotEmpty(related)) {
+                    for (DataTable table : related) {
+                        if (!table.getDataset().isDeleted()) {
+                            issue.getRelatedItems().add(table.getDataset());
+                        }
+                    }
+                    issue.setIssue(provider.getText("abstractSupportingInformationResourceController.remove_mappings"));
+                    return issue;
+                }
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteForController(Resource resource, String reason, TdarUser authUser) {
+        if (StringUtils.isNotEmpty(reason)) {
+            ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, reason);
+            resource.getResourceNotes().add(note);
+            save(note);
+        } else {
+            reason = "reason not specified";
+        }
+        String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
+        logResourceModification(resource, authUser, logMessage);
+        delete(resource);
     }
 }

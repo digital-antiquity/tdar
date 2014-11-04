@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +48,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.download.DownloadController;
 import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.ExcelUnit;
@@ -415,12 +416,12 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     }
 
-    private Dataset setupDatasetWithCodingSheet(CodingSheet codingSheet) throws TdarActionException {
+    private Dataset setupDatasetWithCodingSheet(CodingSheet codingSheet) throws Exception {
         Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
         Long datasetId = dataset.getId();
         assertNotNull(datasetId);
         DataTableColumn period_ = dataset.getDataTables().iterator().next().getColumnByDisplayName("Period");
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
         datasetController.setId(datasetId);
         datasetController.prepare();
         datasetController.editColumnMetadata();
@@ -444,7 +445,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testBigDatasetSpansSheets() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException {
+    public void testBigDatasetSpansSheets() throws Exception {
         try {
             // setup coding sheet
             CodingSheet codingSheet = createAndSaveNewInformationResource(CodingSheet.class);
@@ -461,7 +462,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             assertNotNull(datasetId);
             DataTableColumn num = dataset.getDataTableByGenericName("ds1").getColumnByDisplayName("num");
             assertNotNull(num);
-            DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+            ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
             datasetController.setId(datasetId);
             datasetController.prepare();
             datasetController.editColumnMetadata();
@@ -520,7 +521,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testDatasetMappingPreservation() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
         Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
         Long datasetId = dataset.getId();
         DataTable table = dataset.getDataTables().iterator().next();
         datasetController.setId(datasetId);
@@ -541,7 +542,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         // column.
         assertNotNull("coding sheet should exist", period.getDefaultCodingSheet());
 
-        datasetController = generateNewInitializedController(DatasetController.class);
+        datasetController = generateNewInitializedController(ColumnMetadataController.class);
         table = dataset.getDataTables().iterator().next();
         datasetController.setId(datasetId);
         period_ = table.getColumnByDisplayName("Period");
@@ -620,7 +621,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertNotEmpty(ontology.getOntologyNodes());
         genericService.detachFromSession(ontology);
         Dataset dataset = setupAndLoadResource("src/test/resources/data_integration_tests/periods-modified-sm-01182011.xlsx", Dataset.class);
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
         controller.setId(dataset.getId());
         dataset = null;
         controller.prepare();

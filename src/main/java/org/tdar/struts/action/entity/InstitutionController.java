@@ -1,7 +1,6 @@
 package org.tdar.struts.action.entity;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -11,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -58,21 +56,8 @@ public class InstitutionController extends AbstractCreatorController<Institution
     }
 
     @Override
-    protected void delete(Institution persistable) {
-    }
-
-    @Override
     public Class<Institution> getPersistableClass() {
         return Institution.class;
-    }
-
-    @Override
-    public String loadViewMetadata() {
-        if (!isEditor()) {
-            CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), getPersistable());
-            getGenericService().saveOrUpdate(cvs);
-        }
-        return SUCCESS;
     }
 
     @Override

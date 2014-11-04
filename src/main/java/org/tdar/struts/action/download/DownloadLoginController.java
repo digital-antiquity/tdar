@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
@@ -57,8 +58,8 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            status = authenticationService.authenticatePerson(getDownloadUserLogin(), getServletRequest(), getServletResponse(),
-                    getSessionData());
+            AuthenticationResult result = authenticationService.authenticatePerson(getDownloadUserLogin(), getServletRequest(), getServletResponse(), getSessionData());
+            status = result.getStatus();
         } catch (Exception e) {
             addActionError(e.getMessage());
             status = AuthenticationStatus.ERROR;

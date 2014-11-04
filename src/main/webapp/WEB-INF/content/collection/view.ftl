@@ -32,7 +32,7 @@
 </div>
 
     <#if editable>
-        <@nav.toolbar "collection" "view">
+        <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
             namespace="collection"
             action="add?parentId=${id?c}"
@@ -42,7 +42,7 @@
             includeResourceId=false
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
-        </@nav.toolbar>
+        </@nav.collectionToolbar>
     <#else>
         <@nav.toolbar "collection" "view" />
     </#if>
@@ -51,6 +51,10 @@
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 
     <#if (!resourceCollection.hidden || viewable)>
+    <#if editor>
+    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="stats?id=${id?c}"/>">ADMIN</a></div>
+    </#if>
+
         <#if !collections.empty>
         <!-- Don't show header if header doesn't exist -->
         <div id="sidebar-right" parse="true">

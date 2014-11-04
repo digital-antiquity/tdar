@@ -22,7 +22,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.struts.action.resource.DatasetController;
+import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.data.ResultMetadataWrapper;
 
 import com.opensymphony.xwork2.Action;

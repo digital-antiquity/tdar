@@ -11,14 +11,18 @@
 
 </head>
 <body>
-    <@nav.toolbar "${account.urlNamespace}" "view">
+    <@nav.billingToolbar "${account.urlNamespace}" "view">
         <@nav.makeLink "cart" "add?accountId=${account.id?c}" "add invoice" "add" "" false false />
         <#if administrator>
             <@nav.makeLink "billing" "updateQuotas?id=${account.id?c}" "Reset Totals" "add" "" false false />
             <@nav.makeLink "billing" "fix?id=${account.id?c}" "Fix Initial Billing" "add" "" false false />
         </#if>
-    </@nav.toolbar>
+    </@nav.billingToolbar>
 <h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
+
+    <#if editor>
+    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="stats?id=${id?c}"/>">ADMIN</a></div>
+    </#if>
 
     <@view.pageStatusCallout />
 

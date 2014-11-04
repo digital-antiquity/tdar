@@ -144,12 +144,6 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public Persistable getPersistable() {
         return resource;
     }

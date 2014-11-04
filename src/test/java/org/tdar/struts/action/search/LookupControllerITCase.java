@@ -32,7 +32,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.resource.ProjectController;
+import org.tdar.struts.action.project.ProjectController;
 
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
