@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /**
  * Created by jimdevos on 10/28/14.
  */
-@ParentPackage("default")
+@ParentPackage("default")  //FIXME: change to secured package
 @Namespace("/workspace/ajax")
 @Component
 @Scope("prototype")
@@ -29,9 +29,25 @@ public class IntegrationAjaxController  extends AuthenticationAware.Base impleme
     }
 
     @Action(value = "find-datasets", results={
-            @Result(name="success", type="jsonresult")
+            @Result(name="success", type="stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "datasetSearchJsonInputStream"
+                    }        )
     })
     public String findDatasets() {
+        return "success";
+    }
+
+
+    @Action(value = "find-ontologies", results={
+            @Result(name="success", type="stream",
+                    params = {
+                    "contentType", "application/json",
+                    "inputName", "ontologySearchJsonInputStream"
+            }        )
+    })
+    public String findOntologies() {
         return "success";
     }
 
@@ -81,6 +97,16 @@ public class IntegrationAjaxController  extends AuthenticationAware.Base impleme
     //FIXME: replace placeholder data
     public InputStream getOntologyDetailsJsonInputStream() {
         return getClass().getClassLoader().getResourceAsStream("integration-ajax-samples/get-ontology-details.json");
+    }
+
+    //FIXME: replace placeholder data
+    public InputStream getDatasetSearchJsonInputStream() {
+        return getClass().getClassLoader().getResourceAsStream("integration-ajax-samples/search-datasets.json");
+    }
+
+    //FIXME: replace placeholder data
+    public InputStream getOntologySearchJsonInputStream() {
+        return getClass().getClassLoader().getResourceAsStream("integration-ajax-samples/search-ontologies.json");
     }
 
 
