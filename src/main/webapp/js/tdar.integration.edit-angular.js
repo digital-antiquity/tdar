@@ -59,9 +59,13 @@
 
                 //model.close is a promise that is resolved when the modal closes
                 modal.close.then(function(result){
-                    modal.element.modal('hide');
-                    console.log("modal closed.  result:%s", result);
+                    //modal.element.modal('hide');
+                    console.log("modal destroyed  result:%s", result);
                     $scope.message = result ? "result was yes" : "result was no";
+
+                    if(options.close) {
+                        options.close(result);
+                    }
                 });
 
             //if the service cannot create the modal or catches an exception, the promise calls an error callback
@@ -92,9 +96,17 @@
             console.log(JSON.stringify(integration, null, 4));
         };
 
+        this.addDatasets = function(datsetIds) {
+
+        };
+
+        this.addIntegrationColumns = function(ontologyIds) {
+
+        };
+
         this.integrateClicked = function() {
             console.log('integrate clicked');
-        }
+        };
 
         this.addDatasetsClicked = function(arg) {
             console.log('Add Datasets clicked');
@@ -109,10 +121,15 @@
                         if(item.sibling_count > 1) {
                             result.title += ' - ' + item.display_name;
                         }
+                        result.id = item.data_table_id;
                         result.submitter_display_name  = item.submitter_display_name;
                         result.date_registered = item.date_registered;
                         return result;
-                    });
+                    })
+                },
+                close: function(data) {
+                    console.debug("datasetsClicked.close::");
+                    self.addDatasets(data);
                 }
 
             });
@@ -125,7 +142,10 @@
                 title: "Add Ontologies",
                 searchType: "ontology",
                 url: "/workspace/ajax/find-ontologies",
-                categoryFilter: true
+                categoryFilter: true,
+                close: function(data) {
+                    self.addIntegrationColumns();
+                }
             });
         };
 
@@ -140,9 +160,8 @@
     }]);
 
     //Controller that drives the add-integration-column controller
-    //FIXME: given the similarity we should probably refactor this to use one controller for both dialogs (or at least re-use the same template)
     app.controller('ModalDialogController', ['$scope', '$http', 'close', 'options',  function($scope, $http, close, options){
-        var url = options.url;
+        var url = options.url, closeWait = 500;
         console.debug("ModalDialogController:: url:%s", url);
         $scope.title = options.title;
         $scope.filter = new SearchFilter();
@@ -195,6 +214,7 @@
         $scope.confirm = function(obj) {
             var data = JSON.stringify(obj);
             console.info("confirm:: %s", data);
+            close(obj, closeWait);
         }
 
         //convenience function - true if specified item is in the selecteditems list
@@ -225,8 +245,6 @@
             $scope.search();
         }, true);
 
-        //modal init;
-        //$scope.search();
     }]);
 
 console.log("init done");
