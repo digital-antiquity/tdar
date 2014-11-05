@@ -23,12 +23,9 @@ public class IntegrationAjaxController  extends AuthenticationAware.Base impleme
 
     private static final long serialVersionUID = 0x01;
     private IntegrationSearchFilter filter = new IntegrationSearchFilter();
-    private InputStream inputStream;
 
     @Override
     public void prepare() {
-//        inputStream = getClass().getClassLoader().getResourceAsStream("integration-ajax-samples/get-table-details.json");
-        getLogger().debug("inputstream is null: {}",  inputStream == null);
     }
 
     @Action(value = "find-datasets", results={
@@ -42,17 +39,32 @@ public class IntegrationAjaxController  extends AuthenticationAware.Base impleme
         @Result(name="success", type="stream",
                 params = {
                         "contentType", "application/json",
-                        "inputName", "inputStream"
+                        "inputName", "tableDetailsJsonInputStream"
                 }        )
     })
     public String dataTableDetails() {
         return "success";
     }
 
+    @Action(value = "ontology-details", results={
+            @Result(name="success", type="stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "ontologyDetailsJsonInputStream"
+                    }        )
+    })
+    public String ontologyDetails() {
+        return "success";
+    }
+
+
+
     public IntegrationSearchFilter getFilter() {
         return filter;
     }
 
+
+    //FIXME: replace placeholder data
     public Object getJsonResult() {
         return new ArrayList<String>() {{
             add("Dataset 1");
@@ -61,9 +73,16 @@ public class IntegrationAjaxController  extends AuthenticationAware.Base impleme
         }};
     }
 
-    public InputStream getInputStream() {
+    //FIXME: replace placeholder data
+    public InputStream getTableDetailsJsonInputStream() {
         return getClass().getClassLoader().getResourceAsStream("integration-ajax-samples/get-table-details.json");
     }
+
+    //FIXME: replace placeholder data
+    public InputStream getOntologyDetailsJsonInputStream() {
+        return getClass().getClassLoader().getResourceAsStream("integration-ajax-samples/get-ontology-details.json");
+    }
+
 
 
 }
