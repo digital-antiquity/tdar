@@ -100,7 +100,21 @@
             console.log('Add Datasets clicked');
             openModal({
                 title: "Add Datasets",
-                searchType: "dataset"
+                searchType: "dataset",
+                url: "/workspace/ajax/find-datasets",
+                transformData: function(data) {
+                    return data.map(function(item){
+                        var result = item;
+                        result.title = item.dataset_title;
+                        if(item.sibling_count > 1) {
+                            result.title += ' - ' + item.display_name;
+                        }
+                        result.submitter_display_name  = item.submitter_display_name;
+                        result.date_registered = item.date_registered;
+                        return result;
+                    });
+                }
+
             });
         };
 
@@ -110,6 +124,7 @@
             openModal({
                 title: "Add Ontologies",
                 searchType: "ontology",
+                url: "/workspace/ajax/find-ontologies",
                 categoryFilter: true
             });
         };
@@ -127,31 +142,53 @@
     //Controller that drives the add-integration-column controller
     //FIXME: given the similarity we should probably refactor this to use one controller for both dialogs (or at least re-use the same template)
     app.controller('ModalDialogController', ['$scope', '$http', 'close', 'options',  function($scope, $http, close, options){
+        var url = options.url;
+        console.debug("ModalDialogController:: url:%s", url);
         $scope.title = options.title;
         $scope.filter = new SearchFilter();
         $scope.selectedItems = [];
+        $scope.results = [];
 
         //initialize lookup lists
         $scope.projects = _documentData.allProjects;
         $scope.collections = _documentData.allCollections;
         $scope.categories = _documentData.allCategories;
 
+        $scope.categoryFilter = options.categoryFilter;
 
-        //perform initial search
-        $scope.results = [];
-        for(var i = 0; i < 20; i++) {
-            $scope.results.push({
-                id: i,
-                title: 'sample ontology title',
-                author: 'sample ontology author',
-                date: 'mm/dd/yyyy'
+        //when non-null
+        $scope.errorMessage = null;
+
+        //ajax search fires up at launch and whenever search terms change
+        $scope.search = function() {
+            console.debug("$scope.search::");
+            console.debug(options);
+            var config = {};
+            config.params = $.extend({}, $scope.filter);
+
+            var promise = $http.get(options.url, config);
+            promise.success(function(data){
+                //transform date strings into dates
+                //FIXME: ajax should return date in ISO 8601 format
+                data.forEach(function(item) {
+                    item.date = new Date(item.date_registered);
+                    //console.log("translating: %s", item);
+                });
+
+                if(options.transformData) {
+                    $scope.results = options.transformData(data);
+                } else {
+                    $scope.results = data;
+                }
+
             });
-        }
+
+        };
 
         //update the filter whenever user updates filter UI
         $scope.updateFilter = function() {
             var data = JSON.stringify($scope.filter, null, 4);
-            console.info("updateFilter:: %s", data);
+            $scope.search();
         }
 
         //called when user clicks 'Add Selected Items'
@@ -180,7 +217,16 @@
                 items.push(itemId);
             }
 
-        }
+        };
+
+        //Execute a search() whenever user updates form control bound to the filter object
+        $scope.$watch('filter', function() {
+            console.log("filter changed");
+            $scope.search();
+        }, true);
+
+        //modal init;
+        //$scope.search();
     }]);
 
 console.log("init done");

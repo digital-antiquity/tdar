@@ -6,7 +6,8 @@
     "category_parent_name": "Fauna",
     "category_name": "Element",
     "submitter_id": 8344,
-    "submitter_display_name": "adam brin"
+    "submitter_display_name": "adam brin",
+    "date_registered": "2014-10-06 15:32:40.655000"
 },
     {
         "id": 3029,
@@ -16,7 +17,9 @@
         "category_parent_name": "Fauna",
         "category_name": "Pathologies",
         "submitter_id": 6,
-        "submitter_display_name": "Keith Kintigh"
+        "submitter_display_name": "Keith Kintigh",
+        "date_registered": "2010-07-09 15:35:06.014000"
+
     },
     {
         "id": 4294,
@@ -26,7 +29,9 @@
         "category_parent_name": "Fauna",
         "category_name": "Taxon",
         "submitter_id": 8344,
-        "submitter_display_name": "adam brin"
+        "submitter_display_name": "adam brin",
+        "date_registered": "2014-10-06 15:33:14.298000"
+
     },
     {
         "id": 3479,
@@ -36,6 +41,8 @@
         "category_parent_name": "Fauna",
         "category_name": "Taxon",
         "submitter_id": 6,
-        "submitter_display_name": "Keith Kintigh"
+        "submitter_display_name": "Keith Kintigh",
+        "date_registered": "2010-02-17 11:14:59.623000"
+
     }
 ]

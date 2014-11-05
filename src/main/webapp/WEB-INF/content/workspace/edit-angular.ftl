@@ -154,7 +154,7 @@
             -->
             <div class="row">
                 <div class="span10">
-                    <form id="frmModal" class="form-horizontal form-condensed">
+                    <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur':0} }">
                         <fieldset>
                             <legend>Filters</legend>
                             <div class="control-group">
@@ -175,7 +175,7 @@
                                 </div>
                             </div>
 
-                            <div class="control-group">
+                            <div class="control-group" ng-show="categoryFilter">
                                 <label class="control-label">Category</label>
                                 <div class="controls">
                                     <select name="filter.categoryId" class="input-xlarge"
@@ -216,8 +216,8 @@
                                                 ng-click="toggleSelection(result.id, this)">
                                     </td>
                                     <td>{{result.title}}</td>
-                                    <td>{{result.author}}</td>
-                                    <td>{{result.date}}</td>
+                                    <td>{{result.submitter_display_name}}</td>
+                                    <td>{{result.date | date : 'short'}}</td>
                                 </tr>
                                 </tbody>
                             </table>
