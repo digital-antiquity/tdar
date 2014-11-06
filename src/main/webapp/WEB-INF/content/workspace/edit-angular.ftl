@@ -66,9 +66,9 @@
                         <label class="control-label">Datasets & Ontologies</label>
                         <div class="controls controls-row">
                             <div class="span5">
-                                <label>Selected Datasets</label>
+                                <label>Selected Datasets: {{ctrl.integration.datatables.length}}</label>
                                 <div>
-                                    <select size="10" class="input-xlarge"></select>
+                                    <select size="10" class="input-xlarge" multiple  ng-model="selectedDatatables" ng-options="datatable.display_name for datatable in ctrl.integration.datatables"></select>
                                 </div>
                                 <button type="button" class="btn input-xlarge"
                                         data-bind="click: removeSelectedDatasetClicked" ng-click="ctrl.removeSelectedDatasetClicked()">Remove Selected Dataset</button>

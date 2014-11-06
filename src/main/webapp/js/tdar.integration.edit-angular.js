@@ -7,9 +7,13 @@
     //Our integration "Model" object.
     function Integration() {
         var self = this;
+        var datasetMap = {};
         self.title = "";
         self.description = "";
         self.columns = [];
+        self.datatables = [];
+        self.ontologies = [];
+
     }
 
     //model for search filter that can be used for datasets or ontologies
@@ -36,12 +40,53 @@
         });
         return map;
     }
-
+    //fixme: move to init section (or consider moving this to angular 'service')
     _documentData = _loadDocumentData();
 
 
+    /**
+     * Add specified object to specified array if specified array does not already contain the object.
+     *
+     * @param arr an array of objects
+     * @param obj the object to potentially add to the array
+     * @param propName the property to consider when looking for duplicate items. If undefined, function uses strict identity to find dupes.
+     * @private
+     */
+    function _setAdd(arr, obj, propName) {
+        var fn, dupes=[];
+        if(propName) {
+            fn = function(testObj) {
+                return testObj[propName] === obj[propName]
+            };
+        } else {
+            fn = function(testObj) {
+                return testObj === obj;
+            }
+        }
+        dupes = arr.filter(fn);
+        if(dupes.length === 0) {
+            arr.push(obj);
+        }
+        return dupes.length === 0
+    }
+
+    /**
+     * Remove specified item from the specified array
+     * @param arr
+     * @param item
+     * @returns {*} original, mutated array
+     * @private
+     */
+    function _setRemove(arr, item) {
+        if(arr.indexOf(item) === -1) return arr;
+        arr.splice(arr.indexOf(item), 1);
+        return arr;
+    }
+
+
+
     //top-level controller for the integration viewmodel
-    app.controller('IntegrationCtrl', ['$scope', 'ModalService', function($scope, ModalService){
+    app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', function($scope, ModalService, $http){
         var self = this,
             integration = new Integration(),
             openModal;
@@ -96,7 +141,21 @@
             console.log(JSON.stringify(integration, null, 4));
         };
 
-        this.addDatasets = function(datsetIds) {
+        this.addDatasets = function(datasetIds) {
+            if(datasetIds.length === 0) return;
+
+            $http.get('/workspace/ajax/table-details', {
+                "params": {
+                    "datasetIds": datasetIds
+                }
+            }).success(function(data) {
+                data.forEach(function(datatable) {
+
+                    _setAdd(self.integration.datatables, datatable, "data_table_id");
+                    console.debug("adding %s to datatable list. new size:%s", datatable, integration.datatables.length);
+                });
+            });
+
 
         };
 
@@ -154,8 +213,15 @@
             integration.columns.push({name: 'display column: ' + integration.columns.length })
         };
 
-        this.removeSelectedDatasetClicked = function(arg) {
-            console.log('remove selected dataset clicked');
+        this.removeSelectedDatasetClicked = function() {
+            if($scope.selectedDatatables) {
+                $scope.selectedDatatables.forEach(function(item){
+                    console.debug("removing %s from %s (index:%s)", item , self.integration.datatables, self.integration.datatables.indexOf(item));
+                    _setRemove(self.integration.datatables, item);
+                });
+            } else {
+                console.warn("removeSelectedDatasetClicked:: no tables specified")
+            }
         }
     }]);
 
@@ -246,8 +312,6 @@
         }, true);
 
     }]);
-
-console.log("init done");
 
     //FIXME: these are hacks to auto-open the various popups
     function _hashUrl() {
