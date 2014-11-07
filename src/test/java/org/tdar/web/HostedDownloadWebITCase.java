@@ -1,20 +1,30 @@
 package org.tdar.web;
 
-import com.gargoylesoftware.htmlunit.*;
-import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import com.opensymphony.xwork2.interceptor.annotations.After;
-import com.opensymphony.xwork2.interceptor.annotations.Before;
-import org.junit.Assert;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.utils.SimpleHttpUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import static org.apache.commons.httpclient.HttpStatus.SC_OK;
+import static org.apache.http.HttpHeaders.REFERER;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -22,38 +32,74 @@ import static org.junit.Assert.assertThat;
  */
 public class HostedDownloadWebITCase extends AbstractWebTestCase {
 
-    String HEADER_KEY = "Referer";
-    String HEADER_VALUE = "http://www.samplewebsite.info/gallery";
+    String REFERER_URL = "http://www.samplewebsite.info/gallery";
     String API_KEY_KEY = "apikey";
     String API_KEY_VALUE = "abc123";
-    String IRFV_ID = "5692";
-    String IRF_FILENAME = "fig-27-benigno-t-argote-stone-tool_lg.jpg";
 
+    long IRFV_ID = 68L;
+    String IRF_FILENAME = "tag-fauna-ontology---taxon.owl";
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+    TdarConfiguration tdarConfig = TdarConfiguration.getInstance();
+
+    CloseableHttpClient httpclient;
+
+    public HostedDownloadWebITCase() {
+    }
+
+    URIBuilder uriBuilder() {
+        return new URIBuilder();
+    }
+
+    HttpGet httpGet(URI uri) {
+        return new HttpGet(uri);
+    }
 
     @Before
     public void setupHostedDownloadTest() {
-        //TODO: code that allows hosted downloads for specified apikey goes here
+        httpclient = SimpleHttpUtils.createClient();
     }
 
     @After
     public void teadownhostedDownloadTest() {
-        //TODO: code that removes hosted download entry for specified apikey
+        try {
+            httpclient.close();
+        } catch (IOException mostlyignored) {
+            logger.info("failed to close: {}", mostlyignored);
+        }
     }
 
     @Test @Ignore
-    public void testHostedDownloadSuccess() throws IOException {
-        WebClient client = new WebClient(BrowserVersion.FIREFOX_24);
-        //TODO: figure out how to modify request header only for a single request only  - this call adds the header to every request.
-        client.addRequestHeader(HEADER_KEY, HEADER_VALUE);
+    /**
+     * Perform a hosted download request with valid key, referrer, and file ID.
+     */
+    public void testHostedDownloadSuccess() throws URISyntaxException, IOException {
+        //sanity check: make sure the file exists
+        InformationResourceFileVersion irfv = genericService.find(InformationResourceFileVersion.class, IRFV_ID);
+        assertNotNull(irfv);
 
-        String url = getBaseUrl() + "hosted-download/" + IRFV_ID + "?" + API_KEY_KEY + "=" + API_KEY_VALUE ;
-        getLogger().info("url: {}", url);
+        HttpGet httpget = httpGet(uriBuilder()
+                .setScheme("https")
+                .setHost(tdarConfig.getHostName())
+                .setPort(tdarConfig.getPort())
+                .setPath("/download/hosted/" + IRFV_ID)
+                .addParameter(API_KEY_KEY, API_KEY_VALUE)
+                .build());
+        httpget.addHeader(REFERER, REFERER_URL);
 
-        //if not successful, htmlunit throws exception
-        Page page = client.getPage(url);
+        try (CloseableHttpResponse response = httpclient.execute(httpget)) {
+            //make sure that the server gave us a successful response
+            assertThat(response.getStatusLine().getStatusCode(), is(SC_OK));
+
+            HttpEntity entity = response.getEntity();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            //assert that a download actually occurred
+            assertThat( entity.getContentLength(), greaterThan(0L));
+            entity.writeTo(baos);
+            assertThat("filesize matches response.entity.contentLength", (long)baos.size(), is(entity.getContentLength()));
+        }
     }
-
 }
 
 
