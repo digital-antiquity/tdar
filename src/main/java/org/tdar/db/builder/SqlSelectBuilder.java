@@ -52,6 +52,9 @@ public class SqlSelectBuilder extends AbstractSqlTools implements Serializable {
             sb.append(", ");
         }
         joinListWithCommas(sb, columns, true);
+        if (CollectionUtils.isEmpty(columns)) {
+        	sb.append(" * ");
+        }
         sb.append(" FROM ");
         joinListWithCommas(sb, tableNames, false);
         boolean first = true;

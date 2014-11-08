@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public interface PostgresConstants {
+    public static final String DROP_STATE_ERROR_CODE = "42P01";
+    public static final int MAX_VARCHAR_LENGTH = 500;
+    public static final int MAX_COLUMN_NAME_SIZE = 63;
+
     HashSet<String> RESERVED_COLUMN_NAMES = new HashSet<String>(
             Arrays.asList("a", "abort", "abs", "absent", "absolute", "access", "according", "action", "ada", "add", "admin", "after", "aggregate", "all",
                     "allocate", "also", "alter", "always", "analyse", "analyze", "and", "any", "are", "array", "array_agg", "array_max_cardinality", "as",

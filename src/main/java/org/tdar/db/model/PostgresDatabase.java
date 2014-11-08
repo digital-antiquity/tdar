@@ -84,14 +84,8 @@ import com.opensymphony.xwork2.TextProvider;
 @Component
 public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
 
-    private static final String DROP_STATE_ERROR_CODE = "42P01";
-    public static final int MAX_VARCHAR_LENGTH = 500;
-    public static final int MAX_COLUMN_NAME_SIZE = 63;
-    private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
-    private static final String SELECT_ROW_FROM_TABLE = "SELECT * FROM %s WHERE " + TDAR_ID_COLUMN + " = %s";
     private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
-    private static final String SELECT_ALL_FROM_COLUMN = "SELECT \"%s\" FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=?";
     // private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=\'%s\'";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
@@ -110,7 +104,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String ORIGINAL_KEY = "_original_";
     private static final String INSERT_STATEMENT = "INSERT INTO %1$s (%2$s) VALUES(%3$s)";
     private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
-    private static final String CREATE_TEMPORARY_TABLE = "CREATE TEMPORARY TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
     public static final String DEFAULT_TYPE = "text";
 
@@ -227,12 +220,12 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Deprecated
     public <T> T selectAllFromTable(DataTable table,
             ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
-        String selectColumns = "*";
+    	SqlSelectBuilder builder = new SqlSelectBuilder();
         if (!includeGeneratedValues) {
-            selectColumns = "\"" + StringUtils.join(table.getColumnNames(), "\", \"") + "\"";
+        	builder.getColumns().addAll(table.getColumnNames());
         }
-
-        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE, selectColumns, table.getName()), resultSetExtractor);
+        builder.getTableNames().add(table.getName());
+        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
 
     @Override
@@ -939,8 +932,10 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         if (column == null) {
             return Collections.emptyList();
         }
-        String sql = String.format(SELECT_ALL_FROM_COLUMN, column.getName(), column.getDataTable().getName());
-        return jdbcTemplate.queryForList(sql, String.class);
+    	SqlSelectBuilder builder = new SqlSelectBuilder();
+        	builder.getColumns().add(column.getName());
+        builder.getTableNames().add(column.getDataTable().getName());
+        return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
 
     @Override
@@ -1013,9 +1008,12 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
-        String sql = String.format(SELECT_ROW_FROM_TABLE, dataTable.getName(), rowId);
-        logger.debug(sql);
-        return jdbcTemplate.query(sql, resultSetExtractor);
+    	SqlSelectBuilder builder = new SqlSelectBuilder();
+        builder.getTableNames().add(dataTable.getName());
+        WhereCondition where = new WhereCondition(DataTableColumn.TDAR_ROW_ID.getName());
+        where.setValue(rowId);
+		builder.getWhere().add(where);
+        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
 
     @Override
