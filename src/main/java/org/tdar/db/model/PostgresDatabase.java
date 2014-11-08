@@ -62,6 +62,8 @@ import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.builder.AbstractSqlTools;
 import org.tdar.db.builder.SqlSelectBuilder;
 import org.tdar.db.builder.WhereCondition;
+import org.tdar.db.builder.WhereCondition.Condition;
+import org.tdar.db.builder.WhereCondition.ValueCondition;
 import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.odata.server.AbstractDataRecord;
@@ -84,16 +86,9 @@ import com.opensymphony.xwork2.TextProvider;
 @Component
 public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
 
-    private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=?";
-    // private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=\'%s\'";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
-    private static final String SELECT_DISTINCT = "SELECT DISTINCT \"%s\" FROM %s ORDER BY \"%s\"";
-    private static final String SELECT_DISTINCT_WITH_COUNT = "SELECT DISTINCT \"%s\" as val, count(" + TargetDatabase.TDAR_ID_COLUMN
-            + ") as count FROM %s group by \"%s\" ORDER BY \"%s\"";
-    private static final String SELECT_DISTINCT_NOT_BLANK = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL AND \"%s\" !='' ORDER BY \"%s\"";
-    private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='No coding sheet value for code: ' || \"%s\" WHERE \"%s\" IS NULL";
     private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
@@ -220,25 +215,25 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Deprecated
     public <T> T selectAllFromTable(DataTable table,
             ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
-    	SqlSelectBuilder builder = new SqlSelectBuilder();
+        SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
+        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+    }
+
+    private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
+        SqlSelectBuilder builder = new SqlSelectBuilder();
         if (!includeGeneratedValues) {
-        	builder.getColumns().addAll(table.getColumnNames());
+            builder.getColumns().addAll(table.getColumnNames());
         }
         builder.getTableNames().add(table.getName());
-        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+        return builder;
     }
 
     @Override
     public <T> T selectAllFromTableInImportOrder(DataTable table,
             ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
-        String selectColumns = "*";
-        if (!includeGeneratedValues) {
-            selectColumns = "\"" + StringUtils.join(table.getColumnNames(), "\", \"") + "\"";
-        }
-
-        String sql = String.format(SELECT_ALL_FROM_TABLE_WITH_ORDER, selectColumns, table.getName());
-        logger.debug(sql);
-        return jdbcTemplate.query(sql, resultSetExtractor);
+        SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
+        builder.getOrderBy().add(DataTableColumn.TDAR_ROW_ID.getName());
+        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
 
     @Override
@@ -246,8 +241,12 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
-        String distinctSql = String.format(SELECT_DISTINCT, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(), dataTableColumn.getName());
-        return jdbcTemplate.queryForList(distinctSql, String.class);
+        SqlSelectBuilder builder = new SqlSelectBuilder();
+        builder.setDistinct(true);
+        builder.getColumns().add(dataTableColumn.getName());
+        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getOrderBy().add(dataTableColumn.getName());
+        return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
 
     @Override
@@ -255,15 +254,19 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         if (dataTableColumn == null) {
             return Collections.emptyMap();
         }
-        String distinctSql = String.format(SELECT_DISTINCT_WITH_COUNT, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(),
-                dataTableColumn.getName(),
-                dataTableColumn.getName());
+        SqlSelectBuilder builder = new SqlSelectBuilder();
+        builder.setDistinct(true);
+        builder.setCountColumn(dataTableColumn.getName());
+        builder.getGroupBy().add(dataTableColumn.getName());
+        builder.getColumns().add(dataTableColumn.getName());
+        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getOrderBy().add(dataTableColumn.getName());
 
         final Map<String, Long> toReturn = new HashMap<String, Long>();
-        query(distinctSql, new RowMapper<Object>() {
+        query(builder.toSql(), new RowMapper<Object>() {
             @Override
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                toReturn.put(rs.getString("val"), rs.getLong("count"));
+                toReturn.put(rs.getString(0), rs.getLong(1));
                 return null;
             }
         });
@@ -275,15 +278,23 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
-        String templateSql = SELECT_DISTINCT_NOT_BLANK;
-        if (dataTableColumn.getColumnDataType().isNumeric()) {
-            templateSql = SELECT_DISTINCT_NOT_BLANK_NUM;
+        SqlSelectBuilder builder = new SqlSelectBuilder();
+        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.setDistinct(true);
+        String name = dataTableColumn.getName();
+        builder.getOrderBy().add(name);
+        builder.getColumns().add(name);
+        WhereCondition notNull = new WhereCondition(name);
+        notNull.setValueCondition(ValueCondition.NOT_EQUALS);
+        WhereCondition notBlank = new WhereCondition(name);
+        notBlank.setValueCondition(ValueCondition.NOT_EQUALS);
+        notBlank.setCondition(Condition.AND);
+        builder.getWhere().add(notNull);
+        if (!dataTableColumn.getColumnDataType().isNumeric()) {
+            builder.getWhere().add(notBlank);
         }
 
-        String distinctSql = String.format(templateSql, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(),
-                dataTableColumn.getName(), dataTableColumn.getName(), dataTableColumn.getName());
-        logger.debug(distinctSql);
-        return jdbcTemplate.queryForList(distinctSql, String.class);
+        return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
 
     @Override
@@ -835,7 +846,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             DataTableColumn column = integrationColumn.getColumnForTable(table);
             if (column != null) {
                 builder.getColumns().add(column.getName());
-                //pull the column name twice if an integration column so we have mapped and unmapped values
+                // pull the column name twice if an integration column so we have mapped and unmapped values
                 if (integrationColumn.isIntegrationColumn()) {
                     builder.getColumns().add(column.getName());
                 }
@@ -932,8 +943,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         if (column == null) {
             return Collections.emptyList();
         }
-    	SqlSelectBuilder builder = new SqlSelectBuilder();
-        	builder.getColumns().add(column.getName());
+        SqlSelectBuilder builder = new SqlSelectBuilder();
+        builder.getColumns().add(column.getName());
         builder.getTableNames().add(column.getDataTable().getName());
         return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
@@ -1008,11 +1019,11 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
-    	SqlSelectBuilder builder = new SqlSelectBuilder();
+        SqlSelectBuilder builder = new SqlSelectBuilder();
         builder.getTableNames().add(dataTable.getName());
         WhereCondition where = new WhereCondition(DataTableColumn.TDAR_ROW_ID.getName());
         where.setValue(rowId);
-		builder.getWhere().add(where);
+        builder.getWhere().add(where);
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
 

@@ -8,73 +8,135 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Helper class for building complex SQL statements for Data Integration. Long term, this would be great to get it to use parameterized sql statements
+ * Helper class for building complex SQL statements for Data Integration. Long
+ * term, this would be great to get it to use parameterized sql statements
+ * 
  * @author abrin
  *
  */
 public class SqlSelectBuilder extends AbstractSqlTools implements Serializable {
 
-    private static final long serialVersionUID = -1875170201260652139L;
-    private List<String> columns = new ArrayList<>();
-    private List<String> tableNames = new ArrayList<>();
-    private List<WhereCondition> where = new ArrayList<>();
-    private String stringSelectValue;
+	private static final long serialVersionUID = -1875170201260652139L;
+	private List<String> columns = new ArrayList<>();
+	private List<String> groupBy = new ArrayList<>();
+	private List<String> orderBy = new ArrayList<>();
+	private List<String> tableNames = new ArrayList<>();
+	private List<WhereCondition> where = new ArrayList<>();
+	private String stringSelectValue;
+	private String countColumn;
+	private boolean distinct = false;
+	public List<String> getColumns() {
+		return columns;
+	}
 
-    public List<String> getColumns() {
-        return columns;
-    }
+	public void setColumns(List<String> columns) {
+		this.columns = columns;
+	}
 
-    public void setColumns(List<String> columns) {
-        this.columns = columns;
-    }
+	public List<String> getTableNames() {
+		return tableNames;
+	}
 
-    public List<String> getTableNames() {
-        return tableNames;
-    }
+	public void setTableNames(List<String> tableNames) {
+		this.tableNames = tableNames;
+	}
 
-    public void setTableNames(List<String> tableNames) {
-        this.tableNames = tableNames;
-    }
+	public List<WhereCondition> getWhere() {
+		return where;
+	}
 
-    public List<WhereCondition> getWhere() {
-        return where;
-    }
+	public void setWhere(List<WhereCondition> where) {
+		this.where = where;
+	}
 
-    public void setWhere(List<WhereCondition> where) {
-        this.where = where;
-    }
+	public String toSql() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT ");
+		if (distinct) {
+			sb.append("DISTINCT ");
+		}
+		boolean hasColumns = false;
+		if (StringUtils.isNotBlank(stringSelectValue)) {
+			sb.append(quote(stringSelectValue, false));
+			sb.append(", ");
+			hasColumns = true;
+		}
+		if (StringUtils.isNotBlank(countColumn)) {
+			hasColumns = true;
+			sb.append("count(").append(quote(countColumn)).append(")");
+			if (CollectionUtils.isNotEmpty(columns)
+					|| StringUtils.isNotBlank(stringSelectValue)) {
+				sb.append(", ");
+			}
+		}
+		if (CollectionUtils.isNotEmpty(columns)) {
+			hasColumns = true;
+			joinListWithCommas(sb, columns, true);
+		}
+		if (!hasColumns) {
+			sb.append(" * ");
+		}
+		sb.append(" FROM ");
+		joinListWithCommas(sb, tableNames, false);
+		boolean first = true;
+		if (CollectionUtils.isNotEmpty(where)) {
+			sb.append(" where ");
+		}
+		for (WhereCondition whereCond : where) {
+			if (!first) {
+				sb.append(" ");
+				sb.append(whereCond.getCondition().name());
+				sb.append(" ");
+			}
+			first = false;
+			sb.append(whereCond.toSql());
+		}
+		appendAndJoin(sb, " GROUP BY ", groupBy);
+		appendAndJoin(sb, " ORDER BY ", orderBy);
+		return sb.toString();
+	}
 
-    public String toSql() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ");
-        if (StringUtils.isNotBlank(stringSelectValue)) {
-            sb.append(quote(stringSelectValue, false));
-            sb.append(", ");
-        }
-        joinListWithCommas(sb, columns, true);
-        if (CollectionUtils.isEmpty(columns)) {
-        	sb.append(" * ");
-        }
-        sb.append(" FROM ");
-        joinListWithCommas(sb, tableNames, false);
-        boolean first = true;
-        if (CollectionUtils.isNotEmpty(where)) {
-            sb.append(" where ");
-        }
-        for (WhereCondition whereCond : where) {
-            if (!first) {
-                sb.append(" ");
-                sb.append(whereCond.getCondition().name());
-                sb.append(" ");
-            }
-            first = false;
-            sb.append(whereCond.toSql());
-        }
-        return sb.toString();
-    }
+	private void appendAndJoin(StringBuilder sb, String prefix, List<String> cols) {
+		if (CollectionUtils.isNotEmpty(cols)) {
+			sb.append(prefix);
+			joinListWithCommas(sb, cols, true);
+		}
+	}
 
-    public void setStringSelectValue(String txt) {
-        this.stringSelectValue = txt;
-    }
+	public void setStringSelectValue(String txt) {
+		this.stringSelectValue = txt;
+	}
+
+	public List<String> getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(List<String> orderBy) {
+		this.orderBy = orderBy;
+	}
+
+	public List<String> getGroupBy() {
+		return groupBy;
+	}
+
+	public void setGroupBy(List<String> groupBy) {
+		this.groupBy = groupBy;
+	}
+
+	public String getCountColumn() {
+		return countColumn;
+	}
+
+	public void setCountColumn(String countColumn) {
+		this.countColumn = countColumn;
+	}
+
+	public boolean isDistinct() {
+		return distinct;
+	}
+
+	public void setDistinct(boolean distinct) {
+		this.distinct = distinct;
+	}
 
 }

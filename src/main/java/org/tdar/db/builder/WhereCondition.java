@@ -11,11 +11,11 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
 
     private static final long serialVersionUID = -5257989550031533775L;
 
-    enum ValueCondition {
-        EQUALS, IN;
+    public enum ValueCondition {
+        EQUALS, IN, IS_NOT, NOT_EQUALS;
     }
 
-    enum Condition {
+    public enum Condition {
         AND, OR;
     }
 
@@ -80,9 +80,26 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
         if (CollectionUtils.isEmpty(inValues)) {
             sb.append(" ");
             if (getValue() == null) {
-                sb.append("IS NULL");
+            	if (valueCondition == ValueCondition.EQUALS) {
+            		sb.append("IS NULL");
+            	} else {
+                    sb.append("IS NOT NULL");
+            	}
             } else {
-                sb.append(ValueCondition.EQUALS.name());
+            	switch (valueCondition) {
+				case EQUALS:
+					sb.append("=");
+					break;
+				case IN:
+					sb.append(ValueCondition.IN.name());
+					break;
+				case NOT_EQUALS:
+					sb.append("!=");
+					break;
+				default:
+					break;
+            	
+            	}
                 appendValue(sb, getValue());
             }
         } else {
