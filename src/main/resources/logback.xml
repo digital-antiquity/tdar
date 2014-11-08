@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<configuration>
+  <!-- Errors were reported during translation. -->
+  <!-- Could not find transformer for org.tdar.utils.PatternSubjectSMTPAppender -->
+
+  <!-- performance notes -->
+  <!-- http://www.javacodegeeks.com/2014/07/how-to-instantly-improve-your-java-logging-with-7-logback-tweaks.html -->
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS}%-15([%thread %X{path}]) %-5level %logger - %msg%n</pattern>
+      <!-- <TimeZone>GMT-7:00</TimeZone> -->
+    </encoder>
+  </appender>
+  <!--  http://logback.qos.ch/manual/appenders.html -->
+  <!--  http://logback.qos.ch/manual/layouts.html -->
+  <!--
+  <appender name="smtp" class="org.tdar.utils.PatternSubjectSMTPAppender">
+    <SMTPHost>localhost</SMTPHost>
+    <To>adam.brin@asu.edu</To>
+    <From>tdar-error@tdar.org</From>
+    <EvaluatorClass>fi.reaktor.log4j.emailthrottle.ErrorEmailThrottle</EvaluatorClass>
+    <Subject>%c{1}: %m</Subject>
+    <Threshold>ERROR</Threshold>
+    <BufferSize>100</BufferSize>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d{MMM-dd HH:mm:ss} %-5p %t %c - %m%n</pattern>
+    </layout>
+  </appender>
+  -->
+  <logger name="uk.org" level="DEBUG"/>
+  <logger name="org.eclipse.jetty.LEVEL" level="DEBUG"/>
+  <logger name="org.hibernate.util.JDBCExceptionReporter" level="DEBUG"/>
+  <logger name="org.tdar.struts.action.DashboardController" level="TRACE"/>
+  <logger name="org.tdar" level="DEBUG"/>
+  <root level="ERROR">
+     <appender-ref ref="stdout"/>
+<!--
+     <appender-ref ref="smtp"/>
+ -->
+  </root>
+</configuration>
