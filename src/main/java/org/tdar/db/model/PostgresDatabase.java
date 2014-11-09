@@ -729,7 +729,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Override
     public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
-        final ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, excelService, result);
+        ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, excelService, result);
         createIntegrationTempTable(proxy);
         populateInterationTable(proxy);
         applyOntologyMappings(proxy);
@@ -761,13 +761,19 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             if (!integrationColumn.isIntegrationColumn()) {
                 continue;
             }
-            for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
+            for (OntologyNode node : integrationColumn.getFilteredOntologyNodes()) {
                 DataTableColumn column = integrationColumn.getDataTableColumn();
 
                 WhereCondition whereCond = new WhereCondition(column.getName());
                 Set<String> nodeSet = new HashSet<>();
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
                     nodeSet.addAll(actualColumn.getMappedDataValues(node));
+                    //check parent logic
+                    for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
+                        if (node_.isChildOf(node) && !integrationColumn.getFilteredOntologyNodes().contains(node_)) {
+                            nodeSet.addAll(actualColumn.getMappedDataValues(node_));
+                        }
+                    }
                 }
                 if (CollectionUtils.isEmpty(nodeSet)) {
                     continue;
@@ -801,7 +807,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         tempTable.getDataTableColumns().add(tableColumn);
         proxy.setTempTable(tempTable);
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
-            String deflt = MessageHelper.getMessage("database.null_empty_integration_value");
             logger.debug("column: {}", column);
             if (!StringUtils.isBlank(column.getName())) {
                 DataTableColumn dtc = new DataTableColumn();
@@ -809,9 +814,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 dtc.setName(normalizeTableOrColumnNames(column.getName()));
                 tempTable.getDataTableColumns().add(dtc);
                 column.setDataTableColumn(dtc);
-                if (column.isDisplayColumn()) {
-                    deflt = MessageHelper.getMessage("database.null_empty_mapped_value");
-                }
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
                     DataTableColumn dtc2 = new DataTableColumn();

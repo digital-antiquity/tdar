@@ -36,9 +36,7 @@ import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
-import org.tdar.struts.data.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -54,9 +52,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private transient ExcelService excelService;
     private Workbook workbook;
     private IntegrationContext context;
-    private List<IntegrationDataResult> integrationDataResults;
     private StringBuilder description = new StringBuilder();
-    private Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationResults;
     private TdarUser person;
     private List<String> names;
     private PersonalFilestoreTicket ticket;
@@ -300,28 +296,12 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         this.workbook = workbook;
     }
 
-    public List<IntegrationDataResult> getIntegrationDataResults() {
-        return integrationDataResults;
-    }
-
-    public void setIntegrationDataResults(List<IntegrationDataResult> integrationDataResults) {
-        this.integrationDataResults = integrationDataResults;
-    }
-
     public StringBuilder getDescription() {
         return description;
     }
 
     public void setDescription(StringBuilder description) {
         this.description = description;
-    }
-
-    public Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> getGeneratedIntegrationResults() {
-        return generatedIntegrationResults;
-    }
-
-    public void setGeneratedIntegrationResults(Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationResults) {
-        this.generatedIntegrationResults = generatedIntegrationResults;
     }
 
     public TdarUser getPerson() {

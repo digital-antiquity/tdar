@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-
 public class WhereCondition extends AbstractSqlTools implements Serializable {
 
     private static final long serialVersionUID = -5257989550031533775L;
@@ -24,6 +23,7 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     private Object value;
     private Condition condition = Condition.AND;
     private List<Object> inValues = new ArrayList<>();
+    private boolean includeNulls;
 
     public WhereCondition(String name) {
         this.column = name;
@@ -70,42 +70,50 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     }
 
     public void setIncludeNulls(boolean b) {
-        // TODO Auto-generated method stub
-
+        this.includeNulls = b;
     }
 
     public String toSql() {
         StringBuilder sb = new StringBuilder(" ");
+        if (includeNulls) {
+            sb.append(" (");
+        }
         sb.append(quote(column));
         if (CollectionUtils.isEmpty(inValues)) {
             sb.append(" ");
             if (getValue() == null) {
-            	if (valueCondition == ValueCondition.EQUALS) {
-            		sb.append("IS NULL");
-            	} else {
+                if (valueCondition == ValueCondition.EQUALS) {
+                    sb.append("IS NULL");
+                } else {
                     sb.append("IS NOT NULL");
-            	}
+                }
             } else {
-            	switch (valueCondition) {
-				case EQUALS:
-					sb.append("=");
-					break;
-				case IN:
-					sb.append(ValueCondition.IN.name());
-					break;
-				case NOT_EQUALS:
-					sb.append("!=");
-					break;
-				default:
-					break;
-            	
-            	}
+                switch (valueCondition) {
+                    case EQUALS:
+                        sb.append("=");
+                        break;
+                    case IN:
+                        sb.append(ValueCondition.IN.name());
+                        break;
+                    case NOT_EQUALS:
+                        sb.append("!=");
+                        break;
+                    default:
+                        break;
+
+                }
                 appendValue(sb, getValue());
             }
         } else {
             createInPart(sb, getInValues());
+            if (includeNulls) {
+                sb.append(" OR ").append(quote(column)).append(" IS NULL");
+            }
+        }
+        if (includeNulls) {
             sb.append(") ");
         }
+
         return sb.toString();
     }
 

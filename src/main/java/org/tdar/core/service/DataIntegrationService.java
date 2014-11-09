@@ -2,8 +2,6 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.StringWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -11,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,11 +16,9 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -41,18 +36,14 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.integration.DataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.resource.InformationResourceService;
-import org.tdar.db.builder.AbstractSqlTools;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
-import org.tdar.struts.data.IntegrationDataResult;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -101,84 +92,6 @@ public class DataIntegrationService {
     }
 
     /**
-     * For a specific @link DataTable, perform the DataIntegration just on that @link DataTable
-     * 
-     * @param table
-     * @param integrationColumns
-     * @param pivot
-     * @return
-     */
-    public IntegrationDataResult generateIntegrationResult(final DataTable table, final List<IntegrationColumn> integrationColumns,
-            final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
-        // formulate a SELECT statement
-        String selectSql = tdarDataImportDatabase.generateOntologyEnhancedSelect(table, integrationColumns, pivot);
-
-        IntegrationDataResult integrationDataResult = new IntegrationDataResult();
-        integrationDataResult.setDataTable(table);
-        integrationDataResult.setIntegrationColumns(integrationColumns);
-        logger.debug(selectSql);
-
-        List<String[]> rowDataList = new ArrayList<String[]>();
-        // if we have a "WHERE clause, then we can actually do something (otherwise, we probably have an empty filter list
-        if (selectSql.toLowerCase().contains(" where ")) {
-            rowDataList = tdarDataImportDatabase.query(selectSql, new ParameterizedRowMapper<String[]>() {
-                @Override
-                public String[] mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
-                    // grab the data from this result set, populate the IntegrationDataResult
-
-                    // FIXME: create temporary postgres table, populate it with integration results, update it as necessary,
-                    // then stream it into the generated excel file
-
-                    ArrayList<String> values = new ArrayList<String>();
-                    values.add(table.getDataset().getTitle());
-                    ArrayList<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
-                    int resultSetPosition = 1;
-                    for (IntegrationColumn integrationColumn : integrationColumns) {
-                        // note SQL iterator is 1 based; java iterator is 0 based
-                        DataTableColumn column = table.getColumnByName(resultSet.getMetaData().getColumnName(resultSetPosition));
-                        String value = "";
-                        if (column != null) { // RAW VALUE
-                            value = AbstractSqlTools.getResultSetValueAsString(resultSet, resultSetPosition, column);
-                        }
-                        if ((column != null) && integrationColumn.isIntegrationColumn() && StringUtils.isEmpty(value)) {
-                            value = MessageHelper.getMessage("database.null_empty_integration_value");
-                        }
-                        values.add(value);
-                        ontologyNodes.add(OntologyNode.NULL); // initialize the array so we have columns line up
-                        if ((column != null) && integrationColumn.isIntegrationColumn()) { // MAPPED VALUE if not display column
-                            String mappedVal = null;
-                            // FIXME: get the appropriately aggregated OntologyNode for the given value, add a method in DataIntegrationService
-                            // OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, column);
-                            OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, column);
-                            if (mappedOntologyNode != null) {
-                                mappedVal = mappedOntologyNode.getDisplayName();
-                                ontologyNodes.set(ontologyNodes.size() - 1, mappedOntologyNode);
-                            }
-                            if (mappedVal == null) {
-                                mappedVal = MessageHelper.getMessage("database.null_empty_mapped_value");
-                            }
-                            values.add(mappedVal);
-                        }
-                        resultSetPosition++;
-                    }
-                    if (pivot.get(ontologyNodes) == null) {
-                        pivot.put(ontologyNodes, new HashMap<DataTable, Integer>());
-                    }
-                    Integer groupCount = pivot.get(ontologyNodes).get(table);
-                    if (groupCount == null) {
-                        pivot.get(ontologyNodes).put(table, 0);
-                        groupCount = 0;
-                    }
-                    pivot.get(ontologyNodes).put(table, groupCount + 1);
-                    return values.toArray(new String[0]);
-                }
-            });
-        }
-        integrationDataResult.setRowData(rowDataList);
-        return integrationDataResult;
-    }
-
-    /**
      * sets transient booleans on CodingRule to mark that it's mapped
      * 
      * 
@@ -206,37 +119,6 @@ public class DataIntegrationService {
         }
     }
 
-    /**
-     * Based on the set of @link IntegrationColumns generate the results of the data integration managed by the @link IntegrationDataResult
-     * 
-     * @param integrationColumns
-     * @param tables
-     * @return
-     */
-    public Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generateIntegrationData(
-            List<IntegrationColumn> integrationColumns, List<DataTable> tables) {
-
-        // for each column, rehydrate the column and selected ontology nodes
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            hydrateIntegrationColumn(integrationColumn);
-        }
-
-        // generate projections from each column, first aggregate across common display columns and integration columns
-        List<IntegrationDataResult> results = new ArrayList<>();
-        // keeps track of all the columns that we need to select out from this data table
-        // now iterate through all tables and generate the column lists.
-        // use the OntologyNodes on the integration columns. each DataTable should have one integration column in it...
-        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = new LinkedHashMap<>();
-
-        for (DataTable table : tables) {
-            // generate results per table
-            IntegrationDataResult integrationDataResult = generateIntegrationResult(table, integrationColumns, pivot);
-            results.add(integrationDataResult);
-        }
-        // Collections.sort(pivot);
-        return Pair.create(results, pivot);
-    }
-
     private void hydrateIntegrationColumn(IntegrationColumn integrationColumn) {
         List<DataTableColumn> dataTableColumns = genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class);
         dataTableColumns.removeAll(Collections.singletonList(null));
@@ -256,41 +138,6 @@ public class DataIntegrationService {
 
         logger.debug("after: {} - {}", integrationColumn, filteredOntologyNodes);
         logger.info("integration column: {}", integrationColumn);
-    }
-
-    /**
-     * Writes the results of the Data Integration to an Excel file and stores it in the @link PersonalFilestore for later distribution
-     * 
-     * @param integrationColumns
-     * @param generatedIntegrationData
-     * @param person
-     * @return
-     */
-    public PersonalFilestoreTicket toExcel(TextProvider provider, List<IntegrationColumn> integrationColumns,
-            Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData,
-            TdarUser person) {
-        List<IntegrationDataResult> integrationDataResults = generatedIntegrationData.getFirst();
-        if (CollectionUtils.isEmpty(integrationDataResults)) {
-            return null;
-        }
-
-        DataIntegrationWorkbook integrationWorkbook = new DataIntegrationWorkbook(provider, excelService, person, generatedIntegrationData);
-        integrationWorkbook.setIntegrationColumns(integrationColumns);
-        integrationWorkbook.setIntegrationDataResults(integrationDataResults);
-        integrationWorkbook.generate();
-        PersonalFilestoreTicket ticket = integrationWorkbook.getTicket();
-        genericDao.save(ticket);
-
-        try {
-            File resultFile = integrationWorkbook.writeToTempFile();
-            PersonalFilestore filestore = filestoreService.getPersonalFilestore(person);
-            filestore.store(ticket, resultFile, integrationWorkbook.getFileName());
-        } catch (Exception exception) {
-            logger.error("an error occurred when producing the integration excel file", exception);
-            throw new TdarRecoverableRuntimeException("dataIntegrationService.could_not_save_file");
-        }
-
-        return ticket;
     }
 
     /**

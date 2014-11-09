@@ -66,26 +66,27 @@ public class InteegrationResultSetDecorator extends AbstractIteratorDecorator<Ob
             // note SQL iterator is 1 based; java iterator is 0 based
             DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
             String value = "";
-            if (column != null) { // RAW VALUE
+//            if (column != null) { // RAW VALUE
                 value = (String) row[resultSetPosition];
-            }
-            if ((column != null) && integrationColumn.isIntegrationColumn() && StringUtils.isEmpty(value)) {
-                value = MessageHelper.getMessage("database.null_empty_integration_value");
-            }
+                if (StringUtils.isBlank(value)) {
+                    value = MessageHelper.getMessage("database.null_empty_integration_value");
+                    row[resultSetPosition] = value;
+                }
+//            }
+
 
              if (integrationColumn.isCountColumn()) {
                  countVal = Integer.parseInt(value);
              }
 
             values.add(value);
-            if ((column != null) && !integrationColumn.isDisplayColumn()) { // MAPPED VALUE if not display column
-                value = (String) row[resultSetPosition++];
-                values.add(value);
-                String mappedVal = null;
+            if (integrationColumn.isIntegrationColumn()) { // MAPPED VALUE if not display column
+                resultSetPosition = resultSetPosition+1;
+                String mappedVal = (String) row[resultSetPosition];
                 // FIXME: get the appropriately aggregated OntologyNode for the given value, add a method in DataIntegrationService
                 // OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, column);
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
-                OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, realColumn);
+                OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
                 if (mappedOntologyNode != null && StringUtils.isNotBlank(mappedOntologyNode.getDisplayName())) {
                     mappedVal = mappedOntologyNode.getDisplayName();
                     ontologyNodes.add(mappedOntologyNode);
@@ -95,10 +96,13 @@ public class InteegrationResultSetDecorator extends AbstractIteratorDecorator<Ob
                 if (mappedVal == null) {
                     mappedVal = MessageHelper.getMessage("database.null_empty_mapped_value");
                 }
+                row[resultSetPosition] = mappedVal;
                 values.add(mappedVal);
             }
             resultSetPosition++;
         }
+        logger.trace("{}",StringUtils.join(row,"|"));
+
         HashMap<String, IntContainer> pivotVal = getPivot().get(ontologyNodes);
         if (pivotVal == null) {
             pivotVal = new HashMap<String, IntContainer>();
@@ -124,7 +128,7 @@ public class InteegrationResultSetDecorator extends AbstractIteratorDecorator<Ob
             rowCount = 0;
         }
         if (rowCount < 10) {
-            logger.debug("{} {}{}",row);
+            logger.trace("{} {}{}",row);
             getPreviewData().add(ArrayUtils.clone(row));
             previewCount.put(tableName, rowCount++);
         }

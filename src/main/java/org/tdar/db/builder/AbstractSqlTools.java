@@ -34,6 +34,7 @@ public class AbstractSqlTools {
             appendValue(sb, inValue);
             first = false;
         }
+        sb.append(") ");
     }
 
     public void appendValue(StringBuilder sb, Object value) {

@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -41,11 +39,9 @@ import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
-import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -93,7 +89,6 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
 
     private Long ticketId;
 
-    private List<IntegrationDataResult> integrationDataResults = new ArrayList<IntegrationDataResult>();
     private String integrationDataResultsFilename;
     private long integrationDataResultsContentLength;
     private transient InputStream integrationDataResultsInputStream;
@@ -229,27 +224,13 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
             // return INPUT;
             // }
             //
-            if (modernIntegrationResult) {
-                IntegrationContext context = new IntegrationContext(getAuthenticatedUser(), getIntegrationColumns());
-                context.setDataTables(getSelectedDataTables());
-                ModernIntegrationDataResult result = dataIntegrationService.generateModernIntegrationResult(context,this);
-                PersonalFilestoreTicket ticket = dataIntegrationService.storeResult(result);
-                setTicketId(ticket.getId());
-                getLogger().debug("result:{}",result);
-                setResult(result);
-            } else {
-                Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData =
-                        dataIntegrationService.generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
-    
-                integrationDataResults = generatedIntegrationData.getFirst();
-                setPivotData(generatedIntegrationData.getSecond());
-                PersonalFilestoreTicket ticket = dataIntegrationService.toExcel(this, getIntegrationColumns(), generatedIntegrationData,
-                        getAuthenticatedUser());
-                File file = File.createTempFile("integration", ".xml");
-                FileUtils.writeStringToFile(file, integrationContextXml);
-                filestoreService.store(ticket, file, "integration-context.xml");
-                setTicketId(ticket.getId());
-            }
+            IntegrationContext context = new IntegrationContext(getAuthenticatedUser(), getIntegrationColumns());
+            context.setDataTables(getSelectedDataTables());
+            ModernIntegrationDataResult result = dataIntegrationService.generateModernIntegrationResult(context, this);
+            PersonalFilestoreTicket ticket = dataIntegrationService.storeResult(result);
+            setTicketId(ticket.getId());
+            getLogger().debug("result:{}", result);
+            setResult(result);
         } catch (Throwable e) {
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;
@@ -330,10 +311,6 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
             selectedDataTables = getGenericService().findAll(DataTable.class, tableIds);
         }
         return selectedDataTables;
-    }
-
-    public List<IntegrationDataResult> getIntegrationDataResults() {
-        return integrationDataResults;
     }
 
     public String getIntegrationDataResultsFilename() {
