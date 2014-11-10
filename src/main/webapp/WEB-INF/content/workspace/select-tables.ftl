@@ -140,8 +140,8 @@
                 columns you want to appear in the final set. You can read more about data integration <a
                         href="https://dev.tdar.org/confluence/display/TDAR/Data+Integration">here</a>.
             <ul>
-                <li><a href="<@s.url value="/search/results.action?integratableOptions=YES&startRecord=0"/>">Find Data Sets</a></li>
-                <li><a href="https://dev.tdar.org/confluence/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">Bookmark Data Sets</a></li>
+                <li><a href="<@s.url value="/search/results?integratableOptions=YES&startRecord=0"/>">Find Data Sets</a></li>
+                <li><a href="https://dev.tdar.org/confluence/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">How to Bookmark Data Sets</a></li>
             </ul>
         </div>
         <div class="span6">
