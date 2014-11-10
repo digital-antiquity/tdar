@@ -22,6 +22,7 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
+import org.tdar.struts.data.FileProxy;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -448,5 +449,39 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public DeleteIssue getDeletionIssues(TextProvider textProvider, Creator persistable) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Transactional(readOnly=false)
+    public void saveInstitutionForController(Institution persistable, String name, FileProxy fileProxy) {
+        // name has a unique key; so we need to be careful with it
+        persistable.setName(name);
+        getDao().saveOrUpdate(persistable);
+        if (fileProxy != null) {
+            processFileProxyForCreator(persistable, fileProxy);
+        }
+    }
+
+    public void processFileProxyForCreator(Creator persistable, FileProxy fileProxy) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Transactional(readOnly=false)
+    public void savePersonforController(Person person, String email, String institutionName, FileProxy fileProxy) {
+        if (!StringUtils.equals(email, person.getEmail())) {
+            person.setEmail(email);
+        }
+        getLogger().debug("saving person: {} with institution {} ", person, institutionName);
+        if (StringUtils.isBlank(institutionName)) {
+            person.setInstitution(null);
+        }
+        else {
+            // if the user changed the person's institution, find or create it
+            Institution persistentInstitution = findOrSaveCreator(new Institution(institutionName));
+            getLogger().debug("setting institution to persistent: " + persistentInstitution);
+            person.setInstitution(persistentInstitution);
+        }
+
+        saveOrUpdate(person);
     }
 }

@@ -103,13 +103,18 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
         }
-        if (hasErrors()) {
-            getLogger().info("errors present, returning INPUT");
-            getLogger().info("actionErrors:{}", getActionErrors());
-            getLogger().info("fieldErrors:{}", getFieldErrors());
-            return INPUT;
-        }
 
+        prepareUserInformation();
+        checkForNonContributorCrud();
+        savePersonInfo(person);
+
+        if (passwordResetRequested) {
+            authenticationService.getAuthenticationProvider().resetUserPassword(person);
+        }
+        return SUCCESS;
+    }
+
+    private void prepareUserInformation() {
         if (StringUtils.isBlank(proxyInstitutionName)) {
             getPersistable().setProxyInstitution(null);
         } else {
@@ -121,15 +126,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         getPersistable().setContributorReason(contributorReason);
         getPersistable().setProxyNote(proxyNote);
         getPersistable().setContributor(contributor);
-        checkForNonContributorCrud();
-
-        savePersonInfo(person);
-        getGenericService().saveOrUpdate(person);
-
-        if (passwordResetRequested) {
-            authenticationService.getAuthenticationProvider().resetUserPassword(person);
-        }
-        return SUCCESS;
     }
 
     // check whether password change was requested and whether it was valid
