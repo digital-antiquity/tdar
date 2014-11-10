@@ -41,7 +41,8 @@
         </tr>
         </thead>
         <tbody>
-            <#assign keys = result.pivotData?keys >
+			<#assign pivot = result.pivotData />
+            <#assign keys = pivot?keys >
             <#list keys?sort as key >
             <tr>
                 <#list key as node >
@@ -50,9 +51,10 @@
                 </#list>
                 <#assign totals = 0/>
                 <#list selectedDataTables as table>
-                    <td>  <#if result.pivotData.get(key)?? && result.pivotData.get(key).get(table)??>
-                    ${result.rpivotData.get(key).get(table)}
-                        <#assign totals = totals + result.pivotData.get(key).get(table) />
+                    <td> 
+					 <#if pivot.get(key)?? && pivot.get(key).get(table.name)??>
+                    ${pivot.get(key).get(table.name)}
+                        <#assign totals = totals + pivot.get(key).get(table.name)?number />
                     <#else>0</#if></td>
                 </#list>
                 <td>${totals}</td>
@@ -61,9 +63,11 @@
         </tbody>
     </table>
 </div>
-
-<table>
+<br/><br>
+<h3>Preview Results <span>(1st 10 rows of each table)</span></h3>
+<table class='table tableFormat'>
     <thead><tr>
+        <th>Table</th>
     <#list result.integrationContext.integrationColumns as integrationColumn>
         <th>${integrationColumn.name}</th>
         <#if !integrationColumn.displayColumn>
