@@ -23,7 +23,7 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     private Object value;
     private Condition condition = Condition.AND;
     private List<Object> inValues = new ArrayList<>();
-    private boolean includeNulls;
+    private boolean includeNullsWithInQuery;
 
     public WhereCondition(String name) {
         this.column = name;
@@ -70,51 +70,55 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     }
 
     public void setIncludeNulls(boolean b) {
-        this.includeNulls = b;
+        this.includeNullsWithInQuery = b;
     }
 
     public String toSql() {
         StringBuilder sb = new StringBuilder(" ");
-        if (includeNulls) {
+        if (includeNullsWithInQuery) {
             sb.append(" (");
         }
         sb.append(quote(column));
         if (CollectionUtils.isEmpty(inValues)) {
-            sb.append(" ");
-            if (getValue() == null) {
-                if (valueCondition == ValueCondition.EQUALS) {
-                    sb.append("IS NULL");
-                } else {
-                    sb.append("IS NOT NULL");
-                }
-            } else {
-                switch (valueCondition) {
-                    case EQUALS:
-                        sb.append("=");
-                        break;
-                    case IN:
-                        sb.append(ValueCondition.IN.name());
-                        break;
-                    case NOT_EQUALS:
-                        sb.append("!=");
-                        break;
-                    default:
-                        break;
-
-                }
-                appendValue(sb, getValue());
-            }
+            buildSimpleCondition(sb);
         } else {
             createInPart(sb, getInValues());
-            if (includeNulls) {
+            if (includeNullsWithInQuery) {
                 sb.append(" OR ").append(quote(column)).append(" IS NULL");
             }
         }
-        if (includeNulls) {
+        if (includeNullsWithInQuery) {
             sb.append(") ");
         }
 
         return sb.toString();
+    }
+
+    private void buildSimpleCondition(StringBuilder sb) {
+        sb.append(" ");
+        if (getValue() == null) {
+            if (valueCondition == ValueCondition.EQUALS) {
+                sb.append("IS NULL");
+            } else {
+                sb.append("IS NOT NULL");
+            }
+        } else {
+            switch (valueCondition) {
+                case EQUALS:
+                    sb.append("=");
+                    break;
+                case IN:
+                    sb.append(ValueCondition.IN.name());
+                    break;
+                case NOT_EQUALS:
+                    sb.append("!=");
+                    break;
+                default:
+                    break;
+
+            }
+            appendValue(sb, getValue());
+        }
     }
 
 }

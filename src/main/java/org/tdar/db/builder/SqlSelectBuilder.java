@@ -50,9 +50,38 @@ public class SqlSelectBuilder extends AbstractSqlTools implements Serializable {
 	}
 
 	public String toSql() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT ");
-		if (distinct) {
+		StringBuilder sb = new StringBuilder("SELECT ");
+		buildColumnList(sb);
+		buildFromClause(sb);
+		orderAndAggregate(sb);
+		return sb.toString();
+	}
+
+    private void orderAndAggregate(StringBuilder sb) {
+        appendAndJoin(sb, " GROUP BY ", groupBy);
+		appendAndJoin(sb, " ORDER BY ", orderBy);
+    }
+
+    private void buildFromClause(StringBuilder sb) {
+        sb.append(" FROM ");
+		joinListWithCommas(sb, tableNames, false);
+		boolean first = true;
+		if (CollectionUtils.isNotEmpty(where)) {
+			sb.append(" where ");
+		}
+		for (WhereCondition whereCond : where) {
+			if (!first) {
+				sb.append(" ");
+				sb.append(whereCond.getCondition().name());
+				sb.append(" ");
+			}
+			first = false;
+			sb.append(whereCond.toSql());
+		}
+    }
+
+    private void buildColumnList(StringBuilder sb) {
+        if (distinct) {
 			sb.append("DISTINCT ");
 		}
 		boolean hasColumns = false;
@@ -76,25 +105,7 @@ public class SqlSelectBuilder extends AbstractSqlTools implements Serializable {
 		if (!hasColumns) {
 			sb.append(" * ");
 		}
-		sb.append(" FROM ");
-		joinListWithCommas(sb, tableNames, false);
-		boolean first = true;
-		if (CollectionUtils.isNotEmpty(where)) {
-			sb.append(" where ");
-		}
-		for (WhereCondition whereCond : where) {
-			if (!first) {
-				sb.append(" ");
-				sb.append(whereCond.getCondition().name());
-				sb.append(" ");
-			}
-			first = false;
-			sb.append(whereCond.toSql());
-		}
-		appendAndJoin(sb, " GROUP BY ", groupBy);
-		appendAndJoin(sb, " ORDER BY ", orderBy);
-		return sb.toString();
-	}
+    }
 
 	private void appendAndJoin(StringBuilder sb, String prefix, List<String> cols) {
 		if (CollectionUtils.isNotEmpty(cols)) {
