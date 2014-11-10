@@ -93,7 +93,6 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
     private long integrationDataResultsContentLength;
     private transient InputStream integrationDataResultsInputStream;
 
-    private Map<List<OntologyNode>, Map<DataTable, Integer>> pivotData;
 
     /**
      * Pass through actions that will go to <action-name>.ftl or <action-name>.jsp
@@ -374,14 +373,6 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
 
     public IntegrationColumn getBlankIntegrationColumn() {
         return new IntegrationColumn(ColumnType.DISPLAY);
-    }
-
-    public void setPivotData(Map<List<OntologyNode>, Map<DataTable, Integer>> pivotData) {
-        this.pivotData = pivotData;
-    }
-
-    public Map<List<OntologyNode>, Map<DataTable, Integer>> getPivotData() {
-        return pivotData;
     }
 
     public Set<Ontology> getSharedOntologies() {
