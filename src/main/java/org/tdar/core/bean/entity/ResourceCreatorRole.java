@@ -95,7 +95,7 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
         roles.add(PROJECT_DIRECTOR);
         roles.add(PUBLISHER);
         roles.add(AUTHOR);
-        if (creatorType != CreatorType.INSTITUTION) {
+        if (creatorType == CreatorType.INSTITUTION) {
             roles.add(PREPARER);
             roles.add(SUBMITTED_TO);
             roles.add(SPONSOR);
