@@ -19,7 +19,7 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     }
 
     private String column;
-    private ValueCondition valueCondition;
+    private ValueCondition valueCondition = ValueCondition.EQUALS;
     private Object value;
     private Condition condition = Condition.AND;
     private List<Object> inValues = new ArrayList<>();
