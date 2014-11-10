@@ -34,14 +34,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
         if (hasActionErrors()) {
             return INPUT;
         }
-
-        // name has a unique key; so we need to be careful with it
-        persistable.setName(getName());
-        if (Persistable.Base.isNullOrTransient(persistable)) {
-            getGenericService().save(persistable);
-        } else {
-            getGenericService().update(persistable);
-        }
+        entityService.saveInstitutionForController(persistable, name, generateFileProxy(getFilename(), getFile()));
         return SUCCESS;
     }
 

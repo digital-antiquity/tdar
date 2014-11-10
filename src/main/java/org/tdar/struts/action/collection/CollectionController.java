@@ -1,11 +1,11 @@
 package org.tdar.struts.action.collection;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -93,6 +92,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<Long> toRemove = new ArrayList<>();
     private List<Long> toAdd = new ArrayList<>();
     private List<Project> allSubmittedProjects;
+    private File file;
+    private String contentType;
+    private String filename;
 
     @Override
     public boolean isEditable() {
@@ -113,12 +115,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         return publicResourceCollections;
     }
 
-
     @Override
     protected String save(ResourceCollection persistable) {
-        if (persistable.getType() == null) {
-            persistable.setType(CollectionType.SHARED);
-        }
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         ResourceCollection parent = resourceCollectionService.find(parentId);
@@ -132,14 +130,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
-        if (!Objects.equals(parentId, persistable.getParentId())) {
-            resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
-        }
-
-        resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
-
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
-                getAuthenticatedUser());
+        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
+                resourcesToRemove, shouldSaveResource(), generateFileProxy(getFilename(), getFile()));
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -229,8 +221,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         String result = super.edit();
         return result;
     }
-
-
 
     public List<Long> getSelectedResourceIds() {
         return selectedResourceIds;
@@ -494,6 +484,30 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setToRemove(List<Long> toRemove) {
         this.toRemove = toRemove;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
 }

@@ -1,5 +1,6 @@
 package org.tdar.struts.action.entity;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +32,9 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     private Long addressId;
     private Address address;
     private String returnUrl;
+    private File file;
+    private String contentType;
+    private String filename;
 
     @SkipValidation
     @WriteableSession
@@ -125,6 +129,30 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
 
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
 }

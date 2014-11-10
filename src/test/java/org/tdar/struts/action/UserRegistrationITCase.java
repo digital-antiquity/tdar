@@ -124,6 +124,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 .iterator().next());
     }
 
+    
     @Test
     @Rollback
     public void testExistingAuthorWithoutLogin() {

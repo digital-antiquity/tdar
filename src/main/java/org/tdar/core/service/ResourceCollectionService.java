@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,6 +39,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.struts.data.FileProxy;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -707,7 +709,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser) {
         // should I do something special?
         for (Resource resource : persistable.getResources()) {
@@ -718,10 +720,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // FIXME: need to handle parents and children
         getDao().delete(persistable);
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
-        
+
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public DeleteIssue getDeletionIssues(TextProvider provider, ResourceCollection persistable) {
         List<ResourceCollection> findAllChildCollections = findDirectChildCollections(persistable.getId(), null, CollectionType.SHARED);
         if (CollectionUtils.isNotEmpty(findAllChildCollections)) {
@@ -732,5 +734,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             return issue;
         }
         return null;
+    }
+
+    @Transactional(readOnly=false)
+    public void saveCollectionForController(ResourceCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
+            List<AuthorizedUser> authorizedUsers, List<Resource> resourcesToAdd, List<Resource> resourcesToRemove, boolean shouldSaveResource, FileProxy fileProxy) {
+        if (persistable.getType() == null) {
+            persistable.setType(CollectionType.SHARED);
+        }
+
+        if (!Objects.equals(parentId, persistable.getParentId())) {
+            updateCollectionParentTo(authenticatedUser, persistable, parent);
+        }
+
+        reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
+        saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
+
     }
 }

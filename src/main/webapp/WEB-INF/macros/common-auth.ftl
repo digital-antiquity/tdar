@@ -126,15 +126,16 @@
 </div>
 </#macro>
 
-
+<#-- print the login form 
+	- showLegend (show the login header)
+	- beanPrefix (the prefix for the login info bean)
+-->
 <#macro login showLegend=false beanPrefix="userLogin">
 
     <@common.antiSpam  />
     <#if showLegend>
         <legend>Login</legend>
     </#if>
-<#-- don't think this does anything
-    <input type="hidden" name="url" value="${Parameters.url!''}"/> -->
     <@s.token name='struts.csrf.token' />
     <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
     <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" />
@@ -147,6 +148,7 @@
     </script>
 </#macro>
 
+<#-- print the Terms of service with the specified bean prefix -->
 <#macro tos beanPrefix>
     <span class="help-block">  </span>
     <label class="checkbox">
@@ -155,4 +157,15 @@
         <@s.a href="${tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
     </label>
 </#macro>
+
+<#-- show a warning if authentication is disabled -->
+<#macro loginWarning>
+<#if !authenticationAllowed>
+ <div class="alert alert-warning">
+ <b>Login to ${siteAcronym} is temporarily unavailable due to system maintence. Please try again later.</b>
+</div>
+</#if>
+
+</#macro>
+
 </#escape>

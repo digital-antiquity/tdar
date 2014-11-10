@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -34,6 +36,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
@@ -238,7 +241,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public int getHostPort() {
         return getTdarConfiguration().getPort();
     }
-    
+
     public String getBaseUrl() {
         return getTdarConfiguration().getBaseUrl();
     }
@@ -657,7 +660,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.freemarkerProcessingTime = freemarkerProcessingTime;
     }
 
-
     public String getTosUrl() {
         return getTdarConfiguration().getTosUrl();
     }
@@ -666,4 +668,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getContributorAgreementUrl();
     }
 
+    public boolean isAuthenticationAllowed() {
+        return getTdarConfiguration().allowAuthentication();
+    }
+
+    public FileProxy generateFileProxy(String filename, File file) {
+        FileProxy fileProxy = new FileProxy(filename, file, VersionType.UPLOADED);
+        return fileProxy;
+    }
 }
