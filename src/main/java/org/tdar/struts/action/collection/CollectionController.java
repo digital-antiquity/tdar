@@ -79,7 +79,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 100;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private int totalRecords;
     private List<Resource> results;
     private SortOption secondarySortField;
@@ -510,4 +510,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.filename = filename;
     }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return 100;
+    }
 }

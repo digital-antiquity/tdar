@@ -39,7 +39,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     private static final long serialVersionUID = 974044619477885680L;
     private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
     private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 100;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private int totalRecords;
     private List<Resource> results;
     private SortOption secondarySortField;
@@ -256,4 +256,8 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         this.projectionModel = projectionModel;
     }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return 100;
+    }
 }

@@ -57,12 +57,14 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -89,7 +91,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.Creator")
 public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage {
+        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage,Slugable {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
@@ -519,7 +521,12 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @JsonView(JsonLookupFilter.class)
     public String getDetailUrl() {
-        return String.format("/%s/%s", getUrlNamespace(), getId());
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(),getSlug());
+    }
+    
+    @Override
+    public String getSlug() {
+        return UrlUtils.slugify(getProperName());
     }
 
     abstract public Set<? extends Creator> getSynonyms();

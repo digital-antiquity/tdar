@@ -50,7 +50,7 @@ import org.tdar.utils.PaginationHelper;
 @Namespace("/project")
 @Component
 @Scope("prototype")
-public class ProjectController extends AbstractResourceController<Project> implements SearchResultHandler<Resource> {
+public class ProjectController extends AbstractResourceController<Project> {
 
     private static final long serialVersionUID = -5625084702553576277L;
 
@@ -67,17 +67,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private transient SearchService searchService;
 
     private String callback;
-    private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
-    private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 100;
-    private int totalRecords;
-    private List<Resource> results;
     private SortOption secondarySortField;
     private SortOption sortField;
-    private String mode = "ProjectBrowse";
-    private PaginationHelper paginationHelper;
-    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
-    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
 
     private InputStream jsonInputStream;
 
@@ -120,32 +111,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
         loadCustomMetadata();
     }
 
-    @Override
-    protected void loadCustomMetadata() throws TdarActionException {
-        if (getPersistable() != null) {
-            ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
-            setSortField(getProject().getSortBy());
-            setSecondarySortField(SortOption.TITLE);
-            if (getProject().getSecondarySortBy() != null) {
-                setSecondarySortField(getProject().getSecondarySortBy());
-            }
-            searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-            Date dateUpdated = getProject().getDateUpdated();
-            if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
-                projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
-            }
-            try {
-                searchService.handleSearch(qb, this, this);
-                bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
-
-            } catch (SearchPaginationException e) {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, e);
-            } catch (Exception e) {
-                addActionErrorWithException(getText("projectController.something_happened"), e);
-            }
-        }
-    }
-
     public Project getProject() {
         return getPersistable();
     }
@@ -167,115 +132,14 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return Project.class;
     }
 
-    @Override
-    public SortOption getSortField() {
-        return this.sortField;
-    }
-
-    @Override
-    public SortOption getSecondarySortField() {
-        return this.secondarySortField;
-    }
-
-    @Override
-    public void setTotalRecords(int resultSize) {
-        this.totalRecords = resultSize;
-    }
-
-    @Override
-    public int getStartRecord() {
-        return this.startRecord;
-    }
-
-    @Override
-    public int getRecordsPerPage() {
-        return this.recordsPerPage;
-    }
-
-    @Override
-    public boolean isDebug() {
-        return false;
-    }
-
-    @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
-    public void setStartRecord(int startRecord) {
-        this.startRecord = startRecord;
-    }
-
-    @Override
-    public void setRecordsPerPage(int recordsPerPage) {
-        this.recordsPerPage = recordsPerPage;
-    }
-
-    @Override
-    public int getTotalRecords() {
-        return totalRecords;
-    }
-
-    @Override
-    public void setResults(List<Resource> results) {
-        getLogger().trace("setResults: {}", results);
-        this.results = results;
-    }
-
-    @Override
-    public List<Resource> getResults() {
-        return results;
-    }
-
     public void setSecondarySortField(SortOption secondarySortField) {
         this.secondarySortField = secondarySortField;
     }
 
-    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.search.query.SearchResultHandler#setMode(java.lang.String)
-     */
-    @Override
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.search.query.SearchResultHandler#getMode()
-     */
-    @Override
-    public String getMode() {
-        return mode;
-    }
-
-    @Override
-    public int getNextPageStartRecord() {
-        return startRecord + recordsPerPage;
-    }
-
-    @Override
-    public int getPrevPageStartRecord() {
-        return startRecord - recordsPerPage;
-    }
-
-    @Override
-    public String getSearchTitle() {
-        return getText("projectController.search_title", getPersistable().getTitle());
-    }
-
-    @Override
-    public String getSearchDescription() {
-        return getSearchTitle();
-    }
 
     public List<SortOption> getSortOptions() {
         List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
@@ -289,47 +153,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
     public List<DisplayOrientation> getResultsOrientations() {
         List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
         return options;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
-        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-        return group;
-    }
-
-    public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null) {
-            paginationHelper = PaginationHelper.withSearchResults(this);
-        }
-        return paginationHelper;
-    }
-
-    public ArrayList<FacetValue> getResourceTypeFacets() {
-        return resourceTypeFacets;
-    }
-
-    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
-        this.resourceTypeFacets = resourceTypeFacets;
-    }
-
-    public ArrayList<ResourceType> getSelectedResourceTypes() {
-        return selectedResourceTypes;
-    }
-
-    public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
-        this.selectedResourceTypes = selectedResourceTypes;
-    }
-
-    @Override
-    public ProjectionModel getProjectionModel() {
-        return projectionModel;
-    }
-
-    public void setProjectionModel(ProjectionModel projectionModel) {
-        this.projectionModel = projectionModel;
     }
 
     public InputStream getJsonInputStream() {

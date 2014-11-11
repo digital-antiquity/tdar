@@ -69,6 +69,7 @@ import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -80,6 +81,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
@@ -119,7 +121,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -129,7 +131,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Integer maxWidth;
     private transient VersionType maxSize;
 
-    
     // private transient boolean readyToIndex = true;
     public enum CollectionType {
         INTERNAL("Internal"),
@@ -230,7 +231,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
     @Field
-    @Column(name="hidden", nullable = false)
+    @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
 
     public ResourceCollection() {
@@ -770,7 +771,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     public String getDetailUrl() {
-        return String.format("/%s/%s", getUrlNamespace(), getId());
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
 
     @Fields({
@@ -781,7 +782,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
         return sb.toString();
     }
-
 
     @Override
     public Integer getMaxHeight() {
@@ -811,5 +811,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Override
     public void setMaxSize(VersionType maxSize) {
         this.maxSize = maxSize;
+    }
+
+    @Override
+    public String getSlug() {
+        return UrlUtils.slugify(getName());
     }
 }

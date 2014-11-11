@@ -430,4 +430,10 @@ public class BrowseCreatorController extends AbstractLookupController implements
         }
         return false;
     }
+
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return DEFAULT_RESULT_SIZE;
+    }
+
 }
