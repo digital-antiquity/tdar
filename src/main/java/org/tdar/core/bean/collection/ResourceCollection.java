@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
@@ -78,10 +79,10 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -118,13 +119,17 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private transient boolean changesNeedToBeLogged = false;
     private transient boolean viewable;
+    private transient Integer maxHeight;
+    private transient Integer maxWidth;
+    private transient VersionType maxSize;
 
+    
     // private transient boolean readyToIndex = true;
     public enum CollectionType {
         INTERNAL("Internal"),
@@ -775,5 +780,36 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
         return sb.toString();
+    }
+
+
+    @Override
+    public Integer getMaxHeight() {
+        return maxHeight;
+    }
+
+    @Override
+    public void setMaxHeight(Integer maxHeight) {
+        this.maxHeight = maxHeight;
+    }
+
+    @Override
+    public Integer getMaxWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    public void setMaxWidth(Integer maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    @Override
+    public VersionType getMaxSize() {
+        return maxSize;
+    }
+
+    @Override
+    public void setMaxSize(VersionType maxSize) {
+        this.maxSize = maxSize;
     }
 }

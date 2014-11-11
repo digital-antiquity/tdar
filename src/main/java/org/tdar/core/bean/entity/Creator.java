@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -61,6 +62,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -87,7 +89,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.Creator")
 public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable, Validatable, Addressable, XmlLoggable {
+        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
@@ -214,7 +216,10 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     private transient Float score = -1f;
     private transient Explanation explanation;
     private transient boolean readyToIndex = true;
-
+    private transient Integer maxHeight;
+    private transient Integer maxWidth;
+    private transient VersionType maxSize;
+    
     // @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
@@ -517,5 +522,36 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
 
-    abstract public Set<? extends Creator> getSynonyms(); 
+    abstract public Set<? extends Creator> getSynonyms();
+
+    @Override
+    public Integer getMaxHeight() {
+        return maxHeight;
+    }
+
+    @Override
+    public void setMaxHeight(Integer maxHeight) {
+        this.maxHeight = maxHeight;
+    }
+
+    @Override
+    public Integer getMaxWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    public void setMaxWidth(Integer maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    @Override
+    public VersionType getMaxSize() {
+        return maxSize;
+    }
+
+    @Override
+    public void setMaxSize(VersionType maxSize) {
+        this.maxSize = maxSize;
+    }
+    
 }

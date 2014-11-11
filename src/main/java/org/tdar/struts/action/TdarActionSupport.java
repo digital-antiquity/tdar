@@ -673,7 +673,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public FileProxy generateFileProxy(String filename, File file) {
-        FileProxy fileProxy = new FileProxy(filename, file, VersionType.UPLOADED);
+        FileProxy fileProxy = null;
+        if (filename != null && file != null) {
+            fileProxy = new FileProxy(filename, file, VersionType.UPLOADED);
+        }
         return fileProxy;
+        
     }
 }

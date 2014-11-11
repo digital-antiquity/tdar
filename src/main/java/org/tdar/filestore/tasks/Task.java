@@ -19,6 +19,8 @@ import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 
+import com.hp.hpl.jena.sparql.pfunction.library.container;
+
 /**
  * @author Adam Brin
  * 
@@ -94,12 +96,14 @@ public interface Task extends Serializable {
             InformationResourceFileVersion version = new InformationResourceFileVersion(type, f.getName(), originalVersion.getVersion(),
                     ctx.getInformationResourceId(), originalVersion.getInformationResourceFileId());
 
-            try {
-                ctx.getFilestore().store(ObjectType.RESOURCE, f, version);
-                version.setTransientFile(f);
-            } catch (IOException e) {
-                getLogger().warn("cannot store version", e);
+            if (ctx.isOkToStoreInFilestore()) {
+                try {
+                    ctx.getFilestore().store(ObjectType.RESOURCE, f, version);
+                } catch (IOException e) {
+                    getLogger().warn("cannot store version", e);
+                }
             }
+            version.setTransientFile(f);
             return version;
         }
 

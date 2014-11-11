@@ -34,6 +34,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -54,7 +55,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private AuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authenticationAndAuthorizationService;
+    @Autowired
+    private transient SimpleFileProcessingDao simpleFileProcessingDao;
 
     /**
      * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
@@ -749,6 +752,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
         saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
-
+        simpleFileProcessingDao.processFileProxyForCreator(persistable, fileProxy);
     }
 }
