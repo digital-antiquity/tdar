@@ -635,6 +635,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // TESTING ANONYMOUS USER
         initAnonymousUser(vc);
         vc.setId(parentCollection.getId());
+        vc.setSlug(parentCollection.getSlug());
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
         collections = vc.getCollections();
@@ -647,6 +648,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc = generateNewController(CollectionViewAction.class);
         init(vc, testPerson);
         vc.setId(parentCollection.getId());
+        vc.setSlug(parentCollection.getSlug());
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
         collections = vc.getCollections();
@@ -795,6 +797,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         searchIndexService.index(document);
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(collection1.getId());
+        vc.setSlug(collection1.getSlug());
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
         logger.info("results: {}", vc.getResults());

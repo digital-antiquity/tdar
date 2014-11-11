@@ -161,7 +161,7 @@
         <to type="temporary-redirect">/scholar/scholar?year=$1</to>
     </rule>
 
-    <rule>
+<!--     <rule>
         <from>^/browse/creators/(\d+)/?$</from>
         <to>/browse/creators?id=$1</to>
     </rule>
@@ -169,7 +169,7 @@
         <from>^/browse/creators\?id=(\d+)$</from>
         <to>/browse/creators/$1</to>
     </outbound-rule>
-
+ -->
     <rule>
         <from>^/browse/creators/(\d+)/rdf</from>
         <to>/browse/creatorRdf?id=$1</to>

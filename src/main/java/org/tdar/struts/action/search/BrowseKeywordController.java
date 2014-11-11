@@ -56,10 +56,10 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private Long id;
     private KeywordType keywordType;
     private Keyword keyword;
+    private DisplayOrientation orientation = DisplayOrientation.LIST_FULL;
     private String slug = "";
     private String slugSuffix = "";
     private String keywordPath = "";
-    private DisplayOrientation orientation = DisplayOrientation.LIST_FULL;
     private boolean redirectBadSlug;
 
     public Keyword getKeyword() {
@@ -100,11 +100,11 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (getKeywordType() == null) {
             addActionError(getText("simpleKeywordAction.type_required"));
         }
+        setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
 
         if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
-        setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
         getLogger().debug("id:{}  slug:{}", getId(), getSlug());
         if (!handleSlugRedirect(keyword, this)) {
             redirectBadSlug = true;

@@ -16,6 +16,9 @@ import org.tdar.struts.data.FileProxy;
 public class SimpleFileProcessingDao {
 
     public void processFileProxyForCreator(HasImage persistable, FileProxy fileProxy) {
+        if (fileProxy == null) {
+            return;
+        }
         // techincally this should use the proxy version of an IRFV, but it's easier here to hack it
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, fileProxy.getFilename(), null);
         version.setTransientFile(fileProxy.getFile());

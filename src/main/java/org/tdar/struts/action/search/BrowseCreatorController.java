@@ -16,9 +16,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -68,12 +70,16 @@ import freemarker.ext.dom.NodeModel;
  * @version $Rev$
  */
 @SuppressWarnings("rawtypes")
-@Namespace("/browse")
+@Namespace("/browse/creators")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-public class BrowseCreatorController extends AbstractLookupController implements Preparable {
+@Results(value= { @Result(location = "../creators.ftl"),
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+        location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
+})
+public class BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
 
     public static final String FOAF_XML = ".foaf.xml";
     public static final String SLASH = "/";
@@ -101,6 +107,11 @@ public class BrowseCreatorController extends AbstractLookupController implements
     private float keywordMean = 0;
     private List<NodeModel> keywords;
     private List<NodeModel> collaborators;
+    private String slug = "";
+    private String slugSuffix = "";
+    private String keywordPath = "";
+    private boolean redirectBadSlug;
+
 
     @Autowired
     private transient AccountService accountService;
@@ -167,17 +178,28 @@ public class BrowseCreatorController extends AbstractLookupController implements
             addActionError(getText("browseCreatorController.creator_does_not_exist"));
         }
         if (Persistable.Base.isNullOrTransient(creator)) {
+            getLogger().debug("not found -- {}", creator);
             throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");
         }
 
         if (Persistable.Base.isTransient(getAuthenticatedUser()) && !creator.isBrowsePageVisible() && !Objects.equals(getAuthenticatedUser(), creator)) {
             throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
-        prepareLuceneQuery();
+        if (!handleSlugRedirect(creator, this)) {
+            redirectBadSlug = true;
+        } else {
+            prepareLuceneQuery();
+        }
     }
 
-    @Action(value = CREATORS, results = { @Result(location = "creators.ftl") })
+    @Actions(value={
+            @Action(value = "{id}"),
+            @Action(value="{id}/{slug}")
+    })
     public String browseCreators() throws ParseException, TdarActionException {
+        if (redirectBadSlug) {
+            return BAD_SLUG;
+        }
 
 
         if (isEditor()) {
@@ -434,6 +456,33 @@ public class BrowseCreatorController extends AbstractLookupController implements
     @Override
     public int getDefaultRecordsPerPage() {
         return DEFAULT_RESULT_SIZE;
+    }
+
+    @Override
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    @Override
+    public String getSlugSuffix() {
+        return slugSuffix;
+    }
+
+    @Override
+    public void setSlugSuffix(String slugSuffix) {
+        this.slugSuffix = slugSuffix;
+    }
+
+    private String getKeywordPath() {
+        return keywordPath;
+    }
+
+    public void setKeywordPath(String keywordPath) {
+        this.keywordPath = keywordPath;
     }
 
 }
