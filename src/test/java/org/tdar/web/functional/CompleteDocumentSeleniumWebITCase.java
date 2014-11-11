@@ -61,7 +61,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     public List<String> alternateTextLookup = new ArrayList<String>();
     public List<String> alternateCodeLookup = new ArrayList<String>();
 
-    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
+    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+\\/(.+)$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
     public CompleteDocumentSeleniumWebITCase() {

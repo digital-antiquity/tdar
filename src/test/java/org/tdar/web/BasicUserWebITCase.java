@@ -82,7 +82,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public void assertViewPage() {
         String url = internalPage.getUrl().toString();
-        assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
+        assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+\\/(.+)$"));
     }
 
     public void assertEditPageForInputResult() {

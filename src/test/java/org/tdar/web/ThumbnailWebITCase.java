@@ -42,7 +42,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String IMAGE_TITLE = "a thumb test";
     public static String DESCRIPTION = "this is a test";
 
-    public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+$";
+    public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+\\/(.+)$";
 
     @Test
     // create image as confidential, then log out and see if we see the image.

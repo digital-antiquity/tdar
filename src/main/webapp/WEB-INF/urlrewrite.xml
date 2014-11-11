@@ -27,10 +27,6 @@
         <to>/services/</to>
     </rule>
 
-    <!-- <rule> <note>removing trailing bad request info from get request</note> 
-        <from>^/(document|dataset|project|image|coding-sheet|ontology|sensory-data)/(\d+)([^1234567890\?#/])(.*)</from> 
-        <to>/$1/$2</to> </rule> -->
-
     <rule>
         <from>^/register</from>
         <to>/account/new</to>
@@ -63,46 +59,6 @@
         <to type="redirect">/search/results?resourceTypes=DATASET&amp;startRecord=0
         </to>
     </rule>
-<!--
-    <rule>
-        <from>^/browse/culture-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=CULTURE_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-    <rule>
-        <from>^/browse/site-name/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=SITE_NAME_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/site-type/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=SITE_TYPE_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/investigation-type/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=INVESTIGATION_TYPE&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/material-type/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=MATERIAL_TYPE&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/geographic-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=GEOGRAPHIC_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/temporal-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=TEMPORAL_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/other-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=OTHER_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
--->
 
     <rule>
         <from>^/(coding-sheet)s?/?$</from>
@@ -161,15 +117,6 @@
         <to type="temporary-redirect">/scholar/scholar?year=$1</to>
     </rule>
 
-<!--     <rule>
-        <from>^/browse/creators/(\d+)/?$</from>
-        <to>/browse/creators?id=$1</to>
-    </rule>
-    <outbound-rule>
-        <from>^/browse/creators\?id=(\d+)$</from>
-        <to>/browse/creators/$1</to>
-    </outbound-rule>
- -->
     <rule>
         <from>^/browse/creators/(\d+)/rdf</from>
         <to>/browse/creatorRdf?id=$1</to>
@@ -285,20 +232,6 @@
     </outbound-rule>
     
 
-<!--     all requests for a resource supplying just an id should go to it's 
-        view action
-    <rule>
-        <from>^/(project|dataset|ontology|image|audio|video|document|sensory-data|coding-sheet|archive|geospatial)/([0-9]+)$
-        </from>
-        <to>/$1/view?id=$2</to>
-    </rule>
-    <outbound-rule>
-        <from>^/(project|dataset|ontology|image|audio|video|document|sensory-data|coding-sheet|archive|geospatial)/view?id=(\d+)$
-        </from>
-        <to>/$1/$2</to>
-    </outbound-rule>
-
- -->
      <rule>
         <from>^/(dataset|sensory-data|geospatial)/([0-9]+)/columns$
         </from>
@@ -309,22 +242,6 @@
         <from>^/(sensory-data|geospatial)/view-row(.*)</from>
         <to>/dataset/view-row$1</to>
     </rule>
-
-<!--     <rule>
-        <from>^/(billing|cart|collection)/([0-9]+)$
-        </from>
-        <to>/$1/view?id=$2</to>
-    </rule>
-    <outbound-rule>
-        <from>^/(billing|cart|collection)/view?id=([0-9]+)$</from>
-        <to>/$1/$2</to>
-    </outbound-rule>
-    <outbound-rule>
-        <from>^/(billing|cart|collection)/([0-9]+)/view$
-        </from>
-        <to>/$1/$2</to>
-    </outbound-rule>
- -->
 
     <rule>
         <from>^/(dashboard)/?$</from>
@@ -359,12 +276,6 @@
     </outbound-rule>
 
 
-    <!-- <rule> <from>^/document/add/([A-Z_]+)$</from> <to>/document/add?documentType=$1</to> 
-        </rule> <outbound-rule> <from>^/document/add\?documentType=([A-Z_]+)$</from> 
-        <to>/document/add/$1</to> </outbound-rule> -->
-    <!-- <rule> <from>^/document/(source|related)/([0-9]+)$</from> <to>/document/$1?linkedResourceId=$2</to> 
-        </rule> <outbound-rule> <from>^/document/(source|related)\?linkedResourceId=([0-9]+)$</from> 
-        <to>/document/$1/$2</to> </outbound-rule> -->
     <rule>
         <from>^/resource/add/([0-9]+)$</from>
         <to>/resource/add?projectId=$1</to>

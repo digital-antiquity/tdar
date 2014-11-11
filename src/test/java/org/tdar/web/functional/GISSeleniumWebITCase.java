@@ -43,7 +43,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     public List<String> alternateTextLookup = new ArrayList<String>();
     public List<String> alternateCodeLookup = new ArrayList<String>();
 
-    public static String REGEX_DATASET_VIEW = ".+\\/geospatial\\/\\d+$";
+    public static String REGEX_DATASET_VIEW = ".+\\/geospatial\\/\\d+\\/(.+)$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DATASET_VIEW);
     public static String REGEX_DATASET_EDIT = ".+\\/geospatial\\/\\d+$";
     public static String REGEX_RESOURCE_SAVE = ".+save.action$";
