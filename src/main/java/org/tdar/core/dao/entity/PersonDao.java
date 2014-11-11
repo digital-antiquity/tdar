@@ -207,7 +207,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     private String getFormattedRoles() {
-        Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
+        Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(null);
         String roles = String.format("'%s'",StringUtils.join(roleSet, "','"));
         return roles;
     }
