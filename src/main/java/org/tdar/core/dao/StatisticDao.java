@@ -2,8 +2,6 @@ package org.tdar.core.dao;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,15 +11,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.utils.Pair;
-
-import com.opensymphony.xwork2.TextProvider;
 
 @Component
 public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {

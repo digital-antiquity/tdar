@@ -7,8 +7,8 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ImageThumbnailTask;
 import org.tdar.struts.data.FileProxy;
 

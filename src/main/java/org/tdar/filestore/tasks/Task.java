@@ -19,8 +19,6 @@ import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 
-import com.hp.hpl.jena.sparql.pfunction.library.container;
-
 /**
  * @author Adam Brin
  * 

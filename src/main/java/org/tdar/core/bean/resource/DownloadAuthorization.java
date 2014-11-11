@@ -1,12 +1,12 @@
 package org.tdar.core.bean.resource;
 
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.Institution;
-
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
 
 /**
  * A downloadauth designates a collection of resources that allow file downloads from unauthenticated users.   Instead, the download request includes
