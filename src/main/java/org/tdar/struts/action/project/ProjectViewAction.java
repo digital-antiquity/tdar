@@ -57,7 +57,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
 
     
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
         super.prepare();
         try {
             handleSearch();

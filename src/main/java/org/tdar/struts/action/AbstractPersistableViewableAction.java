@@ -89,8 +89,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
             })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
-        isViewable();
-        // genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
 
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
@@ -150,11 +148,12 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
      * This method is invoked when the paramsPrepareParamsInterceptor stack is
      * applied. It allows us to fetch an entity from the database based on the
      * incoming resourceId param, and then re-apply params on that resource.
+     * @throws TdarActionException 
      * 
      * @see <a href="http://blog.mattsch.com/2011/04/14/things-discovered-in-struts-2/">Things discovered in Struts 2</a>
      */
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
         P p = null;
         getLogger().debug("{} {}", getPersistableClass(), getId());
         if (isPersistableIdSet()) {
@@ -172,9 +171,11 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
             }
             getLogger().info(String.format(msg, getAuthenticatedUser().getUsername(), "VIEWING", getPersistableClass().getSimpleName(), getId(),status));
         }
+        checkValidRequest();
+        isViewable();
     }
     
-    public void checkValidRequest() throws TdarActionException {
+    private void checkValidRequest() throws TdarActionException {
         if (isAuthenticationRequired()) {
             try {
                 if (!getSessionData().isAuthenticated()) {

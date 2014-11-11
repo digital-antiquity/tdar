@@ -266,7 +266,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         return accounts;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String loadViewMetadata() throws TdarActionException {
         if (getResource() == null) {
