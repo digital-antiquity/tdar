@@ -1,5 +1,6 @@
 package org.tdar.struts.action.entity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
@@ -125,6 +127,15 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
 
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+    }
+
+    @Override
+    public List<Status> getStatuses() {
+        List<Status> statuses = super.getStatuses();
+        statuses.remove(Status.DUPLICATE);
+        statuses.remove(Status.FLAGGED_ACCOUNT_BALANCE);
+        statuses.remove(Status.DRAFT);
+        return statuses;
     }
 
 }
