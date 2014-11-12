@@ -137,21 +137,6 @@
             <h3 id="hModalHeader">{{title}}</h3>
         </div>
         <div class="modal-body">
-            <#-- we want the modal to be about span10 wide. Use this section as a guide.  If it spills into more than 1 row it means you screwed up your css.  -->
-            <#--
-            <div class="row">
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-                <div class="span1">span</div>
-            </div>
-            -->
             <div class="row">
                 <div class="span10">
                     <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur':0} }">

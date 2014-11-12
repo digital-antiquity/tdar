@@ -66,7 +66,6 @@
         <script src="/includes/jquery-ui-${jquery_ui_version}/ui/minified/jquery-ui.min.js"></script>
     </#if>
     <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
-    <#include "${themeDir}/head.dec" />
     ${head}
 
     <@common.globalJavascript />

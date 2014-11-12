@@ -70,6 +70,12 @@
         return dupes.length === 0
     }
 
+    function _setAddAll(arr, objs, propName) {
+        objs.forEach(function(obj) {
+           _setAdd(arr, obj, propName);
+        });
+    }
+
     /**
      * Remove specified item from the specified array
      * @param arr
@@ -89,7 +95,14 @@
     app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', function($scope, ModalService, $http){
         var self = this,
             integration = new Integration(),
-            openModal;
+            openModal,
+            sharedOntologies = {},
+            designatedOntologies = {};
+
+        //fixme: remove later, expose viewmodel for debugging
+        window.__viewModel= self;
+
+        this.integration = integration;
 
         openModal = function(options) {
             ModalService.showModal({
@@ -119,9 +132,6 @@
             });
         };
 
-
-        this.integration = integration;
-
         this.tab = 0;
 
         this.setTab  = function(idx) {
@@ -141,6 +151,14 @@
             console.log(JSON.stringify(integration, null, 4));
         };
 
+        function updateSharedOntologies() {
+            console.log("updateSharedOntologies::");
+        }
+
+        /**
+         * Called after user selects list of dataset id's from 'add datasets' modal.
+         * @param datasetIds
+         */
         this.addDatasets = function(datasetIds) {
             if(datasetIds.length === 0) return;
 
@@ -149,14 +167,9 @@
                     "datasetIds": datasetIds
                 }
             }).success(function(data) {
-                data.forEach(function(datatable) {
-
-                    _setAdd(self.integration.datatables, datatable, "data_table_id");
-                    console.debug("adding %s to datatable list. new size:%s", datatable, integration.datatables.length);
-                });
+                _setAddAll(self.integration.datatables, data.dataTables, "data_table_id");
+                updateSharedOntologies();
             });
-
-
         };
 
         this.addIntegrationColumns = function(ontologyIds) {
