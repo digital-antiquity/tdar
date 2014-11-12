@@ -132,7 +132,9 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @Override
     public List<Status> getStatuses() {
         List<Status> statuses = super.getStatuses();
-        statuses.remove(Status.DUPLICATE);
+        if (getPersistable() != null && getPersistable().getStatus() != Status.DUPLICATE) {
+            statuses.remove(Status.DUPLICATE);
+        }
         statuses.remove(Status.FLAGGED_ACCOUNT_BALANCE);
         statuses.remove(Status.DRAFT);
         return statuses;
