@@ -167,6 +167,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         }
         
         for (Pair<String,String> pair : urls) {
+            logger.debug("url: {}", pair.getFirst());
             gotoPage(pair.getFirst());
 
             //assert that the this page seems like a legit invoice-view page

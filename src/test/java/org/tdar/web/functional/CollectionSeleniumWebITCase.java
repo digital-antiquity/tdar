@@ -41,6 +41,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         // make sure basic user cannot see restricted page
         login();
+        setIgnorePageErrorChecks(true);
         gotoPage(url);
         assertPageNotViewable(titles);
         // add basic user
@@ -51,6 +52,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
         logout();
         // make sure unauthenticated user cannot see
+        setIgnorePageErrorChecks(true);
         gotoPage(url);
         assertPageNotViewable(titles);
         // make sure unauthenticated user can now see
@@ -88,7 +90,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String url = setupCollectionForTest(titles, true);
         gotoEdit(url);
         WebElementSelection select = find(By.id("collection-selector"));
-        String id = url.substring(url.lastIndexOf("/") + 1);
+        url = getCurrentUrl();
+        logger.debug("url:{}", url);
+        
+        String id = url.substring(0,url.lastIndexOf("/edit"));
+        id = id.substring(id.lastIndexOf("/") + 1);
+        logger.debug("id: {}, url: {}", id, url);
         select.val(id);
         clearPageCache();
         Assert.assertTrue(getText().contains(TAG_FAUNAL_WORKSHOP));
@@ -206,7 +213,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     private void gotoEdit(String url) {
-        url = url.substring(0,url.lastIndexOf("/"));
+        url = url.substring(0, url.lastIndexOf("/"));
         gotoPage(url + "/edit");
         // find(By.linkText(" edit")).click();
         waitForPageload();

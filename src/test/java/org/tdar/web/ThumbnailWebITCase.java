@@ -73,6 +73,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace("source of view page: {}", getPageCode());
         assertTextPresent(RESTRICTED_ACCESS_TEXT);
         String viewPage = path;
+        path = path.substring(0,path.lastIndexOf("/"));
         String editPage = path + "/edit";
         logger.debug("view:" + viewPage);
         logger.debug("edit:" + editPage);

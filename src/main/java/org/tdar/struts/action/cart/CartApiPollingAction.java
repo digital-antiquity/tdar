@@ -66,7 +66,7 @@ public class CartApiPollingAction extends AbstractCartController {
 
     }
 
-    @Action("polling-check")
+    @Action("{id}/polling-check")
     /**
      * Simply return the invoice associated with the user's session.  The client will continue polling until the invoice status changes from pending_transaction to success (or failed)
      */

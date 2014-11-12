@@ -87,6 +87,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    public void testSetupCorrect() {
+        ResourceCollection collection = resourceCollectionService.find(1575l);
+        assertFalse(collection.isHidden());
+    }
+    
+    @Test
+    @Rollback
     public void testSparseResource() throws Exception {
         ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
         collection.markUpdated(getAdminUser());

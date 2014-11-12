@@ -221,7 +221,6 @@
         <from>^/ontology/([0-9]+)/([^\?]+)\??(.*)$</from>
         <to>/ontology/node?id=$1&amp;iri=$2&amp;$3</to>
     </rule>
- -->
     <rule>
         <from>^/cart/(\d+)/polling-check</from>
         <to>/cart/polling-check?id=$1</to>
@@ -230,6 +229,7 @@
         <from>^/cart/polling-check?id=(\d+)</from>
         <to>/cart/$1/polling-check</to>
     </outbound-rule>
+ -->
     
 
      <rule>
@@ -270,11 +270,11 @@
         <to>/logout</to>
     </outbound-rule>
 
-    <outbound-rule>
+<!--     <outbound-rule>
         <from>^/browse/creators\?id=(\d+)(.*)</from>
         <to>/browse/creators/$1?$2</to>
     </outbound-rule>
-
+ -->
 
     <rule>
         <from>^/resource/add/([0-9]+)$</from>
