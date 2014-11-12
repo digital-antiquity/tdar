@@ -50,7 +50,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public static final String UPDATE_QUOTAS = "updateQuotas";
     public static final String FIX_FOR_DELETE_ISSUE = "fix";
     public static final String CHOOSE = "choose";
-    public static final String VIEW_ID = "view?id=${id}";
+    public static final String VIEW_ID = "${id}";
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
     private static final String LIST_INVOICES = "listInvoices";

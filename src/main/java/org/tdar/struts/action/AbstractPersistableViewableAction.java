@@ -91,14 +91,13 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         return getGenericService().find(getPersistableClass(), id);
     }
 
-    @SkipValidation
     @HttpOnlyIfUnauthenticated
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
             @Action(value = "{id}")
     })
     public String view() throws TdarActionException {
-        if (redirectBadSlug) {
+        if (isRedirectBadSlug()) {
             return BAD_SLUG;
         }
         String resultName = SUCCESS;
@@ -187,8 +186,12 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         }
         checkValidRequest();
         isViewable();
+        handleSlug();
+    }
+
+    protected void handleSlug() {
         if (!handleSlugRedirect(persistable, this)) {
-            redirectBadSlug = true;
+            setRedirectBadSlug(true);
         } 
     }
 
@@ -374,6 +377,14 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
 
     public void setSlug(String slug) {
         this.slug = slug;
+    }
+
+    public boolean isRedirectBadSlug() {
+        return redirectBadSlug;
+    }
+
+    public void setRedirectBadSlug(boolean redirectBadSlug) {
+        this.redirectBadSlug = redirectBadSlug;
     }
 
 }

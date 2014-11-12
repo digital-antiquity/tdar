@@ -206,6 +206,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     private void gotoEdit(String url) {
+        url = url.substring(0,url.lastIndexOf("/"));
         gotoPage(url + "/edit");
         // find(By.linkText(" edit")).click();
         waitForPageload();

@@ -172,7 +172,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm("Save");
         assertFalse(internalPage.getUrl().toString().contains("save-column-metadata"));
 
-        assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
+        assertTrue(internalPage.getUrl().toString().contains("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
 
         // ensure that changing column metadata didn't implicitly change file access rights
