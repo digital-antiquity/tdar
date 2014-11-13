@@ -3,7 +3,6 @@
     var app,_projects, _collections, _categories, _documentData;
     app = angular.module('integrationApp', ['angularModalService']);
 
-
     //Our integration "Model" object.
     function Integration() {
         var self = this;
@@ -43,7 +42,6 @@
     //fixme: move to init section (or consider moving this to angular 'service')
     _documentData = _loadDocumentData();
 
-
     /**
      * Add specified object to specified array if specified array does not already contain the object.
      *
@@ -77,6 +75,25 @@
     }
 
     /**
+     * Retrieve item from an array (by key), treating array as a set.  Yes, I realize setGet is a stupid function name.  Go away.
+     * @param arr
+     * @param keyName
+     * @param key
+     * @returns  object located by key, or null if not found
+     * @private
+     */
+    function _setGet(arr, keyName, key) {
+        var val = null;
+        for(var i = 0; i < arr.length; i++) {
+            if(arr[i][keyName] === key) {
+                val = arr[i][keyName];
+                break;
+            }
+        }
+        return val;
+    }
+
+    /**
      * Remove specified item from the specified array
      * @param arr
      * @param item
@@ -96,14 +113,17 @@
         var self = this,
             integration = new Integration(),
             openModal,
-            sharedOntologies = {},
             designatedOntologies = {};
 
         //fixme: remove later, expose viewmodel for debugging
         window.__viewModel= self;
 
+        //controller public fields
         this.integration = integration;
+        this.tab = 0;
+        this.sharedOntologies = [];
 
+        //'private' methods
         openModal = function(options) {
             ModalService.showModal({
                 templateUrl: "workspace/modal-dialog.html",
@@ -132,8 +152,8 @@
             });
         };
 
-        this.tab = 0;
 
+        //controller public methods
         this.setTab  = function(idx) {
             this.tab = idx;
         }
@@ -151,7 +171,8 @@
             console.log(JSON.stringify(integration, null, 4));
         };
 
-        function updateSharedOntologies() {
+        function updateSharedOntologies(ontologies) {
+            _setAddAll(self.sharedOntologies, ontologies, "id");
             console.log("updateSharedOntologies::");
         }
 
@@ -163,18 +184,62 @@
             if(datasetIds.length === 0) return;
 
             $http.get('/workspace/ajax/table-details', {
-                "params": {
-                    "datasetIds": datasetIds
+                params: {
+                    datasetIds: datasetIds
                 }
             }).success(function(data) {
                 _setAddAll(self.integration.datatables, data.dataTables, "data_table_id");
-                updateSharedOntologies();
+                updateSharedOntologies(data.sharedOntologies);
             });
         };
 
+        /**
+         * Build list of integration columns.  Called after user selects list of ontology id's.
+         * @param ontologyIds
+         */
         this.addIntegrationColumns = function(ontologyIds) {
+            //If user chooses ontologies that arent (yet) in the sharedOntologies list, we'll need to look them up.
+            var columnsToAdd = [];
+            var missingIds = [];
+            ontologyIds.forEach(function(id){
+                var ontology = _setGet(self.sharedOntologies, "id", id);
+                if(ontology) {
+                    columnsToAdd.push(ontology);
+                } else {
+                    missingIds.push(id);
+                }
+            });
+
+            //Lookup any missing ontologies and then add them to integration.columns.
+            if(missingIds.length) {
+                $http.get("/workspace/ajax/table-details", {
+                    params: {
+                        ontologyIds: missingIds
+                    }
+                }).success(function(data) {
+                    data.forEach(function(ontology){
+                        columnsToAdd.push(ontology);
+                        processAddedIntegrationColumns();
+                    });
+                });
+
+            //if no missing id's add the integration columns immediately
+            } else {
+                processAddedIntegrationColumns(columnsToAdd);
+            }
 
         };
+
+        var processAddedIntegrationColumns = function(ontologies) {
+            ontologies.forEach(function(ontology){
+                //todo: build list of participating dataTable columns.
+                self.integration.columns.push({
+                    type: "integration",
+                    data: ontology,
+                    dataTableColumns: []
+                });
+            });
+        }
 
         this.integrateClicked = function() {
             console.log('integrate clicked');
@@ -216,7 +281,7 @@
                 url: "/workspace/ajax/find-ontologies",
                 categoryFilter: true,
                 close: function(data) {
-                    self.addIntegrationColumns();
+                    self.addIntegrationColumns(data);
                 }
             });
         };

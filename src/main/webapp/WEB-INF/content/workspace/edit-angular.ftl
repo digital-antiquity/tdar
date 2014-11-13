@@ -74,9 +74,10 @@
                                         data-bind="click: removeSelectedDatasetClicked" ng-click="ctrl.removeSelectedDatasetClicked()">Remove Selected Dataset</button>
                             </div>
                             <div class="span4">
-                                <label>Selected Ontologies</label>
+                                <label>Shared Ontologies</label>
                                 <div>
-                                    <select size="10" class="input-xlarge"></select>
+                                    <select size="10" class="input-xlarge"
+                                            ng-model="selectedOntologies" multiple ng-options="ontology.title for ontology in ctrl.sharedOntologies"></select>
                                 </div>
                             </div>
                         </div>
@@ -195,12 +196,13 @@
                                     <td>
                                         <input
                                                 type="checkbox"
+                                                id="cbResult{{result.id}}"
                                                 name="selectedItems[]"
                                                 value="{{result.id}}"
                                                 ng-checked="isSelected(result.id)"
                                                 ng-click="toggleSelection(result.id, this)">
                                     </td>
-                                    <td>{{result.title}}</td>
+                                    <td><label for="cbResult{{result.id}}">{{result.title}}</label></td>
                                     <td>{{result.submitter_display_name}}</td>
                                     <td>{{result.date | date : 'short'}}</td>
                                 </tr>
