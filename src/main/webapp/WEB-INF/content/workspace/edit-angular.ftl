@@ -58,7 +58,6 @@
             </div>
         </div>
 
-
         <div id="divSelectedItemsSection">
             <div class="row">
                 <div class="span12">
@@ -86,7 +85,6 @@
             </div>
         </div>
 
-
         <div id="divColumnSection">
             <div class="row">
                 <div class="span12">
@@ -104,17 +102,48 @@
                                     <li data-bind="css:{'integration-column': type === 'integration', active: $parent.currentColumn === $index}"
                                         ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
                                         <a href="#tab{{$index}}" data-bind="text: name">
-                                            {{column.name}}
+                                            {{column.data.title}}
                                             <button class="close" ng-click="ctrl.closeTab($index)">x</button>
                                         </a>
                                     </li>
                                 </ul>
 
-                                <div class="tab-content" data-bind="foreach: integration.columns" >
+                                <div class="tab-content" >
                                     <div class="tab-pane" id="tab{{$index}}"
-                                         data-bind="css: {active: $parent.currentColumn === $index}"
                                          ng-repeat="column in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}">
-                                            <p>Welcome to tab pane {{column.name}}</p>
+
+                                        <div class=".integration-pane-content">
+
+
+                                            <table class="table table-bordered table-condensed">
+                                                <thead>
+                                                <tr>
+                                                    <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
+                                                    <th rowspan="2" style="width:99%">Node Value</th>
+                                                    <th rowspan="1" style="white-space: nowrap;" colspan="{{column.dataTableColumns.length || 1}}">
+                                                        Datasets
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th ng-repeat="dtc in column.dataTableColumns">{{dtc.data_table_display_name}}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr ng-repeat="node in column.data.nodes">
+                                                    <td><input type="checkbox" name="tbd" ng-checked="node.selected" ng-model="node.selected" id="cbont_{{node.id}}"></td>
+                                                    <td style="white-space: nowrap;">
+                                                        <div class="nodechild{{node.index.split('.').length}}">
+                                                            <label for="cbont_{{node.id}}">{{node.display_name}}</label>
+                                                        </div>
+                                                    </td>
+                                                    <td ng-repeat="val in node.participation track by $index">{{val}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+
+
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -238,7 +267,6 @@ ${allResourceCollectionsJson}
 <script type="application/json" id="allCategories">
 ${categoriesJson}
 </script>
-
 
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <script src="/js/tdar.integration.edit-angular.js"></script>

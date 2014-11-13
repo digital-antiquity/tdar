@@ -10,10 +10,11 @@
         self.title = "";
         self.description = "";
         self.columns = [];
+        self.displayColumns = [];
         self.datatables = [];
         self.ontologies = [];
-
     }
+
 
     //model for search filter that can be used for datasets or ontologies
     function SearchFilter() {
@@ -86,7 +87,7 @@
         var val = null;
         for(var i = 0; i < arr.length; i++) {
             if(arr[i][keyName] === key) {
-                val = arr[i][keyName];
+                val = arr[i];
                 break;
             }
         }
@@ -152,7 +153,6 @@
             });
         };
 
-
         //controller public methods
         this.setTab  = function(idx) {
             this.tab = idx;
@@ -212,15 +212,15 @@
 
             //Lookup any missing ontologies and then add them to integration.columns.
             if(missingIds.length) {
-                $http.get("/workspace/ajax/table-details", {
+                $http.get("/workspace/ajax/ontology-details", {
                     params: {
                         ontologyIds: missingIds
                     }
                 }).success(function(data) {
                     data.forEach(function(ontology){
                         columnsToAdd.push(ontology);
-                        processAddedIntegrationColumns();
                     });
+                    processAddedIntegrationColumns(columnsToAdd);
                 });
 
             //if no missing id's add the integration columns immediately
@@ -231,22 +231,48 @@
         };
 
         var processAddedIntegrationColumns = function(ontologies) {
+            console.debug("processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
                 //todo: build list of participating dataTable columns.
-                self.integration.columns.push({
+                var integrationColumn = {
                     type: "integration",
                     data: ontology,
+                    ontologyId: ontology.id,
                     dataTableColumns: []
-                });
+                };
+                self.integration.columns.push(integrationColumn);
+                var dtcs = self.findDataTableColumns(integrationColumn);
+
             });
         }
 
+        self.findDataTableColumns = function(integrationColumn) {
+            var cols = [];
+            var ontologyId = integrationColumn.ontologyId;
+            //troll through each column of each datatable and determine which ones match the specified ontology in the integrationColumn
+            self.integration.datatables.forEach(function(table) {
+                console.debug("table:%s", table.display_name);
+                table.columns.forEach(function(col){
+                    if(ontologyId === col.id) {
+                        console.log("\t matching ontology:%s table:%s  column:%s", ontologyId, table.display_name, col.name);
+                        cols.push({
+                            id: col.id,
+                            name: col.name,
+                            dataTableColumn: col,
+                            dataTable: table
+                        });
+                    }
+                });
+            });
+            return cols;
+        }
+
         this.integrateClicked = function() {
-            console.log('integrate clicked');
+            console.debug('integrate clicked');
         };
 
         this.addDatasetsClicked = function(arg) {
-            console.log('Add Datasets clicked');
+            console.debug('Add Datasets clicked');
             openModal({
                 title: "Add Datasets",
                 searchType: "dataset",
@@ -273,8 +299,7 @@
         };
 
         this.addIntegrationColumnsClicked = function(arg) {
-            console.log('Add Integration Columns Clicked');
-            integration.columns.push({name: 'integration column: ' + integration.columns.length });
+            console.debug('Add Integration Columns Clicked');
             openModal({
                 title: "Add Ontologies",
                 searchType: "ontology",
@@ -287,7 +312,7 @@
         };
 
         this.addDisplayColumnClicked = function(arg) {
-            console.log('add display column clicked');
+            console.debug('add display column clicked');
             integration.columns.push({name: 'display column: ' + integration.columns.length })
         };
 
@@ -385,7 +410,7 @@
 
         //Execute a search() whenever user updates form control bound to the filter object
         $scope.$watch('filter', function() {
-            console.log("filter changed");
+            console.debug("filter changed");
             $scope.search();
         }, true);
 
