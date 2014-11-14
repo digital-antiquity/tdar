@@ -21,6 +21,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -175,7 +176,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     public void updateOccuranceValues() {
         Session session = getCurrentSession();
-        String roles = getFormattedRoles();
+        String roles = getFormattedRoles(null);
         logger.info("clearing creator occurrence values");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
         logger.info("beginning updates - resource");
@@ -194,20 +195,29 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_INSTITUTION)).executeUpdate();
         logger.info("completed updates");
 
-//        logger.info("beginning updates (2) - resource");
+        // create a temp table for these users and drop them in (much faster than a single query); the 1st temp table is 1:1 with resources, the second is 1:1 with creators.  This is much faster.
         session.createSQLQuery(BROWSE_CREATOR_CREATE_TEMP).executeUpdate();
+        // populate the resource table
         session.createSQLQuery(BROWSE_CREATOR_ACTIVE_USERS_1).executeUpdate();
-        session.createSQLQuery(String.format(BROWSE_CREATOR_ROLES_2, roles)).executeUpdate();
-        session.createSQLQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles)).executeUpdate();
+        roles = getFormattedRoles(CreatorType.PERSON);
+        session.createSQLQuery(String.format(BROWSE_CREATOR_ROLES_2, roles, 1000)).executeUpdate();
+        session.createSQLQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles, 1000)).executeUpdate();
+        // these roles matter less, so they get a negative priority. If someone is "just" the submitter, they are 0, if they have secondary roles or submitter,
+        // they will have a negative value, if they have an authorship equivalent role we get a positive result
+        roles = getFormattedRoles(CreatorType.INSTITUTION);
+        session.createSQLQuery(String.format(BROWSE_CREATOR_ROLES_2, roles, -10)).executeUpdate();
+        session.createSQLQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles, -10)).executeUpdate();
         session.createSQLQuery(BROWSE_CREATOR_IR_FIELDS_4).executeUpdate();
+        // populate the temp_creator table with its values
         session.createSQLQuery(BROWSE_CREATOR_CREATOR_TEMP_5).executeUpdate();
+        // migrate the data from the temp_creator table to the real one
         session.createSQLQuery(BROWSE_CREATOR_UPDATE_CREATOR_6).executeUpdate();
         logger.info("completed updates");
 
     }
 
-    private String getFormattedRoles() {
-        Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(null);
+    private String getFormattedRoles(CreatorType type) {
+        Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(type);
         String roles = String.format("'%s'",StringUtils.join(roleSet, "','"));
         return roles;
     }
