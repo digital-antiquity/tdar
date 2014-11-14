@@ -3,6 +3,7 @@ package org.tdar.struts.action.cart;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
         }
     }
 
-    @Action("view")
+    @Action(value="{id}", results={@Result(name=SUCCESS, location="view.ftl")} )
     public String execute() {
         return SUCCESS;
     }

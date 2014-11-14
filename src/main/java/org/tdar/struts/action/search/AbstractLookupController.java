@@ -63,7 +63,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private String callback;
     private ProjectionModel projectionModel;
     private int minLookupLength = 3;
-    private int recordsPerPage = 10;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private int startRecord = DEFAULT_START;
     private List<I> results = Collections.emptyList();
     private int totalRecords;
@@ -585,4 +585,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.result = result;
     }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return DEFAULT_RESULT_SIZE;
+    }
 }

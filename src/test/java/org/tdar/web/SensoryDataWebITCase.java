@@ -23,7 +23,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
     // FIXME: move this to TestConstants
     public static final String SDOC_FIELD_TITLE = "sensoryData.title";
     public static final String SDOC_FIELD_DESCRIPTION = "sensoryData.description";
-    public static String REGEX_SENSORY_DATA_VIEW = "\\/sensory-data\\/\\d+$";
+    public static String REGEX_SENSORY_DATA_VIEW = "\\/sensory-data\\/\\d+\\/(.+)$";
     HashMap<String, String> sensoryHash = new HashMap<String, String>();
 
     @Test

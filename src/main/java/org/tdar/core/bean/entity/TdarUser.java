@@ -99,6 +99,10 @@ public class TdarUser extends Person {
     @Column(name = "dismissed_notifications_date", nullable = true)
     private Date dismissedNotificationsDate;
 
+    
+//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "owners", targetEntity = Institution.class)
+//    private Set<Institution> managedInstitutions =  new HashSet<>();
+
     public TdarUser() {
     }
 

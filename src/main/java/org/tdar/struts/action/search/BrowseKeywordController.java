@@ -2,13 +2,14 @@ package org.tdar.struts.action.search;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
@@ -26,6 +28,8 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -33,9 +37,12 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/browse")
-public class BrowseKeywordController extends AbstractLookupController<Resource> implements Preparable {
-
-    public static final String BAD_SLUG = "bad-slug";
+@Results(value = {
+        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.FREEMARKER, location = "keywords.ftl"),
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+                location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${slugSuffix}", params = { "ignoreParams", "id,keywordPath,slug" })
+})
+public class BrowseKeywordController extends AbstractLookupController<Resource> implements Preparable, SlugViewAction {
 
     private static final long serialVersionUID = 5267144668224536569L;
 
@@ -49,10 +56,11 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private Long id;
     private KeywordType keywordType;
     private Keyword keyword;
-    private String slug = "";
-    private String suffix = "";
-
     private DisplayOrientation orientation = DisplayOrientation.LIST_FULL;
+    private String slug = "";
+    private String slugSuffix = "";
+    private String keywordPath = "";
+    private boolean redirectBadSlug;
 
     public Keyword getKeyword() {
         return keyword;
@@ -92,54 +100,45 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (getKeywordType() == null) {
             addActionError(getText("simpleKeywordAction.type_required"));
         }
-
+        getLogger().debug("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
+        if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
+        }
         getLogger().debug("id:{}  slug:{}", getId(), getSlug());
+        if (!handleSlugRedirect(keyword, this)) {
+            redirectBadSlug = true;
+        } else {
+            try {
+                prepareLuceneQuery();
+            } catch (Exception e) {
+                addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+            }
+        }
     }
 
-    private String keywordPath = "";
-
-    @Actions({
-        @Action(value = "{keywordPath}/{id}",
-            results = {
-                    @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
-                    @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath,slug"})
-            }),
-            @Action(value = "{keywordPath}/{id}/{slug}",
-                    // params = {"keywordType", "CULTURE_KEYWORD"},
-                    results = {
-                            @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
-                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath,slug"})
-                    }
-            )
+    @Actions(value = {
+            @Action(value = "{keywordPath}/{id}"),
+            @Action(value = "{keywordPath}/{id}/{slug}")
     })
     public String view() {
-        if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
-            return NOT_FOUND;
-        }
-        if (!Objects.equals(keyword.getSlug(), slug)) {
-            getLogger().debug("slug mismatch - watnted:{}   got:{}", keyword.getSlug(), slug);
-            if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != 10) {
-                setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
-            }
+        if (redirectBadSlug) {
             return BAD_SLUG;
         }
+        if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
+            // setOrientation(DisplayOrientation.MAP);
+        }
+        return SUCCESS;
+    }
 
+    private void prepareLuceneQuery() throws ParseException {
         setMode("KeywordBrowse");
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
         rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
-        if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
-            // setOrientation(DisplayOrientation.MAP);
-        }
-        try {
-            setSortField(SortOption.TITLE);
-            searchService.handleSearch(rqb, this, this);
-            bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
-        } catch (Exception e) {
-            addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
-        }
-        return SUCCESS;
+        setSortField(SortOption.TITLE);
+        searchService.handleSearch(rqb, this, this);
+        bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
     }
 
     @Override
@@ -155,6 +154,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         this.orientation = orientation;
     }
 
+    @Override
     public String getSlug() {
         return slug;
     }
@@ -163,12 +163,14 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         this.slug = slug;
     }
 
-    public String getSuffix() {
-        return suffix;
+    @Override
+    public String getSlugSuffix() {
+        return slugSuffix;
     }
 
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
+    @Override
+    public void setSlugSuffix(String slugSuffix) {
+        this.slugSuffix = slugSuffix;
     }
 
     private String getKeywordPath() {
@@ -179,4 +181,8 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         this.keywordPath = keywordPath;
     }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return DEFAULT_RESULT_SIZE;
+    }
 }

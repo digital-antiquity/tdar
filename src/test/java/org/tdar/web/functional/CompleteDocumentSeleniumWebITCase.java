@@ -38,8 +38,8 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
@@ -61,7 +61,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     public List<String> alternateTextLookup = new ArrayList<String>();
     public List<String> alternateCodeLookup = new ArrayList<String>();
 
-    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
+    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+\\/(.+)$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
     public CompleteDocumentSeleniumWebITCase() {

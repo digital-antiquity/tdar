@@ -15,7 +15,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     private int resultSize = 0;
     private int totalRecords = 0;
     private int startRecord = 0;
-    private int recordsPerPage = 20;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private boolean debug;
     private boolean showAll;
     private List<Indexable> results;
@@ -184,4 +184,8 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
         this.projectionModel = projectionModel;
     }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return 20;
+    }
 }

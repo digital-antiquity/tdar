@@ -50,7 +50,6 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
-import com.sun.tools.classfile.Annotation.element_value;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 

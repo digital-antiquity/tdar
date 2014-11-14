@@ -25,14 +25,14 @@ public class URLRedirectWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testProjectSecureToInsecureWithPage() {
-        String part = "project/3805?startRecord=2&recordsPerPage=2";
+        String part = "project/3805/new-philadelphia-archaeology-project?startRecord=2&recordsPerPage=2";
         gotoPage(getSecureUrl(part));
         assertCurrentUrlEquals(getBaseUrl() + part);
     }
 
     @Test
     public void testProjectSecureToInsecure() {
-        String part = "project/3805";
+        String part = "project/3805/new-philadelphia-archaeology-project";
         gotoPage(getSecureUrl(part));
         assertCurrentUrlEquals(getBaseUrl() + part);
     }

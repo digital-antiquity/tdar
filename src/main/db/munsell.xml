@@ -89,8 +89,8 @@
             columnName="sequence_number" newDataType="int4" />
         <modifyDataType tableName="sensory_data_scan"
             columnName="sequence_number" newDataType="int4" />
-<!--        <modifyDataType tableName="sensory_data_scan"
-            columnName="resolution" newDataType="float8" /> -->
+        <!-- <modifyDataType tableName="sensory_data_scan" columnName="resolution" 
+            newDataType="float8" /> -->
     </changeSet>
     <changeSet id="munsell-05" author="abrin">
         <addColumn tableName="creator">
@@ -131,19 +131,14 @@
                 defaultValueBoolean="false" />
         </addColumn>
         <update tableName="collection">
-            <column name="hidden" valueBoolean="true"></column>
-            <where>
-                <whereParams>
-                    <param name="visible" valueBoolean="false" />
-                </whereParams>
-            </where>
+            <column name="hidden" valueBoolean="TRUE" />
+            <where>visible is false</where>
         </update>
     </changeSet>
     <changeSet id="munsell-09" author="abrin">
-	    <dropColumn tableName="collection" columnName="visible"/>
-	</changeSet>    
-    
-        <changeSet id="munsell-08-ab" author="abrin">
+        <dropColumn tableName="collection" columnName="visible" />
+    </changeSet>
+    <changeSet id="munsell-08-ab" author="abrin">
         <comment>Changing database to match hibernate validation requirements</comment>
         <modifyDataType tableName="resource_collection_view_statistics"
             columnName="date_accessed" newDataType="timestamp" />
@@ -158,6 +153,6 @@
         <modifyDataType tableName="sensory_data_scan"
             columnName="resolution" newDataType="varchar(255)" />
     </changeSet>
-    
+
 
 </databaseChangeLog>

@@ -42,7 +42,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String IMAGE_TITLE = "a thumb test";
     public static String DESCRIPTION = "this is a test";
 
-    public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+$";
+    public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+\\/(.+)$";
 
     @Test
     // create image as confidential, then log out and see if we see the image.
@@ -73,6 +73,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace("source of view page: {}", getPageCode());
         assertTextPresent(RESTRICTED_ACCESS_TEXT);
         String viewPage = path;
+        path = path.substring(0,path.lastIndexOf("/"));
         String editPage = path + "/edit";
         logger.debug("view:" + viewPage);
         logger.debug("edit:" + editPage);
@@ -143,7 +144,8 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), statusCode);
         // FIXME: change from Gone->Forbidden changed how tDAR responds and thus
         // redirects to a different page... current URL is null?
-        assertTrue(getCurrentUrlPath().contains("unauthorized")); // we can be on the "edit" page with an error message
+        logger.trace(getPageText());
+        assertTrue(getPageText().contains("Unauthorized")); // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);

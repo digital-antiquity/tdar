@@ -35,6 +35,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.search.SlugViewAction;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -42,7 +43,7 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/collection")
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource> {
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
 
@@ -71,7 +72,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 100;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private int totalRecords;
     private List<Resource> results;
     private SortOption secondarySortField;
@@ -166,6 +167,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
         // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
 
+        getLogger().trace("lucene: end");
+    }
+
+    private void buildLuceneSearch() {
         // the visibilty fence should take care of visible vs. shared above
         ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 getResourceCollection(), getAuthenticatedUser(), this);
@@ -185,7 +190,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
-        getLogger().trace("lucene: end");
     }
 
     @Override
@@ -379,5 +383,15 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public boolean isEditable() {
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
+    
+    @Override
+    public void prepare() throws TdarActionException {
+        super.prepare();
+        buildLuceneSearch();
+    }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return 100;
+    }
 }

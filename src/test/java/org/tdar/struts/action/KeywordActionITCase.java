@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -13,11 +14,11 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     public void testBasicKeywordAction() {
-        BrowseKeywordController bkc = setupController(1L, KeywordType.CULTURE_KEYWORD, null);
+        BrowseKeywordController bkc = setupController(3L, KeywordType.CULTURE_KEYWORD, null, false);
         bkc.view();
     }
 
-    private BrowseKeywordController setupController(long l, KeywordType cultureKeyword, String slug) {
+    private BrowseKeywordController setupController(long l, KeywordType cultureKeyword, String slug,boolean expectNotFound) {
         BrowseKeywordController bkc = generateNewController(BrowseKeywordController.class);
         init(bkc, null);
         bkc.setId(l);
@@ -29,16 +30,23 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
             bkc.prepare();
         } catch (Exception ex) {
             e = ex;
+            logger.error("ex",e);
         }
-        assertEquals(null, e);
+        if (expectNotFound) {
+            Assert.assertTrue(e != null);
+            Assert.assertTrue(e instanceof TdarActionException);
+            Assert.assertTrue(e.getMessage().equals("not found"));
+        } else {
+            assertEquals(null, e);
+        }
         return bkc;
     }
 
     @Test
     public void testKeywordActionInvalidId() {
-        BrowseKeywordController bkc = setupController(1000L, KeywordType.CULTURE_KEYWORD, null);
-        String result = bkc.view();
-        assertEquals(TdarActionSupport.NOT_FOUND, result);
+        BrowseKeywordController bkc = setupController(1000L, KeywordType.CULTURE_KEYWORD, null, true);
+//        String result = bkc.view();
+//        assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test
@@ -46,9 +54,9 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
     public void testKeywordActionStatus() {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
-        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug);
-        String result = bkc.view();
-        assertEquals(TdarActionSupport.NOT_FOUND, result);
+        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
+//        String result = bkc.view();
+//        assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test
@@ -60,10 +68,9 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         // change to draft
         it.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(it);
-        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug);
-        String result = bkc.view();
-        assertEquals(TdarActionSupport.NOT_FOUND, result);
-
+        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
+//        String result = bkc.view();
+//        assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test
@@ -75,7 +82,7 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         // change to draft
         it.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(it);
-        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug);
+        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug,false);
         String result = bkc.view();
         assertEquals(TdarActionSupport.SUCCESS, result);
     }
@@ -88,8 +95,8 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
 
         it.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(it);
-        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug);
-        bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, "1234");
+        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, false);
+        bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, "1234", false);
         String result = bkc.view();
         assertEquals(BrowseKeywordController.BAD_SLUG, result);
     }

@@ -87,6 +87,7 @@ import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
@@ -115,6 +116,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
@@ -168,7 +170,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
-        DeHydratable, XmlLoggable {
+        DeHydratable, XmlLoggable, Slugable {
 
     private static final long serialVersionUID = -230400285817185637L;
 
@@ -1962,7 +1964,11 @@ public class Resource implements Persistable,
     }
 
     public String getDetailUrl() {
-        return String.format("/%s/%s", getUrlNamespace(), getId());
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(),getSlug());
     }
 
+    @Override
+    public String getSlug() {
+        return UrlUtils.slugify(getName());
+    }
 }
