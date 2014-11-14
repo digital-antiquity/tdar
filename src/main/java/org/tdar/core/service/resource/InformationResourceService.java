@@ -99,7 +99,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
     public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
         List<ResourceCollection> collections = null;
         if (Persistable.Base.isNotNullOrTransient(collectionId)) {
-            collections = resourceCollectionDao.findCollectionsOfParent(collectionId, true, CollectionType.SHARED);
+            collections = resourceCollectionDao.findCollectionsOfParent(collectionId, false, CollectionType.SHARED);
             return getDao().findRandomFeaturedResourceInCollection(restrictToFiles, collections, maxResults);
         }
         return findRandomFeaturedResource(restrictToFiles, maxResults);

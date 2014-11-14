@@ -108,7 +108,7 @@
 
         <#else>
             <div data-tiplabel="Title"
-                 data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
+                 data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
                 title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
                 cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
@@ -157,6 +157,9 @@
 
     <div id="citationInformation" class="well-alt">
         <h2>Additional Citation Information</h2>
+        <#if local_.citationInformationToggle?? && local_.citationInformationToggle?is_macro>
+            <@local_.citationInformationToggle />
+        </#if>
 
         <#if resource.resourceType.hasLanguage && !resource.resourceType.document >
             <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
@@ -173,7 +176,7 @@
             </span>
 	
 	        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
-                  conference_presentation="Location" thesis="Department" other="Publisher Loc.">
+                  conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
                 <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='input-xxlarge' />
             </span>
                 </div>

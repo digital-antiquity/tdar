@@ -3,60 +3,66 @@ package org.tdar.search.query.part;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.search.query.QueryFieldNames;
 
 public class InstitutionQueryPart extends FieldQueryPart<Institution> {
 
-    public InstitutionQueryPart() {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private boolean useProximity = true;
+    protected static final float NAME_BOOST = 6f;
+    protected static final float ANY_FIELD_BOOST = 2f;
+
+    public InstitutionQueryPart(Institution institution) {
+        add(institution);
     }
+
 
     @Override
     public String generateQueryString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" ( ");
-        StringBuilder sbauto = new StringBuilder();
-        setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-        for (int i = 0; i < getFieldValues().size(); i++) {
-            appendPhrase(sbauto, i);
+        QueryPartGroup group = new QueryPartGroup(getOperator());
+        for (Institution value : getFieldValues()) {
+            group.append(this.getQueryPart(value));
         }
-        if (sbauto.length() > 0) {
-            constructQueryPhrase(sbauto, "name_auto");
-        }
-        sb.append(sbauto).append(" OR ");
+        return group.generateQueryString();
+    }
 
-        List<String> names = new ArrayList<String>();
-        boolean containsSpaces = false;
-        if (CollectionUtils.isNotEmpty(getFieldValues())) {
-            for (Institution inst : getFieldValues()) {
-                names.add(StringUtils.trim(inst.getName()));
-                if (inst.getName().trim().contains(" ")) {
-                    containsSpaces = true;
-                }
+    protected QueryPartGroup getQueryPart(Institution value) {
+        String cleanedQueryString = getCleanedQueryString(value.getName());
+
+        QueryPartGroup primary = new QueryPartGroup(Operator.OR);
+
+        logger.trace(cleanedQueryString);
+
+        FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME_TOKEN, cleanedQueryString);
+
+        List<String> fields = new ArrayList<String>();
+        for (String txt : StringUtils.split(cleanedQueryString)) {
+            if (!ArrayUtils.contains(QueryPart.LUCENE_RESERVED_WORDS, txt)) {
+                fields.add(txt);
             }
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>("name", Operator.OR, names.toArray(new String[0]));
-            fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            fqp.setBoost(4f);
-            sb.append(" " + fqp.toString());
         }
 
-        StringBuilder sbacro = new StringBuilder();
-        // match ASU, but not "arizona state"
-        if (!containsSpaces) {
-            sb.append(" OR ");
-            for (int i = 0; i < getFieldValues().size(); i++) {
-                appendPhrase(sbacro, i);
-            }
-            if (sbauto.length() > 0) {
-                constructQueryPhrase(sbacro, "acronym");
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.NAME_TOKEN, fields).setBoost(ANY_FIELD_BOOST);
+        allFieldsAsPart.setOperator(Operator.AND);
+        allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
+
+        if (cleanedQueryString.contains(" ")) {
+            titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME_PHRASE, cleanedQueryString);
+            // FIXME: magic words
+            if (useProximity) {
+                titlePart.setProximity(3);
             }
         }
-        sb.append(sbacro).append(" ) ");
-        if ((sbacro.length() == 0) && (sbauto.length() == 0)) {
-            return "";
-        }
-        return sb.toString();
+
+        primary.append(titlePart.setBoost(NAME_BOOST));
+        primary.append(allFieldsAsPart);
+
+        return primary;
     }
 }

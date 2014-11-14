@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Slugable;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -32,8 +37,11 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.action.search.SlugViewAction;
+import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
@@ -65,6 +73,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     // FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
     private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";
 
+    public static final String BAD_SLUG = "bad-slug";
+    public static final String DRAFT = "draft";
     public static final String JAXBRESULT = "jaxbdocument";
     public static final String JSONRESULT = "jsonresult";
     public static final String HTTPHEADER = "httpheader";
@@ -238,7 +248,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public int getHostPort() {
         return getTdarConfiguration().getPort();
     }
-    
+
     public String getBaseUrl() {
         return getTdarConfiguration().getBaseUrl();
     }
@@ -657,7 +667,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.freemarkerProcessingTime = freemarkerProcessingTime;
     }
 
-
     public String getTosUrl() {
         return getTdarConfiguration().getTosUrl();
     }
@@ -666,4 +675,35 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getContributorAgreementUrl();
     }
 
+    public boolean isAuthenticationAllowed() {
+        return getTdarConfiguration().allowAuthentication();
+    }
+
+    public FileProxy generateFileProxy(String filename, File file) {
+        FileProxy fileProxy = null;
+        if (filename != null && file != null) {
+            fileProxy = new FileProxy(filename, file, VersionType.UPLOADED);
+        }
+        return fileProxy;
+
+    }
+
+    public boolean handleSlugRedirect(Persistable p, TdarActionSupport action) {
+        if (p instanceof Slugable && action instanceof SlugViewAction) {
+            Slugable s = (Slugable) p;
+            SlugViewAction a = (SlugViewAction) action;
+            if (!Objects.equals(s.getSlug(), a.getSlug())) {
+                getLogger().debug("slug mismatch - watnted:{}   got:{}", s.getSlug(), a.getSlug());
+                if (action instanceof SearchResultHandler<?>) {
+                    SearchResultHandler<?> r = (SearchResultHandler<?>) action;
+                    if (r.getStartRecord() != SearchResultHandler.DEFAULT_START || r.getRecordsPerPage() != r.getDefaultRecordsPerPage()) {
+                        a.setSlugSuffix(String.format("?startRecord=%s&recordsPerPage=%s", r.getStartRecord(), r.getRecordsPerPage()));
+                    }
+                }
+                return false;
+            }
+
+        }
+        return true;
+    }
 }

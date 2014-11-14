@@ -1,7 +1,6 @@
 package org.tdar.struts.action.entity;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,12 +12,10 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
@@ -106,13 +103,18 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
         }
-        if (hasErrors()) {
-            getLogger().info("errors present, returning INPUT");
-            getLogger().info("actionErrors:{}", getActionErrors());
-            getLogger().info("fieldErrors:{}", getFieldErrors());
-            return INPUT;
-        }
 
+        prepareUserInformation();
+        checkForNonContributorCrud();
+        savePersonInfo(person);
+
+        if (passwordResetRequested) {
+            authenticationService.getAuthenticationProvider().resetUserPassword(person);
+        }
+        return SUCCESS;
+    }
+
+    private void prepareUserInformation() {
         if (StringUtils.isBlank(proxyInstitutionName)) {
             getPersistable().setProxyInstitution(null);
         } else {
@@ -124,15 +126,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         getPersistable().setContributorReason(contributorReason);
         getPersistable().setProxyNote(proxyNote);
         getPersistable().setContributor(contributor);
-        checkForNonContributorCrud();
-
-        savePersonInfo(person);
-        getGenericService().saveOrUpdate(person);
-
-        if (passwordResetRequested) {
-            authenticationService.getAuthenticationProvider().resetUserPassword(person);
-        }
-        return SUCCESS;
     }
 
     // check whether password change was requested and whether it was valid
@@ -182,31 +175,8 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     }
 
     @Override
-    protected void delete(TdarUser persistable) {
-
-        // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
-    }
-
-    @Override
     public Class<TdarUser> getPersistableClass() {
         return TdarUser.class;
-    }
-
-    @Override
-    public String loadViewMetadata() {
-        // nothing to do here, the person record was already loaded by prepare()
-        try {
-            getGroups().addAll(authenticationService.getGroupMembership(getPersistable()));
-        } catch (Throwable e) {
-            getLogger().error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
-        }
-
-        if (!isEditor() && !Persistable.Base.isEqual(getPersistable(), getAuthenticatedUser())) {
-            CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), getPersistable());
-            getGenericService().saveOrUpdate(cvs);
-        }
-
-        return SUCCESS;
     }
 
     public TdarUser getPerson() {

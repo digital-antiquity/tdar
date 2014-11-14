@@ -40,6 +40,8 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -92,6 +94,9 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
+//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "managedinstitutions", targetEntity = TdarUser.class)
+//    private Set<TdarUser> owners = new HashSet<>();
+
     public Institution() {
     }
 
@@ -104,7 +109,11 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     // FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
     @Fields({
             @Field(name = "name_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-            @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
+            @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            @Field(name=QueryFieldNames.NAME_TOKEN),
+            @Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    })
     public String getName() {
         if (parentInstitution != null) {
             return parentInstitution.getName() + " : " + name;

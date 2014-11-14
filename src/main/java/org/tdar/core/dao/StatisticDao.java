@@ -112,23 +112,9 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         return toReturn;
     }
 
-    public void generateAggregateDailyDownloadData(Date date) {
-        String sql = String.format(TdarNamedQueries.DAILY_DOWNLOAD_UPDATE, date);
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
-
-    }
-
-    public void generateAggregateDailyResourceData(Date date) {
-        String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE, date);
-        getLogger().trace(sql);
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
-
-    }
-
     public Number countWeeklyEmails() {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.WEEKLY_EMAIL_STATS);
         query.setParameter("date", DateTime.now().minusDays(7).toDate());
         return (Number) query.uniqueResult();
     }
-
 }

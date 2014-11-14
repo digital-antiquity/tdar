@@ -38,6 +38,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
@@ -60,7 +61,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     public List<String> alternateTextLookup = new ArrayList<String>();
     public List<String> alternateCodeLookup = new ArrayList<String>();
 
-    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
+    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+\\/(.+)$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
     public CompleteDocumentSeleniumWebITCase() {
@@ -170,8 +171,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     public void testAuthUser() {
         gotoPage("/document/add");
         setFieldByName("document.title", "My Sample Document");
-        setFieldByName("document.documentType", "OTHER");
+        setFieldByName("document.documentType", DocumentType.CONFERENCE_PRESENTATION.name());
         setFieldByName("document.description", "A resource description");
+        clearPageCache();
+        assertTrue(getText().contains("Conference Location"));
         setFieldByName("document.date", "1923");
         setFieldByName("projectId", "-1");
         find("#accessRightsRecordsAddAnotherButton").click();

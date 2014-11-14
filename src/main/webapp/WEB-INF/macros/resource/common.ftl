@@ -751,7 +751,7 @@ with that datapoint -->
 
 <#-- emit html for single collection list item -->
     <#macro collectionListItem depth=0 collection=collection showOnlyVisible=false >
-        <#if collection.visible || collection.viewable || showOnlyVisible==false >
+        <#if !collection.hidden || collection.viewable || showOnlyVisible==false >
             <#local clsHidden = "", clsClosed="" >
             <#if (depth < 1)><#local clsHidden = "hidden"></#if>
             <#if ((depth < 1) && (collection.transientChildren?size > 0))><#local clsClosed = "closed"></#if>
@@ -797,10 +797,10 @@ with that datapoint -->
 
 <#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
     <#macro codingRules>
-        <#if codingSheet.id != -1>
+        <#if resource.id != -1>
             <#nested>
         <h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
-            <#if codingSheet.codingRules.isEmpty() >
+            <#if resource.codingRules.isEmpty() >
             <div>
                 No coding rules have been entered for this coding sheet yet.
             </div>
@@ -816,7 +816,7 @@ with that datapoint -->
                     </tr>
                     </thead>
                     <tbody>
-                        <#list codingSheet.sortedCodingRules as codeRule>
+                        <#list resource.sortedCodingRules as codeRule>
                         <tr>
                             <td>${codeRule.code}</td>
                             <td>${codeRule.term}</td>

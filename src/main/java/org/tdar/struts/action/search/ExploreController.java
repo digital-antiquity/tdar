@@ -54,10 +54,6 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class ExploreController extends AbstractLookupController {
 
-    public static final String FOAF_XML = ".foaf.xml";
-    public static final String SLASH = "/";
-    public static final String XML = ".xml";
-    public static final String CREATORS = "creators";
     public static final String EXPLORE = "explore";
 
     private static final long serialVersionUID = -128651515783098910L;
@@ -79,7 +75,6 @@ public class ExploreController extends AbstractLookupController {
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
 
-    private String creatorXml;
     private List<Account> accounts = new ArrayList<Account>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
@@ -222,14 +217,6 @@ public class ExploreController extends AbstractLookupController {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
-    }
-
-    public String getCreatorXml() {
-        return creatorXml;
-    }
-
-    public void setCreatorXml(String creatorXml) {
-        this.creatorXml = creatorXml;
     }
 
     public List<Account> getAccounts() {

@@ -1,5 +1,7 @@
 package org.tdar.struts.action;
 
+import java.io.File;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -7,6 +9,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.struts.action.entity.InstitutionController;
 
@@ -52,6 +55,18 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.setId(inst.getId());
         controller.prepare();
         Assert.assertEquals(newName, controller.getInstitution().getName());
+    }
+    
+    @Test
+    @Rollback
+    public void testSavingInstitutionWithImage() throws Exception {
+        controller.prepare();
+        controller.setName("test institution 123");
+        controller.getInstitution().setDescription("my test description");
+        controller.setFile(new File(TestConstants.TEST_IMAGE));
+        controller.setFilename(TestConstants.TEST_IMAGE_NAME);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
     }
 
     @SuppressWarnings("deprecation")

@@ -2,6 +2,7 @@ package org.tdar.struts.result;
 
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.XmlService;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
@@ -59,8 +61,21 @@ public class XMLDocumentResult implements Result {
         }
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
-        resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
+        if (object_ instanceof Map) {
+            JaxbResultContainer container = new JaxbResultContainer();
+            container.convert((Map<String, Object>) object_, invocation);
+            object_ = container;
+        }
+
+        if (object_ instanceof JaxbResultContainer) {
+            JaxbResultContainer result = (JaxbResultContainer) object_;
+            if (result.getStatusCode() != StatusCode.OK.getHttpStatusCode()) {
+                setStatusCode(result.getStatusCode());
+            }
+        }
+        logger.debug("StatusCode: {}",getStatusCode());
+        resp.setStatus(getStatusCode());
         xmlService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
     }
 

@@ -37,10 +37,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     public void testCollectionPermissionsAndVisible() {
         TestConfiguration config = TestConfiguration.getInstance();
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, false);
+        String url = setupCollectionForTest(titles, true);
         logout();
         // make sure basic user cannot see restricted page
         login();
+        setIgnorePageErrorChecks(true);
         gotoPage(url);
         assertPageNotViewable(titles);
         // add basic user
@@ -51,6 +52,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
         logout();
         // make sure unauthenticated user cannot see
+        setIgnorePageErrorChecks(true);
         gotoPage(url);
         assertPageNotViewable(titles);
         // make sure unauthenticated user can now see
@@ -61,7 +63,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         // change view permission
         loginAdmin();
         gotoEdit(url);
-        setFieldByName("resourceCollection.visible", "true");
+        setFieldByName("resourceCollection.hidden", "false");
         submitForm();
         logout();
         // check that anonymous user can see
@@ -85,10 +87,15 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, false);
+        String url = setupCollectionForTest(titles, true);
         gotoEdit(url);
         WebElementSelection select = find(By.id("collection-selector"));
-        String id = url.substring(url.lastIndexOf("/") + 1);
+        url = getCurrentUrl();
+        logger.debug("url:{}", url);
+        
+        String id = url.substring(0,url.lastIndexOf("/edit"));
+        id = id.substring(id.lastIndexOf("/") + 1);
+        logger.debug("id: {}, url: {}", id, url);
         select.val(id);
         clearPageCache();
         Assert.assertTrue(getText().contains(TAG_FAUNAL_WORKSHOP));
@@ -109,7 +116,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, true);
+        String url = setupCollectionForTest(titles, false);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
         gotoPage("/project/" + _139 + "/edit");
         setFieldByName("status", Status.DELETED.name());
@@ -188,7 +195,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
-        setFieldByName("resourceCollection.visible", visible.toString().toLowerCase());
+        setFieldByName("resourceCollection.hidden", visible.toString().toLowerCase());
         addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
                 + config.getEditorUserId(),
                 GeneralPermissions.MODIFY_RECORD);
@@ -206,6 +213,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     private void gotoEdit(String url) {
+        url = url.substring(0, url.lastIndexOf("/"));
         gotoPage(url + "/edit");
         // find(By.linkText(" edit")).click();
         waitForPageload();

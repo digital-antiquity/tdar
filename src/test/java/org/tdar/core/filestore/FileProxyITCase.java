@@ -26,8 +26,8 @@ import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
-import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 

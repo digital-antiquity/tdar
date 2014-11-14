@@ -13,8 +13,8 @@
 
     <#macro afterBasicInfo>
         <@common.codingRules>
-            <#if codingSheet.defaultOntology?has_content>
-            <p><b>Ontology:</b> <a href='<@s.url value="/${codingSheet.defaultOntology.absoluteUrl}"/>'>${codingSheet.defaultOntology.title}</a></p>
+            <#if resource.defaultOntology?has_content>
+            <p><b>Ontology:</b> <a href='<@s.url value="/${resource.defaultOntology.absoluteUrl}"/>'>${resource.defaultOntology.title}</a></p>
             </#if>
             <@view.categoryVariables />
         </@common.codingRules>

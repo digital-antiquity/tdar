@@ -29,6 +29,7 @@ import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -87,7 +88,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
         // do nothing
     }
 
@@ -439,6 +440,11 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                 return person;
             }
         }
+    }
+
+    @Override
+    public AuthenticationResult checkToken(String token, HttpServletRequest request) {
+        throw new TdarRuntimeException("error.not_implemented");
     }
 
 }

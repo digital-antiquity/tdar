@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -49,6 +50,7 @@ import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -87,6 +89,7 @@ public class XmlService {
     private static final String XSD = ".xsd";
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
+    private static final Class<Class>[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class};
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -126,7 +129,7 @@ public class XmlService {
      */
     public File generateSchema() throws IOException, JAXBException {
         final File tempFile = File.createTempFile(TDAR_SCHEMA, XSD, TdarConfiguration.getInstance().getTempDirectory());
-        JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
+        JAXBContext jc = JAXBContext.newInstance(rootClasses);
 
         // WRITE OUT SCHEMA
         jc.generateSchema(new SchemaOutputResolver() {
@@ -167,7 +170,11 @@ public class XmlService {
 
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.registerModules(new JaxbAnnotationModule());
+        Hibernate4Module hibernate4Module = new Hibernate4Module();
+        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+        mapper.registerModules(hibernate4Module);
         ObjectWriter objectWriter = mapper.writer();
+        
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
             objectWriter = mapper.writerWithView(view);
@@ -253,7 +260,7 @@ public class XmlService {
      * @throws Exception
      */
     public Object parseXml(Reader reader) throws Exception {
-        JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
+        JAXBContext jc = JAXBContext.newInstance(rootClasses);
         final List<String> lines = IOUtils.readLines(reader);
         IOUtils.closeQuietly(reader);
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

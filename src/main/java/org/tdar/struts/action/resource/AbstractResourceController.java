@@ -45,7 +45,6 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
@@ -56,7 +55,6 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
@@ -72,7 +70,6 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -173,7 +170,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
-    private List<ResourceCreatorProxy> contactProxies;
 
     private List<ResourceAnnotation> resourceAnnotations;
 
@@ -203,10 +199,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 authorshipProxies.add(proxy);
             } else {
                 creditProxies.add(proxy);
-            }
-
-            if (ResourceCreatorRole.CONTACT == proxy.getRole()) {
-                getContactProxies().add(proxy);
             }
         }
     }
@@ -281,27 +273,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      */
     public String save() throws TdarActionException {
         setupSubmitterField();
+        setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
         return super.save();
-    }
-
-    @SkipValidation
-    @HttpOnlyIfUnauthenticated
-    @Override
-    @Action(value = VIEW,
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, location = "../resource/view-template.ftl"),
-                    @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
-                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
-            })
-    /**
-     * FIXME: appears to only override the SUCCESS result type compared to AbstractPersistableController's declaration,
-     * see if it's possible to do this with less duplicatiousness
-     * 
-     * @see org.tdar.struts.action.AbstractPersistableController#save()
-     */
-    public String view() throws TdarActionException {
-        return super.view();
     }
 
     @SkipValidation
@@ -357,48 +330,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         loadBasicMetadata();
         loadCustomMetadata();
         return SUCCESS;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public String loadViewMetadata() throws TdarActionException {
-        if (getResource() == null) {
-            return ERROR;
-        }
-        loadBasicViewMetadata();
-        loadCustomViewMetadata();
-        resourceService.updateTransientAccessCount(getResource());
-        // don't count if we're an admin
-        if (!Persistable.Base.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
-            resourceService.incrementAccessCounter(getPersistable());
-        }
-        accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
-        bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());
-        if (isEditor()) {
-            if (getPersistableClass().equals(Project.class)) {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null));
-            } else {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null));
-            }
-        }
-
-        return SUCCESS;
-    }
-
-    @Override
-    public void delete(R resource) {
-        String reason = getDeletionReason();
-        if (StringUtils.isNotEmpty(reason)) {
-            ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, getDeletionReason());
-            resource.getResourceNotes().add(note);
-            getGenericService().save(note);
-        } else {
-            reason = "reason not specified";
-        }
-        String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(),
-                getAuthenticatedUser(), reason);
-
-        resourceService.logResourceModification(resource, getAuthenticatedUser(), logMessage);
     }
 
     @Override
@@ -490,25 +421,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
         return editable;
-    }
-
-    @Override
-    public boolean isViewable() throws TdarActionException {
-        boolean result = authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
-        if (result == false) {
-            if (getResource().isDeleted()) {
-                getLogger().debug("resource not viewable because it is deleted: {}", getResource());
-                throw new TdarActionException(StatusCode.GONE, getText("abstractResourceController.resource_deleted"));
-            }
-
-            if (getResource().isDraft()) {
-                getLogger().trace("resource not viewable because it is draft: {}", getResource());
-                throw new TdarActionException(StatusCode.OK.withResultName(DRAFT),
-                        getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
-            }
-
-        }
-        return result;
     }
 
     protected void saveKeywords() {
@@ -973,13 +885,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             authorshipProxies = new ArrayList<>();
         }
         return authorshipProxies;
-    }
-
-    public List<ResourceCreatorProxy> getContactProxies() {
-        if (CollectionUtils.isEmpty(contactProxies)) {
-            contactProxies = new ArrayList<>();
-        }
-        return contactProxies;
     }
 
     public ResourceCreatorProxy getBlankCreatorProxy() {

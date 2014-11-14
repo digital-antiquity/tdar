@@ -38,6 +38,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -136,6 +137,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      */
     @Override
     @Transient
+    @Fields({
+            @Field(name = QueryFieldNames.NAME_TOKEN),
+            @Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    })
     @JsonView(JsonLookupFilter.class)
     public String getName() {
         return lastName + ", " + firstName;
@@ -393,6 +399,15 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @JsonView(JsonAdminLookupFilter.class)
     public boolean isRegistered() {
         return false;
+    }
+
+    public static Person fromName(String properName) {
+        String[] split = split(properName);
+        if (split.length > 1) {
+            return new Person(split[0], split[1],null);
+        } else {
+            return new Person("",properName, null);
+        }
     }
 
 }

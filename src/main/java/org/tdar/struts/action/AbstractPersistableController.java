@@ -2,8 +2,6 @@ package org.tdar.struts.action;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -14,7 +12,6 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -35,7 +32,6 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -57,7 +53,7 @@ import com.opensymphony.xwork2.Preparable;
  */
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
-    public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
+    public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
 
@@ -69,13 +65,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private AntiSpamHelper h = new AntiSpamHelper();
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
-    private String delete;
-    private String deletionReason;
     private String submitAction;
     private P persistable;
     private Long id;
     private Status status;
     private String saveSuccessPath = "view";
+    private String saveSuccessSuffix = "";
     @SuppressWarnings("unused")
     private Class<P> persistableClass;
     public final static String msg = "%s is %s %s (%s): %s";
@@ -131,82 +126,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return null;
     }
 
-    /**
-     * Override to provide custom deletion logic for the specific kind of
-     * Resource this ResourceController is managing.
-     * 
-     * @param persistable
-     */
-    protected abstract void delete(P persistable);
-
-    protected String deleteCustom() {
-        return SUCCESS;
-    }
-
     protected void loadListData() {
-    }
-
-    public Collection<? extends Persistable> getDeleteIssues() {
-        return Collections.emptyList();
-    }
-
-    @SkipValidation
-    @HttpOnlyIfUnauthenticated
-    @Action(value = VIEW,
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, location = "view.ftl"),
-                    @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
-                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
-            })
-    public String view() throws TdarActionException {
-        String resultName = SUCCESS;
-        // genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
-
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
-
-        resultName = loadViewMetadata();
-        loadExtraViewMetadata();
-        return resultName;
-    }
-
-    /*
-     * override this to load extra metadata for the "view"
-     */
-    public void loadExtraViewMetadata() {
-
-    }
-
-    @SkipValidation
-    @HttpsOnly
-    @Action(value = DELETE,
-            // FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
-            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
-                    @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")
-            })
-    public String delete() throws TdarActionException {
-        getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
-        checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
-        if (isPostRequest() && DELETE.equals(getDelete())) {
-            if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
-                addActionError(getText("abstractPersistableController.cannot_delete"));
-                return CONFIRM;
-            }
-            logAction("DELETING");
-            // FIXME: deleteCustom might as well just return a boolean in this current implementation
-            // should we return the result name specified by deleteCustom() instead?
-            if (deleteCustom() != SUCCESS) {
-                return ERROR;
-            }
-
-            delete(persistable);
-            getGenericService().delete(persistable);
-            return SUCCESS;
-        }
-
-        return CONFIRM;
     }
 
     @SkipValidation
@@ -415,17 +335,15 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return loadEditMetadata();
     }
 
-    public String loadEditMetadata() throws TdarActionException {
-        return loadViewMetadata();
-    }
+    public abstract String loadEditMetadata() throws TdarActionException;
 
     public enum RequestType {
         EDIT(true),
         CREATE(true),
-        DELETE(true),
+//        DELETE(true),
         MODIFY_EXISTING(true),
         SAVE(true),
-        VIEW(false),
+//        VIEW(false),
         NONE(false);
         private final boolean authenticationRequired;
 
@@ -437,17 +355,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             return authenticationRequired;
         }
 
-    }
-
-    /**
-     * Generic method enabling override for whether a record is viewable
-     * 
-     * @return boolean whether the user can VIEW this resource
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isViewable() throws TdarActionException {
-        return true;
     }
 
     @Override
@@ -492,25 +399,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
     }
 
-    /**
-     * Used to signal confirmation of deletion requests.
-     * 
-     * @param delete
-     *            the delete to set
-     */
-    public void setDelete(String delete) {
-        this.delete = delete;
-    }
-
-    /**
-     * this is the "override" that gets set when a user clicks on the "confirm" button to confirm
-     * they want to delete a record
-     * 
-     * @return the delete
-     */
-    public String getDelete() {
-        return delete;
-    }
 
     @Override
     public P getPersistable() {
@@ -567,8 +455,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public void setPersistableClass(Class<P> persistableClass) {
         this.persistableClass = persistableClass;
     }
-
-    public abstract String loadViewMetadata() throws TdarActionException;
 
     protected boolean isNullOrNew() {
         return !isPersistableIdSet();
@@ -695,14 +581,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.submitAction = submitAction;
     }
 
-    public String getDeletionReason() {
-        return deletionReason;
-    }
-
-    public void setDeletionReason(String deletionReason) {
-        this.deletionReason = deletionReason;
-    }
-
     public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {
         return uploadedResourceAccessStatistic;
     }
@@ -751,6 +629,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
         this.authorizedUsersFullNames = authorizedUsersFullNames;
+    }
+
+    public String getSaveSuccessSuffix() {
+        return saveSuccessSuffix;
+    }
+
+    public void setSaveSuccessSuffix(String saveSuccessSuffix) {
+        this.saveSuccessSuffix = saveSuccessSuffix;
     }
 
 }

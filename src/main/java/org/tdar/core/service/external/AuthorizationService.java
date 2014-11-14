@@ -417,7 +417,11 @@ public class AuthorizationService implements Accessible {
      * Visible collections
      */
     public boolean canViewCollection(ResourceCollection collection, Person person) {
-        if (collection.isShared() && collection.isVisible()) {
+        if (collection == null) {
+            return false;
+        }
+        
+        if (collection.isShared() && !collection.isHidden()) {
             return true;
         }
         return authorizedUserDao.isAllowedTo(person, collection, GeneralPermissions.VIEW_ALL);

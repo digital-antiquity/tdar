@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.search.SearchFieldType;
@@ -154,9 +156,26 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testIdSearch() {
         gotoPage(SEARCH_RESULTS_BASE_URL + "?query=&id=" + TestConstants.PROJECT_ID);
     }
+	
+    @Test
+    public void testInstitutionSearch() {
+        gotoPage("/search/institutions?query=Arizona");
+    }
+    @Test
+    public void testPeopleSearch() {
+        gotoPage("/search/people?query=Kintigh");
+    }
 
     @Test
-    public void testLatLongSearch() {
+    public void testLatLongSearch() throws InterruptedException {
+        
+        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
+        latLong.setMaximumLatitude(45.336701909968106);
+        latLong.setMinimumLatitude(32.175612478499325);
+        latLong.setMaximumLongitude(-83.0126953125);
+        latLong.setMinimumLongitude(-93.7412109375);
+        Long draft = setupDocumentWithProject("Philadelphia 1", latLong, Status.ACTIVE, null, null);
+        
         gotoPage(SEARCH_RESULTS_BASE_URL
                 + "?groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B0%5D=ALL_FIELDS&groups%5B0%5D.allFields%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=-85.078125&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=38.341656192795924&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=-92.373046875&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=43.58039085560786&");
         assertTextPresent("Philadelphia");

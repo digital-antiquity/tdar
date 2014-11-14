@@ -22,6 +22,8 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.dataset.ColumnMetadataController;
 
 public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 
@@ -65,7 +67,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 
         DataTable dataTable = dataset.getDataTables().iterator().next();
         DataTableColumn period_ = dataTable.getColumnByDisplayName("Period");
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
         datasetController.setId(datasetId);
         datasetController.prepare();
         datasetController.editColumnMetadata();

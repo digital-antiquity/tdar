@@ -60,7 +60,7 @@ View freemarker macros
         </#if>
         <#global numParents = parentCount />
     <li class="<#if (previewSize <=count)>hidden-nodes</#if>">
-        <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName!ontologyNode.iri}
+        <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/node/${ontologyNode.iri}"/>">${ontologyNode.displayName!ontologyNode.iri}
             <#if ontologyNode.synonyms?has_content>
                 (<#t>
                 <#list ontologyNode.synonyms as synonym><#t>
@@ -226,8 +226,8 @@ View freemarker macros
 
             </#if>
             <#if (resource.totalNumberOfFiles == 0)>
-                <li class="citationNote">This resource is a citation<#if resource.copyLocation?has_content> a physical copy is located
-                    at ${resource.copyLocation}</#if></li>
+                <li class="citationNote"><b>This resource is a citation only.</b><#if resource.copyLocation?has_content> The information that we have indicates that a copy is located
+                    at ${resource.copyLocation}.</#if></li>
             </#if>
         </ul>
         <#if showAll != ''>
@@ -364,7 +364,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
 
-        <#if c?? && c.browsePageVisible > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a><#else>${c.properName}</#if>
+        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a><#else>${c.properName}</#if>
     </#compress>
     </#macro>
 

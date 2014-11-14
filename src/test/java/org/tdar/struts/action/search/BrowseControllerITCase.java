@@ -72,7 +72,8 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         controller = generateNewController(BrowseCreatorController.class);
         controller.setId(person.getId());
         try {
-            controller.prepare();
+           controller.setSlug(person.getSlug());
+           controller.prepare();
             assertEquals(Action.SUCCESS, controller.browseCreators());
         } catch (Exception ex) {
             expectedException = true;
@@ -98,6 +99,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(institution.getId());
+        controller.setSlug(institution.getSlug());
         controller.prepare();
         controller.browseCreators();
         List<Resource> results = controller.getResults();
@@ -135,6 +137,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(creator.getId());
+        controller.setSlug(creator.getSlug());
         controller.prepare();
         assertEquals(Action.SUCCESS, controller.browseCreators());
         assertEquals(creator, controller.getCreator());

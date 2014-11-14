@@ -128,7 +128,7 @@ public class ImageThumbnailTask extends AbstractTask {
 
             throw new TdarRecoverableRuntimeException("imageThumbnailTask.fmt_error_processing_could_not_open", Arrays.asList(filename, msg));
         } else {
-            if (getWorkflowContext().getResourceType().hasDemensions()) {
+            if (getWorkflowContext().getResourceType() == null || getWorkflowContext().getResourceType().hasDemensions()) {
                 version.setHeight(ijSource.getHeight());
                 version.setWidth(ijSource.getWidth());
                 version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
@@ -212,7 +212,6 @@ public class ImageThumbnailTask extends AbstractTask {
                 resolution);
 
         FileOutputStream outputStream = null;
-        mkParentDirs(outputFile);
         try {
             outputStream = new FileOutputStream(outputFile);
         } catch (FileNotFoundException e) {

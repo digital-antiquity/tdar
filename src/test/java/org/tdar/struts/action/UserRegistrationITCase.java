@@ -23,8 +23,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.struts.action.account.UserAccountController;
+import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.login.LoginController;
-import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.action.resource.ResourceController;
 import org.tdar.struts.data.UserLogin;
 import org.tdar.utils.MessageHelper;
@@ -124,6 +124,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 .iterator().next());
     }
 
+    
     @Test
     @Rollback
     public void testExistingAuthorWithoutLogin() {

@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.resource.ArchiveController;
+import org.tdar.struts.action.archive.ArchiveController;
 
 /**
  * The aim of this test is simple: to ensure that the path from TdarActionSupport through to the property file yields the expected results for the

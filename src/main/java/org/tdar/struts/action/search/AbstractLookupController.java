@@ -40,7 +40,7 @@ import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.InstitutionQueryPart;
+import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
@@ -63,7 +63,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private String callback;
     private ProjectionModel projectionModel;
     private int minLookupLength = 3;
-    private int recordsPerPage = 10;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private int startRecord = DEFAULT_START;
     private List<I> results = Collections.emptyList();
     private int totalRecords;
@@ -417,6 +417,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.setLookupSource(LookupSource.PERSON);
         QueryBuilder q = new PersonQueryBuilder(Operator.AND);
         boolean valid = false;
+
         Person incomingPerson = new Person();
         if (checkMinString(firstName)) {
             incomingPerson.setFirstName(firstName);
@@ -509,7 +510,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.setLookupSource(LookupSource.INSTITUTION);
         QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         if (checkMinString(institution)) {
-            InstitutionQueryPart iqp = new InstitutionQueryPart();
+            InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
             Institution testInstitution = new Institution(institution);
             if (StringUtils.isNotBlank(institution)) {
                 iqp.add(testInstitution);
@@ -584,4 +585,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.result = result;
     }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return DEFAULT_RESULT_SIZE;
+    }
 }

@@ -30,8 +30,8 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts.action.resource.OntologyController;
 
 import com.opensymphony.xwork2.Action;
 

@@ -118,4 +118,6 @@ public interface SearchResultHandler<I extends Indexable> {
     @SuppressWarnings("rawtypes")
     List<FacetGroup<? extends Enum>> getFacetFields();
 
+    int getDefaultRecordsPerPage();
+
 }

@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -66,11 +67,16 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
+
+    private static final String USAF_LOWER_CASE = "us air force archaeology and cultural resources archive";
+
+    private static final String USAF_TITLE_CASE = "US Air Force Archaeology and Cultural Resources Archive";
 
     private static final String CONSTANTINOPLE = "Constantinople";
 
@@ -130,6 +136,97 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Resource resource : controller.getResults()) {
             assertTrue("expecting site name for resource", resource.getSiteNameKeywords().contains(snk));
         }
+    }
+
+    @Test
+    public void testResourceCaseSensitivity() {
+        Document doc = createAndSaveNewResource(Document.class);
+        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        titleCase.markUpdated(getAdminUser());
+        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        lowerCase.markUpdated(getAdminUser());
+        ResourceCollection upperCase = new ResourceCollection("USAF", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        upperCase.markUpdated(getAdminUser());
+        ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        usafLowerCase.markUpdated(getAdminUser());
+        doc.setTitle("USAF");
+        updateAndIndex(doc);
+        updateAndIndex(titleCase);
+        updateAndIndex(lowerCase);
+        updateAndIndex(upperCase);
+        updateAndIndex(usafLowerCase);
+        
+        // search lowercase one word
+        controller.setQuery("usaf");
+        doSearch();
+        assertTrue(controller.getResults().contains(doc));
+        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        assertTrue(controller.getCollectionResults().contains(upperCase));
+        doc.setTitle("usaf");
+        resetController();
+        updateAndIndex(doc);
+        
+        // search uppercase one word
+        controller.setQuery("USAF");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        assertTrue(controller.getCollectionResults().contains(upperCase));
+        assertTrue(controller.getResults().contains(doc));
+
+        resetController();
+        // search lowercase phrase
+        controller.setQuery("us air");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        resetController();
+        // search titlecase phrase
+        controller.setQuery("US Air");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        resetController();
+        // search uppercase phrase
+        controller.setQuery("US AIR");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+    
+        // search lowercase middle word
+        controller.setQuery("force");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        // search uppercase middle word
+        controller.setQuery("FORCE");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+}
+
+    @Test
+    public void testTitleCaseSensitivity() {
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.setTitle("usaf");
+        updateAndIndex(doc);
+        firstGroup().setTitles(Arrays.asList("USAF"));
+        doSearch();
+        assertTrue(controller.getResults().contains(doc));
+        doc.setTitle("USAF");
+        updateAndIndex(doc);
+        resetController();
+        firstGroup().setTitles(Arrays.asList("usaf"));
+        doSearch();
+        assertTrue(controller.getResults().contains(doc));
+    }
+
+    private void updateAndIndex(Indexable doc) {
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
     }
 
     @Test
@@ -246,6 +343,77 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     }
 
+    public List<Institution> setupInstitutionSearch() {
+        ArrayList<Institution> insts = new ArrayList<>();
+        String[] names = new String[] {"US Air Force", "Vandenberg Air Force Base", "Air Force Base"};
+        for (String name : names) {
+            Institution institution = new Institution(name);
+            updateAndIndex(institution);
+            insts.add(institution);
+        }
+        return insts;
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchWordPlacement() throws TdarActionException {
+        List<Institution> insts = setupInstitutionSearch();
+        controller.setQuery("Air Force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+
+        resetController();
+        controller.setQuery("Force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchCaseInsensitive() throws TdarActionException {
+        List<Institution> insts = setupInstitutionSearch();
+        controller.setQuery("air force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+        resetController();
+        controller.setQuery("force");
+        controller.searchInstitutions();
+        assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
+    }
+
+    @Test
+    @Rollback
+    public void testPersonRelevancy() throws TdarActionException {
+        List<Person> people = new ArrayList<>();
+        Person whelan = new Person("Mary", "Whelan",null);
+        people.add(whelan);
+        Person mmc = new Person("Mary", "McCready",null);
+        Person mmc2 = new Person("McCready","Mary",null);
+        people.add(mmc);
+        people.add(new Person("Doug", "Mary",null));
+        people.add(mmc2);
+        people.add(new Person("Mary", "Robbins-Wade",null));
+        people.add(new Person("Robbins-Wade", "Mary",null));
+        for (Person p : people) {
+            updateAndIndex(p);
+        }
+        controller.setQuery("Mary Whelan");
+        controller.searchPeople();
+        List<Person> results = ((List<Person>)(List<?>)controller.getResults());
+        logger.debug("Results: {}", results);
+        assertTrue(results.get(0).equals(whelan));
+        assertTrue(results.size() == 1);
+        
+        resetController();
+        controller.setQuery("Mary McCready");
+        controller.searchPeople();
+        results = ((List<Person>)(List<?>)controller.getResults());
+        logger.debug("Results: {}", results);
+        assertTrue(results.contains(mmc));
+        assertTrue(results.contains(mmc2));
+        assertTrue(results.size() == 2);
+    }
     @Test
     @Rollback
     public void testApprovedSiteTypeKeywords() {
@@ -483,19 +651,20 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testTitleSiteCodeMatching() {
-        List<String> titles = Arrays.asList("Pueblo Grande (AZ U:9:1(ASM)): Unit 12, Gateway and 44th Streets: SSI Kitchell Testing, Photography Log (PHOTO) Data (1997)", 
-                "Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)", 
-                "Phase 2 Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, the Former Maricopa County Sheriff’s Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)", 
-                "Final Data Recovery And Burial Removal At Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa Counry Sheriff's Substation, Washington And 48th Streets, Phoenix, Arizona (2008)", 
-                "Pueblo Grande (AZ U:9:1(ASM)): Unit 15, Washington and 48th Streets: Soil Systems, Inc. Kitchell Development Testing and Data Recovery (The Former Maricopa County Sheriff's Substation) ", 
-                "Archaeological Testing of Unit 13 at Pueblo Grande, AZ U:9:1(ASM), Arizona Federal Credit Union Property, 44th and Van Buren Streets, Phoenix, Maricopa County, Arizona (1998)", 
-                "Archaeological Testing And Burial Removal Of Unit 11 At Pueblo Grande, AZ U:9:1(ASM), DMB Property, 44th And Van Buren Streets, Phoenix, Maricopa County, Arizona -- DRAFT REPORT (1998)", 
-                "Pueblo Grande (AZ U:9:1(ASM)): Unit 13, Northeast Corner of Van Buren and 44th Streets: Soil Systems, Inc. AZ Federal Credit Union Testing and Data Recovery Project ", 
-                "POLLEN AND MACROFLORAL ANAYSIS AT THE WATER USERS SITE, AZ U:6:23(ASM), ARIZONA (1990)", 
-                "Partial Data Recovery and Burial Removal at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (2002)", 
-                "MACROFLORAL AND PROTEIN RESIDUE ANALYSIS AT SITE AZ U:15:18(ASM), CENTRAL ARIZONA (1996)", 
-                "Pueblo Grande (AZ U:9:1(ASM)) Soil Systems, Inc. Master Provenience Table: Projects, Unit Numbers, and Feature Numbers (2008)");
-        
+        List<String> titles = Arrays
+                .asList("Pueblo Grande (AZ U:9:1(ASM)): Unit 12, Gateway and 44th Streets: SSI Kitchell Testing, Photography Log (PHOTO) Data (1997)",
+                        "Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
+                        "Phase 2 Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, the Former Maricopa County Sheriff’s Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
+                        "Final Data Recovery And Burial Removal At Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa Counry Sheriff's Substation, Washington And 48th Streets, Phoenix, Arizona (2008)",
+                        "Pueblo Grande (AZ U:9:1(ASM)): Unit 15, Washington and 48th Streets: Soil Systems, Inc. Kitchell Development Testing and Data Recovery (The Former Maricopa County Sheriff's Substation) ",
+                        "Archaeological Testing of Unit 13 at Pueblo Grande, AZ U:9:1(ASM), Arizona Federal Credit Union Property, 44th and Van Buren Streets, Phoenix, Maricopa County, Arizona (1998)",
+                        "Archaeological Testing And Burial Removal Of Unit 11 At Pueblo Grande, AZ U:9:1(ASM), DMB Property, 44th And Van Buren Streets, Phoenix, Maricopa County, Arizona -- DRAFT REPORT (1998)",
+                        "Pueblo Grande (AZ U:9:1(ASM)): Unit 13, Northeast Corner of Van Buren and 44th Streets: Soil Systems, Inc. AZ Federal Credit Union Testing and Data Recovery Project ",
+                        "POLLEN AND MACROFLORAL ANAYSIS AT THE WATER USERS SITE, AZ U:6:23(ASM), ARIZONA (1990)",
+                        "Partial Data Recovery and Burial Removal at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (2002)",
+                        "MACROFLORAL AND PROTEIN RESIDUE ANALYSIS AT SITE AZ U:15:18(ASM), CENTRAL ARIZONA (1996)",
+                        "Pueblo Grande (AZ U:9:1(ASM)) Soil Systems, Inc. Master Provenience Table: Projects, Unit Numbers, and Feature Numbers (2008)");
+
         List<Document> docs = new ArrayList<>();
         List<Document> badMatches = new ArrayList<>();
         for (String title : titles) {
@@ -515,12 +684,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         controller.setRecordsPerPage(1000);
         doSearch();
         List<Resource> results = controller.getResults();
-        logger.debug("results: {}",results);
-        assertTrue("controller should not contain titles with MACROFLORAL",CollectionUtils.containsAny(results, badMatches));
-        assertTrue("controller should not contain titles with MACROFLORAL",CollectionUtils.containsAll(results.subList(results.size()-3, results.size()), badMatches));
-        
+        logger.debug("results: {}", results);
+        assertTrue("controller should not contain titles with MACROFLORAL", CollectionUtils.containsAny(results, badMatches));
+        assertTrue("controller should not contain titles with MACROFLORAL",
+                CollectionUtils.containsAll(results.subList(results.size() - 3, results.size()), badMatches));
+
     }
-    
+
     @Test
     @Rollback(true)
     public void testResultCountsAdmin() {
@@ -766,16 +936,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
      * lucene translates dates to utc prior to indexing. When performing a search the system must similarly transform the begin/end
      * dates in a daterange
      */
-    @Test @Rollback public void testTimezoneEdgeCase() {
+    @Test
+    @Rollback
+    public void testTimezoneEdgeCase() {
         Resource doc = createAndSaveNewInformationResource(Document.class);
         DateTime createDateTime = new DateTime(2005, 3, 26, 23, 0, 0, 0);
-        DateTime searchDateTime = new DateTime(2005, 3, 26,  0, 0, 0, 0);
+        DateTime searchDateTime = new DateTime(2005, 3, 26, 0, 0, 0, 0);
         doc.setDateCreated(createDateTime.toDate());
         doc.setDateUpdated(createDateTime.toDate());
         genericService.saveOrUpdate(doc);
         genericService.synchronize();
 
-        //converstion from MST to UTC date advances registration date by one day.
+        // converstion from MST to UTC date advances registration date by one day.
         searchIndexService.flushToIndexes();
         DateRange dateRange = new DateRange();
         dateRange.setStart(searchDateTime.toDate());
@@ -785,22 +957,20 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doSearch();
         assertThat(controller.getResults(), contains(doc));
 
-        //if we advance the search begin/end by one day, we should not see it in search results
+        // if we advance the search begin/end by one day, we should not see it in search results
         dateRange.setStart(searchDateTime.plusDays(1).toDate());
         dateRange.setEnd(searchDateTime.plusDays(2).toDate());
         resetController();
         firstGroup().getRegisteredDates().add(dateRange);
         assertThat(controller.getResults(), not(contains(doc)));
 
-        //if we decrement the search begin/end by one day, we should not see it in search results
+        // if we decrement the search begin/end by one day, we should not see it in search results
         dateRange.setStart(searchDateTime.minusDays(1).toDate());
         dateRange.setEnd(searchDateTime.toDate());
         resetController();
         firstGroup().getRegisteredDates().add(dateRange);
         assertThat(controller.getResults(), not(contains(doc)));
     }
-
-
 
     @Test
     @Rollback
@@ -1224,7 +1394,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         assertThat(sparseCollection.getTitle(), equalTo(firstGroup().getCollections().get(0).getTitle()));
     }
-
 
     private void assertOnlyResultAndProject(InformationResource informationResource) {
         doSearch();

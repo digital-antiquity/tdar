@@ -64,7 +64,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * @param kettleInputPath
      *            the control file output directory: allows us to override the one read from the property file.
      */
-    protected void setKettleInputPath(String kettleInputPath) {
+    protected void setKettleInputPathOverride(String kettleInputPath) {
         this.kettleInputPath = kettleInputPath;
     }
 
@@ -147,7 +147,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
         controlFileOuputDir = new File(kettleInputPath);
         if (!isDirectoryWritable(controlFileOuputDir)) {
-            recordErrorAndExit("Can not write to kettle input directory: " + controlFileOuputDir);
+            recordErrorAndExit("Can not write to kettle input directory: " + controlFileOuputDir.getCanonicalPath());
         }
 
         // do we have a directory to write our copies to?

@@ -1267,7 +1267,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             toReturn.put(INVOICE_ID, getValue(INVOICE_ID));
             assertCurrentUrlContains("process-payment-request");
             clickLinkWithText("Click Here To Begin Payment Process");
-            URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + toReturn.get(INVOICE_ID));
+            URL polingUrl = new URL(getBaseUrl() + "/cart/" + toReturn.get(INVOICE_ID) + "/polling-check");
             String response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
             checkInput(NelnetTransactionItem.getInvoiceIdKey(), toReturn.get(INVOICE_ID));
@@ -1388,10 +1388,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             deleteUser(username);
         }
         gotoPage("/");
-        logger.debug(getPageText());
+        logger.trace(getPageText());
 
         clickLinkOnPage("Sign Up");
-        logger.debug(getPageCode());
+        logger.trace(getPageCode());
         for (String key : values.keySet()) {
             setInput(key, values.get(key));
         }

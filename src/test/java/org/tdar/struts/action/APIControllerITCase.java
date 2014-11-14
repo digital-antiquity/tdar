@@ -51,6 +51,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.api.APIController;
 import org.tdar.utils.TestConfiguration;
 
 import com.opensymphony.xwork2.Action;
@@ -153,26 +154,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     }
 
-    // // return some public resource collections
-    // private List<ResourceCollection> getSomeResourceCollections() throws InstantiationException, IllegalAccessException {
-    // int count = 5;
-    // List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
-    // for (int i = 0; i < count; i++) {
-    // String email = "someperson" + i + "@tdar.net";
-    // Person person = entityService.findByEmail(email);
-    // if (person == null) {
-    // person = createAndSaveNewPerson(email, "someperson");
-    // }
-    // Document document = createAndSaveNewInformationResource(Document.class, person);
-    // ResourceCollection rc = new ResourceCollection(document, getAdminUser());
-    // rc.setName("test collection " + i);
-    // rc.setSortBy(SortOption.TITLE);
-    // resourceCollectionService.saveOrUpdate(rc);
-    // resourceCollections.add(rc);
-    // }
-    // return resourceCollections;
-    // }
-
     @Test
     @Rollback
     public void testNewRecord() throws Exception {
@@ -193,7 +174,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
     }
 
-    private void removeInvalidFields(Resource doc) {
+    public static void removeInvalidFields(Resource doc) {
         if (doc instanceof Dataset) {
             ((Dataset) doc).getDataTables().clear();
         }

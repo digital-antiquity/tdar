@@ -16,9 +16,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -68,12 +70,16 @@ import freemarker.ext.dom.NodeModel;
  * @version $Rev$
  */
 @SuppressWarnings("rawtypes")
-@Namespace("/browse")
+@Namespace("/browse/creators")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-public class BrowseCreatorController extends AbstractLookupController implements Preparable {
+@Results(value= { @Result(location = "../creators.ftl"),
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+        location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
+})
+public class BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
 
     public static final String FOAF_XML = ".foaf.xml";
     public static final String SLASH = "/";
@@ -101,6 +107,11 @@ public class BrowseCreatorController extends AbstractLookupController implements
     private float keywordMean = 0;
     private List<NodeModel> keywords;
     private List<NodeModel> collaborators;
+    private String slug = "";
+    private String slugSuffix = "";
+    private String keywordPath = "";
+    private boolean redirectBadSlug;
+
 
     @Autowired
     private transient AccountService accountService;
@@ -167,19 +178,29 @@ public class BrowseCreatorController extends AbstractLookupController implements
             addActionError(getText("browseCreatorController.creator_does_not_exist"));
         }
         if (Persistable.Base.isNullOrTransient(creator)) {
+            getLogger().debug("not found -- {}", creator);
             throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Action(value = CREATORS, results = { @Result(location = "creators.ftl") })
-    public String browseCreators() throws ParseException, TdarActionException {
 
         if (Persistable.Base.isTransient(getAuthenticatedUser()) && !creator.isBrowsePageVisible() && !Objects.equals(getAuthenticatedUser(), creator)) {
             throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
+        if (!handleSlugRedirect(creator, this)) {
+            redirectBadSlug = true;
+        } else {
+            prepareLuceneQuery();
+        }
+    }
 
-        QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
+    @Actions(value={
+            @Action(value = "{id}"),
+            @Action(value="{id}/{slug}")
+    })
+    public String browseCreators() throws ParseException, TdarActionException {
+        if (redirectBadSlug) {
+            return BAD_SLUG;
+        }
+
 
         if (isEditor()) {
             if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
@@ -205,29 +226,6 @@ public class BrowseCreatorController extends AbstractLookupController implements
             getGenericService().saveOrUpdate(cvs);
         }
 
-        setPersistable(creator);
-        setMode("browseCreators");
-        setSortField(SortOption.RESOURCE_TYPE);
-        if (Persistable.Base.isNotNullOrTransient(creator)) {
-            String descr = getText("browseController.all_resource_from", creator.getProperName());
-            setSearchDescription(descr);
-            setSearchTitle(descr);
-            setRecordsPerPage(50);
-            try {
-                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
-                handleSearch(queryBuilder);
-                bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
-
-            } catch (SearchPaginationException spe) {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
-            } catch (TdarRecoverableRuntimeException tdre) {
-                getLogger().warn("search parse exception", tdre);
-                addActionError(tdre.getMessage());
-            } catch (ParseException e) {
-                getLogger().warn("search parse exception", e);
-            }
-
-        }
 
         FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
         try {
@@ -251,6 +249,34 @@ public class BrowseCreatorController extends AbstractLookupController implements
         // reset fields which can be broken by the searching hydration obfuscating things
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void prepareLuceneQuery() throws TdarActionException {
+        QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
+        setPersistable(creator);
+        setMode("browseCreators");
+        setSortField(SortOption.RESOURCE_TYPE);
+        if (Persistable.Base.isNotNullOrTransient(creator)) {
+            String descr = getText("browseController.all_resource_from", creator.getProperName());
+            setSearchDescription(descr);
+            setSearchTitle(descr);
+            setRecordsPerPage(50);
+            try {
+                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+                handleSearch(queryBuilder);
+                bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+
+            } catch (SearchPaginationException spe) {
+                throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
+            } catch (TdarRecoverableRuntimeException tdre) {
+                getLogger().warn("search parse exception", tdre);
+                addActionError(tdre.getMessage());
+            } catch (ParseException e) {
+                getLogger().warn("search parse exception", e);
+            }
+
+        }
     }
 
     public Creator getCreator() {
@@ -418,6 +444,45 @@ public class BrowseCreatorController extends AbstractLookupController implements
 
     public void setUploadedResourceAccessStatistic(ResourceSpaceUsageStatistic uploadedResourceAccessStatistic) {
         this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
+    }
+
+    public boolean isEditorOrSelf() {
+        if (isEditor() || getCreator().equals(getAuthenticatedUser())) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return DEFAULT_RESULT_SIZE;
+    }
+
+    @Override
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    @Override
+    public String getSlugSuffix() {
+        return slugSuffix;
+    }
+
+    @Override
+    public void setSlugSuffix(String slugSuffix) {
+        this.slugSuffix = slugSuffix;
+    }
+
+    private String getKeywordPath() {
+        return keywordPath;
+    }
+
+    public void setKeywordPath(String keywordPath) {
+        this.keywordPath = keywordPath;
     }
 
 }

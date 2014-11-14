@@ -38,7 +38,7 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     private transient SearchService searchService;
 
     private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 100;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private int totalRecords;
     private List<Resource> results;
     private SortOption secondarySortField;
@@ -181,4 +181,8 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         return null;
     }
 
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return 100;
+    }
 }

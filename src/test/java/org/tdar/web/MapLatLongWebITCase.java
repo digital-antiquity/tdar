@@ -10,7 +10,6 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -18,12 +17,10 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 
 public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    private static final String LAT_LONG_SECURITY_TEST = "latLongSecurityTest";
     private static final String RESOURCE_WITH_NORMAL = "resource with normal";
     private static final String RESOURCE_WITH_DRAFT = "resource with draft";
     private static final String RESOURCE_WITH_OBFUSCATED_LAT_LONG = "resource with obfuscated latLong";
     private static final String RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE = "resource with normal latLong and confidential file";
-    private static final String TEST_SECURITY_COLLECTION = "test security collection";
     public static String REGEX_DOCUMENT_VIEW = "/document/(\\d+)$";
 
     @Test
@@ -34,7 +31,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
         setInput("resourceCollection.description", "test for map secuity");
         setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
-        setInput("resourceCollection.visible", "true");
+        setInput("resourceCollection.hidden", "false");
         setInput("authorizedUsers[0].user.id", getBasicUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
@@ -120,39 +117,5 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         return htmlPage.getElementById("resource-" + confidentialFile);
     }
 
-    private Long setupDocumentWithProject(String resourceName, LatitudeLongitudeBox latLong, Status status, File file, FileAccessRestriction access) {
-        String ticketId = getPersonalFilestoreTicketId();
-        if (file != null) {
-            uploadFileToPersonalFilestore(ticketId, file.getAbsolutePath());
-        }
-
-        gotoPage("/document/add");
-        setInput("document.title", resourceName);
-        setInput("document.description", "hi mom");
-        setInput("document.date", "1999");
-        setInput("document.documentType", "OTHER");
-        setInput("projectId", TestConstants.PARENT_PROJECT_ID.toString());
-        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
-        }
-        setInput("uncontrolledSiteTypeKeywords[0]", LAT_LONG_SECURITY_TEST);
-        if (latLong != null) {
-            setInput("latitudeLongitudeBoxes[0].maximumLatitude", latLong.getMaximumLatitude());
-            setInput("latitudeLongitudeBoxes[0].maximumLongitude", latLong.getMaximumLongitude());
-            setInput("latitudeLongitudeBoxes[0].minimumLatitude", latLong.getMinimumLatitude());
-            setInput("latitudeLongitudeBoxes[0].minimumLongitude", latLong.getMinimumLongitude());
-        }
-        if (status != null) {
-            setInput("status", status.name());
-        }
-
-        setInput("resourceCollections[0].name", TEST_SECURITY_COLLECTION);
-        if (file != null) {
-            setInput("ticketId", ticketId);
-            addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, file.getName());
-        }
-        submitForm();
-        return extractTdarIdFromCurrentURL();
-    }
 
 }

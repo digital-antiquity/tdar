@@ -1,16 +1,10 @@
 package org.tdar.struts.action.entity;
 
-import java.util.Date;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
@@ -36,9 +30,8 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
 
     @Override
     public String loadEditMetadata() throws TdarActionException {
-        String ret = super.loadEditMetadata();
         email = getPersistable().getEmail();
-        return ret;
+        return SUCCESS;
     }
 
     public void validateUniqueEmail() {
@@ -72,61 +65,25 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     }
 
     protected String savePersonInfo(Person person) {
-        if (!StringUtils.equals(email, getPersistable().getEmail())) {
-            getPersistable().setEmail(email);
-        }
         if (hasErrors()) {
             getLogger().info("errors present, returning INPUT");
             getLogger().info("actionErrors:{}", getActionErrors());
             getLogger().info("fieldErrors:{}", getFieldErrors());
             return INPUT;
         }
-        getLogger().debug("saving person: {} with institution {} ", person, institutionName);
-        if (StringUtils.isBlank(institutionName)) {
-            person.setInstitution(null);
+        try {
+            entityService.savePersonforController(person, getEmail(), getInstitutionName(), generateFileProxy(getFilename(), getFile()));
+        } catch (Exception e) {
+            addActionError(e.getLocalizedMessage());
+            return INPUT;
         }
-        else {
-            // if the user changed the person's institution, find or create it
-            Institution persistentInstitution = entityService.findOrSaveCreator(new Institution(institutionName));
-            getLogger().debug("setting institution to persistent: " + persistentInstitution);
-            person.setInstitution(persistentInstitution);
-        }
-
-        getGenericService().saveOrUpdate(person);
-
-        // If the user is editing their own profile, refresh the session object if needed
         return SUCCESS;
     }
-
-    @Override
-    public boolean isViewable() throws org.tdar.struts.action.TdarActionException {
-        if (!isEditable()) {
-            throw new TdarActionException(StatusCode.UNAUTHORIZED, getText("abstractPersistableController.unable_to_view_edit"));
-        }
-        return true;
-    };
 
     @Override
     public boolean isEditable() {
         return getAuthenticatedUser().equals(getPersistable())
                 || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
-    }
-
-    @Override
-    protected void delete(Person persistable) {
-        // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
-    }
-
-    @Override
-    public String loadViewMetadata() {
-        // nothing to do here, the person record was already loaded by prepare()
-
-        if (!isEditor() && !Persistable.Base.isEqual(getPersistable(), getAuthenticatedUser())) {
-            CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), getPersistable());
-            getGenericService().saveOrUpdate(cvs);
-        }
-
-        return SUCCESS;
     }
 
     public String getInstitutionName() {
