@@ -112,35 +112,74 @@
                                     <div class="tab-pane" id="tab{{$index}}"
                                          ng-repeat="column in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}">
 
-                                        <div class=".integration-pane-content">
+                                        <div ng-switch="column.type">
+
+                                            <div ng-switch-when="integration" class=".integration-pane-content">
 
 
-                                            <table class="table table-bordered table-condensed">
-                                                <thead>
-                                                <tr>
-                                                    <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
-                                                    <th rowspan="2" style="width:99%">Node Value</th>
-                                                    <th rowspan="1" style="white-space: nowrap;" colspan="{{column.dataTableColumns.length || 1}}">
-                                                        Datasets
-                                                    </th>
-                                                </tr>
-                                                <tr>
-                                                    <th ng-repeat="dtc in column.dataTableColumns">{{dtc.data_table_display_name}}</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr ng-repeat="node in column.data.nodes">
-                                                    <td><input type="checkbox" name="tbd" ng-checked="node.selected" ng-model="node.selected" id="cbont_{{node.id}}"></td>
-                                                    <td style="white-space: nowrap;">
-                                                        <div class="nodechild{{node.index.split('.').length}}">
-                                                            <label for="cbont_{{node.id}}">{{node.display_name}}</label>
-                                                        </div>
-                                                    </td>
-                                                    <td ng-repeat="val in node.participation track by $index">{{val}}</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+                                                <table class="table table-bordered table-condensed">
+                                                    <thead>
+                                                    <tr>
+                                                        <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
+                                                        <th rowspan="2" style="width:99%">Node Value</th>
+                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{column.dataTableColumns.length || 1}}">
+                                                            Datasets
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th ng-repeat="dtc in column.dataTableColumns">{{dtc.data_table_display_name}}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr ng-repeat="node in column.data.nodes">
+                                                        <td><input type="checkbox" name="tbd" ng-checked="node.selected" ng-model="node.selected" id="cbont_{{node.id}}"></td>
+                                                        <td style="white-space: nowrap;">
+                                                            <div class="nodechild{{node.index.split('.').length}}">
+                                                                <label for="cbont_{{node.id}}">{{node.display_name}}</label>
+                                                            </div>
+                                                        </td>
+                                                        <td ng-repeat="val in node.participation track by $index">{{val}}</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
 
+
+                                            </div>
+
+                                            <div ng-switch-when="display" class=".display-pane-content">
+                                                <div class="control-group">
+                                                    <label class="control-label">Display Column Name</label>
+                                                </div>
+                                                <div>
+                                                    <label>Source columns to include in this display column</label>
+                                                    <table class="table table-condensed">
+                                                        <thead>
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>Column Name</th>
+                                                                <th>Table Name</th>
+                                                                <th>Description</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody ng-repeat="datatable in ctrl.integration.datatables">
+                                                            <tr ng-repeat="column in datatable.columns">
+                                                                <td>
+                                                                    <input type="checkbox" name="temp" id="cbDisplayCol{{datatable.data_table_id}}_{{column.id}}">
+                                                                </td>
+                                                                <td>
+                                                                    <label for="cbDisplayCol{{datatable.data_table_id}}_{{column.id}}">{{column.display_name}}</label>
+                                                                </td>
+                                                                <td>
+                                                                    {{datatable.display_name}}
+                                                                </td>
+                                                                <td>
+                                                                    {{datatable.description}}
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
 
                                         </div>
 

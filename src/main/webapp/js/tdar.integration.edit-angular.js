@@ -313,7 +313,12 @@
 
         this.addDisplayColumnClicked = function(arg) {
             console.debug('add display column clicked');
-            integration.columns.push({name: 'display column: ' + integration.columns.length })
+            integration.columns.push({
+                type: 'display',
+                data: {
+                    title: 'display column: ' + integration.columns.length
+                }
+            });
         };
 
         this.removeSelectedDatasetClicked = function() {
