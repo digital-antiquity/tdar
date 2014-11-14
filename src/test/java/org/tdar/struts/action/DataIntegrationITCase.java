@@ -271,12 +271,12 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         }
         names.add(alexandriaTable.getName());
         names.add(spitalMainTable.getName());
-        Row row = summarySheet.getRow(0);
+        Row row = summarySheet.getRow(3);
         for (int i = 0; i < names.size(); i++) {
             assertEquals(names.get(i), row.getCell(i).getStringCellValue());
         }
         String[] row3 = new String[] { "Felis catus (Cat)", "Ulna", "23", "15" };
-        row = summarySheet.getRow(2);
+        row = summarySheet.getRow(4);
         for (int i = 0; i < names.size(); i++) {
             Cell cell = row.getCell(i);
             if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -287,6 +287,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             }
         }
 
+        // assertions on descriptions too?
+        
         logger.info("hi, we're done here");
     }
 

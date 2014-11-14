@@ -27,9 +27,9 @@ import org.tdar.utils.MessageHelper;
  * @author abrin
  *
  */
-public class InteegrationResultSetDecorator extends AbstractIteratorDecorator<Object[]> {
+public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Object[]> {
 
-    public InteegrationResultSetDecorator(Iterator<Object[]> iterator, IntegrationContext context) {
+    public IntegrationResultSetDecorator(Iterator<Object[]> iterator, IntegrationContext context) {
         super(iterator);
         this.context = context;
         this.tempTable = context.getTempTable();

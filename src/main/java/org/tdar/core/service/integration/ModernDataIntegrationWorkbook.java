@@ -15,17 +15,17 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -36,7 +36,6 @@ import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -77,22 +76,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      * Generate the Excel File
      */
     public void generate() {
-        // HSSFCellStyle headerStyle = excelService.createHeaderStyle(workbook);
-        CellStyle summaryStyle = excelService.createSummaryStyle(getWorkbook());
-        // first column is the table where the
-        setDescription(new StringBuilder(provider.getText("dataIntegrationWorkbook.descr")).append(" "));
         createDataSheet();
-        List<DataTable> tableList = new ArrayList<DataTable>();
-        List<String> columnNames = new ArrayList<String>();
-        List<String> datasetNames = new ArrayList<String>();
-
-        getDescription().append(MessageHelper.getMessage("dataIntegrationWorkbook.descr_with_datasets")).append(" ")
-                .append(StringUtils.join(datasetNames, ", ")).append("\n\t ").append(MessageHelper.getMessage("dataIntegrationWorkbook.descr_using_tables"))
-                .append(": ").append(StringUtils.join(names, ", ")).append("\n\t ")
-                .append(MessageHelper.getMessage("dataIntegrationWorkbook.descr_using_columns"))
-                .append(":").append(StringUtils.join(columnNames, ", "));
-
-        // headerRow.setRowStyle(headerStyle);
 
         // check that this works in excel on windows:
         // https://issues.apache.org/bugzilla/show_bug.cgi?id=50315
@@ -100,7 +84,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         // sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, columnIndex - 1));
 
         createSummarySheet();
-        createDescriptionSheet(context.getIntegrationColumns(), person, getWorkbook(), summaryStyle, tableList);
+        createDescriptionSheet();
 
     }
 
@@ -134,7 +118,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         // CellStyle dataTableNameStyle = CellFormat.build(Style.NORMAL).setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(getWorkbook());
 
         List<String> headerLabels = new ArrayList<String>();
-        headerLabels.add(MessageHelper.getMessage("dataIntegrationWorkbook.data_table"));
+        headerLabels.add(provider.getText("dataIntegrationWorkbook.data_table"));
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
             headerLabels.add(integrationColumn.getName());
 
@@ -144,15 +128,13 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         }
 
         // FIXME: support for cell style data table name (C1)
-        SheetProxy sheetProxy = new SheetProxy(workbook, MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
+        SheetProxy sheetProxy = new SheetProxy(workbook, provider.getText("dataIntegrationWorkbook.data_worksheet"));
 
-        // sheetProxy.setData(IteratorUtils.chainedIterator(iterators));
         sheetProxy.setHeaderLabels(headerLabels);
         sheetProxy.setFreezeRow(1);
         sheetProxy.setStartRow(0);
         Iterable<Object[]> iterator = ResultSetIterator.iterable(resultSet);
-        // ModernDataIntegrationWorkbook workbook, IntegrationContext context, DataTable table, ResultSet resultSet
-        InteegrationResultSetDecorator ird = new InteegrationResultSetDecorator(iterator.iterator(), getContext());
+        IntegrationResultSetDecorator ird = new IntegrationResultSetDecorator(iterator.iterator(), getContext());
         sheetProxy.setData(ird);
         result.setPivotData(ird.getPivot());
         getExcelService().addSheets(sheetProxy);
@@ -170,69 +152,82 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      * @param summaryStyle
      * @param tableList
      */
-    private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, TdarUser person, Workbook workbook,
-            CellStyle summaryStyle,
-            List<DataTable> tableList) {
-        Sheet summarySheet = workbook.createSheet(MessageHelper.getMessage("dataIntegrationWorkbook.description_worksheet"));
-        Row summaryRow = summarySheet.createRow(0);
-        // FIXME: Should I have the ontology mappings too??
-        excelService
-                .createHeaderCell(
-                        summaryStyle,
-                        summaryRow,
-                        0,
-                        provider.getText("dataIntegrationWorkbook.description_header",
-                                Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date()))));
-        summarySheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
+    private void createDescriptionSheet() {
+        CellStyle summaryStyle = excelService.createSummaryStyle(getWorkbook());
+        Sheet summarySheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.description_worksheet"));
 
-        int currentRow = 3;
+        // initial header ... Integration run on ... by ...
+        String title = provider.getText("dataIntegrationWorkbook.title",
+                Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
+        excelService.addHeaderRow(summarySheet, 0, 0, Arrays.asList(title));
 
-        List<String> summaryLabels = new ArrayList<String>();
-        summaryLabels.add("Table:");
-        for (int i = 0; i < tableList.size(); i++) {
-            DataTable table = tableList.get(i);
-            StringBuilder builder = new StringBuilder(table.getDisplayName());
-            builder.append(table.getDataset().getTitle());
-            builder.append(" (").append(table.getDataset().getId()).append(")");
-            summaryLabels.add(builder.toString());
+        // first and second sub-header:
+        // dataset and data table list
+        // along with info for each specific column of each dataset
+        List<String> header = new ArrayList<>();
+        header.add(provider.getText("dataIntegrationWorkbook.int_col_name"));
+        header.add(provider.getText("dataIntegrationWorkbook.int_col_type"));
+        String[] dataTableNameheader = new String[2000];
+        String[] datasetNameheader = new String[2000];
+        int increment = 5;
+        int count = 0;
+        int max = 2 + increment * count;
+        for (DataTable table : context.getDataTables()) {
+            max = 2 + increment * count;
+            dataTableNameheader[max] = table.getName();
+            datasetNameheader[max] = provider.getText("dataIntegrationWorkbook.name_paren_id",
+                    Arrays.asList(table.getDataset().getName(), table.getDataset().getId()));
+            count++;
+            header.addAll(Arrays.asList(provider.getText("dataIntegrationWorkbook.col_name"),
+                    provider.getText("dataIntegrationWorkbook.col_name"), provider.getText("dataIntegrationWorkbook.col_description"),
+                    provider.getText("dataIntegrationWorkbook.col_type"), provider.getText("dataIntegrationWorkbook.col_ontology"),
+                    provider.getText("dataIntegrationWorkbook.col_coding_sheet")));
         }
-        excelService.addHeaderRow(summarySheet, 1, 0, summaryLabels);
-
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            List<String> labels = new ArrayList<String>();
-            List<String> descriptions = new ArrayList<String>();
-            List<String> mappings = new ArrayList<String>();
-            descriptions.add(provider.getText("dataIntegrationWorkbook.description_description_column", Arrays.asList("    ")));
-            if (integrationColumn.isIntegrationColumn()) {
-                labels.add(provider.getText("dataIntegrationWorkbook.description_integration_column", Arrays.asList("    ")));
-                mappings.add(provider.getText("dataIntegrationWorkbook.description_mapped_column", Arrays.asList("    ")));
-            } else {
-                labels.add(" Display Column:");
-            }
-
-            for (int i = 0; i < tableList.size(); i++) {
-                DataTable table = tableList.get(i);
-                DataTableColumn column = integrationColumn.getColumnForTable(table);
-                if (column == null) {
-                    continue;
+        excelService.addHeaderRow(summarySheet, 1, 0, Arrays.asList(ArrayUtils.subarray(datasetNameheader, 0, max + increment)));
+        excelService.addHeaderRow(summarySheet, 2, 0, Arrays.asList(ArrayUtils.subarray(dataTableNameheader, 0, max + increment)));
+        excelService.addRow(summarySheet, 3, 0, header, summaryStyle);
+        int currentRow = 3;
+        // for each integration column, print out all of the column type info, and then add more if it's a true integration column
+        for (IntegrationColumn col : context.getIntegrationColumns()) {
+            currentRow++;
+            String[] row = new String[header.size()];
+            row[0] = col.getName();
+            row[1] = col.getColumnType().name();
+            int size = 2;
+            for (DataTable table : context.getDataTables()) {
+                DataTableColumn dtc = col.getColumnForTable(table);
+                if (dtc != null) {
+                    row[size] = dtc.getName();
+                    row[size + 1] = dtc.getDescription();
+                    row[size + 2] = dtc.getColumnDataType().getLabel();
+                    Ontology defaultOntology = dtc.getDefaultOntology();
+                    if (defaultOntology != null) {
+                        row[size + 3] = provider.getText("dataIntegrationWorkbook.name_paren_id", Arrays.asList(defaultOntology.getName(), defaultOntology.getId()));
+                    }
+                    CodingSheet defaultCodingSheet = dtc.getDefaultCodingSheet();
+                    if (defaultCodingSheet != null) {
+                        row[size + 4] = provider.getText("dataIntegrationWorkbook.name_paren_id", Arrays.asList(defaultCodingSheet.getName(), defaultCodingSheet.getId()));
+                    }
+                    size = size + 5;
                 }
-                labels.add(column.getDisplayName());
-                descriptions.add(column.getDescription());
-                if (integrationColumn.isIntegrationColumn()) {
-                    Ontology ontology = column.getDefaultOntology();
-                    StringBuilder builder = new StringBuilder(ontology.getTitle()).append(" (").append(ontology.getId()).append(")");
-                    mappings.add(builder.toString());
-                }
             }
-            excelService.addDataRow(summarySheet, currentRow++, 0, labels);
-            excelService.addDataRow(summarySheet, currentRow++, 0, descriptions);
-            if (!mappings.isEmpty()) {
-                excelService.addDataRow(summarySheet, currentRow++, 0, mappings);
+            excelService.addDataRow(summarySheet, currentRow, 0, Arrays.asList(row));
+            // if real integration column, show the mapping info
+            
+            if (col.isIntegrationColumn()) {
+                List<String> row2 = new ArrayList<>(Arrays.asList(row));
+                row2.set(0, provider.getText("dataIntegrationWorkbook.col_mapped", Arrays.asList(row[0])));
+                excelService.addDataRow(summarySheet, currentRow++, 0, row2);
+            }
+            // show selected ontology nodes
+            excelService.addDataRow(summarySheet, currentRow++, 2, Arrays.asList(provider.getText("dataIntegrationWorkbook.selected_nodes")));
+            for (OntologyNode node : col.getFilteredOntologyNodes()) {
+                excelService.addDataRow(summarySheet, currentRow++, 3, Arrays.asList(node.getDisplayName()));
             }
         }
 
         // auto-sizing columns
-        for (int i = 0; i < summaryLabels.size(); i++) {
+        for (int i = 0; i < max; i++) {
             summarySheet.autoSizeColumn(i);
         }
     }
@@ -247,9 +242,13 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      */
     private void createSummarySheet() {
         int rowIndex;
-        Sheet pivotSheet = workbook.createSheet(MessageHelper.getMessage("dataIntegrationWorkbook.summary_worksheet"));
+        Sheet pivotSheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.summary_worksheet"));
+        String title = provider.getText("dataIntegrationWorkbook.title",
+                Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
+        excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
+        excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
 
-        rowIndex = 2;
+        rowIndex = 4;
         List<String> rowHeaders = new ArrayList<>();
         for (IntegrationColumn col : context.getIntegrationColumns()) {
             if (col.isIntegrationColumn()) {
@@ -260,7 +259,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             rowHeaders.add(table.getName());
         }
 
-        excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW, ExcelService.FIRST_COLUMN, rowHeaders);
+        excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW + 3, ExcelService.FIRST_COLUMN, rowHeaders);
 
         for (List<OntologyNode> key : pivot.keySet()) {
             logger.trace("key: {}", key);
