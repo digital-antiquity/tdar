@@ -94,6 +94,9 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
+//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "managedinstitutions", targetEntity = TdarUser.class)
+//    private Set<TdarUser> owners = new HashSet<>();
+
     public Institution() {
     }
 

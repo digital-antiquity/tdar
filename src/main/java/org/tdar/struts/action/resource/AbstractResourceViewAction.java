@@ -214,7 +214,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
                 creditProxies.add(proxy);
             }
 
-            if (ResourceCreatorRole.CONTACT == proxy.getRole()) {
+            if (proxy.isValidEmailContact()) {
                 getContactProxies().add(proxy);
             }
         }

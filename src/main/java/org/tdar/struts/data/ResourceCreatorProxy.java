@@ -232,7 +232,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return false;
         }
 
-        if (isValid() && getActualCreatorType().isPerson()) {
+        if (isValid()) {
             return StringUtils.isNotBlank(getPerson().getEmail());
         }
 
