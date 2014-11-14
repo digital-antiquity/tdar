@@ -360,7 +360,7 @@ public class DataIntegrationService {
             hydrateIntegrationColumn(integrationColumn);
         }
 
-        ModernIntegrationDataResult result = tdarDataImportDatabase.generateModernIntegrationResult(context, provider, excelService);
+        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider, excelService);
         return result;
     }
 

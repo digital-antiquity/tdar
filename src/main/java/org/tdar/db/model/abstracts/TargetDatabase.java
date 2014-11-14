@@ -4,10 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
@@ -45,8 +42,6 @@ public interface TargetDatabase extends Database {
 
     void createTable(DataTable dataTable) throws Exception;
 
-    <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse);
-
     void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
 
     List<String> selectNonNullDistinctValues(DataTableColumn column);
@@ -68,8 +63,6 @@ public interface TargetDatabase extends Database {
 
     List<String> selectDistinctValues(DataTableColumn column);
 
-    List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
-
     List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
             String query);
 
@@ -79,5 +72,5 @@ public interface TargetDatabase extends Database {
 
     int getMaxColumnNameLength();
 
-    ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService);
+    ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService);
 }

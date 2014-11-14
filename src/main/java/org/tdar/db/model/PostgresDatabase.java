@@ -42,7 +42,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
@@ -318,7 +317,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     // FIXME: allows for totally free form queries, refine this later?
-    @Override
     public <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse) {
         return jdbcTemplate.query(psc, pss, rse);
     }
@@ -727,7 +725,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
-    public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
+    public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, excelService, result);
         createIntegrationTempTable(proxy);
@@ -919,10 +917,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
 
-    @Override
-    public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper) {
-        return jdbcTemplate.query(selectSql, parameterizedRowMapper);
-    }
 
     @Override
     public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
