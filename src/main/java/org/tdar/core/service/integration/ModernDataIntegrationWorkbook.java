@@ -131,7 +131,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      */
     public void createDataSheet() {
         // Create header
-//        CellStyle dataTableNameStyle = CellFormat.build(Style.NORMAL).setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(getWorkbook());
+        // CellStyle dataTableNameStyle = CellFormat.build(Style.NORMAL).setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(getWorkbook());
 
         List<String> headerLabels = new ArrayList<String>();
         headerLabels.add(MessageHelper.getMessage("dataIntegrationWorkbook.data_table"));
@@ -146,13 +146,13 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         // FIXME: support for cell style data table name (C1)
         SheetProxy sheetProxy = new SheetProxy(workbook, MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
 
-//        sheetProxy.setData(IteratorUtils.chainedIterator(iterators));
+        // sheetProxy.setData(IteratorUtils.chainedIterator(iterators));
         sheetProxy.setHeaderLabels(headerLabels);
         sheetProxy.setFreezeRow(1);
         sheetProxy.setStartRow(0);
         Iterable<Object[]> iterator = ResultSetIterator.iterable(resultSet);
-        //ModernDataIntegrationWorkbook workbook, IntegrationContext context, DataTable table, ResultSet resultSet
-        InteegrationResultSetDecorator ird = new InteegrationResultSetDecorator( iterator.iterator(), getContext());
+        // ModernDataIntegrationWorkbook workbook, IntegrationContext context, DataTable table, ResultSet resultSet
+        InteegrationResultSetDecorator ird = new InteegrationResultSetDecorator(iterator.iterator(), getContext());
         sheetProxy.setData(ird);
         result.setPivotData(ird.getPivot());
         getExcelService().addSheets(sheetProxy);
@@ -251,14 +251,19 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
         rowIndex = 2;
         List<String> rowHeaders = new ArrayList<>();
-        for (DataTableColumn col : context.getTempTable().getDataTableColumns()) {
-            rowHeaders.add(col.getDisplayName());
+        for (IntegrationColumn col : context.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                rowHeaders.add(col.getName());
+            }
+        }
+        for (DataTable table : context.getDataTables()) {
+            rowHeaders.add(table.getName());
         }
 
         excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW, ExcelService.FIRST_COLUMN, rowHeaders);
 
         for (List<OntologyNode> key : pivot.keySet()) {
-            logger.debug("key: {}", key);
+            logger.trace("key: {}", key);
             List<String> rowData = new ArrayList<String>();
             for (OntologyNode col : key) {
                 if (col != null) {
@@ -266,7 +271,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     // rowData.add(col.getIndex());
                 }
             }
-            //Map<List<OntologyNode>, HashMap<String, IntContainer>>
+            // Map<List<OntologyNode>, HashMap<String, IntContainer>>
             Map<String, IntContainer> vals = pivot.get(key);
             for (DataTable table : context.getDataTables()) {
                 IntContainer integer = vals.get(table.getName());
@@ -345,7 +350,6 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         getWorkbook().write(new FileOutputStream(resultFile));
         return resultFile;
     }
-
 
     public void setResultSet(ResultSet arg0) {
         this.resultSet = arg0;

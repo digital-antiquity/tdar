@@ -12,8 +12,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CodingRule;
@@ -242,11 +244,12 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
         ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
         logger.trace("result: {}", result);
-        Sheet sheet = result.getWorkbook().getWorkbook().getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
+        Workbook workbook = result.getWorkbook().getWorkbook();
+        Sheet sheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            logger.debug("{} | {}", row.getCell(2).getStringCellValue(), row.getCell(4).getStringCellValue());
+            logger.trace("{} | {}", row.getCell(2).getStringCellValue(), row.getCell(4).getStringCellValue());
             if (row.getCell(1).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                 seenElementNull = true;
             }
@@ -257,6 +260,33 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // assertTrue(resultingDataTableColumns.containsAll(displayRulesColumns));
         assertTrue(seenElementNull);
         assertTrue(seenSpeciesNull);
+
+        // confirm that the pivot sheet is created properly with names and at least one known value
+        Sheet summarySheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.summary_worksheet"));
+        List<String> names = new ArrayList<>();
+        for (IntegrationColumn col : integrationColumns) {
+            if (col.isIntegrationColumn()) {
+                names.add(col.getName());
+            }
+        }
+        names.add(alexandriaTable.getName());
+        names.add(spitalMainTable.getName());
+        Row row = summarySheet.getRow(0);
+        for (int i = 0; i < names.size(); i++) {
+            assertEquals(names.get(i), row.getCell(i).getStringCellValue());
+        }
+        String[] row3 = new String[] { "Felis catus (Cat)", "Ulna", "23", "15" };
+        row = summarySheet.getRow(2);
+        for (int i = 0; i < names.size(); i++) {
+            Cell cell = row.getCell(i);
+            if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                assertEquals((int)Double.parseDouble(row3[i]), (int)cell.getNumericCellValue() );
+            } else {
+                assertEquals(row3[i], cell.getStringCellValue());
+                
+            }
+        }
+
         logger.info("hi, we're done here");
     }
 
