@@ -766,9 +766,10 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
                 WhereCondition whereCond = new WhereCondition(column.getName());
                 Set<String> nodeSet = new HashSet<>();
+                // do these need to be per-table-updates?
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
                     nodeSet.addAll(actualColumn.getMappedDataValues(node));
-                    //check parent logic
+                    //check parent mapping logic to make sure that we don't apply to the grantparent if multiple nodes in tree are selected
                     for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
                         if (node_.isChildOf(node) && !integrationColumn.getFilteredOntologyNodes().contains(node_)) {
                             nodeSet.addAll(actualColumn.getMappedDataValues(node_));
@@ -830,7 +831,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     public void generateModernIntegrationResult(final IntegrationContext proxy, final DataTable table) {
         StringBuilder sb = new StringBuilder();
         joinListWithCommas(sb, proxy.getTempTable().getColumnNames(), true);
-        String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateModernOntologyEnhancedSelect(table, proxy);
+        String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateOntologyEnhancedSelect(table, proxy);
 
         if (!selectSql.toLowerCase().contains(" where ")) {
             throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
@@ -839,7 +840,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         executeUpdateOrDelete(selectSql);
     }
 
-    private String generateModernOntologyEnhancedSelect(DataTable table, IntegrationContext proxy) {
+    private String generateOntologyEnhancedSelect(DataTable table, IntegrationContext proxy) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
         builder.setStringSelectValue(table.getName());
@@ -874,39 +875,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             }
         }
         builder.getTableNames().add(table.getName());
-        return builder.toSql();
-    }
-
-    @Override
-    public String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
-            final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
-        SqlSelectBuilder builder = new SqlSelectBuilder();
-
-        // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            logger.trace("table: {} column: {}", table, integrationColumn);
-            DataTableColumn column = integrationColumn.getColumnForTable(table);
-            if (column != null) {
-                builder.getColumns().add(column.getName());
-            }
-
-            // if we're an integration column, quote and grab all of the ontology nodes for the select
-            // these are the "hierarchical" values
-            if (integrationColumn.isIntegrationColumn() && (column != null)) {
-                WhereCondition whereCondition = new WhereCondition(column.getName());
-                for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
-                    whereCondition.getInValues().addAll(column.getMappedDataValues(node));
-                }
-                if (whereCondition.getInValues().isEmpty()) {
-                    continue;
-                }
-
-                if (integrationColumn.isNullIncluded()) {
-                    whereCondition.setIncludeNulls(true);
-                }
-                builder.getWhere().add(whereCondition);
-            }
-        }
         return builder.toSql();
     }
 

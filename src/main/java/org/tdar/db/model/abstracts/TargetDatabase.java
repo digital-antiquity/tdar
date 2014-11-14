@@ -8,13 +8,11 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
-import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -67,11 +65,6 @@ public interface TargetDatabase extends Database {
     <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);
 
     Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
-
-    String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
-            Map<List<OntologyNode>, Map<DataTable, Integer>> pivot);
-
-    // List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
     List<String> selectDistinctValues(DataTableColumn column);
 
