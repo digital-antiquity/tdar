@@ -428,6 +428,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.EDIT);
+        if (getPersistable() == null) {
+            setPersistable(createPersistable());
+        }
         checkValidRequest(this);
     }
 

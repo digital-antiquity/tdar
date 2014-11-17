@@ -151,7 +151,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     @Autowired
     private transient GenericService genericService;
 
@@ -712,7 +712,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         return true;
     }
-    
+
     public <P extends Persistable> void prepareAndLoad(PersistableLoadingAction<P> pc, RequestType type) throws TdarActionException {
         P p = null;
         Class<P> persistableClass = pc.getPersistableClass();
@@ -731,26 +731,28 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             if (p instanceof HasStatus) {
                 status = ((HasStatus) p).getStatus().toString();
             }
-            getLogger().info(String.format("%s is %s %s (%s): %s", pc.getAuthenticatedUser().getUsername(), type.name(), persistableClass.getSimpleName(), id, status));
+            getLogger().info(
+                    String.format("%s is %s %s (%s): %s", pc.getAuthenticatedUser().getUsername(), type.name(), persistableClass.getSimpleName(), id, status));
         }
         checkValidRequest(pc);
     }
-    
-    protected  <P extends Persistable> void checkValidRequest(PersistableLoadingAction<P> pc) throws TdarActionException {
-        if (pc.isAuthenticationRequired()) {
-            try {
-                if (!getSessionData().isAuthenticated()) {
-                    addActionError(getText("abstractPersistableController.must_authenticate"));
-                    abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.must_authenticate"));
-                }
-            } catch (Exception e) {
-                addActionErrorWithException(getText("abstractPersistableController.session_not_initialized"), e);
-                abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.could_not_load"));
-            }
-        }
+
+    protected <P extends Persistable> void checkValidRequest(PersistableLoadingAction<P> pc) throws TdarActionException {
+        // if (pc.isAuthenticationRequired()) {
+        // try {
+        // if (!getSessionData().isAuthenticated()) {
+        // addActionError(getText("abstractPersistableController.must_authenticate"));
+        // abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.must_authenticate"));
+        // }
+        // } catch (Exception e) {
+        // addActionErrorWithException(getText("abstractPersistableController.session_not_initialized"), e);
+        // abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.could_not_load"));
+        // }
+        // }
 
         Persistable persistable = pc.getPersistable();
-        if (Persistable.Base.isNullOrTransient(persistable)) {
+        // if we're NULL and we're not supposed to be null
+        if (Persistable.Base.isNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(pc.getId())) {
             // deal with the case that we have a new or not found resource
             getLogger().debug("Dealing with transient persistable {}", persistable);
             if (persistable == null) {
