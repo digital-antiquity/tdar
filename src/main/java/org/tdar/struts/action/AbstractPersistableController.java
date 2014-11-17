@@ -344,7 +344,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         MODIFY_EXISTING(true),
         SAVE(true),
 //        VIEW(false),
-        NONE(false);
+        NONE(false), VIEW(false);
         private final boolean authenticationRequired;
 
         private RequestType(boolean authenticationRequired) {

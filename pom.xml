@@ -32,7 +32,7 @@
         <jetty.stop.port>12919</jetty.stop.port>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>12.0.1</geotools.version>
+        <geotools.version>12.1</geotools.version>
         <tika.version>1.6</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
@@ -237,7 +237,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.49j</version>
+            <version>1.49k</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
         </dependency>
         <dependency>
@@ -255,7 +255,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.8.3</version>
+            <version>1.8.4</version>
         </dependency>
         <dependency>
             <groupId>javax.media.jai</groupId>
