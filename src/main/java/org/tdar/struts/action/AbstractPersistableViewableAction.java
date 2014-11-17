@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
@@ -132,7 +133,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
      * @throws TdarActionException
      */
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         return true;
     }
 
@@ -321,6 +322,11 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
 
     public void setRedirectBadSlug(boolean redirectBadSlug) {
         this.redirectBadSlug = redirectBadSlug;
+    }
+
+    @Override
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.VIEW_ANYTHING;
     }
 
 }

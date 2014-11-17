@@ -209,15 +209,15 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return ticketId;
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls) throws TdarActionException {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) throws TdarActionException {
         return setupAndLoadResource(filename, cls, permis, -1L);
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) throws TdarActionException {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
@@ -259,7 +259,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) throws TdarActionException {
 
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;

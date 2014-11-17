@@ -277,7 +277,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         if (getResource() == null && getId() != null) {
             // persistable is null, so the lookup failed (aka not found)
             abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));

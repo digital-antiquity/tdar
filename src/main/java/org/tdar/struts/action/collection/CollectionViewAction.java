@@ -94,7 +94,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         if (getResourceCollection() == null) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }

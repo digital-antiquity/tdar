@@ -53,7 +53,7 @@ import com.opensymphony.xwork2.Action;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
-    public DocumentController initControllerFields() {
+    public DocumentController initControllerFields() throws TdarActionException {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
@@ -281,7 +281,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    public void testOpenURLGeneration() {
+    public void testOpenURLGeneration() throws TdarActionException {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.setId(4231L);
         controller.prepare();

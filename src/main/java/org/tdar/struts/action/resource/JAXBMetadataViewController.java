@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -90,8 +91,9 @@ public class JAXBMetadataViewController extends AbstractPersistableViewableActio
     }
 
     @Override
-    public void prepare() {
-        resource = genericService.find(Resource.class, id);
+    public void prepare() throws TdarActionException {
+        prepareAndLoad(this, RequestType.VIEW);
+        checkValidRequest(this);
         if (Persistable.Base.isNullOrTransient(resource)) {
             addActionError(getText("jaxbMetadataViewController.resource_does_not_exist"));
         }
@@ -106,7 +108,7 @@ public class JAXBMetadataViewController extends AbstractPersistableViewableActio
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         return authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
     }
 

@@ -668,7 +668,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
         super.prepare();
         if (getPersistable() == null)
             return;

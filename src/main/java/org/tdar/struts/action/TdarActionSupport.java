@@ -767,7 +767,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             return;
         }
 
-        if (pc.isViewable()) {
+        if (pc.authorize()) {
             return;
         }
         String errorMessage = getText("abstractPersistableController.no_permissions");

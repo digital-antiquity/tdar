@@ -65,7 +65,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     }
 
     @Override
-    public boolean isViewable() {
+    public boolean authorize() {
         getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;

@@ -40,7 +40,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     private DocumentController controller;
 
-    public void initControllerFields() {
+    public void initControllerFields() throws TdarActionException {
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
     }
@@ -209,7 +209,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
 
-    private Pair<String, Exception> setupResource(Document d) {
+    private Pair<String, Exception> setupResource(Document d) throws TdarActionException {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         if ((d != null) && (d.getId() != null)) {
             controller.setId(d.getId());

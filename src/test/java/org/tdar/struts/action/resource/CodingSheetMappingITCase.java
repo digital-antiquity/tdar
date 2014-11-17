@@ -136,7 +136,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDegenerateCodingSheetWithTabs() throws IOException {
+    public void testDegenerateCodingSheetWithTabs() throws IOException, TdarActionException {
         setIgnoreActionErrors(true);
         CodingSheet codingSheet = setupAndLoadResource("tab_as_csv.csv", CodingSheet.class);
         assertEquals(FileStatus.PROCESSING_ERROR, codingSheet.getFirstInformationResourceFile().getStatus());
@@ -145,7 +145,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDoubleCoding() {
+    public void testDoubleCoding() throws TdarActionException {
         CodingSheet codingSheet = setupAndLoadResource(DOUBLE_CODING, CodingSheet.class);
         Dataset dataset = setupAndLoadResource(DOUBLE_DATASET, Dataset.class);
         DataTable firstTable = dataset.getDataTables().iterator().next();

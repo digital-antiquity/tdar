@@ -81,7 +81,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     }
 
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
         super.prepare();
         contributor = getPersistable().isContributor();
     }
