@@ -15,18 +15,8 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
 
     @Override
     public String generateQueryString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" ( ");
-        StringBuilder sbauto = new StringBuilder();
-        setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-        for (int i = 0; i < getFieldValues().size(); i++) {
-            appendPhrase(sbauto, i);
-        }
-        if (sbauto.length() > 0) {
-            constructQueryPhrase(sbauto, "name_auto");
-        }
-        sb.append(sbauto).append(" OR ");
-
+        QueryPartGroup group = new QueryPartGroup(Operator.OR);
+        group.append(new FieldQueryPart<Institution>("name_auto", getFieldValues()));
         List<String> names = new ArrayList<String>();
         boolean containsSpaces = false;
         if (CollectionUtils.isNotEmpty(getFieldValues())) {
@@ -38,25 +28,18 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
             }
             FieldQueryPart<String> fqp = new FieldQueryPart<String>("name", Operator.OR, names.toArray(new String[0]));
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            fqp.setBoost(4f);
-            sb.append(" " + fqp.toString());
+            fqp.setBoost(3f);
+            group.append(fqp);
         }
 
-        StringBuilder sbacro = new StringBuilder();
         // match ASU, but not "arizona state"
-        if (!containsSpaces) {
-            sb.append(" OR ");
-            for (int i = 0; i < getFieldValues().size(); i++) {
-                appendPhrase(sbacro, i);
-            }
-            if (sbauto.length() > 0) {
-                constructQueryPhrase(sbacro, "acronym");
-            }
-        }
-        sb.append(sbacro).append(" ) ");
-        if ((sbacro.length() == 0) && (sbauto.length() == 0)) {
+        FieldQueryPart<String> acronym = new FieldQueryPart<String>("acronym", names);
+        acronym.setOperator(Operator.OR);
+        acronym.setBoost(7f);
+        group.append(acronym);
+        if (CollectionUtils.isEmpty(names)) {
             return "";
         }
-        return sb.toString();
+        return group.generateQueryString();
     }
 }

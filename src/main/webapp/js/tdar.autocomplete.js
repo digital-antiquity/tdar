@@ -669,7 +669,7 @@ TDAR.autocomplete = (function () {
         var options = {};
         options.url = "lookup/institution";
         options.dataPath = "institutions";
-        options.sortField = 'CREATOR_NAME';
+        options.sortField = 'RELEVANCY';
         options.enhanceRequestData = function (requestData) {
             requestData.institution = requestData.term;
         };
