@@ -3,18 +3,16 @@
     var app,_projects, _collections, _categories, _documentData;
     app = angular.module('integrationApp', ['angularModalService']);
 
-    //Our integration "Model" object.
+    //Our integration model
     function Integration() {
         var self = this;
         var datasetMap = {};
         self.title = "";
         self.description = "";
         self.columns = [];
-        self.displayColumns = [];
         self.datatables = [];
         self.ontologies = [];
     }
-
 
     //model for search filter that can be used for datasets or ontologies
     function SearchFilter() {
@@ -107,12 +105,14 @@
         return arr;
     }
 
-
+    /**
+     * Share the integration model between controllers
+     */
+    app.service('integrationService', Integration);
 
     //top-level controller for the integration viewmodel
-    app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', function($scope, ModalService, $http){
+    app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', 'integrationService',  function($scope, ModalService, $http, integration){
         var self = this,
-            integration = new Integration(),
             openModal,
             designatedOntologies = {};
 
@@ -236,9 +236,11 @@
                 //todo: build list of participating dataTable columns.
                 var integrationColumn = {
                     type: "integration",
+                    title: "intcol" + ontology.id,
                     data: ontology,
                     ontologyId: ontology.id,
-                    dataTableColumns: []
+                    //FIXME: replace with actual data
+                    dataTableColumns: [{id:1},{id:2}]
                 };
                 self.integration.columns.push(integrationColumn);
                 var dtcs = self.findDataTableColumns(integrationColumn);
@@ -313,12 +315,24 @@
 
         this.addDisplayColumnClicked = function(arg) {
             console.debug('add display column clicked');
-            integration.columns.push({
+            var col = {
                 type: 'display',
-                data: {
-                    title: 'display column: ' + integration.columns.length
-                }
+                title: 'display col'
+            };
+
+            col.data=[];
+
+            integration.datatables.forEach(function(table){
+                console.log("table %s", table);
+                table.columns.forEach(function(dtc){
+                    col.data.push({
+                        id: dtc.id,
+                        selected: false,
+                        "datatableColumn": dtc
+                    });
+                });
             });
+            integration.columns.push(col);
         };
 
         this.removeSelectedDatasetClicked = function() {
@@ -421,18 +435,26 @@
 
     }]);
 
-    //FIXME: these are hacks to auto-open the various popups
-    function _hashUrl() {
-        var wlh = "" + window.location.hash;
-        return wlh.substring(1);
-    }
+    app.controller('LegacyFormController', ['$scope', '$http', 'integrationService', function($scope, $http, integration){
+        var self = this, fields = [];
+        self.fields = fields;
+        self.integration = integration;
+        self.showForm = false;
+        self.hideForm = function() {
+            self.showForm = false;
+        };
 
-    $(function() {
-        var scope = angular.element($("#divIntegrationMain")).scope();
-        //fire dataset modal if url ends in #dataset
-        if(_hashUrl() === "dataset")
-            scope.ctrl.openDatasetModal();
-    })
+        self.dumpdata = function() {
+            console.log("hello");
+            console.log($("#frmLegacy").serializeArray());
+            JSON.stringify($("#frmLegacy").serializeArray(), null, "4");
+        };
+
+
+
+
+
+    }]);
 
 /* global jQuery, angular  */
 })(jQuery, angular, console);

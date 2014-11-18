@@ -97,12 +97,10 @@
                         <div class="controls">
 
                             <div id="tabControl" data-bind="if: integration.columns().length">
-                                <ul class="nav nav-tabs"
-                                    data-bind="foreach: integration.columns">
-                                    <li data-bind="css:{'integration-column': type === 'integration', active: $parent.currentColumn === $index}"
-                                        ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
-                                        <a href="#tab{{$index}}" data-bind="text: name">
-                                            {{column.data.title}}
+                                <ul class="nav nav-tabs">
+                                    <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
+                                        <a href="#tab{{$index}}">
+                                            {{column.title}}
                                             <button class="close" ng-click="ctrl.closeTab($index)">x</button>
                                         </a>
                                     </li>
@@ -110,7 +108,7 @@
 
                                 <div class="tab-content" >
                                     <div class="tab-pane" id="tab{{$index}}"
-                                         ng-repeat="column in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}">
+                                         ng-repeat="column in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
 
                                         <div ng-switch="column.type">
 
@@ -147,10 +145,10 @@
                                             </div>
 
                                             <div ng-switch-when="display" class=".display-pane-content">
-                                                <div class="control-group">
-                                                    <label class="control-label">Display Column Name</label>
-                                                </div>
-                                                <div>
+                                                <#--<div class="control-group">-->
+                                                    <#--<label class="control-label">Display Column Name</label>-->
+                                                <#--</div>-->
+                                                <#--<div>-->
                                                     <label>Source columns to include in this display column</label>
                                                     <table class="table table-condensed">
                                                         <thead>
@@ -163,8 +161,9 @@
                                                         </thead>
                                                         <tbody ng-repeat="datatable in ctrl.integration.datatables">
                                                             <tr ng-repeat="column in datatable.columns">
-                                                                <td>
-                                                                    <input type="checkbox" name="temp" id="cbDisplayCol{{datatable.data_table_id}}_{{column.id}}">
+                                                                <td>{{columnIndex}} :: {{$index}}
+                                                                    <input type="checkbox" ng-model="ctrl.integration.columns[columnIndex].data[$index].selected" name="displayColumns[]"
+                                                                           id="cbDisplayCol{{datatable.data_table_id}}_{{column.id}}">
                                                                 </td>
                                                                 <td>
                                                                     <label for="cbDisplayCol{{datatable.data_table_id}}_{{column.id}}">{{column.display_name}}</label>
@@ -198,6 +197,35 @@
     </form>
 </div>
 
+
+<form ng-controller="LegacyFormController as legacyCtrl" id="frmLegacy">
+<#--<button type="button" class="btn btn-mini" ng-click="buildLegacyForm()">Build Legacy Form</button>-->
+<#--<button type="button" class="btn btn-mini" ng-click="hideForm()">Hide Form</button>-->
+<div  og-show="showForm">
+    <h2>legacy form goes here</h2>
+    <button type="button" ng-click="legacyCtrl.dumpdata()">dump data</button>
+    <fieldset>
+        <div ng-repeat="col in legacyCtrl.integration.columns" ng-init="columnIndex=$index">
+            <input type="hidden" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
+            type: {{col.type}}
+            <div ng-switch="col.type">
+                <span ng-switch-when="integration">
+                    <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}]" value="{{dtc.id}}"  ng-repeat="dtc in col.dataTableColumns">
+                    <input type="hidden" name="integrationColumns[{{columnIndex}}].filteredOntologyNodes.id" value="{{node.id}}" ng-repeat="node in col.data.nodes | filter: {selected:true}">
+                </span>
+                <span ng-switch-when="display">
+                    <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id" value="{{dtc.id}}" ng-repeat="dtc in col.data | filter: {selected: true}">
+                </span>
+            </div>
+        </div>
+        <input ng-repeat="datatable in legacyCtrl.integration.datatables" type="hidden" name="tableIds[$index]" value="{{datatable.data_table_id}}">
+    </fieldset>
+</div>
+</form>
+
+<div>
+
+<span>
 <!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">
     <div id="divModalContainer" class="modal modal-big hide fade" tabindex="-1" role="dialog">
@@ -289,6 +317,7 @@
 
             <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
             <button class="btn btn-primary" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
+
         </div>
     </div>
 </script>
@@ -310,6 +339,7 @@ ${categoriesJson}
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <script src="/js/tdar.integration.edit-angular.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
+</span>
 
 
 </body>
