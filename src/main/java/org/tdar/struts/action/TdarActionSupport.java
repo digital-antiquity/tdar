@@ -717,7 +717,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         P p = null;
         Class<P> persistableClass = pc.getPersistableClass();
         Long id = pc.getId();
-        getLogger().debug("{} {}", persistableClass.getSimpleName(), id);
         if (Persistable.Base.isNotNullOrTransient(pc.getPersistable())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);
         } else {

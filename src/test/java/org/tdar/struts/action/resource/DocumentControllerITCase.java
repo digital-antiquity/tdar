@@ -200,8 +200,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // try to edit as basic user -- should fail
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(id);
-        dc.prepare();
         try {
+            dc.prepare();
             assertNotEquals(Action.SUCCESS, dc.edit());
         } catch (TdarActionException e) {
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
@@ -282,7 +282,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     public void testOpenURLGeneration() throws TdarActionException {
-        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        DocumentViewAction controller = generateNewInitializedController(DocumentViewAction.class);
         controller.setId(4231L);
         controller.prepare();
         String openUrl = controller.getOpenUrl();
@@ -294,7 +294,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     public void testScholarSource() throws Exception {
-        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        DocumentViewAction controller = generateNewInitializedController(DocumentViewAction.class);
         controller.setId(4231L);
         controller.prepare();
         String scholar = controller.getGoogleScholarTags();

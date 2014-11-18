@@ -54,7 +54,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testProjectJSON() throws IOException, TdarActionException {
-        ProjectController controller = generateNewInitializedController(ProjectController.class);
+        ProjectController controller = generateNewInitializedController(ProjectController.class, getAdminUser());
         controller.setId(3805L);
         controller.prepare();
         RelatedComparativeCollection rcc = new RelatedComparativeCollection();

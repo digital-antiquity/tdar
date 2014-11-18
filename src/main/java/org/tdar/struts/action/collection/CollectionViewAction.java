@@ -100,6 +100,16 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         }
         return authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
+    
+    public boolean isVisible() {
+        try {
+            if (!getResourceCollection().isHidden() || authorize()) {
+                return true;
+            }
+        } catch (TdarActionException e) {
+        }
+        return false;
+    }
 
     public ResourceCollection getResourceCollection() {
         return getPersistable();

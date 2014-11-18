@@ -585,6 +585,11 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.saveSuccessSuffix = saveSuccessSuffix;
     }
     
+    // ideally factor out, but used by the view layer to determine whether to show the edit button or not
+    public boolean isEditable() {
+        return authorize();
+    }
+    
     @Override
     public boolean authorize() {
         return true;

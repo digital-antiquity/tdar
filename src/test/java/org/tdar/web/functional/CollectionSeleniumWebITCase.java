@@ -229,9 +229,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     private void assertPageViewable(List<String> titles) {
         String text = getText();
-        logger.trace(text);
+        logger.debug(text);
         for (String title : titles) {
-            Assert.assertTrue("view page contains title", text.contains(title));
+            Assert.assertTrue("view page contains title: " + title, text.contains(title));
         }
         Assert.assertTrue(text.contains(TITLE));
         Assert.assertTrue(text.contains(DESCRIPTION));
