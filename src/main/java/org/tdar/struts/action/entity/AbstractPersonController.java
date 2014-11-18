@@ -46,9 +46,9 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
                 addFieldError("email", getText("userAccountController.username_not_available"));
             }
         }
-
     }
 
+    
     @Override
     public void validate() {
         validateUniqueEmail();
@@ -80,8 +80,12 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         return SUCCESS;
     }
 
+//    public boolean isEditable() {
+//        return authorize();
+//    }
+
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         return getAuthenticatedUser().equals(getPersistable())
                 || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }

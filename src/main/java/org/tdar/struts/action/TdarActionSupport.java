@@ -632,7 +632,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         if (this instanceof AbstractInformationResourceController) {
             AbstractInformationResourceController<?> cast = (AbstractInformationResourceController<?>) this;
-            if (cast.isEditable() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
+            if (cast.authorize() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
                 return true;
             }
 
@@ -717,7 +717,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         P p = null;
         Class<P> persistableClass = pc.getPersistableClass();
         Long id = pc.getId();
-        getLogger().debug("{} {}", persistableClass, id);
+        getLogger().debug("{} {}", persistableClass.getSimpleName(), id);
         if (Persistable.Base.isNotNullOrTransient(pc.getPersistable())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);
         } else {

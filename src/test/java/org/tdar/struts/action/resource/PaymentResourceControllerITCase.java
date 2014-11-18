@@ -50,6 +50,8 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     }
 
     private class UsagePair extends Pair<Long, Long> {
+        private static final long serialVersionUID = 3493370798695227648L;
+
         public UsagePair(Long first, Long second) {
             super(first, second);
         }

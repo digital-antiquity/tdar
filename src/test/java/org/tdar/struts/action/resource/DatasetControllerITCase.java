@@ -144,7 +144,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testNullResourceOperations() throws Exception {
-        List<String> successActions = Arrays.asList("add", "list");
+        List<String> successActions = Arrays.asList("add", "list","edit");
         // grab all methods on DatasetController annotated with a conventions plugin @Action
         for (Method method : DatasetController.class.getMethods()) {
             controller = generateNewInitializedController(DatasetController.class);

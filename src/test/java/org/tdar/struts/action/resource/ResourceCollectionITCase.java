@@ -911,6 +911,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         String result = Action.SUCCESS;
         setIgnoreActionErrors(true);
         try {
+            cc.prepare();
             result = cc.save();
         } catch (Exception e) {
             logger.error("{}", e);
@@ -955,7 +956,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
         cc.setId(id);
-        cc.prepare();
+//        cc.prepare();
         // controller.getResources().add(document);
         cc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         assertWeFailedToSave(cc);
@@ -1001,7 +1002,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
         cc.setId(id);
-        cc.prepare();
+//        cc.prepare();
         cc.setParentId(parentId);
         assertWeFailedToSave(cc);
     }
@@ -1361,10 +1362,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
-        controller.prepare();
         boolean seen = false;
         ignoreActionErrors(true);
         try {
+            controller.prepare();
             controller.edit();
         } catch (Exception e) {
             seen = true;
@@ -1417,10 +1418,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
-        controller.prepare();
         boolean seen = false;
         ignoreActionErrors(true);
         try {
+            controller.prepare();
             controller.edit();
         } catch (Exception e) {
             seen = true;
@@ -1466,10 +1467,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
          */
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
-        controller.prepare();
         boolean seen = false;
         ignoreActionErrors(true);
         try {
+            controller.prepare();
             controller.edit();
         } catch (Exception e) {
             seen = true;

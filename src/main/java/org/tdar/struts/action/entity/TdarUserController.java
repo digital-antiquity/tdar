@@ -168,11 +168,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         return false;
     }
 
-    @Override
-    public boolean isEditable() {
-        return getAuthenticatedUser().equals(getPersistable())
-                || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
-    }
 
     @Override
     public Class<TdarUser> getPersistableClass() {
@@ -182,7 +177,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     public TdarUser getPerson() {
         TdarUser p = getPersistable();
         if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-            if (!isEditable()) {
+            if (!authorize()) {
                 obfuscationService.obfuscate(p, getAuthenticatedUser());
             }
         }

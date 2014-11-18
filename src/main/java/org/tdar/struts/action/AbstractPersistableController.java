@@ -51,7 +51,7 @@ import com.opensymphony.xwork2.Preparable;
  * @author Adam Brin, <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P>, PersistableLoadingAction<P> {
+public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<P> {
 
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String LIST = "list";
@@ -328,9 +328,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     })
     @HttpsOnly
     public String edit() throws TdarActionException {
-        // ensureValidEditRequest();
-        // genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        if (Persistable.Base.isNullOrTransient(getPersistable() )) {
+            throw new TdarActionException(StatusCode.NOT_FOUND,getText("abstractPersistableController.not_found"));
+        }
         logAction("EDITING");
         return loadEditMetadata();
     }
@@ -356,49 +356,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
     }
-
-    @Override
-    public boolean isCreatable() throws TdarActionException {
-        return true;
-    }
-
-    /**
-     * Generic method enabling override for whether a record is editable
-     * 
-     * @return boolean whether the user can EDIT this resource
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isEditable() throws TdarActionException {
-        return false;
-    }
-
-    /**
-     * Generic method enabling override for whether a record is deleteable
-     * 
-     * @return boolean whether the user can DELETE this resource (default calls isEditable)
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isDeleteable() throws TdarActionException {
-        return isEditable();
-    }
-
-    /**
-     * Generic method enabling override for whether a record is saveable
-     * 
-     * @return boolean whether the user can SAVE this resource (default is TRUE for NEW resources, calls isEditable for existing)
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isSaveable() throws TdarActionException {
-        if (isNullOrNew()) {
-            return true;
-        } else {
-            return isEditable();
-        }
-    }
-
 
     @Override
     public P getPersistable() {

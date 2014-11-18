@@ -215,11 +215,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return getPersistable();
     }
 
-    @Override
-    public boolean isEditable() throws TdarActionException {
-        return true;
-    }
-
     public void setAccount(Account account) {
         setPersistable(account);
     }

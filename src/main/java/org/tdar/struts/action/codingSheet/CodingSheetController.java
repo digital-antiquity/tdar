@@ -71,7 +71,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomViewMetadata();
-        if (isEditable() && getCodingSheet().isMappedImproperly()) {
+        if (authorize() && getCodingSheet().isMappedImproperly()) {
             addActionMessage(getText("codingSheetController.mappedImproperly"));
         }
     }

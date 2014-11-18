@@ -82,9 +82,9 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
         logger.info("{} -- {} ", controller.getAuthenticatedUser(), inst);
         controller.setId(id);
-        controller.prepare();
-        controller.getInstitution().setName(newName);
         try {
+            controller.prepare();
+            controller.getInstitution().setName(newName);
             controller.edit();
             Assert.fail("edit request from non-admin should have thrown an exception");
         } catch (TdarActionException expected) {
