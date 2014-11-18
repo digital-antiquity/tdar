@@ -94,7 +94,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
     })
     public String view() {
-        if (Persistable.Base.isNullOrTransient(keyword)  && keyword.isDuplicate()) {
+        if (Persistable.Base.isNotNullOrTransient(keyword)  && keyword.isDuplicate()) {
             setKeyword(genericKeywordService.findAuthority(keyword));
             return BAD_SLUG;
         }
