@@ -121,7 +121,6 @@ import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;

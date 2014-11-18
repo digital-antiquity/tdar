@@ -13,6 +13,7 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
@@ -21,7 +22,6 @@ import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
 import org.tdar.filestore.tasks.Task;
-import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$

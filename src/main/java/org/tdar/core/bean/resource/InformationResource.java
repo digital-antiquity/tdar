@@ -51,6 +51,7 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
@@ -1169,4 +1170,15 @@ public abstract class InformationResource extends Resource {
         this.doi = doi;
     }
 
+    private transient List<FileProxy> fileProxies = new ArrayList<>();
+
+    @XmlElementWrapper(name = "fileProxies")
+    @XmlElement(name = "fileProxy")
+    public List<FileProxy> getFileProxies() {
+        return fileProxies;
+    }
+
+    public void setFileProxies(List<FileProxy> fileProxies) {
+        this.fileProxies = fileProxies;
+    }
 }

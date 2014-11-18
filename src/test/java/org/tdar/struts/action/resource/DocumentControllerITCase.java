@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -43,7 +44,6 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UploadController;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;

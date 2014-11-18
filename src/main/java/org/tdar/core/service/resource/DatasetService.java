@@ -32,6 +32,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.TdarUser;
@@ -67,7 +68,6 @@ import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.Pair;
 

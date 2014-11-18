@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.bean;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -30,6 +35,8 @@ import org.tdar.core.configuration.TdarConfiguration;
  * @author $Author$
  * @version $Revision$
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExtension {
 
     private static final long serialVersionUID = 1390565134253286109L;
@@ -283,6 +290,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         return false;
     }
 
+    @XmlTransient
     public boolean isCreatedByServer() {
         return createdByServer;
     }

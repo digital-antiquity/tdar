@@ -18,6 +18,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
@@ -52,7 +53,6 @@ import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.action.resource.ImageController;
 import org.tdar.struts.action.resource.OntologyController;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Action;

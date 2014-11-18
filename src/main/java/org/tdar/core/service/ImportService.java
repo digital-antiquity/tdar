@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -63,7 +64,6 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 

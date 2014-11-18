@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
@@ -28,7 +29,6 @@ import org.tdar.db.conversion.converters.TabConverter;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
-import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$

@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -17,11 +17,12 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.TdarGroup;
@@ -34,7 +35,6 @@ import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -62,7 +62,6 @@ public class APIController extends AuthenticationAware.Base {
     private String msg;
     private String status;
     private Long projectId; // note this will override projectId value specified in record
-
     // on the receiving end
     private List<String> processedFileNames;
 
@@ -79,8 +78,8 @@ public class APIController extends AuthenticationAware.Base {
 
     private Resource importedRecord;
     private String message;
-    private List<String> restrictedFiles = new ArrayList<>();
-    private FileAccessRestriction fileAccessRestriction;
+    // private List<String> restrictedFiles = new ArrayList<>();
+    // private FileAccessRestriction fileAccessRestriction;
     private Long id;
     private InputStream inputStream;
     private JaxbResultContainer xmlResultObject = new JaxbResultContainer();
@@ -116,24 +115,10 @@ public class APIController extends AuthenticationAware.Base {
     @PostOnly
     public String upload() {
 
-        if (CollectionUtils.isNotEmpty(uploadFile) && fileAccessRestriction == null) {
-            // If there is an error setting this field in the OGNL layer this method is still called...
-            // This check means that if there was such an error, then we are not going to default to a weaker access restriction.
-            getLogger().info("file access restrictions not set");
-            errorResponse(StatusCode.BAD_REQUEST);
-            return ERROR;
-        } else if (StringUtils.isEmpty(getRecord())) {
+        if (StringUtils.isEmpty(getRecord())) {
             getLogger().info("no record defined");
             errorResponse(StatusCode.BAD_REQUEST);
             return ERROR;
-        }
-        List<FileProxy> proxies = new ArrayList<>();
-        for (int i = 0; i < uploadFileFileName.size(); i++) {
-            FileProxy proxy = new FileProxy(uploadFileFileName.get(i), uploadFile.get(i), VersionType.UPLOADED, FileAction.ADD);
-            if (restrictedFiles.contains(uploadFileFileName.get(i))) {
-                proxy.setRestriction(fileAccessRestriction);
-            }
-            proxies.add(proxy);
         }
 
         try {
@@ -141,9 +126,30 @@ public class APIController extends AuthenticationAware.Base {
             // I don't know that this is "right"
             xmlResultObject.setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
-            // getGenericService().detachFromSession(incoming);
-            // getGenericService().detachFromSession(getAuthenticatedUser());
-            Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId, true);
+            List<FileProxy> fileProxies = new ArrayList<FileProxy>();
+            if (incoming instanceof InformationResource) {
+                fileProxies.addAll(((InformationResource) incoming).getFileProxies());
+            }
+            for (int i = 0; i < uploadFileFileName.size(); i++) {
+                boolean seen = false;
+                String name = uploadFileFileName.get(i);
+                File file = uploadFile.get(i);
+                for (FileProxy proxy : fileProxies) {
+                    getLogger().debug("{} -- {}", proxy, name);
+                    if (Objects.equals(proxy.getFilename(), name)) {
+                        proxy.setFile(file);
+                        seen = true;
+                    }
+                }
+                if (seen == false) {
+                    FileProxy proxy = new FileProxy(name, file, VersionType.UPLOADED);
+                    proxy.setAction(FileAction.ADD);
+                    fileProxies.add(proxy);
+                }
+
+            }
+
+            Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, fileProxies, projectId, true);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
@@ -307,14 +313,6 @@ public class APIController extends AuthenticationAware.Base {
         this.projectId = projectId;
     }
 
-    public List<String> getRestrictedFiles() {
-        return restrictedFiles;
-    }
-
-    public void setRestrictedFiles(List<String> confidentialFiles) {
-        this.restrictedFiles = confidentialFiles;
-    }
-
     public Long getAccountId() {
         return accountId;
     }
@@ -329,14 +327,6 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
-    }
-
-    public FileAccessRestriction getFileAccessRestriction() {
-        return fileAccessRestriction;
-    }
-
-    public void setFileAccessRestriction(FileAccessRestriction fileAccessRestriction) {
-        this.fileAccessRestriction = fileAccessRestriction;
     }
 
     public String getMessage() {
@@ -366,4 +356,5 @@ public class APIController extends AuthenticationAware.Base {
     public void setXmlResultObject(JaxbResultContainer xmlResultContainer) {
         this.xmlResultObject = xmlResultContainer;
     }
+
 }

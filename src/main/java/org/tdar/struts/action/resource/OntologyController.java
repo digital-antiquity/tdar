@@ -14,6 +14,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
@@ -25,7 +26,6 @@ import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 /**

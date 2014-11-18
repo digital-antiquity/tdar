@@ -79,6 +79,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;

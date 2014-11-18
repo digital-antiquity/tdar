@@ -16,6 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
@@ -44,7 +45,6 @@ import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
 /**
