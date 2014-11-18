@@ -37,7 +37,6 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
-
 @ParentPackage("default")
 @Namespace("/api")
 @Component
@@ -80,7 +79,7 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
             getLogger().debug("user:{}", user);
             if (!authorizationService.isMember(user, TdarGroup.TDAR_API_USER)) {
                 addActionError(getText("apiAuthenticationController.invalid_user"));
-                
+
             } else {
                 AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
                         getSessionData());
@@ -88,7 +87,7 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
                 xmlResultObject.put(USERNAME, result.getTokenUsername());
                 xmlResultObject.put(API_TOKEN, result.getToken());
                 xmlResultObject.put(API_TOKEN_KEY_NAME, getTdarConfiguration().getRequestTokenName());
-                xmlResultObject.put(MESSAGE, getText("apiAuthenticationController.tos_reminder",Arrays.asList(getTdarConfiguration().getTosUrl())));
+                xmlResultObject.put(MESSAGE, getText("apiAuthenticationController.tos_reminder", Arrays.asList(getTdarConfiguration().getTosUrl())));
             }
         } catch (Exception e) {
             addActionError(e.getMessage());
@@ -131,9 +130,11 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
         ErrorTransferObject errors = getUserLogin().validate(authorizationService, recaptchaService);
         processErrorObject(errors);
 
-        if (!isPostRequest() || errors.isNotEmpty()) {
-            getLogger().debug("errors: {}", errors);
+        if (!isPostRequest()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
+        }
+        if (errors.isNotEmpty()) {
+            getLogger().debug("errors: {}", errors);
         }
     }
 
