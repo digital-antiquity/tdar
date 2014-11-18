@@ -94,9 +94,15 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
     })
     public String view() {
+        if (Persistable.Base.isNullOrTransient(keyword)  && keyword.isDuplicate()) {
+            setKeyword(genericKeywordService.findAuthority(keyword));
+            return BAD_SLUG;
+        }
+
         if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
+        
         if (!Objects.equal(keyword.getSlug(), slug)) {
             if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != DEFAULT_RESULT_SIZE) {
                 setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
