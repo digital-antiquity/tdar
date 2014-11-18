@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivityModel;
@@ -26,8 +27,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.document.DocumentController;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
@@ -40,7 +39,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     private DocumentController controller;
 
-    public void initControllerFields() throws TdarActionException {
+    public void initControllerFields() {
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
     }
@@ -50,8 +49,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     }
 
     private class UsagePair extends Pair<Long, Long> {
-        private static final long serialVersionUID = 3493370798695227648L;
-
         public UsagePair(Long first, Long second) {
             super(first, second);
         }
@@ -211,7 +208,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
 
-    private Pair<String, Exception> setupResource(Document d) throws TdarActionException {
+    private Pair<String, Exception> setupResource(Document d) {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         if ((d != null) && (d.getId() != null)) {
             controller.setId(d.getId());

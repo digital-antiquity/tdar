@@ -17,15 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.FileType;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.Workflow;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.MessageHelper;
 
 /**

@@ -124,10 +124,18 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public String view() {
         if (redirectBadSlug) {
             return BAD_SLUG;
+		}
+        if (Persistable.Base.isNotNullOrTransient(keyword)  && keyword.isDuplicate()) {
+            setKeyword(genericKeywordService.findAuthority(keyword));
+            return BAD_SLUG;
+        }
+
+        if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
+            return NOT_FOUND;
         }
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
             // setOrientation(DisplayOrientation.MAP);
-        }
+		}
         return SUCCESS;
     }
 

@@ -1,4 +1,4 @@
-package org.tdar.struts.action.archive;
+package org.tdar.struts.action.resource;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,14 +9,13 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.Archive;
-import org.tdar.core.bean.resource.FileAction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts.data.FileProxy;
 
 /**
  * Wraps an archive file, such as a zip file or a tarball.

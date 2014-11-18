@@ -10,6 +10,7 @@ import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -25,7 +26,6 @@ import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FileProxy;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 

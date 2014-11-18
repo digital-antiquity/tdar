@@ -31,6 +31,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
@@ -53,7 +54,6 @@ import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
 

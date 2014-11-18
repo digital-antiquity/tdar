@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -30,8 +31,8 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.FileAccessRestriction;
-import org.tdar.core.bean.resource.FileAction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
@@ -43,17 +44,13 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UploadController;
-import org.tdar.struts.action.document.DocumentController;
-import org.tdar.struts.action.document.DocumentViewAction;
-import org.tdar.struts.action.project.ProjectController;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
-    public DocumentController initControllerFields() throws TdarActionException {
+    public DocumentController initControllerFields() {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
@@ -200,8 +197,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // try to edit as basic user -- should fail
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(id);
+        dc.prepare();
         try {
-            dc.prepare();
             assertNotEquals(Action.SUCCESS, dc.edit());
         } catch (TdarActionException e) {
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
@@ -281,27 +278,23 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    public void testOpenURLGeneration() throws TdarActionException {
-        DocumentViewAction controller = generateNewInitializedController(DocumentViewAction.class);
+    public void testOpenURLGeneration() {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.setId(4231L);
         controller.prepare();
         String openUrl = controller.getOpenUrl();
         logger.debug(openUrl);
-        assertEquals(
-                "ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/http://localhost:8180&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:unknown&amp;rft.genre=unknown&amp;rft.title=2008+New+Philadelphia+Archaeology+Report%2C+Chapter+3%2C+Block+3%2C+Lot+4",
-                openUrl);
+        assertEquals("ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/http://localhost:8180&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:unknown&amp;rft.genre=unknown&amp;rft.title=2008+New+Philadelphia+Archaeology+Report%2C+Chapter+3%2C+Block+3%2C+Lot+4", openUrl);
     }
 
     @Test
     public void testScholarSource() throws Exception {
-        DocumentViewAction controller = generateNewInitializedController(DocumentViewAction.class);
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.setId(4231L);
         controller.prepare();
         String scholar = controller.getGoogleScholarTags();
         logger.debug(scholar);
-        assertEquals(
-                "<meta name=\"citation_title\" content=\"2008 New Philadelphia Archaeology Report, Chapter 3, Block 3, Lot 4\"/>\n<meta name=\"citation_date\" content=\"2008\"/>\n<meta name=\"citation_online_date\" content=\"2010/08/14\"/>\n",
-                scholar);
+        assertEquals("<meta name=\"citation_title\" content=\"2008 New Philadelphia Archaeology Report, Chapter 3, Block 3, Lot 4\"/>\n<meta name=\"citation_date\" content=\"2008\"/>\n<meta name=\"citation_online_date\" content=\"2010/08/14\"/>\n", scholar);
 
     }
 
@@ -328,10 +321,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // now reload the document and see if the institution was saved.
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
-        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
-        rva.setId(newId);
-        rva.prepare();
-        rva.view();
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
 
         d = controller.getResource();
         Assert.assertEquals(d.getInternalResourceCollection(), null);
@@ -345,46 +338,30 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(CreatorType.INSTITUTION, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains(EXPECTED_INSTITUTION_NAME));
         Assert.assertEquals(ResourceCreatorRole.REPOSITORY, actualCreator.getRole());
+        setHttpServletRequest(getServletPostRequest());
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
+        controller.setDelete("delete");
         String deletionReason = "this is a test";
-        rva = deleteResource(newId, deletionReason);
+        controller.setDeletionReason(deletionReason);
+        controller.delete();
 
+        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
+
+        Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
+        Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
         boolean seen = false;
-        for (ResourceNote note : rva.getResource().getResourceNotes()) {
+        for (ResourceNote note : controller.getDocument().getResourceNotes()) {
             if ((note.getType() == ResourceNoteType.ADMIN) && note.getNote().equals(deletionReason)) {
                 seen = true;
             }
         }
         assertTrue("a deletion note should have been added", seen);
-    }
-
-    private DocumentViewAction deleteResource(Long newId, String deletionReason) throws Exception {
-        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
-        rva.setId(newId);
-        rva.prepare();
-        rva.view();
-        
-        
-        ResourceDeleteAction deleteAction = generateNewInitializedController(ResourceDeleteAction.class);
-        deleteAction.setId(newId);
-        deleteAction.prepare();
-
-        Resource res = deleteAction.getPersistable();
-        Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, res.getId());
-        deleteAction.setDeletionReason(deletionReason);
-        deleteAction.setServletRequest(getServletPostRequest());
-        deleteAction.setDelete(deleteAction.DELETE);
-        String delete = deleteAction.delete();
-        assertEquals(TdarActionSupport.SUCCESS, delete);
-        logger.debug("status: {}", delete);
-        genericService.synchronize();
-        rva = generateNewInitializedController(DocumentViewAction.class, getAdminUser());
-        rva.setId(newId);
-        rva.prepare();
-        rva.view();
-        Assert.assertEquals("expecting document status to be deleted", Status.DELETED, rva.getResource().getStatus());
-        Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, rva.getStatus());
-
-        return rva;
     }
 
     @Test
@@ -424,8 +401,20 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(CreatorType.PERSON, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains("newLast"));
         Assert.assertEquals(ResourceCreatorRole.AUTHOR, actualCreator.getRole());
-        String deletionReason = "because";
-        DocumentViewAction rva = deleteResource(d.getId(), deletionReason );
+        setHttpServletRequest(getServletPostRequest());
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
+        controller.setDelete("delete");
+        controller.delete();
+        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
+
+        Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
+        Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
     }
 
     // return a populated "new" resource creator person (i.e. all person fields
@@ -463,49 +452,49 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // now reload the document and see if the institution was saved.
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
-        ResourceDeleteAction deleteAction = generateNewInitializedController(ResourceDeleteAction.class);
-        deleteAction.setId(newId);
-        deleteAction.prepare();
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
 
-        Resource res = deleteAction.getPersistable();
-        Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, res.getId());
-        Set<ResourceCreator> resourceCreators = res.getResourceCreators();
+        d = controller.getResource();
+        Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
+        Set<ResourceCreator> resourceCreators = d.getResourceCreators();
         Assert.assertTrue(resourceCreators.size() > 0);
         ResourceCreator actualCreator = (ResourceCreator) d.getResourceCreators().toArray()[0];
         Assert.assertNotNull(actualCreator);
         Assert.assertEquals(CreatorType.PERSON, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains("newLast"));
-        deleteAction.delete(controller.getDocument());
+        controller.delete(controller.getDocument());
 
         // FIXME: should add and replace items here to really test
 
         // FIXME: issues with hydrating resources with Institutions
 
-        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class, getAdminUser());
-        rva.setId(newId);
-        rva.prepare();
-        rva.view();
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         // assert my authorproxies have what i think they should have (rendering
         // edit page)
-        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller = generateNewInitializedController(DocumentController.class);
         controller.setId(newId);
         controller.prepare();
         controller.edit();
-        controller.getPersistable().setStatus(Status.DRAFT);
         controller.setAuthorshipProxies(new ArrayList<ResourceCreatorProxy>());
         // deleting all authorship resource creators
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         // loading the view page
-        rva = generateNewInitializedController(DocumentViewAction.class);
-        rva.setId(newId);
-        rva.prepare();
-        rva.view();
-        logger.info("{}", rva.getAuthorshipProxies());
-        Assert.assertEquals("expecting size zero", 0, rva.getAuthorshipProxies().size());
-        logger.debug("{}", rva.getAuthorshipProxies().size());
-        Assert.assertTrue("expecting invaled proxy", rva.getAuthorshipProxies().isEmpty());
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
+        logger.info("{}", controller.getAuthorshipProxies());
+        Assert.assertEquals("expecting size zero", 0, controller.getAuthorshipProxies().size());
+        logger.debug("{}", controller.getAuthorshipProxies().size());
+        Assert.assertTrue("expecting invaled proxy", controller.getAuthorshipProxies().isEmpty());
     }
 
     @Test
