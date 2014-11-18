@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.document.DocumentController;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
@@ -39,7 +40,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     private DocumentController controller;
 
-    public void initControllerFields() {
+    public void initControllerFields() throws TdarActionException {
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
     }
@@ -49,6 +50,8 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     }
 
     private class UsagePair extends Pair<Long, Long> {
+        private static final long serialVersionUID = 3493370798695227648L;
+
         public UsagePair(Long first, Long second) {
             super(first, second);
         }
@@ -208,7 +211,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
 
-    private Pair<String, Exception> setupResource(Document d) {
+    private Pair<String, Exception> setupResource(Document d) throws TdarActionException {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         if ((d != null) && (d.getId() != null)) {
             controller.setId(d.getId());

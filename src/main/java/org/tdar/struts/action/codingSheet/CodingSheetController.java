@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.codingSheet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -25,10 +24,10 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -72,7 +71,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomViewMetadata();
-        if (isEditable() && getCodingSheet().isMappedImproperly()) {
+        if (authorize() && getCodingSheet().isMappedImproperly()) {
             addActionMessage(getText("codingSheetController.mappedImproperly"));
         }
     }
@@ -114,7 +113,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             @Result(name = INPUT, type = "redirect", location = URLConstants.VIEW_RESOURCE_ID)
     })
     public String loadOntologyMappedColumns() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         getLogger().debug("loading ontology mapped columns for {}", getPersistable());
         Ontology ontology = getCodingSheet().getDefaultOntology();
         setOntologyNodes(ontology.getSortedOntologyNodesByImportOrder());
@@ -138,7 +137,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
                     @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
                     @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         try {
             getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!", getCodingSheet());
             for (CodingRule transientRule : getCodingRules()) {
@@ -215,16 +214,4 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         this.ontology = ontology;
     }
 
-    public boolean isOkToMapOntology() {
-        Ontology defaultOntology = getPersistable().getDefaultOntology();
-        if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
-            getLogger().debug("cannot map, ontology issues, null or transient");
-            return false;
-        }
-        if (CollectionUtils.isEmpty(getPersistable().getCodingRules()) || CollectionUtils.isNotEmpty(getPersistable().getFilesWithProcessingErrors())) {
-            getLogger().debug("cannot map, coding sheet has errors or no rules");
-            return false;
-        }
-        return true;
-    }
 }

@@ -1,6 +1,7 @@
 package org.tdar.core.dao;
 
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
@@ -10,7 +11,6 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ImageThumbnailTask;
-import org.tdar.struts.data.FileProxy;
 
 @Component
 public class SimpleFileProcessingDao {

@@ -35,10 +35,10 @@ import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
@@ -46,13 +46,14 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.account.UserAccountController;
+import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.collection.CollectionController;
+import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts.action.image.ImageController;
+import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
-import org.tdar.struts.action.resource.CodingSheetController;
-import org.tdar.struts.action.resource.DatasetController;
-import org.tdar.struts.action.resource.DocumentController;
-import org.tdar.struts.action.resource.ImageController;
-import org.tdar.struts.action.resource.OntologyController;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Action;
@@ -169,7 +170,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.setParentId(parentId);
         resourceCollection.setType(type);
         controller.setAsync(false);
-        resourceCollection.setVisible(visible);
+        resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (resources != null) {
             controller.getToAdd().addAll(Persistable.Base.extractIds(resources));
@@ -208,15 +209,15 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return ticketId;
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls) throws TdarActionException {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) throws TdarActionException {
         return setupAndLoadResource(filename, cls, permis, -1L);
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) throws TdarActionException {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
@@ -258,7 +259,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) throws TdarActionException {
 
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;
