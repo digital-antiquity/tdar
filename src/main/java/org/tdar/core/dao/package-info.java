@@ -465,6 +465,26 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
                 query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
+                // 
+                query = "select distinct dt from DataTable dt inner join dt.dataTableColumns as dtc inner join dtc.defaultOntology as ont join dt.dataset as ds left join ds.resourceCollections as rc"
+                        + " left join rc.parentIds parentId  "
+                        + "where ds.status='ACTIVE' and (:projectId=-1 or ds.project.id=:projectId) and "
+                        + "(:collectionId=-1 or rc.id=:collectionId or parentId=:collectionId) and "
+                        + "(:hasOntologies=false or ont.id in (:ontologyIds) ) and "
+                        + "(:bookmarked=false or ds.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,
+                // 
+                query = "select distinct ont from Ontology ont left join ont.resourceCollections as rc"
+                        + " left join rc.parentIds parentId  "
+                        + "where ont.status='ACTIVE' and (:projectId=-1 or ont.project.id=:projectId) and "
+                        + "(:collectionId=-1 or rc.id=:collectionId or parentId=:collectionId) and "
+                        + "(:categoryId=-1 or ont.categoryVariable.id=:categoryId) and"
+                        + "(:hasDatasets=false or ont.id in "
+                            + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:dataTableIds))) and"
+                        + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
 
 })
 package org.tdar.core.dao;

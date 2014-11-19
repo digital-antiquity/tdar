@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.integration.OntologyIntegrationSearchFilter;
 import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
@@ -268,4 +269,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
     }
 
+    public List<Ontology> findOntologies(OntologyIntegrationSearchFilter ontologyFilter, Integer startRecord, int recordsPerPage) {
+        return getDao().findOntologies(ontologyFilter.getProject(), ontologyFilter.getCollection(), ontologyFilter.getAuthorizedUser(), ontologyFilter.getCategoryVariable(), ontologyFilter.getDataTables(),ontologyFilter.getIsBookmarked() , startRecord, recordsPerPage);
+    }
 }

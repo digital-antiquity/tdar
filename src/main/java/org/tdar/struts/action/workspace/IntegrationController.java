@@ -1,8 +1,17 @@
 package org.tdar.struts.action.workspace;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.Preparable;
-import org.apache.struts2.convention.annotation.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,7 +19,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.XmlService;
@@ -19,8 +27,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 
-import java.io.IOException;
-import java.util.*;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  *
@@ -37,7 +44,7 @@ import java.util.*;
  */
 public class IntegrationController extends AuthenticationAware.Base implements Preparable {
 
-    private static final long serialVersionUID = 0x01;
+    private static final long serialVersionUID = -2356381511354062946L;
     private List<Project> allSubmittedProjects = new ArrayList<>();
     private List<Resource> fullUserProjects = new ArrayList<>();
     private List<ResourceCollection> allCollections = new ArrayList<>();

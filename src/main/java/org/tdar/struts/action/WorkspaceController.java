@@ -39,9 +39,9 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationColumn.ColumnType;
-import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.data.intgration.IntegrationColumn;
+import org.tdar.struts.data.intgration.IntegrationDataResult;
+import org.tdar.struts.data.intgration.IntegrationColumn.ColumnType;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.Pair;
 

@@ -20,14 +20,10 @@ import org.tdar.struts.data.FacetGroup;
  * @see org.tdar.core.service.SearchService#handleSearch(org.tdar.search.query.QueryBuilder, SearchResultHandler)
  * 
  */
-public interface SearchResultHandler<I extends Indexable> {
+public interface SearchResultHandler<I extends Indexable> extends SimpleSearchResultHandler {
 
     final int DEFAULT_START = 0;
     final int DEFAULT_RESULT_SIZE = 25;
-
-    SortOption getSortField();
-
-    void setSortField(SortOption sortField);
 
     SortOption getSecondarySortField();
 
@@ -65,23 +61,6 @@ public interface SearchResultHandler<I extends Indexable> {
 
     int getTotalRecords();
 
-    /**
-     * Gets the index of the first record which the SearchService should return in this page of results.
-     * 
-     * @return the index of the first record which the SearchService should return
-     */
-    int getStartRecord();
-
-    void setStartRecord(int startRecord);
-
-    /**
-     * Retrieve the number of records which the SearchService should return in this page of results.
-     * 
-     * @return the number of records to return.
-     */
-    int getRecordsPerPage();
-
-    void setRecordsPerPage(int recordsPerPage);
 
     boolean isDebug();
 

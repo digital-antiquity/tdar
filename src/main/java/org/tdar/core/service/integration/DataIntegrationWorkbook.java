@@ -36,8 +36,8 @@ import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.CellFormat.Style;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.data.intgration.IntegrationColumn;
+import org.tdar.struts.data.intgration.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 

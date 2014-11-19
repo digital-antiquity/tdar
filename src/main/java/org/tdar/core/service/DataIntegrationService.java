@@ -27,17 +27,23 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.integration.DatasetIntegrationSearchFilter;
+import org.tdar.core.dao.integration.IntegrationSearchFilter;
+import org.tdar.core.dao.integration.OntologyIntegrationSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -46,9 +52,9 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationContext;
-import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.data.intgration.IntegrationColumn;
+import org.tdar.struts.data.intgration.IntegrationContext;
+import org.tdar.struts.data.intgration.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
@@ -524,5 +530,24 @@ public class DataIntegrationService {
         }
 
         return allOntologies;
+    }
+
+    @Transactional
+    public void hydrateFilter(IntegrationSearchFilter filter, TdarUser authUser) {
+        if (filter == null) {
+            return;
+        }
+        filter.setProject(genericDao.loadFromSparseEntity(filter.getProject(), Project.class));
+        filter.setCollection(genericDao.loadFromSparseEntity(filter.getCollection(), ResourceCollection.class));
+        if (filter instanceof OntologyIntegrationSearchFilter) {
+            OntologyIntegrationSearchFilter oFilter = (OntologyIntegrationSearchFilter) filter;
+            oFilter.setDataTables(genericDao.loadFromSparseEntities(oFilter.getDataTables(), DataTable.class));
+            oFilter.setCategoryVariable(genericDao.loadFromSparseEntity(oFilter.getCategoryVariable(), CategoryVariable.class));
+        }
+        if (filter instanceof DatasetIntegrationSearchFilter) {
+            DatasetIntegrationSearchFilter dFilter = (DatasetIntegrationSearchFilter) filter;
+            dFilter.setOntologies(genericDao.loadFromSparseEntities(dFilter.getOntologies(), Ontology.class));
+        }
+        filter.setAuthorizedUser(authUser);
     }
 }

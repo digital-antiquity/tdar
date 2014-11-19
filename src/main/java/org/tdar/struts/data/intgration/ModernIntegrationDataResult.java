@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.struts.data.intgration;
 
 import java.io.Serializable;
 import java.sql.ResultSet;

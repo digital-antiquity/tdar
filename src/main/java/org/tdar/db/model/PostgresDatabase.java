@@ -60,9 +60,9 @@ import org.tdar.core.service.RowOperations;
 import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.odata.server.AbstractDataRecord;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationContext;
-import org.tdar.struts.data.ModernIntegrationDataResult;
+import org.tdar.struts.data.intgration.IntegrationColumn;
+import org.tdar.struts.data.intgration.IntegrationContext;
+import org.tdar.struts.data.intgration.ModernIntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 

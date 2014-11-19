@@ -66,6 +66,16 @@ public class Dataset extends InformationResource {
             return MessageHelper.formatLocalizableKey(this);
         }
 
+        public Boolean getBooleanValue() {
+            switch (this) {
+                case NO:
+                    return Boolean.FALSE;
+
+                default:
+                    return Boolean.TRUE;
+            }
+        }
+
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)

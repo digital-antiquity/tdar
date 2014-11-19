@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.data;
+package org.tdar.struts.data.intgration;
 
 import java.io.Serializable;
 import java.util.Date;

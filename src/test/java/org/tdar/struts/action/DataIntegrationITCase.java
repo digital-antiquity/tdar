@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -22,10 +23,14 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.dao.integration.DatasetIntegrationSearchFilter;
+import org.tdar.core.dao.integration.OntologyIntegrationSearchFilter;
+import org.tdar.core.service.resource.DataTableService;
+import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationColumn.ColumnType;
-import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.data.intgration.IntegrationColumn;
+import org.tdar.struts.data.intgration.IntegrationColumn.ColumnType;
+import org.tdar.struts.data.intgration.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -41,7 +46,35 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     private static final String BONE_COMMON_NAME_COL = "bone_common_name";
     private static final String TAXON_COL = "taxon";
     private static final String SPECIES_COMMON_NAME_COL = "species_common_name";
-    
+
+    @Autowired
+    DataTableService dataTableService;
+
+    @Autowired
+    OntologyService ontologyService;
+
+    @Test
+    public void testDatasetService() {
+        int firstRecord = 0;
+        int maxRecords = 10;
+        DatasetIntegrationSearchFilter filter = new DatasetIntegrationSearchFilter();
+        filter.setAuthorizedUser(getUser());
+        for (DataTable dt : dataTableService.findDataTables(filter, firstRecord, maxRecords)) {
+            logger.debug("{} - {}", dt.getName(), dt.getId());
+        }
+    }
+
+    @Test
+    public void testOntologyService() {
+        int firstRecord = 0;
+        int maxRecords = 10;
+        OntologyIntegrationSearchFilter filter = new OntologyIntegrationSearchFilter();
+        filter.setAuthorizedUser(getUser());
+        for (Ontology ont : ontologyService.findOntologies(filter, firstRecord, maxRecords)) {
+            logger.debug("{} - {}", ont.getName(), ont.getId());
+        }
+    }
+
     @Test
     @Rollback
     public void testFilteredNodesSurviveHierarchy() throws Exception {
