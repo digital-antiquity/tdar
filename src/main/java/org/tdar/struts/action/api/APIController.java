@@ -130,7 +130,8 @@ public class APIController extends AuthenticationAware.Base {
             if (incoming instanceof InformationResource) {
                 fileProxies.addAll(((InformationResource) incoming).getFileProxies());
             }
-            for (int i = 0; i < uploadFileFileName.size(); i++) {
+            getLogger().debug("File Proxies: {}", fileProxies);
+            for (int i = 0; i < uploadFile.size(); i++) {
                 boolean seen = false;
                 String name = uploadFileFileName.get(i);
                 File file = uploadFile.get(i);
