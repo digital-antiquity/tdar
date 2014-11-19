@@ -136,8 +136,8 @@ public class APIController extends AuthenticationAware.Base {
                 String name = uploadFileFileName.get(i);
                 File file = uploadFile.get(i);
                 for (FileProxy proxy : fileProxies) {
-                    getLogger().debug("{} -- {}", proxy, name);
                     if (Objects.equals(proxy.getFilename(), name)) {
+                        getLogger().debug("{} -- {}", proxy, name);
                         proxy.setFile(file);
                         seen = true;
                     }
@@ -146,6 +146,7 @@ public class APIController extends AuthenticationAware.Base {
                     FileProxy proxy = new FileProxy(name, file, VersionType.UPLOADED);
                     proxy.setAction(FileAction.ADD);
                     fileProxies.add(proxy);
+                    getLogger().debug("{} -- {}", proxy, name);
                 }
 
             }
