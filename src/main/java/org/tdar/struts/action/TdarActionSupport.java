@@ -737,17 +737,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected <P extends Persistable> void checkValidRequest(PersistableLoadingAction<P> pc) throws TdarActionException {
-        // if (pc.isAuthenticationRequired()) {
-        // try {
-        // if (!getSessionData().isAuthenticated()) {
-        // addActionError(getText("abstractPersistableController.must_authenticate"));
-        // abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.must_authenticate"));
-        // }
-        // } catch (Exception e) {
-        // addActionErrorWithException(getText("abstractPersistableController.session_not_initialized"), e);
-        // abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.could_not_load"));
-        // }
-        // }
 
         Persistable persistable = pc.getPersistable();
         // if we're NULL and we're not supposed to be null

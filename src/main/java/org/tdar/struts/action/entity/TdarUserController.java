@@ -16,7 +16,6 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
@@ -69,8 +68,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     @HttpsOnly
     @SkipValidation
     public String myProfile() throws TdarActionException {
-        setId(getAuthenticatedUser().getId());
-        prepare();
         return edit();
     }
 
@@ -82,6 +79,9 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
 
     @Override
     public void prepare() throws TdarActionException {
+        if (getCurrentUrl().contains("myprofile")) {
+            setId(getAuthenticatedUser().getId());
+        }
         super.prepare();
         contributor = getPersistable().isContributor();
     }

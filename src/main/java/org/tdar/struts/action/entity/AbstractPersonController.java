@@ -80,9 +80,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         return SUCCESS;
     }
 
-//    public boolean isEditable() {
-//        return authorize();
-//    }
 
     @Override
     public boolean authorize() {
