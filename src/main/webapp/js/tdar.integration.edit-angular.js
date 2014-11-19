@@ -230,6 +230,7 @@
 
         };
 
+        //add and initialize an integration column associated with with the specified ontology ID
         var processAddedIntegrationColumns = function(ontologies) {
             console.debug("processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
@@ -247,6 +248,25 @@
 
             });
         }
+
+        /**
+         * add initialize a single integration column associated with with the specified ontology ID
+         * @param ontology
+         */
+        var addIntegrationColumn = function(ontology) {
+            var integrationColumn = {
+                nodeSelections: [],
+                datatableColumnIds: []
+            };
+
+            integrationColumn.nodeSelections = ontology.nodes.map(function(node) {
+                return {
+                    selected: false,
+                    node: node
+                }
+            });
+        };
+
 
         self.findDataTableColumns = function(integrationColumn) {
             var cols = [];
