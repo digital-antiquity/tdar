@@ -46,6 +46,8 @@ public interface TestConstants {
 
     public static final String TEST_IMAGE_NAME = "5127663428_42ef7f4463_b.jpg";
     public static final String TEST_IMAGE = TEST_IMAGE_DIR + TEST_IMAGE_NAME;
+    public static final String TEST_IMAGE_NAME2 = "handbook_of_archaeology.jpg";
+    public static final String TEST_IMAGE2  = TEST_IMAGE_DIR + TEST_IMAGE_NAME2;
 
     public static String INSTITUTION_NAME = "Arizona State University";
     public static String DEFAULT_FIRST_NAME = "Test";

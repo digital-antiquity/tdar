@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -20,6 +22,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -29,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.XmlService;
@@ -110,8 +114,25 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
         assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
-
+    }
+    
+    @Test
+    @Rollback
+    public void testConfidential() throws Exception {
+        JaxbResultContainer login = setupValidLogin();
         
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/upload");
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
+        builder.addTextBody("record", text);
+        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE)));
+        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE2)));
+
+        post.setEntity(builder.build());
+        CloseableHttpResponse response = httpClient.execute(post);        
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
+        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
     }
     
     @Test

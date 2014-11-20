@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -23,12 +24,10 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -72,7 +71,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomViewMetadata();
-        if (isEditable() && getCodingSheet().isMappedImproperly()) {
+        if (authorize() && getCodingSheet().isMappedImproperly()) {
             addActionMessage(getText("codingSheetController.mappedImproperly"));
         }
     }
@@ -114,7 +113,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             @Result(name = INPUT, type = "redirect", location = URLConstants.VIEW_RESOURCE_ID)
     })
     public String loadOntologyMappedColumns() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         getLogger().debug("loading ontology mapped columns for {}", getPersistable());
         Ontology ontology = getCodingSheet().getDefaultOntology();
         setOntologyNodes(ontology.getSortedOntologyNodesByImportOrder());
@@ -138,7 +137,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
                     @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
                     @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         try {
             getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!", getCodingSheet());
             for (CodingRule transientRule : getCodingRules()) {

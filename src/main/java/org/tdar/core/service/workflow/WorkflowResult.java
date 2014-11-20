@@ -10,10 +10,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.filestore.WorkflowContext;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.ExceptionWrapper;
 
 public class WorkflowResult implements Serializable {

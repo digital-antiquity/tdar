@@ -94,11 +94,21 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         if (getResourceCollection() == null) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
         return authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
+    }
+    
+    public boolean isVisible() {
+        try {
+            if (!getResourceCollection().isHidden() || authorize()) {
+                return true;
+            }
+        } catch (TdarActionException e) {
+        }
+        return false;
     }
 
     public ResourceCollection getResourceCollection() {

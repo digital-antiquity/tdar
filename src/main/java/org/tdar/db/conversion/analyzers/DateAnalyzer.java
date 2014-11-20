@@ -83,7 +83,7 @@ public class DateAnalyzer implements ColumnAnalyzer {
                 result = null;
             }
 
-            if (value.matches("(\\d+)\\-(\\d+)")) {
+            if (value.matches("(\\d+)(\\-|/)(\\d+)")) {
                 return null;
             }
             logger.trace("== result: {} ", result);

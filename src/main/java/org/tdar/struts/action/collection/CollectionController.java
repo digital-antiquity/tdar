@@ -96,10 +96,12 @@ public class CollectionController extends AbstractPersistableController<Resource
     private String contentType;
     private String filename;
 
+    
+    
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         if (isNullOrNew()) {
-            return false;
+            return true;
         }
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }

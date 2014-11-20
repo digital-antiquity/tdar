@@ -363,15 +363,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
     }
 
-    @Override
-    public boolean isCreatable() throws TdarActionException {
-        // FIXME: this is really an authorization thing...
-        // if (!getAuthenticatedUser().getContributor()) {
-        // return false;
-        // }
-        return true;
-    }
-
     /**
      * Returns true if authuser is able to create billable items, contributor status notwithstanding.
      * 
@@ -413,9 +404,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private Boolean editable = null;
 
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         if (isNullOrNew()) {
-            return false;
+            return true;
         }
         if (editable == null) {
             editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);

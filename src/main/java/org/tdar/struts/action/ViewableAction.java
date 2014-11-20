@@ -11,7 +11,7 @@ public interface ViewableAction<P extends Persistable> {
      * 
      * @throws TdarActionException
      */
-    boolean isViewable() throws TdarActionException;
+    boolean authorize() throws TdarActionException;
 
     /**
      * @return Person object representing the user currently logged-in

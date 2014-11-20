@@ -54,7 +54,6 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.tdar.core.bean.resource.FileAccessRestriction;
 
 /**
  * http://thegenomefactory.blogspot.com.au/2013/08/minimum-standards-for-bioinformatics.html
@@ -66,10 +65,6 @@ public class CommandLineAPITool {
     // The following are the names of the fields on the APIController that we set
     /** Set in the query. Not really needed. */
     private static final String API_UPLOADED_ITEM = "uploadedItem";
-    /** The access restrictions that is to be applied to the uploaded files */
-    private static final String API_FIELD_FILE_ACCESS_RESTRICTION = "fileAccessRestriction";
-    /** The list of files that are to have the access restriction applied to them */
-    private static final String API_FIELD_RESTRICTED_FILES = "restrictedFiles";
     /** The list of attachment files */
     private static final String API_FIELD_UPLOAD_FILE = "uploadFile";
     /** The meta-data describing the files, an xml file itself, adhering to the published schema */
@@ -99,7 +94,6 @@ public class CommandLineAPITool {
     private static final String OPTION_ACCOUNTID = "accountid";
     private static final String OPTION_SLEEP = "sleep";
     private static final String OPTION_PROJECT_ID = "projectid";
-    private static final String OPTION_ACCESS_RESTRICTION = API_FIELD_FILE_ACCESS_RESTRICTION;
     private static final String ALPHA_TDAR_ORG = "alpha.tdar.org";
     @SuppressWarnings("unused")
     private static final String CORE_TDAR_ORG = "core.tdar.org";
@@ -117,7 +111,6 @@ public class CommandLineAPITool {
     private Long projectId;
     private Long accountId;
     private long msSleepBetween;
-    private FileAccessRestriction fileAccessRestriction = FileAccessRestriction.PUBLIC;
     private List<String> seen = new ArrayList<>();
     private String httpProtocol = HTTPS_PROTOCOL;
     private File[] files;
@@ -195,9 +188,6 @@ public class CommandLineAPITool {
         if (line.hasOption(OPTION_SLEEP)) {
             importer.setMsSleepBetween(getAsLong(line.getOptionValue(OPTION_SLEEP)));
         }
-        if (line.hasOption(OPTION_ACCESS_RESTRICTION)) {
-            importer.setFileAccessRestriction(FileAccessRestriction.valueOf(line.getOptionValue(OPTION_ACCESS_RESTRICTION)));
-        }
         if (line.hasOption(OPTION_SEEN_FILE)) {
             importer.setSeenFile(line.getOptionValue(OPTION_SEEN_FILE));
         }
@@ -229,9 +219,6 @@ public class CommandLineAPITool {
         options.addOption(OptionBuilder.withArgName(OPTION_SEEN_FILE).hasArg()
                 .withDescription("the name of the file to record successful file tranfers to (defaults to " + IMPORT_SEEN_FILE + ")")
                 .create(OPTION_SEEN_FILE));
-        options.addOption(OptionBuilder.withArgName(OPTION_ACCESS_RESTRICTION).hasArg()
-                .withDescription("the access restriction to be applied - one of [" + getFileAccessRestrictionChoices() + "]")
-                .create(OPTION_ACCESS_RESTRICTION));
         return options;
     }
 
@@ -264,9 +251,6 @@ public class CommandLineAPITool {
                 case OPTION_SEEN_FILE:
                     importer.setSeenFile(property);
                     break;
-                case OPTION_ACCESS_RESTRICTION:
-                    importer.setFileAccessRestriction(FileAccessRestriction.valueOf(property));
-                    break;
                 case OPTION_FILE:
                     importer.setFiles(property.split(","));
                     break;
@@ -287,18 +271,6 @@ public class CommandLineAPITool {
         console.setWriter(new OutputStreamWriter(System.out));
         logger.setLevel(Level.INFO);
         logger.addAppender(console);
-    }
-
-    private static String getFileAccessRestrictionChoices() {
-        String result = "";
-        FileAccessRestriction[] values = FileAccessRestriction.values();
-        for (int i = 1; i <= values.length; i++) {
-            result = result + values[i - 1];
-            if (i < values.length) {
-                result = result + " | ";
-            }
-        }
-        return result;
     }
 
     private static boolean hasNoOptions(CommandLine line) {
@@ -482,14 +454,9 @@ public class CommandLineAPITool {
                 builder.addTextBody(API_FIELD_ACCOUNT_ID, accountId.toString());
             }
 
-            builder.addTextBody(API_FIELD_FILE_ACCESS_RESTRICTION, getFileAccessRestriction().name());
-
             if (!CollectionUtils.isEmpty(attachments)) {
                 for (int i = 0; i < attachments.size(); i++) {
                     builder.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
-                    if (getFileAccessRestriction().isRestricted()) {
-                        builder.addTextBody(API_FIELD_RESTRICTED_FILES, attachments.get(i).getName());
-                    }
                 }
             }
 
@@ -603,14 +570,6 @@ public class CommandLineAPITool {
 
     public void setSeen(List<String> seen) {
         this.seen = seen;
-    }
-
-    public FileAccessRestriction getFileAccessRestriction() {
-        return fileAccessRestriction;
-    }
-
-    public void setFileAccessRestriction(FileAccessRestriction fileAccessRestriction) {
-        this.fileAccessRestriction = fileAccessRestriction;
     }
 
     /**

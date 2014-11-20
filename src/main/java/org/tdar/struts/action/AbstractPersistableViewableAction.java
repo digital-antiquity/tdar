@@ -10,7 +10,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
@@ -19,10 +18,10 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -48,7 +47,7 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
 })
-public abstract class AbstractPersistableViewableAction<P extends Persistable> extends AuthenticationAware.Base implements Preparable, ViewableAction<P> {
+public abstract class AbstractPersistableViewableAction<P extends Persistable> extends AuthenticationAware.Base implements Preparable, ViewableAction<P>, PersistableLoadingAction<P> {
 
     private static final long serialVersionUID = -5126488373034823160L;
 
@@ -62,7 +61,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     private Status status;
     @SuppressWarnings("unused")
     private Class<P> persistableClass;
-    public final static String msg = "%s is %s %s (%s): %s";
     public final static String REDIRECT_HOME = "REDIRECT_HOME";
     public final static String REDIRECT_PROJECT_LIST = "PROJECT_LIST";
     private List<AuthorizedUser> authorizedUsers;
@@ -135,7 +133,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
      * @throws TdarActionException
      */
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         return true;
     }
 
@@ -167,25 +165,8 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
      */
     @Override
     public void prepare() throws TdarActionException {
-        P p = null;
-        getLogger().debug("{} {}", getPersistableClass(), getId());
-        if (isPersistableIdSet()) {
-            getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
-        } else {
-            p = loadFromId(getId());
-            setPersistable(p);
-        }
-        // first check the session
-        if (!(getAuthenticatedUser() == null)) {
-            // don't log anonymous users
-            String status = "";
-            if (getPersistable() instanceof HasStatus) {
-                status = ((HasStatus) getPersistable()).getStatus().toString();
-            }
-            getLogger().info(String.format(msg, getAuthenticatedUser().getUsername(), "VIEWING", getPersistableClass().getSimpleName(), getId(), status));
-        }
-        checkValidRequest();
-        isViewable();
+        prepareAndLoad(this, RequestType.VIEW);
+        checkValidRequest(this);
         handleSlug();
     }
 
@@ -193,50 +174,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         if (!handleSlugRedirect(persistable, this)) {
             setRedirectBadSlug(true);
         } 
-    }
-
-    private void checkValidRequest() throws TdarActionException {
-        if (isAuthenticationRequired()) {
-            try {
-                if (!getSessionData().isAuthenticated()) {
-                    addActionError(getText("abstractPersistableController.must_authenticate"));
-                    abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.must_authenticate"));
-                }
-            } catch (Exception e) {
-                addActionErrorWithException(getText("abstractPersistableController.session_not_initialized"), e);
-                abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.could_not_load"));
-            }
-        }
-
-        Persistable persistable = getPersistable();
-        if (Persistable.Base.isNullOrTransient(persistable)) {
-            // deal with the case that we have a new or not found resource
-            getLogger().debug("Dealing with transient persistable {}", persistable);
-            if (persistable == null) {
-                // persistable is null, so the lookup failed (aka not found)
-                abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
-            } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
-                // id not specified or not a number, so this is an invalid request
-                abort(StatusCode.BAD_REQUEST,
-                        getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
-            }
-        }
-        // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
-        if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
-            return;
-        }
-
-        if (isViewable()) {
-            return;
-        }
-        String errorMessage = getText("abstractPersistableController.no_permissions");
-        addActionError(errorMessage);
-        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
-    }
-
-    private boolean isAuthenticationRequired() {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     protected boolean isPersistableIdSet() {
@@ -385,6 +322,11 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
 
     public void setRedirectBadSlug(boolean redirectBadSlug) {
         this.redirectBadSlug = redirectBadSlug;
+    }
+
+    @Override
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.VIEW_ANYTHING;
     }
 
 }

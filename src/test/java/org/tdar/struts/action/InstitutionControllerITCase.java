@@ -73,7 +73,7 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     // non-curators should not be able to edit an institution
-    public void testEditByNonAdmin() {
+    public void testEditByNonAdmin() throws TdarActionException {
         setIgnoreActionErrors(true);
         Institution inst = genericService.findAll(Institution.class).iterator().next();
         final Long id = inst.getId();
@@ -82,9 +82,9 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
         logger.info("{} -- {} ", controller.getAuthenticatedUser(), inst);
         controller.setId(id);
-        controller.prepare();
-        controller.getInstitution().setName(newName);
         try {
+            controller.prepare();
+            controller.getInstitution().setName(newName);
             controller.edit();
             Assert.fail("edit request from non-admin should have thrown an exception");
         } catch (TdarActionException expected) {

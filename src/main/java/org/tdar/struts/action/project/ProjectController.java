@@ -2,9 +2,7 @@ package org.tdar.struts.action.project;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -12,31 +10,20 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.SearchPaginationException;
-import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.resource.ProjectService;
-import org.tdar.search.query.FacetValue;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceController;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
-import org.tdar.utils.PaginationHelper;
 
 /**
  * $Id$
@@ -161,6 +148,14 @@ public class ProjectController extends AbstractResourceController<Project> {
 
     public void setJsonInputStream(InputStream jsonInputStream) {
         this.jsonInputStream = jsonInputStream;
+    }
+
+    public SortOption getSecondarySortField() {
+        return secondarySortField;
+    }
+
+    public SortOption getSortField() {
+        return sortField;
     }
 
     

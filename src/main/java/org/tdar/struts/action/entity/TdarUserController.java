@@ -16,7 +16,6 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
@@ -69,8 +68,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     @HttpsOnly
     @SkipValidation
     public String myProfile() throws TdarActionException {
-        setId(getAuthenticatedUser().getId());
-        prepare();
         return edit();
     }
 
@@ -81,7 +78,10 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     }
 
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
+        if (getCurrentUrl().contains("myprofile")) {
+            setId(getAuthenticatedUser().getId());
+        }
         super.prepare();
         contributor = getPersistable().isContributor();
     }
@@ -168,11 +168,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         return false;
     }
 
-    @Override
-    public boolean isEditable() {
-        return getAuthenticatedUser().equals(getPersistable())
-                || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
-    }
 
     @Override
     public Class<TdarUser> getPersistableClass() {
@@ -182,7 +177,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     public TdarUser getPerson() {
         TdarUser p = getPersistable();
         if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-            if (!isEditable()) {
+            if (!authorize()) {
                 obfuscationService.obfuscate(p, getAuthenticatedUser());
             }
         }

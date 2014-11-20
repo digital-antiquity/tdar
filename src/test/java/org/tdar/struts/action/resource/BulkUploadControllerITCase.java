@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.citation.Citation;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
@@ -57,8 +58,8 @@ import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.TestConfiguration;
 
@@ -84,7 +85,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testExcelTemplate() throws FileNotFoundException, IOException {
+    public void testExcelTemplate() throws FileNotFoundException, IOException, TdarActionException {
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();
         File file = File.createTempFile("tempTemplate", ".xls");

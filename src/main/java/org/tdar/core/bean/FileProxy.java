@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.bean;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,13 +7,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.HasExtension;
@@ -21,9 +25,6 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 /**
  * $Id$
@@ -33,8 +34,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
  * @author $Author$
  * @version $Revision$
  */
-
-@JsonAutoDetect(getterVisibility=Visibility.PUBLIC_ONLY)
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExtension {
 
     private static final long serialVersionUID = 1390565134253286109L;
@@ -288,6 +289,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         return false;
     }
 
+    @XmlTransient
     public boolean isCreatedByServer() {
         return createdByServer;
     }

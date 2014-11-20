@@ -78,7 +78,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
     }
 
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         if (!isAuthenticated()) {
             return false;
         }

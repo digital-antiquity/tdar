@@ -18,6 +18,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -28,7 +29,6 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Action;

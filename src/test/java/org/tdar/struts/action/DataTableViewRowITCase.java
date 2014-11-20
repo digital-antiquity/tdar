@@ -31,7 +31,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(RowViewAction.class);
     }
 
-    private void prepareValidData() {
+    private void prepareValidData() throws TdarActionException {
         dataset = setupAndLoadResource(TEST_DATASET, Dataset.class);
         assertNotNull(dataset);
         DataTable dataTable = dataset.getDataTables().iterator().next();

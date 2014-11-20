@@ -21,7 +21,7 @@ public class PersonController extends AbstractPersonController<Person> {
     public Person getPerson() {
         Person p = getPersistable();
         if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-            if (!isEditable()) {
+            if (!authorize()) {
                 obfuscationService.obfuscate(p, getAuthenticatedUser());
             }
         }

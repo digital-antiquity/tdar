@@ -25,11 +25,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.LocalizableException;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -37,11 +41,12 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.search.SlugViewAction;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
@@ -142,9 +147,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Autowired
     private transient FileSystemResourceService filesystemResourceService;
-
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient GenericService genericService;
@@ -626,7 +632,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         if (this instanceof AbstractInformationResourceController) {
             AbstractInformationResourceController<?> cast = (AbstractInformationResourceController<?>) this;
-            if (cast.isEditable() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
+            if (cast.authorize() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
                 return true;
             }
 
@@ -706,4 +712,66 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         return true;
     }
+
+    public <P extends Persistable> void prepareAndLoad(PersistableLoadingAction<P> pc, RequestType type) throws TdarActionException {
+        P p = null;
+        Class<P> persistableClass = pc.getPersistableClass();
+        Long id = pc.getId();
+        if (Persistable.Base.isNotNullOrTransient(pc.getPersistable())) {
+            getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);
+        } else {
+            p = genericService.find(persistableClass, id);
+            pc.setPersistable(p);
+        }
+        // first check the session
+        if (!(pc.getAuthenticatedUser() == null)) {
+            // don't log anonymous users
+            String status = "";
+            if (p instanceof HasStatus) {
+                status = ((HasStatus) p).getStatus().toString();
+            }
+            getLogger().info(
+                    String.format("%s is %s %s (%s): %s", pc.getAuthenticatedUser().getUsername(), type.name(), persistableClass.getSimpleName(), id, status));
+        }
+        checkValidRequest(pc);
+    }
+
+    protected <P extends Persistable> void checkValidRequest(PersistableLoadingAction<P> pc) throws TdarActionException {
+
+        Persistable persistable = pc.getPersistable();
+        // if we're NULL and we're not supposed to be null
+        if (Persistable.Base.isNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(pc.getId())) {
+            // deal with the case that we have a new or not found resource
+            getLogger().debug("Dealing with transient persistable {}", persistable);
+            if (persistable == null) {
+                // persistable is null, so the lookup failed (aka not found)
+                abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
+            } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
+                // id not specified or not a number, so this is an invalid request
+                abort(StatusCode.BAD_REQUEST,
+                        getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
+            }
+        }
+        // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
+        if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, pc.getAuthenticatedUser())) {
+            return;
+        }
+
+        if (pc.authorize()) {
+            return;
+        }
+        String errorMessage = getText("abstractPersistableController.no_permissions");
+        addActionError(errorMessage);
+        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
+    }
+
+    protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
+        throw new TdarActionException(statusCode, errorMessage);
+    }
+
+    public boolean isAuthenticationRequired() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

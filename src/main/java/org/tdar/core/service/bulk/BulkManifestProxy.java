@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -41,7 +42,6 @@ import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
 
