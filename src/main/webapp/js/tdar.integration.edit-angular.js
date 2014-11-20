@@ -14,6 +14,27 @@
         self.ontologies = [];
     }
 
+    Integration.prototype = {
+        addIntegrationColumn: function(title, ontology) {
+            var self = this;
+            var col = {
+                title: title,
+                ontologyId: ontology.id,
+                nodeSelections: [],
+                datatableColumnIds: []
+            }
+
+            col.nodeSelections = ontology.nodes.map(function(node){
+               return {
+                   selected: false,
+                   node: node
+               }
+            });
+            self.columns.push(col);
+            return col;
+        }
+    };
+
     //model for search filter that can be used for datasets or ontologies
     function SearchFilter() {
         var self = this;
@@ -234,38 +255,9 @@
         var processAddedIntegrationColumns = function(ontologies) {
             console.debug("processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
-                //todo: build list of participating dataTable columns.
-                var integrationColumn = {
-                    type: "integration",
-                    title: "intcol" + ontology.id,
-                    data: ontology,
-                    ontologyId: ontology.id,
-                    //FIXME: replace with actual data
-                    dataTableColumns: [{id:1},{id:2}]
-                };
-                self.integration.columns.push(integrationColumn);
-                var dtcs = self.findDataTableColumns(integrationColumn);
-
+                self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
         }
-
-        /**
-         * add initialize a single integration column associated with with the specified ontology ID
-         * @param ontology
-         */
-        var addIntegrationColumn = function(ontology) {
-            var integrationColumn = {
-                nodeSelections: [],
-                datatableColumnIds: []
-            };
-
-            integrationColumn.nodeSelections = ontology.nodes.map(function(node) {
-                return {
-                    selected: false,
-                    node: node
-                }
-            });
-        };
 
 
         self.findDataTableColumns = function(integrationColumn) {

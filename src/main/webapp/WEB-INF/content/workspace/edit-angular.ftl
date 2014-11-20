@@ -129,14 +129,14 @@
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr ng-repeat="node in column.data.nodes">
-                                                        <td><input type="checkbox" name="tbd" ng-checked="node.selected" ng-model="node.selected" id="cbont_{{node.id}}"></td>
+                                                    <tr ng-repeat="nodeSelection in column.nodeSelections">
+                                                        <td><input type="checkbox" name="tbd" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
-                                                            <div class="nodechild{{node.index.split('.').length}}">
-                                                                <label for="cbont_{{node.id}}">{{node.display_name}}</label>
+                                                            <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
+                                                                <label for="cbont_{{node.id}}">{{nodeSelection.node.display_name}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="val in node.participation track by $index">{{val}}</td>
+                                                        <td ng-repeat="dtc in column.datatableColumnIds track by $index">{{val}}</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
