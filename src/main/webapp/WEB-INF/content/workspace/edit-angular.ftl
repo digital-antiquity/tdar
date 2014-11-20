@@ -67,7 +67,7 @@
                             <div class="span5">
                                 <label>Selected Datasets: {{ctrl.integration.datatables.length}}</label>
                                 <div>
-                                    <select size="10" class="input-xlarge" multiple  ng-model="selectedDatatables" ng-options="datatable.display_name for datatable in ctrl.integration.datatables"></select>
+                                    <select size="10" class="input-xlarge" multiple  ng-model="selectedDatatables" ng-options="datatable.data_table_name for datatable in ctrl.integration.datatables"></select>
                                 </div>
                                 <button type="button" class="btn input-xlarge"
                                         data-bind="click: removeSelectedDatasetClicked" ng-click="ctrl.removeSelectedDatasetClicked()">Remove Selected Dataset</button>
@@ -76,7 +76,7 @@
                                 <label>Shared Ontologies</label>
                                 <div>
                                     <select size="10" class="input-xlarge"
-                                            ng-model="selectedOntologies" multiple ng-options="ontology.title for ontology in ctrl.sharedOntologies"></select>
+                                            ng-model="selectedOntologies" multiple ng-options="ontology.name for ontology in ctrl.sharedOntologies"></select>
                                 </div>
                             </div>
                         </div>

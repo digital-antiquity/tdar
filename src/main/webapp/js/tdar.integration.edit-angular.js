@@ -203,14 +203,18 @@
          */
         this.addDatasets = function(datasetIds) {
             if(datasetIds.length === 0) return;
-
+            var params1 = {};
+            var i =0;
+            angular.forEach(JSON.parse(datasetIds), function(id) {
+                params1["dataTableIds["+i+"]"] = id;
+                i++;
+            });
             $http.get('/workspace/ajax/table-details', {
-                params: {
-                    datasetIds: datasetIds
-                }
+                params: params1
+
             }).success(function(data) {
-                _setAddAll(self.integration.datatables, data.dataTables, "data_table_id");
-                updateSharedOntologies(data.sharedOntologies);
+                _setAddAll(self.integration.datatables, data[0].dataTables, "data_table_id");
+                updateSharedOntologies(data[0].sharedOntologies);
             });
         };
 
@@ -294,13 +298,11 @@
                 transformData: function(data) {
                     return data.map(function(item){
                         var result = item;
-                        result.title = item.dataset_title;
-                        if(item.sibling_count > 1) {
-                            result.title += ' - ' + item.display_name;
-                        }
+                        result.title = item.dataset_name;
+                        result.title += ' - ' + item.data_table_name;
                         result.id = item.data_table_id;
-                        result.submitter_display_name  = item.submitter_display_name;
-                        result.date_registered = item.date_registered;
+                        result.submitter_display_name  = item.dataset.submitter.properName;
+                        result.date_registered = item.dataset_date_created;
                         return result;
                     })
                 },
@@ -354,7 +356,7 @@
                     _setRemove(self.integration.datatables, item);
                 });
             } else {
-                console.warn("removeSelectedDatasetClicked:: no tables specified")
+                console.warn("removeSelectedDatasetClicked:: no tables specified");
             }
         }
     }]);
@@ -414,7 +416,8 @@
         $scope.confirm = function(obj) {
             var data = JSON.stringify(obj);
             console.info("confirm:: %s", data);
-            close(obj, closeWait);
+            // ADAM CHANGED THIS, check that it's correct
+            close(data, closeWait);
         }
 
         //convenience function - true if specified item is in the selecteditems list
