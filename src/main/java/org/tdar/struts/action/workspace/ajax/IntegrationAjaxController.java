@@ -78,7 +78,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         integrationService.hydrateFilter(datasetFilter, getAuthenticatedUser());
     }
 
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
     @Action(value = "find-datasets")
@@ -94,6 +94,21 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
         return SUCCESS;
     }
+    
+    @Action(value="get-shared-ontologies")
+    public String findSharedOntologies() throws IOException {
+        List<DataTable> dataTables = getGenericService().findAll(DataTable.class, dataTableIds);
+        Map<Ontology, List<DataTable>> suggestions = integrationService.getIntegrationSuggestions(dataTables,true);
+        for (Ontology ontology : suggestions.keySet()) {
+            Map<String,Object> ont = new HashMap<>();
+            ont.put("name", ontology.getTitle());
+            ont.put("id", ontology.getId());
+            results.add(ont);
+        }
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        return SUCCESS;
+    }
+    
 
     private HashMap<String, Object> setupDatableForJson(DataTable result) {
         HashMap<String, Object> map = new HashMap<>();
@@ -101,6 +116,10 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         map.put("dataset_id", dataset.getId());
         map.put("data_table_id", result.getId());
         map.put("data_table_name", result.getName());
+        HashMap<String,Object> ds= new HashMap<>();
+        ds.put("submitter", dataset.getSubmitter());
+        map.put("dataset", ds);
+        
         map.put("dataset_name", dataset.getTitle());
         map.put("dataset_submitter", dataset.getSubmitter().getProperName());
         map.put("dataset_date_created", formatter.format(dataset.getDateCreated()));
