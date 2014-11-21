@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -16,6 +19,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
@@ -79,6 +83,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     private List<Long> dataTableColumnsIds = new ArrayList<>();
     private List<Long> dataTableIds = new ArrayList<>();
 
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Override
@@ -119,6 +124,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
             Map<String, Object> ont = new HashMap<>();
             ont.put("name", ontology.getTitle());
             ont.put("id", ontology.getId());
+            ont.put("nodes", setupOntologyNodesForJson(ontology));
             shared.add(ont);
         }
         return shared;
@@ -167,6 +173,24 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         map.put("ontology_submitter", ontology.getSubmitter().getProperName());
         map.put("ontology_date_created", formatter.format(ontology.getDateCreated()));
         return map;
+    }
+
+    ArrayNode setupOntologyNodesForJson(Ontology ontology) {
+        Long ontologyId = ontology.getId();
+        ArrayNode jsArray = objectMapper.createArrayNode();
+        for(OntologyNode node : ontology.getSortedOntologyNodesByImportOrder()) {
+            ObjectNode jsObject = objectMapper.createObjectNode()
+                    .put("id", node.getId())
+                    .put("ontology_id", ontologyId)
+                    .put("description", node.getDescription())
+                    .put("display_name", node.getDisplayName())
+                    .put("index", node.getIndex())
+                    .put("interval_start", node.getIntervalStart())
+                    .put("interval_end", node.getIntervalEnd())
+                    .put("import_order", node.getImportOrder());
+            jsArray.add(jsObject);
+        }
+        return jsArray;
     }
 
     @Action(value = "table-details")
