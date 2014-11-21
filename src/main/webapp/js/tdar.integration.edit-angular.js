@@ -2,7 +2,6 @@
     "use strict";
     var app,_projects, _collections, _categories, _documentData;
     app = angular.module('integrationApp', ['angularModalService']);
-
     //Our integration model
     function Integration() {
         var self = this;
@@ -203,16 +202,9 @@
          */
         this.addDatasets = function(datasetIds) {
             if(datasetIds.length === 0) return;
-            var params1 = {};
-            var i =0;
-            angular.forEach(JSON.parse(datasetIds), function(id) {
-                params1["dataTableIds["+i+"]"] = id;
-                i++;
-            });
-            $http.get('/workspace/ajax/table-details', {
-                params: params1
-
-            }).success(function(data) {
+            //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
+            $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true)
+            ).success(function(data) {
                 _setAddAll(self.integration.datatables, data[0].dataTables, "data_table_id");
                 updateSharedOntologies(data[0].sharedOntologies);
             });
@@ -413,11 +405,8 @@
         }
 
         //called when user clicks 'Add Selected Items'
-        $scope.confirm = function(obj) {
-            var data = JSON.stringify(obj);
-            console.info("confirm:: %s", data);
-            // ADAM CHANGED THIS, check that it's correct
-            close(data, closeWait);
+        $scope.confirm = function(selectedIds) {
+            close(selectedIds, closeWait);
         }
 
         //convenience function - true if specified item is in the selecteditems list

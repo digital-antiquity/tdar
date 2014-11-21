@@ -17,7 +17,7 @@
                    </label>
                    <div class="controls">
                        <input type="text" class="input-xxlarge" name="integration.title"
-                              data-bind="{value: integration.title}" ng-model="ctrl.integration.title">
+                              ng-model="ctrl.integration.title">
                    </div>
                </div>
                <div class="control-group">
@@ -26,7 +26,7 @@
                    </label>
                    <div class="controls">
                        <textarea name="integration.description" class="input-xxlarge" cols="80" rows="4"
-                                 data-bind="{value: integration.description}" ng-model="ctrl.integration.description"></textarea>
+                                 ng-model="ctrl.integration.description"></textarea>
                    </div>
                </div>
             </div>
@@ -46,11 +46,11 @@
                         <div class="controls">
                             <div class="btn-group">
                                 <button type="button" class="btn"  id="btnAddDataset"
-                                        data-bind="click: addDatasetsClicked" ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
+                                        ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
                                 <button type="button" class="btn"  id="btnAddIntegrationColumn"
-                                        data-bind="click: addIntegrationColumnsClicked" ng-click="ctrl.addIntegrationColumnsClicked()">Add Integration Columns...</button>
+                                        ng-click="ctrl.addIntegrationColumnsClicked()">Add Integration Columns...</button>
                                 <button type="button" class="btn" id="btnAddDisplayColumn"
-                                        data-bind="click: addDisplayColumnClicked" ng-click="ctrl.addDisplayColumnClicked()">Add Display Column</button>
+                                        ng-click="ctrl.addDisplayColumnClicked()">Add Display Column</button>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                                     <select size="10" class="input-xlarge" multiple  ng-model="selectedDatatables" ng-options="datatable.data_table_name for datatable in ctrl.integration.datatables"></select>
                                 </div>
                                 <button type="button" class="btn input-xlarge"
-                                        data-bind="click: removeSelectedDatasetClicked" ng-click="ctrl.removeSelectedDatasetClicked()">Remove Selected Dataset</button>
+                                        ng-click="ctrl.removeSelectedDatasetClicked()">Remove Selected Dataset</button>
                             </div>
                             <div class="span4">
                                 <label>Shared Ontologies</label>
@@ -96,7 +96,7 @@
                         </label>
                         <div class="controls">
 
-                            <div id="tabControl" data-bind="if: integration.columns().length">
+                            <div id="tabControl" ">
                                 <ul class="nav nav-tabs">
                                     <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
                                         <a href="#tab{{$index}}">

@@ -51,6 +51,13 @@ import com.opensymphony.xwork2.Preparable;
 public class IntegrationAjaxController extends AuthenticationAware.Base implements Preparable, SimpleSearchResultHandler {
 
     private static final long serialVersionUID = 7550182111626753594L;
+    private Long ontologyId;
+
+
+    //minimize LOC so people don't notice this hack
+    class SimpleMap extends HashMap<String, Object> {}
+    class SimpleMapList extends ArrayList<HashMap<String, Object>>{
+    }
 
     private OntologyIntegrationSearchFilter ontologyFilter;
     private DatasetIntegrationSearchFilter datasetFilter;
@@ -68,9 +75,11 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     private transient XmlService xmlService;
 
     private List<Map<String, Object>> results = new ArrayList<>();
-    private Long ontologyId = -1L;
+    private List<Long> ontologyIds = new ArrayList<>();
     private List<Long> dataTableColumnsIds = new ArrayList<>();
     private List<Long> dataTableIds = new ArrayList<>();
+
+
 
     @Override
     public void prepare() {
@@ -232,6 +241,53 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         return SUCCESS;
     }
 
+    @Action(value = "ontology-list-details")
+    public String ontologyListDetails() throws IOException {
+        List<Ontology> ontologies = ontologyService.findAll(getOntologyIds());
+        SimpleMapList maplist= new SimpleMapList();
+        getLogger().debug("ontologies found: {}", getOntologyIds());
+        for(Ontology ontology : ontologies) {
+            getLogger().debug("grabbing detail for ontology: {}", ontology);
+            HashMap<String, Object> map = setupOntologyForJson(ontology);
+            List<DataTableColumn> columns = getGenericService().findAll(DataTableColumn.class, getDataTableColumnsIds());
+
+            //FIXME: let caller get ontology details even if caller does not provide datatable information.
+            // rehydrate all of the resources being passed in, we just had empty beans with ids
+            IntegrationColumn intColumn = new IntegrationColumn(ColumnType.INTEGRATION, columns.toArray(new DataTableColumn[0]));
+
+            // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
+            for (DataTableColumn column : columns) {
+                getLogger().info("{} ({})", column, column.getDefaultOntology());
+                getLogger().info("{} ({})", column, column.getDefaultCodingSheet());
+                integrationService.updateMappedCodingRules(column);
+            }
+            ArrayList<Map<String, Object>> nodeList = new ArrayList<Map<String, Object>>();
+            map.put("nodes", nodeList);
+
+            for (OntologyNode node : intColumn.getFlattenedOntologyNodeList()) {
+                Map<String, Object> nodeMap = new HashMap<>();
+                nodeList.add(nodeMap);
+                nodeMap.put("id", node.getId());
+                nodeMap.put("displayName", node.getDisplayName());
+                nodeMap.put("index", node.getIndex());
+                nodeMap.put("indented_label", node.getIndentedLabel());
+                nodeMap.put("iri", node.getIri());
+                nodeMap.put("interval_start", node.getIntervalStart());
+                nodeMap.put("interval_end", node.getIntervalEnd());
+                nodeMap.put("import_order", node.getImportOrder());
+                nodeMap.put("mapping_list", node.getColumnHasValueArray());
+            }
+            maplist.add(map);
+        }
+
+        results.clear();
+        results.addAll(maplist);
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        return SUCCESS;
+    }
+
+
+
     @Override
     public SortOption getSortField() {
         return null;
@@ -298,12 +354,12 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         this.dataTableColumnsIds = dataTableColumnsIds;
     }
 
-    public Long getOntologyId() {
-        return ontologyId;
+    public List<Long> getOntologyIds() {
+        return ontologyIds;
     }
 
-    public void setOntologyId(Long ontologyId) {
-        this.ontologyId = ontologyId;
+    public void setOntologyIds(List<Long> ontologyIds) {
+        this.ontologyIds = ontologyIds;
     }
 
     public List<Long> getDataTableIds() {
@@ -312,6 +368,14 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     public void setDataTableIds(List<Long> dataTableIds) {
         this.dataTableIds = dataTableIds;
+    }
+
+    public Long getOntologyId() {
+        return ontologyId;
+    }
+
+    public void setOntologyId(Long ontologyId) {
+        this.ontologyId = ontologyId;
     }
 
 }
