@@ -229,10 +229,7 @@
 
             //Lookup any missing ontologies and then add them to integration.columns.
             if(missingIds.length) {
-                $http.get("/workspace/ajax/ontology-details", {
-                    params: {
-                        ontologyIds: missingIds
-                    }
+                $http.get("/workspace/ajax/ontology-details?" + $.param({ontologyIds: missingIds}), {
                 }).success(function(data) {
                     data.forEach(function(ontology){
                         columnsToAdd.push(ontology);

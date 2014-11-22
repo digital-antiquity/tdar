@@ -240,6 +240,12 @@
                         <fieldset>
                             <legend>Filters</legend>
                             <div class="control-group">
+                                <label class="control-label">Title</label>
+                                <div class="controls">
+                                    <input type="text" ng-model="filter.title" class="input-block-level" name="filter.title"></input>
+                                </div>
+                            </div>
+                            <div class="control-group">
                                 <label class="control-label">Project / Collection</label>
                                 <div class="controls controls-row">
                                     <div class="span3">
@@ -300,7 +306,7 @@
                                     </td>
                                     <td><label for="cbResult{{result.id}}">{{result.title}}</label></td>
                                     <td>{{result.submitter_display_name}}</td>
-                                    <td>{{result.date | date : 'short'}}</td>
+                                    <td>{{result.date_created | date }}</td>
                                 </tr>
                                 </tbody>
                             </table>

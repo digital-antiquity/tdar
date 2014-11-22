@@ -149,7 +149,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
         map.put("dataset_name", dataset.getTitle());
         map.put("dataset_submitter", dataset.getSubmitter().getProperName());
-        map.put("dataset_date_created", formatter.format(dataset.getDateCreated()));
+        map.put("date_created", formatter.format(dataset.getDateCreated()));
         map.put("integratable", dataset.getIntegratableOptions().getBooleanValue());
         return map;
     }
@@ -178,7 +178,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         map.put("category_variable_name", category.getName());
         map.put("ontology_name", ontology.getTitle());
         map.put("ontology_submitter", ontology.getSubmitter().getProperName());
-        map.put("ontology_date_created", formatter.format(ontology.getDateCreated()));
+        map.put("date_created", formatter.format(ontology.getDateCreated()));
         return map;
     }
 
