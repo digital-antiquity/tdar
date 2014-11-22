@@ -61,7 +61,7 @@ jQuery.extend({
  * trying to move these functions out of global scope and apply strict parsing.
  */
 
-TDAR.common = function () {
+TDAR.common = function (TDAR, fileupload) {
     "use strict";
 
     var self = {};
@@ -455,7 +455,7 @@ TDAR.common = function () {
                     fileuploadSelector: '#divFileUpload'
                 });
 
-                var fileValidator = new FileuploadValidator("metadataForm");
+                var fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
                 fileValidator.addRule("nodupes");
                 TDAR.fileupload.validator = fileValidator;
             }
@@ -1254,7 +1254,7 @@ TDAR.common = function () {
     });
 
     return self;
-}();
+}(TDAR, TDAR.fileupload);
 
 function checkWindowSize() {
     var width = $(window).width()
