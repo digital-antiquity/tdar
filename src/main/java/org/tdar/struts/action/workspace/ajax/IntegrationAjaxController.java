@@ -3,15 +3,15 @@ package org.tdar.struts.action.workspace.ajax;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -92,7 +92,8 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         integrationService.hydrateFilter(datasetFilter, getAuthenticatedUser());
     }
 
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    //angularjs needs either 8601 format or epochtime
+    DateFormat formatter =  new ISO8601DateFormat();
 
     @Action(value = "find-datasets")
     public String findDatasets() throws IOException {
@@ -110,25 +111,31 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     @Action(value = "get-shared-ontologies")
     public String findSharedOntologies() throws IOException {
-        results.addAll(serializeSharedOntologies());
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        //results.addAll(serializeSharedOntologies());
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(serializeSharedOntologies()).getBytes()));
         return SUCCESS;
     }
 
-    private List<Map<String, Object>> serializeSharedOntologies() {
+    private ArrayNode serializeSharedOntologies() {
         List<DataTable> dataTables = getGenericService().findAll(DataTable.class, dataTableIds);
-        List<Map<String, Object>> shared = new ArrayList<>();
-
         Map<Ontology, List<DataTable>> suggestions = integrationService.getIntegrationSuggestions(dataTables, true);
-        for (Ontology ontology : suggestions.keySet()) {
-            Map<String, Object> ont = new HashMap<>();
-            ont.put("name", ontology.getTitle());
-            ont.put("id", ontology.getId());
-            ont.put("nodes", setupOntologyNodesForJson(ontology));
-            shared.add(ont);
-        }
+        ArrayNode shared = setupOntologyListJson(suggestions.keySet());
         return shared;
     }
+
+    private ArrayNode setupOntologyListJson(Collection<Ontology> ontologies) {
+        ArrayNode jsArray = objectMapper.createArrayNode();
+        for (Ontology ontology : ontologies) {
+            getLogger().debug("adding ontology to list:{}", ontology);
+            ObjectNode obj = objectMapper.createObjectNode();
+            obj.put("name", ontology.getTitle())
+                .put("id", ontology.getId())
+                .put("nodes", setupOntologyNodesForJson(ontology));
+            jsArray.add(obj);
+        }
+        return jsArray;
+    }
+
 
     private HashMap<String, Object> setupDatableForJson(DataTable result) {
         HashMap<String, Object> map = new HashMap<>();
@@ -231,8 +238,8 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         return tables;
     }
 
-    @Action(value = "ontology-details")
-    public String ontologyDetails() throws IOException {
+    @Action(value = "integration-column-details")
+    public String integrationColumnDetails() throws IOException {
         Ontology ontology = ontologyService.find(getOntologyId());
         HashMap<String, Object> map = setupOntologyForJson(ontology);
         List<DataTableColumn> columns = getGenericService().findAll(DataTableColumn.class, getDataTableColumnsIds());
@@ -245,7 +252,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
             getLogger().info("{} ({})", column, column.getDefaultCodingSheet());
             integrationService.updateMappedCodingRules(column);
         }
-        ArrayList<Map<String, Object>> nodeList = new ArrayList<Map<String, Object>>();
+        ArrayList<Map<String, Object>> nodeList = new ArrayList<>();
         map.put("nodes", nodeList);
 
         for (OntologyNode node : intColumn.getFlattenedOntologyNodeList()) {
@@ -261,56 +268,23 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
             nodeMap.put("import_order", node.getImportOrder());
             nodeMap.put("mapping_list", node.getColumnHasValueArray());
         }
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        results = nodeList;
+        stringifyThenSetInputStream(results);
         return SUCCESS;
     }
 
-    @Action(value = "ontology-list-details")
-    public String ontologyListDetails() throws IOException {
+    @Action(value = "ontology-details")
+    public String ontologyDetails() throws IOException {
         List<Ontology> ontologies = ontologyService.findAll(getOntologyIds());
-        SimpleMapList maplist= new SimpleMapList();
-        getLogger().debug("ontologies found: {}", getOntologyIds());
+        SimpleMapList maplist = new SimpleMapList();
         for(Ontology ontology : ontologies) {
-            getLogger().debug("grabbing detail for ontology: {}", ontology);
             HashMap<String, Object> map = setupOntologyForJson(ontology);
-            List<DataTableColumn> columns = getGenericService().findAll(DataTableColumn.class, getDataTableColumnsIds());
-
-            //FIXME: let caller get ontology details even if caller does not provide datatable information.
-            // rehydrate all of the resources being passed in, we just had empty beans with ids
-            IntegrationColumn intColumn = new IntegrationColumn(ColumnType.INTEGRATION, columns.toArray(new DataTableColumn[0]));
-
-            // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
-            for (DataTableColumn column : columns) {
-                getLogger().info("{} ({})", column, column.getDefaultOntology());
-                getLogger().info("{} ({})", column, column.getDefaultCodingSheet());
-                integrationService.updateMappedCodingRules(column);
-            }
-            ArrayList<Map<String, Object>> nodeList = new ArrayList<Map<String, Object>>();
-            map.put("nodes", nodeList);
-
-            for (OntologyNode node : intColumn.getFlattenedOntologyNodeList()) {
-                Map<String, Object> nodeMap = new HashMap<>();
-                nodeList.add(nodeMap);
-                nodeMap.put("id", node.getId());
-                nodeMap.put("displayName", node.getDisplayName());
-                nodeMap.put("index", node.getIndex());
-                nodeMap.put("indented_label", node.getIndentedLabel());
-                nodeMap.put("iri", node.getIri());
-                nodeMap.put("interval_start", node.getIntervalStart());
-                nodeMap.put("interval_end", node.getIntervalEnd());
-                nodeMap.put("import_order", node.getImportOrder());
-                nodeMap.put("mapping_list", node.getColumnHasValueArray());
-            }
+            map.put("nodes", setupOntologyNodesForJson(ontology));
             maplist.add(map);
         }
-
-        results.clear();
-        results.addAll(maplist);
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        stringifyThenSetInputStream(maplist);
         return SUCCESS;
     }
-
-
 
     @Override
     public SortOption getSortField() {
@@ -370,6 +344,14 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         this.jsonInputStream = jsonInputStream;
     }
 
+    /**
+     * Stringify object and set to jsonInputStream
+     * @param obj
+     */
+    void stringifyThenSetInputStream(Object obj) throws IOException {
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(obj).getBytes()));
+    }
+
     public List<Long> getDataTableColumnsIds() {
         return dataTableColumnsIds;
     }
@@ -401,5 +383,6 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     public void setOntologyId(Long ontologyId) {
         this.ontologyId = ontologyId;
     }
+
 
 }
