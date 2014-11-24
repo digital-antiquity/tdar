@@ -19,6 +19,8 @@ public class UserNotificationSeleniumWebITCase extends AbstractEditorSeleniumWeb
         assertFalse(getText().contains(RELEASE_ANNOUNCE));
         logout();
         loginEditor();
+        clearPageCache();
+        logger.debug(getText());
         assertFalse(getText().contains(RELEASE_ANNOUNCE));
     }
 
