@@ -72,7 +72,7 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
             return INPUT;
         }
         try {
-            entityService.savePersonforController(person, getEmail(), getInstitutionName(), generateFileProxy(getFilename(), getFile()));
+            entityService.savePersonforController(person, getEmail(), getInstitutionName(), generateFileProxy(getFileFileName(), getFile()));
         } catch (Exception e) {
             addActionError(e.getLocalizedMessage());
             return INPUT;

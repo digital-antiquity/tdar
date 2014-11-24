@@ -93,8 +93,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<Long> toAdd = new ArrayList<>();
     private List<Project> allSubmittedProjects;
     private File file;
-    private String contentType;
-    private String filename;
+    private String fileContentType;
+    private String fileFileName;
 
     
     
@@ -133,7 +133,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
-                resourcesToRemove, shouldSaveResource(), generateFileProxy(getFilename(), getFile()));
+                resourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -496,24 +496,24 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.file = file;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
     @Override
     public int getDefaultRecordsPerPage() {
         return 100;
+    }
+
+    public String getFileFileName() {
+        return fileFileName;
+    }
+
+    public void setFileFileName(String fileFileName) {
+        this.fileFileName = fileFileName;
+    }
+
+    public String getFileContentType() {
+        return fileContentType;
+    }
+
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
     }
 }

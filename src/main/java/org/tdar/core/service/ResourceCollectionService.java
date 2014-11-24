@@ -752,6 +752,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
         saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
-        simpleFileProcessingDao.processFileProxyForCreator(persistable, fileProxy);
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
     }
 }

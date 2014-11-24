@@ -1,5 +1,10 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
+
+    <#macro uploadForm>
+        <@s.file theme="simple" name='file' cssClass="input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+    </#macro>
+
     <#macro basicInformation>
             <h2 id="profile">Personal Details</h2>
         

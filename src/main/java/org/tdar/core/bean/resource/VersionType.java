@@ -44,4 +44,19 @@ public enum VersionType {
         return ((this == VersionType.ARCHIVAL) || (this == VersionType.UPLOADED_ARCHIVAL));
     }
 
+    public static VersionType forName(String version) {
+        if (version == null) {
+            return null;
+        }
+        switch (version.toLowerCase()) {
+            case "sm":
+                return VersionType.WEB_SMALL;
+            case "md":
+                return VersionType.WEB_MEDIUM;
+            case "lg":
+                return VersionType.WEB_LARGE;
+        }
+        return null;
+    }
+
 }

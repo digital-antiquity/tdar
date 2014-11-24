@@ -1,5 +1,7 @@
 package org.tdar.struts.action.download;
 
+import java.io.FileNotFoundException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -16,6 +18,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFile.Type;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -104,8 +109,44 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
+ 
+    private VersionType type;
+    private String filename;
+    
+    @Actions(value = {
+            @Action(value = "creator/{type}/{informationResourceFileVersionId}/{filename}")
+    })
+    public String other() throws FileNotFoundException {
+        FileStoreFile proxy = new FileStoreFile(Type.CREATOR, VersionType.WEB_SMALL, getInformationResourceFileVersionId(), getFilename());
+        TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, proxy);
+        
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                isCoverPageIncluded(), this));
+        if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
+            return getDownloadTransferObject().getResult().name().toLowerCase();
+        }
+        return getDownloadTransferObject().getResult().name().toLowerCase();
+    }
+
+    
     @Override
     public void prepare() {
         super.prepare();
+    }
+
+    public VersionType getType() {
+        return type;
+    }
+
+    public void setType(VersionType type) {
+        this.type = type;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

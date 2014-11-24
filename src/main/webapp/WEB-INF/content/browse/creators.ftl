@@ -27,6 +27,7 @@
 
     <@nav.creatorToolbar "view" />
 
+<#-- <img src="/files/creator/sm/${creator.id}/logo.jpg"/> -->
 
 
     <@view.pageStatusCallout />

@@ -75,9 +75,9 @@ import freemarker.ext.dom.NodeModel;
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-@Results(value= { @Result(location = "../creators.ftl"),
+@Results(value = { @Result(location = "../creators.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
-        location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
+                location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
 public class BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
 
@@ -111,7 +111,6 @@ public class BrowseCreatorController extends AbstractLookupController implements
     private String slugSuffix = "";
     private String keywordPath = "";
     private boolean redirectBadSlug;
-
 
     @Autowired
     private transient AccountService accountService;
@@ -192,15 +191,14 @@ public class BrowseCreatorController extends AbstractLookupController implements
         }
     }
 
-    @Actions(value={
+    @Actions(value = {
             @Action(value = "{id}"),
-            @Action(value="{id}/{slug}")
+            @Action(value = "{id}/{slug}")
     })
     public String browseCreators() throws ParseException, TdarActionException {
         if (redirectBadSlug) {
             return BAD_SLUG;
         }
-
 
         if (isEditor()) {
             if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
@@ -225,7 +223,6 @@ public class BrowseCreatorController extends AbstractLookupController implements
             CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), creator);
             getGenericService().saveOrUpdate(cvs);
         }
-
 
         FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
         try {

@@ -64,7 +64,7 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.setName("test institution 123");
         controller.getInstitution().setDescription("my test description");
         controller.setFile(new File(TestConstants.TEST_IMAGE));
-        controller.setFilename(TestConstants.TEST_IMAGE_NAME);
+        controller.setFileFileName(TestConstants.TEST_IMAGE_NAME);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
     }

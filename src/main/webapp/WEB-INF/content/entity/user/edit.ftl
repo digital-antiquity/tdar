@@ -58,6 +58,8 @@
                     </div>
                 </#if>
             </@entityEdit.basicInformation>
+
+        <@entityEdit.uploadForm />
             <h3>Contributor</h3>
 
             <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />

@@ -460,7 +460,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         persistable.setName(name);
         getDao().saveOrUpdate(persistable);
         if (fileProxy != null) {
-            simpleFileProcessingDao.processFileProxyForCreator(persistable, fileProxy);
+            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
         }
     }
 
@@ -482,7 +482,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
         saveOrUpdate(person);
         if (fileProxy != null) {
-            simpleFileProcessingDao.processFileProxyForCreator(person, fileProxy);
+            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(person, fileProxy);
         }
     }
 }

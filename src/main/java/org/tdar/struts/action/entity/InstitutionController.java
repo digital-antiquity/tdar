@@ -34,7 +34,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
         if (hasActionErrors()) {
             return INPUT;
         }
-        entityService.saveInstitutionForController(persistable, name, generateFileProxy(getFilename(), getFile()));
+        entityService.saveInstitutionForController(persistable, name, generateFileProxy(getFileFileName(), getFile()));
         return SUCCESS;
     }
 
