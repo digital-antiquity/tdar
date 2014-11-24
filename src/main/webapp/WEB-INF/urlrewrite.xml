@@ -32,12 +32,12 @@
         <to>/account/new</to>
     </rule>
 
-    <rule>
+ <!--    <rule>
         <from>^/(account)/add</from>
         <to>/$1/new</to>
     </rule>
 
-
+ -->
     <rule>
         <from>^/(document)s?/?$</from>
         <to type="redirect">/search/results?resourceTypes=DOCUMENT&amp;startRecord=0
@@ -256,12 +256,12 @@
         <to>/logout</to>
     </outbound-rule>
 
-    <rule>
+<!--     <rule>
         <from>^/resource/add/([0-9]+)$</from>
         <to>/resource/add?projectId=$1</to>
     </rule>
 
-    <rule>
+     <rule>
         <from>^/resource/([0-9]+)$</from>
         <to>/resource/view?resourceId=$1</to>
     </rule>
@@ -280,6 +280,7 @@
         <from>^/filestore/([0-9]+)/get$</from>
         <to>/filestore/$1</to>
     </outbound-rule>
+ -->
 
     <rule>
         <from>^/search$</from>

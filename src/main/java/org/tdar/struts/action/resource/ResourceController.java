@@ -1,6 +1,7 @@
 package org.tdar.struts.action.resource;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -38,18 +40,28 @@ public class ResourceController extends AuthenticationAware.Base {
     // incoming data from /resource/add
     private ResourceType resourceType;
     private Long projectId;
+    private Resource resource;
 
     private Long resourceId;
 
     /**
      * Passthrough action, just loads add.ftl via conventions plugin.
      */
-    @Action(value = "add",
-            results = {
-                    @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
-                    @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
-                    @Result(name = SUCCESS, location = "add.ftl")
-            })
+    @Actions(value={
+            @Action(value = "add",
+                    results = {
+                            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = SUCCESS, location = "add.ftl")
+                    }),
+                    @Action(value = "add/{projectId",
+                    results = {
+                            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = SUCCESS, location = "add.ftl")
+                    })
+
+    })
     @Override
     public String execute() {
         if (!isContributor()) {
@@ -69,19 +81,14 @@ public class ResourceController extends AuthenticationAware.Base {
      * 
      * @return
      */
-    @Action(value = "edit",
+    @Action(value = "{resourceId}/edit",
             results = {
                     @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = "DATASET", type = TYPE_REDIRECT, location = "/dataset/edit?resourceId=${resource.id}"),
-                    @Result(name = "DOCUMENT", type = TYPE_REDIRECT, location = "/document/edit?resourceId=${resource.id}"),
-                    @Result(name = "ONTOLOGY", type = TYPE_REDIRECT, location = "/ontology/edit?resourceId=${resource.id}"),
-                    @Result(name = "IMAGE", type = TYPE_REDIRECT, location = "/image/edit?resourceId=${resource.id}"),
-                    @Result(name = "SENSORY_DATA", type = TYPE_REDIRECT, location = "/sensory-data/edit?resourceId=${resource.id}"),
-                    @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/edit?resourceId=${resource.id}")
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/edit?id=${resource.id}")
             })
     public String edit() {
-        InformationResource informationResource = getGenericService().find(InformationResource.class, resourceId);
-        if (informationResource == null) {
+        resource = getGenericService().find(InformationResource.class, resourceId);
+        if (resource == null) {
             getLogger().error("trying to edit information resource but it was null.");
             addActionError(getText("resourceController.invalid"));
             return INPUT;
@@ -91,7 +98,7 @@ public class ResourceController extends AuthenticationAware.Base {
             return INPUT;
         }
 
-        return resourceType.name();
+        return SUCCESS;
     }
 
     public boolean isAllowedToCreateResource() {
@@ -104,23 +111,18 @@ public class ResourceController extends AuthenticationAware.Base {
      * 
      * @return
      */
-    @Action(value = "view",
+    @Action(value = "{id}",
             results = {
-                    @Result(name = "DATASET", type = TYPE_REDIRECT, location = "/dataset/view?id=${resourceId}"),
-                    @Result(name = "DOCUMENT", type = TYPE_REDIRECT, location = "/document/view?id=${resourceId}"),
-                    @Result(name = "ONTOLOGY", type = TYPE_REDIRECT, location = "/ontology/view?id=${resourceId}"),
-                    @Result(name = "IMAGE", type = TYPE_REDIRECT, location = "/image/view?id=${resourceId}"),
-                    @Result(name = "SENSORY_DATA", type = TYPE_REDIRECT, location = "/sensory-data/view?id=${resourceId}"),
-                    @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/view?id=${resourceId}")
+                    @Result(name = "SUCCESS", type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resourceId}")
             })
     public String view() {
-        InformationResource informationResource = getGenericService().find(InformationResource.class, resourceId);
-        if (informationResource == null) {
+        resource = getGenericService().find(Resource.class, resourceId);
+        if (resource == null) {
             getLogger().error("trying to edit information resource but it was null.");
             addActionError(getText("resourceController.not_found"));
             return NOT_FOUND;
         }
-        return informationResource.getResourceType().name();
+        return SUCCESS;
     }
 
     public ResourceType getResourceType() {
@@ -145,5 +147,13 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public Long getResourceId() {
         return resourceId;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 }

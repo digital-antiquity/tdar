@@ -752,6 +752,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                         getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
             }
         }
+        
+        
+        
         // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
         if (authorizationService.can(pc.getAdminRights(), pc.getAuthenticatedUser())) {
             return;
@@ -768,10 +771,4 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
         throw new TdarActionException(statusCode, errorMessage);
     }
-
-    public boolean isAuthenticationRequired() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }

@@ -78,10 +78,16 @@ public class UserAccountController extends AuthenticationAware.Base implements V
         return ((person != null) && person.isRegistered());
     }
 
-    @Action(value = "new",
-            results = {
-                    @Result(name = SUCCESS, location = "edit.ftl"),
-                    @Result(name = AUTHENTICATED, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD) })
+    @Actions(value = {
+            @Action(value = "new",
+                    results = {
+                            @Result(name = SUCCESS, location = "edit.ftl"),
+                            @Result(name = AUTHENTICATED, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD) }),
+            @Action(value = "add",
+                    results = {
+                            @Result(name = SUCCESS, location = "edit.ftl"),
+                            @Result(name = AUTHENTICATED, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD) })
+    })
     @SkipValidation
     @Override
     @HttpsOnly

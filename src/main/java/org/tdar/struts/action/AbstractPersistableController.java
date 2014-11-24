@@ -335,23 +335,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public abstract String loadEditMetadata() throws TdarActionException;
 
     public enum RequestType {
-        EDIT(true),
-        CREATE(true),
-//        DELETE(true),
-        MODIFY_EXISTING(true),
-        SAVE(true),
-//        VIEW(false),
-        NONE(false), VIEW(false);
-        private final boolean authenticationRequired;
-
-        private RequestType(boolean authenticationRequired) {
-            this.authenticationRequired = authenticationRequired;
-        }
-
-        public boolean isAuthenticationRequired() {
-            return authenticationRequired;
-        }
-
+        EDIT,
+        CREATE,
+        DELETE,
+        MODIFY_EXISTING,
+        SAVE,
+        NONE, VIEW;
     }
 
     @Override
@@ -382,7 +371,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.EDIT);
-        if (getPersistable() == null) {
+        if (getPersistable() == null && getCurrentUrl().contains("/add")) {
             setPersistable(createPersistable());
         }
     }
