@@ -126,11 +126,11 @@
         <to>/browse/creators/$1/rdf</to>
     </outbound-rule>
 
-    <rule>
+<!--     <rule>
         <from>^/filestore/(\d+)/([\w\-]+)</from>
         <to>/filestore/$2?informationResourceFileVersionId=$1</to>
     </rule>
-
+ 
     <rule>
         <from>^/files/img/sm/(\d+)</from>
         <to>/filestore/thumbnail?informationResourceFileVersionId=$1</to>
@@ -140,12 +140,13 @@
         <from>^/files/img/(md|lg)/(\d+)</from>
         <to>/filestore/$1?informationResourceFileVersionId=$2</to>
     </rule>
+ -->
 
-    <rule>
+<!--     <rule>
         <from>^/filestore/(\d+)/?</from>
         <to>/filestore/get?informationResourceFileVersionId=$1</to>
     </rule>
-
+ -->
     <rule>
         <from>^/services//(.*)</from>
         <to>/services/$1</to>

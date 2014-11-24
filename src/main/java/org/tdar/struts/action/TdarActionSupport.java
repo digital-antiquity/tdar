@@ -753,7 +753,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
         }
         // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
-        if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, pc.getAuthenticatedUser())) {
+        if (authorizationService.can(pc.getAdminRights(), pc.getAuthenticatedUser())) {
             return;
         }
 

@@ -1,7 +1,9 @@
 package org.tdar.struts.action.download;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,10 @@ import org.tdar.struts.action.TdarActionException;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/filestore")
+@Namespaces(value={
+        @Namespace("/filestore"),
+        @Namespace("/files")
+})
 @Component
 @Scope("prototype")
 public class DownloadController extends AbstractDownloadController implements Preparable {
@@ -52,7 +57,13 @@ public class DownloadController extends AbstractDownloadController implements Pr
     }
 
     @Override
-    @Action(value = GET)
+    @Actions(value= {
+            @Action(value = GET),
+            @Action(value = "get/{informationResourceFileVersionId}"),
+            @Action(value = "img/md/{informationResourceFileVersionId}"),
+            @Action(value = "img/lg/{informationResourceFileVersionId}"),
+            @Action(value = "{informationResourceFileVersionId}/get"),
+    })
     public String execute() {
         getSessionData().clearPassthroughParameters();
         if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {

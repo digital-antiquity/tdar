@@ -155,8 +155,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         boolean isNew = false;
         try {
             if (isPostRequest()) {
-//                checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
-
                 if (isNullOrNew()) {
                     isNew = true;
                 }
@@ -295,7 +293,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
 
-//        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
         return loadAddMetadata();
     }
@@ -388,7 +385,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (getPersistable() == null) {
             setPersistable(createPersistable());
         }
-        checkValidRequest(this);
     }
 
     protected boolean isPersistableIdSet() {
