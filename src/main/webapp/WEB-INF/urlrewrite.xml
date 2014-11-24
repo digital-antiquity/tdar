@@ -248,7 +248,7 @@
 
     <rule>
         <from>^/unapi/(.+)/(\d+)$</from>
-        <to>/unapi/$1?id=$21</to>
+        <to>/unapi/$1?id=$2</to>
     </rule>
 
     <rule>
