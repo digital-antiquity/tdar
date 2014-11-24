@@ -12,13 +12,8 @@
  * FileuploadValidator can act part of the jQuery Validation Plugin workflow (this is helpful if you want invalid
  * files to prevent a form submission)
  *
- * The FileuploadValidator class is created using "Simple JavaScript Inheritance" function defined in tdar.core.js.
- * (for more info: http://ejohn.org/blog/simple-javascript-inheritance/)
- *
  */
-var FileuploadValidator;
-//FIXME: Jim, do we really need inheritance, or is this something you read in a blog and decided to throw into tDAR?  Sincerely, future-Jim
-(function (TDAR, $, console) {
+(function (TDAR, fileupload, $, console) {
     "use strict";
 
     /**
@@ -211,7 +206,12 @@ var FileuploadValidator;
      *
      * @type {Class|*}
      */
-    FileuploadValidator = Class.extend({
+
+    function FileuploadValidator(formId, settings) {
+        this.init(formId, settings)
+    }
+
+    FileuploadValidator.prototype = {
 
         /**
          * Note: most fields in this class are not "private" in that they may provide helpful information, but they
@@ -506,7 +506,8 @@ var FileuploadValidator;
             //we've added the method, now we need the specific rule that binds the fileinput element to the method
             $(self.inputSelector).addClass(methodName)
         }
-    });
+    };
+    TDAR.fileupload.FileuploadValidator = FileuploadValidator;
 
     //FIXME: move this function to tdar.dataintegration.js
     /**
@@ -612,5 +613,4 @@ var FileuploadValidator;
 
         TDAR.fileupload.addDataTableValidation(validator);
     };
-
-})(TDAR, jQuery, console);
+})(TDAR, TDAR.fileupload, jQuery, console, window);
