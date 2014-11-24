@@ -121,7 +121,7 @@ public abstract class AbstractSeleniumWebITCase {
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     private boolean ignorePageErrorChecks;
 
