@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -28,7 +29,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
  * @version $Rev$
  * 
  */
-@Namespace("/")
+@Namespace("/unapi")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -52,7 +53,7 @@ public class UnapiController extends TdarActionSupport {
     private String format;
 
     @Override
-    @Action(
+    @Actions(value = { @Action(
             value = "unapi",
             results = {
                     @Result(name = FORMATS,
@@ -63,7 +64,8 @@ public class UnapiController extends TdarActionSupport {
                     @Result(name = NOFORMAT, type = HTTPHEADER, params = { "status", "406" })
             }
             )
-            public String execute() {
+    })
+    public String execute() {
         if (StringUtils.isNotBlank(format) && (id != null)) {
             Resource r = resourceService.find(id);
             if (r == null) {

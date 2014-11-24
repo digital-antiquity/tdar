@@ -86,7 +86,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     public void testProjectJson() {
         Set<CultureKeyword> cultureKeywords = projectService.find(PARENT_PROJECT_ID).getCultureKeywords();
         logger.debug("cultureKeywords: {}", cultureKeywords);
-        gotoPageWithoutErrorCheck("/project/" + PARENT_PROJECT_ID + "/json");
+        gotoPageWithoutErrorCheck("/project/json/" + PARENT_PROJECT_ID);
         String json = getPageCode();
         logger.debug("page json:" + json);
         assertTrue("json is not empty", json.length() > 0);

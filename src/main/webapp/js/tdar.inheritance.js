@@ -433,11 +433,8 @@ TDAR.inheritance = (function () {
             var sel = this;
             if ($(sel).val() !== '' && $(sel).val() > 0) {
                 $.ajax({
-                    url: TDAR.uri() + "project/json",
+                    url: TDAR.uri() + "project/json/" + $(sel).val() ,
                     dataType: "jsonp",
-                    data: {
-                        id: $(sel).val()
-                    },
                     success: _projectChangedCallback,
                     error: function (msg) {
                         console.error("error");
