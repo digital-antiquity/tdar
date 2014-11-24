@@ -96,7 +96,7 @@
                         </label>
                         <div class="controls">
 
-                            <div id="tabControl" ">
+                            <div id="tabControl">
                                 <ul class="nav nav-tabs">
                                     <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
                                         <a href="#tab{{$index}}">
@@ -113,7 +113,6 @@
                                         <div ng-switch="column.type">
 
                                             <div ng-switch-when="integration" class=".integration-pane-content">
-
 
                                                 <table class="table table-bordered table-condensed">
                                                     <thead>
@@ -133,15 +132,13 @@
                                                         <td><input type="checkbox" name="tbd" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
-                                                                <label for="cbont_{{node.id}}">{{nodeSelection.node.display_name}}</label>
+                                                                <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.display_name}}</label>
                                                             </div>
                                                         </td>
                                                         <td ng-repeat="dtc in column.datatableColumnIds track by $index">{{val}}</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
-
-
                                             </div>
 
                                             <div ng-switch-when="display" class=".display-pane-content">

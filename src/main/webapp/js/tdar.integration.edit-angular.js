@@ -17,6 +17,7 @@
         addIntegrationColumn: function(title, ontology) {
             var self = this;
             var col = {
+                type: "integration",
                 title: title,
                 ontologyId: ontology.id,
                 nodeSelections: [],
@@ -214,7 +215,7 @@
          * Build list of integration columns.  Called after user selects list of ontology id's.
          * @param ontologyIds
          */
-        this.addIntegrationColumns = function(ontologyIds) {
+        self.addIntegrationColumns = function(ontologyIds) {
             //If user chooses ontologies that arent (yet) in the sharedOntologies list, we'll need to look them up.
             var columnsToAdd = [];
             var missingIds = [];
@@ -229,7 +230,7 @@
 
             //Lookup any missing ontologies and then add them to integration.columns.
             if(missingIds.length) {
-                $http.get("/workspace/ajax/ontology-details?" + $.param({ontologyIds: missingIds}), {
+                $http.get("/workspace/ajax/ontology-details?" + $.param({ontologyIds: missingIds}, true), {
                 }).success(function(data) {
                     data.forEach(function(ontology){
                         columnsToAdd.push(ontology);
