@@ -54,7 +54,7 @@ public class ResourceController extends AuthenticationAware.Base {
                             @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
                             @Result(name = SUCCESS, location = "add.ftl")
                     }),
-                    @Action(value = "add/{projectId",
+                    @Action(value = "add/{projectId}",
                     results = {
                             @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
                             @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
