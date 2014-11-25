@@ -16,7 +16,7 @@ import org.tdar.core.service.GenericService;
 public abstract class AbstractCountCache<C extends AbstractCountCache, D extends Comparable<D>> extends Persistable.Base implements Comparable<C>,
         ResourceCache {
 
-    private static final long serialVersionUID = -1407077845657074783L;
+    private static final long serialVersionUID = 6182074332493898892L;
 
     @Override
     public String getLabel() {

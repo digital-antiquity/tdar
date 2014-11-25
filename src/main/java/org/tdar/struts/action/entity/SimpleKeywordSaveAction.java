@@ -25,8 +25,7 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 @Namespace("/entity/keyword")
 public class SimpleKeywordSaveAction extends AbstractKeywordController {
 
-    private static final long serialVersionUID = 5267144668224536569L;
-
+    private static final long serialVersionUID = -6454678744854024278L;
     private String label;
     private String description;
 

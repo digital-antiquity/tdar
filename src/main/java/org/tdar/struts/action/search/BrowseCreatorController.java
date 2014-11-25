@@ -78,15 +78,19 @@ import freemarker.ext.dom.NodeModel;
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
-public class BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
+public class 
+BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7004124945674660779L;
     public static final String FOAF_XML = ".foaf.xml";
     public static final String SLASH = "/";
     public static final String XML = ".xml";
     public static final String CREATORS = "creators";
     public static final String EXPLORE = "explore";
 
-    private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
     private Persistable persistable;
     private Long viewCount = 0L;

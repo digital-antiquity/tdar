@@ -6,7 +6,7 @@ import org.tdar.utils.MessageHelper;
 
 public class I18nException extends Exception implements LocalizableException {
 
-    private static final long serialVersionUID = 6115182705667575524L;
+    private static final long serialVersionUID = -6989995919647215504L;
     private Locale locale;
     private Object[] values;
     private String message;

@@ -154,5 +154,16 @@
             columnName="resolution" newDataType="varchar(255)" />
     </changeSet>
 
-
+    <changeSet id="munsell-10" author="abrin">
+        <dropColumn tableName="download_authorization"
+            columnName="referer_regex" />
+        <createTable tableName="referrer_hostnames">
+            <column name="download_authorization_id" type="bigint">
+                <constraints nullable="false"
+                    references="download_authorization"
+                    foreignKeyName="fk_referrer_hostnames__download_authorization_id" />
+            </column>
+            <column name="hostname" type="varchar(255)" />
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

@@ -25,7 +25,7 @@ import org.tdar.core.bean.resource.ResourceType;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.HomepageResourceCountCache")
 public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType> {
 
-    private static final long serialVersionUID = 4401314235170180736L;
+    private static final long serialVersionUID = 1808499288414868010L;
 
     @Column(name = "resource_count")
     private Long count;
