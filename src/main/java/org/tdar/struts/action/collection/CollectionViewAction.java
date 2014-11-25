@@ -21,6 +21,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -28,6 +29,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -100,7 +102,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         }
         return authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
-    
+
     public boolean isVisible() {
         try {
             if (!getResourceCollection().isHidden() || authorize()) {
@@ -393,7 +395,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public boolean isEditable() {
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
-    
+
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
@@ -404,4 +406,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public int getDefaultRecordsPerPage() {
         return 100;
     }
+
+    public boolean isLogoAvailable() {
+        return logoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
+    }
+
 }

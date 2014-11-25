@@ -59,4 +59,17 @@ public enum VersionType {
         return null;
     }
 
+    public String toPath() {
+        switch (this) {
+            case WEB_LARGE:
+                return "_lg";
+            case WEB_SMALL:
+                return "_sm";
+            case WEB_MEDIUM:
+                return "_md";
+            default:
+                return "";
+        }
+    }
+
 }

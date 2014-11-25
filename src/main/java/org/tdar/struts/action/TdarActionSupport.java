@@ -31,7 +31,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -42,6 +41,8 @@ import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
@@ -752,9 +753,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                         getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
             }
         }
-        
-        
-        
+
         // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
         if (authorizationService.can(pc.getAdminRights(), pc.getAuthenticatedUser())) {
             return;
@@ -771,4 +770,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
         throw new TdarActionException(statusCode, errorMessage);
     }
+
+    protected boolean logoAvailable(ObjectType type, Long id, VersionType version) {
+        try {
+            FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
+            if (file.exists()) {
+                return true;
+            }
+        } catch (Exception e) {
+
+        }
+        return false;
+    }
+
 }

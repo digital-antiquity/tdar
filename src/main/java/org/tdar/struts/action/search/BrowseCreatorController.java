@@ -44,7 +44,6 @@ import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -109,7 +108,6 @@ public class BrowseCreatorController extends AbstractLookupController implements
     private List<NodeModel> collaborators;
     private String slug = "";
     private String slugSuffix = "";
-    private String keywordPath = "";
     private boolean redirectBadSlug;
 
     @Autowired
@@ -154,7 +152,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
     })
     public String creatorRdf() throws FileNotFoundException {
         try {
-            FileStoreFile object = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
+            FileStoreFile object = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
             File file = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, object);
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
@@ -224,7 +222,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
             getGenericService().saveOrUpdate(cvs);
         }
 
-        FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
+        FileStoreFile personInfo = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, getId(), getId() + XML);
         try {
             File foafFile = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
             if (foafFile.exists()) {
@@ -474,12 +472,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
         this.slugSuffix = slugSuffix;
     }
 
-    private String getKeywordPath() {
-        return keywordPath;
+    public boolean isLogoAvailable() {
+        return logoAvailable(ObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
     }
-
-    public void setKeywordPath(String keywordPath) {
-        this.keywordPath = keywordPath;
-    }
-
 }

@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.filestore.Filestore.ObjectType;
 
 public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
@@ -94,30 +94,14 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
         this.extension = extension;
     }
 
-    private Type type;
+    private ObjectType type;
     private VersionType versionType;
 
     public FileStoreFile() {
 
     }
 
-    public enum Type {
-        RESOURCE,
-        CREATOR,
-        LOG,
-        COLLECTION;
-
-        public static Type forName(String typeString) {
-            for (Type  type : Type.values()) {
-                if (StringUtils.equalsIgnoreCase(type.name(), typeString)) {
-                    return type;
-                }
-            }
-            return null;
-        }
-    }
-
-    public FileStoreFile(Type type, VersionType versionType, Long id, String filename) {
+    public FileStoreFile(ObjectType type, VersionType versionType, Long id, String filename) {
         this.persistableId = id;
         this.filename = filename;
         this.type = type;
@@ -224,11 +208,11 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
     }
 
     @Override
-    public Type getType() {
+    public ObjectType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(ObjectType type) {
         this.type = type;
     }
 

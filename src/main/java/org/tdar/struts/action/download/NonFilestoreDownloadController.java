@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,6 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -37,12 +37,23 @@ import com.opensymphony.xwork2.Preparable;
  * @author abrin
  *
  */
+@Results(value = {
+            @Result(name = TdarActionSupport.SUCCESS, type = "stream",
+                    params = {
+                            "contentType", "${contentType}",
+                            "inputName", "stream",
+                            "contentDisposition", "filename=\"${filename}\""
+                    // ,"contentLength", "${downloadTransferObject.contentLength}"
+                    }
+            ),
+            @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+            @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })})
 public class NonFilestoreDownloadController extends TdarActionSupport implements Preparable, Serializable {
 
     private static final long serialVersionUID = 520143306023106607L;
     private String contentType;
     private String filename;
-    private Type type;
+    private ObjectType type;
     private String typeString;
     private String versionString;
     private InputStream stream;
@@ -54,22 +65,27 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    @Action(value = "{typeString}/{versionString}/{id}/{filename}", results = {
-            @Result(name = SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "${contentType}",
-                            "inputName", "stream",
-                            "contentDisposition", "filename=\"${filename}\""
-                    // ,"contentLength", "${downloadTransferObject.contentLength}"
-                    }
-            ),
-            @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
-            @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
-
-    })
-    public String execute() throws IOException {
+    @Action("/creator/{versionString}/{id}/logo")
+    public String creator() throws IOException {
+        filename = "logo"+version.toPath()+".jpg";
+        type = ObjectType.CREATOR;
         FileStoreFile proxy = new FileStoreFile(type, version, getId(), getFilename());
-        File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, proxy);
+        File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
+        if (file != null) {
+            setContentType(Files.probeContentType(file.toPath()));
+            setFilename(file.getName());
+            setStream(new FileInputStream(file));
+            return SUCCESS;
+        }
+        return INPUT;
+    }
+
+    @Action("/collection/{versionString}/{id}/logo")
+    public String collection() throws IOException {
+        filename = "logo"+version.toPath()+".jpg";
+        type = ObjectType.COLLECTION;
+        FileStoreFile proxy = new FileStoreFile(type, version, getId(), getFilename());
+        File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
         if (file != null) {
             setContentType(Files.probeContentType(file.toPath()));
             setFilename(file.getName());
@@ -81,9 +97,9 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
 
     @Override
     public void prepare() throws TdarActionException {
+        getLogger().debug("{} - {} - {} - {}", versionString, typeString, id, filename);
         version = VersionType.forName(versionString);
-        type = Type.forName(typeString);
-        if (version == null || id == null || type == null || filename == null) {
+        if (version == null || id == null) {
             abort(StatusCode.BAD_REQUEST, "bad request");
         }
     }
@@ -102,14 +118,6 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
 
     public void setFilename(String filename) {
         this.filename = filename;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     public InputStream getStream() {
