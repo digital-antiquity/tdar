@@ -370,7 +370,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      */
     @Override
     public boolean isAbleToCreateBillableItem() {
-        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType()));
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), ResourceType.fromClass(getPersistableClass())));
     }
 
     // return a persisted annotation based on incoming pojo

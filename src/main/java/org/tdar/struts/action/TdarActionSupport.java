@@ -718,12 +718,16 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         P p = null;
         Class<P> persistableClass = pc.getPersistableClass();
         Long id = pc.getId();
+        // if we're not null or transient, somehow we've been initialized wrongly
         if (Persistable.Base.isNotNullOrTransient(pc.getPersistable())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);
-        } else {
+        } 
+        // if the ID is not set, don't try and load/set it
+        else if (Persistable.Base.isNotNullOrTransient(id)){
             p = genericService.find(persistableClass, id);
             pc.setPersistable(p);
         }
+        
         // first check the session
         if (!(pc.getAuthenticatedUser() == null)) {
             // don't log anonymous users

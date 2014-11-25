@@ -372,7 +372,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Override
     public void prepare() throws TdarActionException {
         RequestType type = RequestType.EDIT;
-        if (getPersistable() == null && getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl())) {
+        if (getPersistable() == null && (getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl()))) {
+            getLogger().debug("setting persistable");
             setPersistable(createPersistable());
             type = RequestType.CREATE;
         }
