@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.Validateable;
  * @version $Revision$
  */
 @ParentPackage("default")
-@Namespace("/login")
+@Namespace("/")
 @Component
 @Scope("prototype")
 @Results({
@@ -90,7 +90,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Actions(
     {
-            @Action(value = "process",
+            @Action(value = "login/process",
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
                             @Result(name = REDIRECT, type = REDIRECT, location = "${internalReturnUrl}"),
