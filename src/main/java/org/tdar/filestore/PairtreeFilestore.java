@@ -253,7 +253,7 @@ public class PairtreeFilestore extends BaseFilestore {
                 append(base, SUPPORT);
             }
         }
-        logger.debug("{} ({} {})", base, type, version);
+        logger.trace("{} ({} {})", base, type, version);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());
     }
 

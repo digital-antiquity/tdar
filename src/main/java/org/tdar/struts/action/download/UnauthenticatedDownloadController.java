@@ -56,19 +56,6 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         }
     }
 
-    /*
-     * I believe we'll need something like this for our contract with SRI
-     * 
-     * public String downloadCustom() {
-     * HttpServletRequest request = ServletActionContext.getRequest();
-     * String referrer = request.getHeader("referer");
-     * if (downloadService.canDownloadUnauthenticated(referrer, getInformationResourceFileVersion())) {
-     * downloadService.handleActualDownload(null, this, null, getInformationResourceFileVersion());
-     * }
-     * return INPUT;
-     * }
-     */
-
     @Actions(value = {
             @Action(value = GET),
             @Action(value = "thumbnail/{informationResourceFileVersionId}"),
@@ -96,7 +83,7 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         }
 
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this));
+                isCoverPageIncluded(), this, null));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }

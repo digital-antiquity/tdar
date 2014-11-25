@@ -42,7 +42,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
         getSessionData().clearPassthroughParameters();
 
         DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this);
+                isCoverPageIncluded(), this, null);
         setInformationResource(dto.getInformationResource());
         if (dto.getResult() != DownloadResult.SUCCESS) {
             return ERROR;
@@ -74,7 +74,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this));
+                isCoverPageIncluded(), this, null));
         getDownloadTransferObject().setAttachment(forceAttachment);
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
@@ -90,7 +90,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
             return ERROR;
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(),
-                this));
+                this, null));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }

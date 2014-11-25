@@ -155,7 +155,7 @@ public class PdfService {
                             try {
                                 IOUtils.copyLarge(new FileInputStream(wrapper.getDocument()), pipedOutputStream);
                             } catch (Exception e1) {
-                                logger.error("cannot attach PDF, even w/o cover page",e1);
+                                logger.error("cannot attach PDF, even w/o cover page", e1);
                             }
                         } finally {
                             IOUtils.closeQuietly(pipedOutputStream);
@@ -242,12 +242,16 @@ public class PdfService {
 
         cursorPositionFromBottom = 200;
         List<Object> byOn = new ArrayList<>();
-        byOn.add(submitter.getProperName());
+        String msg = "pdfService.by_on";
+        if (submitter != null) {
+            byOn.add(submitter.getProperName());
+        } else {
+            msg = "pdfService.on";
+        }
         byOn.add(new Date());
-        cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.downloaded"), provider.getText("pdfService.by_on", byOn),
+        cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.downloaded"), provider.getText(msg, byOn),
                 PdfFontHelper.HELVETICA_EIGHT_POINT,
                 LEFT_MARGIN, cursorPositionFromBottom);
-
         content.close();
         File tempFile = File.createTempFile(COVER_PAGE, DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
         doc.save(new FileOutputStream(tempFile));

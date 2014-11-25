@@ -20,10 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
@@ -169,12 +171,26 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return result.longValue();
     }
 
+    @SuppressWarnings("unchecked")
     public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
         if (Persistable.Base.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN);
         query.setLong("id", persistable.getId());
+        return query.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+        List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
+        if (CollectionUtils.isEmpty(sharedCollectionIds )) {
+            return Collections.EMPTY_LIST;
+        }
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION);
+        query.setParameterList("collectionids", sharedCollectionIds);
+        query.setParameter("apiKey", apiKey);
+        query.setParameter("hostname", referrer.toLowerCase());
         return query.list();
     }
 

@@ -157,6 +157,8 @@
     <changeSet id="munsell-10" author="abrin">
         <dropColumn tableName="download_authorization"
             columnName="referer_regex" />
+        <dropColumn tableName="download_authorization"
+            columnName="institution_id" />
         <createTable tableName="referrer_hostnames">
             <column name="download_authorization_id" type="bigint">
                 <constraints nullable="false"

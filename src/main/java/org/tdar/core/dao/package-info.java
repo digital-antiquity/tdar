@@ -465,7 +465,9 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
                 query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
-
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
+                query = "from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))")
 })
 package org.tdar.core.dao;
 

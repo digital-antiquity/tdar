@@ -1,5 +1,9 @@
 package org.tdar.core.bean.collection;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -10,10 +14,9 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Institution;
 
 /**
- * A downloadauth designates a collection of resources that allow file downloads from unauthenticated users.   Instead, the download request includes
+ * A downloadauth designates a collection of resources that allow file downloads from unauthenticated users. Instead, the download request includes
  * an API key that effectively serves as an alternate form of authentication.
  */
 @Entity
@@ -23,31 +26,17 @@ public class DownloadAuthorization extends Persistable.Base {
 
     private static final long serialVersionUID = 2087845303008388117L;
 
-    @ManyToOne
-    @JoinColumn(name="institution_id")
-    private Institution institution;
-
-    @Column(name="api_key")
+    @Column(name = "api_key")
     private String apiKey;
 
     @ElementCollection()
     @CollectionTable(name = "referrer_hostnames", joinColumns = @JoinColumn(name = "download_authorization_id"))
     @Column(name = "hostname")
-    private String refererHostname;
+    private Set<String> refererHostnames = new LinkedHashSet<>();
 
-    
     @ManyToOne
-    @JoinColumn(name="resource_collection_id")
+    @JoinColumn(name = "resource_collection_id")
     private ResourceCollection resourceCollection;
-
-    
-    public Institution getInstitution() {
-        return institution;
-    }
-
-    public void setInstitution(Institution institution) {
-        this.institution = institution;
-    }
 
     public String getApiKey() {
         return apiKey;
@@ -57,20 +46,20 @@ public class DownloadAuthorization extends Persistable.Base {
         this.apiKey = apiKey;
     }
 
-    public String getRefererHostname() {
-        return refererHostname;
-    }
-
-    public void setRefererHostname(String refererHostname) {
-        this.refererHostname = refererHostname;
-    }
-
     public ResourceCollection getResourceCollection() {
         return resourceCollection;
     }
 
     public void setResourceCollection(ResourceCollection resourceCollection) {
         this.resourceCollection = resourceCollection;
+    }
+
+    public Set<String> getRefererHostnames() {
+        return refererHostnames;
+    }
+
+    public void setRefererHostnames(Set<String> refererHostnames) {
+        this.refererHostnames = refererHostnames;
     }
 
 }
