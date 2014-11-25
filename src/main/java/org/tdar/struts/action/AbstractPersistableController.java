@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -370,10 +371,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      */
     @Override
     public void prepare() throws TdarActionException {
-        prepareAndLoad(this, RequestType.EDIT);
-        if (getPersistable() == null && getCurrentUrl().contains("/add")) {
+        RequestType type = RequestType.EDIT;
+        if (getPersistable() == null && getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl())) {
             setPersistable(createPersistable());
+            type = RequestType.CREATE;
         }
+        prepareAndLoad(this, type);
     }
 
     protected boolean isPersistableIdSet() {
