@@ -95,7 +95,7 @@
             <h2>Browse and Display Options</h2>
 
             <div class="control-group">
-                <label class="control-label">Make this collection public?</label>
+                <label class="control-label">Hide this collection?</label>
 
                 <div class="controls">
                     <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"

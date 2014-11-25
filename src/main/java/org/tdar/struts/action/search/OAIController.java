@@ -30,6 +30,8 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -46,6 +48,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.RangeQueryPart;
@@ -90,7 +93,6 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     public static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
     public static final String SUCCESS_GET_RECORD = "success-get-record";
     public static final String SUCCESS_LIST_RECORDS = "success-list-records";
-    @SuppressWarnings("unused")
     public static final String SUCCESS_LIST_SETS = "success-list-sets";
 
     // OAI-PMH URL parameters
@@ -130,6 +132,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     @Autowired
     private XmlService xmlService;
+    private ArrayList<ResourceCollection> sets;
 
     // http://.../oai-pmh/oai?
     @Action(value = "oai", results = {
@@ -138,6 +141,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             @Result(name = SUCCESS_IDENTIFY, location = "identify.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
             @Result(name = SUCCESS_LIST_IDENTIFIERS, location = "listIdentifiers.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
             @Result(name = SUCCESS_LIST_RECORDS, location = "listRecords.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
+            @Result(name = SUCCESS_LIST_SETS, location = "listSets.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
             @Result(name = SUCCESS_LIST_METADATA_FORMATS, location = "listMetadataFormats.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
             @Result(name = ERROR, location = "error.ftl", type = FREEMARKER, params = { "contentType", "text/xml" })
     })
@@ -267,6 +271,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         String effectiveMetadataPrefix = metadataPrefix;
         Date effectiveFrom = new DateTime("1900").toDate();
         Date effectiveUntil = new DateTime("3000").toDate();
+        Long collectionId = null;
         if (from != null) {
             effectiveFrom = new DateTime(from).toDate();
         }
@@ -281,6 +286,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             // instead all the parameters come packed into a resumption token.
             cursor = resumptionToken.getCursor();
             effectiveFrom = resumptionToken.getFromDate();
+            collectionId = resumptionToken.getSet();
             effectiveUntil = resumptionToken.getUntilDate();
             effectiveMetadataPrefix = resumptionToken.getMetadataPrefix();
         }
@@ -290,7 +296,9 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // now actually build the queries and execute them
         resourceQueryBuilder = new ResourceQueryBuilder();
         resourceQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
-
+        if (collectionId != null) {
+            resourceQueryBuilder.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionId));
+        }
         personQueryBuilder = new PersonQueryBuilder();
         personQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
         institutionQueryBuilder = new InstitutionQueryBuilder();
@@ -329,6 +337,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 newResumptionToken.setFromDate(effectiveFrom);
                 newResumptionToken.setUntilDate(effectiveUntil);
                 newResumptionToken.setMetadataPrefix(effectiveMetadataPrefix);
+                newResumptionToken.setSet(collectionId);
             }
         }
 
@@ -360,6 +369,9 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 ids.add(resource.getId());
                 // create OAI metadata for the record
                 OAIRecordProxy proxy = new OAIRecordProxy(repositoryNamespaceIdentifier, recordType, resource.getId(), resource.getDateUpdated());
+                if (resource instanceof Resource) {
+                    proxy.setSets(((Resource) resource).getSharedCollectionsContaining());
+                }
                 if (includeRecords) {
                     proxy.setMetadata(createNodeModel(resource, metadataFormat));
                 }
@@ -499,8 +511,92 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     }
 
     private String listSetsVerb() throws OAIException {
-        throw new OAIException(getText("oaiController.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
-        // return SUCCESS_LIST_SETS;
+
+        // Sort results by dateUpdated ascending and filter
+        // by dates, either supplied in OAI-PMH 'from' and 'to' parameters,
+        // or encoded as parts of the 'resumptionToken'
+        // Optionally filter results by date range
+        // In Lucene, dates are stored as "yyyyMMddHHmmssSSS" in UTC time zone
+        // see http://docs.jboss.org/hibernate/search/3.4/reference/en-US/html_single/#d0e3510
+        // but in OAI-PMH, date parameters are ISO8601 dates, so we must remove the punctuation.
+        String effectiveMetadataPrefix = metadataPrefix;
+        Date effectiveFrom = new DateTime("1900").toDate();
+        Date effectiveUntil = new DateTime("3000").toDate();
+        if (from != null) {
+            effectiveFrom = new DateTime(from).toDate();
+        }
+        if (until != null) {
+            effectiveUntil = new DateTime(until).toDate();
+        }
+        // start record number (cursor)
+        int cursor = 0;
+        if (resumptionToken != null) {
+            // ... then this is the second or subsequent page of results.
+            // In this case there are no separate "from" and "until" parameters passed by the client;
+            // instead all the parameters come packed into a resumption token.
+            cursor = resumptionToken.getCursor();
+            effectiveFrom = resumptionToken.getFromDate();
+            effectiveUntil = resumptionToken.getUntilDate();
+            effectiveMetadataPrefix = resumptionToken.getMetadataPrefix();
+        }
+        setSortField(SortOption.DATE_UPDATED);
+
+        // now actually build the queries and execute them
+        ResourceCollectionQueryBuilder collectionQueryBuilder = new ResourceCollectionQueryBuilder();
+        collectionQueryBuilder.append(new FieldQueryPart<>("type", CollectionType.SHARED));
+
+        setSets(new ArrayList<ResourceCollection>());
+
+        // only publish Persons and Institutions if this feature is specifically enabled in TDAR configuration,
+        // and only with oai_dc and tdar metadata formats, not MODS
+        setStartRecord(cursor);
+        collectionQueryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
+        int total = 0;
+        try {
+            switchProjectionModel(collectionQueryBuilder);
+            super.handleSearch(collectionQueryBuilder);
+            total = getTotalRecords();
+            List<Long> ids = new ArrayList<>();
+            for (Indexable i : getResults()) {
+                getLogger().debug("{}, {}", i ,((Viewable) i).isViewable());
+                if ((i instanceof Viewable) && !((Viewable) i).isViewable()) {
+                    continue;
+                }
+                ids.add(i.getId());
+                // create OAI metadata for the record
+                sets.add((ResourceCollection)i);
+            }
+            getLogger().info("ALL IDS: {}", ids);
+        } catch (SearchPaginationException spe) {
+            getLogger().debug("an pagination exception happened .. {} ", spe.getMessage());
+        } catch (TdarRecoverableRuntimeException e) {
+            // this is expected as the cursor follows the "max" results for person/inst/resource so, whatever the max is
+            // means that the others will throw this error.
+            getLogger().debug("an exception happened .. {} ", e);
+        } catch (ParseException e) {
+            getLogger().debug("an exception happened .. {} ", e);
+        }
+
+
+        // if any of the queries returned more than a page of search results, create a resumptionToken to allow
+        // the client to continue harvesting from that point
+        int recordsPerPage = getRecordsPerPage();
+        if (total > recordsPerPage) {
+            // ... then this is a partial response, and should be terminated with a ResumptionToken
+            // which may be empty if this is the last page of results
+            newResumptionToken = new OAIResumptionToken();
+            // advance the cursor by one page
+            cursor = getNextPageStartRecord();
+            // check if there would be any resources, persons or institutions in that hypothetical next page
+            if (total > cursor) {
+                // ... populate the resumptionToken so the harvester can continue harvesting from the next page
+                newResumptionToken.setCursor(cursor);
+                newResumptionToken.setFromDate(effectiveFrom);
+                newResumptionToken.setUntilDate(effectiveUntil);
+                newResumptionToken.setMetadataPrefix(effectiveMetadataPrefix);
+            }
+        }        
+         return SUCCESS_LIST_SETS;
     }
 
     private String getRecordVerb() throws JAXBException, OAIException, ParserConfigurationException {
@@ -846,5 +942,13 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
+    }
+
+    public ArrayList<ResourceCollection> getSets() {
+        return sets;
+    }
+
+    public void setSets(ArrayList<ResourceCollection> sets) {
+        this.sets = sets;
     }
 }

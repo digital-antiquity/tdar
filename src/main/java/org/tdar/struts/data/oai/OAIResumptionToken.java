@@ -21,6 +21,7 @@ public class OAIResumptionToken {
     private Date untilDate;
     private String metadataPrefix;
     private String token = "";
+    private Long set;
 
     /**
      * Create an empty ResumptionToken (for ending a list)
@@ -118,7 +119,9 @@ public class OAIResumptionToken {
         this.metadataPrefix = metadataPrefix;
         invalidateToken();
         // validate the prefix
-        OAIMetadataFormat.fromString(metadataPrefix);
+        if (metadataPrefix != null) {
+            OAIMetadataFormat.fromString(metadataPrefix);
+        }
     }
 
     /**
@@ -169,5 +172,13 @@ public class OAIResumptionToken {
      */
     private void invalidateToken() {
         token = null;
+    }
+
+    public Long getSet() {
+        return set;
+    }
+
+    public void setSet(Long id) {
+        this.set = set;
     }
 }

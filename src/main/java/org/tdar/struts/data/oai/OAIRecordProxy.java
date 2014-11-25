@@ -1,6 +1,8 @@
 package org.tdar.struts.data.oai;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -9,7 +11,7 @@ public class OAIRecordProxy {
     private String identifier;
     private Date datestamp;
     private NodeModel metadata;
-
+    private List<Long> sets = new ArrayList();
     /**
      * @return the identifier
      */
@@ -38,6 +40,14 @@ public class OAIRecordProxy {
     public OAIRecordProxy(String repositoryNamespaceIdentifier, OAIRecordType recordType, long numericIdentifier, Date datestamp) {
         this.identifier = "oai:" + repositoryNamespaceIdentifier + ":" + recordType.getName() + ":" + String.valueOf(numericIdentifier);
         this.datestamp = datestamp;
+    }
+
+    public List<Long> getSets() {
+        return sets;
+    }
+
+    public void setSets(List<Long> sets) {
+        this.sets = sets;
     }
 
 }

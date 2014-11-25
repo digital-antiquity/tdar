@@ -51,11 +51,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
@@ -215,8 +217,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
+    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Column(nullable = true, name = "date_updated")
     @Temporal(TemporalType.TIMESTAMP)
+    @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;
 
     @ManyToOne

@@ -14,7 +14,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -475,7 +474,7 @@ public class AuthorizationService implements Accessible {
             }
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
-                if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isInternal()) {
+                if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isHidden()) {
                     viewable = true;
                 }
             }
