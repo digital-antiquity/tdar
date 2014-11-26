@@ -18,10 +18,9 @@ import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 
-import freemarker.core.Configurable;
 
 @Service
-public class NelNetPaymentDao extends Configurable implements PaymentTransactionProcessor {
+public class NelNetPaymentDao implements PaymentTransactionProcessor {
 
     @Autowired
     GenericDao genericDao;

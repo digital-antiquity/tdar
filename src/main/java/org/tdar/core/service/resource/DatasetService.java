@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -849,8 +850,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
         getLogger().info("coding(incoming):{} coding(existing):{} equals?:{}", incomingCodingSheet, existingCodingSheet,
-                ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
-        if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
+                Objects.equals(incomingCodingSheet, existingCodingSheet));
+        if (Objects.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
         }
         else if (incomingCodingSheet.isGenerated()) {

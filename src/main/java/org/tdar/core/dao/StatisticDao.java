@@ -88,6 +88,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         return toReturn;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Long> getFileStats(List<VersionType> types) {
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_SIZE_TOTAL);
         query.setParameterList("types", types);

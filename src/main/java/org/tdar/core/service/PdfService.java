@@ -135,6 +135,7 @@ public class PdfService {
         wrapper.getMerger().addSource(document);
         wrapper.setDocument(document);
 
+        @SuppressWarnings("unused")
         Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
             public void uncaughtException(Thread th, Throwable ex) {
                 System.out.println("Uncaught exception: " + ex);

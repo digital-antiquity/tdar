@@ -395,6 +395,8 @@ public abstract class AbstractSeleniumWebITCase {
                         ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
                         configureCapabilities(DesiredCapabilities.phantomjs()));
                 break;
+                default:
+                    break;
         }
         EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
         eventFiringWebDriver.register(eventListener);

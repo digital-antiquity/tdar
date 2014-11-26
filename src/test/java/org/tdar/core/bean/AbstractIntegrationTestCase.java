@@ -889,21 +889,21 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
         BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
-        Invoice invoice = initAccount(account, activity, getUser());
+        initAccount(account, activity, getUser());
         genericService.saveOrUpdate(account);
         return account;
     }
 
     public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
+        initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
         genericService.saveOrUpdate(account);
         return account;
     }
 
     public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
+        initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
         genericService.saveOrUpdate(account);
@@ -912,7 +912,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
+        initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
         genericService.saveOrUpdate(account);
@@ -921,7 +921,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
+        initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
         genericService.saveOrUpdate(account);
@@ -930,7 +930,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public Account setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
+        initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
         genericService.saveOrUpdate(account);

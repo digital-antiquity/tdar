@@ -149,6 +149,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public List getFacetFields() {
         return null;

@@ -25,6 +25,7 @@ import javax.servlet.http.Part;
 
 import com.sun.net.httpserver.HttpExchange;
 
+@SuppressWarnings("restriction")
 public class HttpExchangeServletWrapper implements HttpServletRequest {
 
     private HttpExchange exchange;
@@ -34,6 +35,7 @@ public class HttpExchangeServletWrapper implements HttpServletRequest {
         this.exchange = exchange;
     }
 
+    @SuppressWarnings("restriction")
     @Override
     public void setAttribute(String key, Object object)
     {
@@ -63,7 +65,7 @@ public class HttpExchangeServletWrapper implements HttpServletRequest {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Enumeration getAttributeNames() {
         throw new UnsupportedOperationException();
@@ -156,7 +158,7 @@ public class HttpExchangeServletWrapper implements HttpServletRequest {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Enumeration getLocales() {
         throw new UnsupportedOperationException();
@@ -217,13 +219,13 @@ public class HttpExchangeServletWrapper implements HttpServletRequest {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Enumeration getHeaders(String name) {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Enumeration getHeaderNames() {
         throw new UnsupportedOperationException();

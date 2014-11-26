@@ -14,6 +14,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * $Id$
  * 
@@ -38,7 +40,7 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
     }
 
     @SuppressWarnings("unchecked")
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH",
+    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH",
             justification = "ignoring null derefernece because findbugs is not paying attention to the null-check above")
     public List<CodingRule> findMappedCodingRules(CodingSheet sheet, List<String> valuesToMatch) {
         if (Persistable.Base.isNullOrTransient(sheet) || CollectionUtils.isEmpty(valuesToMatch)) {

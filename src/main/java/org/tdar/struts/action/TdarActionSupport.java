@@ -714,44 +714,63 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return true;
     }
 
+    /**
+     * Load up controller and then check that the user can execute function prior to calling action (used in prepare)
+     * 
+     * @param pc
+     * @param type
+     * @throws TdarActionException
+     */
     public <P extends Persistable> void prepareAndLoad(PersistableLoadingAction<P> pc, RequestType type) throws TdarActionException {
         P p = null;
         Class<P> persistableClass = pc.getPersistableClass();
+
+        // get the ID
         Long id = pc.getId();
         // if we're not null or transient, somehow we've been initialized wrongly
         if (Persistable.Base.isNotNullOrTransient(pc.getPersistable())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);
-        } 
+        }
         // if the ID is not set, don't try and load/set it
-        else if (Persistable.Base.isNotNullOrTransient(id)){
+        else if (Persistable.Base.isNotNullOrTransient(id)) {
             p = genericService.find(persistableClass, id);
             pc.setPersistable(p);
         }
-        
-        // first check the session
+
+        String status = "";
+        String name = "";
         if (!(pc.getAuthenticatedUser() == null)) {
             // don't log anonymous users
-            String status = "";
             if (p instanceof HasStatus) {
                 status = ((HasStatus) p).getStatus().toString();
             }
-            getLogger().info(
-                    String.format("%s is %s %s (%s): %s", pc.getAuthenticatedUser().getUsername(), type.name(), persistableClass.getSimpleName(), id, status));
+            name = pc.getAuthenticatedUser().getUsername();
         }
+        getLogger().info(String.format("%s is %s %s (%s): %s", name, type.name(), persistableClass.getSimpleName(), id, status));
         checkValidRequest(pc);
     }
 
+    /**
+     * Check that the request is valid. In general, this should be able to used as is, though, it's possible to either (a) override the entire method or (b)
+     * implement authorize() differently.
+     * 
+     * @param pc
+     * @throws TdarActionException
+     */
     protected <P extends Persistable> void checkValidRequest(PersistableLoadingAction<P> pc) throws TdarActionException {
 
         Persistable persistable = pc.getPersistable();
-        // if we're NULL and we're not supposed to be null
+        // if the persistable is NULL and the ID is not null, then we have a "load" issue; if the ID is not numeric, thwn we wouldn't have even gotten here
         if (Persistable.Base.isNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(pc.getId())) {
             // deal with the case that we have a new or not found resource
             getLogger().debug("Dealing with transient persistable {}", persistable);
+            // ID specified
             if (persistable == null) {
                 // persistable is null, so the lookup failed (aka not found)
                 abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
-            } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
+            }
+            // ID is NULL or -1 too, so bad request
+            else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                 // id not specified or not a number, so this is an invalid request
                 abort(StatusCode.BAD_REQUEST,
                         getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
@@ -763,19 +782,29 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             return;
         }
 
+        // call the locally defined "authorize" method for more specific checks
         if (pc.authorize()) {
             return;
         }
+
+        // default is to be an error
         String errorMessage = getText("abstractPersistableController.no_permissions");
         addActionError(errorMessage);
         abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
     }
 
+    /**
+     * Throw an exception with a status code
+     * 
+     * @param statusCode
+     * @param errorMessage
+     * @throws TdarActionException
+     */
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
         throw new TdarActionException(statusCode, errorMessage);
     }
 
-    protected boolean logoAvailable(ObjectType type, Long id, VersionType version) {
+    protected boolean checkLogoAvailable(ObjectType type, Long id, VersionType version) {
         try {
             FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
             File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);

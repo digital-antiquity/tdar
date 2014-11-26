@@ -17,13 +17,9 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(Operator.OR);
         List<String> names = new ArrayList<String>();
-        boolean containsSpaces = false;
         if (CollectionUtils.isNotEmpty(getFieldValues())) {
             for (Institution inst : getFieldValues()) {
                 names.add(StringUtils.trim(inst.getName()));
-                if (inst.getName().trim().contains(" ")) {
-                    containsSpaces = true;
-                }
             }
             FieldQueryPart<String> fqp = new FieldQueryPart<String>("name", Operator.OR, names);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);

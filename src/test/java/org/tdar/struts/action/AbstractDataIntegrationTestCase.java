@@ -337,7 +337,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         ZipFile zipfile = null;
         try {
             zipfile = new ZipFile(archive);
-            for (Enumeration e = zipfile.entries(); e.hasMoreElements();) {
+            for (Enumeration<?> e = zipfile.entries(); e.hasMoreElements();) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
                 files.put(entry.getName(), entry.getSize());
                 logger.info("{} {}", entry.getName(), entry.getSize());

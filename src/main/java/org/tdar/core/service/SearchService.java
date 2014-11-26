@@ -746,6 +746,7 @@ public class SearchService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<? extends Resource> findMostRecentResources(long l, TdarUser authenticatedUser, TextProvider provider) throws ParseException {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.getStatuses().add(Status.ACTIVE);

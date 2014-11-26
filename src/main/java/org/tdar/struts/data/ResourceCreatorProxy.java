@@ -18,6 +18,8 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * $Id$
  * 
@@ -133,7 +135,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * 
      * @return creatorType, if system can figure out based on available info. otherwise null.
      */
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH",
+    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH",
             justification = "ignoring null derefernece because findbugs is not paying attention to the null-check above")
     private CreatorType determineActualCreatorType() {
         if ((institution == null) && (person == null)) {

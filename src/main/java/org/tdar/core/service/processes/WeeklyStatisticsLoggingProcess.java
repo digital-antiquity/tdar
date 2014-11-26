@@ -47,7 +47,6 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
 
-    private int batchCount = 0;
     private boolean run = false;
 
     @Override

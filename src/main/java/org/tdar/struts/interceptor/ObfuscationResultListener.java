@@ -92,12 +92,12 @@ public class ObfuscationResultListener implements PreResultListener {
                     Class<?> actual = obj.getClass();
                     try {
                         // if the object is a collection, and the collection is empty, or the object is one of our static types, skip
-                        if (obj instanceof Collection && CollectionUtils.isEmpty((Collection) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
+                        if (obj instanceof Collection && CollectionUtils.isEmpty((Collection<?>) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
                             logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
                             continue;
                         }
                         // otherwise create a CGLIB proxy of the object
-                        Object result = result = enhance(obj, obfuscationService, user);
+                        Object result = enhance(obj, obfuscationService, user);
                         // call the setter on the object
                         setter.invoke(action, actual.cast(result));
                     } catch (Exception e) {
@@ -157,7 +157,7 @@ public class ObfuscationResultListener implements PreResultListener {
             if (invoke != null && (method.getName().startsWith("iterator"))) {
                 if (invoke instanceof Iterator) {
                     logger.debug("intercepting: {}", method);
-                    return new AbstractIteratorDecorator((Iterator) invoke) {
+                    return new AbstractIteratorDecorator((Iterator<?>) invoke) {
                         @Override
                         public Object next() {
                             Object next = super.next();

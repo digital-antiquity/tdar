@@ -539,6 +539,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getInvestigationTypeIdLists().add(ids);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException {

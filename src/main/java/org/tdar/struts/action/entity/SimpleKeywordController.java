@@ -175,6 +175,7 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         return startRecord - recordsPerPage;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub

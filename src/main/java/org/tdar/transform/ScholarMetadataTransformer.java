@@ -47,6 +47,8 @@ public class ScholarMetadataTransformer implements Serializable {
                     case THESIS:
                         publisherField = "citation_dissertation_institution";
                         break;
+                    default:
+                        break;
                 }
                 addMetaTagIfNotBlank(toReturn, "citation_volume", doc.getVolume());
                 addMetaTagIfNotBlank(toReturn, "citation_issue", doc.getJournalNumber());

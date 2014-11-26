@@ -19,6 +19,7 @@ import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
+@SuppressWarnings("restriction")
 public class HttpTestingServer implements ITestingServer {
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -37,6 +38,7 @@ public class HttpTestingServer implements ITestingServer {
         return sessionData;
     }
 
+    @SuppressWarnings("restriction")
     @Override
     public void createServer() {
         configureProducer();

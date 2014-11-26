@@ -22,7 +22,6 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
     @Autowired
     private transient EntityService entityService;
 
-    private int batchCount = 0;
     private boolean run = false;
 
     @Override

@@ -179,6 +179,6 @@ public class OAIResumptionToken {
     }
 
     public void setSet(Long id) {
-        this.set = set;
+        this.set = id;
     }
 }

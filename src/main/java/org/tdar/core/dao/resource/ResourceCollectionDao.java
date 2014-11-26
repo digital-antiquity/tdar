@@ -155,6 +155,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return allChildren;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findCollectionSparseResources(Long collectionId) {
         if (Persistable.Base.isNullOrTransient(collectionId)) {
             return Collections.EMPTY_LIST;

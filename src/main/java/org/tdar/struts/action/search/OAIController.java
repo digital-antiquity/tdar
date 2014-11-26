@@ -550,7 +550,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // only publish Persons and Institutions if this feature is specifically enabled in TDAR configuration,
         // and only with oai_dc and tdar metadata formats, not MODS
         setStartRecord(cursor);
-        collectionQueryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
+        collectionQueryBuilder.append(new RangeQueryPart<Date>(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
         int total = 0;
         try {
             switchProjectionModel(collectionQueryBuilder);

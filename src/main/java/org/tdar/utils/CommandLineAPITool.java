@@ -48,7 +48,6 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -62,6 +61,7 @@ import org.apache.log4j.PatternLayout;
  */
 public class CommandLineAPITool {
 
+    private static final String UTF_8 = "UTF-8";
     // The following are the names of the fields on the APIController that we set
     /** Set in the query. Not really needed. */
     private static final String API_UPLOADED_ITEM = "uploadedItem";
@@ -347,7 +347,7 @@ public class CommandLineAPITool {
             postNameValuePairs.add(new BasicNameValuePair("userLogin.loginUsername", getUsername()));
             postNameValuePairs.add(new BasicNameValuePair("userLogin.loginPassword", getPassword()));
 
-            tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
+            tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, UTF_8));
             HttpResponse response = httpclient.execute(tdarAuth);
             HttpEntity entity = response.getEntity();
             logger.trace("Login form get: " + response.getStatusLine());
@@ -438,7 +438,7 @@ public class CommandLineAPITool {
         String path = record.getPath();
         try {
             HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "="
-                    + URLEncoder.encode(path, "UTF-8"));
+                    + URLEncoder.encode(path, UTF_8));
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             if (seen.contains(path)) {
                 logger.warn("skipping: " + path);

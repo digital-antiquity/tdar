@@ -477,6 +477,6 @@ BrowseCreatorController extends AbstractLookupController implements Preparable, 
     }
 
     public boolean isLogoAvailable() {
-        return logoAvailable(ObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(ObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
     }
 }

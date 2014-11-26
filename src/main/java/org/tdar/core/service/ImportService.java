@@ -413,6 +413,7 @@ public class ImportService {
         return rec;
     }
 
+    @SuppressWarnings("unchecked")
     public <R extends Resource> void resetOneToManyPersistableIds(R rec) {
         List<Field> findAnnotatedFieldsOfClass = ReflectionService.findAnnotatedFieldsOfClass(rec.getClass(), OneToMany.class);
         for (Field fld : findAnnotatedFieldsOfClass) {

@@ -169,6 +169,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
         return 0;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub

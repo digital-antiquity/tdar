@@ -38,6 +38,7 @@ public abstract class AbstractDeleteAction<P extends Persistable> extends Authen
     @Autowired
     private transient AuthorizationService authorizationService;
 
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private DeleteIssue deleteIssue;

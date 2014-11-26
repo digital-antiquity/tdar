@@ -384,7 +384,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     @Transactional
-    public void queueTask(Class<? extends ScheduledProcess> class1) {
+    public void queueTask(Class<? extends ScheduledProcess<? extends Persistable>> class1) {
         ScheduledProcess<Persistable> process = scheduledProcessMap.get(class1);
         if (process != null) {
             scheduledProcessQueue.add(process);

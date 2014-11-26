@@ -11,7 +11,7 @@ public class OAIRecordProxy {
     private String identifier;
     private Date datestamp;
     private NodeModel metadata;
-    private List<Long> sets = new ArrayList();
+    private List<Long> sets = new ArrayList<>();
     /**
      * @return the identifier
      */

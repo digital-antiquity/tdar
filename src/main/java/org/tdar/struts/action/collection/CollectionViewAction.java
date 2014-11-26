@@ -408,7 +408,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     public boolean isLogoAvailable() {
-        return logoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
     }
 
 }

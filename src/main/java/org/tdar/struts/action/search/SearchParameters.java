@@ -67,7 +67,6 @@ public class SearchParameters {
     // user specified status that they do not have permissions to search for. probably because they are not logged in.
 
     private static final Operator defaultOperator = Operator.AND;
-    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private List<SearchFieldType> fieldTypes = new ArrayList<SearchFieldType>();
