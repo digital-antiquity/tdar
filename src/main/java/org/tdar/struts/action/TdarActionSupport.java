@@ -746,7 +746,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
             name = pc.getAuthenticatedUser().getUsername();
         }
-        getLogger().info(String.format("%s is %s %s (%s): %s", name, type.name(), persistableClass.getSimpleName(), id, status));
+        getLogger().info(String.format("%s is %s %s (%s): %s", name, type.getLabel(), persistableClass.getSimpleName(), id, status));
         checkValidRequest(pc);
     }
 

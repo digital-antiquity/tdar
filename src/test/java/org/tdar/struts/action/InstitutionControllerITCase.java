@@ -28,15 +28,23 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testInstitutionAuthorizationFailure() throws TdarActionException {
+    public void testInstitutionAuthorization() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Institution test = new Institution(TESTING_AUTH_INSTIUTION);
         // test no authorization
         genericService.saveOrUpdate(test);
+        controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
         controller.setId(test.getId());
-        controller.prepare();
-        assertFalse(controller.isEditable());
-
-        setup();
+        boolean seenException = false;
+        try {
+            controller.prepare();
+            assertFalse(controller.isEditable());
+        } catch (Exception e) {
+            seenException = true;
+        }
+        assertTrue(seenException);
+        seenException = false;
+        controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
 
         // unauthorized authorization
         InstitutionManagementAuthorization ima = new InstitutionManagementAuthorization(test, getBasicUser());
@@ -44,19 +52,32 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         ima.setReason("because");
         genericService.saveOrUpdate(ima);
         controller.setId(test.getId());
-        controller.prepare();
-        assertFalse(controller.isEditable());
-        setup();
+        try {
+            controller.prepare();
+            assertFalse(controller.isEditable());
+        } catch (Exception e) {
+            seenException = true;
+        }
+        assertTrue(seenException);
+        seenException = false;
 
         // authorized
+        controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
         ima.setAuthorized(true);
         genericService.saveOrUpdate(ima);
         controller.setId(test.getId());
         controller.prepare();
         assertTrue(controller.isEditable());
 
+        
+        // authorized
+        controller = generateNewInitializedController(InstitutionController.class, getAdminUser());
+        controller.setId(test.getId());
+        controller.prepare();
+        assertTrue(controller.isEditable());
+
     }
-    
+
     @Test
     @Rollback
     public void testSavingInstitution() throws Exception {
@@ -91,7 +112,7 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.prepare();
         Assert.assertEquals(newName, controller.getInstitution().getName());
     }
-    
+
     @Test
     @Rollback
     public void testSavingInstitutionWithImage() throws Exception {

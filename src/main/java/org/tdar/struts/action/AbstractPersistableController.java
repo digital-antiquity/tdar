@@ -339,9 +339,25 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         EDIT,
         CREATE,
         DELETE,
-        MODIFY_EXISTING,
         SAVE,
         NONE, VIEW;
+
+        public String getLabel() {
+            switch (this) {
+                case CREATE:
+                    return "CREATING";
+                case DELETE:
+                    return "DELETING";
+                case EDIT:
+                    return "EDITING";
+                case SAVE:
+                    return "SAVING";
+                case VIEW:
+                    return "VIEWING";
+                default:
+                    return "";
+            }
+        }
     }
 
     @Override
@@ -372,7 +388,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Override
     public void prepare() throws TdarActionException {
         RequestType type = RequestType.EDIT;
-        if (getPersistable() == null && (getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl()))) {
+        if (getId() == null && (getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl()))) {
             getLogger().debug("setting persistable");
             setPersistable(createPersistable());
             type = RequestType.CREATE;
