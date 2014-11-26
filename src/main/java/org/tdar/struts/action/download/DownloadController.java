@@ -66,6 +66,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
             @Action(value = "img/md/{informationResourceFileVersionId}"),
             @Action(value = "img/lg/{informationResourceFileVersionId}"),
             @Action(value = "{informationResourceFileVersionId}/get"),
+            @Action(value = "{informationResourceFileVersionId}"),
     })
     public String execute() {
         getSessionData().clearPassthroughParameters();
