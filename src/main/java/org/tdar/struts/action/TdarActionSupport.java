@@ -47,7 +47,6 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts.action.search.SlugViewAction;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;

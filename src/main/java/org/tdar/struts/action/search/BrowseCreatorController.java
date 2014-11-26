@@ -49,6 +49,7 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
