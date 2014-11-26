@@ -18,8 +18,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.EntityService;
-//import org.tdar.utils.TestConfiguration;
 
+//import org.tdar.utils.TestConfiguration;
 
 /*
  * This provider is designed specifically for testing where no valid connection to an external service
@@ -60,7 +60,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     public boolean isConfigured() {
         return true;
     }
-    
+
     @Override
     public boolean isEnabled() {
         return true;
@@ -109,7 +109,9 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public boolean deleteUser(TdarUser person) {
         try {
-            users.remove(person.getEmail());
+            if (users.containsKey(person.getUsername())) {
+                users.remove(person.getUsername());
+            }
             return true;
         } catch (Exception e) {
             logger.debug("{}", e);
