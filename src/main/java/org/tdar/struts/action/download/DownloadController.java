@@ -37,7 +37,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
     private boolean forceAttachment = false;
 
-    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) })
+    @Action(value = "{informationResourceFileVersionId}/confirm", results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) })
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 

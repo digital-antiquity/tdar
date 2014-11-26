@@ -161,7 +161,7 @@ public class UrlService {
         if (format.equalsIgnoreCase("oai_dc") || format.equalsIgnoreCase("dc")) {
             type = "dc";
         } else if (format.equalsIgnoreCase("mods")) {
-            type = "/mods";
+            type = "mods";
         } else {
             return null;
         }

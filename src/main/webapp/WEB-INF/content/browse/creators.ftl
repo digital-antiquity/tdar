@@ -82,10 +82,11 @@
         </#if>
 
     <h1>
-<img class="pull-right" itemprop="image"  src="/files/creator/sm/${creator.id}/logo"/> 
     <#if logoAvailable>
-        <#if creator.properName??>${creator.properName}</#if></h1>
+		<img class="pull-right" itemprop="image"  src="/files/creator/sm/${creator.id}/logo"
+		alt="logo" title="logo" /> 
     </#if>
+        <#if creator.properName??>${creator.properName}</#if></h1>
 
         <#assign scope="http://schema.org/Person"/>
         <#if creator.creatorType.institution >
