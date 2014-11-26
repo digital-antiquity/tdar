@@ -28,33 +28,23 @@ navigation freemarker macros
         <div class="span12 resource-nav  screen " id="toolbars" parse="true">
             <ul>
                 <#if persistable??>
-        <@makeLink namespace "view" "view" "view" current />
-        <#if editable>
-                    <@makeLink namespace "edit" "edit" "edit" current />
-                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-                    <@makeLink "resource" "delete?id=${resource.id}" "delete" "delete" current true _deleteable />
-        </#if>
-        <#if persistable.resourceType??>
-                    <@list.bookmark resource true true />
-                    <#if resource.resourceType == "PROJECT">
-                        <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
-                        <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
-                    </#if>
-            <@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
-                </#if>
-        <#nested>
-       <#elseif creator??>
-                    <@makeLink namespace "view" "view" "view" current />
-                    <#if ableToEditAnything>
-                        <@makeLink namespace "edit" "edit" "edit" current />
-                    </#if>
-                <#else>
-                    <@makeLink "workspace" "list" "bookmarked resources" "list" current false />
-                    <@makeLink "workspace" "select-tables" "integrate data tables in your workspace" "select-tables" current false />
-                </#if>
-            </ul>
-        </div>
-        </#if>
+			        <@makeLink namespace "view" "view" "view" current />
+			        <#if editable>
+			            <@makeLink namespace "edit" "edit" "edit" current />
+			            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+			            <@makeLink "resource" "delete?id=${resource.id}" "delete" "delete" current true _deleteable />
+			        </#if>
+			        <@list.bookmark resource true true />
+			        <#if resource.resourceType.project >
+			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
+			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
+			        </#if>
+					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+			    </#if>
+			    <#nested>
+			</ul>
+		</div>
+		</#if>
     </#macro>
 
 
@@ -105,7 +95,7 @@ navigation freemarker macros
  -->
     <#macro creatorToolbar current>
 
-        <#if editor || id == ((authenticatedUser.id)!-1)>
+        <#if editable >
             <#if (persistable.registered)!false>
                 <#local creatorType = "user" />
             <#elseif creator??>
@@ -119,7 +109,7 @@ navigation freemarker macros
                 <ul>
                     <@makeLink "browse" "creators" "view" "view" current true />
 
-    <#if "edit" != current>
+			    <#if "edit" != current>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
                 <#else>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />

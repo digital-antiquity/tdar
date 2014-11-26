@@ -1,5 +1,8 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -11,6 +14,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.InstitutionManagementAuthorization;
 import org.tdar.struts.action.entity.InstitutionController;
 
 public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
@@ -22,6 +26,37 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller = generateNewInitializedController(InstitutionController.class);
     }
 
+    @Test
+    @Rollback
+    public void testInstitutionAuthorizationFailure() throws TdarActionException {
+        Institution test = new Institution(TESTING_AUTH_INSTIUTION);
+        // test no authorization
+        genericService.saveOrUpdate(test);
+        controller.setId(test.getId());
+        controller.prepare();
+        assertFalse(controller.isEditable());
+
+        setup();
+
+        // unauthorized authorization
+        InstitutionManagementAuthorization ima = new InstitutionManagementAuthorization(test, getBasicUser());
+        ima.setAuthorized(false);
+        ima.setReason("because");
+        genericService.saveOrUpdate(ima);
+        controller.setId(test.getId());
+        controller.prepare();
+        assertFalse(controller.isEditable());
+        setup();
+
+        // authorized
+        ima.setAuthorized(true);
+        genericService.saveOrUpdate(ima);
+        controller.setId(test.getId());
+        controller.prepare();
+        assertTrue(controller.isEditable());
+
+    }
+    
     @Test
     @Rollback
     public void testSavingInstitution() throws Exception {
@@ -69,7 +104,6 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.save();
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     // non-curators should not be able to edit an institution

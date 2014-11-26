@@ -28,6 +28,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -39,6 +40,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
+import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -65,6 +67,9 @@ public class AuthorizationService implements Accessible {
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
+
+    @Autowired
+    private InstitutionDao institutionDao;
 
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
@@ -303,9 +308,28 @@ public class AuthorizationService implements Accessible {
             return canEditResource(authenticatedUser, (Resource) item, GeneralPermissions.MODIFY_METADATA);
         } else if (item instanceof ResourceCollection) {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
+        } else if (item instanceof Institution) {
+          return canEditInstitution(authenticatedUser, (Institution)item);  
         } else {
             return can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser);
         }
+    }
+
+    private boolean canEditInstitution(TdarUser authenticatedUser, Institution item) {
+        // is the request valid
+        if (authenticatedUser == null) {
+            return false;
+        }
+
+        // does the user have special privileges to edit resources in any status?
+        if (can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, authenticatedUser)) {
+            logger.trace("checking if person can edit any resource");
+            return true;
+        }
+
+        // finally, check if user has been granted permission
+        // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
+        return institutionDao.canEditInstitution(authenticatedUser, item);
     }
 
     /**

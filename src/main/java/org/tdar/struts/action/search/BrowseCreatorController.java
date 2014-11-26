@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
@@ -42,6 +43,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
@@ -78,8 +80,7 @@ import freemarker.ext.dom.NodeModel;
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
-public class 
-BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
+public class BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
 
     /**
      * 
@@ -116,6 +117,9 @@ BrowseCreatorController extends AbstractLookupController implements Preparable, 
 
     @Autowired
     private transient AccountService accountService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
@@ -169,6 +173,16 @@ BrowseCreatorController extends AbstractLookupController implements Preparable, 
             return ERROR;
         }
         return ERROR;
+    }
+
+    public boolean isEditable() {
+        if (isEditorOrSelf()) {
+            return true;
+        }
+        if (creator.getCreatorType().isInstitution()) {
+            return authorizationService.canEdit(getAuthenticatedUser(), (Institution) creator);
+        }
+        return false;
     }
 
     @Override
