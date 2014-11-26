@@ -13,6 +13,8 @@ public class HomepageWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testSuccessfulHomepageLoad() throws Exception {
+        gotoPage("/");
+        logger.debug(getPageText());
         assertTextPresentInPage(TdarConfiguration.getInstance().getSiteName());
     }
 }
