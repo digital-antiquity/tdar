@@ -81,12 +81,12 @@ public class IntegrationContext implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder();
+        sb.append("t_").append(System.currentTimeMillis());
         if (CollectionUtils.isNotEmpty(dataTables)) {
             for (DataTable dataTable : dataTables) {
-                sb.append(dataTable.getInternalName()).append("_");
+                sb.append("_").append(dataTable.getInternalName());
             }
         }
-        sb.append("t").append(System.currentTimeMillis());
         tempTableName = sb.toString();
         return tempTableName;
     }

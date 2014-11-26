@@ -64,7 +64,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         int countVal = -1;
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
             // note SQL iterator is 1 based; java iterator is 0 based
-            DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
+//            DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
             String value = "";
 //            if (column != null) { // RAW VALUE
                 value = (String) row[resultSetPosition];
@@ -83,8 +83,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             if (integrationColumn.isIntegrationColumn()) { // MAPPED VALUE if not display column
                 resultSetPosition = resultSetPosition+1;
                 String mappedVal = (String) row[resultSetPosition];
-                // FIXME: get the appropriately aggregated OntologyNode for the given value, add a method in DataIntegrationService
-                // OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, column);
+
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
                 OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
                 if (mappedOntologyNode != null && StringUtils.isNotBlank(mappedOntologyNode.getDisplayName())) {
