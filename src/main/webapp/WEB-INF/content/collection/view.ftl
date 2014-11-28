@@ -43,8 +43,6 @@
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
         </@nav.collectionToolbar>
-    <#else>
-        <@nav.toolbar "collection" "view" />
     </#if>
 
     <@view.pageStatusCallout />
