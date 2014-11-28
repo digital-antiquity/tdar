@@ -43,14 +43,12 @@
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
         </@nav.collectionToolbar>
-    <#else>
-        <@nav.toolbar "collection" "view" />
     </#if>
 
     <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 
-    <#if (!resourceCollection.hidden || viewable)>
+    <#if visible>
     <#if editor>
     <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="stats?id=${id?c}"/>">ADMIN</a></div>
     </#if>
@@ -146,7 +144,7 @@
                 <@view.kvp key="Collection Type" val=resourceCollection.type.label />
             </div>
             <div class="span4">
-                <@view.kvp key="Visible" val=resourceCollection.hidden?string />
+                <@view.kvp key="Hidden" val=resourceCollection.hidden?string />
             </div>
         </div>
         <div class="row">

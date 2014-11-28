@@ -24,6 +24,7 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
@@ -66,7 +67,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
     @MappedSuperclass
     @XmlType(name = "kwdbase")
-    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T> {
+    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T>, Slugable {
 
         private static final long serialVersionUID = -7516574981065004043L;
 
@@ -99,6 +100,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
         private Long occurrence = 0L;
 
+        @Override
         public String getSlug() {
             return UrlUtils.slugify(getLabel());
         }

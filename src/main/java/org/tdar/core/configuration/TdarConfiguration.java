@@ -7,13 +7,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.resources.image.ImageUtilities;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.LicenseType;
@@ -134,23 +132,6 @@ public class TdarConfiguration {
         }
 
         initPersonalFilestorePath();
-    }
-
-    private void initializeTimeZoneInfo() {
-        // Note: tdar timestamps do not currently encode timezone information. However, we set the timezone here because there are other systems (e.g.
-        // DateBridge) that convert datetime values to UTC. Therefore. We set the default timezone to UTC to prevent these systems from modifying the
-        // timestamp.
-
-        // use JodaTime to load TimeZone
-        DateTimeZone timeZone = getTimeZone();
-        DateTimeZone.setDefault(timeZone);
-        // use JodaTime TiemZone to initialize Java TimeZone
-        TimeZone.setDefault(timeZone.toTimeZone());
-
-    }
-
-    private DateTimeZone getTimeZone() {
-        return DateTimeZone.forID(assistant.getStringProperty("time.zone", DateTimeZone.UTC.getID()));
     }
 
     public String getConfigurationFile() {

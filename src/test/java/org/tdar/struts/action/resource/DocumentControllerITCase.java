@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -46,15 +47,13 @@ import org.tdar.struts.action.UploadController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
-import com.sun.tools.classfile.Annotation.element_value;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
-    public DocumentController initControllerFields() {
+    public DocumentController initControllerFields() throws TdarActionException {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
@@ -201,8 +200,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // try to edit as basic user -- should fail
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(id);
-        dc.prepare();
         try {
+            dc.prepare();
             assertNotEquals(Action.SUCCESS, dc.edit());
         } catch (TdarActionException e) {
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
@@ -282,8 +281,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    public void testOpenURLGeneration() {
-        DocumentController controller = generateNewInitializedController(DocumentController.class);
+    public void testOpenURLGeneration() throws TdarActionException {
+        DocumentViewAction controller = generateNewInitializedController(DocumentViewAction.class);
         controller.setId(4231L);
         controller.prepare();
         String openUrl = controller.getOpenUrl();
@@ -295,7 +294,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     public void testScholarSource() throws Exception {
-        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        DocumentViewAction controller = generateNewInitializedController(DocumentViewAction.class);
         controller.setId(4231L);
         controller.prepare();
         String scholar = controller.getGoogleScholarTags();

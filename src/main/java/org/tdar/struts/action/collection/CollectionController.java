@@ -1,11 +1,11 @@
 package org.tdar.struts.action.collection;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -80,7 +79,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 100;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private int totalRecords;
     private List<Resource> results;
     private SortOption secondarySortField;
@@ -93,11 +92,16 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<Long> toRemove = new ArrayList<>();
     private List<Long> toAdd = new ArrayList<>();
     private List<Project> allSubmittedProjects;
+    private File file;
+    private String fileContentType;
+    private String fileFileName;
 
+    
+    
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         if (isNullOrNew()) {
-            return false;
+            return true;
         }
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
@@ -113,12 +117,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         return publicResourceCollections;
     }
 
-
     @Override
     protected String save(ResourceCollection persistable) {
-        if (persistable.getType() == null) {
-            persistable.setType(CollectionType.SHARED);
-        }
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         ResourceCollection parent = resourceCollectionService.find(parentId);
@@ -132,14 +132,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
-        if (!Objects.equals(parentId, persistable.getParentId())) {
-            resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
-        }
-
-        resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
-
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
-                getAuthenticatedUser());
+        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
+                resourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -229,8 +223,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         String result = super.edit();
         return result;
     }
-
-
 
     public List<Long> getSelectedResourceIds() {
         return selectedResourceIds;
@@ -496,4 +488,32 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.toRemove = toRemove;
     }
 
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    @Override
+    public int getDefaultRecordsPerPage() {
+        return 100;
+    }
+
+    public String getFileFileName() {
+        return fileFileName;
+    }
+
+    public void setFileFileName(String fileFileName) {
+        this.fileFileName = fileFileName;
+    }
+
+    public String getFileContentType() {
+        return fileContentType;
+    }
+
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
+    }
 }

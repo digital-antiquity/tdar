@@ -46,11 +46,10 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -89,7 +88,8 @@ public class XmlService {
     private static final String XSD = ".xsd";
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
-    private static final Class<Class>[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class};
+    @SuppressWarnings("unchecked")
+    private static final Class<Class<?>>[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class};
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -345,7 +345,7 @@ public class XmlService {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
-        FileStoreFile fsf = new FileStoreFile(Type.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
+        FileStoreFile fsf = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
         TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
     }
@@ -401,7 +401,7 @@ public class XmlService {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         convertToXML(log, writer);
         IOUtils.closeQuietly(writer);
-        FileStoreFile fsf = new FileStoreFile(Type.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
+        FileStoreFile fsf = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
         TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
     }

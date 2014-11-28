@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,9 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("default")
-@Namespace("/filestore")
+@Namespaces(value = {
+        @Namespace("/filestore"),
+        @Namespace("/files") })
 @Component
 @Scope("prototype")
 public class UnauthenticatedDownloadController extends AbstractDownloadController implements Preparable {
@@ -53,22 +56,13 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         }
     }
 
-    /*
-     * I believe we'll need something like this for our contract with SRI
-     * 
-     * public String downloadCustom() {
-     * HttpServletRequest request = ServletActionContext.getRequest();
-     * String referrer = request.getHeader("referer");
-     * if (downloadService.canDownloadUnauthenticated(referrer, getInformationResourceFileVersion())) {
-     * downloadService.handleActualDownload(null, this, null, getInformationResourceFileVersion());
-     * }
-     * return INPUT;
-     * }
-     */
-
-    @Actions({
-            @Action(value = THUMBNAIL),
-            @Action(value = SM)
+    @Actions(value = {
+            @Action(value = GET),
+            @Action(value = "thumbnail/{informationResourceFileVersionId}"),
+            @Action(value = "sm/{informationResourceFileVersionId}"),
+            @Action(value = "img/sm/{informationResourceFileVersionId}"),
+            @Action(value = "{informationResourceFileVersionId}/thumbnail"),
+            @Action(value = "{informationResourceFileVersionId}/sm")
     })
     public String thumbnail() {
         getSessionData().clearPassthroughParameters();
@@ -89,7 +83,7 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         }
 
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this));
+                isCoverPageIncluded(), this, null));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }

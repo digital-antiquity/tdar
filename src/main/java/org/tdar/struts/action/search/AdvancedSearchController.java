@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -209,6 +208,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void searchCollectionsToo() {
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         buildResourceCollectionQuery(queryBuilder);
@@ -383,9 +383,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             }
             setMode("rss");
             search();
-            setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
+            setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml11(getSearchPhrase()));
             setSearchDescription(getText("advancedSearchController.rss_subtitle", TdarConfiguration.getInstance().getSiteAcronym(),
-                    StringEscapeUtils.escapeXml(getSearchPhrase())));
+                    StringEscapeUtils.escapeXml11(getSearchPhrase())));
             // if (getAuthenticatedUser() == null) {
             // geoMode = GeoRssMode.NONE;
             // }
@@ -707,7 +707,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     List<MaterialKeyword> allMaterialKeywords;
 
     private Keyword exploreKeyword;
-    private List<String> projections = ListUtils.EMPTY_LIST;
 
     public List<MaterialKeyword> getAllMaterialKeywords() {
 
@@ -729,7 +728,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String getRssUrl() {
         StringBuilder urlBuilder = new StringBuilder();
         if (getServletRequest() != null) {
-            urlBuilder.append(urlService.getBaseUrl())
+            urlBuilder.append(UrlService.getBaseUrl())
                     .append(getServletRequest().getContextPath())
                     .append(SEARCH_RSS).append("?")
                     .append(getServletRequest().getQueryString());
@@ -1041,7 +1040,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                         Arrays.asList(getText("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(),
                                 getSearchPhrase())));
                 rowNum++;
-                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), urlService.getBaseUrl()
+                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), UrlService.getBaseUrl()
                         + getServletRequest().getRequestURI()
                                 .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
                 excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);

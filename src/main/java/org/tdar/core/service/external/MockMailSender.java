@@ -20,7 +20,7 @@ public class MockMailSender implements MailSender {
     }
 
     @Override
-    public void send(SimpleMailMessage[] simpleMessages) throws MailException {
+    public void send(SimpleMailMessage... simpleMessages) throws MailException {
         messages.addAll(Arrays.asList(simpleMessages));
     }
 

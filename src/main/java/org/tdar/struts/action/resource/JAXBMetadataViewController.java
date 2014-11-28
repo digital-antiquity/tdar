@@ -10,10 +10,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.AbstractPersistableViewableAction;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.ViewableAction;
@@ -30,11 +33,11 @@ import edu.asu.lib.mods.ModsDocument;
 @Scope("prototype")
 @ParentPackage("default")
 @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "status", "400" })
-public class JAXBMetadataViewController extends AbstractPersistableViewableAction<Resource> implements Preparable, ViewableAction<Resource> {
+public class JAXBMetadataViewController extends AuthenticationAware.Base implements Preparable, ViewableAction<Resource>, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = -7297306518597493712L;
-    public static final String DC = "dc";
-    public static final String MODS = "mods";
+    public static final String DC = "dc/{id}";
+    public static final String MODS = "mods/{id}";
     private ModsDocument modsDocument;
     private DublinCoreDocument dcDocument;
 
@@ -90,8 +93,8 @@ public class JAXBMetadataViewController extends AbstractPersistableViewableActio
     }
 
     @Override
-    public void prepare() {
-        resource = genericService.find(Resource.class, id);
+    public void prepare() throws TdarActionException {
+        prepareAndLoad(this, RequestType.VIEW);
         if (Persistable.Base.isNullOrTransient(resource)) {
             addActionError(getText("jaxbMetadataViewController.resource_does_not_exist"));
         }
@@ -105,8 +108,12 @@ public class JAXBMetadataViewController extends AbstractPersistableViewableActio
         this.resource = resource;
     }
 
+    public void setPersistable(Resource resource) {
+        this.resource = resource;
+    }
+
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         return authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
     }
 
@@ -121,8 +128,8 @@ public class JAXBMetadataViewController extends AbstractPersistableViewableActio
     }
 
     @Override
-    public String loadViewMetadata() throws TdarActionException {
-        return SUCCESS;
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.VIEW_ANYTHING;
     }
 
 }

@@ -1,5 +1,7 @@
 package org.tdar.core.service.external;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,7 +11,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +26,9 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -33,8 +40,10 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
+import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 
@@ -58,6 +67,12 @@ public class AuthorizationService implements Accessible {
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
+
+    @Autowired
+    private InstitutionDao institutionDao;
+
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Override
     public List<Resource> findEditableResources(Person person, boolean isAdmin, List<ResourceType> resourceTypes) {
@@ -293,9 +308,28 @@ public class AuthorizationService implements Accessible {
             return canEditResource(authenticatedUser, (Resource) item, GeneralPermissions.MODIFY_METADATA);
         } else if (item instanceof ResourceCollection) {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
+        } else if (item instanceof Institution) {
+          return canEditInstitution(authenticatedUser, (Institution)item);  
         } else {
             return can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser);
         }
+    }
+
+    private boolean canEditInstitution(TdarUser authenticatedUser, Institution item) {
+        // is the request valid
+        if (authenticatedUser == null) {
+            return false;
+        }
+
+        // does the user have special privileges to edit resources in any status?
+        if (can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, authenticatedUser)) {
+            logger.trace("checking if person can edit any resource");
+            return true;
+        }
+
+        // finally, check if user has been granted permission
+        // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
+        return institutionDao.canEditInstitution(authenticatedUser, item);
     }
 
     /**
@@ -420,7 +454,7 @@ public class AuthorizationService implements Accessible {
         if (collection == null) {
             return false;
         }
-        
+
         if (collection.isShared() && !collection.isHidden()) {
             return true;
         }
@@ -464,7 +498,7 @@ public class AuthorizationService implements Accessible {
             }
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
-                if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isInternal()) {
+                if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isHidden()) {
                     viewable = true;
                 }
             }
@@ -540,6 +574,23 @@ public class AuthorizationService implements Accessible {
         }
         for (InformationResourceFileVersion vers : irFile.getLatestVersions()) {
             vers.setViewable(visible);
+        }
+    }
+
+    @Transactional(readOnly=true)
+    public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
+            HttpServletRequest request) throws MalformedURLException {
+        String referrer = request.getHeader("referer");
+        if (StringUtils.isBlank(referrer)) {
+            throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
+        }
+        URL url = new URL(referrer);
+        referrer = url.getHost();
+        List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
+        if (CollectionUtils.isNotEmpty(authorizations)) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

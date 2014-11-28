@@ -23,8 +23,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -34,7 +37,6 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Language;
@@ -78,6 +80,27 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     int defaultMaxResults = config.getMaxAPIFindAll();
 
     @Test
+    public void testSerialization() throws Exception {
+        FileProxy proxy = new FileProxy();
+        String convertToXML = xmlService.convertToXML(proxy);
+        logger.debug(convertToXML);
+        ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
+        String convertToXML4 = xmlService.convertToXML(collection);
+        logger.debug(convertToXML4);
+        Image img = new Image();
+        img.setDescription("absasda sd");
+        img.setTitle("this is my title");
+        img.getFileProxies().add(new FileProxy());
+        String convertToXML2 = xmlService.convertToXML(img);
+        logger.debug(convertToXML2);
+        Project proj = new Project();
+        proj.setDescription("absasda sd");
+        proj.setTitle("this is my title");
+        String convertToXML3 = xmlService.convertToXML(proj);
+        logger.debug(convertToXML3);
+    }
+
+    @Test
     public void testAPIController() throws Exception {
         Document fake = resourceService.find(TEST_ID);
         // setup a fake record, with some new fields off the session
@@ -119,7 +142,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         old = null;
         fake = null;
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DOCUMENT)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_DOCUMENT_NAME));
@@ -166,7 +188,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String docXml = xmlService.convertToXML(doc);
         logger.info(docXml);
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
@@ -199,7 +220,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
     public void testNewConfidentialRecord() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
         Project project = genericService.findAll(Project.class, 1).get(0);
         Account account = setupAccountForPerson(getUser());
@@ -209,8 +229,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
         controller.setAccountId(account.getId());
         controller.setProjectId(project.getId());
-        controller.setRestrictedFiles(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
-        controller.setFileAccessRestriction(FileAccessRestriction.CONFIDENTIAL);
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
         assertEquals(Action.SUCCESS, uploadStatus);
@@ -222,7 +240,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     public void testMimbres() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/mimbres.xml"));
         controller.setRecord(text);
         String uploadStatus = controller.upload();
@@ -234,7 +251,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testDataset() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/dataset.xml"));
         controller.setRecord(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Workbook1.csv")));
@@ -250,7 +266,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testDatasetWithMappings() throws Exception {
 
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/datasetmapping.xml"));
         controller.setRecord(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Workbook1.csv")));
@@ -264,7 +279,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testTrivialRecord() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         SensoryData data = new SensoryData();
         data.setTitle("Test");
         data.setDescription(" a description");
@@ -286,7 +300,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testReplaceRecord() throws Exception {
         Document old = generateDocumentWithFileAndUser();
-        TdarUser user = (TdarUser)old.getSubmitter();
+        TdarUser user = (TdarUser) old.getSubmitter();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
         String originalXml = xmlService.convertToXML(old);
@@ -301,7 +315,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         logger.debug("ORIGINAL: {}", originalXml);
         logger.debug("INCOMING: {}", docXml);
 
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
 
@@ -328,7 +341,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testInvalidFileType() throws Exception {
         setIgnoreActionErrors(true);
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         Dataset doc = findAResource(Dataset.class);
         removeInvalidFields(doc);
 
@@ -350,7 +362,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String docXml = xmlService.convertToXML(doc);
 
         APIController controller = generateNewController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         init(controller, getBasicUser());
         controller.setRecord(docXml);
 
@@ -364,7 +375,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback(true)
     public void testInvalidInvestigationType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         Resource doc = findAResource(Document.class);
         @SuppressWarnings("null")
         Long docid = doc.getId();
@@ -403,7 +413,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String docXml = xmlService.convertToXML(doc);
         doc = null;
         docXml = StringUtils.replace(docXml, Language.ENGLISH.name(), "FNGLISH");
-        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         assertEquals(Action.ERROR, uploadStatus);

@@ -11,7 +11,6 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.search.query.QueryFieldNames;
@@ -47,11 +46,7 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
         QueryPartGroup notGroup = new QueryPartGroup();
         notGroup.setOperator(Operator.AND);
 
-        Set<ResourceCreatorRole> roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage();
-        if (creator instanceof Person) {
-            roles.remove(ResourceCreatorRole.RESOURCE_PROVIDER);
-            roles.remove(ResourceCreatorRole.PUBLISHER);
-        }
+        Set<ResourceCreatorRole> roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creator.getCreatorType());
 
         FieldQueryPart<ResourceCreatorRole> notRoles = new FieldQueryPart<ResourceCreatorRole>("activeResourceCreators.role", Operator.OR, roles);
         notRoles.setInverse(true);

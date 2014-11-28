@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -43,7 +44,6 @@ import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.Pair;
@@ -226,11 +226,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
             phase = reciever.getStatus();
             percentDone = reciever.getPercentComplete();
             getLogger().debug("{} {}%", phase, percentDone);
-            boolean success = true;
             if (CollectionUtils.isNotEmpty(reciever.getAsyncErrors())) {
                 getLogger().warn("bulkUploadErrors: {}", reciever.getAsyncErrors());
                 setAsyncErrors(StringUtils.join(reciever.getHtmlAsyncErrors(), ""));
-                success = false;
             }
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();

@@ -17,6 +17,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
@@ -149,7 +150,7 @@ public class EmailService {
     }
 
     @Transactional(readOnly = false)
-    public Email constructEmail(Person from, Person to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type) {
+    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type) {
         Email email = new Email();
         genericDao.markWritable(email);
         email.setFrom(CONFIG.getDefaultFromEmail());

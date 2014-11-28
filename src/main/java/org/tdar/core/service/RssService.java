@@ -142,7 +142,6 @@ public class RssService implements Serializable {
      * @throws FeedException
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
     @Cacheable(value = "rssFeed")
     public List<SyndEntry> parseFeed(URL url) throws FeedException, IOException {
         List<SyndEntry> result = new ArrayList<>();
@@ -173,7 +172,6 @@ public class RssService implements Serializable {
      * @throws IOException
      * @throws FeedException
      */
-    @SuppressWarnings({ "unused", "unchecked" })
     public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
             boolean includeEnclosures, TextProvider provider) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
@@ -199,17 +197,14 @@ public class RssService implements Serializable {
         feed.setDescription(handler.getSearchDescription());
         List<SyndEntry> entries = new ArrayList<SyndEntry>();
         for (I resource_ : handler.getResults()) {
-            SyndEntry entry = createRssEntryForResource(handler, mode, includeEnclosures, entries, resource_);
+            createRssEntryForResource(handler, mode, includeEnclosures, entries, resource_);
         }
         feed.setEntries(entries);
         feed.setPublishedDate(new Date());
-        if (feed != null) {
-            StringWriter writer = new StringWriter();
-            SyndFeedOutput output = new SyndFeedOutput();
-            output.output(feed, writer);
-            return new ByteArrayInputStream(stripInvalidXMLCharacters(writer.toString()).getBytes());
-        }
-        return null;
+        StringWriter writer = new StringWriter();
+        SyndFeedOutput output = new SyndFeedOutput();
+        output.output(feed, writer);
+        return new ByteArrayInputStream(stripInvalidXMLCharacters(writer.toString()).getBytes());
     }
 
     /**
@@ -308,7 +303,6 @@ public class RssService implements Serializable {
      * @param resource
      * @param hasRestrictions
      */
-    @SuppressWarnings("unchecked")
     private void addGeoRssLatLongBox(GeoRssMode mode, SyndEntry entry, Resource resource, boolean hasRestrictions) {
         LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
         /*
@@ -334,7 +328,6 @@ public class RssService implements Serializable {
      * @param entry
      * @param version
      */
-    @SuppressWarnings("unchecked")
     private void addEnclosure(TdarUser user, SyndEntry entry, InformationResourceFileVersion version) {
         if (version == null) {
             return;
@@ -344,7 +337,7 @@ public class RssService implements Serializable {
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());
             enclosure.setType(version.getMimeType());
-            enclosure.setUrl(urlService.downloadUrl(version));
+            enclosure.setUrl(UrlService.downloadUrl(version));
             entry.getEnclosures().add(enclosure);
         }
     }

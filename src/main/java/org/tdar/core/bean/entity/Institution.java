@@ -94,6 +94,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
+
     public Institution() {
     }
 

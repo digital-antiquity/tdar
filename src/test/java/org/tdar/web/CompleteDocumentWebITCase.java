@@ -41,7 +41,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
     public Map<String, String> docUnorderdValMap = new HashMap<String, String>();
     public List<String> alternateTextLookup = new ArrayList<String>();
     public List<String> alternateCodeLookup = new ArrayList<String>();
-    public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
+    public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+\\/(.+)$";
 
     public CompleteDocumentWebITCase() {
         docValMap = new HashMap<String, String>();

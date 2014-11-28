@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.download;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +23,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
-import org.tdar.struts.action.download.DownloadController;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 import com.opensymphony.xwork2.Action;
 
@@ -151,5 +151,4 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         assertEquals(Action.ERROR, controller.execute());
 
     }
-
 }

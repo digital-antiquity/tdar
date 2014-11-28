@@ -2,13 +2,12 @@ package org.tdar.struts.action;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -53,7 +52,7 @@ import com.opensymphony.xwork2.Preparable;
  * @author Adam Brin, <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
+public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<P> {
 
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String LIST = "list";
@@ -157,8 +156,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         boolean isNew = false;
         try {
             if (isPostRequest()) {
-                checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
-
                 if (isNullOrNew()) {
                     isNew = true;
                 }
@@ -297,7 +294,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
 
-        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
         return loadAddMetadata();
     }
@@ -330,9 +326,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     })
     @HttpsOnly
     public String edit() throws TdarActionException {
-        // ensureValidEditRequest();
-        // genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        if (Persistable.Base.isNullOrTransient(getPersistable() )) {
+            throw new TdarActionException(StatusCode.NOT_FOUND,getText("abstractPersistableController.not_found"));
+        }
         logAction("EDITING");
         return loadEditMetadata();
     }
@@ -340,67 +336,29 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public abstract String loadEditMetadata() throws TdarActionException;
 
     public enum RequestType {
-        EDIT(true),
-        CREATE(true),
-//        DELETE(true),
-        MODIFY_EXISTING(true),
-        SAVE(true),
-//        VIEW(false),
-        NONE(false);
-        private final boolean authenticationRequired;
+        EDIT,
+        CREATE,
+        DELETE,
+        SAVE,
+        NONE, VIEW;
 
-        private RequestType(boolean authenticationRequired) {
-            this.authenticationRequired = authenticationRequired;
-        }
-
-        public boolean isAuthenticationRequired() {
-            return authenticationRequired;
-        }
-
-    }
-
-    @Override
-    public boolean isCreatable() throws TdarActionException {
-        return true;
-    }
-
-    /**
-     * Generic method enabling override for whether a record is editable
-     * 
-     * @return boolean whether the user can EDIT this resource
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isEditable() throws TdarActionException {
-        return false;
-    }
-
-    /**
-     * Generic method enabling override for whether a record is deleteable
-     * 
-     * @return boolean whether the user can DELETE this resource (default calls isEditable)
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isDeleteable() throws TdarActionException {
-        return isEditable();
-    }
-
-    /**
-     * Generic method enabling override for whether a record is saveable
-     * 
-     * @return boolean whether the user can SAVE this resource (default is TRUE for NEW resources, calls isEditable for existing)
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isSaveable() throws TdarActionException {
-        if (isNullOrNew()) {
-            return true;
-        } else {
-            return isEditable();
+        public String getLabel() {
+            switch (this) {
+                case CREATE:
+                    return "CREATING";
+                case DELETE:
+                    return "DELETING";
+                case EDIT:
+                    return "EDITING";
+                case SAVE:
+                    return "SAVING";
+                case VIEW:
+                    return "VIEWING";
+                default:
+                    return "";
+            }
         }
     }
-
 
     @Override
     public P getPersistable() {
@@ -423,28 +381,19 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * This method is invoked when the paramsPrepareParamsInterceptor stack is
      * applied. It allows us to fetch an entity from the database based on the
      * incoming resourceId param, and then re-apply params on that resource.
+     * @throws TdarActionException 
      * 
      * @see <a href="http://blog.mattsch.com/2011/04/14/things-discovered-in-struts-2/">Things discovered in Struts 2</a>
      */
     @Override
-    public void prepare() {
-        P p = null;
-        if (isPersistableIdSet()) {
-            getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
-        }
-        if (Persistable.Base.isNullOrTransient(getId())) {
+    public void prepare() throws TdarActionException {
+        RequestType type = RequestType.EDIT;
+        if (getId() == null && (getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl()))) {
+            getLogger().debug("setting persistable");
             setPersistable(createPersistable());
-        } else {
-
-            p = loadFromId(getId());
-            // from a permissions standpoint... being really strict, we should mark this as read-only
-            // getGenericService().markReadOnly(p);
-            setPersistable(p);
+            type = RequestType.CREATE;
         }
-
-        if (!ADD.equals(getActionName())) {
-            getLogger().trace("id:{}, persistable:{}", getId(), p);
-        }
+        prepareAndLoad(this, type);
     }
 
     protected boolean isPersistableIdSet() {
@@ -639,6 +588,21 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setSaveSuccessSuffix(String saveSuccessSuffix) {
         this.saveSuccessSuffix = saveSuccessSuffix;
+    }
+    
+    // ideally factor out, but used by the view layer to determine whether to show the edit button or not
+    public boolean isEditable() {
+        return authorize();
+    }
+    
+    @Override
+    public boolean authorize() {
+        return true;
+    }
+
+    @Override
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.EDIT_ANYTHING;
     }
 
 }

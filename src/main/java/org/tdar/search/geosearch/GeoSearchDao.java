@@ -32,6 +32,8 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.data.SvgMapWrapper;
 import org.tdar.utils.MessageHelper;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This is a DAO to manage access to postGIS. It's attempted to manage this by hiding all of the PostGIS info at this layer
  * as opposed to the previous model that used a single combined, Dao and Service model
@@ -225,7 +227,7 @@ public class GeoSearchDao {
         return queryForList;
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings
+    @SuppressFBWarnings
     @Autowired(required = false)
     @Lazy(true)
     public void setDataSource(@Qualifier("tdarGeoDataSource") DataSource dataSource) {

@@ -485,7 +485,12 @@
                         + "(:hasDatasets=false or ont.id in "
                             + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:dataTableIds))) and"
                         + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
+                query = "from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
+                @org.hibernate.annotations.NamedQuery(
+                        name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
+                        query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true")})
 
-})
 package org.tdar.core.dao;
 

@@ -46,7 +46,7 @@ public class FacetGroup<C extends Enum> implements Serializable {
 
     public void add(String result, int count) {
         @SuppressWarnings("unchecked")
-        C f = (C) facetEnum.valueOf(facetClass, result);
+        C f = (C) Enum.valueOf(facetClass, result);
         FacetValue facet = new FacetValue();
         facet.setCount(count);
         facet.setKey(f.name());

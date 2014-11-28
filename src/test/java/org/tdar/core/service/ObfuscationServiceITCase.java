@@ -44,7 +44,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
     
     @Test
     public void testAOPInterceptor() throws TdarActionException {
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
         controller.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         controller.prepare();
         controller.getProject();
@@ -54,9 +54,6 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         rva.prepare();
         rva.view();
         rva.getProject();
-        controller.getId();
-        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
-        controller.getId();
     }
     
     @Test

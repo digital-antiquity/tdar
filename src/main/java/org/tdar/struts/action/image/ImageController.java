@@ -28,7 +28,7 @@ import org.tdar.struts.action.resource.AbstractInformationResourceController;
 @Namespace("/image")
 public class ImageController extends AbstractInformationResourceController<Image> {
 
-    private static final long serialVersionUID = 377533801938016848L;
+    private static final long serialVersionUID = 8690371228267286260L;
 
     @Override
     protected String save(Image image) throws TdarActionException {

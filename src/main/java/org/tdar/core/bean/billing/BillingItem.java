@@ -23,6 +23,7 @@ import org.tdar.core.exception.TdarValidationException;
 public class BillingItem extends Base implements Validatable {
 
     private static final long serialVersionUID = -2775737509085985555L;
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })

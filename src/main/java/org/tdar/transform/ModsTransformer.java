@@ -54,6 +54,7 @@ import gov.loc.mods.v3.NameTypeAttribute;
 public abstract class ModsTransformer<R extends Resource> implements
         Transformer<R, ModsDocument> {
 
+    @SuppressWarnings("unused")
     private Logger logger = Logger.getLogger(getClass());
 
     @Override

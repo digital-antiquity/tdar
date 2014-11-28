@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +33,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.TdarUser;
@@ -67,7 +69,6 @@ import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.Pair;
 
@@ -849,8 +850,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
         getLogger().info("coding(incoming):{} coding(existing):{} equals?:{}", incomingCodingSheet, existingCodingSheet,
-                ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
-        if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
+                Objects.equals(incomingCodingSheet, existingCodingSheet));
+        if (Objects.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
         }
         else if (incomingCodingSheet.isGenerated()) {

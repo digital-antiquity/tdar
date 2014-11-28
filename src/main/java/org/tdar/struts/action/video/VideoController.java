@@ -28,7 +28,7 @@ import org.tdar.struts.action.resource.AbstractInformationResourceController;
 @Namespace("/video")
 public class VideoController extends AbstractInformationResourceController<Video> {
 
-    private static final long serialVersionUID = 377533801938016848L;
+    private static final long serialVersionUID = -6872812317910152508L;
 
     @Override
     protected String save(Video video) throws TdarActionException {

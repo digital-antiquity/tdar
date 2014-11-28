@@ -16,8 +16,7 @@ import org.tdar.core.bean.resource.Resource;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.WeeklyPopularResourceCache")
 public class WeeklyPopularResourceCache extends Persistable.Base implements Comparable<WeeklyPopularResourceCache>, ResourceCache<Resource> {
 
-    private static final long serialVersionUID = 4401314235170180736L;
-
+    private static final long serialVersionUID = 589291882710378333L;
     @OneToOne
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Resource resource;

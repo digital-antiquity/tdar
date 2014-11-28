@@ -13,6 +13,7 @@ import org.tdar.search.query.QueryFieldNames;
 import com.opensymphony.xwork2.TextProvider;
 
 public class CollectionAccessQueryPart implements QueryPart<Person> {
+    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Person user;

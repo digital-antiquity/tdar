@@ -27,18 +27,9 @@
         <to>/services/</to>
     </rule>
 
-    <!-- <rule> <note>removing trailing bad request info from get request</note> 
-        <from>^/(document|dataset|project|image|coding-sheet|ontology|sensory-data)/(\d+)([^1234567890\?#/])(.*)</from> 
-        <to>/$1/$2</to> </rule> -->
-
     <rule>
         <from>^/register</from>
         <to>/account/new</to>
-    </rule>
-
-    <rule>
-        <from>^/(account)/add</from>
-        <to>/$1/new</to>
     </rule>
 
     <rule>
@@ -62,46 +53,6 @@
         <to type="redirect">/search/results?resourceTypes=DATASET&amp;startRecord=0
         </to>
     </rule>
-<!--
-    <rule>
-        <from>^/browse/culture-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=CULTURE_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-    <rule>
-        <from>^/browse/site-name/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=SITE_NAME_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/site-type/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=SITE_TYPE_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/investigation-type/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=INVESTIGATION_TYPE&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/material-type/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=MATERIAL_TYPE&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/geographic-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=GEOGRAPHIC_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/temporal-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=TEMPORAL_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/browse/other-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=OTHER_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
-    </rule>
--->
 
     <rule>
         <from>^/(coding-sheet)s?/?$</from>
@@ -161,15 +112,6 @@
     </rule>
 
     <rule>
-        <from>^/browse/creators/(\d+)/?$</from>
-        <to>/browse/creators?id=$1</to>
-    </rule>
-    <outbound-rule>
-        <from>^/browse/creators\?id=(\d+)$</from>
-        <to>/browse/creators/$1</to>
-    </outbound-rule>
-
-    <rule>
         <from>^/browse/creators/(\d+)/rdf</from>
         <to>/browse/creatorRdf?id=$1</to>
     </rule>
@@ -177,26 +119,6 @@
         <from>^/browse/creatorRdf\?id=(\d+)$</from>
         <to>/browse/creators/$1/rdf</to>
     </outbound-rule>
-
-    <rule>
-        <from>^/filestore/(\d+)/([\w\-]+)</from>
-        <to>/filestore/$2?informationResourceFileVersionId=$1</to>
-    </rule>
-
-    <rule>
-        <from>^/files/img/sm/(\d+)</from>
-        <to>/filestore/thumbnail?informationResourceFileVersionId=$1</to>
-    </rule>
-
-    <rule>
-        <from>^/files/img/(md|lg)/(\d+)</from>
-        <to>/filestore/$1?informationResourceFileVersionId=$2</to>
-    </rule>
-
-    <rule>
-        <from>^/filestore/(\d+)/?</from>
-        <to>/filestore/get?informationResourceFileVersionId=$1</to>
-    </rule>
 
     <rule>
         <from>^/services//(.*)</from>
@@ -238,21 +160,6 @@
     </rule>
 
     <rule>
-        <from>^/unapi/(.+)/(\d+)$</from>
-        <to>/unapi/$1?id=$21</to>
-    </rule>
-
-    <rule>
-        <from>^/project/(\d+)/json</from>
-        <to>/project/json?id=$1</to>
-    </rule>
-    <outbound-rule>
-        <from>^/project/json\?id=(\d+)$
-        </from>
-        <to>/project/$1/json</to>
-    </outbound-rule>
-
-    <rule>
         <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(edit|delete|mapping)\??(.*)$
         </from>
         <to>/$1/$3?id=$2</to>
@@ -269,43 +176,7 @@
         <to>/$1/$3/$2?$4</to>
     </outbound-rule>
 
-    <rule>
-        <from>^/ontology/([0-9]+)/([^\?]+)\??(.*)$</from>
-        <to>/ontology/node?id=$1&amp;iri=$2&amp;$3</to>
-    </rule>
-
-    <rule>
-        <from>^/cart/(\d+)/polling-check</from>
-        <to>/cart/polling-check?id=$1</to>
-    </rule>
-    <outbound-rule>
-        <from>^/cart/polling-check?id=(\d+)</from>
-        <to>/cart/$1/polling-check</to>
-    </outbound-rule>
-    
-    <!-- <rule> <from>^/(cart|billing)/([0-9]+)/(address|credit|simple|choose|polling|polling-check|review|finalreview)$ 
-        </from> <to>/$1/$3?id=$2</to> </rule> <outbound-rule> <from>^/(cart|billing)/(address|credit|choose|simple|polling|polling-check|review|finalreview)\?id=([0-9]+)$ 
-        </from> <to>/$1/$3/$2</to> </outbound-rule> -->
-    <!-- XXX: could use this instead to deal with relative links (maybe) -->
-    <!-- <outbound-rule> -->
-    <!-- <from>(view|edit|upload|delete|columns|citations)\?id=([0-9]+)$</from> -->
-    <!-- <to>$2/$1</to> -->
-    <!-- </outbound-rule> -->
-
-    <!-- all requests for a resource supplying just an id should go to it's 
-        view action -->
-    <rule>
-        <from>^/(project|dataset|ontology|image|audio|video|document|sensory-data|coding-sheet|archive|geospatial)/([0-9]+)$
-        </from>
-        <to>/$1/view?id=$2</to>
-    </rule>
-    <outbound-rule>
-        <from>^/(project|dataset|ontology|image|audio|video|document|sensory-data|coding-sheet|archive|geospatial)/view?id=(\d+)$
-        </from>
-        <to>/$1/$2</to>
-    </outbound-rule>
-
-    <rule>
+     <rule>
         <from>^/(dataset|sensory-data|geospatial)/([0-9]+)/columns$
         </from>
         <to>/dataset/columns?id=$2</to>
@@ -315,86 +186,6 @@
         <from>^/(sensory-data|geospatial)/view-row(.*)</from>
         <to>/dataset/view-row$1</to>
     </rule>
-
-    <rule>
-        <from>^/(billing|cart|collection)/([0-9]+)$
-        </from>
-        <to>/$1/view?id=$2</to>
-    </rule>
-    <outbound-rule>
-        <from>^/(billing|cart|collection)/view?id=([0-9]+)$</from>
-        <to>/$1/$2</to>
-    </outbound-rule>
-
-    <outbound-rule>
-        <from>^/(billing|cart|collection)/([0-9]+)/view$
-        </from>
-        <to>/$1/$2</to>
-    </outbound-rule>
-
-    <rule>
-        <from>^/(dashboard)/?$</from>
-        <to>/$1/$1</to>
-    </rule>
-    <outbound-rule>
-        <from>^/(dashboard)/dashboard/?$</from>
-        <to>/$1</to>
-    </outbound-rule>
-
-    <rule>
-        <from>^/(login)/?$</from>
-        <to>/$1/$1</to>
-    </rule>
-    <outbound-rule>
-        <from>^/(login)/login/?$</from>
-        <to>/$1</to>
-    </outbound-rule>
-
-    <rule>
-        <from>^/(logout)/?$</from>
-        <to>/login/$1</to>
-    </rule>
-    <outbound-rule>
-        <from>^/login/logout/?$</from>
-        <to>/logout</to>
-    </outbound-rule>
-
-    <outbound-rule>
-        <from>^/browse/creators\?id=(\d+)(.*)</from>
-        <to>/browse/creators/$1?$2</to>
-    </outbound-rule>
-
-
-    <!-- <rule> <from>^/document/add/([A-Z_]+)$</from> <to>/document/add?documentType=$1</to> 
-        </rule> <outbound-rule> <from>^/document/add\?documentType=([A-Z_]+)$</from> 
-        <to>/document/add/$1</to> </outbound-rule> -->
-    <!-- <rule> <from>^/document/(source|related)/([0-9]+)$</from> <to>/document/$1?linkedResourceId=$2</to> 
-        </rule> <outbound-rule> <from>^/document/(source|related)\?linkedResourceId=([0-9]+)$</from> 
-        <to>/document/$1/$2</to> </outbound-rule> -->
-    <rule>
-        <from>^/resource/add/([0-9]+)$</from>
-        <to>/resource/add?projectId=$1</to>
-    </rule>
-
-    <rule>
-        <from>^/resource/([0-9]+)$</from>
-        <to>/resource/view?resourceId=$1</to>
-    </rule>
-
-    <outbound-rule>
-        <from>^/resource/add\?projectId=([0-9]+)$</from>
-        <to>/resource/add/$1</to>
-    </outbound-rule>
-
-    <rule>
-        <from>^/filestore/([0-9]+)$</from>
-        <to>/filestore/$1/get</to>
-    </rule>
-
-    <outbound-rule>
-        <from>^/filestore/([0-9]+)/get$</from>
-        <to>/filestore/$1</to>
-    </outbound-rule>
 
     <rule>
         <from>^/search$</from>

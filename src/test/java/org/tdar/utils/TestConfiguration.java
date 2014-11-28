@@ -10,6 +10,7 @@ import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.ConfigurationAssistant;
+import org.tdar.core.dao.external.auth.MockAuthenticationProvider;
 
 /**
  * $Id$
@@ -100,11 +101,11 @@ public class TestConfiguration {
     }
 
     public String getAdminUsername() {
-        return assistant.getStringProperty("tdar.admin.username", "admin@tdar.org");
+        return assistant.getStringProperty("tdar.admin.username", MockAuthenticationProvider.ADMIN_USERNAME);
     }
 
     public String getAdminPassword() {
-        return assistant.getStringProperty("tdar.admin.password", "admin");
+        return assistant.getStringProperty("tdar.admin.password", MockAuthenticationProvider.ADMIN_PASSWORD);
     }
 
     public Long getAdminUserId() {
@@ -112,11 +113,11 @@ public class TestConfiguration {
     }
 
     public String getUsername() {
-        return assistant.getStringProperty("tdar.user.username", "test@tdar.org");
+        return assistant.getStringProperty("tdar.user.username", MockAuthenticationProvider.USERNAME);
     }
 
     public String getPassword() {
-        return assistant.getStringProperty("tdar.user.password", "test");
+        return assistant.getStringProperty("tdar.user.password", MockAuthenticationProvider.PASSWORD);
     }
 
     public Long getUserId() {
@@ -124,11 +125,11 @@ public class TestConfiguration {
     }
 
     public String getEditorUsername() {
-        return assistant.getStringProperty("tdar.editor.username", "editor@tdar.org");
+        return assistant.getStringProperty("tdar.editor.username", MockAuthenticationProvider.EDITOR_USERNAME);
     }
 
     public String getEditorPassword() {
-        return assistant.getStringProperty("tdar.editor.password", "editor");
+        return assistant.getStringProperty("tdar.editor.password", MockAuthenticationProvider.EDITOR_PASSWORD);
     }
 
     public Long getEditorUserId() {
@@ -136,11 +137,11 @@ public class TestConfiguration {
     }
 
     public String getBillingAdminUsername() {
-        return assistant.getStringProperty("tdar.billing.username", "billing@tdar.org");
+        return assistant.getStringProperty("tdar.billing.username", MockAuthenticationProvider.BILLING_USERNAME);
     }
 
     public String getBillingAdminPassword() {
-        return assistant.getStringProperty("tdar.billing.password", "billing");
+        return assistant.getStringProperty("tdar.billing.password", MockAuthenticationProvider.BILLING_PASSWORD);
     }
 
     public Long getBillingAdminUserId() {

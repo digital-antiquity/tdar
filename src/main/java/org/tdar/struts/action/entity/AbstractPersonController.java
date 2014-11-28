@@ -3,7 +3,6 @@ package org.tdar.struts.action.entity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
@@ -47,9 +46,9 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
                 addFieldError("email", getText("userAccountController.username_not_available"));
             }
         }
-
     }
 
+    
     @Override
     public void validate() {
         validateUniqueEmail();
@@ -66,35 +65,24 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     }
 
     protected String savePersonInfo(Person person) {
-        if (!StringUtils.equals(email, getPersistable().getEmail())) {
-            getPersistable().setEmail(email);
-        }
         if (hasErrors()) {
             getLogger().info("errors present, returning INPUT");
             getLogger().info("actionErrors:{}", getActionErrors());
             getLogger().info("fieldErrors:{}", getFieldErrors());
             return INPUT;
         }
-        getLogger().debug("saving person: {} with institution {} ", person, institutionName);
-        if (StringUtils.isBlank(institutionName)) {
-            person.setInstitution(null);
+        try {
+            entityService.savePersonforController(person, getEmail(), getInstitutionName(), generateFileProxy(getFileFileName(), getFile()));
+        } catch (Exception e) {
+            addActionError(e.getLocalizedMessage());
+            return INPUT;
         }
-        else {
-            // if the user changed the person's institution, find or create it
-            Institution persistentInstitution = entityService.findOrSaveCreator(new Institution(institutionName));
-            getLogger().debug("setting institution to persistent: " + persistentInstitution);
-            person.setInstitution(persistentInstitution);
-        }
-
-        getGenericService().saveOrUpdate(person);
-
-        // If the user is editing their own profile, refresh the session object if needed
         return SUCCESS;
     }
 
 
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         return getAuthenticatedUser().equals(getPersistable())
                 || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }

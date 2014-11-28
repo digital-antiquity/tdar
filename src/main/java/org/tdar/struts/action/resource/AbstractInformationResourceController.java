@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -44,7 +45,6 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.EmailMessageType;
@@ -668,7 +668,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
         super.prepare();
         if (getPersistable() == null)
             return;

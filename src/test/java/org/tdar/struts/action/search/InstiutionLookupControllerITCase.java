@@ -47,6 +47,21 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
 
     @Test
     @Rollback(true)
+    public void testInstitutionWithAcronym() {
+        Institution inst = new Institution("Arizona State University (ASU)");
+        genericService.saveOrUpdate(inst);
+        genericService.saveOrUpdate(inst);
+        searchIndexService.indexAll(getAdminUser(), Institution.class);
+        controller.setInstitution("ASU");
+        String result = controller.lookupInstitution();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        List<Indexable> institutions = controller.getResults();
+        logger.debug("institutions: {} ", institutions);
+        assertTrue("inst list should contain acronym item", institutions.contains(inst));
+    }
+
+    @Test
+    @Rollback(true)
     public void testValidInstitutionWithSpace() {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setInstitution("University of");

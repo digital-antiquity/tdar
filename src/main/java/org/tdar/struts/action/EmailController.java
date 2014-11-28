@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
@@ -41,7 +43,7 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     private Person from;
     private Resource resource;
     private Long resourceId;
-    private Person to;
+    private HasEmail to;
     private String subject;
     private String messageBody;
     private EmailMessageType type;
@@ -119,7 +121,7 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     public void prepare() throws Exception {
         h.checkForSpammers(recaptchaService, true);
         from = genericService.find(Person.class, fromId);
-        to = genericService.find(Person.class, toId);
+        to = genericService.find(Creator.class, toId);
         resource = genericService.find(Resource.class, resourceId);
     }
 
@@ -145,11 +147,11 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     }
 
-    public Person getTo() {
+    public HasEmail getTo() {
         return to;
     }
 
-    public void setTo(Person to) {
+    public void setTo(HasEmail to) {
         this.to = to;
     }
 

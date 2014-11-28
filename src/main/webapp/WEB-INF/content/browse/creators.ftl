@@ -27,8 +27,6 @@
 
     <@nav.creatorToolbar "view" />
 
-
-
     <@view.pageStatusCallout />
 
     <#if creator?? >
@@ -83,7 +81,13 @@
         </div>
         </#if>
 
-    <h1><#if creator.properName??>${creator.properName}</#if></h1>
+    <h1>
+    <#if logoAvailable>
+		<img class="pull-right" itemprop="image"  src="/files/creator/sm/${creator.id}/logo"
+		alt="logo" title="logo" /> 
+    </#if>
+        <#if creator.properName??>${creator.properName}</#if></h1>
+
         <#assign scope="http://schema.org/Person"/>
         <#if creator.creatorType.institution >
             <#assign scope="http://schema.org/Organization"/>

@@ -76,9 +76,9 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         imageController = generateNewController(ImageController.class);
         init(imageController, p);
         imageController.setId(imgId);
-        imageController.prepare();
         boolean seen = false;
         try {
+            imageController.prepare();
             imageController.edit();
         } catch (TdarActionException e) {
             seen = true;
@@ -141,10 +141,10 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         imageController = generateNewController(ImageController.class);
         init(imageController, p);
         imageController.setId(imgId);
-        imageController.prepare();
         boolean exceptionOccured = false;
         String result = null;
         try {
+            imageController.prepare();
             result = imageController.edit();
             logger.debug("action error count:{}, they are:{}", imageController.getActionErrors().size(), imageController.getActionErrors());
             // logger.debug("brace yourself: \n\n\n\n{} \n\n\n", xmlService.convertToXML(image));

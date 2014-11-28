@@ -8,7 +8,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -146,7 +144,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testNullResourceOperations() throws Exception {
-        List<String> successActions = Arrays.asList("add", "list");
+        List<String> successActions = Arrays.asList("add", "list","edit");
         // grab all methods on DatasetController annotated with a conventions plugin @Action
         for (Method method : DatasetController.class.getMethods()) {
             controller = generateNewInitializedController(DatasetController.class);

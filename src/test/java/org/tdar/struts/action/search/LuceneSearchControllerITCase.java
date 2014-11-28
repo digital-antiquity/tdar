@@ -41,8 +41,6 @@ import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.CreatorOwnerQueryPart;
 import org.tdar.struts.data.DateRange;
 import org.tdar.utils.MessageHelper;
 
@@ -541,6 +539,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getInvestigationTypeIdLists().add(ids);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException {

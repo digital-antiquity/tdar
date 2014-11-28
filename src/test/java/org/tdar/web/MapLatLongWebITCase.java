@@ -10,7 +10,6 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;

@@ -15,48 +15,30 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
 
     @Override
     public String generateQueryString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" ( ");
-        StringBuilder sbauto = new StringBuilder();
-        setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-        for (int i = 0; i < getFieldValues().size(); i++) {
-            appendPhrase(sbauto, i);
-        }
-        if (sbauto.length() > 0) {
-            constructQueryPhrase(sbauto, "name_auto");
-        }
-        sb.append(sbauto).append(" OR ");
-
+        QueryPartGroup group = new QueryPartGroup(Operator.OR);
         List<String> names = new ArrayList<String>();
-        boolean containsSpaces = false;
         if (CollectionUtils.isNotEmpty(getFieldValues())) {
             for (Institution inst : getFieldValues()) {
                 names.add(StringUtils.trim(inst.getName()));
-                if (inst.getName().trim().contains(" ")) {
-                    containsSpaces = true;
-                }
             }
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>("name", Operator.OR, names.toArray(new String[0]));
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>("name", Operator.OR, names);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            fqp.setBoost(4f);
-            sb.append(" " + fqp.toString());
+            fqp.setBoost(3f);
+            group.append(fqp);
         }
+        FieldQueryPart<Institution> name_auto = new FieldQueryPart<Institution>("name_auto", getFieldValues());
+        group.append(name_auto);
+        name_auto.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
 
-        StringBuilder sbacro = new StringBuilder();
         // match ASU, but not "arizona state"
-        if (!containsSpaces) {
-            sb.append(" OR ");
-            for (int i = 0; i < getFieldValues().size(); i++) {
-                appendPhrase(sbacro, i);
-            }
-            if (sbauto.length() > 0) {
-                constructQueryPhrase(sbacro, "acronym");
-            }
-        }
-        sb.append(sbacro).append(" ) ");
-        if ((sbacro.length() == 0) && (sbauto.length() == 0)) {
+        FieldQueryPart<String> acronym = new FieldQueryPart<String>("acronym", names);
+        acronym.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+        acronym.setOperator(Operator.OR);
+        acronym.setBoost(7f);
+        group.append(acronym);
+        if (CollectionUtils.isEmpty(names)) {
             return "";
         }
-        return sb.toString();
+        return group.generateQueryString();
     }
 }

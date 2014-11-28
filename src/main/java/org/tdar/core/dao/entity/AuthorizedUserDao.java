@@ -217,6 +217,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted, List<Long> collectionIds) {
         // Hey guess what - you always get sorted results.
         if (CollectionUtils.isEmpty(collectionIds)) {

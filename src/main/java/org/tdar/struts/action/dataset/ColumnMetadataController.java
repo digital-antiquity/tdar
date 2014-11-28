@@ -36,7 +36,7 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.action.CrudAction;
+import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -50,7 +50,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/dataset")
-public class ColumnMetadataController extends AuthenticationAware.Base implements Preparable, CrudAction<Dataset> {
+public class ColumnMetadataController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Dataset> {
 
     private static final long serialVersionUID = 657544410406621681L;
     public static final String COLUMNS = "columns";
@@ -143,7 +143,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     @SkipValidation
     @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl") })
     public String editColumnMetadata() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         if (getDataResource().getLatestVersions().isEmpty()) {
             addActionError(getText("abstractDatasetController.upload_data_file_first"));
@@ -198,7 +198,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
      * @throws TdarActionException
      */
     public String saveColumnMetadata() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Pair<Boolean, List<DataTableColumn>> updateResults = new Pair<Boolean, List<DataTableColumn>>(false, new ArrayList<DataTableColumn>());
         initializePaginationHelper();
 
@@ -313,7 +313,9 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
 
     @Override
     public void prepare() throws Exception {
-        persistable = datasetService.find(getId());
+        prepareAndLoad(this, RequestType.EDIT);
+        checkValidRequest(this);
+
         if (dataTableId != null) {
             this.dataTable = dataTableService.find(dataTableId);
         } else {
@@ -333,23 +335,8 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     }
 
     @Override
-    public boolean isCreatable() throws TdarActionException {
-        return false;
-    }
-
-    @Override
-    public boolean isEditable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
-    }
-
-    @Override
-    public boolean isSaveable() throws TdarActionException {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
-    }
-
-    @Override
-    public boolean isDeleteable() throws TdarActionException {
-        return false;
     }
 
     @Override
@@ -400,5 +387,10 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
 
     public Dataset getResource() {
         return persistable;
+    }
+    
+    @Override
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.EDIT_ANYTHING;
     }
 }

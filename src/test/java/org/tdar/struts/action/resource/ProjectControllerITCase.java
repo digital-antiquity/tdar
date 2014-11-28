@@ -39,6 +39,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.sensoryData.SensoryDataController;
 import org.tdar.struts.data.ResourceCreatorProxy;
@@ -52,8 +53,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testProjectJSON() throws IOException {
-        ProjectController controller = generateNewInitializedController(ProjectController.class);
+    public void testProjectJSON() throws IOException, TdarActionException {
+        ProjectController controller = generateNewInitializedController(ProjectController.class, getAdminUser());
         controller.setId(3805L);
         controller.prepare();
         RelatedComparativeCollection rcc = new RelatedComparativeCollection();
@@ -261,7 +262,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         evictCache();
     }
 
-    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) {
+    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) throws TdarActionException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.setAsync(false);

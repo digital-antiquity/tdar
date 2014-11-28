@@ -12,7 +12,7 @@
 
 <p><strong>Parent:</strong>
     <#if parentNode?has_content>
-        <a href="<@s.url value="${parentNode.iri}"/>">${parentNode.displayName}</a></p>
+        <a href="<@s.url value="node/${parentNode.iri}"/>">${parentNode.displayName}</a></p>
     <#else>
     <a href="<@s.url value="/ontology/${ontology.id?c}"/>">${ontology.title} (ontology root)</a></p>
 

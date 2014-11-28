@@ -63,6 +63,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
 
     private ActionInvocation invocation;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(ActionInvocation invocation) throws Exception {
         this.invocation = invocation;

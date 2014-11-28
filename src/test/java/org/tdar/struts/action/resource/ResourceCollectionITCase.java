@@ -87,6 +87,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    public void testSetupCorrect() {
+        ResourceCollection collection = resourceCollectionService.find(1575l);
+        assertFalse(collection.isHidden());
+    }
+    
+    @Test
+    @Rollback
     public void testSparseResource() throws Exception {
         ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
         collection.markUpdated(getAdminUser());
@@ -635,6 +642,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // TESTING ANONYMOUS USER
         initAnonymousUser(vc);
         vc.setId(parentCollection.getId());
+        vc.setSlug(parentCollection.getSlug());
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
         collections = vc.getCollections();
@@ -647,6 +655,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc = generateNewController(CollectionViewAction.class);
         init(vc, testPerson);
         vc.setId(parentCollection.getId());
+        vc.setSlug(parentCollection.getSlug());
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
         collections = vc.getCollections();
@@ -795,6 +804,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         searchIndexService.index(document);
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(collection1.getId());
+        vc.setSlug(collection1.getSlug());
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
         logger.info("results: {}", vc.getResults());
@@ -901,6 +911,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         String result = Action.SUCCESS;
         setIgnoreActionErrors(true);
         try {
+            cc.prepare();
             result = cc.save();
         } catch (Exception e) {
             logger.error("{}", e);
@@ -945,7 +956,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
         cc.setId(id);
-        cc.prepare();
+//        cc.prepare();
         // controller.getResources().add(document);
         cc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         assertWeFailedToSave(cc);
@@ -991,7 +1002,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
         cc.setId(id);
-        cc.prepare();
+//        cc.prepare();
         cc.setParentId(parentId);
         assertWeFailedToSave(cc);
     }
@@ -1249,6 +1260,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getResources()));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testDraftResourceVisibleByAuthuser() throws Exception {
@@ -1351,10 +1363,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
-        controller.prepare();
         boolean seen = false;
         ignoreActionErrors(true);
         try {
+            controller.prepare();
             controller.edit();
         } catch (Exception e) {
             seen = true;
@@ -1407,10 +1419,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
-        controller.prepare();
         boolean seen = false;
         ignoreActionErrors(true);
         try {
+            controller.prepare();
             controller.edit();
         } catch (Exception e) {
             seen = true;
@@ -1456,10 +1468,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
          */
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
-        controller.prepare();
         boolean seen = false;
         ignoreActionErrors(true);
         try {
+            controller.prepare();
             controller.edit();
         } catch (Exception e) {
             seen = true;

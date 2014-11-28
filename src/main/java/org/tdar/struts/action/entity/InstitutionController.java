@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
 
@@ -34,14 +33,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
         if (hasActionErrors()) {
             return INPUT;
         }
-
-        // name has a unique key; so we need to be careful with it
-        persistable.setName(getName());
-        if (Persistable.Base.isNullOrTransient(persistable)) {
-            getGenericService().save(persistable);
-        } else {
-            getGenericService().update(persistable);
-        }
+        entityService.saveInstitutionForController(persistable, name, generateFileProxy(getFileFileName(), getFile()));
         return SUCCESS;
     }
 
@@ -85,11 +77,11 @@ public class InstitutionController extends AbstractCreatorController<Institution
     }
 
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         if (!isAuthenticated()) {
             return false;
         }
-        return authorizationService.can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
+        return authorizationService.canEdit(getAuthenticatedUser(), getInstitution());
     }
 
     public String getName() {

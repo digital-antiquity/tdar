@@ -44,7 +44,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testBrowse() throws IOException {
+    public void testBrowse() throws IOException, TdarActionException {
         // load datasets
         Dataset dataset = setupAndLoadResource(DOUBLE_DATASET, Dataset.class);
         assertNotNull(dataset);
@@ -96,7 +96,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testSearch() throws IOException {
+    public void testSearch() throws IOException, TdarActionException {
         // load datasets
         Dataset dataset = setupAndLoadResource(TEXT_DATASET, Dataset.class);
         assertNotNull(dataset);

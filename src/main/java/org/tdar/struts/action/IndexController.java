@@ -80,8 +80,6 @@ public class IndexController extends AuthenticationAware.Base {
                     params = { "status", "404" }) }),
             @Action(value = "gone", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/resource-deleted.ftl",
                     params = { "status", "410" }) }),
-            @Action(value = "unauthorized", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/unauthorized.ftl",
-                    params = { "status", "401" }) }),
             @Action(value = "access-denied", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/access-denied.ftl",
                     params = { "status", "403" }) }),
             @Action(value = "invalid-token", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/double-submit.ftl",
@@ -92,24 +90,31 @@ public class IndexController extends AuthenticationAware.Base {
     }
 
     @HttpOnlyIfUnauthenticated
-    @Override
     @Actions({
-            @Action("contact"),
-            @Action("credit"),
-            @Action(value = "terms", results = {@Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${tosUrl}") }),
-            @Action(value = "opensearch", results = {
-                    @Result(name = SUCCESS, location = "opensearch.ftl", type = FREEMARKER, params = { "contentType", "application/xml" })
-            }),
             @Action(value = "robots", results = {
                     @Result(name = SUCCESS, location = "robots.ftl", type = FREEMARKER, params = { "contentType", "text/plain" })
             })
     })
-    public String execute() {
+    public String robots() {
         File file = new File(getTdarConfiguration().getSitemapDir(), sitemapFile);
         if (!file.exists()) {
             setSitemapFile("sitemap1.xml.gz");
         }
 
+        return SUCCESS;
+    }
+
+    @HttpOnlyIfUnauthenticated
+    @Actions(value={
+            @Action(value = "terms", results = {@Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${tosUrl}") }),
+            @Action(value = "opensearch", results = {
+                    @Result(name = SUCCESS, location = "opensearch.ftl", type = FREEMARKER, params = { "contentType", "application/xml" })
+            }),
+            @Action("credit"),
+            @Action("contact")
+    })
+    @Override
+    public String execute() {
         return SUCCESS;
     }
 

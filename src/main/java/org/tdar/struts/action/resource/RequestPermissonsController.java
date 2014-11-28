@@ -11,7 +11,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -21,7 +20,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.action.CrudAction;
+import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -33,7 +32,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource")
 @Component
 @Scope("prototype")
-public class RequestPermissonsController extends AuthenticationAware.Base implements Preparable, CrudAction<Resource> {
+public class RequestPermissonsController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = 1L;
     private Long requestorId;
@@ -55,6 +54,9 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
         if (requestor == null) {
             addActionError("requestPermissionsController.require_user");
         }
+        prepareAndLoad(this, RequestType.EDIT);
+        checkValidRequest(this);
+
         resource = genericService.find(Resource.class, resourceId);
         if (resource == null) {
             addActionError("requestPermissionsController.cannot_find_resource");
@@ -71,7 +73,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
             })
     @HttpsOnly
     public String requestAccess() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         return SUCCESS;
     }
@@ -89,7 +91,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     @WriteableSession
     @HttpsOnly
     public String processAccessRequest() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (getPermission() == null) {
             addActionError("requestPermissionsController.specify_permission");
             return ERROR;
@@ -124,28 +126,18 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     }
 
     @Override
-    public boolean isCreatable() throws TdarActionException {
-        return false;
-    }
-
-    @Override
-    public boolean isEditable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         return authorizationService.canEditResource(getAuthenticatedUser(), getResource(), GeneralPermissions.MODIFY_METADATA);
     }
 
     @Override
-    public boolean isSaveable() throws TdarActionException {
-        return isEditable();
-    }
-
-    @Override
-    public boolean isDeleteable() throws TdarActionException {
-        return false;
-    }
-
-    @Override
-    public Persistable getPersistable() {
+    public Resource getPersistable() {
         return getResource();
+    }
+
+    @Override
+    public void setPersistable(Resource persistable) {
+        this.resource = persistable;
     }
 
     @Override
@@ -175,6 +167,16 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
 
     public void setAvailablePermissions(List<GeneralPermissions> availablePermissions) {
         this.availablePermissions = availablePermissions;
+    }
+
+    @Override
+    public Long getId() {
+        return resourceId;
+    }
+
+    @Override
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.EDIT_ANYTHING;
     }
 
 }

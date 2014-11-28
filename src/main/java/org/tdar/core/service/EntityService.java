@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
@@ -19,6 +20,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
@@ -39,9 +41,11 @@ import com.opensymphony.xwork2.TextProvider;
 public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonDao> {
 
     @Autowired
-    private InstitutionDao institutionDao;
+    private transient InstitutionDao institutionDao;
     @Autowired
-    private AuthorizedUserDao authorizedUserDao;
+    private transient AuthorizedUserDao authorizedUserDao;
+    @Autowired
+    private transient SimpleFileProcessingDao simpleFileProcessingDao;
 
     /**
      * Find a @link Person by ID
@@ -438,15 +442,47 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void deleteForController(Creator collection, String deletionReason, TdarUser authenticatedUser) {
         // TODO Auto-generated method stub
-        
+
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public DeleteIssue getDeletionIssues(TextProvider textProvider, Creator persistable) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Transactional(readOnly = false)
+    public void saveInstitutionForController(Institution persistable, String name, FileProxy fileProxy) {
+        // name has a unique key; so we need to be careful with it
+        persistable.setName(name);
+        getDao().saveOrUpdate(persistable);
+        if (fileProxy != null) {
+            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void savePersonforController(Person person, String email, String institutionName, FileProxy fileProxy) {
+        if (!StringUtils.equals(email, person.getEmail())) {
+            person.setEmail(email);
+        }
+        getLogger().debug("saving person: {} with institution {} ", person, institutionName);
+        if (StringUtils.isBlank(institutionName)) {
+            person.setInstitution(null);
+        }
+        else {
+            // if the user changed the person's institution, find or create it
+            Institution persistentInstitution = findOrSaveCreator(new Institution(institutionName));
+            getLogger().debug("setting institution to persistent: " + persistentInstitution);
+            person.setInstitution(persistentInstitution);
+        }
+
+        saveOrUpdate(person);
+        if (fileProxy != null) {
+            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(person, fileProxy);
+        }
     }
 }

@@ -25,6 +25,7 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
     private String label;
     private Class<?> analyzer;
     private String parent;
+    @SuppressWarnings("unused")
     private Logger logger = Logger.getLogger(DynamicQueryComponent.class);
 
     /**

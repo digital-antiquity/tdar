@@ -16,7 +16,6 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
@@ -69,8 +68,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     @HttpsOnly
     @SkipValidation
     public String myProfile() throws TdarActionException {
-        setId(getAuthenticatedUser().getId());
-        prepare();
         return edit();
     }
 
@@ -81,7 +78,10 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     }
 
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
+        if (getCurrentUrl().contains("myprofile")) {
+            setId(getAuthenticatedUser().getId());
+        }
         super.prepare();
         contributor = getPersistable().isContributor();
     }
@@ -103,13 +103,18 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
         }
-        if (hasErrors()) {
-            getLogger().info("errors present, returning INPUT");
-            getLogger().info("actionErrors:{}", getActionErrors());
-            getLogger().info("fieldErrors:{}", getFieldErrors());
-            return INPUT;
-        }
 
+        prepareUserInformation();
+        checkForNonContributorCrud();
+        savePersonInfo(person);
+
+        if (passwordResetRequested) {
+            authenticationService.getAuthenticationProvider().resetUserPassword(person);
+        }
+        return SUCCESS;
+    }
+
+    private void prepareUserInformation() {
         if (StringUtils.isBlank(proxyInstitutionName)) {
             getPersistable().setProxyInstitution(null);
         } else {
@@ -121,15 +126,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         getPersistable().setContributorReason(contributorReason);
         getPersistable().setProxyNote(proxyNote);
         getPersistable().setContributor(contributor);
-        checkForNonContributorCrud();
-
-        savePersonInfo(person);
-        getGenericService().saveOrUpdate(person);
-
-        if (passwordResetRequested) {
-            authenticationService.getAuthenticationProvider().resetUserPassword(person);
-        }
-        return SUCCESS;
     }
 
     // check whether password change was requested and whether it was valid
@@ -172,11 +168,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         return false;
     }
 
-    @Override
-    public boolean isEditable() {
-        return getAuthenticatedUser().equals(getPersistable())
-                || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
-    }
 
     @Override
     public Class<TdarUser> getPersistableClass() {
@@ -186,7 +177,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     public TdarUser getPerson() {
         TdarUser p = getPersistable();
         if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-            if (!isEditable()) {
+            if (!authorize()) {
                 obfuscationService.obfuscate(p, getAuthenticatedUser());
             }
         }
@@ -228,7 +219,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     @Override
     public String getSaveSuccessPath() {
         // instead of a custom view page we will co-opt the browse/creator page.
-        String path = "/browse/creators";
+        String path = "browse/creators";
         getLogger().debug("{}?id={}", path, getId());
         return path;
     }

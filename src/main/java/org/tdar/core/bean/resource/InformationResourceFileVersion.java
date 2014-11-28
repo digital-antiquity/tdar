@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
-import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.FileStoreFileProxy;
+import org.tdar.filestore.Filestore.ObjectType;
 
 @Entity
 // making the assumption formally that there can only be one version of any type
@@ -151,10 +151,12 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         setFileVersionType(type);
         setFilename(filename);
         setExtension(FilenameUtils.getExtension(filename));
-        setVersion(irFile.getLatestVersion());
-        setInformationResourceFile(irFile);
-        setInformationResourceFileId(irFile.getId());
-        setInformationResourceId(irFile.getInformationResource().getId());
+        if (irFile != null) {
+            setVersion(irFile.getLatestVersion());
+            setInformationResourceFile(irFile);
+            setInformationResourceFileId(irFile.getId());
+            setInformationResourceId(irFile.getInformationResource().getId());
+        }
         setDateCreated(new Date());
     }
 
@@ -478,8 +480,8 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     @Override
-    public Type getType() {
-        return Type.RESOURCE;
+    public ObjectType getType() {
+        return ObjectType.RESOURCE;
     }
 
     @Override

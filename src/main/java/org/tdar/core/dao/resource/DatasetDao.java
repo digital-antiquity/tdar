@@ -217,6 +217,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
         Session session = getCurrentSession();
         // distinct prevents duplicates
@@ -258,6 +259,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return toReturn;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findOld(Long[] ids) {
         Session session = getCurrentSession();
         long time = System.currentTimeMillis();
@@ -268,6 +270,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return results;
     }
 
+    @SuppressWarnings("unchecked")
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
         int count = 0;
@@ -302,7 +305,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (StringUtils.isEmpty(text)) {
             return text;
         }
-        return StringEscapeUtils.escapeXml(RssService.stripInvalidXMLCharacters(text));
+        return StringEscapeUtils.escapeXml11(RssService.stripInvalidXMLCharacters(text));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

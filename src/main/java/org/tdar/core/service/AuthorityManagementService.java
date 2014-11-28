@@ -549,6 +549,7 @@ public class AuthorityManagementService {
 
     }
 
+    @SuppressWarnings("unchecked")
     public void findPluralDups(Class<? extends Keyword> cls, Person user, boolean listOnly) {
         Map<String, Keyword> map = new HashMap<>();
         Map<Keyword, Set<Keyword>> dups = new HashMap<>();
@@ -580,7 +581,7 @@ public class AuthorityManagementService {
         }
         for (Entry<Keyword, Set<Keyword>> entry : dups.entrySet()) {
             processSynonyms(entry.getKey(), entry.getValue(), DupeMode.MARK_DUPS_ONLY);
-            updateReferrers(user, (Class<? extends Dedupable>) cls, Persistable.Base.extractIds(entry.getValue()), entry.getKey().getId(),
+            updateReferrers(user, (Class<? extends Dedupable<?>>) cls, Persistable.Base.extractIds(entry.getValue()), entry.getKey().getId(),
                     DupeMode.MARK_DUPS_ONLY, false);
         }
     }

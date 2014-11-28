@@ -38,6 +38,13 @@
     <tdar:date>2012</tdar:date>
     <tdar:dateNormalized>2012</tdar:dateNormalized>
     <tdar:externalReference>false</tdar:externalReference>
+    <tdar:fileProxies>
+        <tdar:fileProxy>
+			<tdar:action>ADD</tdar:action>
+			<tdar:filename>5127663428_42ef7f4463_b.jpg</tdar:filename>
+			<tdar:restriction>CONFIDENTIAL</tdar:restriction>
+        </tdar:fileProxy>
+    </tdar:fileProxies>
     <tdar:inheritingCollectionInformation>true
     </tdar:inheritingCollectionInformation>
     <tdar:inheritingCulturalInformation>true
@@ -64,4 +71,5 @@
     <tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage>
     <tdar:resourceProviderInstitution>
     </tdar:resourceProviderInstitution>
+
 </tdar:image>

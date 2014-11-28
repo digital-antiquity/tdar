@@ -8,8 +8,10 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.TdarNamedQueries;
 
 /**
  * $Id$
@@ -41,7 +43,19 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public List<Institution> findInstitutionsWIthSpaces() {
         return getCriteria().add(Restrictions.and(Restrictions.eq("status", Status.ACTIVE),Restrictions.or(Restrictions.like("name", " %"),Restrictions.like("name", "% ")))).list();
+    }
+
+    public boolean canEditInstitution(TdarUser authenticatedUser, Institution item) {
+        Query query = getNamedQuery(TdarNamedQueries.CAN_EDIT_INSTITUTION);
+        query.setParameter("institutionId", item.getId());
+        query.setParameter("userId", authenticatedUser.getId());
+        Boolean result = (Boolean) query.uniqueResult();
+        if (result == null) {
+            return false;
+        }
+        return result;
     }
 }

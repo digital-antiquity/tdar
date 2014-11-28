@@ -55,7 +55,7 @@ public final class WorkflowContext implements Serializable {
     private Class<? extends Workflow> workflowClass;
     private List<String> dataTablesToCleanup = new ArrayList<>();
     private transient Resource transientResource;
-
+    private boolean okToStoreInFilestore = true;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
     private transient XmlService xmlService;
     private transient TargetDatabase targetDatabase;
@@ -289,6 +289,14 @@ public final class WorkflowContext implements Serializable {
 
         // TODO Auto-generated method stub
 
+    }
+
+    public boolean isOkToStoreInFilestore() {
+        return okToStoreInFilestore;
+    }
+
+    public void setOkToStoreInFilestore(boolean okToStoreInFilestore) {
+        this.okToStoreInFilestore = okToStoreInFilestore;
     }
 
 }

@@ -165,6 +165,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             try {
                 FullTextQuery idq = searchService.search(qb);
                 idq.setProjection("id");
+                @SuppressWarnings("unchecked")
                 List<Object[]> idresults = idq.list();
                 for (Object[] idresult : idresults) {
                     projIds.add((Long) idresult[0]);

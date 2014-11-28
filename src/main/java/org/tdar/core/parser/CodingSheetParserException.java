@@ -17,7 +17,7 @@ import org.tdar.core.exception.I18nException;
  */
 public class CodingSheetParserException extends I18nException {
 
-    private static final long serialVersionUID = 6246686753761896569L;
+    private static final long serialVersionUID = 6138401598434300520L;
     // TODO: considering immutableList, but remember we have pom exclusions for the latest version (i think)
     private List<String> contributingFactors = new ArrayList<String>();
 

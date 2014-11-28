@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Date;
 
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.filestore.FileStoreFile.Type;
+import org.tdar.filestore.Filestore.ObjectType;
 
 public interface FileStoreFileProxy {
 
@@ -26,7 +26,7 @@ public interface FileStoreFileProxy {
 
     Long getPersistableId();
 
-    Type getType();
+    ObjectType getType();
 
     VersionType getVersionType();
 

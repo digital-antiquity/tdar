@@ -170,7 +170,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
-    private List<ResourceCreatorProxy> contactProxies;
 
     private List<ResourceAnnotation> resourceAnnotations;
 
@@ -200,10 +199,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 authorshipProxies.add(proxy);
             } else {
                 creditProxies.add(proxy);
-            }
-
-            if (proxy.isValidEmailContact()) {
-                getContactProxies().add(proxy);
             }
         }
     }
@@ -368,15 +363,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
     }
 
-    @Override
-    public boolean isCreatable() throws TdarActionException {
-        // FIXME: this is really an authorization thing...
-        // if (!getAuthenticatedUser().getContributor()) {
-        // return false;
-        // }
-        return true;
-    }
-
     /**
      * Returns true if authuser is able to create billable items, contributor status notwithstanding.
      * 
@@ -384,7 +370,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      */
     @Override
     public boolean isAbleToCreateBillableItem() {
-        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType()));
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), ResourceType.fromClass(getPersistableClass())));
     }
 
     // return a persisted annotation based on incoming pojo
@@ -418,9 +404,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private Boolean editable = null;
 
     @Override
-    public boolean isEditable() {
+    public boolean authorize() {
         if (isNullOrNew()) {
-            return false;
+            return true;
         }
         if (editable == null) {
             editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
@@ -890,13 +876,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             authorshipProxies = new ArrayList<>();
         }
         return authorshipProxies;
-    }
-
-    public List<ResourceCreatorProxy> getContactProxies() {
-        if (CollectionUtils.isEmpty(contactProxies)) {
-            contactProxies = new ArrayList<>();
-        }
-        return contactProxies;
     }
 
     public ResourceCreatorProxy getBlankCreatorProxy() {

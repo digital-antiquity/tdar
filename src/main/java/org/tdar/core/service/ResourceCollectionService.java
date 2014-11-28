@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -33,6 +35,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -52,7 +55,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private AuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authenticationAndAuthorizationService;
+    @Autowired
+    private transient SimpleFileProcessingDao simpleFileProcessingDao;
 
     /**
      * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
@@ -707,7 +712,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser) {
         // should I do something special?
         for (Resource resource : persistable.getResources()) {
@@ -718,10 +723,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // FIXME: need to handle parents and children
         getDao().delete(persistable);
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
-        
+
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public DeleteIssue getDeletionIssues(TextProvider provider, ResourceCollection persistable) {
         List<ResourceCollection> findAllChildCollections = findDirectChildCollections(persistable.getId(), null, CollectionType.SHARED);
         if (CollectionUtils.isNotEmpty(findAllChildCollections)) {
@@ -732,5 +737,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             return issue;
         }
         return null;
+    }
+
+    @Transactional(readOnly=false)
+    public void saveCollectionForController(ResourceCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
+            List<AuthorizedUser> authorizedUsers, List<Resource> resourcesToAdd, List<Resource> resourcesToRemove, boolean shouldSaveResource, FileProxy fileProxy) {
+        if (persistable.getType() == null) {
+            persistable.setType(CollectionType.SHARED);
+        }
+
+        if (!Objects.equals(parentId, persistable.getParentId())) {
+            updateCollectionParentTo(authenticatedUser, persistable, parent);
+        }
+
+        reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
+        saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
     }
 }

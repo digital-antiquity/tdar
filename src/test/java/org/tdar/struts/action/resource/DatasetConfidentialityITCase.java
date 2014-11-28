@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.action.dataset.DatasetController;
 
 public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 

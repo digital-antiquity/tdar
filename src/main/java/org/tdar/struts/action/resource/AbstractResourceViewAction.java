@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -64,10 +64,11 @@ import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
+import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
@@ -89,11 +90,14 @@ import org.tdar.utils.EmailMessageType;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/resource")
-public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAction<Resource>  {
+@Results(value={
+        @Result(name = TdarActionSupport.SUCCESS, location = "../resource/view-template.ftl")
+})
+public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAction<Resource> implements SlugViewAction {
 
     private static final long serialVersionUID = 896347341133309643L;
 
-//    public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
+    // public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
@@ -210,29 +214,10 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
                 creditProxies.add(proxy);
             }
 
-            if (ResourceCreatorRole.CONTACT == proxy.getRole()) {
+            if (proxy.isValidEmailContact()) {
                 getContactProxies().add(proxy);
             }
         }
-    }
-
-    
-    @HttpOnlyIfUnauthenticated
-    @Override
-    @Action(value = VIEW,
-            results = {
-                    @Result(name = SUCCESS, location = "../resource/view-template.ftl"),
-                    @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
-                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
-            })
-    /**
-     * FIXME: appears to only override the SUCCESS result type compared to AbstractPersistableController's declaration,
-     * see if it's possible to do this with less duplicatiousness
-     * 
-     * @see org.tdar.struts.action.AbstractPersistableController#save()
-     */
-    public String view() throws TdarActionException {
-        return super.view();
     }
 
     protected void loadCustomMetadata() throws TdarActionException {
@@ -266,7 +251,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         return accounts;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String loadViewMetadata() throws TdarActionException {
         if (getResource() == null) {
@@ -293,7 +277,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
+    public boolean authorize() throws TdarActionException {
         if (getResource() == null && getId() != null) {
             // persistable is null, so the lookup failed (aka not found)
             abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
@@ -928,5 +912,4 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         }
         return editable;
     }
-
 }

@@ -51,11 +51,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
@@ -63,11 +65,13 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -78,10 +82,11 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -118,12 +123,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private transient boolean changesNeedToBeLogged = false;
     private transient boolean viewable;
+    private transient Integer maxHeight;
+    private transient Integer maxWidth;
+    private transient VersionType maxSize;
 
     // private transient boolean readyToIndex = true;
     public enum CollectionType {
@@ -209,8 +217,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
+    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Column(nullable = true, name = "date_updated")
     @Temporal(TemporalType.TIMESTAMP)
+    @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;
 
     @ManyToOne
@@ -225,7 +235,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
     @Field
-    @Column(name="hidden", nullable = false)
+    @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
 
     public ResourceCollection() {
@@ -765,7 +775,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     public String getDetailUrl() {
-        return String.format("/%s/%s", getUrlNamespace(), getId());
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
 
     @Fields({
@@ -775,5 +785,40 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
         return sb.toString();
+    }
+
+    @Override
+    public Integer getMaxHeight() {
+        return maxHeight;
+    }
+
+    @Override
+    public void setMaxHeight(Integer maxHeight) {
+        this.maxHeight = maxHeight;
+    }
+
+    @Override
+    public Integer getMaxWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    public void setMaxWidth(Integer maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    @Override
+    public VersionType getMaxSize() {
+        return maxSize;
+    }
+
+    @Override
+    public void setMaxSize(VersionType maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    @Override
+    public String getSlug() {
+        return UrlUtils.slugify(getName());
     }
 }

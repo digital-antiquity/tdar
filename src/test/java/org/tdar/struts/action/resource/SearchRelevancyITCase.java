@@ -74,7 +74,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 
     @Before
     // create the necessary information resources needed for our test
-    public void prepareInformationResources() {
+    public void prepareInformationResources() throws TdarActionException {
 
         // prep the search controller
         searchIndexService.purgeAll();

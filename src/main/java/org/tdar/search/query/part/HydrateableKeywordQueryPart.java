@@ -31,6 +31,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     private static final String INFORMATION_RESOURCES = "informationResources.";
     private boolean includeChildren = true;
 
+    @SuppressWarnings("unchecked")
     public HydrateableKeywordQueryPart(KeywordType type, List<K> fieldValues_) {
         setOperator(Operator.OR);
         setActualClass((Class<K>) type.getKeywordClass());

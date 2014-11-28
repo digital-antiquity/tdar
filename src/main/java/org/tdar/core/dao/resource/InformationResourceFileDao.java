@@ -116,6 +116,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<InformationResource> findInformationResourcesWithFileStatus(
             Person authenticatedUser, List<Status> resourceStatus,
             List<FileStatus> fileStatus) {
@@ -141,6 +142,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         return query.setReadOnly(true).setCacheable(false).scroll(ScrollMode.FORWARD_ONLY);
     }
 
+    @SuppressWarnings("unchecked")
     public List<InformationResourceFile> findAllExpiredEmbargoes() {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGO_EXIPRED);
         DateTime today = new DateTime().withTimeAtStartOfDay();
@@ -148,6 +150,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW);
         DateTime today = new DateTime().plusDays(1).withTimeAtStartOfDay();

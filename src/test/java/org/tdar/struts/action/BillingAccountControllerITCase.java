@@ -224,7 +224,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
 
     @Test
     @Rollback
-    public void testCreateCouponValid() {
+    public void testCreateCouponValid() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);

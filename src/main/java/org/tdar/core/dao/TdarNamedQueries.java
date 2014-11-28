@@ -132,9 +132,12 @@ public interface TdarNamedQueries {
     String FIND_BY_TDAR_YEAR = "query.sparse_by_tdar_year";
     String FIND_BY_TDAR_YEAR_COUNT = "query.sparse_by_tdar_year_count";
     String QUERY_RESOURCE_FILE_EMBARGO_EXIPRED = "query.expired";
+    String QUERY_HOSTED_DOWNLOAD_AUTHORIZATION = "query.hosted_download_auth";
     String QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW = "query.expires_tomorrow";
     String QUERY_INTEGRATION_DATA_TABLE = "query.integration_data_table";
     String QUERY_INTEGRATION_ONTOLOGY = "query.integration_ontology";
+    String CAN_EDIT_INSTITUTION = "query.authorize_edit_institution";
+
     // raw SQL/HQL queries
 
     /**
@@ -220,8 +223,8 @@ public interface TdarNamedQueries {
     
     String BROWSE_CREATOR_CREATE_TEMP = "create temporary table rctest (rid bigint, cid bigint, role int);create temporary table rctest_creator (cid bigint, cnt bigint)";
     String BROWSE_CREATOR_ACTIVE_USERS_1 = "insert into rctest select resource.id, submitter_id, 0 from resource where status='ACTIVE'";
-    String BROWSE_CREATOR_ROLES_2 = "insert into rctest select resource_id, creator_id, 1000 from resource_creator where resource_id in (select rid from rctest) and role in (%1$s)";
-    String BROWSE_CREATOR_IR_ROLES_3 = "insert into rctest select resource_id, creator_id, 1000 from resource_creator where resource_id in (select project_id from rctest, information_resource ir where rid=ir.id and inheriting_individual_institutional_credit=true ) and role in (%1$s)";
+    String BROWSE_CREATOR_ROLES_2 = "insert into rctest select resource_id, creator_id, %2$s from resource_creator where resource_id in (select rid from rctest) and role in (%1$s)";
+    String BROWSE_CREATOR_IR_ROLES_3 = "insert into rctest select resource_id, creator_id, %2$s from resource_creator where resource_id in (select project_id from rctest, information_resource ir where rid=ir.id and inheriting_individual_institutional_credit=true ) and role in (%1$s)";
     String BROWSE_CREATOR_IR_FIELDS_4 = "insert into rctest select id, provider_institution_id, -1 from information_resource where id in (select rid from rctest) and provider_institution_id is not null union select id, publisher_id, -1 from information_resource where id in (select rid from rctest) and publisher_id is not null";
     String BROWSE_CREATOR_CREATOR_TEMP_5 = "insert into rctest_creator (cid, cnt) select cid, count(rid) from rctest where rid in (select rid from rctest where role >= 0 group by rid having sum(role) = 0 union select rid from rctest where role!=0) group by cid";
     String BROWSE_CREATOR_UPDATE_CREATOR_6 = "update creator SET browse_occurrence = cnt from creator c, rctest_creator where cid=c.id and c.id=creator.id";

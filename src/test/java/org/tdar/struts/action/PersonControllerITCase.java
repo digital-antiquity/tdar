@@ -65,11 +65,11 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller = generateNewController(PersonController.class);
         init(controller, getBasicUser());
         controller.setId(getAdminUserId());
-        controller.prepare();
 
         // first off, ensure they can't even get to the edit page
         StatusCode code = null;
         try {
+            controller.prepare();
             controller.edit();
         } catch (TdarActionException e) {
             code = e.getResponseStatusCode();
@@ -80,14 +80,14 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller = generateNewController(PersonController.class);
         init(controller, getBasicUser());
         controller.setId(getAdminUserId());
-        controller.prepare();
-
         String oldLastName = getAdminUser().getLastName();
         final String newLastName = oldLastName.concat(" updated");
-        controller.getPerson().setLastName(newLastName);
-        controller.setServletRequest(getServletPostRequest());
-        code = null;
         try {
+            controller.prepare();
+            
+            controller.getPerson().setLastName(newLastName);
+            controller.setServletRequest(getServletPostRequest());
+            code = null;
             controller.save();
         } catch (TdarActionException e) {
             code = e.getResponseStatusCode();

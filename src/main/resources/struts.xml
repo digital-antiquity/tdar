@@ -166,8 +166,9 @@
             </result>
             <!--  NOTE: we should be doing ONLY redirects here because if something went wrong , the values are likely not on the stack; 
             		thus a redirect clears the stack (values match IndexAction)-->
-			<result name="unauthorized" type="redirect">
-				<param name="location">/unauthorized</param>
+            <result name="unauthorized" type="freemarkerhttp">
+                <param name="status">401</param>
+                <param name='location'>/WEB-INF/content/errors/unauthorized.ftl</param>
             </result>
             <result name="forbidden" type="freemarkerhttp">
                 <param name="status">403</param>

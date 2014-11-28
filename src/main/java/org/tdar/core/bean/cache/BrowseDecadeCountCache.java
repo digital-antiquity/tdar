@@ -20,7 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.BrowseDecadeCache")
 public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCountCache, Integer> {
 
-    private static final long serialVersionUID = -1407077845657074783L;
+    private static final long serialVersionUID = -5905078214966414970L;
 
     @Column(name = "item_count")
     private Long count;

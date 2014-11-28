@@ -19,6 +19,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.billing.BillingAccountController;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
@@ -55,7 +56,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         return rcp;
     }
 
-    public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, Account account, Invoice invoice) {
+    public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, Account account, Invoice invoice) throws TdarActionException {
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
@@ -67,7 +68,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         return controller.getAccount().getCoupons().iterator().next().getCode();
     }
 
-    public BillingAccountController setupContrllerForCoupon(Account account, Invoice invoice) {
+    public BillingAccountController setupContrllerForCoupon(Account account, Invoice invoice) throws TdarActionException {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
         genericService.saveOrUpdate(invoice);
