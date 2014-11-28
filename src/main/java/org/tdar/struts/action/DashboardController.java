@@ -15,6 +15,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,7 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
  * @version $Revision$
  */
 @ParentPackage("secured")
-@Namespace("/dashboard")
+@Namespace("")
 @Component
 @Scope("prototype")
 public class DashboardController extends AuthenticationAware.Base implements DataTableResourceDisplay {
@@ -120,7 +121,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     }
 
     @Override
-    @Action("dashboard")
+    @Action(value="dashboard", results={@Result(name=SUCCESS, location="dashboard/dashboard.ftl")})
     public String execute() {
         setupRecentResources();
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));

@@ -1,8 +1,10 @@
 package org.tdar.core.dao.external.auth;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,21 +19,34 @@ import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResult
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.EntityService;
 
+//import org.tdar.utils.TestConfiguration;
+
 /*
  * This provider is designed specifically for testing where no valid connection to an external service
  * is available.  Great for testing* and bascially nothing else. DO NOT USE IN PRODUCTION**
  *
- * To authenticate: use a valid username, but for the password field, use the name of a tdar membership group name
- * (e.g.  'tdar-admins', 'tdar-editors', 'tdar-users').  The provider will authenticate the user and endow that user
- * with the permissions indicated by the groupname.
+ * To authenticate: follow the normal process, simply either register, or use our "test" usernames and "passwords"
  *
  * *As you might expect,  authentication-tests will probably fail
  * ** This class has failsafes to prevent use in production.  Don't rely on them.
  */
 public class MockAuthenticationProvider extends BaseAuthenticationProvider {
+    // hardcoded for testing
+    public static final String ADMIN_USERNAME = "admin@tdar.org";
+    public static final String ADMIN_PASSWORD = "admin";
+
+    public static final String EDITOR_USERNAME = "editor@tdar.org";
+    public static final String EDITOR_PASSWORD = "editor";
+
+    public static final String BILLING_USERNAME = "admin@tdar.org";
+    public static final String BILLING_PASSWORD = "admin";
+
+    public static final String USERNAME = "test@tdar.org";
+    public static final String PASSWORD = "test";
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<String, String> users = new ConcurrentHashMap<String, String>();
+    private Map<String, MockAuthenticationInfo> users = new ConcurrentHashMap<String, MockAuthenticationInfo>();
 
     public MockAuthenticationProvider() {
         logger.debug("is prod?: {}", TdarConfiguration.getInstance().isProductionEnvironment());
@@ -47,45 +62,46 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name,
-            String password) {
-        if (!isEnabled() || !isConfigured()) {
-            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
-        }
+    public boolean isEnabled() {
+        return true;
+    };
+
+    @Override
+    public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name, String password) {
+
         if (TdarConfiguration.getInstance().isProductionEnvironment()) {
             logger.error("Mock Authentication is not allowed in production.");
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         }
 
-        AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.ACCOUNT_DOES_NOT_EXIST);
+        AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
 
-        logger.debug("trying to authenticate:: user: {}  groupname:{}", name, password);
-        if (users.containsKey(name)) {
-            TdarGroup group = TdarGroup.fromString(password);
-            logger.debug("user found:{}  group:{}", name, group);
-            users.put(name, group.getGroupName());
+        logger.debug("trying to authenticate:: user: {}  password:{}", name, password);
+        MockAuthenticationInfo user = users.get(name);
+        if (user != null && Objects.equals(password, user.getPassword())) {
             result.setType(AuthenticationResultType.VALID);
-            if (group == TdarGroup.UNAUTHORIZED) {
-                result.setType(AuthenticationResultType.INVALID_PASSWORD);
-            }
+        } else if (user != null) {
+            result.setType(AuthenticationResultType.INVALID_PASSWORD);
         } else {
-            logger.debug("user not found: {}", name);
+            result.setType(AuthenticationResultType.ACCOUNT_DOES_NOT_EXIST);
         }
         return result;
     }
 
     @Override
     public boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
-        if (users.containsKey(person.getEmail())) {
+        if (users.containsKey(person.getUsername())) {
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         } else {
-            users.put(person.getEmail(), password);
+            MockAuthenticationInfo info = new MockAuthenticationInfo();
+            info.setPassword(password);
+            info.getMemberships().addAll(Arrays.asList(groups));
+            users.put(person.getUsername(), info);
             return new AuthenticationResult(AuthenticationResultType.VALID);
         }
     }
@@ -93,7 +109,9 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public boolean deleteUser(TdarUser person) {
         try {
-            users.remove(person.getEmail());
+            if (users.containsKey(person.getUsername())) {
+                users.remove(person.getUsername());
+            }
             return true;
         } catch (Exception e) {
             logger.debug("{}", e);
@@ -109,29 +127,18 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public void updateUserPassword(TdarUser person, String password) {
-        users.put(person.getEmail(), password);
+        users.get(person.getUsername()).setPassword(password);
     }
 
     @Override
     public String[] findGroupMemberships(TdarUser person) {
-        TdarGroup group = TdarGroup.fromString(users.get(person.getUsername()));
-        logger.debug("group membership request: name:{}   groupname:{},    group:{}", new Object[] { person.getUsername(), users.get(person.getUsername()),
-                group });
         List<String> toReturn = new ArrayList<String>();
-        switch (group) {
-            case TDAR_ADMIN:
-                toReturn.add(TdarGroup.TDAR_ADMIN.getGroupName());
-            case TDAR_EDITOR:
-                toReturn.add(TdarGroup.TDAR_EDITOR.getGroupName());
-            case TDAR_USERS:
-                toReturn.add(TdarGroup.TDAR_USERS.getGroupName());
-                break;
-            default:
-                break;
+        for (TdarGroup group : users.get(person.getUsername()).getMemberships()) {
+            toReturn.add(group.getGroupName());
         }
         String[] result = toReturn.toArray(new String[0]);
-        logger.debug("group membership request: name:{}   groupname:{},  group:{},  membership:[{}]",
-                new Object[] { person.getUsername(), users.get(person.getUsername()), group, result });
+        logger.debug("group membership request: name:{}   membership:[{}]",
+                new Object[] { person.getUsername(), users.get(person.getUsername()), result });
         return result;
     }
 
@@ -149,11 +156,37 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
         }
         List<TdarUser> registeredUsers = entityService.findAllRegisteredUsers();
         for (TdarUser user : registeredUsers) {
-            users.put(user.getUsername(), user.getUsername());
+            MockAuthenticationInfo info = new MockAuthenticationInfo();
+            info.setPassword(user.getUsername());
+            info.getMemberships().add(TdarGroup.TDAR_USERS);
+            info.getMemberships().add(TdarGroup.JIRA_USERS);
+            info.getMemberships().add(TdarGroup.CONFLUENCE_USERS);
+            if (user.getUsername().equals(ADMIN_USERNAME)) {
+                info.getMemberships().add(TdarGroup.TDAR_ADMIN);
+                info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
+                info.getMemberships().add(TdarGroup.TDAR_API_USER);
+                info.setPassword("admin");
+            }
+
+            if (user.getUsername().equals(EDITOR_USERNAME)) {
+                info.getMemberships().add(TdarGroup.TDAR_EDITOR);
+                info.setPassword(EDITOR_PASSWORD);
+            }
+
+            if (user.getUsername().equals(BILLING_USERNAME)) {
+                info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
+                info.setPassword(BILLING_PASSWORD);
+            }
+
+            if (user.getUsername().equals(USERNAME)) {
+                info.setPassword(PASSWORD);
+            }
+            users.put(user.getUsername(), info);
         }
     }
 
     @Override
     public AuthenticationResult checkToken(String token, HttpServletRequest request) {
         throw new TdarRuntimeException("error.not_implemented");
-    }}
+    }
+}

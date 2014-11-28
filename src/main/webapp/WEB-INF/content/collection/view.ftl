@@ -43,8 +43,6 @@
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
         </@nav.collectionToolbar>
-    <#else>
-        <@nav.toolbar "collection" "view" />
     </#if>
 
     <@view.pageStatusCallout />
@@ -146,7 +144,7 @@
                 <@view.kvp key="Collection Type" val=resourceCollection.type.label />
             </div>
             <div class="span4">
-                <@view.kvp key="Visible" val=resourceCollection.hidden?string />
+                <@view.kvp key="Hidden" val=resourceCollection.hidden?string />
             </div>
         </div>
         <div class="row">

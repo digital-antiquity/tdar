@@ -28,7 +28,9 @@ import org.tdar.core.service.XmlService;
 @Component
 @Scope("prototype")
 public class SchemaController extends TdarActionSupport {
-    private static final long serialVersionUID = -9216882130992021384L;
+
+    private static final long serialVersionUID = -52006343273049231L;
+
     private InputStream inputStream;
 
     @Autowired

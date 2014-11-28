@@ -37,10 +37,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "resid_noteid", columnList = "resource_id, id") })
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
-    private static final long serialVersionUID = 8517883471101372051L;
-
-    // @ManyToOne(optional = false)
-    // private Resource resource;
+    private static final long serialVersionUID = -3161092447810925887L;
 
     @Column(length = FieldLength.FIELD_LENGTH_5000)
     @Field

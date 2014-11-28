@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
 
@@ -34,7 +33,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
         if (hasActionErrors()) {
             return INPUT;
         }
-        entityService.saveInstitutionForController(persistable, name, generateFileProxy(getFilename(), getFile()));
+        entityService.saveInstitutionForController(persistable, name, generateFileProxy(getFileFileName(), getFile()));
         return SUCCESS;
     }
 
@@ -82,7 +81,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
         if (!isAuthenticated()) {
             return false;
         }
-        return authorizationService.can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
+        return authorizationService.canEdit(getAuthenticatedUser(), getInstitution());
     }
 
     public String getName() {

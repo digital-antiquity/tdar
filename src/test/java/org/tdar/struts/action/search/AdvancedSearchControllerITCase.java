@@ -580,6 +580,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue("search should have at least 1 result", resourceCount > 0);
     }
 
+    @SuppressWarnings("deprecation")
     private Project sparseProject(Long id) {
         Project project = new Project(id, "sparse");
         return project;
@@ -1317,6 +1318,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         // assertEquals(coll.getId(), firstGroup().getCollections().get(1).getId());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page

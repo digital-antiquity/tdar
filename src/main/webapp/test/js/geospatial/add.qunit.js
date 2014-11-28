@@ -69,7 +69,7 @@
                     formSelector: "#metadataForm",
                     inputSelector: '#fileAsyncUpload'
                 });
-                basic.validator = new FileuploadValidator("metadataForm");
+                basic.validator = new TDAR.fileupload.FileuploadValidator("metadataForm");
                 basic.validator.addRule("nodupes");
                 basic.helper = helper;
             },
@@ -142,7 +142,7 @@
                         inputSelector: '#fileAsyncUpload'
                     });
                 }
-                gis.validator = new FileuploadValidator("metadataForm");
+                gis.validator = new TDAR.fileupload.FileuploadValidator("metadataForm");
                 gis.validator.addRule("nodupes");
                 TDAR.fileupload.addGisValidation(gis.validator);
                 gis.helper = helper;

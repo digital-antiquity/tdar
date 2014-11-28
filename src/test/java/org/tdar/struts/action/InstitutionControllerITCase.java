@@ -1,5 +1,8 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -11,6 +14,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.InstitutionManagementAuthorization;
 import org.tdar.struts.action.entity.InstitutionController;
 
 public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
@@ -20,6 +24,58 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
     @Before
     public void setup() {
         controller = generateNewInitializedController(InstitutionController.class);
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionAuthorization() throws TdarActionException {
+        setIgnoreActionErrors(true);
+        Institution test = new Institution(TESTING_AUTH_INSTIUTION);
+        // test no authorization
+        genericService.saveOrUpdate(test);
+        controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
+        controller.setId(test.getId());
+        boolean seenException = false;
+        try {
+            controller.prepare();
+            assertFalse(controller.isEditable());
+        } catch (Exception e) {
+            seenException = true;
+        }
+        assertTrue(seenException);
+        seenException = false;
+        controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
+
+        // unauthorized authorization
+        InstitutionManagementAuthorization ima = new InstitutionManagementAuthorization(test, getBasicUser());
+        ima.setAuthorized(false);
+        ima.setReason("because");
+        genericService.saveOrUpdate(ima);
+        controller.setId(test.getId());
+        try {
+            controller.prepare();
+            assertFalse(controller.isEditable());
+        } catch (Exception e) {
+            seenException = true;
+        }
+        assertTrue(seenException);
+        seenException = false;
+
+        // authorized
+        controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
+        ima.setAuthorized(true);
+        genericService.saveOrUpdate(ima);
+        controller.setId(test.getId());
+        controller.prepare();
+        assertTrue(controller.isEditable());
+
+        
+        // authorized
+        controller = generateNewInitializedController(InstitutionController.class, getAdminUser());
+        controller.setId(test.getId());
+        controller.prepare();
+        assertTrue(controller.isEditable());
+
     }
 
     @Test
@@ -56,7 +112,7 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.prepare();
         Assert.assertEquals(newName, controller.getInstitution().getName());
     }
-    
+
     @Test
     @Rollback
     public void testSavingInstitutionWithImage() throws Exception {
@@ -64,12 +120,11 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.setName("test institution 123");
         controller.getInstitution().setDescription("my test description");
         controller.setFile(new File(TestConstants.TEST_IMAGE));
-        controller.setFilename(TestConstants.TEST_IMAGE_NAME);
+        controller.setFileFileName(TestConstants.TEST_IMAGE_NAME);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     // non-curators should not be able to edit an institution

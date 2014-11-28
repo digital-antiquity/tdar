@@ -28,7 +28,8 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
     private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
 
-    public RangeQueryPart(String field, @SuppressWarnings("unchecked") Range<C>... values) {
+    @SafeVarargs
+    public RangeQueryPart(String field, Range<C>... values) {
         this(field, "Value", values);
     }
 

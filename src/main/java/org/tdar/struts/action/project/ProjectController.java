@@ -81,9 +81,7 @@ public class ProjectController extends AbstractResourceController<Project> {
         }
     }
 
-    // FIXME: this belongs in the abstractResourcController, and there should be an abstract method that returns gives hints to json() on which fields to
-    // serialize
-    @Action(value = JSON,
+    @Action(value = "json/{id}",
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     @SkipValidation
     @HttpForbiddenErrorResponseOnly
@@ -91,7 +89,6 @@ public class ProjectController extends AbstractResourceController<Project> {
         setJsonInputStream(new ByteArrayInputStream(projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback()).getBytes()));
         return SUCCESS;
     }
-
 
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
@@ -127,7 +124,6 @@ public class ProjectController extends AbstractResourceController<Project> {
         this.sortField = sortField;
     }
 
-
     public List<SortOption> getSortOptions() {
         List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
         options.remove(SortOption.RESOURCE_TYPE);
@@ -158,5 +154,4 @@ public class ProjectController extends AbstractResourceController<Project> {
         return sortField;
     }
 
-    
 }

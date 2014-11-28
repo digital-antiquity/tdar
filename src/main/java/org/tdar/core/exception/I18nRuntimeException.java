@@ -11,6 +11,7 @@ import org.tdar.utils.MessageHelper;
 public class I18nRuntimeException extends RuntimeException implements LocalizableException {
 
     private static final long serialVersionUID = 6115182705667575524L;
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Locale locale;

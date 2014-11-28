@@ -26,6 +26,8 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -79,15 +81,25 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     public void testSerialization() throws Exception {
-        FileProxy proxy  =new FileProxy();
+        FileProxy proxy = new FileProxy();
         String convertToXML = xmlService.convertToXML(proxy);
         logger.debug(convertToXML);
+        ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
+        String convertToXML4 = xmlService.convertToXML(collection);
+        logger.debug(convertToXML4);
         Image img = new Image();
+        img.setDescription("absasda sd");
+        img.setTitle("this is my title");
         img.getFileProxies().add(new FileProxy());
         String convertToXML2 = xmlService.convertToXML(img);
-        logger.debug(convertToXML2);        
+        logger.debug(convertToXML2);
+        Project proj = new Project();
+        proj.setDescription("absasda sd");
+        proj.setTitle("this is my title");
+        String convertToXML3 = xmlService.convertToXML(proj);
+        logger.debug(convertToXML3);
     }
-    
+
     @Test
     public void testAPIController() throws Exception {
         Document fake = resourceService.find(TEST_ID);
@@ -288,7 +300,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testReplaceRecord() throws Exception {
         Document old = generateDocumentWithFileAndUser();
-        TdarUser user = (TdarUser)old.getSubmitter();
+        TdarUser user = (TdarUser) old.getSubmitter();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
         String originalXml = xmlService.convertToXML(old);

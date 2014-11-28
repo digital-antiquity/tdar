@@ -32,7 +32,7 @@ import org.tdar.utils.PaginationHelper;
 @Namespace("/entity/keyword")
 public class SimpleKeywordController extends AbstractKeywordController implements SearchResultHandler<Resource> {
 
-    private static final long serialVersionUID = 5267144668224536569L;
+    private static final long serialVersionUID = 8576078075798508582L;
 
     @Autowired
     private transient SearchService searchService;
@@ -175,6 +175,7 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         return startRecord - recordsPerPage;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub

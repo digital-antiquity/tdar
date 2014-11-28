@@ -8,6 +8,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.struts.action.TdarActionSupport;
 
 public class ResourceControllerITCase extends AbstractResourceControllerITCase {
 
@@ -36,8 +37,7 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
                     controller.setResourceType(type);
                     controller.setResourceId(createAndSaveNewInformationResource.getId());
                     String selectResult = controller.edit();
-                    assertEquals(type.name(), selectResult);
-                    // FIXME: learn to test the locations
+                    assertEquals(TdarActionSupport.SUCCESS, selectResult);
                 } else {
                     resource.markUpdated(getUser());
                     resource.setTitle("test");
@@ -47,7 +47,7 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
                     controller.setResourceType(type);
                     controller.setResourceId(resource.getId());
                     String selectResult = controller.edit();
-                    assertEquals("input", selectResult);
+                    assertEquals(TdarActionSupport.INPUT, selectResult);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

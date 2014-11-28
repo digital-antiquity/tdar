@@ -54,9 +54,10 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class ExploreController extends AbstractLookupController {
 
+    private static final long serialVersionUID = -2826087034735486222L;
+
     public static final String EXPLORE = "explore";
 
-    private static final long serialVersionUID = -128651515783098910L;
     private Long viewCount = 0L;
     private List<InvestigationType> investigationTypes = new ArrayList<InvestigationType>();
     private List<CultureKeyword> cultureKeywords = new ArrayList<CultureKeyword>();

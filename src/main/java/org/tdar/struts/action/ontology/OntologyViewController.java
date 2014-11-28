@@ -10,7 +10,6 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -140,7 +139,7 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
     protected void handleSlug() {
         if (!Objects.equals(getSlug(), getPersistable().getSlug())) {
             OntologyNode node_ = getOntology().getNodeByIri(getIri());
-            if (node != null) {
+            if (node_ != null) {
                 redirectIri = String.format("/ontology/%s/node/%s", getId(), getIri());
             }
         } else {

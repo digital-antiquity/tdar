@@ -25,7 +25,7 @@ import org.tdar.core.bean.resource.Resource;
 @Immutable
 public class AggregateViewStatistic extends Base implements Serializable {
 
-    private static final long serialVersionUID = 1698960536676588440L;
+    private static final long serialVersionUID = -7546251456761049085L;
 
     @Column(name = "date_accessed")
     @Temporal(TemporalType.DATE)

@@ -170,7 +170,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             }
             QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
             try {
-                FullTextQuery search = searchService.search(query, null);
+                FullTextQuery search = searchService.search(query);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
                 total = search.getResultSize();
                 if (total == 0) {

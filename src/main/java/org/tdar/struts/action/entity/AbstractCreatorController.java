@@ -14,7 +14,6 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -34,8 +33,8 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     private Address address;
     private String returnUrl;
     private File file;
-    private String contentType;
-    private String filename;
+    private String fileContentType;
+    private String fileFileName;
 
     @SkipValidation
     @WriteableSession
@@ -43,7 +42,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @Action(value = "save-address",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}"),
+                    @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators/${id}"),
                     @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}"),
                     @Result(name = INPUT, location = "../address-info.ftl")
             })
@@ -140,22 +139,6 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
         this.file = file;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
     @Override
     public List<Status> getStatuses() {
         List<Status> statuses = super.getStatuses();
@@ -165,6 +148,22 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
         statuses.remove(Status.FLAGGED_ACCOUNT_BALANCE);
         statuses.remove(Status.DRAFT);
         return statuses;
+    }
+
+    public String getFileContentType() {
+        return fileContentType;
+    }
+
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
+    }
+
+    public String getFileFileName() {
+        return fileFileName;
+    }
+
+    public void setFileFileName(String fileFileName) {
+        this.fileFileName = fileFileName;
     }
 
 }

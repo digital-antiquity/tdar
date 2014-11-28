@@ -132,7 +132,9 @@ public interface TdarNamedQueries {
     String FIND_BY_TDAR_YEAR = "query.sparse_by_tdar_year";
     String FIND_BY_TDAR_YEAR_COUNT = "query.sparse_by_tdar_year_count";
     String QUERY_RESOURCE_FILE_EMBARGO_EXIPRED = "query.expired";
+    String QUERY_HOSTED_DOWNLOAD_AUTHORIZATION = "query.hosted_download_auth";
     String QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW = "query.expires_tomorrow";
+    String CAN_EDIT_INSTITUTION = "query.authorize_edit_institution";
     // raw SQL/HQL queries
 
     /**

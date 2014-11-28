@@ -50,6 +50,7 @@ public class XMLDocumentResult implements Result {
         this.object = stream;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(ActionInvocation invocation) throws Exception {
         Object object_ = invocation.getStack().findValue(object);

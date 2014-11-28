@@ -79,7 +79,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;
@@ -552,7 +551,7 @@ public class Resource implements Persistable,
     public List<Long> getSharedCollectionsContaining() {
         Set<Long> collectionIds = new HashSet<Long>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (!collection.isInternal()) {
+            if (collection.isShared()) {
                 collectionIds.add(collection.getId());
                 collectionIds.addAll(collection.getParentIds());
             }

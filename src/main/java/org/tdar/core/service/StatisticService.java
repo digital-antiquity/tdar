@@ -45,7 +45,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     @Autowired
     private AccountDao accountDao;
-    
+
     @Autowired
     private AggregateStatisticsDao aggregateStatisticsDao;
 
@@ -200,7 +200,8 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
                 return aggregateStatisticsDao.getMonthlyStats(ids, provider);
             case YEAR:
                 return aggregateStatisticsDao.getAnnualStats(ids, provider);
+            default:
+                return null;
         }
-        return null;
     }
 }

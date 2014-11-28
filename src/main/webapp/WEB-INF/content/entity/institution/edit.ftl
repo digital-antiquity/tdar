@@ -37,6 +37,8 @@
             </div>
         </#if>
 
+        <@entityEdit.uploadForm />
+
         <@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
 
         <@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />

@@ -40,6 +40,7 @@ public class ScholarController extends AbstractLookupController {
         this.year = year;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     @Actions({
             @Action(value = "scholar", results = { @Result(name = SUCCESS, location = "scholar.ftl") }),

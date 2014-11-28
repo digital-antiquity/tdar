@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
@@ -42,12 +43,13 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
@@ -75,19 +77,22 @@ import freemarker.ext.dom.NodeModel;
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-@Results(value= { @Result(location = "../creators.ftl"),
+@Results(value = { @Result(location = "../creators.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
-        location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
+                location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
 public class BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7004124945674660779L;
     public static final String FOAF_XML = ".foaf.xml";
     public static final String SLASH = "/";
     public static final String XML = ".xml";
     public static final String CREATORS = "creators";
     public static final String EXPLORE = "explore";
 
-    private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
     private Persistable persistable;
     private Long viewCount = 0L;
@@ -109,12 +114,13 @@ public class BrowseCreatorController extends AbstractLookupController implements
     private List<NodeModel> collaborators;
     private String slug = "";
     private String slugSuffix = "";
-    private String keywordPath = "";
     private boolean redirectBadSlug;
-
 
     @Autowired
     private transient AccountService accountService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
@@ -155,7 +161,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
     })
     public String creatorRdf() throws FileNotFoundException {
         try {
-            FileStoreFile object = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
+            FileStoreFile object = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
             File file = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, object);
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
@@ -168,6 +174,16 @@ public class BrowseCreatorController extends AbstractLookupController implements
             return ERROR;
         }
         return ERROR;
+    }
+
+    public boolean isEditable() {
+        if (isEditorOrSelf()) {
+            return true;
+        }
+        if (creator.getCreatorType().isInstitution()) {
+            return authorizationService.canEdit(getAuthenticatedUser(), (Institution) creator);
+        }
+        return false;
     }
 
     @Override
@@ -192,15 +208,14 @@ public class BrowseCreatorController extends AbstractLookupController implements
         }
     }
 
-    @Actions(value={
+    @Actions(value = {
             @Action(value = "{id}"),
-            @Action(value="{id}/{slug}")
+            @Action(value = "{id}/{slug}")
     })
     public String browseCreators() throws ParseException, TdarActionException {
         if (redirectBadSlug) {
             return BAD_SLUG;
         }
-
 
         if (isEditor()) {
             if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
@@ -226,8 +241,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
             getGenericService().saveOrUpdate(cvs);
         }
 
-
-        FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
+        FileStoreFile personInfo = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, getId(), getId() + XML);
         try {
             File foafFile = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
             if (foafFile.exists()) {
@@ -477,12 +491,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
         this.slugSuffix = slugSuffix;
     }
 
-    private String getKeywordPath() {
-        return keywordPath;
+    public boolean isLogoAvailable() {
+        return checkLogoAvailable(ObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
     }
-
-    public void setKeywordPath(String keywordPath) {
-        this.keywordPath = keywordPath;
-    }
-
 }

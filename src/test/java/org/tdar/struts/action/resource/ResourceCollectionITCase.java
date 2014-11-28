@@ -1260,6 +1260,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getResources()));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testDraftResourceVisibleByAuthuser() throws Exception {

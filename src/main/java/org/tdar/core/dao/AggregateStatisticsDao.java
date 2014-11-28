@@ -114,6 +114,7 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param sql
      * @return
      */
+    @SuppressWarnings("unchecked")
     private StatsResultObject populateResultsObject(Collection<Long> resourceIds, List<String> labelKeys, String sql) {
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameterList("ids", resourceIds);

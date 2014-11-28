@@ -202,7 +202,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
                 case RESOURCE:
                     msg = controller.search();
                     break;
-                case KEYWORD:
+                default:
                     fail();
             }
         } catch (Exception ex) {

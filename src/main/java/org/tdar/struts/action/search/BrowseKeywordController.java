@@ -28,6 +28,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -149,6 +150,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public List getFacetFields() {
         return null;

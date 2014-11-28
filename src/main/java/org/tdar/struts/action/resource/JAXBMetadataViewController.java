@@ -36,8 +36,8 @@ import edu.asu.lib.mods.ModsDocument;
 public class JAXBMetadataViewController extends AuthenticationAware.Base implements Preparable, ViewableAction<Resource>, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = -7297306518597493712L;
-    public static final String DC = "dc";
-    public static final String MODS = "mods";
+    public static final String DC = "dc/{id}";
+    public static final String MODS = "mods/{id}";
     private ModsDocument modsDocument;
     private DublinCoreDocument dcDocument;
 

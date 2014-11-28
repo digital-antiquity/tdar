@@ -14,7 +14,7 @@
         "enableMockAuth" via JVM command line for the test like so: -DenableMockAuth=true -->
 
 <!--    
-     <bean id="AuthProvider" class="org.tdar.core.dao.external.auth.CrowdRestDao" />
+     <bean id="AuthenticationProvider" class="org.tdar.core.dao.external.auth.MockAuthenticationProvider" />
 
      <bean id="DoiProvider" class="org.tdar.core.dao.external.pid.EZIDDao" />
 

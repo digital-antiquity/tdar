@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.FileType;
@@ -176,7 +177,7 @@ public class DownloadService {
 
     @Transactional(readOnly = false)
     public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
-            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider) {
+            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
         if (Persistable.Base.isNotNullOrTransient(versionToDownload)) {
             versionsToDownload.add(versionToDownload);
@@ -198,13 +199,13 @@ public class DownloadService {
             }
         }
 
-        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, authenticatedUser, textProvider, this);
+        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, authenticatedUser, textProvider, this, authorization);
         dto.setIncludeCoverPage(includeCoverPage);
 
         Iterator<InformationResourceFileVersion> iter = versionsToDownload.iterator();
         while (iter.hasNext()) {
             InformationResourceFileVersion version = iter.next();
-            if (!authorizationService.canDownload(version, authenticatedUser)) {
+            if (!authorizationService.canDownload(version, authenticatedUser) && authorization == null) {
                 logger.warn("thumbail request: resource is confidential/embargoed: {}", version);
                 dto.setResult(DownloadResult.FORBIDDEN);
                 return dto;

@@ -13,6 +13,8 @@ import org.tdar.utils.Pair;
  */
 public class StringRange extends Pair<String, String> implements Range<String>, Validatable {
 
+    private static final long serialVersionUID = 4788181277695080159L;
+
     public StringRange() {
         super(null, null);
     }

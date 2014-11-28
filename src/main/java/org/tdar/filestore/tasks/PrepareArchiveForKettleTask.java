@@ -179,9 +179,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     private void writeKettleControlFileToDisk(Archive archive, File copy) throws IOException, TemplateException {
         Template template = loadFreemarkerTemplate();
         Map<String, Object> values = new HashMap<>();
-        values.put(FILE_NAME, StringEscapeUtils.escapeXml(copy.getAbsolutePath()));
+        values.put(FILE_NAME, StringEscapeUtils.escapeXml11(copy.getAbsolutePath()));
         values.put(PROJECT_ID, archive.getProjectId());
-        values.put(UPDATED_BY_EMAIL, StringEscapeUtils.escapeXml(getEmailToNotify(archive)));
+        values.put(UPDATED_BY_EMAIL, StringEscapeUtils.escapeXml11(getEmailToNotify(archive)));
         try (Writer output = new FileWriter(getNewRunControlFile())) {
             template.process(values, output);
         }

@@ -157,17 +157,15 @@ public class UrlService {
     }
 
     public static String constructUnAPIFormatUrl(Resource r, String format) {
-        StringBuilder sb = new StringBuilder("/unapi");
-
+        String type = null;
         if (format.equalsIgnoreCase("oai_dc") || format.equalsIgnoreCase("dc")) {
-            sb.append("/dc");
+            type = "dc";
         } else if (format.equalsIgnoreCase("mods")) {
-            sb.append("/mods");
+            type = "mods";
         } else {
             return null;
         }
-        sb.append("/").append(r.getId());
-        return sb.toString();
+        return String.format("/unapi/%s/%s", type, r.getId());
     }
 
 }

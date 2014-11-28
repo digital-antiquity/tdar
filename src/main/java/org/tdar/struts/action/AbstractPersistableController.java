@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -155,8 +156,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         boolean isNew = false;
         try {
             if (isPostRequest()) {
-//                checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
-
                 if (isNullOrNew()) {
                     isNew = true;
                 }
@@ -295,7 +294,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
 
-//        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
         return loadAddMetadata();
     }
@@ -338,23 +336,28 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public abstract String loadEditMetadata() throws TdarActionException;
 
     public enum RequestType {
-        EDIT(true),
-        CREATE(true),
-//        DELETE(true),
-        MODIFY_EXISTING(true),
-        SAVE(true),
-//        VIEW(false),
-        NONE(false), VIEW(false);
-        private final boolean authenticationRequired;
+        EDIT,
+        CREATE,
+        DELETE,
+        SAVE,
+        NONE, VIEW;
 
-        private RequestType(boolean authenticationRequired) {
-            this.authenticationRequired = authenticationRequired;
+        public String getLabel() {
+            switch (this) {
+                case CREATE:
+                    return "CREATING";
+                case DELETE:
+                    return "DELETING";
+                case EDIT:
+                    return "EDITING";
+                case SAVE:
+                    return "SAVING";
+                case VIEW:
+                    return "VIEWING";
+                default:
+                    return "";
+            }
         }
-
-        public boolean isAuthenticationRequired() {
-            return authenticationRequired;
-        }
-
     }
 
     @Override
@@ -384,11 +387,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      */
     @Override
     public void prepare() throws TdarActionException {
-        prepareAndLoad(this, RequestType.EDIT);
-        if (getPersistable() == null) {
+        RequestType type = RequestType.EDIT;
+        if (getId() == null && (getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl()))) {
+            getLogger().debug("setting persistable");
             setPersistable(createPersistable());
+            type = RequestType.CREATE;
         }
-        checkValidRequest(this);
+        prepareAndLoad(this, type);
     }
 
     protected boolean isPersistableIdSet() {
