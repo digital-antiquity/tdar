@@ -52,7 +52,6 @@ import org.tdar.core.service.integration.DataIntegrationWorkbook;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.personal.PersonalFilestore;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.intgration.IntegrationColumn;
 import org.tdar.struts.data.intgration.IntegrationContext;
 import org.tdar.struts.data.intgration.IntegrationDataResult;
