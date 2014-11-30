@@ -1,4 +1,4 @@
-package org.tdar.core.bean.util;
+package org.tdar.core.service.processes;
 
 import java.util.ArrayList;
 import java.util.Collections;

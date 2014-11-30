@@ -28,7 +28,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
@@ -36,6 +35,7 @@ import org.tdar.core.service.processes.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.ScheduledBatchProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 

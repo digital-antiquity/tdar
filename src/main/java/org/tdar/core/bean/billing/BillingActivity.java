@@ -15,7 +15,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.bean.TdarGroup;
 
 /*
  * An activity represents a specific thing that can be "charged"

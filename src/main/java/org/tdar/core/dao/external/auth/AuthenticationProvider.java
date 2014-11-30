@@ -3,6 +3,7 @@ package org.tdar.core.dao.external.auth;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.Configurable;
 

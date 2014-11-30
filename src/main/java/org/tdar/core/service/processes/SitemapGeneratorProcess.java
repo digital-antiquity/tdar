@@ -16,7 +16,6 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;

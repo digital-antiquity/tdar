@@ -23,4 +23,7 @@ public interface URLConstants {
     String CART_REVIEW_UNAUTHENTICATED = "/cart/review-unauthenticated";
     String CART_PROCESS_PAYMENT_REQUEST = "/cart/process-payment-request";
 
+    String TDAR_NAMESPACE_URL = "http://www.tdar.org/namespace";
+    String TDAR_NAMESPACE_PREFIX = "tdar";
+
 }

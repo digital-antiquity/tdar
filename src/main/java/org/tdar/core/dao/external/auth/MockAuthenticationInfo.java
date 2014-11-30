@@ -3,6 +3,8 @@ package org.tdar.core.dao.external.auth;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.tdar.core.bean.TdarGroup;
+
 public class MockAuthenticationInfo {
 
     private Set<TdarGroup> memberships = new HashSet<>();

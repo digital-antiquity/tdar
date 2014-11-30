@@ -97,7 +97,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String UPDATE_COLUMN_TO_NULL = "UPDATE %s SET \"%s\"=NULL";
     private static final String ORIGINAL_KEY = "_original_";
     private static final String INSERT_STATEMENT = "INSERT INTO %1$s (%2$s) VALUES(%3$s)";
-    private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
+    private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + DataTableColumn.TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
     public static final String DEFAULT_TYPE = "text";
 
@@ -799,7 +799,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         final DataTable tempTable = new DataTable();
         tempTable.setName(proxy.getTempTableName());
 
-        createTable(String.format("CREATE TEMPORARY TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial)", tempTable.getName()));
+        createTable(String.format("CREATE TEMPORARY TABLE %1$s (" + DataTableColumn.TDAR_ID_COLUMN + " bigserial)", tempTable.getName()));
         DataTableColumn tableColumn = new DataTableColumn();
         tableColumn.setName("tableName");
         executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), tableColumn.getName()));

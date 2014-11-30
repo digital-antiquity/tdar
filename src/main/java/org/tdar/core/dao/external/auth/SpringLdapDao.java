@@ -26,6 +26,7 @@ import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;

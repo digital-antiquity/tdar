@@ -1,6 +1,5 @@
 package org.tdar.core.bean.billing;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,9 +37,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -239,7 +236,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.resources = resources;
     }
 
-    public void initTotals() {
+    private void initTotals() {
         resetTransientTotals();
         for (Invoice invoice : getInvoices()) {
             if (invoice.getTransactionStatus() != TransactionStatus.TRANSACTION_SUCCESSFUL) {
@@ -297,37 +294,6 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public Long getAvailableResources() {
         Long totalResources = getTotalNumberOfResources();
         return totalResources - getResourcesUsed();
-    }
-
-    public enum AccountAdditionStatus {
-        CAN_ADD_RESOURCE,
-        NOT_ENOUGH_SPACE,
-        NOT_ENOUGH_FILES,
-        NOT_ENOUGH_RESOURCES;
-    }
-
-    public AccountAdditionStatus canAddResource(ResourceEvaluator re) {
-        if (re.evaluatesNumberOfFiles()) {
-            logger.debug("available files {} trying to use {}", getAvailableNumberOfFiles(), re.getFilesUsed());
-            if ((getAvailableNumberOfFiles() - re.getFilesUsed()) < 0) {
-                return AccountAdditionStatus.NOT_ENOUGH_FILES;
-            }
-        }
-
-        if (re.evaluatesNumberOfResources()) {
-            logger.debug("available resources {} trying to use {}", getAvailableResources(), re.getResourcesUsed());
-            if ((getAvailableResources() - re.getResourcesUsed()) < 0) {
-                return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
-            }
-        }
-
-        if (re.evaluatesSpace()) {
-            logger.debug("available space {} trying to use {}", getAvailableSpaceInBytes(), re.getSpaceUsedInBytes());
-            if ((getAvailableSpaceInBytes() - re.getSpaceUsedInBytes()) < 0) {
-                return AccountAdditionStatus.NOT_ENOUGH_SPACE;
-            }
-        }
-        return AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 
     @Override
@@ -391,25 +357,6 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.authorizedMembers = authorizedMembers;
     }
 
-    public boolean hasMinimumForNewRecord(ResourceEvaluator re, ResourceType type) {
-        initTotals();
-        return (re.accountHasMinimumForNewResource(this, type));
-    }
-
-    /*
-     * We always update quotas even if a resource overdraws because it's impossible later to reconcile how much something was overdrawn easily...
-     * eg. was it because it was a "new resource" or because it was a new file, or 2k over
-     */
-    public void updateQuotas(ResourceEvaluator endingEvaluator, Collection<Resource> list) {
-        AccountAdditionStatus status = canAddResource(endingEvaluator);
-        getResources().addAll(list);
-        setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
-        setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
-        setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
-        if (status != AccountAdditionStatus.CAN_ADD_RESOURCE) {
-            throw new TdarQuotaException("account.overdrawn", status);
-        }
-    }
 
     public Long getFilesUsed() {
         return filesUsed;
@@ -463,9 +410,6 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.expires = expires;
     }
 
-    public boolean isOverdrawn(ResourceEvaluator re) {
-        return canAddResource(re) != AccountAdditionStatus.CAN_ADD_RESOURCE;
-    }
 
     @Override
     public Date getDateUpdated() {

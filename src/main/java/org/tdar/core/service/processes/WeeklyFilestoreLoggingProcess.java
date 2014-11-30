@@ -19,7 +19,6 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersionProxy;
-import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericService;

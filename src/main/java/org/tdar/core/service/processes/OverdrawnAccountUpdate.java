@@ -11,7 +11,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.EmailService;
 

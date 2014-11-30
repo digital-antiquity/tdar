@@ -12,23 +12,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.external.AuthorizationService;
@@ -157,7 +157,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<Account> accounts = listAvailableAccountsForUser(user);
         for (Account account : accounts) {
             logger.trace("evaluating account {}", account.getName());
-            if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
+            if (account.isActive() && getDao().hasMinimumForNewRecord(account, getResourceEvaluator(), type)) {
                 logger.info("account '{}' has minimum balance for {}", account.getName(), user.getProperName());
                 return true;
             }
@@ -394,6 +394,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             selectedAccount = genericDao.find(Account.class, id);
         }
         return selectedAccount;
+    }
+
+    @Transactional
+    @Deprecated
+    public void updateQuotas(Account account, ResourceEvaluator re, List<Resource> resources) {
+        getDao().updateQuotas(account, re, resources);
+    }
+
+    public AccountAdditionStatus canAddResource(Account account, ResourceEvaluator re) {
+        return getDao().canAddResource(account, re);
     }
 
 }

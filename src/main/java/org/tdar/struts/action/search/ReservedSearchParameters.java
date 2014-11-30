@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.FieldQueryPart;

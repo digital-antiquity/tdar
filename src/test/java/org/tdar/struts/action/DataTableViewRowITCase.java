@@ -116,7 +116,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         assertEquals(Action.SUCCESS, controller.getDataResultsRow());
         final Iterator<DataTableColumn> iterator = controller.getDataTableRowAsMap().keySet().iterator();
         final String name = iterator.next().getName();
-        assertTrue("The row id column is expected to be first in the map, but found " + name, name.equals(TargetDatabase.TDAR_ID_COLUMN));
+        assertTrue("The row id column is expected to be first in the map, but found " + name, name.equals(DataTableColumn.TDAR_ID_COLUMN));
     }
 
 }

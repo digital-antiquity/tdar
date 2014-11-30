@@ -8,6 +8,7 @@ import org.hibernate.search.bridge.LuceneOptions;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.DataUtil;
 
 /**
  * 
@@ -32,7 +33,7 @@ public class StringMapBridge implements FieldBridge {
             if (key instanceof DataTableColumn) {
                 keyName = ((DataTableColumn) key).getName();
             } else {
-                keyName = GenericService.extractStringValue(key);
+                keyName = DataUtil.extractStringValue(key);
             }
 
             opts.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + map.get(key), doc);

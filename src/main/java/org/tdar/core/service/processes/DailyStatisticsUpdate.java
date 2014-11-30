@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.StatisticService;
 
 /**

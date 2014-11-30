@@ -1,11 +1,10 @@
-package org.tdar.core.dao.external.auth;
+package org.tdar.core.bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.tdar.core.bean.HasLabel;
 
 public enum TdarGroup implements HasLabel {
 

@@ -1,7 +1,9 @@
-package org.tdar.core.bean.billing;
+package org.tdar.core.dao.external.payment.nelnet;
 
 import java.util.Arrays;
 import java.util.List;
+
+import org.tdar.core.bean.billing.TransactionStatus;
 
 /**
  * Enum to track NelNet Transaction Status

@@ -11,7 +11,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.InformationResourceFileService;

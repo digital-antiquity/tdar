@@ -28,7 +28,6 @@ public interface TargetDatabase extends Database {
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
-    static final String TDAR_ID_COLUMN = "id_row_tdar";
 
     String normalizeTableOrColumnNames(String input);
 

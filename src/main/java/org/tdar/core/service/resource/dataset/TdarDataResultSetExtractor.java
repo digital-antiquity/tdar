@@ -53,7 +53,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             if ((rowNum > start) && (rowNum <= (start + page))) {
                 ArrayList<String> values = new ArrayList<String>();
                 for (DataTableColumn col : wrapper.getFields()) {
-                    if (col.isVisible() || (returnRowId && TargetDatabase.TDAR_ID_COLUMN.equals(col.getName()))) {
+                    if (col.isVisible() || (returnRowId && DataTableColumn.TDAR_ID_COLUMN.equals(col.getName()))) {
                         values.add(result.get(col));
                     }
                 }

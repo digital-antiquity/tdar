@@ -18,12 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -39,6 +37,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.dao.AccountAdditionStatus;
+import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.billing.AccountService;
 
@@ -98,14 +98,14 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         updateModel(model, true, false, false);
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_RESOURCES, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_RESOURCES, accountService.canAddResource(account ,re));
         updateModel(model, false, true, false);
         logger.info("af: {} , ref: {}", account.getAvailableNumberOfFiles(), re.getFilesUsed());
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, accountService.canAddResource(account ,re));
         updateModel(model, false, false, true);
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, accountService.canAddResource(account ,re));
         updateModel(model, false, false, false);
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
         // model.setCountingResources(true);
         // assertFalse(re.accountHasMinimumForNewResource(new Account()));
         // model.setCountingResources(false);
@@ -122,20 +122,20 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
         Account account = setupAccountWithInvoiceForOneResource(model, getUser());
         updateModel(model, true, false, false);
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
         updateModel(model, false, true, false);
 
         /* add one file */
         logger.info("af: {} , ref: {}", account.getAvailableNumberOfFiles(), re.getFilesUsed());
         account = setupAccountWithInvoiceForOneFile(model, getUser());
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
 
         /* add 5 MB */
         updateModel(model, false, false, true);
         account = setupAccountWithInvoiceFor6Mb(model, getUser());
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
         updateModel(model, false, false, false);
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         logger.info("{}", re);
         List<Resource> resources = new ArrayList<Resource>();
         resources.add(resource);
-        account.updateQuotas(re, resources);
+        accountService.updateQuotas(account, re, resources);
         account.getResources().add(resource);
         assertTrue(account.getResources().contains(resource));
         assertEquals(spaceUsedInBytes.longValue() + re.getSpaceUsedInBytes(), account.getSpaceUsedInBytes().longValue());

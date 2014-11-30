@@ -7,9 +7,9 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 
 public class QueryPartITCase extends AbstractIntegrationTestCase {

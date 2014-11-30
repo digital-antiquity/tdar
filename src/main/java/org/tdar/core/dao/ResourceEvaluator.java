@@ -1,4 +1,4 @@
-package org.tdar.core.bean.billing;
+package org.tdar.core.dao;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -10,6 +10,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
