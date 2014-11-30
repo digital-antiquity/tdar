@@ -250,14 +250,14 @@ public class Resource implements Persistable,
     @JsonView(JsonLookupFilter.class)
     private Long id = -1L;
 
-    @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
+    @BulkImportField(key="TITLE", required = true, order = -100)
     @NotNull
     @Column(length = 512)
     @JsonView(JsonLookupFilter.class)
     @Length(max = 512)
     private String title;
 
-    @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
+    @BulkImportField(required = true, order = -50, key="DESCRIPTION")
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @JsonView(JsonLookupFilter.class)

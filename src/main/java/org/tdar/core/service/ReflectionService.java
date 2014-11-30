@@ -41,10 +41,13 @@ import org.springframework.util.ReflectionUtils;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -554,9 +557,8 @@ public class ReflectionService {
             }
             if (annotation != null) {
                 String fieldPrefix = prefix;
-                if (StringUtils.isNotBlank(annotation.label())) {
-                    fieldPrefix = StringUtils.trim(annotation.label());
-                    // fieldPrefix = fieldPrefix.trim();
+                if (StringUtils.isNotBlank(annotation.key())) {
+                    fieldPrefix = CellMetadata.getDisplayLabel(MessageHelper.getInstance(), annotation.key());
                 }
 
                 Class<?> type = field.getType();
@@ -579,7 +581,7 @@ public class ReflectionService {
                 // handle more primative fields private String ...
                 else {
                     logger.trace("adding {} ({})", field, stack);
-                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && Objects.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
+                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && Objects.equals(annotation.key(), InformationResource.COPYRIGHT_HOLDER)) {
                         continue;
                     }
 

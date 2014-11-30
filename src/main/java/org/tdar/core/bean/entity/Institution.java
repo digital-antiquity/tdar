@@ -76,7 +76,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
-    @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
+    @BulkImportField(key="CREATOR_INSTITUTION", order = 10)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 

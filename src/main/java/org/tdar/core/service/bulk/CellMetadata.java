@@ -16,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * This class is a proxy class that enables the BulkUpload process to map and manage the import process. The BulkUploadService
@@ -25,6 +29,19 @@ import org.tdar.core.bean.BulkImportField;
  * 
  */
 public class CellMetadata implements Serializable {
+
+    private static final String FILENAME_ = "FILENAME";
+    public static final String _COMMENT = "_comment";
+    public static final String BULK_UPLOAD_TEMPLATE = "bulkUploadTemplate.";
+
+    public static String getDisplayLabel(TextProvider provider, String key) {
+        return provider.getText(BULK_UPLOAD_TEMPLATE + key);
+    }
+
+    public static String getDescription(TextProvider provider, String key) {
+        return provider.getText(BULK_UPLOAD_TEMPLATE + key + _COMMENT);
+
+    }
 
     private static final String REQUIRED = "*";
 
@@ -48,8 +65,18 @@ public class CellMetadata implements Serializable {
         };
 
         @Override
+        public String getDisplayName() {
+            return CellMetadata.getDisplayLabel(MessageHelper.getInstance(), FILENAME_);
+        };
+
+        @Override
+        public String getKey() {
+            return FILENAME_;
+        };
+
+        @Override
         public String getComment() {
-            return BulkImportField.FILENAME_DESCRIPTION;
+            return CellMetadata.getDescription(MessageHelper.getInstance(), FILENAME_);
         };
 
         @Override
@@ -70,9 +97,7 @@ public class CellMetadata implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name).append(" display:").append(displayName).append(" rqrd:").append(required).append(" -- ").append(mappedClass);
-        return sb.toString();
+        return String.format("display: %s rqrd: %s -- %s", displayName, required, mappedClass);
     }
 
     @SuppressWarnings("unused")
@@ -80,6 +105,8 @@ public class CellMetadata implements Serializable {
     private List<Enum<?>> enumList = new ArrayList<>();
     private boolean floatNumber = false;
     private boolean numeric = false;
+
+    private String key;
 
     /**
      * Initialize with specified values
@@ -112,8 +139,17 @@ public class CellMetadata implements Serializable {
             }
         }
         this.name = fieldPrefix + field.getName();
-        this.displayName = StringUtils.trim(prefix + " " + annotation.label());
-        this.comment = annotation.comment();
+        this.setKey(annotation.key());
+        String keyL = BULK_UPLOAD_TEMPLATE + annotation.key();
+        String keyC = keyL + _COMMENT;
+        if (MessageHelper.checkKey(keyC)) {
+            comment = MessageHelper.getMessage(keyC);
+        }
+        if (StringUtils.equals(MessageHelper.getMessage(keyL), keyL)) {
+            throw new TdarRecoverableRuntimeException("key not stored: " + keyL);
+        }
+        displayName = StringUtils.trim(prefix + " " + MessageHelper.getMessage(keyL));
+
         this.order = annotation.order();
 
         if (Integer.class.isAssignableFrom(field.getType()) || Long.class.isAssignableFrom(field.getType())) {
@@ -262,4 +298,13 @@ public class CellMetadata implements Serializable {
     public void setNumeric(boolean numeric) {
         this.numeric = numeric;
     }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
 }
