@@ -1,8 +1,10 @@
 package org.tdar.core.bean.resource;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -26,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -63,11 +66,9 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @ManyToOne(optional = false)
     private Ontology ontology;
 
-    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_start")
     private Integer intervalStart;
 
-    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_end")
     private Integer intervalEnd;
 
@@ -98,6 +99,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     private transient boolean mappedDataValues;
     private transient boolean parent;
     private transient boolean[] columnHasValueArray;
+    private transient Map<DataTableColumn,Boolean> columnHasValueMap = new HashMap<>();
+
     private transient OntologyNode parentNode;
     private transient Set<OntologyNode> synonymNodes = new HashSet<>();
 
@@ -337,6 +340,14 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public void setMappedDataValues(boolean mappedDataValues) {
         this.mappedDataValues = mappedDataValues;
+    }
+
+    public Map<DataTableColumn,Boolean> getColumnHasValueMap() {
+        return columnHasValueMap;
+    }
+
+    public void setColumnHasValueMap(Map<DataTableColumn,Boolean> columnHasValueMap) {
+        this.columnHasValueMap = columnHasValueMap;
     }
 
 }

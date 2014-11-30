@@ -27,6 +27,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
@@ -55,6 +56,7 @@ import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.intgration.IntegrationColumn;
 import org.tdar.struts.data.intgration.IntegrationContext;
 import org.tdar.struts.data.intgration.IntegrationDataResult;
+import org.tdar.struts.data.intgration.IntegrationColumn.ColumnType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
@@ -549,5 +551,20 @@ public class DataIntegrationService {
             dFilter.setOntologies(genericDao.loadFromSparseEntities(dFilter.getOntologies(), Ontology.class));
         }
         filter.setAuthorizedUser(authUser);
+    }
+
+    @Transactional
+    public void getColumnDetails(IntegrationColumn integrationColumn) {
+        // rehydrate all of the resources being passed in, we just had empty beans with ids
+        integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
+        integrationColumn.setColumns(genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class));
+
+        // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
+        for (DataTableColumn column : integrationColumn.getColumns()) {
+            logger.info("{} ({})", column, column.getDefaultOntology());
+            logger.info("{} ({})", column, column.getDefaultCodingSheet());
+            updateMappedCodingRules(column);
+        }
+        
     }
 }

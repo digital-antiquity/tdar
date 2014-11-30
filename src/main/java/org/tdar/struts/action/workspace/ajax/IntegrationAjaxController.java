@@ -4,14 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -19,7 +17,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
@@ -38,8 +35,11 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.intgration.IntegrationColumn;
-import org.tdar.struts.data.intgration.IntegrationColumn.ColumnType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.opensymphony.xwork2.Preparable;
 
 /**
@@ -55,14 +55,9 @@ import com.opensymphony.xwork2.Preparable;
 public class IntegrationAjaxController extends AuthenticationAware.Base implements Preparable, SimpleSearchResultHandler {
 
     private static final long serialVersionUID = 7550182111626753594L;
-    private Long ontologyId;
+//    private Long ontologyId;
 
-
-    //minimize LOC so people don't notice this hack
-    class SimpleMap extends HashMap<String, Object> {}
-    class SimpleMapList extends ArrayList<HashMap<String, Object>>{
-    }
-
+    private IntegrationColumn integrationColumn;
     private OntologyIntegrationSearchFilter ontologyFilter;
     private DatasetIntegrationSearchFilter datasetFilter;
     private InputStream jsonInputStream;
@@ -240,22 +235,12 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     @Action(value = "integration-column-details")
     public String integrationColumnDetails() throws IOException {
-        Ontology ontology = ontologyService.find(getOntologyId());
-        HashMap<String, Object> map = setupOntologyForJson(ontology);
-        List<DataTableColumn> columns = getGenericService().findAll(DataTableColumn.class, getDataTableColumnsIds());
-        // rehydrate all of the resources being passed in, we just had empty beans with ids
-        IntegrationColumn intColumn = new IntegrationColumn(ColumnType.INTEGRATION, columns.toArray(new DataTableColumn[0]));
-
-        // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
-        for (DataTableColumn column : columns) {
-            getLogger().info("{} ({})", column, column.getDefaultOntology());
-            getLogger().info("{} ({})", column, column.getDefaultCodingSheet());
-            integrationService.updateMappedCodingRules(column);
-        }
+        integrationService.getColumnDetails(integrationColumn);
         ArrayList<Map<String, Object>> nodeList = new ArrayList<>();
+        HashMap<String, Object> map = setupOntologyForJson(integrationColumn.getSharedOntology());
         map.put("nodes", nodeList);
 
-        for (OntologyNode node : intColumn.getFlattenedOntologyNodeList()) {
+        for (OntologyNode node : integrationColumn.getFlattenedOntologyNodeList()) {
             Map<String, Object> nodeMap = new HashMap<>();
             nodeList.add(nodeMap);
             nodeMap.put("id", node.getId());
@@ -266,7 +251,13 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
             nodeMap.put("interval_start", node.getIntervalStart());
             nodeMap.put("interval_end", node.getIntervalEnd());
             nodeMap.put("import_order", node.getImportOrder());
+            Map<String, Object> mappings = new HashMap<>();
+            nodeMap.put("mappings", mappings);
             nodeMap.put("mapping_list", node.getColumnHasValueArray());
+            Map<DataTableColumn, Boolean> mapMap = node.getColumnHasValueMap();
+            for (DataTableColumn column : mapMap.keySet()) {
+                mappings.put(column.getName(), mapMap.get(column));
+            }
         }
         results = nodeList;
         stringifyThenSetInputStream(results);
@@ -276,7 +267,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     @Action(value = "ontology-details")
     public String ontologyDetails() throws IOException {
         List<Ontology> ontologies = ontologyService.findAll(getOntologyIds());
-        SimpleMapList maplist = new SimpleMapList();
+        List<Map<String,Object>> maplist = new ArrayList<Map<String,Object>>();
         for(Ontology ontology : ontologies) {
             HashMap<String, Object> map = setupOntologyForJson(ontology);
             map.put("nodes", setupOntologyNodesForJson(ontology));
@@ -376,13 +367,21 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         this.dataTableIds = dataTableIds;
     }
 
-    public Long getOntologyId() {
-        return ontologyId;
+    public IntegrationColumn getIntegrationColumn() {
+        return integrationColumn;
     }
 
-    public void setOntologyId(Long ontologyId) {
-        this.ontologyId = ontologyId;
+    public void setIntegrationColumn(IntegrationColumn integrationColumn) {
+        this.integrationColumn = integrationColumn;
     }
+
+//    public Long getOntologyId() {
+//        return ontologyId;
+//    }
+//
+//    public void setOntologyId(Long ontologyId) {
+//        this.ontologyId = ontologyId;
+//    }
 
 
 }

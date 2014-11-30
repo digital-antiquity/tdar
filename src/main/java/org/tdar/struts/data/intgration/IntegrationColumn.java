@@ -297,11 +297,14 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
         for (OntologyNode ontologyNode : ontologyNodes) {
             boolean[] columnHasValueArray = new boolean[columns.size()];
+            Map<DataTableColumn,Boolean> columnHasValueMap = new HashMap<>();
             // assume integrationColumns and data value maps have already been
             // populated
             for (int index = 0; index < columns.size(); index++) {
-                columnHasValueArray[index] = false;
                 DataTableColumn column = columns.get(index);
+                columnHasValueArray[index] = false;
+                
+                columnHasValueMap.put(column, Boolean.FALSE);
                 CodingSheet codingSheet = column.getDefaultCodingSheet();
                 if (codingSheet == null) {
                     continue;
@@ -319,6 +322,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
                     for (CodingRule rule : rules) {
                         if ((rule != null) && rule.isMappedToData(column)) {
                             columnHasValueArray[index] = true;
+                            columnHasValueMap.put(column, Boolean.TRUE);
                             ontologyNode.setMappedDataValues(true);
                         }
                     }
@@ -326,6 +330,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
             }
             ontologyNode.setColumnHasValueArray(columnHasValueArray);
+            ontologyNode.setColumnHasValueMap(columnHasValueMap);
         }
         // could probably do it in one pass recursively
         for (OntologyNode ontologyNode : ontologyNodes) {
