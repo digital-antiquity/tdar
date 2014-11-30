@@ -19,11 +19,11 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.bulk.BatchAction;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.data.BatchAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
 /**

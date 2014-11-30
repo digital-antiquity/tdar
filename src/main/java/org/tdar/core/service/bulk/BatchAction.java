@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.service.bulk;
 
 import java.io.Serializable;
 import java.util.ArrayList;
