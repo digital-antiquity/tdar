@@ -9,6 +9,7 @@ package org.tdar.core.service.bulk;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -146,7 +147,7 @@ public class CellMetadata implements Serializable {
             comment = MessageHelper.getMessage(keyC);
         }
         if (StringUtils.equals(MessageHelper.getMessage(keyL), keyL)) {
-            throw new TdarRecoverableRuntimeException("key not stored: " + keyL);
+            throw new TdarRecoverableRuntimeException("cellMetadata.key_not_stored",Arrays.asList(keyL));
         }
         displayName = StringUtils.trim(prefix + " " + MessageHelper.getMessage(keyL));
 
