@@ -9,8 +9,7 @@ import org.tdar.core.dao.integration.IntegrationSearchFilter;
 
 public class OntologyIntegrationSearchFilter extends IntegrationSearchFilter {
 
-    private static final long serialVersionUID = -5221366878292263318L;
-
+    private static final long serialVersionUID = 5767362193404485163L;
     private CategoryVariable categoryVariable;
     private List<DataTable> dataTables = new ArrayList<>();
     
