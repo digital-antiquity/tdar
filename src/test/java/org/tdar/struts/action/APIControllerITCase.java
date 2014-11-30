@@ -148,7 +148,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         assertTrue(controller.getErrorMessage().contains("updated"));
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.UPDATED, controller.getStatus());
 
         Document importedRecord = resourceService.find(TEST_ID);
         assertNotNull(importedRecord);
@@ -192,7 +192,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.CREATED, controller.getStatus());
     }
 
     public static void removeInvalidFields(Resource doc) {
@@ -232,7 +232,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.CREATED, controller.getStatus());
         Image img = genericService.find(Image.class, controller.getId());
         assertFalse(img.getFilesWithRestrictions(true).isEmpty());
     }
@@ -244,7 +244,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setRecord(text);
         String uploadStatus = controller.upload();
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.CREATED, controller.getStatus());
     }
 
     @Test
@@ -257,7 +257,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFileFileName(Arrays.asList("Workbook1.csv"));
         String uploadStatus = controller.upload();
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.CREATED, controller.getStatus());
     }
 
     @Test
@@ -272,7 +272,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFileFileName(Arrays.asList("Workbook1.csv"));
         String uploadStatus = controller.upload();
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.CREATED, controller.getStatus());
     }
 
     @Test
@@ -293,7 +293,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.CREATED, controller.getStatus());
     }
 
     @Test
@@ -320,7 +320,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
         logger.info(controller.getErrorMessage());
         assertEquals(Action.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.UPDATED, controller.getStatus());
         controller = null;
         old = (Document) resourceService.find(oldId);
         assertEquals(oldIRId, old.getFirstInformationResourceFile().getId());
@@ -351,7 +351,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         assertEquals(Action.ERROR, uploadStatus);
         assertEquals(String.format("Expected Forbidden for %s, but was %s >> %s", doc.getId(), controller.getStatus(), datasetXml),
-                StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
+                StatusCode.FORBIDDEN, controller.getStatus());
     }
 
     @Test
@@ -368,7 +368,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         assertEquals(Action.ERROR, uploadStatus);
         assertEquals(String.format("Expected UNAUTHORIZED for %s, but was %s >> %s", doc.getId(), controller.getStatus(), docXml),
-                StatusCode.UNAUTHORIZED.getResultName(), controller.getStatus());
+                StatusCode.UNAUTHORIZED, controller.getStatus());
     }
 
     @Test
@@ -388,7 +388,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         assertEquals(Action.ERROR, uploadStatus);
-        assertEquals(String.format("Expected Forbidden for %s, but was %s >> $s", docid, controller.getStatus(), docXml), StatusCode.FORBIDDEN.getResultName(),
+        assertEquals(String.format("Expected Forbidden for %s, but was %s >> $s", docid, controller.getStatus(), docXml), StatusCode.FORBIDDEN,
                 controller.getStatus());
     }
 
@@ -416,7 +416,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         assertEquals(Action.ERROR, uploadStatus);
-        assertEquals(StatusCode.BAD_REQUEST.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.BAD_REQUEST, controller.getStatus());
     }
 
 }

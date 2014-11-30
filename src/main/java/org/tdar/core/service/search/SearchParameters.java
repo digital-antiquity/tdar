@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.core.service.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.CreatorOwnerQueryPart;
@@ -40,8 +41,8 @@ import org.tdar.search.query.part.SkeletonPersistableQueryPart;
 import org.tdar.search.query.part.SpatialQueryPart;
 import org.tdar.search.query.part.TemporalQueryPart;
 import org.tdar.search.query.part.TitleQueryPart;
+import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.DateRange;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.StringRange;
 import org.tdar.utils.MessageHelper;
 

@@ -35,13 +35,13 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 

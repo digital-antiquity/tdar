@@ -56,6 +56,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -68,7 +69,6 @@ import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.KeywordNode;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
@@ -295,7 +295,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
             if (getResource().isDraft()) {
                 getLogger().trace("resource not viewable because it is draft: {}", getResource());
-                throw new TdarActionException(StatusCode.OK.withResultName(DRAFT),
+                throw new TdarActionException(StatusCode.OK, DRAFT,
                         getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
             }
 

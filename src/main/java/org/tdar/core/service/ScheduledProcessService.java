@@ -42,6 +42,7 @@ import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.utils.MessageHelper;
 
 /**

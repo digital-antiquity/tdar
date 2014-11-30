@@ -164,11 +164,11 @@ public abstract class AbstractDeleteAction<P extends Persistable> extends Authen
         try {
             if (!getSessionData().isAuthenticated()) {
                 addActionError(getText("abstractPersistableController.must_authenticate"));
-                abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.must_authenticate"));
+                abort(StatusCode.OK, LOGIN, getText("abstractPersistableController.must_authenticate"));
             }
         } catch (Exception e) {
             addActionErrorWithException(getText("abstractPersistableController.session_not_initialized"), e);
-            abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.could_not_load"));
+            abort(StatusCode.OK, LOGIN, getText("abstractPersistableController.could_not_load"));
         }
 
         // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
@@ -181,7 +181,7 @@ public abstract class AbstractDeleteAction<P extends Persistable> extends Authen
         }
         String errorMessage = getText("abstractPersistableController.no_permissions");
         addActionError(errorMessage);
-        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
+        abort(StatusCode.FORBIDDEN, UNAUTHORIZED, errorMessage);
     }
 
     abstract protected void delete(P persistable);

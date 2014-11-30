@@ -1,4 +1,4 @@
-package org.tdar.struts.action.download;
+package org.tdar.core.service.download;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.service.download.DownloadTransferObject;
 
 /*
  * Closes a DownloadLock when stream is closed

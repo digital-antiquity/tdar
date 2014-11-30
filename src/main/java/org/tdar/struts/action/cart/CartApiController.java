@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.InvoiceService;
-import org.tdar.struts.data.PricingOption;
+import org.tdar.core.service.billing.PricingOption;
 
 import com.opensymphony.xwork2.Preparable;
 

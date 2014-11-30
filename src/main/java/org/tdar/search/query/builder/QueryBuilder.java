@@ -14,9 +14,9 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
+import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.part.QueryPartGroup;
-import org.tdar.struts.action.search.SearchParameters;
 
 import com.opensymphony.xwork2.TextProvider;
 

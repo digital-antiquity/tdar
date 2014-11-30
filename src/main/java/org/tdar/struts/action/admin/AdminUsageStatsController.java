@@ -15,9 +15,9 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 /**

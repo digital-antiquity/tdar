@@ -24,17 +24,17 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.SearchService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 /**

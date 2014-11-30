@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +37,8 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;

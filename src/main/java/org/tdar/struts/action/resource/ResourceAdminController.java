@@ -28,12 +28,12 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.UsageStats;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 

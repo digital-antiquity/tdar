@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +62,9 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.FacetValue;
@@ -83,10 +86,7 @@ import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
-import org.tdar.struts.action.search.ReservedSearchParameters;
-import org.tdar.struts.action.search.SearchParameters;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 

@@ -61,15 +61,15 @@ import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
+import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.TextProvider;

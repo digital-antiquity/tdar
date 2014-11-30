@@ -22,11 +22,11 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.external.UserLogin;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.login.LoginController;
 import org.tdar.struts.action.resource.ResourceController;
-import org.tdar.struts.data.UserLogin;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 

@@ -93,12 +93,16 @@ public interface AuthenticationAware extends SessionDataAware {
             }
             String errorMessage = getText("abstractPersistableController.no_permissions");
             addActionError(errorMessage);
-            abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
+            abort(StatusCode.FORBIDDEN, UNAUTHORIZED, errorMessage);
             return false;
         }
 
         protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
             throw new TdarActionException(statusCode, errorMessage);
+        }
+
+        protected void abort(StatusCode statusCode, String response, String errorMessage) throws TdarActionException {
+            throw new TdarActionException(statusCode, response, errorMessage);
         }
 
         public boolean isAdministrator() {

@@ -2,6 +2,7 @@ package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.web.SessionData;
@@ -87,10 +89,38 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 logger.warn("caught TdarActionException ({})", exception.getStatusCode(), exception);
             }
             response.setStatus(exception.getStatusCode());
-            logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), exception.getResultName());
+            String resultName = getResultNameFor(exception);
+            logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), resultName);
             genericService.clearCurrentSession();
             setSessionClosed(true);
-            return exception.getResultName();
+            return resultName;
+        }
+    }
+
+    private String getResultNameFor(TdarActionException exception) {
+        if (StringUtils.isNotBlank(exception.getResponse())) {
+            return exception.getResponse();
+        }
+        switch (exception.getResponseStatusCode()) {
+            case OK:
+                return TdarActionSupport.SUCCESS;
+            case CREATED:
+                return "created";
+            case GONE:
+                return TdarActionSupport.GONE;
+            case UPDATED:
+                return "updated";
+            case NOT_FOUND:
+                return TdarActionSupport.NOT_FOUND;
+            case UNAUTHORIZED:
+                return TdarActionSupport.UNAUTHORIZED;
+            case BAD_REQUEST:
+                return "badrequest";
+            case FORBIDDEN:
+                return "notallowed";
+            default:
+                // UNKNOWN_ERROR
+                return "unknownerror";
         }
     }
 

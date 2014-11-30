@@ -25,11 +25,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.search.SearchIndexService;
+import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.search.AdvancedSearchController;
-import org.tdar.struts.action.search.SearchParameters;
 
 public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 

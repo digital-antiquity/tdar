@@ -14,8 +14,8 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.TextProvider;
 

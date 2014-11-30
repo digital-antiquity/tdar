@@ -38,11 +38,11 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.sensoryData.SensoryDataController;
-import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
 

@@ -1,4 +1,4 @@
-package org.tdar.struts.data.oai;
+package org.tdar.core.exception;
 
 public enum OaiErrorCode {
     BAD_ARGUMENT("badArgument"),

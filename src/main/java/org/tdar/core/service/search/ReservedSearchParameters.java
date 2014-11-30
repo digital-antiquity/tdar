@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.core.service.search;
 
 import java.util.ArrayList;
 import java.util.List;

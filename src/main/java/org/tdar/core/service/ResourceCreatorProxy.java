@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.service;
 
 import java.util.Arrays;
 import java.util.HashSet;

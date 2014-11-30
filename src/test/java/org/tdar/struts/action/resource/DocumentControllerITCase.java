@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -47,7 +48,6 @@ import org.tdar.struts.action.UploadController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
-import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
 

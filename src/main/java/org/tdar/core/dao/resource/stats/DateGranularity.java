@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.dao.resource.stats;
 
 import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;

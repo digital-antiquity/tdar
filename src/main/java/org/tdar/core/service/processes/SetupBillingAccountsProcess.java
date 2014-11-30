@@ -25,8 +25,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.billing.InvoiceService;
+import org.tdar.core.service.billing.PricingOption;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.PricingOption;
 
 /**
  * $Id$

@@ -42,7 +42,7 @@ import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
 
 /**

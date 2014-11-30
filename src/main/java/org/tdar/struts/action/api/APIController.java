@@ -60,7 +60,7 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> uploadFileFileName = new ArrayList<>();
     private String record;
     private String msg;
-    private String status;
+    private StatusCode status;
     private Long projectId; // note this will override projectId value specified in record
     // on the receiving end
     private List<String> processedFileNames;
@@ -159,10 +159,10 @@ public class APIController extends AuthenticationAware.Base {
 
             message = "updated:" + loadedRecord.getId();
             StatusCode code = StatusCode.UPDATED;
-            status = StatusCode.UPDATED.getResultName();
+            status = StatusCode.UPDATED;
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
-                status = StatusCode.CREATED.getResultName();
+                status = StatusCode.CREATED;
                 message = "created:" + loadedRecord.getId();
                 code = StatusCode.CREATED;
                 getXmlResultObject().setRecordId(loadedRecord.getId());
@@ -215,7 +215,7 @@ public class APIController extends AuthenticationAware.Base {
     }
 
     private String errorResponse(StatusCode statusCode) {
-        status = statusCode.getResultName();
+        status = statusCode;
         xmlResultObject.setStatus(statusCode.toString());
         xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
         return ERROR;
@@ -283,11 +283,11 @@ public class APIController extends AuthenticationAware.Base {
         return msg;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusCode status) {
         this.status = status;
     }
 
-    public String getStatus() {
+    public StatusCode getStatus() {
         return status;
     }
 

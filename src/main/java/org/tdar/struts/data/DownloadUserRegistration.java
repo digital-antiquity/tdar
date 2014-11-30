@@ -1,5 +1,7 @@
 package org.tdar.struts.data;
 
+import org.tdar.core.service.external.UserRegistration;
+
 /**
  * Appends file download specific data to typical user registration.
  */

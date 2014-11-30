@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.service.external;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.UserAuthData;
 
 /**
  * Created by jimdevos on 6/17/14.

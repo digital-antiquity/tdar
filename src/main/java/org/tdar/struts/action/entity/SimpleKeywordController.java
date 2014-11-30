@@ -14,7 +14,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.SearchService;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;

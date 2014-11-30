@@ -45,13 +45,13 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.download.DownloadController;
-import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.ExcelUnit;
 
 /**

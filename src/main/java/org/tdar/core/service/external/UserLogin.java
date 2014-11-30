@@ -1,10 +1,10 @@
-package org.tdar.struts.data;
+package org.tdar.core.service.external;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.UserAuthData;
 
 /**
  * Created by jimdevos on 6/17/14.

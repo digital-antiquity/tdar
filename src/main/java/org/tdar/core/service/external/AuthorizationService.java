@@ -45,7 +45,7 @@ import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.core.service.search.ReservedSearchParameters;
 
 /*
  * This service is designed to hide the complexity of users and permissions from the rest of tDAR.  It handles a number different functions including:

@@ -17,7 +17,7 @@ import org.tdar.struts.data.FacetGroup;
  * An instance of this interface is passed to the SearchService, along with a query, and in response the SearchService
  * queries this interface for sorting, paging, faceting, etc. options, and then returns a page of results.
  * 
- * @see org.tdar.core.service.SearchService#handleSearch(org.tdar.search.query.QueryBuilder, SearchResultHandler)
+ * @see org.tdar.core.service.search.SearchService#handleSearch(org.tdar.search.query.QueryBuilder, SearchResultHandler)
  * 
  */
 public interface SearchResultHandler<I extends Indexable> {
