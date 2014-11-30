@@ -6,7 +6,6 @@ import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.service.GenericService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.DataUtil;
 

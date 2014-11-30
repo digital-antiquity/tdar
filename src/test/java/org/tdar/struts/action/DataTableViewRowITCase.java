@@ -15,7 +15,6 @@ import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.struts.action.dataset.RowViewAction;
 
 import com.opensymphony.xwork2.Action;

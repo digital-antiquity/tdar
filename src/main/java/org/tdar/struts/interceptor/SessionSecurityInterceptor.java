@@ -115,9 +115,9 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             case UNAUTHORIZED:
                 return TdarActionSupport.UNAUTHORIZED;
             case BAD_REQUEST:
-                return "badrequest";
+                return TdarActionSupport.BAD_REQUEST;
             case FORBIDDEN:
-                return "notallowed";
+                return TdarActionSupport.FORBIDDEN; //"notallowed"
             default:
                 // UNKNOWN_ERROR
                 return "unknownerror";
