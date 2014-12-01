@@ -3,7 +3,6 @@ package org.tdar.struts.action.resource;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,34 +21,16 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.citation.RelatedComparativeCollection;
-import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.coverage.CoverageDate;
-import org.tdar.core.bean.coverage.CoverageType;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceAnnotation;
-import org.tdar.core.bean.resource.ResourceAnnotationKey;
-import org.tdar.core.bean.resource.ResourceNote;
-import org.tdar.core.bean.resource.ResourceNoteType;
-import org.tdar.core.bean.resource.ResourceRelationship;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -68,7 +49,6 @@ import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.KeywordNode;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
@@ -90,7 +70,7 @@ import org.tdar.utils.EmailMessageType;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/resource")
-@Results(value={
+@Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, location = "../resource/view-template.ftl")
 })
 public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAction<Resource> implements SlugViewAction {
@@ -99,10 +79,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
     // public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
-    private List<MaterialKeyword> allMaterialKeywords;
-    private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
-    private String submitterProperName = "";
 
     @Autowired
     private transient DatasetService datasetService;
@@ -142,57 +119,18 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     @Autowired
     private ResourceService resourceService;
 
-    private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
-    private KeywordNode<CultureKeyword> approvedCultureKeywords;
-
     private List<ResourceCollection> resourceCollections = new ArrayList<>();
     private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
-    private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
-
-    // containers for submitted data.
-    private List<String> siteNameKeywords;
-
-    private List<Long> materialKeywordIds;
-    private List<Long> investigationTypeIds;
-
-    private List<Long> approvedSiteTypeKeywordIds;
-    private List<Long> approvedCultureKeywordIds;
-
-    private List<String> uncontrolledSiteTypeKeywords;
-    private List<String> uncontrolledCultureKeywords;
-
-    private List<String> otherKeywords;
-
-    private Person submitter;
-    private List<String> temporalKeywords;
-    private List<String> geographicKeywords;
-    private List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
-    private List<CoverageDate> coverageDates;
-    // citation data.
-    // private List<String> sourceCitations;
-    private List<SourceCollection> sourceCollections;
-    // private List<String> relatedCitations;
-    private List<RelatedComparativeCollection> relatedComparativeCollections;
-    private Long accountId;
-    private Set<Account> activeAccounts;
-
-    private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
     private List<ResourceCreatorProxy> contactProxies;
 
-    private List<ResourceAnnotation> resourceAnnotations;
-
     private List<ResourceCollection> viewableResourceCollections;
 
-    private Project project;
-
-    private void initializeResourceCreatorProxyLists(boolean isViewPage) {
+    private void initializeResourceCreatorProxyLists() {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
-        if (isViewPage) {
-            resourceCreators = getPersistable().getActiveResourceCreators();
-        }
+        resourceCreators = getPersistable().getActiveResourceCreators();
         if (resourceCreators == null) {
             return;
         }
@@ -306,102 +244,15 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         Sequence.applySequence(list);
     }
 
-    public void loadBasicMetadata() {
-        // load all keywords
-
-        setMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
-        setInvestigationTypeIds(toIdList(getResource().getInvestigationTypes()));
-
-        setUncontrolledCultureKeywords(toSortedStringList(getResource().getUncontrolledCultureKeywords()));
-        setApprovedCultureKeywordIds(toIdList(getResource().getApprovedCultureKeywords()));
-
-        setUncontrolledSiteTypeKeywords(toSortedStringList(getResource().getUncontrolledSiteTypeKeywords()));
-        setApprovedSiteTypeKeywordIds(toIdList(getResource().getApprovedSiteTypeKeywords()));
-
-        setOtherKeywords(toSortedStringList(getResource().getOtherKeywords()));
-        setSiteNameKeywords(toSortedStringList(getResource().getSiteNameKeywords()));
-        // load temporal / geographic terms
-        setTemporalKeywords(toSortedStringList(getResource().getTemporalKeywords()));
-        setGeographicKeywords(toSortedStringList(getResource().getGeographicKeywords()));
-        // load spatial context
-        getLatitudeLongitudeBoxes().addAll(getResource().getLatitudeLongitudeBoxes());
-
-        // load radiocarbon / calendar dates
-        getCoverageDates().addAll(getResource().getCoverageDates());
-        // load full access users
-
-        getResourceNotes().addAll(getResource().getResourceNotes());
-        Collections.sort(getResourceNotes());
-        getSourceCollections().addAll(getResource().getSourceCollections());
-        getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
-        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
-        for (AuthorizedUser au : getAuthorizedUsers()) {
-            String name = null;
-            if (au != null && au.getUser() != null) {
-                name = au.getUser().getProperName();
-            }
-            getAuthorizedUsersFullNames().add(name);
-        }
-        initializeResourceCreatorProxyLists(false);
-        getResourceAnnotations().addAll(getResource().getResourceAnnotations());
-        loadEffectiveResourceCollections();
-    }
-
     public void loadBasicViewMetadata() {
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
-        initializeResourceCreatorProxyLists(true);
+        initializeResourceCreatorProxyLists();
         loadEffectiveResourceCollections();
     }
 
     private void loadEffectiveResourceCollections() {
         getResourceCollections().addAll(getResource().getSharedResourceCollections());
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
-    }
-
-    public List<String> getSiteNameKeywords() {
-        if (CollectionUtils.isEmpty(siteNameKeywords)) {
-            siteNameKeywords = new ArrayList<>();
-        }
-        return siteNameKeywords;
-    }
-
-    public List<String> getOtherKeywords() {
-        if (CollectionUtils.isEmpty(otherKeywords)) {
-            otherKeywords = new ArrayList<>();
-        }
-        return otherKeywords;
-    }
-
-    public List<String> getTemporalKeywords() {
-        if (CollectionUtils.isEmpty(temporalKeywords)) {
-            temporalKeywords = new ArrayList<>();
-        }
-        return temporalKeywords;
-    }
-
-    public List<String> getGeographicKeywords() {
-        if (CollectionUtils.isEmpty(geographicKeywords)) {
-            geographicKeywords = new ArrayList<>();
-        }
-        return geographicKeywords;
-    }
-
-    public List<LatitudeLongitudeBox> getLatitudeLongitudeBoxes() {
-        if (latitudeLongitudeBoxes == null) {
-            latitudeLongitudeBoxes = new ArrayList<>();
-        }
-        return latitudeLongitudeBoxes;
-    }
-
-    public void setLatitudeLongitudeBoxes(List<LatitudeLongitudeBox> longitudeLatitudeBox) {
-        this.latitudeLongitudeBoxes = longitudeLatitudeBox;
-    }
-
-    public List<Long> getMaterialKeywordIds() {
-        if (CollectionUtils.isEmpty(materialKeywordIds)) {
-            materialKeywordIds = new ArrayList<>();
-        }
-        return materialKeywordIds;
     }
 
     public Resource getResource() {
@@ -413,188 +264,12 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         setPersistable(resource);
     }
 
-    public List<MaterialKeyword> getAllMaterialKeywords() {
-        if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = genericKeywordService.findAllWithCache(MaterialKeyword.class);
-            Collections.sort(allMaterialKeywords);
-        }
-        return allMaterialKeywords;
-    }
-
-    public List<CoverageDate> getCoverageDates() {
-        if (CollectionUtils.isEmpty(coverageDates)) {
-            coverageDates = new ArrayList<>();
-        }
-        return coverageDates;
-    }
-
-    public void setCoverageDates(List<CoverageDate> coverageDates) {
-        this.coverageDates = coverageDates;
-    }
-
-    public List<SourceCollection> getSourceCollections() {
-        if (sourceCollections == null) {
-            sourceCollections = new ArrayList<>();
-        }
-        return sourceCollections;
-    }
-
-    public List<RelatedComparativeCollection> getRelatedComparativeCollections() {
-        if (relatedComparativeCollections == null) {
-            relatedComparativeCollections = new ArrayList<>();
-        }
-        return relatedComparativeCollections;
-    }
-
     public boolean isAbleToViewConfidentialFiles() {
         return authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getPersistable());
     }
 
-    public List<InvestigationType> getAllInvestigationTypes() {
-        if (CollectionUtils.isEmpty(allInvestigationTypes)) {
-            allInvestigationTypes = genericKeywordService.findAllWithCache(InvestigationType.class);
-            Collections.sort(allInvestigationTypes);
-        }
-        return allInvestigationTypes;
-    }
-
-    public List<Long> getInvestigationTypeIds() {
-        if (CollectionUtils.isEmpty(investigationTypeIds)) {
-            investigationTypeIds = createListWithSingleNull();
-        }
-        return investigationTypeIds;
-    }
-
-    public KeywordNode<SiteTypeKeyword> getApprovedSiteTypeKeywords() {
-        if (approvedSiteTypeKeywords == null) {
-            approvedSiteTypeKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
-        }
-        return approvedSiteTypeKeywords;
-    }
-
-    public KeywordNode<CultureKeyword> getApprovedCultureKeywords() {
-        if (approvedCultureKeywords == null) {
-            approvedCultureKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
-        }
-        return approvedCultureKeywords;
-    }
-
-    public List<Long> getApprovedSiteTypeKeywordIds() {
-        if (CollectionUtils.isEmpty(approvedSiteTypeKeywordIds)) {
-            approvedSiteTypeKeywordIds = createListWithSingleNull();
-        }
-        return approvedSiteTypeKeywordIds;
-    }
-
-    public List<Long> getApprovedCultureKeywordIds() {
-        if (CollectionUtils.isEmpty(approvedCultureKeywordIds)) {
-            approvedCultureKeywordIds = createListWithSingleNull();
-        }
-        return approvedCultureKeywordIds;
-    }
-
-    public List<String> getUncontrolledSiteTypeKeywords() {
-        if (CollectionUtils.isEmpty(uncontrolledSiteTypeKeywords)) {
-            uncontrolledSiteTypeKeywords = createListWithSingleNull();
-        }
-        return uncontrolledSiteTypeKeywords;
-    }
-
-    public List<String> getUncontrolledCultureKeywords() {
-        if (CollectionUtils.isEmpty(uncontrolledCultureKeywords)) {
-            uncontrolledCultureKeywords = createListWithSingleNull();
-        }
-        return uncontrolledCultureKeywords;
-    }
-
-    public List<CreatorType> getCreatorTypes() {
-        // FIXME: move impl to service layer
-        return Arrays.asList(CreatorType.values());
-    }
-
-    public List<ResourceNote> getResourceNotes() {
-        if (resourceNotes == null) {
-            resourceNotes = new ArrayList<>();
-        }
-        return resourceNotes;
-    }
-
-    // FIXME: JTd: I think we should make all controller collection setters protected unless service layer absolutely. Confirm w/ others and change signatures
-    // or revert this method back to public if there are objections.
-    protected void setResourceNotes(List<ResourceNote> resourceNotes) {
-        this.resourceNotes = resourceNotes;
-    }
-
-    public ResourceNote getBlankResourceNote() {
-        return new ResourceNote();
-    }
-
-    public List<ResourceNoteType> getNoteTypes() {
-        return Arrays.asList(ResourceNoteType.values());
-    }
-
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {
-        // FIXME: move impl to service
-        // FIXME: change to SortedSet
         return ResourceCreatorRole.getAll();
-    }
-
-    public Set<ResourceAnnotationKey> getAllResourceAnnotationKeys() {
-        Set<ResourceAnnotationKey> keys = new HashSet<>();
-        if ((getPersistable() != null) && CollectionUtils.isNotEmpty(getPersistable().getActiveResourceAnnotations())) {
-            for (ResourceAnnotation ra : getPersistable().getActiveResourceAnnotations()) {
-                keys.add(ra.getResourceAnnotationKey());
-            }
-        }
-        return keys;
-    }
-
-    public void setSiteNameKeywords(List<String> siteNameKeywords) {
-        this.siteNameKeywords = siteNameKeywords;
-    }
-
-    public void setApprovedSiteTypeKeywordIds(List<Long> approvedSiteTypeKeywordIds) {
-        this.approvedSiteTypeKeywordIds = approvedSiteTypeKeywordIds;
-    }
-
-    public void setApprovedCultureKeywordIds(List<Long> approvedCultureKeywordIds) {
-        this.approvedCultureKeywordIds = approvedCultureKeywordIds;
-    }
-
-    public void setUncontrolledSiteTypeKeywords(List<String> uncontrolledSiteTypeKeywords) {
-        this.uncontrolledSiteTypeKeywords = uncontrolledSiteTypeKeywords;
-    }
-
-    public void setUncontrolledCultureKeywords(List<String> uncontrolledCultureKeywords) {
-        this.uncontrolledCultureKeywords = uncontrolledCultureKeywords;
-    }
-
-    public void setOtherKeywords(List<String> otherKeywords) {
-        this.otherKeywords = otherKeywords;
-    }
-
-    public void setTemporalKeywords(List<String> temporalKeywords) {
-        this.temporalKeywords = temporalKeywords;
-    }
-
-    public void setGeographicKeywords(List<String> geographicKeywords) {
-        this.geographicKeywords = geographicKeywords;
-    }
-
-    public void setMaterialKeywordIds(List<Long> materialKeywordIds) {
-        this.materialKeywordIds = materialKeywordIds;
-    }
-
-    public void setInvestigationTypeIds(List<Long> investigationTypeIds) {
-        this.investigationTypeIds = investigationTypeIds;
-    }
-
-    public void setSourceCollections(List<SourceCollection> sourceCollections) {
-        this.sourceCollections = sourceCollections;
-    }
-
-    public void setRelatedComparativeCollections(List<RelatedComparativeCollection> relatedComparativeCitations) {
-        this.relatedComparativeCollections = relatedComparativeCitations;
     }
 
     public List<ResourceCreatorProxy> getAuthorshipProxies() {
@@ -609,14 +284,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
             contactProxies = new ArrayList<>();
         }
         return contactProxies;
-    }
-
-    public ResourceCreatorProxy getBlankCreatorProxy() {
-        return new ResourceCreatorProxy();
-    }
-
-    public CoverageDate getBlankCoverageDate() {
-        return new CoverageDate(CoverageType.CALENDAR_DATE);
     }
 
     public void setAuthorshipProxies(List<ResourceCreatorProxy> authorshipProxies) {
@@ -650,36 +317,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         return ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, getResource().getResourceType());
     }
 
-    public List<ResourceAnnotation> getResourceAnnotations() {
-        if (resourceAnnotations == null) {
-            resourceAnnotations = new ArrayList<>();
-        }
-        return resourceAnnotations;
-    }
-
-    public ResourceAnnotation getBlankResourceAnnotation() {
-        return new ResourceAnnotation(new ResourceAnnotationKey(), "");
-    }
-
-    public ResourceCollection getBlankResourceCollection() {
-        return new ResourceCollection(CollectionType.SHARED);
-    }
-
-    public SourceCollection getBlankSourceCollection() {
-        return new SourceCollection();
-    }
-
-    public RelatedComparativeCollection getBlankRelatedComparativeCollection() {
-        return new RelatedComparativeCollection();
-    }
-
-    public void setResourceAnnotations(List<ResourceAnnotation> resourceAnnotations) {
-        this.resourceAnnotations = resourceAnnotations;
-    }
-
-    public List<ResourceType> getAllResourceTypes() {
-        return Arrays.asList(ResourceType.values());
-    }
 
     /**
      * @param resourceCollections
@@ -734,45 +371,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         return viewableResourceCollections;
     }
 
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
-    }
-
-    public Set<Account> getActiveAccounts() {
-        if (activeAccounts == null) {
-            activeAccounts = new HashSet<>(determineActiveAccounts());
-        }
-        return activeAccounts;
-    }
-
-    public void setActiveAccounts(Set<Account> activeAccounts) {
-        this.activeAccounts = activeAccounts;
-    }
-
-    public boolean isBulkUpload() {
-        return false;
-    }
-
-    public Person getSubmitter() {
-        return submitter;
-    }
-
-    public void setSubmitter(Person submitter) {
-        this.submitter = submitter;
-    }
-
-    public List<ResourceRelationship> getResourceRelationships() {
-        return resourceRelationships;
-    }
-
-    public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
-        this.resourceRelationships = resourceRelationships;
-    }
-
     public boolean isUserAbleToReTranslate() {
         if (authorizationService.canEdit(getAuthenticatedUser(), getPersistable())) {
             return true;
@@ -786,42 +384,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
     public boolean isUserAbleToViewUnobfuscatedMap() {
         return isEditor();
-    }
-
-    public void updateQuota(Account account, Resource resource) {
-        if (getTdarConfiguration().isPayPerIngestEnabled()) {
-            accountService.updateQuota(account, resource);
-        }
-    }
-
-    public List<CoverageType> getAllCoverageTypes() {
-        List<CoverageType> coverageTypes = new ArrayList<>();
-        coverageTypes.add(CoverageType.CALENDAR_DATE);
-        coverageTypes.add(CoverageType.RADIOCARBON_DATE);
-        return coverageTypes;
-    }
-
-    /**
-     * Returns a list of Strings resulting from applying toString to each
-     * element of the incoming Collection.
-     * 
-     * Basically, map( toString, collection ), but since Java doesn't support
-     * closures yet...
-     * 
-     * @param collection
-     * @return
-     */
-    protected List<String> toSortedStringList(Collection<?> collection) {
-        ArrayList<String> stringList = new ArrayList<>(collection.size());
-        for (Object o : collection) {
-            stringList.add(o.toString());
-        }
-        Collections.sort(stringList);
-        return stringList;
-    }
-
-    protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
-        return Persistable.Base.extractIds(persistables);
     }
 
     protected void loadCustomViewMetadata() throws TdarActionException {
@@ -845,29 +407,9 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         this.emailTypes = emailTypes;
     }
 
-    public String getSubmitterProperName() {
-        return submitterProperName;
-    }
-
-    public void setSubmitterProperName(String submitterProperName) {
-        this.submitterProperName = submitterProperName;
-    }
-
     @Override
     public Class<Resource> getPersistableClass() {
         return Resource.class;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    protected void resolveProject() {
-        project = Project.NULL;
-        if (getResource() instanceof InformationResource) {
-            InformationResource ir = (InformationResource) getResource();
-            project = ir.getProject();
-        }
     }
 
     /*

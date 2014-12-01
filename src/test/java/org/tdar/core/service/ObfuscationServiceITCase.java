@@ -24,6 +24,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.document.DocumentController;
@@ -53,7 +54,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         rva.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         rva.prepare();
         rva.view();
-        rva.getProject();
+        ((Document)rva.getResource()).getProject();
     }
     
     @Test

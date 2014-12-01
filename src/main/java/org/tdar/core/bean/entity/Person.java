@@ -63,9 +63,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     private static final long serialVersionUID = -3863573773250268081L;
 
-    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated",
-            "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
-
     @Transient
     private transient String wildcardName;
 
@@ -315,10 +312,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Override
     public boolean isDedupable() {
         return true;
-    }
-
-    public static String[] getIgnorePropertiesForUniqueness() {
-        return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
     @Override
