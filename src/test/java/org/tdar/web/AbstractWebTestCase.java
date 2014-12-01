@@ -167,6 +167,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     };
 
     private HtmlElement documentElement;
+    protected boolean skipHtmlValidation = false;
 
     // disregard an encoding error if it's in the exclusions set;
 
@@ -290,6 +291,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertPageValidHtml() {
+        if(skipHtmlValidation) return;
         if (internalPage.getWebResponse().getContentType().contains("json")) {
             try {
                 JSONObject.fromObject(getPageCode());
