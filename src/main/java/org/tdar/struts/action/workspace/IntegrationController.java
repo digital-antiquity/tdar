@@ -1,10 +1,7 @@
 package org.tdar.struts.action.workspace;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -15,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryVariable;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ProjectService;
 import org.tdar.struts.action.AuthenticationAware;
 
 import com.opensymphony.xwork2.Preparable;
@@ -47,6 +47,14 @@ public class IntegrationController extends AuthenticationAware.Base implements P
     private XmlService xmlService;
     @Autowired
     private GenericService genericService;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
+
+
+    private List<Resource> fullUserProjects = new ArrayList<>();
+    private Collection allResourceCollections = new ArrayList<>();
 
     // @Actions({
     //
@@ -108,6 +116,8 @@ public class IntegrationController extends AuthenticationAware.Base implements P
     @Override
     public void prepare() {
         prepareCategories();
+        prepareProjectStuff();
+        prepareCollections();
     }
 
     @Actions({
@@ -150,7 +160,6 @@ public class IntegrationController extends AuthenticationAware.Base implements P
         categoryListJsonObject = subcats;
     }
 
-
     public String getCategoriesJson() {
         String json = "[]";
         try {
@@ -161,4 +170,37 @@ public class IntegrationController extends AuthenticationAware.Base implements P
         return json;
     }
 
+
+
+     String getJson(Object obj) {
+         String json = "[]";
+         try {
+             json = xmlService.convertToJson(obj);
+         } catch (IOException e) {
+             addActionError(e.getMessage());
+         }
+         return json;
+     }
+
+    public List<Resource> getFullUserProjects() {
+        return fullUserProjects;
+    }
+
+    public String getFullUserProjectsJson() {
+        return getJson(fullUserProjects);
+    }
+
+    public String getAllResourceCollectionsJson() {
+        return getJson(allResourceCollections);
+    }
+
+    private void prepareProjectStuff() {
+        // FIXME: isAdmin should not be an argument here; ProjectService can derive isAdmin by tapping authservice.
+        fullUserProjects = new ArrayList<>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), false));
+        Collections.sort(fullUserProjects);
+    }
+    private void prepareCollections() {
+        // For now, you just get flattened list of collections. Because.
+        allResourceCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
+    }
 }
