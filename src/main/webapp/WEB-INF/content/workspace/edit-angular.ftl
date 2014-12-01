@@ -338,10 +338,10 @@ ${allResourceCollectionsJson}
 <script type="application/json" id="allCategories">
 ${categoriesJson}
 </script>
-
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <script src="/js/tdar.integration.edit-angular.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
+<script src="/js/tdar.pagination.js"></script>
 </span>
 
 
