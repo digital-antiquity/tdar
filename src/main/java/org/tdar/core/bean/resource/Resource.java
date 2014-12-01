@@ -166,7 +166,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(name = "resource")
+@XmlType(name = "resource", propOrder={})
+@XmlTransient
 public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,

@@ -278,14 +278,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
     @Override
     public boolean authorize() throws TdarActionException {
-        if (getResource() == null && getId() != null) {
-            // persistable is null, so the lookup failed (aka not found)
-            abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
-        } else if (Persistable.Base.isNullOrTransient(getResource().getId())) {
-            // id not specified or not a number, so this is an invalid request
-            abort(StatusCode.BAD_REQUEST,
-                    getText("abstractPersistableController.cannot_recognize_request", getResource().getClass().getSimpleName()));
-        }
         boolean result = authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
         if (result == false) {
             if (getResource().isDeleted()) {
