@@ -254,3 +254,25 @@ create table download_authorization (
   primary key (id)
 );
 drop table download_authorization;
+
+-- jtdevos 1-dec-2014 sync with munsell 10
+alter table  download_authorization drop column referer_regex;
+alter table  download_authorization drop column institution_id;
+CREATE TABLE referrer_hostnames
+(
+    download_authorization_id bigint NOT NULL,
+    hostname varchar(255),
+    FOREIGN KEY (download_authorization_id) REFERENCES download_authorization (id)
+);
+
+-- jtdevos 1-dec-2014 sync with munsell-11
+CREATE TABLE institution_authorization
+(
+    id SERIAL NOT NULL ,
+    user_id bigint NOT NULL,
+    institution_id bigint NOT NULL,
+    authorized bool DEFAULT false,
+    reason varchar,
+    FOREIGN KEY (institution_id) REFERENCES institution (id),
+    FOREIGN KEY (user_id) REFERENCES tdar_user (id)
+);

@@ -44,7 +44,10 @@
             collectionId: null,
             categoryId: null,
             unbookmarked: false,
-            incompatible: false
+            incompatible: false,
+
+            //fixme: get pagination info from paginationHelper
+            recordsPerPage: 500
         });
     }
 
@@ -380,11 +383,6 @@
             var promise = $http.get(options.url, config);
             promise.success(function(data){
                 //transform date strings into dates
-                //FIXME: ajax should return date in ISO 8601 format
-                data.forEach(function(item) {
-                    item.date = new Date(item.date_registered);
-                    //console.log("translating: %s", item);
-                });
 
                 if(options.transformData) {
                     $scope.results = options.transformData(data);

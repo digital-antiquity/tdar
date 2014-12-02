@@ -194,12 +194,11 @@
 </div>
 
 
-<form ng-controller="LegacyFormController as legacyCtrl" id="frmLegacy">
+<form ng-controller="LegacyFormController as legacyCtrl" id="frmLegacy" method="post" action="/workspace/display-filtered-results">
 <#--<button type="button" class="btn btn-mini" ng-click="buildLegacyForm()">Build Legacy Form</button>-->
 <#--<button type="button" class="btn btn-mini" ng-click="hideForm()">Hide Form</button>-->
 <div  og-show="showForm">
     <h2>legacy form goes here</h2>
-    <button type="button" ng-click="legacyCtrl.dumpdata()">dump data</button>
     <fieldset>
         <div ng-repeat="col in legacyCtrl.integration.columns" ng-init="columnIndex=$index">
             <input type="hidden" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
@@ -216,6 +215,9 @@
         </div>
         <input ng-repeat="datatable in legacyCtrl.integration.datatables" type="hidden" name="tableIds[$index]" value="{{datatable.data_table_id}}">
     </fieldset>
+    <button type="button" ng-click="legacyCtrl.dumpdata()">dump data</button>
+    <input type="submit" name="submit" value="submit">
+
 </div>
 </form>
 

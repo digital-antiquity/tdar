@@ -86,7 +86,7 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
 
     @Transactional(readOnly = true)
     public List<DataTable> findDataTables(DatasetIntegrationSearchFilter datasetFilter, Integer startRecord, int recordsPerPage) {
-        return getDao().findDataTables(datasetFilter.getProject(), datasetFilter.getCollection(), datasetFilter.getOntologies(), false, datasetFilter.getAuthorizedUser(), startRecord, recordsPerPage);
+        return getDao().findDataTables(datasetFilter.getProject(), datasetFilter.getCollection(), datasetFilter.getOntologies(), datasetFilter.getIsBookmarked(), datasetFilter.getAuthorizedUser(), startRecord, recordsPerPage);
         
     }
 
