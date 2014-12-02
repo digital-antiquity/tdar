@@ -95,6 +95,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         if (datasetFilter == null) {
             datasetFilter = new DatasetIntegrationSearchFilter();
         }
+        getLogger().debug("find-datasets:: datasetFilter: {}", datasetFilter );
 
         List<DataTable> findDataTables = dataTableService.findDataTables(datasetFilter, startRecord, recordsPerPage);
         for (DataTable result : findDataTables) {
@@ -155,6 +156,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
             ontologyFilter = new OntologyIntegrationSearchFilter();
         }
 
+        getLogger().debug("find-ontologies:: ontologyFilter: {}", ontologyFilter );
         List<Ontology> ontologies = ontologyService.findOntologies(ontologyFilter, startRecord, recordsPerPage);
         for (Ontology ontology : ontologies) {
             HashMap<String, Object> map = setupOntologyForJson(ontology);
@@ -312,6 +314,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     }
 
     public OntologyIntegrationSearchFilter getOntologyFilter() {
+        if(ontologyFilter == null) ontologyFilter = new OntologyIntegrationSearchFilter();
         return ontologyFilter;
     }
 
@@ -320,6 +323,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     }
 
     public DatasetIntegrationSearchFilter getDatasetFilter() {
+        if(datasetFilter == null) datasetFilter = new DatasetIntegrationSearchFilter();
         return datasetFilter;
     }
 

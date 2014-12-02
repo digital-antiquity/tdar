@@ -2,6 +2,8 @@ package org.tdar.core.dao.integration;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
@@ -58,5 +60,13 @@ public abstract class IntegrationSearchFilter implements Serializable{
         this.authorizedUser = authorizedUser;
     }
 
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("project", project)
+                .append("collection", collection)
+                .append("bookmarked", isBookmarked)
+                .append("isAbleToIntegrate", isAbleToIntegrate)
+                .append("authuser", authorizedUser).build();
+    }
 
 }
