@@ -80,7 +80,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         if (bookmark == null) {
             return false;
         }
-        person.getBookmarkedResources().remove(bookmark);
+        resource.getBookmarkedResources().remove(bookmark);
         getDao().delete(bookmark);
         getDao().saveOrUpdate(person);
         return true;

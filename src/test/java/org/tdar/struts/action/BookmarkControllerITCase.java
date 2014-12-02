@@ -27,7 +27,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         Document document = createNewDocument();
         bookmarkResource(document,getUser());
         bookmarkResource(document,getUser());
-        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 1);
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(getUser()).size() == 1);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         bookmarkResource(document, user);
         removeBookmark(document, user);
         user = genericService.find(TdarUser.class, getUserId());
-        assertTrue("something wrong, cannot bookmark item twice", user.getBookmarkedResources().size() == 0);
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(user).size() == 0);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         Document document = createNewDocument();
         bookmarkResource(document, true, getUser());
         bookmarkResource(document, getUser());
-        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 1);
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(getUser()).size() == 1);
    }
 
     @Test
@@ -58,7 +58,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         bookmarkResource(document, true, user);
         removeBookmark(document, true, user);
         user = genericService.find(TdarUser.class, getUserId());
-        assertTrue("something wrong, cannot bookmark item twice", user.getBookmarkedResources().size() == 0);
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(user).size() == 0);
     }
 
     public Document createNewDocument() {

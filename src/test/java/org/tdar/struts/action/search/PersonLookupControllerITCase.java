@@ -19,6 +19,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.search.query.SortOption;
 import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 import com.opensymphony.xwork2.Action;
@@ -51,7 +52,108 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         List<Indexable> people = controller.getResults();
         assertEquals("person list should be empty", people.size(), 0);
     }
+    
+    @Test
+    @Rollback
+    public void testUserLookupWithrelevancy() {
+        TdarUser person = new TdarUser();
+        person.setLastName("Savala");
+        person.setFirstName("M");
+        person.setEmail("savala@coxasdsad.net");
+        person.setUsername("savala@coxasdsad.net");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("Gomez");
+        person.setFirstName("m");
+        person.setEmail("gomez@hotmaadsasdil.com");
+        person.setUsername("gomez@hotmaadsasdil.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("R");
+        person.setFirstName("M");
+        person.setEmail("mr@gmasdasdail.com");
+        person.setUsername("mr@gmasdasdail.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("W");
+        person.setFirstName("M");
+        person.setEmail("wm@gmaiadssadl.com");
+        person.setUsername("wm@gmaiadssadl.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("Scott");
+        person.setFirstName("Ron");
+        person.setEmail("scott@coasdsadx.net");
+        person.setUsername("scott@coasdsadx.net");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("Scott");
+        person.setFirstName("Frederick");
+        person.setEmail("fredrerick@hotasdasdmail.com");
+        person.setUsername("fredrerick@hotasdasdmail.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("Scott");
+        person.setFirstName("Anne");
+        person.setEmail("anne@mchasdasdsi.com");
+        person.setUsername("anne@mchasdasdsi.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("Scott");
+        person.setFirstName("Susan");
+        person.setEmail("susan@gmailasda.com");
+        person.setUsername("susan@gmailasda.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("Scott");
+        person.setFirstName("Kathleen");
+        person.setEmail("katheen@designworkasdasds-tn.com");
+        person.setUsername("katheen@designworkasdasds-tn.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser();
+        person.setLastName("Ortman");
+        person.setFirstName("Scott");
+        person.setEmail("ortman@coloradoasd.edu");
+        person.setUsername("ortman@coloradoasd.edu");
+        person = new TdarUser();
+        person.setLastName("Scott Thompson");
+        person.setFirstName("M");
+        person.setEmail("mscottthompson@sua.edu");
+        person.setUsername("mscottthompson@sua.edu");
+        genericService.saveOrUpdate(person);
+        
+        //searching by name
+        controller.setTerm("M Scott Thompson");
+        controller.setRegistered("true");
+        searchIndexService.indexAll(getAdminUser(), Person.class);
+        controller.setSortField(SortOption.RELEVANCE);
+        String result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        List<Indexable> people = controller.getResults();
+        logger.debug("results:{} ", people);
+        assertEquals(person, people.get(0));
+        
+        // searching by username
+        controller = generateNewInitializedController(LookupController.class, getAdminUser());
+        controller.setTerm("mscottthompson@sua.edu");
+        controller.setSortField(SortOption.RELEVANCE);
+        result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        people = controller.getResults();
+        logger.debug("results:{} ", people);
+        assertEquals(person, people.get(0));
 
+        // searching by username
+        controller = generateNewInitializedController(LookupController.class, getAdminUser());
+        controller.setTerm("M Scott Th");
+        controller.setSortField(SortOption.RELEVANCE);
+        result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        people = controller.getResults();
+        logger.debug("results:{} ", people);
+        assertEquals(person, people.get(0));
+}
+    
     @Test
     public void testPersonLookupTooShortOverride() {
         searchIndexService.indexAll(getAdminUser(), Person.class);

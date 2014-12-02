@@ -9,7 +9,7 @@
         <!-- managed versions -->
         <struts2.version>2.3.16.3</struts2.version>
         <hibernate.version>4.3.7.Final</hibernate.version>
-        <hibernate.search.version>4.5.1.Final</hibernate.search.version>
+        <hibernate.search.version>4.5.2.Final</hibernate.search.version>
         <spring.framework.version>4.1.2.RELEASE</spring.framework.version>
         <spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
         <postgresql.jdbc.version>9.3-1102-jdbc41</postgresql.jdbc.version>
@@ -2413,7 +2413,7 @@
         </profile>
         <profile>
             <id>liquibase-setup-dev-instance</id>
-                    <!--  mvn -Pliquibase-export clean compile  -->
+                    <!--  mvn -Pliquibase-setup-dev-instance clean compile  -->
             <build>
                 <defaultGoal>liquibase:update</defaultGoal>
                 <resources>
@@ -2571,6 +2571,14 @@
         </profile>
         
     <profile>
+    <!-- this profile is "temporary" and is not run in isolation. It should 
+        be run along with jetty:run which will setup the properties files correctly. 
+        Eventually, this will be built into the default "jetty" launch process and 
+        "deploy" process. 
+        
+        Enabling this profile activates the liquibase.properties 
+        and sets skipUpgradeLiquibase=false which means that liquibase is processed 
+        during the setup process. -->
         <id>liquibase</id>
             <build>
                 <resources>

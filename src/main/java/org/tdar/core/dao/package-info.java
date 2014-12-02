@@ -105,6 +105,10 @@
                 query = "select br.resource from BookmarkedResource br where br.person.id = :personId and br.resource.status in (:statuses) order by br.resource.resourceType "
         ),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_BOOKMARKEDRESOURCES_FOR_USER,
+                query = "select br from BookmarkedResource br where br.person.id = :personId order by br.resource.resourceType "
+        ),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATASET_CAN_LINK_TO_ONTOLOGY,
                 query = "select dtc.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc " +
                         "where dt.dataset.id=:datasetId"
