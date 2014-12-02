@@ -29,6 +29,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -44,7 +45,7 @@ public class TdarUser extends Person {
 
     @Column(unique = true, nullable = true)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
-    @Field
+    @Field(name = QueryFieldNames.USERNAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     private String username;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
