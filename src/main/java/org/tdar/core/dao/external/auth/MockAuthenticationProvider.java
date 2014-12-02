@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,13 +79,15 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
         AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
 
         logger.debug("trying to authenticate:: user: {}  password:{}", name, password);
-        MockAuthenticationInfo user = users.get(name);
+        MockAuthenticationInfo user = users.get(name.toLowerCase());
         if (user != null && Objects.equals(password, user.getPassword())) {
             result.setType(AuthenticationResultType.VALID);
         } else if (user != null) {
             result.setType(AuthenticationResultType.INVALID_PASSWORD);
         } else {
-            result.setType(AuthenticationResultType.ACCOUNT_DOES_NOT_EXIST);
+            result.setType(AuthenticationResultType.INVALID_PASSWORD);
+            // mirroring settings for crowd which are obfuscated for security
+            // result.setType(AuthenticationResultType.ACCOUNT_DOES_NOT_EXIST);
         }
         return result;
     }
@@ -96,13 +99,17 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
-        if (users.containsKey(person.getUsername())) {
+        if (users.containsKey(person.getUsername().toLowerCase())) {
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         } else {
+            if (ArrayUtils.isEmpty(groups)) {
+                groups = AuthenticationProvider.DEFAULT_GROUPS;
+            }
+            logger.debug("adding: {} [{}]", person.getUsername().toLowerCase(), groups);
             MockAuthenticationInfo info = new MockAuthenticationInfo();
             info.setPassword(password);
             info.getMemberships().addAll(Arrays.asList(groups));
-            users.put(person.getUsername(), info);
+            users.put(person.getUsername().toLowerCase(), info);
             return new AuthenticationResult(AuthenticationResultType.VALID);
         }
     }
@@ -110,8 +117,13 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public boolean deleteUser(TdarUser person) {
         try {
-            if (users.containsKey(person.getUsername())) {
-                users.remove(person.getUsername());
+            String key = person.getUsername().toLowerCase();
+            logger.debug("removing: {}", key);
+            if (users.containsKey(key)) {
+                users.remove(key);
+            }
+            if (users.containsKey(key)) {
+                logger.error("USERS still contains key: {}", key);
             }
             return true;
         } catch (Exception e) {
@@ -128,18 +140,22 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public void updateUserPassword(TdarUser person, String password) {
-        users.get(person.getUsername()).setPassword(password);
+        users.get(person.getUsername().toLowerCase()).setPassword(password);
     }
 
     @Override
     public String[] findGroupMemberships(TdarUser person) {
         List<String> toReturn = new ArrayList<String>();
-        for (TdarGroup group : users.get(person.getUsername()).getMemberships()) {
+        MockAuthenticationInfo mockAuthenticationInfo = users.get(person.getUsername().toLowerCase());
+        if (mockAuthenticationInfo == null) {
+            return new String[0];
+        }
+        for (TdarGroup group : mockAuthenticationInfo.getMemberships()) {
             toReturn.add(group.getGroupName());
         }
         String[] result = toReturn.toArray(new String[0]);
         logger.debug("group membership request: name:{}   membership:[{}]",
-                new Object[] { person.getUsername(), users.get(person.getUsername()), result });
+                new Object[] { person.getUsername(), mockAuthenticationInfo, result });
         return result;
     }
 
@@ -182,7 +198,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             if (user.getUsername().equals(USERNAME)) {
                 info.setPassword(PASSWORD);
             }
-            users.put(user.getUsername(), info);
+            logger.trace("init: {}", user.getUsername().toLowerCase());
+            users.put(user.getUsername().toLowerCase(), info);
         }
     }
 

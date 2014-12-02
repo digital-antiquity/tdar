@@ -93,7 +93,7 @@ public class UserRegistration extends UserAuthData {
         } else {
             TdarUser existingUser = authService.findByUsername(getPerson().getUsername());
             if (existingUser != null && existingUser.isRegistered()) {
-                getLogger().debug("username was already registered: ", getPerson().getUsername());
+                getLogger().debug("username was already registered: {}", getPerson().getUsername());
                 errors.addFieldError(getPrefix() + "person.username", "userAccountController.error_username_already_registered");
             }
         }
