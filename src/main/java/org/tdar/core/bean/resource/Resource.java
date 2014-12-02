@@ -439,6 +439,9 @@ public class Resource implements Persistable,
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
+  private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
+
     private transient Account account;
 
     // used by the import service to determine whether a record has been
@@ -1971,5 +1974,14 @@ public class Resource implements Persistable,
     @Override
     public String getSlug() {
         return UrlUtils.slugify(getName());
+    }
+
+    @XmlTransient
+    public Set<BookmarkedResource> getBookmarkedResources() {
+        return bookmarkedResources;
+    }
+
+    public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
+        this.bookmarkedResources = bookmarkedResources;
     }
 }

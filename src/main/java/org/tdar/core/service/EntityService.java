@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -24,6 +25,7 @@ import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
+import org.tdar.core.dao.resource.BookmarkedResourceDao;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -46,6 +48,9 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private transient AuthorizedUserDao authorizedUserDao;
     @Autowired
     private transient SimpleFileProcessingDao simpleFileProcessingDao;
+
+    @Autowired
+    private transient BookmarkedResourceDao bookmarkedResourceDao;
 
     /**
      * Find a @link Person by ID
@@ -484,5 +489,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (fileProxy != null) {
             simpleFileProcessingDao.processFileProxyForCreatorOrCollection(person, fileProxy);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookmarkedResource> getBookmarkedResourcesForUser(TdarUser user) {
+        return bookmarkedResourceDao.findBookmarksResourcesByPerson(user);
     }
 }
