@@ -96,5 +96,6 @@ public interface QueryFieldNames {
     String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
     String NAME_PHRASE = "name_phrase";
     String NAME_TOKEN = "name_token";
+    String USERNAME = "username";
 
 }

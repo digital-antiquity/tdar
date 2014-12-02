@@ -41,13 +41,20 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 group.setOperator(Operator.OR);
                 String wildcard = StringUtils.trim(new String(wildcardName));
                 wildcard = PhraseFormatter.ESCAPED.format(wildcard);
-                wildcard = PhraseFormatter.WILDCARD.format(wildcard);
-                if (wildcard.contains(" ")) {
+                if (!wildcard.contains(" ")) {
+                    wildcard = PhraseFormatter.WILDCARD.format(wildcard);
+                } else {
                     wildcard = PhraseFormatter.QUOTED.format(wildcard);
                 }
                 FieldQueryPart<String> fullName = new FieldQueryPart<>(QueryFieldNames.PROPER_NAME, wildcard);
                 fullName.setBoost(6f);
                 group.append(fullName);
+                FieldQueryPart<String> username = new FieldQueryPart<>(QueryFieldNames.USERNAME, wildcard);
+                username.setBoost(4f);
+                group.append(username);
+                FieldQueryPart<String> email = new FieldQueryPart<>(QueryFieldNames.EMAIL, wildcard);
+                email.setBoost(4f);
+                group.append(email);
                 setOperator(Operator.OR);
             }
 
