@@ -181,6 +181,7 @@ public class DownloadService {
             versionsToDownload.add(versionToDownload);
         }
 
+        DownloadResult issue = DownloadResult.SUCCESS;
         if (Persistable.Base.isNotNullOrTransient(resourceToDownload)) {
             for (InformationResourceFile irf : resourceToDownload.getInformationResourceFiles()) {
                 if (irf.isDeleted()) {
@@ -189,17 +190,22 @@ public class DownloadService {
                 versionsToDownload.add(irf.getLatestUploadedOrArchivalVersion());
                 logger.trace("adding: {}", irf.getLatestUploadedVersion());
             }
-        } else {
+        } else if (CollectionUtils.isNotEmpty(versionsToDownload)) {
             // trying to address a casting issue where we're getting a javassist version and not a tdar information resource
             resourceToDownload = versionsToDownload.get(0).getInformationResourceFile().getInformationResource();
             if (resourceToDownload.getResourceType().isDocument()) {
                 resourceToDownload = genericService.find(Document.class, resourceToDownload.getId());
             }
+        } else {
+            issue = DownloadResult.ERROR;
         }
 
         DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, authenticatedUser, textProvider, this);
         dto.setIncludeCoverPage(includeCoverPage);
-
+        if (issue != DownloadResult.SUCCESS) {
+            dto.setResult(issue);
+            return dto;
+        }
         Iterator<InformationResourceFileVersion> iter = versionsToDownload.iterator();
         while (iter.hasNext()) {
             InformationResourceFileVersion version = iter.next();
