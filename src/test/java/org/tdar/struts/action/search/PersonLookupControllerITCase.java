@@ -142,7 +142,17 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         people = controller.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
-    }
+
+        // searching by username
+        controller = generateNewInitializedController(LookupController.class, getAdminUser());
+        controller.setTerm("M Scott Th");
+        controller.setSortField(SortOption.RELEVANCE);
+        result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        people = controller.getResults();
+        logger.debug("results:{} ", people);
+        assertEquals(person, people.get(0));
+}
     
     @Test
     public void testPersonLookupTooShortOverride() {

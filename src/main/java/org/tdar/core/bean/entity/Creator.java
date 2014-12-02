@@ -62,6 +62,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -152,7 +153,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @Column(nullable = false, name = "hidden", columnDefinition = "boolean default FALSE")
     private boolean hidden = false;
-    
+
     @Column(name = Creator.OCCURRENCE)
     private Long occurrence = 0L;
     @Column(name = Creator.BROWSE_OCCURRENCE)
@@ -226,7 +227,9 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     @JsonView(JsonLookupFilter.class)
     public abstract String getName();
 
-    @Fields({ @Field(name = QueryFieldNames.PROPER_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
+    @Fields({ @Field(name = QueryFieldNames.PROPER_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            @Field(name = QueryFieldNames.PROPER_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
+    })
     @JsonView(JsonLookupFilter.class)
     public abstract String getProperName();
 
@@ -518,5 +521,5 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
 
-    abstract public Set<? extends Creator> getSynonyms(); 
+    abstract public Set<? extends Creator> getSynonyms();
 }

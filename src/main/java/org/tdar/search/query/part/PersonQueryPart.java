@@ -46,9 +46,13 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 } else {
                     wildcard = PhraseFormatter.QUOTED.format(wildcard);
                 }
-                FieldQueryPart<String> fullName = new FieldQueryPart<>(QueryFieldNames.PROPER_NAME, wildcard);
-                fullName.setBoost(6f);
-                group.append(fullName);
+//                FieldQueryPart<String> fullName = new FieldQueryPart<>(QueryFieldNames.PROPER_NAME, wildcard);
+//                fullName.setBoost(6f);
+//                fullName.setBoost(6f);
+//                group.append(fullName);
+                FieldQueryPart<String> auto = new FieldQueryPart<String>(QueryFieldNames.PROPER_AUTO, wildcard);
+                auto.setBoost(6f);
+                group.append(auto);
                 FieldQueryPart<String> username = new FieldQueryPart<>(QueryFieldNames.USERNAME, wildcard);
                 username.setBoost(4f);
                 group.append(username);

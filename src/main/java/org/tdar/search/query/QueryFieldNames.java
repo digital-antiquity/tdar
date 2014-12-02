@@ -97,5 +97,6 @@ public interface QueryFieldNames {
     String NAME_PHRASE = "name_phrase";
     String NAME_TOKEN = "name_token";
     String USERNAME = "username";
+    String PROPER_AUTO = "proper_name_auto";
 
 }
