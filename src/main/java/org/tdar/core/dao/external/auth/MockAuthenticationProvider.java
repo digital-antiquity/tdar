@@ -19,7 +19,6 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.EntityService;
 
 //import org.tdar.utils.TestConfiguration;
@@ -122,6 +121,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             logger.debug("adding: {} [{}]", person.getUsername().toLowerCase(), groups);
             MockAuthenticationInfo info = new MockAuthenticationInfo();
             info.setPassword(password);
+            info.setUsername(person.getUsername().toLowerCase());
             info.getMemberships().addAll(Arrays.asList(groups));
             users.put(person.getUsername().toLowerCase(), info);
             return new AuthenticationResult(AuthenticationResultType.VALID);
@@ -187,11 +187,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
         }
         List<TdarUser> registeredUsers = entityService.findAllRegisteredUsers();
         for (TdarUser user : registeredUsers) {
-            MockAuthenticationInfo info = new MockAuthenticationInfo();
-            info.setPassword(user.getUsername());
-            info.getMemberships().add(TdarGroup.TDAR_USERS);
-            info.getMemberships().add(TdarGroup.JIRA_USERS);
-            info.getMemberships().add(TdarGroup.CONFLUENCE_USERS);
+            addUser(user, user.getUsername(), TdarGroup.TDAR_USERS, TdarGroup.JIRA_USERS, TdarGroup.CONFLUENCE_USERS);
+            MockAuthenticationInfo info = users.get(user.getUsername().toLowerCase());
             if (user.getUsername().equals(ADMIN_USERNAME)) {
                 info.getMemberships().add(TdarGroup.TDAR_ADMIN);
                 info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
@@ -219,6 +216,14 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public AuthenticationResult checkToken(String token, HttpServletRequest request) {
-        throw new TdarRuntimeException("error.not_implemented");
+        AuthenticationResult result  = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
+        for (MockAuthenticationInfo info : users.values()) {
+            if (Objects.equals(token, info.getToken())) {
+                result.setTokenUsername(info.getUsername());
+                result.setType(AuthenticationResultType.VALID);
+                result.setToken(token);
+            }
+        }
+        return result;
     }
 }
