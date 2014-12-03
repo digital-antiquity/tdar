@@ -1721,3 +1721,8 @@ div.grippie {
     height: 9px;
     overflow: hidden
 }
+
+/** hide angular templates until angular finishes initial render **/
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}

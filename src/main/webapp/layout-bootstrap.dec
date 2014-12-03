@@ -76,7 +76,7 @@
     <@common.globalJavascript />
 
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" data-ng-cloak class="results ${actionName} <#if !production>not-production</#if>">
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">

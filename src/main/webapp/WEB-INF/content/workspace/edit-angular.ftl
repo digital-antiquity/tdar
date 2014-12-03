@@ -8,7 +8,7 @@
         <h1>Dataset Integration</h1>
         <h2>{{ctrl.integration.title || 'Create New Integration'}}</h2>
     </div>
-    <form id="frmIntegrationEdit" action="#" method="post" class="form-horizontal">
+    <form id="frmIntegrationEdit" action="#" method="post" class="form-horizontal ">
         <div class="row">
             <div class="span9">
                <div class="control-group">
@@ -16,16 +16,14 @@
                        Integration Name
                    </label>
                    <div class="controls">
-                       <input type="text" class="input-xxlarge" name="integration.title"
+                       <input type="text" class="input-block-level" name="integration.title"
                               ng-model="ctrl.integration.title">
                    </div>
                </div>
                <div class="control-group">
-                   <label class="control-label">
-                       Description
-                   </label>
+                   <label class="control-label">Description</label>
                    <div class="controls">
-                       <textarea name="integration.description" class="input-xxlarge" cols="80" rows="4"
+                       <textarea name="integration.description" class="input-block-level" cols="80" rows="2"
                                  ng-model="ctrl.integration.description"></textarea>
                    </div>
                </div>
@@ -39,8 +37,6 @@
         </div>
 
         <div id="divActionsSection">
-            <div class="row">
-                <div class="span12">
                     <div class="control-group">
                         <label class="control-label">Actions</label>
                         <div class="controls">
@@ -48,14 +44,13 @@
                                 <button type="button" class="btn"  id="btnAddDataset"
                                         ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
                                 <button type="button" class="btn"  id="btnAddIntegrationColumn"
-                                        ng-click="ctrl.addIntegrationColumnsClicked()">Add Integration Columns...</button>
+                                        ignoreme-ng-click="ctrl.addIntegrationColumnsClicked()"
+                                        ng-click="ctrl.addToIntegrationColumnsClicked()">Add Integration Columns...</button>
                                 <button type="button" class="btn" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()">Add Display Column</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
         </div>
 
         <div id="divSelectedItemsSection">
@@ -64,20 +59,26 @@
                     <div class="control-group">
                         <label class="control-label">Datasets & Ontologies</label>
                         <div class="controls controls-row">
-                            <div class="span5">
-                                <label>Selected Datasets: {{ctrl.integration.datatables.length}}</label>
+                            <div class="span4">
+                                <label>Selected Datasets</label>
                                 <div>
-                                    <select size="10" class="input-xlarge" multiple  ng-model="selectedDatatables" ng-options="datatable.data_table_name for datatable in ctrl.integration.datatables"></select>
+                                    <select size="5" class="input-block-level" multiple  ng-model="selectedDatatables" ng-options="datatable.data_table_name for datatable in ctrl.integration.datatables"></select>
                                 </div>
-                                <button type="button" class="btn input-xlarge"
-                                        ng-click="ctrl.removeSelectedDatasetClicked()">Remove Selected Dataset</button>
+                                <button type="button" class="btn input-block-level"
+                                        ng-click="ctrl.removeSelectedDatasetClicked()">Remove selected dataset</button>
                             </div>
                             <div class="span4">
-                                <label>Shared Ontologies</label>
+                                <label>Ontologies</label>
                                 <div>
-                                    <select size="10" class="input-xlarge"
-                                            ng-model="selectedOntologies" multiple ng-options="ontology.name for ontology in ctrl.sharedOntologies"></select>
+                                    <select size="5" class="input-block-level" multiple
+                                            ng-model="selectedOntologies"
+                                            ng-options="ontology.name for ontology in ctrl.sharedOntologies"
+                                            ng-dblclick="ctrl.addToIntegrationColumnsClicked()"></select>
                                 </div>
+
+                                <#--<button type="button" class="btn input-block-level"-->
+                                        <#--ng-click="ctrl.addToIntegrationColumnsClicked()">Add selected as integration column</button>-->
+
                             </div>
                         </div>
                     </div>

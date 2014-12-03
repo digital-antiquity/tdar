@@ -14,6 +14,8 @@
     }
 
     Integration.prototype = {
+
+        //fixme: do we need/want to prohibit multiple integration columns w/ the same ontology? Even
         addIntegrationColumn: function(title, ontology) {
             var self = this;
             var col = {
@@ -352,7 +354,7 @@
             integration.columns.push(col);
         };
 
-        this.removeSelectedDatasetClicked = function() {
+        self.removeSelectedDatasetClicked = function() {
             if($scope.selectedDatatables) {
                 $scope.selectedDatatables.forEach(function(item){
                     console.debug("removing %s from %s (index:%s)", item , self.integration.datatables, self.integration.datatables.indexOf(item));
@@ -361,7 +363,15 @@
             } else {
                 console.warn("removeSelectedDatasetClicked:: no tables specified");
             }
+        };
+
+        self.addToIntegrationColumnsClicked = function() {
+            console.log("addToIntegrationColumnsClicked: %s", $scope.selectedOntologies);
+            $scope.selectedOntologies.forEach(function(ontology, idx){
+                self.integration.addIntegrationColumn(ontology.name, ontology);
+            });
         }
+
     }]);
 
     //Controller that drives the add-integration-column controller
