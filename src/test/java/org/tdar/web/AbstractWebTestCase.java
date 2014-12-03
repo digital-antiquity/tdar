@@ -1,11 +1,5 @@
 package org.tdar.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +19,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -95,6 +88,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
+
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -234,12 +234,22 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      */
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertFalse("An error ocurred @ " + path + " ==> " + internalPage.getWebResponse().getContentAsString(),
-                statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         assertNoAccessibilityErrors();
         return statusCode;
+    }
+
+    /**
+     * Request a page similar to gotoPage(), sans html validaton
+     * @param path
+     * @return
+     */
+    public String gotoJson(String path) {
+        int statusCode = gotoPageWithoutErrorCheck(path);
+        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
+        return internalPage.getWebResponse().getContentAsString();
     }
 
     private void assertNoAccessibilityErrors() {
@@ -671,7 +681,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public int submitForm(String buttonText) {
         submitFormWithoutErrorCheck(buttonText);
         int statusCode = internalPage.getWebResponse().getStatusCode();
-        assertFalse(statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertFalse(statusCode == SC_INTERNAL_SERVER_ERROR);
         assertNoErrorTextPresent();
         assertNoEscapeIssues();
         assertPageValidHtml();

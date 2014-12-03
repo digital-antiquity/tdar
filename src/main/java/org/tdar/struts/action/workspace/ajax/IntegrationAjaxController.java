@@ -18,6 +18,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
@@ -79,7 +80,6 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     private List<Long> dataTableIds = new ArrayList<>();
 
     private ObjectMapper objectMapper = new ObjectMapper();
-
 
     @Override
     public void prepare() {
@@ -168,11 +168,17 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     private HashMap<String, Object> setupOntologyForJson(Ontology ontology) {
         HashMap<String, Object> map = new HashMap<>();
+        Long catId = null;
+        String catName = null;
         CategoryVariable category = ontology.getCategoryVariable();
+        if(category != null) {
+            catId = category.getId();
+            catName = category.getName();
+        }
         map.put("id", ontology.getId());
         map.put("title", ontology.getTitle());
-        map.put("category_variable_id", category.getId());
-        map.put("category_variable_name", category.getName());
+        map.put("category_variable_id", catId);
+        map.put("category_variable_name", catName);
         map.put("ontology_name", ontology.getTitle());
         map.put("ontology_submitter", ontology.getSubmitter().getProperName());
         map.put("date_created", formatter.format(ontology.getDateCreated()));

@@ -33,7 +33,17 @@
             self.columns.push(col);
             return col;
         }
+
     };
+
+    //given ontologyand list of datatables, build a 2d-list of compatible columns (datatableColumns broken down by data table).  this list
+    //note this is not the same thing as an integration column's list of dataTableColumns.
+    function _buildCompatibilityInfo(ontology, datatables) {
+        //FIXME:  implemnent me.
+    }
+
+
+
 
     //model for search filter that can be used for datasets or ontologies
     function SearchFilter() {
