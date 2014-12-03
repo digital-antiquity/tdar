@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,6 +57,12 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals(TdarConfiguration.getInstance().getRequestTokenName())) {
+                cookie.setMaxAge(0);
+            }
+            response.addCookie(cookie);
+        }
     }
 
     @Override
@@ -82,6 +89,13 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
         MockAuthenticationInfo user = users.get(name.toLowerCase());
         if (user != null && Objects.equals(password, user.getPassword())) {
             result.setType(AuthenticationResultType.VALID);
+            String token = Long.toString(user.hashCode() + System.currentTimeMillis());
+            result.setToken(token);
+            result.setTokenUsername(name.toLowerCase());
+            user.setToken(token);
+            Cookie cookie = new Cookie(TdarConfiguration.getInstance().getRequestTokenName(), token);
+            cookie.setMaxAge(1024);
+            response.addCookie(cookie);
         } else if (user != null) {
             result.setType(AuthenticationResultType.INVALID_PASSWORD);
         } else {
