@@ -134,6 +134,13 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         return true;
     }
 
+    @Transactional(readOnly = false)
+    public void retranslate(Dataset dataset) {
+        for (DataTable table : dataset.getDataTables()) {
+            retranslate(table.getDataTableColumns());
+        }
+    }
+
     /*
      * Convenience method for untranslate, then translate using column.getDefaultCodingSheet()
      */
@@ -237,6 +244,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
 
             getAnalyzer().processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
+
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);
         }
@@ -895,6 +903,29 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
+    }
+
+    @Transactional(readOnly = false)
+    @Async
+    public void remapAllColumnsAsync(final Dataset dataset, final Project project) {
+        remapAllColumns(dataset, project);
+    }
+
+    @Transactional(readOnly = false)
+    public void remapAllColumns(Dataset dataset, Project project) {
+        List<DataTableColumn> columns = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
+            for (DataTable datatable : dataset.getDataTables()) {
+                if (CollectionUtils.isNotEmpty(datatable.getDataTableColumns())) {
+                    for (DataTableColumn col : datatable.getDataTableColumns()) {
+                        if (col.isMappingColumn()) {
+                            columns.add(col);
+                        }
+                    }
+                }
+            }
+        }
+        remapColumns(columns, project);
     }
 
 }

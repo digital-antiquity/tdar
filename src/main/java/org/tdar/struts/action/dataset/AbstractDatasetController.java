@@ -237,4 +237,16 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         return getAnalyzer().getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
     }
 
+    @Override
+    protected void postSaveCallback(String actionMessage) {
+        super.postSaveCallback(actionMessage);
+        if (isHasFileProxyChanges()) {
+            if (isAsync()) {
+                datasetService.remapAllColumnsAsync(getDataResource(), getProject());
+            } else {
+                datasetService.remapAllColumns(getDataResource(), getProject());
+            }
+        }
+    }
+
 }

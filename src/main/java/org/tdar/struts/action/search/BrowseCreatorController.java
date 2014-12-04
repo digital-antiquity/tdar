@@ -282,7 +282,7 @@ public class BrowseCreatorController extends AbstractLookupController implements
                 bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
             } catch (SearchPaginationException spe) {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
+                throw new TdarActionException(StatusCode.NOT_FOUND, spe);
             } catch (TdarRecoverableRuntimeException tdre) {
                 getLogger().warn("search parse exception", tdre);
                 addActionError(tdre.getMessage());
