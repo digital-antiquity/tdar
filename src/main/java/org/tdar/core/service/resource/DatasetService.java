@@ -133,6 +133,13 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         return true;
     }
 
+    @Transactional(readOnly = false)
+    public void retranslate(Dataset dataset) {
+        for (DataTable table : dataset.getDataTables()) {
+            retranslate(table.getDataTableColumns());
+        }
+    }
+
     /*
      * Convenience method for untranslate, then translate using column.getDefaultCodingSheet()
      */
