@@ -110,6 +110,7 @@ public class DataTable extends Persistable.Base {
      * 
      * @return
      */
+    @XmlTransient
     public List<DataTableColumn> getSortedDataTableColumns() {
         return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
             @Override
@@ -119,6 +120,21 @@ public class DataTable extends Persistable.Base {
                     return a.getDisplayName().compareTo(b.getDisplayName());
                 }
                 return comparison;
+            }
+        });
+    }
+
+    /**
+     * Get the data table columns sorted in the ascending order of sequence_number which should be the import order if available
+     * 
+     * @return
+     */
+    @XmlTransient
+    public List<DataTableColumn> getSortedDataTableColumnsByImportOrder() {
+        return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
+            @Override
+            public int compare(DataTableColumn a, DataTableColumn b) {
+                return ObjectUtils.compare(a.getSequenceNumber(), b.getSequenceNumber());
             }
         });
     }

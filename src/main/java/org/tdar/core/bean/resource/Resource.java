@@ -166,7 +166,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(name = "resource")
+@XmlType(name = "resource", propOrder={})
+@XmlTransient
 public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
@@ -250,14 +251,14 @@ public class Resource implements Persistable,
     @JsonView(JsonLookupFilter.class)
     private Long id = -1L;
 
-    @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
+    @BulkImportField(key="TITLE", required = true, order = -100)
     @NotNull
     @Column(length = 512)
     @JsonView(JsonLookupFilter.class)
     @Length(max = 512)
     private String title;
 
-    @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
+    @BulkImportField(required = true, order = -50, key="DESCRIPTION")
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @JsonView(JsonLookupFilter.class)
@@ -437,6 +438,9 @@ public class Resource implements Persistable,
     @IndexedEmbedded(depth = 2)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
+  private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
 
     private transient Account account;
 
@@ -1970,5 +1974,14 @@ public class Resource implements Persistable,
     @Override
     public String getSlug() {
         return UrlUtils.slugify(getName());
+    }
+
+    @XmlTransient
+    public Set<BookmarkedResource> getBookmarkedResources() {
+        return bookmarkedResources;
+    }
+
+    public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
+        this.bookmarkedResources = bookmarkedResources;
     }
 }

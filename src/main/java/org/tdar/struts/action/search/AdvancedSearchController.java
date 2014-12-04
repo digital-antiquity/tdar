@@ -64,9 +64,10 @@ import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
-import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.search.SearchParameters;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
@@ -358,6 +359,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private List<String> getAllGeneralQueryFields() {
         List<String> allFields = new ArrayList<>();
         for (SearchParameters param : groups) {
+            if (param == null) {
+                continue;
+            }
             for (String val : param.getAllFields()) {
                 if (StringUtils.isNotBlank(val)) {
                     allFields.add(val);
@@ -423,7 +427,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             getLogger().trace("legacy api:  tdar id");
             groups.clear();
             groups.add(new SearchParameters());
-            groups.get(0).getResourceIds().add(getId());
+            getFirstGroup().getResourceIds().add(getId());
             getResourceTypes().clear();
             return true;
         }
@@ -435,8 +439,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         LatitudeLongitudeBox ll = getMap();
         if ((ll == null) || !ll.isInitializedAndValid()) {
-            if (!getGroups().isEmpty() && !getGroups().get(0).getLatitudeLongitudeBoxes().isEmpty()) {
-                ll = getGroups().get(0).getLatitudeLongitudeBoxes().get(0);
+            if (CollectionUtils.isNotEmpty(getGroups()) && getGroups().get(0) != null
+                    && CollectionUtils.isNotEmpty(getFirstGroup().getLatitudeLongitudeBoxes())) {
+                ll = getFirstGroup().getLatitudeLongitudeBoxes().get(0);
             }
         }
 
@@ -493,6 +498,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         topLevelQueryPart = new QueryPartGroup(topLevelOperator);
 
         for (SearchParameters group : groups) {
+            if (group == null) {
+                continue;
+            }
             group.setExplore(explore);
             try {
                 searchService.updateResourceCreators(group, 20);

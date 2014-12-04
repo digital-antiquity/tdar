@@ -8,6 +8,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlRootElement
 @XmlType(name = "citation")
+@XmlTransient
 public abstract class Citation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 4174558394278154078L;

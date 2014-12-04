@@ -16,18 +16,17 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.billing.InvoiceService;
+import org.tdar.core.service.billing.PricingOption;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.PricingOption;
 
 /**
  * $Id$

@@ -15,7 +15,6 @@ import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.struts.action.dataset.RowViewAction;
 
 import com.opensymphony.xwork2.Action;
@@ -116,7 +115,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         assertEquals(Action.SUCCESS, controller.getDataResultsRow());
         final Iterator<DataTableColumn> iterator = controller.getDataTableRowAsMap().keySet().iterator();
         final String name = iterator.next().getName();
-        assertTrue("The row id column is expected to be first in the map, but found " + name, name.equals(TargetDatabase.TDAR_ID_COLUMN));
+        assertTrue("The row id column is expected to be first in the map, but found " + name, name.equals(DataTableColumn.TDAR_ID_COLUMN));
     }
 
 }

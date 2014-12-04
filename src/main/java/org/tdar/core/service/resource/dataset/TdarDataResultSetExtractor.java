@@ -9,8 +9,6 @@ import java.util.Map;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.struts.data.ResultMetadataWrapper;
 
 /*
  * Handles the extraction of a ResultSet from the tdardata database and converts it into a ResultsMetadataWrapper backed object that can be converted to JSON or XML
@@ -53,7 +51,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             if ((rowNum > start) && (rowNum <= (start + page))) {
                 ArrayList<String> values = new ArrayList<String>();
                 for (DataTableColumn col : wrapper.getFields()) {
-                    if (col.isVisible() || (returnRowId && TargetDatabase.TDAR_ID_COLUMN.equals(col.getName()))) {
+                    if (col.isVisible() || (returnRowId && DataTableColumn.TDAR_ID_COLUMN.equals(col.getName()))) {
                         values.add(result.get(col));
                     }
                 }

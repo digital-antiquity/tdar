@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.tdar.core.exception.OAIException;
+import org.tdar.core.exception.OaiErrorCode;
 import org.tdar.utils.MessageHelper;
 
 /**

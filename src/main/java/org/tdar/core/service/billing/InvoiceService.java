@@ -43,10 +43,9 @@ import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.struts.data.PricingOption;
-import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.utils.MessageHelper;
 
 @Service

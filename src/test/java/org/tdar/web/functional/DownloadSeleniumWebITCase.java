@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.FileAccessRestriction;
-import org.tdar.struts.data.UserRegistration;
+import org.tdar.core.service.external.UserRegistration;
 
 /**
  * Created by adam on 7/21/14.

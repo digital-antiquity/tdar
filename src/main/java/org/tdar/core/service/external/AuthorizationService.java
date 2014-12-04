@@ -24,6 +24,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
@@ -42,10 +43,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.core.service.search.ReservedSearchParameters;
 
 /*
  * This service is designed to hide the complexity of users and permissions from the rest of tDAR.  It handles a number different functions including:

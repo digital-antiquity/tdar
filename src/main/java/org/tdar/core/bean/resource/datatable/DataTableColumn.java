@@ -37,7 +37,6 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -62,6 +61,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    public static final String TDAR_ID_COLUMN = "id_row_tdar";
+
     public static final DataTableColumn TDAR_ROW_ID = new DataTableColumn() {
 
         private static final long serialVersionUID = 3518018865128797773L;
@@ -73,7 +74,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
         @Override
         public String getName() {
-            return TargetDatabase.TDAR_ID_COLUMN;
+            return TDAR_ID_COLUMN;
         }
 
         @Override

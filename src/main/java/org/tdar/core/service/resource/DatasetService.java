@@ -61,15 +61,15 @@ import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
+import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -132,6 +132,13 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // FIXME: if we eventually offer on-the-fly coding sheet translation we cannot modify the actual dataset in place
         tdarDataImportDatabase.translateInPlace(column, codingSheet);
         return true;
+    }
+
+    @Transactional(readOnly = false)
+    public void retranslate(Dataset dataset) {
+        for (DataTable table : dataset.getDataTables()) {
+            retranslate(table.getDataTableColumns());
+        }
     }
 
     /*
@@ -237,6 +244,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
 
             getAnalyzer().processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
+
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);
         }
@@ -895,6 +903,29 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
+    }
+
+    @Transactional(readOnly = false)
+    @Async
+    public void remapAllColumnsAsync(final Dataset dataset, final Project project) {
+        remapAllColumns(dataset, project);
+    }
+
+    @Transactional(readOnly = false)
+    public void remapAllColumns(Dataset dataset, Project project) {
+        List<DataTableColumn> columns = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
+            for (DataTable datatable : dataset.getDataTables()) {
+                if (CollectionUtils.isNotEmpty(datatable.getDataTableColumns())) {
+                    for (DataTableColumn col : datatable.getDataTableColumns()) {
+                        if (col.isMappingColumn()) {
+                            columns.add(col);
+                        }
+                    }
+                }
+            }
+        }
+        remapColumns(columns, project);
     }
 
 }

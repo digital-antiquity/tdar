@@ -60,6 +60,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -69,7 +70,6 @@ import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.KeywordNode;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -1089,11 +1089,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
         return Persistable.Base.extractIds(persistables);
-    }
-
-    protected void loadCustomViewMetadata() throws TdarActionException {
-        // TODO Auto-generated method stub
-
     }
 
     public List<EmailMessageType> getEmailTypes() {

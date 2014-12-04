@@ -44,6 +44,8 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
@@ -51,8 +53,6 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.data.intgration.IntegrationColumn;
-import org.tdar.struts.data.intgration.IntegrationDataResult;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
@@ -62,7 +62,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
-
 
     @Override
     protected String getTestFilePath() {
@@ -227,7 +226,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         }
     }
 
-    public List<IntegrationDataResult> performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
+    public Object performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
             HashMap<Ontology, String[]> nodeSelectionMap) throws IOException {
         WorkspaceController controller = generateNewInitializedController(WorkspaceController.class);
         performIntegrationFiltering(integrationColumns, nodeSelectionMap);
@@ -236,45 +235,25 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         controller.displayFilteredResults();
 
         logger.info("Testing Integration Results");
-        assertNotNull(controller.getIntegrationDataResults());
-        for (IntegrationDataResult integrationDataResult : controller.getIntegrationDataResults()) {
-
-            // expected colcount includes one table name, integration column count, and display column count
-            int colCount = 1;
-
-            colCount += integrationDataResult.getIntegrationColumns().size();
-
-            for (IntegrationColumn col : integrationColumns) { // adding ontology mapping entry
-                if (!col.isDisplayColumn()) {
-                    colCount++;
-                }
-            }
-
-            int size = 0;
-            for (String[] data : integrationDataResult.getRowData()) {
-                size++;
-                assertEquals("row " + size + " didn't match expected # of columns " + colCount, colCount, data.length);
-            }
-        }
+        assertNotNull(controller.getResult());
         logger.info("{}", controller.getIntegrationColumns());
 
-        List<IntegrationDataResult> results = controller.getIntegrationDataResults();
         Long ticketId = controller.getTicketId();
         assertNotNull(ticketId);
-
+        ModernIntegrationDataResult result = controller.getResult();
         controller = generateNewInitializedController(WorkspaceController.class);
         controller.setTicketId(ticketId);
         controller.downloadIntegrationDataResults();
         InputStream integrationDataResultsInputStream = controller.getIntegrationDataResultsInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(integrationDataResultsInputStream));
         Assert.assertFalse(StringUtils.isEmpty(reader.readLine()));
-        return results;
+        return result;
     }
 
     public List<String> performIntegrationFiltering(List<IntegrationColumn> integrationColumns, HashMap<Ontology, String[]> nodeSelectionMap) {
         List<String> checkedNodeList = new ArrayList<String>();
         for (IntegrationColumn integrationColumn : integrationColumns) {
-            if (integrationColumn.isDisplayColumn()) {
+            if (!integrationColumn.isIntegrationColumn()) {
                 continue;
             }
             if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
@@ -295,8 +274,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         }
         return checkedNodeList;
     }
-
-
 
     public void assertArchiveContents(Collection<File> expectedFiles, File archive) throws IOException {
         assertArchiveContents(expectedFiles, archive, true);
@@ -345,7 +322,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         } catch (Exception e) {
             logger.error("Error while extracting file " + archive, e);
         } finally {
-            if (zipfile!=null) {
+            if (zipfile != null) {
                 IOUtils.closeQuietly(zipfile);
             }
         }

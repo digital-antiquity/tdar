@@ -77,4 +77,12 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
         }
         return resources;
     }
+
+    public List<BookmarkedResource> findBookmarksResourcesByPerson(TdarUser user) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCES_FOR_USER);
+        query.setLong("personId", user.getId());
+        @SuppressWarnings("unchecked")
+        List<BookmarkedResource> resources = query.list();
+        return resources;
+    }
 }

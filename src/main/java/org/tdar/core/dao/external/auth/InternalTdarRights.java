@@ -3,6 +3,8 @@ package org.tdar.core.dao.external.auth;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.tdar.core.bean.TdarGroup;
+
 public enum InternalTdarRights {
     VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO(TdarGroup.TDAR_EDITOR),
     EDIT_PERSONAL_ENTITES(TdarGroup.TDAR_EDITOR),

@@ -9,9 +9,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -26,10 +30,10 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
+import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.data.intgration.IntegrationColumn;
-import org.tdar.struts.data.intgration.IntegrationColumn.ColumnType;
-import org.tdar.struts.data.intgration.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -129,14 +133,13 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // tests that the mapped ontology node is not aggregated up to pleuronectiformes
         for (String term : plaiceFlounderTerms) {
             assertEquals(plaiceFlounderOntologyNode.getDisplayName(),
-                    dataIntegrationService.getMappedOntologyNode(term, spitalSpeciesColumn, integrationColumn).getDisplayName());
+                    integrationColumn.getMappedOntologyNode(term, spitalSpeciesColumn).getDisplayName());
         }
 
         // testing aggregation up from gaddidae to paracanthopt...
         for (String term : mappedGadidaeTerms) {
-            logger.trace("{} -> {}", term, dataIntegrationService.getMappedOntologyNode(term, spitalSpeciesColumn, integrationColumn).getDisplayName());
-            assertEquals(paracanthopt.getDisplayName(), dataIntegrationService.getMappedOntologyNode(term, spitalSpeciesColumn, integrationColumn)
-                    .getDisplayName());
+            logger.trace("{} -> {}", term, integrationColumn.getMappedOntologyNode(term, spitalSpeciesColumn).getDisplayName());
+            assertEquals(paracanthopt.getDisplayName(), integrationColumn.getMappedOntologyNode(term, spitalSpeciesColumn).getDisplayName());
         }
 
     }
@@ -214,7 +217,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
                 .getColumnByName(BELEMENT_COL)));
 
         List<String> displayRulesColumns = new ArrayList<>();
-        displayRulesColumns.addAll(Arrays.asList("no", "fus_prox"));
+        displayRulesColumns.addAll(Arrays.asList("col_no", "fus_prox"));
 
         for (String col : displayRulesColumns) {
             integrationColumns.add(new IntegrationColumn(ColumnType.DISPLAY, spitalMainTable.getColumnByName(col)));
@@ -227,13 +230,13 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         controller.setIntegrationColumns(integrationColumns);
         controller.filterDataValues();
         for (IntegrationColumn column : controller.getIntegrationColumns()) {
-            if (column.isDisplayColumn()) {
+            if (!column.isIntegrationColumn()) {
                 continue;
             }
             for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
-                logger.info("node: {} ", node);
+                logger.trace("node: {} ", node);
                 if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {
-                    logger.info("node: {} - {}", node, node.getColumnHasValueArray());
+                    logger.trace("node: {} - {}", node, node.getColumnHasValueArray());
                     boolean oneTrue = false;
                     for (boolean val : node.getColumnHasValueArray()) {
                         if (val) {
@@ -262,33 +265,58 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         nodeSelectionMap.put(taxonOntology, new String[] { "Felis catus (Cat)", "Canis familiaris (Dog)", "Ovis aries (Sheep)" });
         nodeSelectionMap.put(bElementOntology, new String[] { "Atlas", "Axis", "Carpal", "Tooth", "Ulna" });
 
-        List<IntegrationDataResult> results = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
+        Object results_ = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
         // assuming we're dealing with alexandria here
         boolean seenElementNull = false;
         boolean seenSpeciesNull = false;
-        for (IntegrationDataResult result : results) {
-            logger.info("{} - {}", result.getDataTable().getName(), result.getRowData().size());
-            assertTrue(CollectionUtils.isNotEmpty(result.getRowData()));
-            // List<DataTableColumn> columnsToDisplay = result.getColumnsToDisplay();
-            // for (DataTableColumn col : columnsToDisplay) { // capturing to test later
-            // resultingDataTableColumns.add(col.getName());
-            // resultingDataTableColumns.add(col.getDisplayName());
-            // }
-            logger.debug("\n{}\n\trowdata: {}", result, result.getRowData());
-            assertFalse("Should have integration results from each dataset", CollectionUtils.isEmpty(result.getRowData()));
-            for (String[] rowData : result.getRowData()) {
-                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
-                    seenElementNull = true;
-                }
-                if (rowData[3].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
-                    seenSpeciesNull = true;
-                }
+
+        ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
+        logger.trace("result: {}", result);
+        Workbook workbook = result.getWorkbook().getWorkbook();
+        Sheet sheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
+        Iterator<Row> rowIterator = sheet.rowIterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            logger.trace("{} | {}", row.getCell(2).getStringCellValue(), row.getCell(4).getStringCellValue());
+            if (row.getCell(1).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
+                seenElementNull = true;
+            }
+            if (row.getCell(3).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
+                seenSpeciesNull = true;
             }
         }
-
         // assertTrue(resultingDataTableColumns.containsAll(displayRulesColumns));
         assertTrue(seenElementNull);
         assertTrue(seenSpeciesNull);
+
+        // confirm that the pivot sheet is created properly with names and at least one known value
+        Sheet summarySheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.summary_worksheet"));
+        List<String> names = new ArrayList<>();
+        for (IntegrationColumn col : integrationColumns) {
+            if (col.isIntegrationColumn()) {
+                names.add(col.getName());
+            }
+        }
+        names.add(alexandriaTable.getName());
+        names.add(spitalMainTable.getName());
+        Row row = summarySheet.getRow(3);
+        for (int i = 0; i < names.size(); i++) {
+            assertEquals(names.get(i), row.getCell(i).getStringCellValue());
+        }
+        String[] row3 = new String[] { "Felis catus (Cat)", "Ulna", "23", "15" };
+        row = summarySheet.getRow(4);
+        for (int i = 0; i < names.size(); i++) {
+            Cell cell = row.getCell(i);
+            if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                assertEquals((int)Double.parseDouble(row3[i]), (int)cell.getNumericCellValue() );
+            } else {
+                assertEquals(row3[i], cell.getStringCellValue());
+                
+            }
+        }
+
+        // assertions on descriptions too?
+        
         logger.info("hi, we're done here");
     }
 
@@ -368,32 +396,38 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         HashMap<Ontology, String[]> nodeSelectionMap = new HashMap<>();
         nodeSelectionMap.put(bElementOntology, new String[] { "Tarsal", "Astragalus", "Ulna" });
 
-        List<IntegrationDataResult> results = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
+        Object results_ = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
+        logger.info("{}", results_);
         // assuming we're dealing with alexandria here
         boolean seenElementNull = false;
-        logger.info("{}", results);
         int ulna = 0;
         int tarsal = 0;
         int astragalus = 0;
         int empty = 0;
-        for (IntegrationDataResult result : results) {
 
-            for (String[] rowData : result.getRowData()) {
-                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
-                    seenElementNull = true;
-                }
-                if (rowData[2].equalsIgnoreCase("tarsal")) {
-                    tarsal++;
-                }
-                if (rowData[2].equalsIgnoreCase("ulna")) {
-                    ulna++;
-                }
-                if (rowData[2].equalsIgnoreCase("astragalus")) {
-                    astragalus++;
-                }
-                if (rowData[2].equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
-                    empty++;
-                }
+        ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
+
+        Sheet sheet = result.getWorkbook().getWorkbook().getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
+        Iterator<Row> rowIterator = sheet.rowIterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            String value2 = row.getCell(2).getStringCellValue();
+            String value1 = row.getCell(1).getStringCellValue();
+            if (value1.equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
+                seenElementNull = true;
+            }
+
+            if (value2.equalsIgnoreCase("tarsal")) {
+                tarsal++;
+            }
+            if (value2.equalsIgnoreCase("ulna")) {
+                ulna++;
+            }
+            if (value2.equalsIgnoreCase("astragalus")) {
+                astragalus++;
+            }
+            if (value2.equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
+                empty++;
             }
         }
         logger.info("tarsal: {}", tarsal);

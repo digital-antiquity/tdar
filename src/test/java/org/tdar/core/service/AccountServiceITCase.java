@@ -12,7 +12,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
@@ -22,6 +21,7 @@ import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.billing.InvoiceService;
 

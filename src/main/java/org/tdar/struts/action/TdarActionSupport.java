@@ -789,7 +789,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         // default is to be an error
         String errorMessage = getText("abstractPersistableController.no_permissions");
         addActionError(errorMessage);
-        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
+        abort(StatusCode.FORBIDDEN, UNAUTHORIZED, errorMessage);
     }
 
     /**
@@ -801,6 +801,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
         throw new TdarActionException(statusCode, errorMessage);
+    }
+
+    protected void abort(StatusCode statusCode, String response, String errorMessage) throws TdarActionException {
+        throw new TdarActionException(statusCode, response, errorMessage);
     }
 
     protected boolean checkLogoAvailable(ObjectType type, Long id, VersionType version) {

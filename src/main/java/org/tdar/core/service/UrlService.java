@@ -16,9 +16,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 @Service
 public class UrlService {
 
-    public static final String TDAR_NAMESPACE_URL = "http://www.tdar.org/namespace";
-    public static final String TDAR_NAMESPACE_PREFIX = "tdar";
-
     private static String baseUrl;
 
     /*

@@ -63,9 +63,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     private static final long serialVersionUID = -3863573773250268081L;
 
-    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated",
-            "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
-
     @Transient
     private transient String wildcardName;
 
@@ -76,14 +73,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
-    @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
+    @BulkImportField(key="CREATOR_LNAME", order = 2)
     @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
-    @BulkImportField(label = "First Name", comment = BulkImportField.CREATOR_FNAME_DESCRIPTION, order = 1)
+    @BulkImportField(key="CREATOR_FNAME", order = 1)
     @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -96,7 +93,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
-    @BulkImportField(label = "Email", order = 3)
+    @BulkImportField(key = "EMAIL", order = 3)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String email;
@@ -106,7 +103,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
-    @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
+    @BulkImportField(key="CREATOR_PERSON_INSTITUTION", order = 50)
     @JsonView(JsonLookupFilter.class)
     private Institution institution;
 
@@ -315,10 +312,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Override
     public boolean isDedupable() {
         return true;
-    }
-
-    public static String[] getIgnorePropertiesForUniqueness() {
-        return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
     @Override

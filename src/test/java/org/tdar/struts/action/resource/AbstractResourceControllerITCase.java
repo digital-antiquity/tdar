@@ -17,11 +17,11 @@ import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.billing.BillingAccountController;
-import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
 

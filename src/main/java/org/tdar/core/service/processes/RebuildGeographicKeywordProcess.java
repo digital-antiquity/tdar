@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.resource.ResourceService;
 
 @Component

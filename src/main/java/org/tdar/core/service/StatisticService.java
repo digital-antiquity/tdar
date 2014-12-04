@@ -25,7 +25,7 @@ import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.StatisticDao;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.struts.data.DateGranularity;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.Pair;
 
 import com.ibm.icu.util.GregorianCalendar;

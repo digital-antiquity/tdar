@@ -22,11 +22,11 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.external.UserLogin;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.login.LoginController;
 import org.tdar.struts.action.resource.ResourceController;
-import org.tdar.struts.data.UserLogin;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
@@ -46,6 +46,7 @@ import freemarker.template.Configuration;
  */
 public class UserRegistrationITCase extends AbstractControllerITCase {
 
+    private static final String PASSWORD = "password";
     static final String REASON = "because";
     private static final String TESTING_EMAIL = "test2asd@test2.com";
     static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
@@ -138,7 +139,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         // cleanup crowd if we need to...
         authService.getAuthenticationProvider().deleteUser(p);
         genericService.synchronize();
-        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPassword(PASSWORD);
         controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
@@ -187,7 +188,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         authService.getAuthenticationProvider().deleteUser(p);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
-        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPassword(PASSWORD);
         controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
@@ -272,13 +273,17 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(false)
+    /**
+     * NOTE THIS TEST IS FLIMSY AS IT SEEMS TO FAIL WHEN RUN A "SECOND" TIME WITHOUT CLEARNING THE DATABASE UP
+     */
     public void testEmailWithPlusSign() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
-        String email = "test++++++user@gmail.com";
-        Person findByEmail = entityService.findByEmail(email);
+        String email = "test+++user@gmail.com";
+        TdarUser findByEmail = (TdarUser)entityService.findByEmail(email);
         if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
             genericService.delete(findByEmail);
+            authenticationService.getAuthenticationProvider().deleteUser(findByEmail);
         }
         evictCache();
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
@@ -298,7 +303,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 LoginController loginAction = generateNewInitializedController(LoginController.class);
                 UserLogin userLogin = loginAction.getUserLogin();
                 userLogin.setLoginUsername(p.getEmail());
-                userLogin.setLoginPassword("password");
+                userLogin.setLoginPassword(PASSWORD);
                 loginAction.setServletRequest(getServletPostRequest());
                 assertEquals(TdarActionSupport.SUCCESS, loginAction.authenticate());
                 TdarUser person = genericService.find(TdarUser.class, p.getId());
@@ -395,7 +400,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setUsername(TESTING_EMAIL);
-        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPassword(PASSWORD);
         controller.validate();
         assertTrue("expecting confirm email", controller.getFieldErrors().get("registration.confirmEmail").contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
     }
@@ -413,7 +418,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         controller.getRegistration().setAcceptTermsOfUse(true);
         controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
-        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPassword(PASSWORD);
         controller.validate();
         logger.debug("E:{}", controller.getFieldErrors().get("registration.confirmPassword"));
         assertTrue("expecting confirm password", controller.getFieldErrors().get("registration.confirmPassword")
@@ -429,7 +434,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         Person p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
-        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPassword(PASSWORD);
         controller.getRegistration().setConfirmPassword("password_");
         controller.validate();
         assertTrue("expecting matching passwords",
@@ -449,7 +454,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setLastName("last");
         controller.getH().setTimeCheck(System.currentTimeMillis() - 5000);
         controller.getRegistration().setConfirmEmail(TESTING_EMAIL.toUpperCase());
-        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPassword(PASSWORD);
         controller.getRegistration().setConfirmPassword("password_");
         controller.validate();
         assertTrue("expecting matching passwords",

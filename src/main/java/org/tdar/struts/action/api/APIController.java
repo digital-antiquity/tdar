@@ -19,13 +19,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
@@ -60,7 +60,7 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> uploadFileFileName = new ArrayList<>();
     private String record;
     private String msg;
-    private String status;
+    private StatusCode status;
     private Long projectId; // note this will override projectId value specified in record
     // on the receiving end
     private List<String> processedFileNames;
@@ -159,10 +159,10 @@ public class APIController extends AuthenticationAware.Base {
 
             message = "updated:" + loadedRecord.getId();
             StatusCode code = StatusCode.UPDATED;
-            status = StatusCode.UPDATED.getResultName();
+            status = StatusCode.UPDATED;
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
-                status = StatusCode.CREATED.getResultName();
+                status = StatusCode.CREATED;
                 message = "created:" + loadedRecord.getId();
                 code = StatusCode.CREATED;
                 getXmlResultObject().setRecordId(loadedRecord.getId());
@@ -215,7 +215,7 @@ public class APIController extends AuthenticationAware.Base {
     }
 
     private String errorResponse(StatusCode statusCode) {
-        status = statusCode.getResultName();
+        status = statusCode;
         xmlResultObject.setStatus(statusCode.toString());
         xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
         return ERROR;
@@ -283,11 +283,11 @@ public class APIController extends AuthenticationAware.Base {
         return msg;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusCode status) {
         this.status = status;
     }
 
-    public String getStatus() {
+    public StatusCode getStatus() {
         return status;
     }
 

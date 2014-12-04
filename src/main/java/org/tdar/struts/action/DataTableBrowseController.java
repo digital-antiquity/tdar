@@ -17,7 +17,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 @ParentPackage("secured")

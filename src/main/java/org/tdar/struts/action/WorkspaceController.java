@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -37,13 +34,13 @@ import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.IntegrationContext;
+import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
-import org.tdar.struts.data.intgration.IntegrationColumn;
-import org.tdar.struts.data.intgration.IntegrationDataResult;
-import org.tdar.struts.data.intgration.IntegrationColumn.ColumnType;
 import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -85,16 +82,16 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
     private List<IntegrationColumn> integrationColumns;
     private List<Long> tableIds;
     private List<DataTable> selectedDataTables;
+    private ModernIntegrationDataResult result;
+    private boolean modernIntegrationResult = true;
     // private List<String> ontologyNodeFilterSelections;
 
     private Long ticketId;
 
-    private List<IntegrationDataResult> integrationDataResults = new ArrayList<IntegrationDataResult>();
     private String integrationDataResultsFilename;
     private long integrationDataResultsContentLength;
     private transient InputStream integrationDataResultsInputStream;
 
-    private Map<List<OntologyNode>, Map<DataTable, Integer>> pivotData;
 
     /**
      * Pass through actions that will go to <action-name>.ftl or <action-name>.jsp
@@ -150,7 +147,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
             getLogger().debug("integration columns: {}", getIntegrationColumns());
 
             for (IntegrationColumn integrationColumn : getIntegrationColumns()) {
-                if (integrationColumn.isDisplayColumn()) {
+                if (!integrationColumn.isIntegrationColumn()) {
                     continue;
                 }
 
@@ -235,17 +232,13 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
             // return INPUT;
             // }
             //
-            Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData =
-                    dataIntegrationService.generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
-
-            integrationDataResults = generatedIntegrationData.getFirst();
-            setPivotData(generatedIntegrationData.getSecond());
-            PersonalFilestoreTicket ticket = dataIntegrationService.toExcel(this, getIntegrationColumns(), generatedIntegrationData,
-                    getAuthenticatedUser());
-            File file = File.createTempFile("integration", ".xml");
-            FileUtils.writeStringToFile(file, integrationContextXml);
-            filestoreService.store(ticket, file, "integration-context.xml");
+            IntegrationContext context = new IntegrationContext(getAuthenticatedUser(), getIntegrationColumns());
+            context.setDataTables(getSelectedDataTables());
+            ModernIntegrationDataResult result = dataIntegrationService.generateModernIntegrationResult(context, this);
+            PersonalFilestoreTicket ticket = dataIntegrationService.storeResult(result);
             setTicketId(ticket.getId());
+            getLogger().debug("result:{}", result);
+            setResult(result);
         } catch (Throwable e) {
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;
@@ -328,10 +321,6 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         return selectedDataTables;
     }
 
-    public List<IntegrationDataResult> getIntegrationDataResults() {
-        return integrationDataResults;
-    }
-
     public String getIntegrationDataResultsFilename() {
         return integrationDataResultsFilename;
     }
@@ -395,14 +384,6 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         return new IntegrationColumn(ColumnType.DISPLAY);
     }
 
-    public void setPivotData(Map<List<OntologyNode>, Map<DataTable, Integer>> pivotData) {
-        this.pivotData = pivotData;
-    }
-
-    public Map<List<OntologyNode>, Map<DataTable, Integer>> getPivotData() {
-        return pivotData;
-    }
-
     public Set<Ontology> getSharedOntologies() {
         return sharedOntologies;
     }
@@ -417,4 +398,21 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         cleanupIntegrationColumns();
         getLogger().trace("prepare integrationColumns (after):{}", integrationColumns);
     }
+
+    public ModernIntegrationDataResult getResult() {
+        return result;
+    }
+
+    public void setResult(ModernIntegrationDataResult result) {
+        this.result = result;
+    }
+
+    public boolean isModernIntegrationResult() {
+        return modernIntegrationResult;
+    }
+
+    public void setModernIntegrationResult(boolean modernIntegrationResult) {
+        this.modernIntegrationResult = modernIntegrationResult;
+    }
+
 }

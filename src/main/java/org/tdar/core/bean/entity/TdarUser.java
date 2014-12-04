@@ -2,7 +2,6 @@ package org.tdar.core.bean.entity;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,7 +11,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,9 +27,9 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
-import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -45,12 +43,9 @@ public class TdarUser extends Person {
 
     private static final long serialVersionUID = 6232922939044373880L;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
-
     @Column(unique = true, nullable = true)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
-    @Field
+    @Field(name = QueryFieldNames.USERNAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     private String username;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
@@ -192,15 +187,6 @@ public class TdarUser extends Person {
     @Override
     public boolean isDedupable() {
         return false;
-    }
-
-    @XmlTransient
-    public Set<BookmarkedResource> getBookmarkedResources() {
-        return bookmarkedResources;
-    }
-
-    public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
-        this.bookmarkedResources = bookmarkedResources;
     }
 
     public Institution getProxyInstitution() {

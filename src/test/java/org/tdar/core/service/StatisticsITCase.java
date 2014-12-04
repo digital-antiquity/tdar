@@ -28,10 +28,10 @@ import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.processes.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.DateGranularity;
 
 public class StatisticsITCase extends AbstractIntegrationTestCase {
 

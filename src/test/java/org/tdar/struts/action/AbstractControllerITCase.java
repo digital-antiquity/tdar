@@ -113,7 +113,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertNotNull(r);
         genericService.refresh(user);
         boolean seen = false;
-        for (BookmarkedResource b : user.getBookmarkedResources()) {
+        for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
             if (ObjectUtils.equals(b.getResource(), r)) {
                 seen = true;
             }
@@ -124,7 +124,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     public void removeBookmark(Resource r, boolean ajax, TdarUser user) throws Exception {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
-        for (BookmarkedResource b : user.getBookmarkedResources()) {
+        for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
             if (ObjectUtils.equals(b.getResource(), r)) {
                 seen = true;
             }
@@ -142,7 +142,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         seen = false;
         genericService.synchronize();
         user = genericService.find(TdarUser.class, user.getId());
-        for (BookmarkedResource b : user.getBookmarkedResources()) {
+        for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
             if (ObjectUtils.equals(b.getResource(), r)) {
                 seen = true;
             }

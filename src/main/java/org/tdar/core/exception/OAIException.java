@@ -1,6 +1,5 @@
 package org.tdar.core.exception;
 
-import org.tdar.struts.data.oai.OaiErrorCode;
 
 /**
  * $Id$

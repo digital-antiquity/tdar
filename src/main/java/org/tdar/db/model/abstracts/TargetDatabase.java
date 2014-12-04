@@ -1,20 +1,18 @@
 package org.tdar.db.model.abstracts;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.struts.data.intgration.IntegrationColumn;
+import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.integration.IntegrationContext;
+import org.tdar.core.service.integration.ModernIntegrationDataResult;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * A base class for target Databases that can be written to via a
@@ -30,7 +28,6 @@ public interface TargetDatabase extends Database {
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
-    static final String TDAR_ID_COLUMN = "id_row_tdar";
 
     String normalizeTableOrColumnNames(String input);
 
@@ -43,8 +40,6 @@ public interface TargetDatabase extends Database {
     void dropTable(DataTable dataTable);
 
     void createTable(DataTable dataTable) throws Exception;
-
-    <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse);
 
     void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
 
@@ -65,16 +60,7 @@ public interface TargetDatabase extends Database {
 
     Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
 
-    String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
-            Map<List<OntologyNode>, Map<DataTable, Integer>> pivot);
-
-    // List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
-
-    String getResultSetValueAsString(ResultSet resultSet, int resultSetPosition, DataTableColumn column) throws SQLException;
-
     List<String> selectDistinctValues(DataTableColumn column);
-
-    List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
     List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
             String query);
@@ -85,4 +71,5 @@ public interface TargetDatabase extends Database {
 
     int getMaxColumnNameLength();
 
+    ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService);
 }

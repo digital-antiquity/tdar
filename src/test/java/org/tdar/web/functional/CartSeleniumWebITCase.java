@@ -21,7 +21,7 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
-import org.tdar.struts.data.UserRegistration;
+import org.tdar.core.service.external.UserRegistration;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.interceptor.annotations.After;

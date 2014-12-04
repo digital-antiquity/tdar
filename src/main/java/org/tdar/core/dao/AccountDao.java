@@ -23,16 +23,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.AccountEvaluationHelper;
 
@@ -274,12 +274,12 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         /* update the account info in the database */
         updateAccountInfo(account, resourceEvaluator);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
-
-        account.initTotals();
+        // init totals
+        account.getTotalNumberOfResources();
         helper.updateFromAccount(account);
         logAccountAndHelperState(account, helper);
 
-        boolean overdrawn = account.isOverdrawn(getResourceEvaluator());
+        boolean overdrawn = isOverdrawn(account, getResourceEvaluator());
         logger.info("overdrawn: {} hasUpdates: {}", overdrawn, hasUpdates);
 
         if (!hasUpdates || overdrawn) {
@@ -305,7 +305,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             processResourcesChronologically(helper, resourcesToEvaluate);
 
             status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
-            overdrawn = account.isOverdrawn(getResourceEvaluator());
+            overdrawn = isOverdrawn(account, getResourceEvaluator());
             logger.info("flagged: {} overdrawn:{}", helper.getFlagged(), overdrawn);
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
                 account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
@@ -330,6 +330,34 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         logger.trace("space used: {} ", account.getSpaceUsedInMb());
         logger.trace("space avail: {} ", account.getAvailableSpaceInMb());
         return status;
+    }
+
+    private boolean isOverdrawn(Account account, ResourceEvaluator resourceEvaluator) {
+        return canAddResource(account, resourceEvaluator) != AccountAdditionStatus.CAN_ADD_RESOURCE;
+    }
+
+    public AccountAdditionStatus canAddResource(Account account, ResourceEvaluator re) {
+        if (re.evaluatesNumberOfFiles()) {
+            logger.debug("available files {} trying to use {}", account.getAvailableNumberOfFiles(), re.getFilesUsed());
+            if ((account.getAvailableNumberOfFiles() - re.getFilesUsed()) < 0) {
+                return AccountAdditionStatus.NOT_ENOUGH_FILES;
+            }
+        }
+
+        if (re.evaluatesNumberOfResources()) {
+            logger.debug("available resources {} trying to use {}", account.getAvailableResources(), re.getResourcesUsed());
+            if ((account.getAvailableResources() - re.getResourcesUsed()) < 0) {
+                return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
+            }
+        }
+
+        if (re.evaluatesSpace()) {
+            logger.debug("available space {} trying to use {}", account.getAvailableSpaceInBytes(), re.getSpaceUsedInBytes());
+            if ((account.getAvailableSpaceInBytes() - re.getSpaceUsedInBytes()) < 0) {
+                return AccountAdditionStatus.NOT_ENOUGH_SPACE;
+            }
+        }
+        return AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 
     /**
@@ -562,6 +590,27 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         Number result = (Number) criteria.uniqueResult();
         return result;
         // TODO Auto-generated method stub
-        
+
+    }
+
+    /*
+     * We always update quotas even if a resource overdraws because it's impossible later to reconcile how much something was overdrawn easily...
+     * eg. was it because it was a "new resource" or because it was a new file, or 2k over
+     */
+    public void updateQuotas(Account account, ResourceEvaluator endingEvaluator, Collection<Resource> list) {
+        AccountAdditionStatus status = canAddResource(account, endingEvaluator);
+        account.getResources().addAll(list);
+        account.setFilesUsed(account.getFilesUsed() + endingEvaluator.getFilesUsed());
+        account.setResourcesUsed(account.getResourcesUsed() + endingEvaluator.getResourcesUsed());
+        account.setSpaceUsedInBytes(account.getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
+        if (status != AccountAdditionStatus.CAN_ADD_RESOURCE) {
+            throw new TdarQuotaException("account.overdrawn", status);
+        }
+    }
+
+    public boolean hasMinimumForNewRecord(Account account, ResourceEvaluator resourceEvaluator, ResourceType type) {
+        // init totals
+        account.getTotalNumberOfResources();
+        return (resourceEvaluator.accountHasMinimumForNewResource(account, type));
     }
 }

@@ -53,6 +53,7 @@ import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;

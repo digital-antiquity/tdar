@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.StatsResultObject;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.StatisticService;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;

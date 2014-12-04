@@ -67,6 +67,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
     @MappedSuperclass
     @XmlType(name = "kwdbase")
+    @XmlTransient
     public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T>, Slugable {
 
         private static final long serialVersionUID = -7516574981065004043L;

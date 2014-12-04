@@ -24,7 +24,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;

@@ -5,7 +5,7 @@ tDAR's database is managed by liquibase (http://www.liquibase.org).  We use liqu
 Prior to running these scripts, create 3 databases:
  * tdarmetadata
  * tdardata
- * tdargis
+ * tdargis (not currently managed via liquibase, sql in tdar.support)
 
 Data locations:
  - src/main/db/changelog.xml -- production upgrade script
@@ -17,8 +17,8 @@ Data locations:
  
 
 Maven Profiles:
- - setup-dev-instance -- sets up a developer instance of tdar with test data
- - setup-production-instance -- sets up an empty, production instance of tDAR
+ - liquibase-setup-dev-instance -- sets up a developer instance of tdar with test data
+ - liquibase-setup-production-instance -- sets up an empty, production instance of tDAR
  - liquibase -- upgrades a local instance (tdarmetadata) of the database with any outstanding changelogs
  - liquibase-export -- exports a copy of the tdarmetadata database to a xml dump
  

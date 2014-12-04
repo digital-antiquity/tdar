@@ -2,7 +2,7 @@ package org.tdar.core.bean.cache;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.service.GenericService;
+import org.tdar.utils.DataUtil;
 
 /**
  * Abstract class to help manage the cache data.
@@ -20,7 +20,7 @@ public abstract class AbstractCountCache<C extends AbstractCountCache, D extends
 
     @Override
     public String getLabel() {
-        return GenericService.extractStringValue(getKey());
+        return DataUtil.extractStringValue(getKey());
     }
 
     @Override

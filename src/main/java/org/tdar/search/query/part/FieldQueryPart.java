@@ -11,8 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
-import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 
@@ -273,8 +274,10 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         for (int i = 0; i < getFieldValues().size(); i++) {
             Object fieldValue = getFieldValues().get(i);
             StringBuilder builder = new StringBuilder();
-            if (SimpleSearch.class.isAssignableFrom(fieldValue.getClass())) {
-                fieldValue = ((SimpleSearch) fieldValue).getTitle();
+            if (Resource.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValue = ((Resource) fieldValue).getTitle();
+            }else if (ResourceCollection.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValue = ((ResourceCollection) fieldValue).getTitle();
             } else if (fieldValue instanceof Localizable) {
                 fieldValue = provider.getText(((Localizable) fieldValue).getLocaleKey());
             } else if (fieldValue instanceof HasLabel) {

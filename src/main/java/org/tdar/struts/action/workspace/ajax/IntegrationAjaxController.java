@@ -27,13 +27,13 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.search.query.SimpleSearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.intgration.IntegrationColumn;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

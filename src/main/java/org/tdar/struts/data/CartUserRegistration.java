@@ -3,6 +3,7 @@ package org.tdar.struts.data;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.core.service.external.UserRegistration;
 
 public class CartUserRegistration extends UserRegistration {
 

@@ -65,13 +65,13 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @IndexedEmbedded
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull
-    @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
+    @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, key = "RESOURCE_CREATOR", order = 1)
     @JsonView(JsonLookupFilter.class)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
     @Field
-    @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
+    @BulkImportField(key="CREATOR_ROLE", order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private ResourceCreatorRole role;

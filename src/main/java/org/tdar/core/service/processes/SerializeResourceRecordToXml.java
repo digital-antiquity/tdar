@@ -2,7 +2,6 @@ package org.tdar.core.service.processes;
 
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 /**

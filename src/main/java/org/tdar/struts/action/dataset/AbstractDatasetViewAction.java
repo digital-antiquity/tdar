@@ -51,7 +51,7 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
         super.loadCustomViewMetadata();
         List<Map<String, Object>> result = new ArrayList<>();
         if (Persistable.Base.isNotNullOrTransient(getDataTable())) {
-            for (DataTableColumn dtc : getDataTable().getDataTableColumns()) {
+            for (DataTableColumn dtc : getDataTable().getSortedDataTableColumnsByImportOrder()) {
                 Map<String, Object> col = new HashMap<>();
                 col.put("simpleName", dtc.getJsSimpleName());
                 col.put("displayName", dtc.getDisplayName());
