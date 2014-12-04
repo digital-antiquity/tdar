@@ -44,6 +44,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
@@ -52,7 +53,6 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.data.IntegrationColumn;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 

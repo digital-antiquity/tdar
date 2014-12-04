@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.struts.data.IntegrationContext;
 
 /**
  * $Id$

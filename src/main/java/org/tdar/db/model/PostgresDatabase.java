@@ -56,6 +56,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.RowOperations;
+import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.builder.AbstractSqlTools;
@@ -66,8 +68,6 @@ import org.tdar.db.builder.WhereCondition.ValueCondition;
 import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.odata.server.AbstractDataRecord;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationContext;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 

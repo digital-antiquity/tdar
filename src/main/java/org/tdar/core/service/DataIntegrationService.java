@@ -37,13 +37,13 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.personal.PersonalFilestore;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationContext;
 import org.tdar.utils.Pair;
 
 import au.com.bytecode.opencsv.CSVWriter;

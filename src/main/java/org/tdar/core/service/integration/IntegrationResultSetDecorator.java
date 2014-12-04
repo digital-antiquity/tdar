@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationContext;
 import org.tdar.utils.MessageHelper;
 
 /**

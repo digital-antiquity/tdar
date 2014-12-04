@@ -26,10 +26,10 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.utils.MessageHelper;
 
 /**
