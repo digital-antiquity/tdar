@@ -22,8 +22,6 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.dataOne.DataOneCapabilitiesResponse;
 import org.tdar.struts.data.dataOne.DataOneLogEntry;
-import org.tdar.struts.data.dataOne.DataOneCapabilitiesResponse;
-import org.tdar.struts.data.dataOne.DataOneLogEntry;
 import org.tdar.utils.activity.Activity;
 
 import com.opensymphony.xwork2.interceptor.ParameterNameAware;
