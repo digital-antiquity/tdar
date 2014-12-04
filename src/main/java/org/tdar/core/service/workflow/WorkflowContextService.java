@@ -78,6 +78,7 @@ public class WorkflowContextService {
             switch (ctx.getResourceType()) {
                 case GEOSPATIAL:
                 case DATASET:
+                case SENSORY_DATA:
                     Dataset dataset = (Dataset) resource;
                     if (ctx.getTransientResource() == null) {
                         break;
