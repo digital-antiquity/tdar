@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.TemplateModelException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -204,6 +202,18 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
         getLogger().debug("passing off to Freemarker");
         return SUCCESS;
+    }
+
+    @Override
+    protected void postSaveCallback(String actionMessage) {
+        super.postSaveCallback(actionMessage);
+        if (isHasFileProxyChanges()) {
+            if (isAsync()) {
+                datasetService.remapAllColumnsAsync(getDataResource(), getProject());
+            } else {
+                datasetService.remapAllColumns(getDataResource(), getProject());
+            }
+        }
     }
 
     @SkipValidation
