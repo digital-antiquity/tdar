@@ -166,11 +166,15 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     }
 
     public String getGoogleScholarTags() throws Exception {
-        ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
         StringWriter sw = new StringWriter();
-        for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
-            xmlService.convertToXMLFragment(MetaTag.class, tag, sw);
-            sw.append("\n");
+        try {
+            ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
+            for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
+                xmlService.convertToXMLFragment(MetaTag.class, tag, sw);
+                sw.append("\n");
+            }
+        } catch (Exception e) {
+            getLogger().error("error converting scholar tag for resource:", getId(), e);
         }
         return sw.toString();
     }
@@ -316,7 +320,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public List<ResourceCreatorRole> getPersonCreditRoles() {
         return ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, getResource().getResourceType());
     }
-
 
     /**
      * @param resourceCollections
