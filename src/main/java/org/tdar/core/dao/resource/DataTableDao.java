@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.integration.IntegrationSearchFilter;
 
 /**
  * $Id$
@@ -73,6 +74,19 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         query.setParameter("submitterId", submitterId, LongType.INSTANCE);
         query.setMaxResults(maxResults);
         query.setFirstResult(firstResult);
+        return query.list();
+    }
+
+    public List<DataTable> findDataTables(IntegrationSearchFilter filter) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE)
+                .setParameter("projectId", filter.getProjectId(), LongType.INSTANCE)
+                .setParameter("collectionId", filter.getCollectionId(), LongType.INSTANCE)
+                .setParameter("hasOntologies", !filter.getOntologyIds().isEmpty())
+                .setParameterList("ontologyIds", paddedList(filter.getOntologyIds()), LongType.INSTANCE)
+                .setParameter("bookmarked", filter.isBookmarked())
+                .setParameter("submitterId", filter.getAuthorizedUser().getId(), LongType.INSTANCE)
+                .setMaxResults(filter.getMaxResults())
+                .setFirstResult(filter.getFirstResult());
         return query.list();
     }
 

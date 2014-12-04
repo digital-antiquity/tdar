@@ -18,15 +18,13 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.dao.integration.DatasetIntegrationSearchFilter;
-import org.tdar.core.dao.integration.OntologyIntegrationSearchFilter;
+import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.DataTableService;
@@ -59,8 +57,8 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 //    private Long ontologyId;
 
     private IntegrationColumn integrationColumn;
-    private OntologyIntegrationSearchFilter ontologyFilter;
-    private DatasetIntegrationSearchFilter datasetFilter;
+
+    private IntegrationSearchFilter searchFilter = new IntegrationSearchFilter();
     private InputStream jsonInputStream;
     private Integer startRecord = 0;
     private int recordsPerPage = 10;
@@ -83,8 +81,16 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     @Override
     public void prepare() {
-        integrationService.hydrateFilter(ontologyFilter, getAuthenticatedUser());
-        integrationService.hydrateFilter(datasetFilter, getAuthenticatedUser());
+        /** fixme: note to futurejim: not sure if I want client in control of the authuser filter (still mulling it over).  If we decide against it,
+         *          I think it's best to seperate it from the searchfilter class outright, so that we can conceptualize SearchFilter as a simple DTO with
+         *          the client having presumptive read/write access to all the fields therein (as opposed to some fields that it can write to and some fields
+         *          that it shouldn't modify.
+         */
+        searchFilter.setAuthorizedUser(getAuthenticatedUser());
+
+        //fixme: consider breaking out search-xyz actions into modeldriven actions backed by SearchFilter
+        searchFilter.setMaxResults(getRecordsPerPage());
+        searchFilter.setFirstResult(getStartRecord());
     }
 
     //angularjs needs either 8601 format or epochtime
@@ -92,12 +98,9 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     @Action(value = "find-datasets")
     public String findDatasets() throws IOException {
-        if (datasetFilter == null) {
-            datasetFilter = new DatasetIntegrationSearchFilter();
-        }
-        getLogger().debug("find-datasets:: datasetFilter: {}", datasetFilter );
+        getLogger().debug("find-datasets:: datasetFilter: {}", searchFilter);
 
-        List<DataTable> findDataTables = dataTableService.findDataTables(datasetFilter, startRecord, recordsPerPage);
+        List<DataTable> findDataTables = dataTableService.findDataTables(searchFilter);
         for (DataTable result : findDataTables) {
             results.add(setupDatableForJson(result));
         }
@@ -152,12 +155,9 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     @Action(value = "find-ontologies")
     public String findOntologies() throws IOException {
-        if (ontologyFilter == null) {
-            ontologyFilter = new OntologyIntegrationSearchFilter();
-        }
 
-        getLogger().debug("find-ontologies:: ontologyFilter: {}", ontologyFilter );
-        List<Ontology> ontologies = ontologyService.findOntologies(ontologyFilter, startRecord, recordsPerPage);
+        getLogger().debug("find-ontologies:: searchFilter: {}", searchFilter);
+        List<Ontology> ontologies = ontologyService.findOntologies(searchFilter);
         for (Ontology ontology : ontologies) {
             HashMap<String, Object> map = setupOntologyForJson(ontology);
             results.add(map);
@@ -319,24 +319,6 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         return results;
     }
 
-    public OntologyIntegrationSearchFilter getOntologyFilter() {
-        if(ontologyFilter == null) ontologyFilter = new OntologyIntegrationSearchFilter();
-        return ontologyFilter;
-    }
-
-    public void setOntologyFilter(OntologyIntegrationSearchFilter ontologyFilter) {
-        this.ontologyFilter = ontologyFilter;
-    }
-
-    public DatasetIntegrationSearchFilter getDatasetFilter() {
-        if(datasetFilter == null) datasetFilter = new DatasetIntegrationSearchFilter();
-        return datasetFilter;
-    }
-
-    public void setDatasetFilter(DatasetIntegrationSearchFilter datasetFilter) {
-        this.datasetFilter = datasetFilter;
-    }
-
     public InputStream getJsonInputStream() {
         return jsonInputStream;
     }
@@ -385,13 +367,12 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         this.integrationColumn = integrationColumn;
     }
 
-//    public Long getOntologyId() {
-//        return ontologyId;
-//    }
-//
-//    public void setOntologyId(Long ontologyId) {
-//        this.ontologyId = ontologyId;
-//    }
+    public IntegrationSearchFilter getSearchFilter() {
+        return searchFilter;
+    }
 
+    public void setSearchFilter(IntegrationSearchFilter searchFilter) {
+        this.searchFilter = searchFilter;
+    }
 
 }

@@ -23,8 +23,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.core.dao.integration.DatasetIntegrationSearchFilter;
-import org.tdar.core.dao.integration.OntologyIntegrationSearchFilter;
+import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
@@ -55,22 +54,18 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     public void testDatasetService() {
-        int firstRecord = 0;
-        int maxRecords = 10;
-        DatasetIntegrationSearchFilter filter = new DatasetIntegrationSearchFilter();
+        IntegrationSearchFilter filter = new IntegrationSearchFilter();
         filter.setAuthorizedUser(getUser());
-        for (DataTable dt : dataTableService.findDataTables(filter, firstRecord, maxRecords)) {
+        for (DataTable dt : dataTableService.findDataTables(filter)) {
             logger.debug("{} - {}", dt.getName(), dt.getId());
         }
     }
 
     @Test
     public void testOntologyService() {
-        int firstRecord = 0;
-        int maxRecords = 10;
-        OntologyIntegrationSearchFilter filter = new OntologyIntegrationSearchFilter();
+        IntegrationSearchFilter filter = new IntegrationSearchFilter();
         filter.setAuthorizedUser(getUser());
-        for (Ontology ont : ontologyService.findOntologies(filter, firstRecord, maxRecords)) {
+        for (Ontology ont : ontologyService.findOntologies(filter)) {
             logger.debug("{} - {}", ont.getName(), ont.getId());
         }
     }

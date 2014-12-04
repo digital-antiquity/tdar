@@ -10,7 +10,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.dao.integration.DatasetIntegrationSearchFilter;
+import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
@@ -85,9 +85,10 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
 
 
     @Transactional(readOnly = true)
-    public List<DataTable> findDataTables(DatasetIntegrationSearchFilter datasetFilter, Integer startRecord, int recordsPerPage) {
-        return getDao().findDataTables(datasetFilter.getProject(), datasetFilter.getCollection(), datasetFilter.getOntologies(), datasetFilter.getIsBookmarked(), datasetFilter.getAuthorizedUser(), startRecord, recordsPerPage);
-        
+    public List<DataTable> findDataTables(IntegrationSearchFilter searchFilter) {
+//        return getDao().findDataTables(datasetFilter.getProject(), datasetFilter.getCollection(), datasetFilter.getOntologies(), datasetFilter.isBookmarked(), datasetFilter.getAuthorizedUser(), startRecord, recordsPerPage);
+        return getDao().findDataTables(searchFilter);
+
     }
 
 }

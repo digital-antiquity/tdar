@@ -472,7 +472,7 @@
                         + " left join rc.parentIds parentId  "
                         + "where ds.status='ACTIVE' and (:projectId=-1 or ds.project.id=:projectId) and "
                         + "(:collectionId=-1 or rc.id=:collectionId or parentId=:collectionId) and "
-                        + "(:hasOntologies=false or ont.id in (:ontologyIds) ) and "
+                        + "(:hasOntologies=false or ont.id in :ontologyIds ) and "
                         + "(:bookmarked=false or ds.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,

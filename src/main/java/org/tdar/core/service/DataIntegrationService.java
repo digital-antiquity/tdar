@@ -43,9 +43,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.integration.DatasetIntegrationSearchFilter;
 import org.tdar.core.dao.integration.IntegrationSearchFilter;
-import org.tdar.core.dao.integration.OntologyIntegrationSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -532,25 +530,6 @@ public class DataIntegrationService {
         }
 
         return allOntologies;
-    }
-
-    @Transactional
-    public void hydrateFilter(IntegrationSearchFilter filter, TdarUser authUser) {
-        if (filter == null) {
-            return;
-        }
-        filter.setProject(genericDao.loadFromSparseEntity(filter.getProject(), Project.class));
-        filter.setCollection(genericDao.loadFromSparseEntity(filter.getCollection(), ResourceCollection.class));
-        if (filter instanceof OntologyIntegrationSearchFilter) {
-            OntologyIntegrationSearchFilter oFilter = (OntologyIntegrationSearchFilter) filter;
-            oFilter.setDataTables(genericDao.loadFromSparseEntities(oFilter.getDataTables(), DataTable.class));
-            oFilter.setCategoryVariable(genericDao.loadFromSparseEntity(oFilter.getCategoryVariable(), CategoryVariable.class));
-        }
-        if (filter instanceof DatasetIntegrationSearchFilter) {
-            DatasetIntegrationSearchFilter dFilter = (DatasetIntegrationSearchFilter) filter;
-            dFilter.setOntologies(genericDao.loadFromSparseEntities(dFilter.getOntologies(), Ontology.class));
-        }
-        filter.setAuthorizedUser(authUser);
     }
 
     @Transactional

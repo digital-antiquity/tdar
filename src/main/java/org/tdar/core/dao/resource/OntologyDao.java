@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.integration.IntegrationSearchFilter;
 
 /**
  * 
@@ -106,4 +107,21 @@ public class OntologyDao extends ResourceDao<Ontology> {
         query.setMaxResults(maxResults);
         return query.list();
     }
+
+    public List<Ontology> findOntologies(IntegrationSearchFilter searchFilter) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY)
+                .setParameter("projectId", searchFilter.getProjectId(), LongType.INSTANCE)
+                .setParameter("collectionId", searchFilter.getCollectionId(), LongType.INSTANCE)
+                .setParameter("bookmarked", searchFilter.isBookmarked())
+                .setParameter("categoryId", searchFilter.getCategoryVariableId(), LongType.INSTANCE)
+                //fixme: see if size(:idlist) is valid hql. if so we can omit hasDatasets parameter
+                .setParameter("hasDatasets", !searchFilter.getDataTableIds().isEmpty())
+                .setParameterList("dataTableIds", paddedList(searchFilter.getDataTableIds()))
+                .setParameter("submitterId", searchFilter.getAuthorizedUser().getId(), LongType.INSTANCE)
+                .setFirstResult(searchFilter.getFirstResult())
+                .setMaxResults(searchFilter.getMaxResults());
+        return query.list();
+    }
+
+
 }

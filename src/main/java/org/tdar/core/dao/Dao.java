@@ -1,5 +1,6 @@
 package org.tdar.core.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -251,5 +252,22 @@ public interface Dao<T> {
             return persistentClass;
         }
 
+        /**
+         * Hibernate will interpolate empty where-in expressions with "()" which is considered invalid syntax by most rdbms (including pgsql).  This kludge
+         * returns the specified list if {@Code potentiallyEmptyList} is not empty.  Otherwise, this method returns a list with a single null.
+         *
+         * @param potentiallyEmptyList a non-null, potentially empty list
+         * @param <T> any type
+         * @return your list, or a single-null list
+         */
+        protected static <T> List<T> paddedList(List<T> potentiallyEmptyList) {
+            List<T> ret = potentiallyEmptyList;
+            if(potentiallyEmptyList.isEmpty()) {
+                List<T> padding = new ArrayList<>();
+                padding.add(null);
+                ret = padding;
+            }
+            return ret;
+        }
     }
 }
