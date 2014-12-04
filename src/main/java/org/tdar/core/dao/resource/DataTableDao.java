@@ -42,40 +42,6 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         return query.list();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<DataTable> findDataTables(Project project, ResourceCollection collection, List<Ontology> ontologies, boolean bookmarked, TdarUser authorizedUser, int firstResult, int maxResults) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE);
-        Long projectId = -1L;
-        Long collectionId = -1L;
-        Long submitterId = -1L;
-        boolean hasOntologies = false;
-        List<Long> ontologyIds = Arrays.asList(-1L);
-        if (Persistable.Base.isNotNullOrTransient(project)) {
-            projectId = project.getId();
-        }
-
-        if (Persistable.Base.isNotNullOrTransient(authorizedUser)) {
-            submitterId = authorizedUser.getId();
-        }
-        
-        if (Persistable.Base.isNotNullOrTransient(collection)) {
-            collectionId = collection.getId();
-        }
-        if (CollectionUtils.isNotEmpty(ontologies)) {
-            ontologyIds = Persistable.Base.extractIds(ontologies);
-        }
-
-        // not really sure why, but the -1L seems to need a type hint
-        query.setParameter("projectId", projectId, LongType.INSTANCE);
-        query.setParameter("collectionId", collectionId, LongType.INSTANCE);
-        query.setParameter("hasOntologies", hasOntologies);
-        query.setParameterList("ontologyIds", ontologyIds, LongType.INSTANCE);
-        query.setParameter("bookmarked", bookmarked);
-        query.setParameter("submitterId", submitterId, LongType.INSTANCE);
-        query.setMaxResults(maxResults);
-        query.setFirstResult(firstResult);
-        return query.list();
-    }
 
     public List<DataTable> findDataTables(IntegrationSearchFilter filter) {
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE)
@@ -87,7 +53,7 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
                 .setParameter("submitterId", filter.getAuthorizedUser().getId(), LongType.INSTANCE)
                 .setMaxResults(filter.getMaxResults())
                 .setFirstResult(filter.getFirstResult());
-        return query.list();
+        return Collections.checkedList(query.list(), DataTable.class);
     }
 
 }
