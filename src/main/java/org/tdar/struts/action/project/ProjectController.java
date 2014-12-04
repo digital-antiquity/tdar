@@ -21,7 +21,6 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.SortOption;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
@@ -88,11 +87,6 @@ public class ProjectController extends AbstractResourceController<Project> {
     public String json() {
         setJsonInputStream(new ByteArrayInputStream(projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback()).getBytes()));
         return SUCCESS;
-    }
-
-    @Override
-    protected void loadCustomViewMetadata() throws TdarActionException {
-        loadCustomMetadata();
     }
 
     public Project getProject() {

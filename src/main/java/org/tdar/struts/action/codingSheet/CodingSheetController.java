@@ -67,14 +67,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         super.loadCustomMetadata();
         setOntology(getCodingSheet().getDefaultOntology());
     };
-
-    @Override
-    protected void loadCustomViewMetadata() throws TdarActionException {
-        super.loadCustomViewMetadata();
-        if (authorize() && getCodingSheet().isMappedImproperly()) {
-            addActionMessage(getText("codingSheetController.mappedImproperly"));
-        }
-    }
     
     /**
      * Save basic metadata of the registering concept.

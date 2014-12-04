@@ -1091,11 +1091,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return Persistable.Base.extractIds(persistables);
     }
 
-    protected void loadCustomViewMetadata() throws TdarActionException {
-        // TODO Auto-generated method stub
-
-    }
-
     public List<EmailMessageType> getEmailTypes() {
         return emailTypes;
     }
