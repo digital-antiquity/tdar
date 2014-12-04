@@ -1313,7 +1313,6 @@
 
     <build>
         <finalName>${warfile.name}</finalName>
-        <outputDirectory>${webapp.deploy.dir}</outputDirectory>
         <resources>
             <!-- We only want a small set of files to be filtered. 
                  NOTE: These files are NOT read into maven properties for interpolation, they are just the set of files
