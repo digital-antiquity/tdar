@@ -241,20 +241,20 @@
                             <div class="control-group">
                                 <label class="control-label">Title</label>
                                 <div class="controls">
-                                    <input type="text" ng-model="filter.title" class="input-block-level" name="filter.title"></input>
+                                    <input type="text" ng-model="filter.title" class="input-block-level" name="searchFilter.title"></input>
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Project / Collection</label>
                                 <div class="controls controls-row">
                                     <div class="span3">
-                                        <select name="filter.projectId" class="input-block-level"
+                                        <select name="searchFilter.projectId" class="input-block-level"
                                                 ng-model="filter.projectId" ng-options="project.id as project.title for project in projects">
                                             <option value="">Any project</option>
                                         </select>
                                     </div>
                                     <div class="span3">
-                                        <select name="filter.collectionId" class="input-block-level"
+                                        <select name="searchFilter.collectionId" class="input-block-level"
                                                 ng-model="filter.collectionId" ng-options="collection.id as collection.title for collection in collections">
                                             <option value="">Any collection</option>
                                         </select>
@@ -265,7 +265,7 @@
                             <div class="control-group" ng-show="categoryFilter">
                                 <label class="control-label">Category</label>
                                 <div class="controls">
-                                    <select name="filter.categoryId" class="input-xlarge"
+                                    <select name="searchFilter.categoryId" class="input-xlarge"
                                             ng-model="filter.categoryId" ng-options="category.id as category.name group by category.parent_name for category in categories" >
                                         <option value="">Any category</option>
                                     </select>
@@ -275,8 +275,8 @@
                             <div class="control-group">
                                 <label class="control-label">Other Filters</label>
                                 <div class="controls form-inline">
-                                    <label class="checkbox inline"><input type="checkbox" name="filter.unbookmarked" ng-model="filter.unbookmarked">Bookmarked Items</label>
-                                    <label class="checkbox inline"><input type="checkbox" name="filter.incompatible" ng-model="filter.incompatible" value="true">Integration-compatible</label>
+                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.bookmarked" ng-model="filter.bookmarked">Bookmarked Items</label>
+                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.incompatible" ng-model="filter.incompatible" value="true">Integration-compatible</label>
                                 </div>
                             </div>
                         </fieldset>

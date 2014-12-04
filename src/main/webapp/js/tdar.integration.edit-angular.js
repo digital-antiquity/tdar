@@ -50,17 +50,32 @@
     //model for search filter that can be used for datasets or ontologies
     function SearchFilter() {
         var self = this;
-        $.extend(self, {
+        var _properties = {
             title: "",
             projectId: null,
             collectionId: null,
             categoryId: null,
-            unbookmarked: false,
+            bookmarked: false,
             incompatible: false,
-
             //fixme: get pagination info from paginationHelper
-            recordsPerPage: 500
-        });
+            startRecord: 0,
+            recordsPerPage: 500,
+        }
+        $.extend(self, _properties);
+        // FIXME: for Jim: do this dynamically so that we can just choose a prefix and all properties get prefixed by
+        // the prefix
+        self.toStrutsParams = function() {
+            return {
+                "searchFilter.title": self.title,
+                "searchFilter.projectId": self.projectId,
+                "searchFilter.collectionId": self.collectionId,
+                "searchFilter.categoryId": self.categoryId,
+                "searchFilter.bookmarked": self.bookmarked,
+                "searchFilter.incompatible": self.incompatible,
+                "searchFilter.startRecord": self.startRecord,
+                "searchFilter.recordsPerPage": self.recordsPerPage,
+            }
+        }
     }
 
     //read json embedded in script elements
@@ -397,10 +412,11 @@
         $scope.search = function() {
             console.debug("$scope.search::");
             console.debug(options);
-            var config = {};
-            config.params = $.extend({}, $scope.filter);
-
-            var promise = $http.get(options.url, config);
+            var config = {
+                params: $scope.filter.toStrutsParams()
+            };
+            console.debug(config.params);
+            var promise = $http.get(url, config);
             promise.success(function(data){
                 //transform date strings into dates
 
