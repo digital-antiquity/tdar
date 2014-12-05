@@ -12,7 +12,7 @@ import org.tdar.struts.action.search.BrowseKeywordController;
 public class KewordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
-    public void testBasicKeywordAction() {
+    public void testBasicKeywordAction() throws TdarActionException {
         BrowseKeywordController bkc = setupController(1L, KeywordType.CULTURE_KEYWORD, null);
         bkc.view();
     }
@@ -34,7 +34,7 @@ public class KewordActionITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    public void testKeywordActionInvalidId() {
+    public void testKeywordActionInvalidId() throws TdarActionException {
         BrowseKeywordController bkc = setupController(1000L, KeywordType.CULTURE_KEYWORD, null);
         String result = bkc.view();
         assertEquals(TdarActionSupport.NOT_FOUND, result);
@@ -42,7 +42,7 @@ public class KewordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testKeywordActionStatus() {
+    public void testKeywordActionStatus() throws TdarActionException {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug);
@@ -52,7 +52,7 @@ public class KewordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testKeywordActionStatusDraft() {
+    public void testKeywordActionStatusDraft() throws TdarActionException {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
 
@@ -67,7 +67,7 @@ public class KewordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testKeywordActionStatusActive() {
+    public void testKeywordActionStatusActive() throws TdarActionException {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
 
@@ -81,7 +81,7 @@ public class KewordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testKeywordActionBadSlug() {
+    public void testKeywordActionBadSlug() throws TdarActionException {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
 
