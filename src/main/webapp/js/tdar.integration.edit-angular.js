@@ -2,21 +2,79 @@
     "use strict";
     var app,_projects, _collections, _categories, _documentData;
     app = angular.module('integrationApp', ['angularModalService']);
+
     //Our integration model
     function Integration() {
         var self = this;
-        var datasetMap = {};
+
+        /**
+         * Name for the current integration workflow, specified by the user. This is for organizational purposes only(e.g. picking a previous integration out
+         * of a list).  This name does not appear in the final integration report.
+         * @type {string}
+         */
         self.title = "";
+
+        /**
+         * Description for the current workflow.  For organizational purposes (it does not appear in final integration report).
+         * @type {string}
+         */
         self.description = "";
+
+        /**
+         * This list describes columns in the final integration results.  Here a column may be either an "integration" column or a "display" column.
+         * @type {Array}
+         */
         self.columns = [];
+
+        /**
+         * List of datatables included in the integration.
+         * @type {Array}
+         */
         self.datatables = [];
+
+        /**
+         * List of ontologies that the user may integrate over. To be added as an integration column,   the ontology must be "shared" by all of this integration
+         * object's datatables.  That is, the system can only create an integration column for a given ontology if, for every datatable in Integration#datatables, there is at least one
+         * datataneColumn with a default_ontology_id that equals ontology.id.
+         * @type {Array}
+         */
         self.ontologies = [];
-    }
 
-    Integration.prototype = {
+        /**
+         * Build the datatable participation information for the specified ongology and store the results in ontology.compatibleDatatableColumns
+         *
+         * compatibleDatatableColumns is a 2d array of datatableColumns that map to the specified ontology.
+         *
+         * Not to be
+         * confused with datatableColumn list in an integration context.
+         * @param ontology
+         * @private
+         */
+        function _buildCompatibleDatatableColumns(ontology) {
 
-        //fixme: do we need/want to prohibit multiple integration columns w/ the same ontology? Even
-        addIntegrationColumn: function(title, ontology) {
+            //outer list: broken down by dataTable
+            var compatColsList = [];
+
+            self.datatables.forEach(function(datatable) {
+                //inner list: datatableColumns that use the specified ontology
+                var compatCols = [];
+                datatable.columns.forEach(function(col){
+                    if(col.default_ontology_id === ontology.id) {
+                        compatCols.push(col.id);
+                    }
+                });
+                compatColsList.push(compatCols);
+            });
+            ontology.compatibleDatatableColumns = compatColsList;
+        }
+
+        /**
+         * Append an 'integration column' to the columns list.
+         * @param title
+         * @param ontology
+         * @returns {{type: string, title: *, ontologyId: *, nodeSelections: Array, datatableColumnIds: Array}}
+         */
+        self.addIntegrationColumn =  function _addIntegrationColumn(title, ontology) {
             var self = this;
             var col = {
                 type: "integration",
@@ -27,27 +85,30 @@
             }
 
             col.nodeSelections = ontology.nodes.map(function(node){
-               return {
-                   selected: false,
-                   node: node
-               }
+                return {
+                    selected: false,
+                    node: node
+                }
             });
             self.columns.push(col);
             return col;
+        };
+
+        self.updateSharedOntologies = function _updateSharedOntologies(ontologies) {
+            _setAddAll(self.ontologies, ontologies, "id");
+            ontologies.forEach(_buildCompatibleDatatableColumns);
+        };
+
+        self.removeDatatable = function _removeDatatable(datatable) {
+            _setRemove(self.datatables, datatable);
         }
 
-    };
-
-    //given ontologyand list of datatables, build a 2d-list of compatible columns (datatableColumns broken down by data table).  this list
-    //note this is not the same thing as an integration column's list of dataTableColumns.
-    function _buildCompatibilityInfo(ontology, datatables) {
-        //FIXME:  implemnent me.
     }
 
-
-
-
-    //model for search filter that can be used for datasets or ontologies
+    /**
+     * SearchFilter stores the current filter values specified by the user when interacting with the "Find Ontologies" and "Find Datasets" popup control
+     * @constructor
+     */
     function SearchFilter() {
         var self = this;
         var _properties = {
@@ -59,8 +120,9 @@
             incompatible: false,
             //fixme: get pagination info from paginationHelper
             startRecord: 0,
-            recordsPerPage: 500,
-        }
+            recordsPerPage: 500
+        };
+
         $.extend(self, _properties);
         // FIXME: for Jim: do this dynamically so that we can just choose a prefix and all properties get prefixed by
         // the prefix
@@ -73,13 +135,13 @@
                 "searchFilter.bookmarked": self.bookmarked,
                 "searchFilter.incompatible": self.incompatible,
                 "searchFilter.startRecord": self.startRecord,
-                "searchFilter.recordsPerPage": self.recordsPerPage,
+                "searchFilter.recordsPerPage": self.recordsPerPage
             }
         }
     }
 
-    //read json embedded in script elements
-    function _loadDocumentData() {
+    //TODO: this function is handy - move it to tdar.core.js (blocker: TDAR is not defined yet. I really need to untangle the <script> load order.  )
+   function _loadDocumentData() {
         var dataElements = $('[type="application/json"][id]').toArray();
         var map = {};
         dataElements.forEach(function(elem){
@@ -89,7 +151,8 @@
         });
         return map;
     }
-    //fixme: move to init section (or consider moving this to angular 'service')
+
+    //FIXME: HACK: this iife-global should be moved to a bootstrap/init section (what's angular way to bootstrap an app?), or maybe wrap this inside an angular service?
     _documentData = _loadDocumentData();
 
     /**
@@ -156,8 +219,13 @@
         return arr;
     }
 
-    /**
-     * Share the integration model between controllers
+    /*
+     Make the integration viewmodel available to all components in this angular app.  Currently overkill (we could put this object in iife scope), but we may choose
+     to break out this code into multiple .js files later.
+
+     More info:
+        more info: http://stackoverflow.com/questions/16508666/sharing-a-variable-between-controllers-in-angular-js
+        http://stackoverflow.com/questions/21919962/angular-share-data-between-controllers
      */
     app.service('integrationService', Integration);
 
@@ -222,10 +290,6 @@
             console.log(JSON.stringify(integration, null, 4));
         };
 
-        function updateSharedOntologies(ontologies) {
-            _setAddAll(self.sharedOntologies, ontologies, "id");
-            console.log("updateSharedOntologies::");
-        }
 
         /**
          * Called after user selects list of dataset id's from 'add datasets' modal.
@@ -237,7 +301,7 @@
             $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true)
             ).success(function(data) {
                 _setAddAll(self.integration.datatables, data[0].dataTables, "data_table_id");
-                updateSharedOntologies(data[0].sharedOntologies);
+                self.integration.updateSharedOntologies(data[0].sharedOntologies);
             });
         };
 
@@ -370,14 +434,11 @@
         };
 
         self.removeSelectedDatasetClicked = function() {
-            if($scope.selectedDatatables) {
-                $scope.selectedDatatables.forEach(function(item){
-                    console.debug("removing %s from %s (index:%s)", item , self.integration.datatables, self.integration.datatables.indexOf(item));
-                    _setRemove(self.integration.datatables, item);
-                });
-            } else {
-                console.warn("removeSelectedDatasetClicked:: no tables specified");
-            }
+            if(!$scope.selectedDatatables) {return;}
+
+            $scope.selectedDatatables.forEach(function(item){
+                integration.removeDatatable(item);
+            });
         };
 
         self.addToIntegrationColumnsClicked = function() {
@@ -410,12 +471,10 @@
 
         //ajax search fires up at launch and whenever search terms change
         $scope.search = function() {
-            console.debug("$scope.search::");
-            console.debug(options);
             var config = {
                 params: $scope.filter.toStrutsParams()
             };
-            console.debug(config.params);
+            //console.debug(config.params);
             var promise = $http.get(url, config);
             promise.success(function(data){
                 //transform date strings into dates

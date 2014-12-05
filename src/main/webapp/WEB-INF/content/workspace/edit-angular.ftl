@@ -72,7 +72,7 @@
                                 <div>
                                     <select size="5" class="input-block-level" multiple
                                             ng-model="selectedOntologies"
-                                            ng-options="ontology.name for ontology in ctrl.sharedOntologies"
+                                            ng-options="ontology.name for ontology in ctrl.integration.ontologies"
                                             ng-dblclick="ctrl.addToIntegrationColumnsClicked()"></select>
                                 </div>
 
