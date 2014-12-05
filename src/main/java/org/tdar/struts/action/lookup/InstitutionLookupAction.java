@@ -3,7 +3,6 @@ package org.tdar.struts.action.lookup;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -21,7 +20,7 @@ import org.tdar.struts.data.FacetGroup;
  * @version $Rev$
  */
 @Namespace("/lookup")
-@ParentPackage("secured")
+@ParentPackage("default")
 @Component
 @Scope("prototype")
 public class InstitutionLookupAction extends AbstractLookupController<Institution> {
@@ -34,8 +33,7 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
     private transient AuthorizationService authorizationService;
 
     
-    @Action(value = "institution",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+    @Action(value = "institution", results = {
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
             })
     public String lookupInstitution() {

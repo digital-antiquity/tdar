@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -24,7 +23,7 @@ import org.tdar.struts.data.FacetGroup;
  * @version $Rev$
  */
 @Namespace("/lookup")
-@ParentPackage("secured")
+@ParentPackage("default")
 @Component
 @Scope("prototype")
 public class PersonLookupAction extends AbstractLookupController<Person> {
@@ -41,10 +40,9 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    @Action(value = "person",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
-            })
+    @Action(value = "person", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String lookupPerson() {
         setMode("personLookup");
         return findPerson(firstName, term, lastName, institution, email, registered);

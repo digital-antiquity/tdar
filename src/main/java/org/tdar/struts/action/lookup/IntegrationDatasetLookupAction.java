@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -21,6 +22,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.BookmarkQueryPart;
 import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.struts.action.AbstractLookupController;
@@ -35,39 +37,36 @@ import org.tdar.utils.json.JsonLookupFilter;
  * @version $Rev$
  */
 @Namespace("/lookup")
-@ParentPackage("default")
+@ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class ResourceLookupAction extends AbstractLookupController<Resource> {
+public class IntegrationDatasetLookupAction extends AbstractLookupController<Resource> {
 
-    private static final long serialVersionUID = 1328807454084572934L;
     
+    private static final long serialVersionUID = -7961710740717444794L;
+
     public static final String SELECTED_RESULTS = "selectedResults";
     
     private Long projectId;
     private Long collectionId;
     private String term;
-    private String title;
     private Long sortCategoryId;
-    private boolean includeCompleteRecord = false;
-    private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
+    private boolean bookmarked;
 
-    private Long selectResourcesFromCollectionid;
-
-
-    @Action(value = "resource", results = {
+    @Action(value = "dataset",
+            results = {
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
             })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
         setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
-        // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
-        if (!isIncludeCompleteRecord() || (getAuthenticatedUser() == null)) {
-            getLogger().info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
-            setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+        
+        if (isBookmarked()) {
+            BookmarkQueryPart bqp = new BookmarkQueryPart();
+            bqp.add(getAuthenticatedUser());
+            q.append(bqp);
         }
-
         q.append(new CategoryTermQueryPart(getTerm(), getSortCategoryId()));
 
         if (Persistable.Base.isNotNullOrTransient(getProjectId())) {
@@ -80,6 +79,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             setSecondarySortField(SortOption.TITLE);
         }
 
+        
         q.append(processReservedTerms(this));
         try {
             handleSearch(q);
@@ -89,25 +89,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             return ERROR;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getSelectResourcesFromCollectionid())) {
-            ResourceCollection collectionContainer = getGenericService().find(ResourceCollection.class, getSelectResourcesFromCollectionid());
-            if (collectionContainer != null) {
-                Set<Long> resourceIds = new HashSet<Long>();
-                for (Indexable result_ : getResults()) {
-                    Resource resource = (Resource) result_;
-                    if (resource != null && resource.isViewable() && resource.getResourceCollections().contains(collectionContainer)) {
-                        resourceIds.add(resource.getId());
-                    }
-                }
-                getResult().put(SELECTED_RESULTS, resourceIds);
-            }
-        }
-
-        if (isIncludeCompleteRecord()) {
-            jsonifyResult(null);
-        } else {
-            jsonifyResult(JsonLookupFilter.class);
-        }
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
     @SuppressWarnings("rawtypes")
@@ -139,29 +121,11 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     public void setSortCategoryId(Long sortCategoryId) {
         this.sortCategoryId = sortCategoryId;
     }
-    public boolean isIncludeCompleteRecord() {
-        return includeCompleteRecord;
+    public boolean isBookmarked() {
+        return bookmarked;
     }
-    public void setIncludeCompleteRecord(boolean includeCompleteRecord) {
-        this.includeCompleteRecord = includeCompleteRecord;
-    }
-    public GeneralPermissions getPermission() {
-        return permission;
-    }
-    public void setPermission(GeneralPermissions permission) {
-        this.permission = permission;
-    }
-    public Long getSelectResourcesFromCollectionid() {
-        return selectResourcesFromCollectionid;
-    }
-    public void setSelectResourcesFromCollectionid(Long selectResourcesFromCollectionid) {
-        this.selectResourcesFromCollectionid = selectResourcesFromCollectionid;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
+    public void setBookmarked(boolean bookmarked) {
+        this.bookmarked = bookmarked;
     }
 
 }

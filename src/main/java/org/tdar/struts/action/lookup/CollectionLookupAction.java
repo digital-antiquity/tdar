@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -30,7 +29,7 @@ import org.tdar.utils.json.JsonLookupFilter;
  * @version $Rev$
  */
 @Namespace("/lookup")
-@ParentPackage("secured")
+@ParentPackage("default")
 @Component
 @Scope("prototype")
 public class CollectionLookupAction extends AbstractLookupController<ResourceCollection> {
@@ -44,8 +43,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
     private String term;
     private GeneralPermissions permission;
 
-    @Action(value = "collection",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+    @Action(value = "collection", results = {
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
             })
     public String lookupResourceCollection() {

@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -32,7 +31,7 @@ import org.tdar.utils.json.JsonLookupFilter;
  * @version $Rev$
  */
 @Namespace("/lookup")
-@ParentPackage("secured")
+@ParentPackage("default")
 @Component
 @Scope("prototype")
 public class KeywordLookupAction extends AbstractLookupController<Keyword> {
@@ -47,8 +46,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
     private String keywordType;
     private String term;
 
-    @Action(value = "keyword",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+    @Action(value = "keyword",results = {
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
             })
     public String lookupKeyword() {
