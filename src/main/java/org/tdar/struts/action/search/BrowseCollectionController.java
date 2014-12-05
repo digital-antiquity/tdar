@@ -20,6 +20,9 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.SearchPaginationException;
+import org.tdar.core.exception.StatusCode;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
@@ -33,6 +36,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -107,16 +111,8 @@ public class BrowseCollectionController extends AbstractLookupController {
     }
 
     @Action(COLLECTIONS)
-    public String browseCollections() throws ParseException {
-        QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
-        setMode("browseCollections");
-        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-        handleSearch(qb);
-        setSearchDescription(getText("browseController.all_tdar_collections"));
-        setSearchTitle(getText("browseController.all_tdar_collections"));
+    public String browseCollections() throws TdarActionException {
+        performLuceneQuery();
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null,
@@ -125,6 +121,27 @@ public class BrowseCollectionController extends AbstractLookupController {
         }
 
         return SUCCESS;
+    }
+
+    private void performLuceneQuery() throws TdarActionException {
+        QueryBuilder qb = new ResourceCollectionQueryBuilder();
+        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
+        setMode("browseCollections");
+        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        try {
+            handleSearch(qb);
+        } catch (SearchPaginationException spe) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, spe);
+        } catch (TdarRecoverableRuntimeException tdre) {
+            getLogger().warn("search parse exception", tdre);
+            addActionError(tdre.getMessage());
+        } catch (ParseException e) {
+            getLogger().warn("search parse exception", e);
+        }
+        setSearchDescription(getText("browseController.all_tdar_collections"));
+        setSearchTitle(getText("browseController.all_tdar_collections"));
     }
 
     public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {

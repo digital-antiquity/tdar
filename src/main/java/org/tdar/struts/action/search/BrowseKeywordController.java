@@ -16,6 +16,8 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.SearchPaginationException;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
@@ -24,6 +26,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.struts.action.TdarActionException;
 
 import com.google.common.base.Objects;
 import com.opensymphony.xwork2.Preparable;
@@ -93,7 +96,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             @Result(name=SUCCESS, type=FREEMARKER, location="keywords.ftl"),
             @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
     })
-    public String view() {
+    public String view() throws TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(keyword)  && keyword.isDuplicate()) {
             setKeyword(genericKeywordService.findAuthority(keyword));
             return BAD_SLUG;
@@ -110,6 +113,12 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             return BAD_SLUG;
         }
         
+        performLuceneQuery();
+        return SUCCESS;
+    }
+
+    private void performLuceneQuery() throws TdarActionException {
+        // ideally this would be in "prepare" but, we're postponing because we want to catch the "bad" slug calls first
         setMode("KeywordBrowse");
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
@@ -121,10 +130,11 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             setSortField(SortOption.TITLE);
             searchService.handleSearch(rqb, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+        } catch (SearchPaginationException spe) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, spe);
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
-        return SUCCESS;
     }
 
     @Override
