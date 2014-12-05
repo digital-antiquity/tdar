@@ -109,34 +109,33 @@
 
                                 <div class="tab-content" >
                                     <div class="tab-pane" id="tab{{$index}}"
-                                         ng-repeat="column in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
-
-                                        <div ng-switch="column.type">
-
+                                         ng-repeat="integrationColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
+                                        <div ng-switch="integrationColumn.type">
                                             <div ng-switch-when="integration" class=".integration-pane-content">
-
                                                 <table class="table table-bordered table-condensed">
                                                     <thead>
                                                     <tr>
                                                         <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
                                                         <th rowspan="2" style="width:99%">Node Value</th>
-                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{column.dataTableColumns.length || 1}}">
+                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{integrationColumn.dataTableColumns.length}}">
                                                             Datasets
                                                         </th>
                                                     </tr>
                                                     <tr>
-                                                        <th ng-repeat="dtc in column.dataTableColumns">{{dtc.data_table_display_name}}</th>
+                                                        <th ng-repeat="cc in lookupCompatibleColumns(integrationColumn.ontologyId)" >
+                                                            <select ng-model="integrationColumn.selectedDatatableColumns[$index]" ng-options="c.display_name for c in cc.compatCols"></select>
+                                                        </th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr ng-repeat="nodeSelection in column.nodeSelections">
+                                                    <tr ng-repeat="nodeSelection in integrationColumn.nodeSelections">
                                                         <td><input type="checkbox" name="tbd" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
                                                                 <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.display_name}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="dtc in column.datatableColumnIds track by $index">{{val}}</td>
+                                                        <td >{{val}}</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
@@ -188,9 +187,6 @@
                     </div>
             </div>
         </div>
-
-
-
     </form>
 </div>
 
@@ -221,8 +217,6 @@
 
 </div>
 </form>
-
-<div>
 
 <span>
 <!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->

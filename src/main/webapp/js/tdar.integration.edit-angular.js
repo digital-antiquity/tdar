@@ -52,20 +52,18 @@
          */
         function _buildCompatibleDatatableColumns(ontology) {
 
-            //outer list: broken down by dataTable
-            var compatColsList = [];
+            //list of maps
+            var compatTables = [];
 
             self.datatables.forEach(function(datatable) {
-                //inner list: datatableColumns that use the specified ontology
-                var compatCols = [];
-                datatable.columns.forEach(function(col){
-                    if(col.default_ontology_id === ontology.id) {
-                        compatCols.push(col.id);
-                    }
+                compatTables.push({
+                    datatable: datatable,
+                    compatCols:datatable.columns.filter(function(col){
+                        return col.default_ontology_id === ontology.id;
+                    })
                 });
-                compatColsList.push(compatCols);
             });
-            ontology.compatibleDatatableColumns = compatColsList;
+            ontology.compatibleDatatableColumns = compatTables;
         }
 
         /**
@@ -81,7 +79,10 @@
                 title: title,
                 ontologyId: ontology.id,
                 nodeSelections: [],
-                datatableColumnIds: []
+                selectedDatatableColumns: ontology.compatibleDatatableColumns.map(function(dt){
+                    if(!dt.compatCols.length) return null;
+                    return dt.compatCols[0];
+                })
             }
 
             col.nodeSelections = ontology.nodes.map(function(node){
@@ -239,9 +240,9 @@
         window.__viewModel= self;
 
         //controller public fields
-        this.integration = integration;
-        this.tab = 0;
-        this.sharedOntologies = [];
+        self.integration = integration;
+        self.tab = 0;
+        self.sharedOntologies = [];
 
         //'private' methods
         openModal = function(options) {
@@ -273,29 +274,28 @@
         };
 
         //controller public methods
-        this.setTab  = function(idx) {
+        self.setTab  = function(idx) {
             this.tab = idx;
         }
 
-        this.isTabSet = function(idx) {
+        self.isTabSet = function(idx) {
             return this.tab === idx;
         }
 
-        this.closeTab = function(idx) {
+        self.closeTab = function(idx) {
             integration.columns.splice(idx, 1);
         }
 
-        this.saveClicked = function() {
+        self.saveClicked = function() {
             console.log("Saving.")
             console.log(JSON.stringify(integration, null, 4));
         };
-
 
         /**
          * Called after user selects list of dataset id's from 'add datasets' modal.
          * @param datasetIds
          */
-        this.addDatasets = function(datasetIds) {
+        self.addDatasets = function(datasetIds) {
             if(datasetIds.length === 0) return;
             //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
             $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true)
@@ -369,11 +369,11 @@
             return cols;
         }
 
-        this.integrateClicked = function() {
+        self.integrateClicked = function() {
             console.debug('integrate clicked');
         };
 
-        this.addDatasetsClicked = function(arg) {
+        self.addDatasetsClicked = function(arg) {
             console.debug('Add Datasets clicked');
             openModal({
                 title: "Add Datasets",
@@ -398,7 +398,7 @@
             });
         };
 
-        this.addIntegrationColumnsClicked = function(arg) {
+        self.addIntegrationColumnsClicked = function(arg) {
             console.debug('Add Integration Columns Clicked');
             openModal({
                 title: "Add Ontologies",
@@ -411,7 +411,7 @@
             });
         };
 
-        this.addDisplayColumnClicked = function(arg) {
+        self.addDisplayColumnClicked = function(arg) {
             console.debug('add display column clicked');
             var col = {
                 type: 'display',
@@ -448,6 +448,11 @@
             });
         }
 
+        $scope.lookupCompatibleColumns = function(id) {
+            var ontology = _setGet(integration.ontologies, "id", id);
+            return ontology.compatibleDatatableColumns;
+
+        }
     }]);
 
     //Controller that drives the add-integration-column controller
