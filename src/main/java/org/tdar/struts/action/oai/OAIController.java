@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.action.search;
+package org.tdar.struts.action.oai;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,6 +53,7 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.RangeQueryPart;
+import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.oai.OAIMetadataFormat;

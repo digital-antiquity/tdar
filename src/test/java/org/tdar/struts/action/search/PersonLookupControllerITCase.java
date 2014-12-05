@@ -20,12 +20,12 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.lookup.PersonLookupAction;
 import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 import com.opensymphony.xwork2.Action;
 
 public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
-
 
     @Autowired
     ObfuscationService obfuscationService;
@@ -34,12 +34,12 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     ReflectionService reflectionService;
 
     @Autowired
-    private LookupController controller;
+    private PersonLookupAction controller;
     private Logger log = Logger.getLogger(getClass());
 
     @Before
     public void initController() {
-        controller = generateNewInitializedController(LookupController.class);
+        controller = generateNewInitializedController(PersonLookupAction.class);
         controller.setRecordsPerPage(99);
     }
 
@@ -49,10 +49,10 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setFirstName("bobby");
         String result = controller.lookupPerson();
         assertEquals("operation successful", result, Action.SUCCESS);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         assertEquals("person list should be empty", people.size(), 0);
     }
-    
+
     @Test
     @Rollback
     public void testUserLookupWithrelevancy() {
@@ -121,20 +121,20 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         person.setEmail("mscottthompson@sua.edu");
         person.setUsername("mscottthompson@sua.edu");
         genericService.saveOrUpdate(person);
-        
-        //searching by name
+
+        // searching by name
         controller.setTerm("M Scott Thompson");
         controller.setRegistered("true");
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setSortField(SortOption.RELEVANCE);
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
-        
+
         // searching by username
-        controller = generateNewInitializedController(LookupController.class, getAdminUser());
+        controller = generateNewInitializedController(PersonLookupAction.class, getAdminUser());
         controller.setTerm("mscottthompson@sua.edu");
         controller.setSortField(SortOption.RELEVANCE);
         result = controller.lookupPerson();
@@ -144,7 +144,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         assertEquals(person, people.get(0));
 
         // searching by username
-        controller = generateNewInitializedController(LookupController.class, getAdminUser());
+        controller = generateNewInitializedController(PersonLookupAction.class, getAdminUser());
         controller.setTerm("M Scott Th");
         controller.setSortField(SortOption.RELEVANCE);
         result = controller.lookupPerson();
@@ -152,8 +152,8 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         people = controller.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
-}
-    
+    }
+
     @Test
     public void testPersonLookupTooShortOverride() {
         searchIndexService.indexAll(getAdminUser(), Person.class);
@@ -161,7 +161,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setMinLookupLength(0);
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         assertFalse("person list should have exactly 0 items", people.size() == 0);
     }
 
@@ -171,7 +171,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setLastName("Br");
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         assertEquals("person list should have exactly 0 items", people.size(), 0);
     }
 
@@ -181,7 +181,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setEmail("test@tdar.org");
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         assertEquals("person list should have exactly one item", people.size(), 1);
     }
 
@@ -193,15 +193,14 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setLastName("(    ");
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
     }
 
-    
     @Test
     @Rollback
     // we should properly escape input
     public void testPersonByUsername() {
-        TdarUser user = new TdarUser("billing","admin","billingadmin@tdar.net");
+        TdarUser user = new TdarUser("billing", "admin", "billingadmin@tdar.net");
         user.setUsername("billingAdmin");
         user.markUpdated(getAdminUser());
         genericService.saveOrUpdate(user);
@@ -210,7 +209,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setRegistered("true");
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         assertNotEmpty(people);
         assertTrue(people.contains(user));
     }
@@ -222,7 +221,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setRegistered("true");
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         assertEquals("person list should have exactly one item", 2, people.size());
     }
 
@@ -244,7 +243,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setInstitution(institution);
         String result = controller.lookupPerson();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         assertTrue("person list should contain the persion created", people.contains(person));
     }
 
@@ -255,7 +254,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         String partialLastName = "Mann";
         controller.setLastName(partialLastName);
         controller.lookupPerson();
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         if (people != null) {
             this.log.debug("people size:" + people.size() + "value:" + people);
         }
@@ -271,7 +270,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         String name = "John H";
         controller.setTerm(name);
         controller.lookupPerson();
-        List<Indexable> people = controller.getResults();
+        List<Person> people = controller.getResults();
         logger.debug("people: {}", people);
         if (people != null) {
             this.log.debug("people size:" + people.size() + "value:" + people);
@@ -297,12 +296,11 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     private void createUser(String string, String string2, String string3) {
-        TdarUser person =new TdarUser(string, string2, string3);
+        TdarUser person = new TdarUser(string, string2, string3);
         person.setUsername(string3);
         person.setContributor(true);
         genericService.saveOrUpdate(person);
     }
-    
 
     @Test
     @Rollback
@@ -313,7 +311,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
         searchIndexService.indexAll(getAdminUser(), Person.class);
         // "log out"
-        controller = generateNewController(LookupController.class);
+        controller = generateNewController(PersonLookupAction.class);
         initAnonymousUser(controller);
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
@@ -331,7 +329,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         genericService.markReadOnly();
 
         // okay now "log in" and make sure that email lookup is still working
-        controller = generateNewInitializedController(LookupController.class, getAdminUser());
+        controller = generateNewInitializedController(PersonLookupAction.class, getAdminUser());
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         String email = "james.t.devos@asu.edu";
@@ -342,5 +340,47 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         assertEquals(email, jim.getEmail());
     }
 
-    
+    @Test
+    @Rollback(true)
+    public void testInstitutionAlone() {
+        Person person = new Person("a test", "person", null);
+        Institution inst = new Institution("TQF");
+        genericService.saveOrUpdate(person);
+        person.setInstitution(inst);
+        genericService.saveOrUpdate(inst);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
+        controller.setInstitution("TQF");
+        String result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        List<Person> people = controller.getResults();
+        assertTrue("person list should have exactly one item", people.contains(person));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testValidInstitutionWithSpace() {
+        searchIndexService.indexAll(getAdminUser(), Person.class);
+        controller.setInstitution("University of");
+        String result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        List<Person> people = controller.getResults();
+        logger.info("{}", people);
+        assertTrue("person list should have at least two items", people.size() >= 2);
+        for (Indexable p : controller.getResults()) {
+            Person pers = (Person) p;
+            assertTrue(pers.getInstitution().getName().contains(" "));
+        }
+    }
+
+    @Test
+    @Rollback(true)
+    public void testInstitutionEmpty() {
+        searchIndexService.indexAll(getAdminUser(), Person.class);
+        // FIXME: should not need to be quoted
+        controller.setInstitution("University ABCD");
+        String result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        List<Person> people = controller.getResults();
+        assertEquals("person list should have 0 item(s)", 0, people.size());
+    }
 }

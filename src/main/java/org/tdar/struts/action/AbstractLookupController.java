@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.action.search;
+package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -46,7 +46,6 @@ import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -262,7 +261,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * 
      */
     @SuppressWarnings("unchecked")
-    protected List<Creator> getCreatorResults() {
+    public List<Creator> getCreatorResults() {
         return (List<Creator>) results;
     }
 

@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.resource;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -11,6 +11,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -34,7 +35,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
 
     @Action(value = "duplicate", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "confirm-duplicate.ftl"),
-            @Result(name = INPUT, type = FREEMARKER, location = "duplicate-error.ftl")
+            @Result(name = INPUT, type = FREEMARKER, location ="duplicate-error.ftl")
     })
     public String execute() {
         if (!getAuthenticatedUser().isContributor()) {

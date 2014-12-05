@@ -32,15 +32,22 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.lookup.CollectionLookupAction;
+import org.tdar.struts.action.lookup.InstitutionLookupAction;
+import org.tdar.struts.action.lookup.KeywordLookupAction;
+import org.tdar.struts.action.lookup.PersonLookupAction;
+import org.tdar.struts.action.lookup.ResourceAnnotationKeyLookupAction;
+import org.tdar.struts.action.lookup.ResourceLookupAction;
 import org.tdar.struts.action.project.ProjectController;
 
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
-    private LookupController controller;
+    private static final String L_BL_AW = "l[]bl aw\\";
+    private ResourceLookupAction controller;
 
     @Before
     public void initController() {
-        controller = generateNewInitializedController(LookupController.class);
+        controller = generateNewInitializedController(ResourceLookupAction.class);
         controller.setRecordsPerPage(99);
     }
 
@@ -61,7 +68,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setResourceTypes(Arrays.asList(ResourceType.ONTOLOGY));
         controller.lookupResource();
         assertFalse(controller.getResults().isEmpty());
-        assertTrue(((Collection<Long>)controller.getResult().get(LookupController.SELECTED_RESULTS)).contains(ont.getId()));
+        assertTrue(((Collection<Long>)controller.getResult().get(ResourceLookupAction.SELECTED_RESULTS)).contains(ont.getId()));
     }
     
     @Test
@@ -76,7 +83,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         logger.debug("results:{}", controller.getResults());
         List<Long> ids = Persistable.Base.extractIds(controller.getResults());
 
-        controller = generateNewController(LookupController.class);
+        controller = generateNewController(ResourceLookupAction.class);
         init(controller, getAdminUser());
         controller.setRecordsPerPage(1000);
         controller.setTerm("");
@@ -256,7 +263,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         logger.info("{}", sheetIds);
         assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
 
-        controller = generateNewInitializedController(LookupController.class, getBasicUser());
+        controller = generateNewInitializedController(ResourceLookupAction.class, getBasicUser());
         controller.setRecordsPerPage(10);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         controller.setTerm("Taxonomic Level");
@@ -267,7 +274,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         Resource col = ((Resource) controller.getResults().get(0));
         assertEquals("Taxonomic Level 1", col.getName());
 
-        controller = generateNewInitializedController(LookupController.class, getBasicUser());
+        controller = generateNewInitializedController(ResourceLookupAction.class, getBasicUser());
         controller.setRecordsPerPage(1000);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         controller.setSortCategoryId(85l);
@@ -284,7 +291,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         // get back all documents
         controller.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT));
         controller.lookupResource();
-        List<Indexable> resources = controller.getResults();
+        List<Resource> resources = controller.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
 
@@ -294,7 +301,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         // get back all documents
         controller.setTerm(TestConstants.TEST_DOCUMENT_ID);
         controller.lookupResource();
-        List<Indexable> resources = controller.getResults();
+        List<Resource> resources = controller.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
 
@@ -303,7 +310,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setProjectId(3073L);
         controller.lookupResource();
-        List<Indexable> resources = controller.getResults();
+        List<Resource> resources = controller.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
 
@@ -321,7 +328,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
         controller.lookupResource();
 
-        List<Indexable> results = controller.getResults();
+        List<Resource> results = controller.getResults();
 
         for (Indexable result : results) {
             if (proj.getId().equals(result.getId())) {
@@ -352,7 +359,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         proj.setSubmitter(getAdminUser());
         genericService.saveOrUpdate(proj);
         searchIndexService.index(proj);
-        controller = generateNewController(LookupController.class);
+        controller = generateNewController(ResourceLookupAction.class);
         init(controller, getAdminUser());
         controller.setUseSubmitterContext(false);
         controller.setIncludedStatuses(new ArrayList<Status>(Arrays.asList(Status.values())));
@@ -431,7 +438,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
 
         // login as an admin
-        controller = generateNewController(LookupController.class);
+        controller = generateNewController(ResourceLookupAction.class);
         init(controller, getAdminUser());
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         for (Document doc : docs) {
@@ -459,24 +466,30 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     @Rollback
     // special characters need to be escaped or stripped prior to search
     public void testLookupWithSpecialCharactors() {
-        setTextFields("l[]bl aw\\");
+        controller.setTerm(L_BL_AW);
+        controller.setTitle(L_BL_AW);
         controller.setMinLookupLength(0);
-        controller.lookupPerson();
-        controller.lookupInstitution();
-        controller.setKeywordType("TemporalKeyword");
-        controller.lookupKeyword();
         controller.lookupResource();
-        controller.lookupResourceCollection();
+        PersonLookupAction pcontroller = generateNewInitializedController(PersonLookupAction.class);
+        pcontroller.setTerm(L_BL_AW);
+        pcontroller.setFirstName(L_BL_AW);
+        pcontroller.setLastName(L_BL_AW);
+        pcontroller.setEmail(L_BL_AW);
+        pcontroller.setInstitution(L_BL_AW);
+        pcontroller.lookupPerson();
+        InstitutionLookupAction icontroller = generateNewInitializedController(InstitutionLookupAction.class);
+        icontroller.setInstitution(L_BL_AW);
+        icontroller.lookupInstitution();
+        KeywordLookupAction kcontroller = generateNewInitializedController(KeywordLookupAction.class);
+        kcontroller.setKeywordType("TemporalKeyword");
+        kcontroller.setTerm(L_BL_AW);
+        kcontroller.lookupKeyword();
+        CollectionLookupAction ccontroller = generateNewInitializedController(CollectionLookupAction.class);
+        controller.setTerm(L_BL_AW);
+        controller.setTitle(L_BL_AW);
+        ccontroller.lookupResourceCollection();
+        ResourceAnnotationKeyLookupAction rcontroller = generateNewController(ResourceAnnotationKeyLookupAction.class);
+        rcontroller.setTerm(L_BL_AW);
+        rcontroller.lookupAnnotationKey();
     }
-
-    // we don't care about making sense, we just want to catch parsing errors.
-    private void setTextFields(String str) {
-        controller.setFirstName(str);
-        controller.setLastName(str);
-        controller.setInstitution(str);
-        controller.setEmail(str);
-        controller.setTerm(str);
-        controller.setTitle(str);
-    }
-
 }

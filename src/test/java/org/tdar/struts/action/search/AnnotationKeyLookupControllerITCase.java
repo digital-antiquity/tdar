@@ -8,30 +8,18 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
+import org.tdar.struts.action.lookup.ResourceAnnotationKeyLookupAction;
 
-public class KeywordAnnotationLookupControllerITCase extends AbstractIntegrationTestCase {
+public class AnnotationKeyLookupControllerITCase extends AbstractIntegrationTestCase {
 
-    private LookupController controller;
+    private ResourceAnnotationKeyLookupAction controller;
 
     @Before
     public void initController() {
-        controller = generateNewInitializedController(LookupController.class);
+        controller = generateNewInitializedController(ResourceAnnotationKeyLookupAction.class);
         controller.setRecordsPerPage(99);
-    }
-
-    @Test
-    public void testKeywordLookup() {
-        searchIndexService.indexAll(getAdminUser(), GeographicKeyword.class, CultureKeyword.class);
-        controller.setKeywordType("culturekeyword");
-        controller.setTerm("Folsom");
-        controller.lookupKeyword();
-        List<Indexable> resources = controller.getResults();
-        assertTrue("at least one document", resources.size() >= 1);
     }
 
     @Test
@@ -48,7 +36,7 @@ public class KeywordAnnotationLookupControllerITCase extends AbstractIntegration
         searchIndexService.indexAll(getAdminUser(), ResourceAnnotationKey.class);
         controller.setTerm("IS");
         controller.lookupAnnotationKey();
-        List<Indexable> resources = controller.getResults();
+        List<ResourceAnnotationKey> resources = controller.getResults();
         assertTrue("at least one document", resources.size() == 2);
 
         // FIXME: not properly simulating new page request

@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action.browse;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,6 +34,8 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.struts.action.AbstractLookupController;
+import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 

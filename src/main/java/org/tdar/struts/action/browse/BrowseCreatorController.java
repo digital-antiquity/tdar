@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action.browse;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,9 +50,11 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.w3c.dom.Document;

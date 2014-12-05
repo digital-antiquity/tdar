@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action.browse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +34,8 @@ import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
+import org.tdar.struts.action.AbstractLookupController;
+import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 

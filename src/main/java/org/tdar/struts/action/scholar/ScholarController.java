@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action.scholar;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
