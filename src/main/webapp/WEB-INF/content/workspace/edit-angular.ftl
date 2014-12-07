@@ -8,7 +8,7 @@
         <h1>Dataset Integration</h1>
         <h2>{{ctrl.integration.title || 'Create New Integration'}}</h2>
     </div>
-    <form id="frmIntegrationEdit" action="#" method="post" class="form-horizontal ">
+    <form id="frmIntegrationEdit" class="form-horizontal">
         <div class="row">
             <div class="span9">
                <div class="control-group">
@@ -93,7 +93,6 @@
                     <div class="control-group">
                         <label class="control-label">
                             Configure Columns
-
                         </label>
                         <div class="controls">
 
@@ -141,44 +140,22 @@
                                                 </table>
                                             </div>
 
+
                                             <div ng-switch-when="display" class=".display-pane-content">
-                                                <#--<div class="control-group">-->
-                                                    <#--<label class="control-label">Display Column Name</label>-->
-                                                <#--</div>-->
-                                                <#--<div>-->
-                                                    <label>Source columns to include in this display column</label>
-                                                    <table class="table table-condensed">
-                                                        <thead>
-                                                            <tr>
-                                                                <th></th>
-                                                                <th>Column Name</th>
-                                                                <th>Table Name</th>
-                                                                <th>Description</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody ng-repeat="datatable in ctrl.integration.datatables">
-                                                            <tr ng-repeat="column in datatable.columns">
-                                                                <td>{{columnIndex}} :: {{$index}}
-                                                                    <input type="checkbox" ng-model="ctrl.integration.columns[columnIndex].data[$index].selected" name="displayColumns[]"
-                                                                           id="cbDisplayCol{{datatable.data_table_id}}_{{column.id}}">
-                                                                </td>
-                                                                <td>
-                                                                    <label for="cbDisplayCol{{datatable.data_table_id}}_{{column.id}}">{{column.display_name}}</label>
-                                                                </td>
-                                                                <td>
-                                                                    {{datatable.display_name}}
-                                                                </td>
-                                                                <td>
-                                                                    {{datatable.description}}
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                <h3>Choose source columns</h3>
+                                                <table>
+                                                    <tr ng-repeat="columnSelection in integrationColumn.datatableColumnSelections">
+                                                        <td>{{columnSelection.datatable.data_table_name}}</td>
+                                                        <td>
+                                                            <select ng-model="columnSelection.datatableColumn"
+                                                                    ng-options="c.display_name for c in columnSelection.datatable.columns">
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
                                             </div>
-
                                         </div>
-
                                     </div>
                                 </div>
                             </div>

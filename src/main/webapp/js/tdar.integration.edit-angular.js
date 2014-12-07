@@ -102,8 +102,34 @@
 
         self.removeDatatable = function _removeDatatable(datatable) {
             _setRemove(self.datatables, datatable);
-        }
+        };
 
+
+        /**
+         * Add a 'display column' to the columns list.  A display column contains a list of datatableColumn selections, which the system
+         * will include in the final integration report file.   The user may choose 0 or 1 datatableColumn from each
+         * datatable.  This method primes the datatableColumnSelections list to be size N with each slot containing null (where
+         * N is the count of data tables in the current integration workflow.
+         * @param title
+         * @private
+         */
+        self.addDisplayColumn = function _addDisplayColumn(title) {
+
+            var displayColumn = {
+                type: 'display',
+                title: title,
+                datatableColumnSelections: []
+            };
+
+            self.datatables.forEach(function(table){
+                var selection = {
+                    datatable: table,
+                    datatableColumn: null
+                }
+                displayColumn.datatableColumnSelections.push(selection);
+            });
+            self.columns.push(displayColumn);
+        }
     }
 
     /**
@@ -412,25 +438,7 @@
         };
 
         self.addDisplayColumnClicked = function(arg) {
-            console.debug('add display column clicked');
-            var col = {
-                type: 'display',
-                title: 'display col'
-            };
-
-            col.data=[];
-
-            integration.datatables.forEach(function(table){
-                console.log("table %s", table);
-                table.columns.forEach(function(dtc){
-                    col.data.push({
-                        id: dtc.id,
-                        selected: false,
-                        "datatableColumn": dtc
-                    });
-                });
-            });
-            integration.columns.push(col);
+            integration.addDisplayColumn("display column");
         };
 
         self.removeSelectedDatasetClicked = function() {
