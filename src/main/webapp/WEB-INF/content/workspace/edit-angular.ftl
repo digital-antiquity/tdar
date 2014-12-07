@@ -107,6 +107,7 @@
                                 </ul>
 
                                 <div class="tab-content" >
+                                <#-- FIXME: integrationColumn is a crummy name. some are display, some are integration.  what's a good name for that? -->
                                     <div class="tab-pane" id="tab{{$index}}"
                                          ng-repeat="integrationColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
                                         <div ng-switch="integrationColumn.type">
@@ -140,7 +141,6 @@
                                                 </table>
                                             </div>
 
-
                                             <div ng-switch-when="display" class=".display-pane-content">
                                                 <h3>Choose source columns</h3>
                                                 <table>
@@ -169,30 +169,29 @@
 
 
 <form ng-controller="LegacyFormController as legacyCtrl" id="frmLegacy" method="post" action="/workspace/display-filtered-results">
-<#--<button type="button" class="btn btn-mini" ng-click="buildLegacyForm()">Build Legacy Form</button>-->
-<#--<button type="button" class="btn btn-mini" ng-click="hideForm()">Hide Form</button>-->
-<div  og-show="showForm">
-    <h2>legacy form goes here</h2>
-    <fieldset>
-        <div ng-repeat="col in legacyCtrl.integration.columns" ng-init="columnIndex=$index">
-            <input type="hidden" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
-            type: {{col.type}}
-            <div ng-switch="col.type">
-                <span ng-switch-when="integration">
-                    <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}]" value="{{dtc.id}}"  ng-repeat="dtc in col.dataTableColumns">
-                    <input type="hidden" name="integrationColumns[{{columnIndex}}].filteredOntologyNodes.id" value="{{node.id}}" ng-repeat="node in col.data.nodes | filter: {selected:true}">
-                </span>
-                <span ng-switch-when="display">
-                    <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id" value="{{dtc.id}}" ng-repeat="dtc in col.data | filter: {selected: true}">
-                </span>
-            </div>
-        </div>
-        <input ng-repeat="datatable in legacyCtrl.integration.datatables" type="hidden" name="tableIds[$index]" value="{{datatable.data_table_id}}">
-    </fieldset>
-    <button type="button" ng-click="legacyCtrl.dumpdata()">dump data</button>
-    <input type="submit" name="submit" value="submit">
+<h2>Debug:  legacy form</h2>
+<button type="button" class="btn" ng-disabled="legacyCtrl.integration.columns.length === 0" ng-click="legacyCtrl.dumpdata()">log to console</button>
+<input type="submit"  class="btn" ng-disabled="legacyCtrl.integration.columns.length === 0" name="submit" value="submit">
 
-</div>
+<fieldset>
+    <div ng-repeat="col in legacyCtrl.integration.columns" ng-init="columnIndex=$index">
+        <input type="hidden" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
+        <div ng-switch="col.type">
+            <span ng-switch-when="integration">
+                <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
+                       value="{{dtc.id}}"  ng-repeat="dtc in col.selectedDatatableColumns">
+                <input type="hidden" name="integrationColumns[{{columnIndex}}].filteredOntologyNodes.id"
+                       value="{{nodeSelection.node.id}}" ng-repeat="nodeSelection in col.nodeSelections | filter: {selected:true}">
+            </span>
+            <span ng-switch-when="display">
+                <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
+                       value="{{colSelection.datatableColumn.id}}"
+                       ng-repeat="colSelection in col.datatableColumnSelections | filter: {datatableColumn: '!!'}">
+            </span>
+        </div>
+    </div>
+    <input ng-repeat="datatable in legacyCtrl.integration.datatables" type="hidden" name="tableIds[{{$index}}]" value="{{datatable.data_table_id}}">
+</fieldset>
 </form>
 
 <span>

@@ -553,9 +553,7 @@
         };
 
         self.dumpdata = function() {
-            console.log("hello");
-            console.log($("#frmLegacy").serializeArray());
-            JSON.stringify($("#frmLegacy").serializeArray(), null, "4");
+            console.table($("#frmLegacy").serializeArray());
         };
 
 

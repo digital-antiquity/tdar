@@ -81,15 +81,11 @@ if (!window.console) {
     console = {};
 }
 
-console.log = console.log || function () {
-};
-console.warn = console.warn || function () {
-};
-console.debug = console.debug || function () {
-};
-console.error = console.error || function () {
-};
-console.info = console.info || function () {
-};
-console.trace = function () {
-};
+console.log = console.log || function () {};
+console.trace = console.trace || console.log;
+console.info = console.info || console.log;
+console.error = console.error || console.log;
+console.warn = console.warn || console.log;
+console.debug = console.debug || console.log;
+console.table = console.table || console.log;
+
