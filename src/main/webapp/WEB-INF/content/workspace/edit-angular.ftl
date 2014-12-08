@@ -312,6 +312,8 @@ ${allResourceCollectionsJson}
 ${categoriesJson}
 </script>
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
+<!-- fixme: cycle.js modifies global JSON object. think of a better way to incorporate this -->
+<script src="/includes/json-js-3d7767b/cycle.js"></script>
 <script src="/js/tdar.integration.edit-angular.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
 <script src="/js/tdar.pagination.js"></script>

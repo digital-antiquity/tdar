@@ -4,6 +4,7 @@
   "private": true,
   "depenencies": {},
   "dependencies": {
-    "angular-modal-service": "~0.4.0"
+    "angular-modal-service": "~0.4.0",
+    "JSON-js": "*"
   }
 }
