@@ -58,10 +58,10 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
 
     private IntegrationColumn integrationColumn;
 
-    private IntegrationSearchFilter searchFilter = new IntegrationSearchFilter();
     private InputStream jsonInputStream;
     private Integer startRecord = 0;
-    private int recordsPerPage = 10;
+    private Integer recordsPerPage = 100;
+    private IntegrationSearchFilter searchFilter = new IntegrationSearchFilter(recordsPerPage, startRecord);
 
     @Autowired
     private transient OntologyService ontologyService;
@@ -254,6 +254,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
             nodeMap.put("id", node.getId());
             nodeMap.put("displayName", node.getDisplayName());
             nodeMap.put("index", node.getIndex());
+            //FIXME: what of these are actually needed?
             nodeMap.put("indented_label", node.getIndentedLabel());
             nodeMap.put("iri", node.getIri());
             nodeMap.put("interval_start", node.getIntervalStart());

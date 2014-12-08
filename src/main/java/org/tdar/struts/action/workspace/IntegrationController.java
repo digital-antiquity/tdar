@@ -203,4 +203,8 @@ public class IntegrationController extends AuthenticationAware.Base implements P
         // For now, you just get flattened list of collections. Because.
         allResourceCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
     }
+    
+    public String getNgApplicationName() {
+        return "integrationApp";
+    }
 }

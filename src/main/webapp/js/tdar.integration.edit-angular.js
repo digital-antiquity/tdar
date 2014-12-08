@@ -145,7 +145,7 @@
             categoryId: null,
             bookmarked: false,
             incompatible: false,
-            //fixme: get pagination info from paginationHelper
+            //fixme: get pagination info from paginationHelper / controller?
             startRecord: 0,
             recordsPerPage: 500
         };
@@ -160,12 +160,12 @@
                 "searchFilter.collectionId": self.collectionId,
                 "searchFilter.categoryId": self.categoryId,
                 "searchFilter.bookmarked": self.bookmarked,
-                "searchFilter.incompatible": self.incompatible,
-                "searchFilter.startRecord": self.startRecord,
-                "searchFilter.recordsPerPage": self.recordsPerPage
-            }
+                "searchFilter.ableToIntegrate": self.incompatible,
+                "startRecord": self.startRecord,
+                "recordsPerPage": self.recordsPerPage
+            };
         }
-    }
+    };
 
     //TODO: this function is handy - move it to tdar.core.js (blocker: TDAR is not defined yet. I really need to untangle the <script> load order.  )
    function _loadDocumentData() {

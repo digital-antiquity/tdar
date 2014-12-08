@@ -58,7 +58,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     public void testDatasetService() {
-        IntegrationSearchFilter filter = new IntegrationSearchFilter();
+        IntegrationSearchFilter filter = new IntegrationSearchFilter(100, 0);
         filter.setAuthorizedUser(getUser());
         for (DataTable dt : dataTableService.findDataTables(filter)) {
             logger.debug("{} - {}", dt.getName(), dt.getId());
@@ -67,7 +67,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     public void testOntologyService() {
-        IntegrationSearchFilter filter = new IntegrationSearchFilter();
+        IntegrationSearchFilter filter = new IntegrationSearchFilter(100, 0);
         filter.setAuthorizedUser(getUser());
         for (Ontology ont : ontologyService.findOntologies(filter)) {
             logger.debug("{} - {}", ont.getName(), ont.getId());

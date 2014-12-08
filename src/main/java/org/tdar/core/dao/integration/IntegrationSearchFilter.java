@@ -2,18 +2,11 @@ package org.tdar.core.dao.integration;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.tdar.core.bean.HasSubmitter;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.utils.PaginationHelper;
 
 /**
  * Simple pojo for storing Integration search parameters
@@ -29,12 +22,16 @@ public class IntegrationSearchFilter implements Serializable {
     private List<Long> dataTableIds = new ArrayList<>();
     private boolean bookmarked = false;
     private boolean ableToIntegrate = false;
+    private String title;
 
-    //TODO: consider paginationHelper object instead
-    private int maxResults = 100;
-    private int firstResult = 0;
+    private int maxResults;
+    private int firstResult;
 
-
+    public IntegrationSearchFilter(int maxResults, int firstResult) {
+        this.maxResults = maxResults;
+        this.firstResult = firstResult;
+    }
+    
     public Boolean isBookmarked() {
         return bookmarked;
     }
@@ -94,6 +91,13 @@ public class IntegrationSearchFilter implements Serializable {
         return ontologyIds;
     }
 
+    public List<Long> getPaddedOntologyIds() {
+        if (ontologyIds.isEmpty()) {
+            return paddedIdList();
+        }
+        return ontologyIds;
+    }
+
     public void setOntologyIds(List<Long> ontologyIds) {
         this.ontologyIds = ontologyIds;
     }
@@ -118,6 +122,19 @@ public class IntegrationSearchFilter implements Serializable {
         return dataTableIds;
     }
 
+    public List<Long> getPaddedDataTableIds() {
+        if (dataTableIds.isEmpty()) {
+            return paddedIdList();
+        }
+        return dataTableIds;
+    }
+
+    private List<Long> paddedIdList() {
+        List<Long> padding = new ArrayList<>();
+        padding.add(null);
+        return padding;
+    }
+
     public void setDataTableIds(List<Long> dataTableIds) {
         this.dataTableIds = dataTableIds;
     }
@@ -128,5 +145,33 @@ public class IntegrationSearchFilter implements Serializable {
 
     public void setCategoryVariableId(Long categoryVariableId) {
         this.categoryVariableId = categoryVariableId;
+    }
+
+    public boolean isHasOntologies() {
+        return !getOntologyIds().isEmpty();
+    }
+
+    public long getSubmitterId() {
+        return getAuthorizedUser().getId();
+    }
+
+    public boolean isHasDatasets() {
+        return !getDataTableIds().isEmpty();
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    //fixme: better way?
+    public String getTitleLookup() {
+        if (StringUtils.isBlank(title)) {
+            return "%";
+        }
+        return "%" + title.toLowerCase() + "%";
     }
 }

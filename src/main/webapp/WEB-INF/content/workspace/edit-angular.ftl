@@ -123,6 +123,7 @@
                                                     </tr>
                                                     <tr>
                                                         <th ng-repeat="cc in lookupCompatibleColumns(integrationColumn.ontologyId)" >
+                                                        	<!-- suggest using  track by c.name to get at a key that we can more easily use" -->
                                                             <select ng-model="integrationColumn.selectedDatatableColumns[$index]" ng-options="c.display_name for c in cc.compatCols"></select>
                                                         </th>
                                                     </tr>
