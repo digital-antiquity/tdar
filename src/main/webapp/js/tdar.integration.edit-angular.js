@@ -40,6 +40,12 @@
          */
         self.ontologies = [];
 
+        //derived datatable participation information
+        self.compatibleDatatableColumns = [];
+
+        //derived node participation information
+        var _nodeParticipationInformation = {};
+
         /**
          * Build the datatable participation information for the specified ongology and store the results in ontology.compatibleDatatableColumns
          *
@@ -78,6 +84,7 @@
                 type: "integration",
                 title: title,
                 ontologyId: ontology.id,
+                ontology: ontology,
                 nodeSelections: [],
                 selectedDatatableColumns: ontology.compatibleDatatableColumns.map(function(dt){
                     if(!dt.compatCols.length) return null;
@@ -129,7 +136,28 @@
                 displayColumn.datatableColumnSelections.push(selection);
             });
             self.columns.push(displayColumn);
+        };
+
+        /**
+         * find ontology node by with specified ontology and node.ID
+         * @param ontology
+         * @param nodeId
+         * @private
+         */
+        function _lookupNode(ontology, nodeId) {
+            _setGet(ontology.nodes, "id", nodeId);
         }
+
+
+        //FIXME: implement me
+        self.updateParticipationInfo = function _updateParticipationInfo(ontology, data) {
+        }
+
+
+        //FIXME: implement me
+        self.lookupNodeParticipation = function _lookupNodeParticipation(nodeId, data) {
+        }
+
     }
 
     /**
@@ -257,7 +285,7 @@
     app.service('integrationService', Integration);
 
     //top-level controller for the integration viewmodel
-    app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', 'integrationService',  function($scope, ModalService, $http, integration){
+    app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', 'integrationService', '$q',   function($scope, ModalService, $http, integration, $q){
         var self = this,
             openModal,
             designatedOntologies = {};
@@ -393,6 +421,7 @@
                 });
             });
             return cols;
+
         }
 
         self.integrateClicked = function() {
@@ -454,13 +483,65 @@
             $scope.selectedOntologies.forEach(function(ontology, idx){
                 self.integration.addIntegrationColumn(ontology.name, ontology);
             });
-        }
+        };
 
         $scope.lookupCompatibleColumns = function(id) {
             var ontology = _setGet(integration.ontologies, "id", id);
             return ontology.compatibleDatatableColumns;
 
+        };
+
+        $scope.loadIntegrationColumnDetails = function(integration) {
+            //get column participation for all dataTableColumns across all shared ontologies
+            var promises = [];
+            var configs = [];
+            integration.ontologies.forEach(function(ontology){
+                //FIXME: rename this so that allen will stop mocking me.
+                ontology.reallyCompatibleDatatableColumns = [];
+
+                var config = {};
+                var params = {
+                    "integrationColumn.columnType": "INTEGRATION",
+                    "integrationColumn.sharedOntology.id": ontology.id
+                };
+                var i = 0;
+                ontology.compatibleDatatableColumns.forEach(function(compatTable){
+                    compatTable.compatCols.forEach(function(compatCol){
+                        ontology.reallyCompatibleDatatableColumns.push(compatCol);
+                        console.log("compatCol table:%s  cols:%s", compatTable.datatable.id, compatCol.id);
+                        params["integrationColumn.columns[" + i + "].id"] = compatCol.id
+                        i++;
+                    });
+                });
+                config.params = params;
+                configs.push(config);
+                promises.push($http.get("/workspace/ajax/integration-column-details", config));
+            });
+            console.log("ajax configs::");
+            console.log(configs);
+
+            $q.all(promises).then(function(arResults){
+
+
+                console.log("requests sent:%s", arResults.length);
+                console.log(arResults);
+                arResults.forEach(function(result, ontologyIdx){
+                    var ontology = self.integration.ontologies[ontologyIdx];
+                    result.data.forEach(function(ontologyNodeInfo, nodeIdx) {
+                        var node = ontology.nodes[nodeIdx];
+                        node.participatingDatatableColumnIds = [];
+                        ontologyNodeInfo.mapping_list.forEach(function(bPresent, idx){
+                            if(bPresent) {
+                                node.participatingDatatableColumnIds.push(ontology.reallyCompatibleDatatableColumns[idx].id);
+                            }
+                        });
+                    });
+                    //delete ontology.reallyCompatibleDatatableColumns;
+                    //integration.updateParticipationInfo(integration.ontologies[i], result.data);
+                });
+            }) ;
         }
+
     }]);
 
     //Controller that drives the add-integration-column controller

@@ -247,6 +247,8 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         ArrayList<Map<String, Object>> nodeList = new ArrayList<>();
         HashMap<String, Object> map = setupOntologyForJson(integrationColumn.getSharedOntology());
         map.put("nodes", nodeList);
+        getLogger().debug("nodes: {}", nodeList);
+        getLogger().debug("integrationColumn.getFlattenedOntologyNodeList: {}", integrationColumn.getFlattenedOntologyNodeList());
 
         for (OntologyNode node : integrationColumn.getFlattenedOntologyNodeList()) {
             Map<String, Object> nodeMap = new HashMap<>();
