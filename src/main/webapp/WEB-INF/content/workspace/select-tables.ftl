@@ -102,15 +102,11 @@
 
 <body>
 <h1>Data Integration</h1>
-<h2>The New Way</h2>
 <div class="well">
     <p>
-        If this were finished, you'd see a list of previous integrations.  Instead, now you just get a link to the edit screens:
+        Please click the link below to access the new Dataset Integration UI  (currently under development).
     </p>
-    <ul>
-        <li><a href="add">New Integration (knockout)</a></li>
-        <li><a href="add-angular">New Integration (angular)</a></li>
-    </ul>
+        <a href="add-angular">New Integration UI</a>
 
 </div>
 
@@ -120,7 +116,6 @@
     <div class="row">
         <#if (bookmarkedDataTables)?? && !bookmarkedDataTables.empty >
             <div class="span12">
-                <h2>The Old Way</h2>
                 <h3>Step 1: Select Datasets to Integrate or Display</h3>
                 <@s.form name='selectDTForm' method='post' action='select-columns'>
                     <@s.token name='struts.csrf.token' />

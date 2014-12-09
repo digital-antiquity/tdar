@@ -580,8 +580,10 @@
                     });
 
             //TODO: handle integration columns for ontologies that are no longer shared (e.g. if a user adds a datatable)
+            self.integration.columns = []
+            self.setTab(0);
 
-            //TODO: handle displahy column when source datatableColumn no longer exists
+            //TODO: handle display column when source datatableColumn no longer exists
         };
 
 
