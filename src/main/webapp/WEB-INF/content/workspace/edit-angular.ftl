@@ -3,10 +3,22 @@
     <link rel="stylesheet" href="/css/tdar.integration.css" media="screen">
 </head>
 <body>
+<style type="text/css">
+    h1.compact {
+        margin-top:0 !important;
+        margin-bottom: -3pt ;
+    }
+    h2.compact {
+        margin-top:-3pt ;
+    }
+    input.intcol, select.intcol {
+        width: 90pt;
+    }
+</style>
 <div id="divIntegrationMain" ng-controller="IntegrationCtrl as ctrl">
     <div id="divIntegrationHeader">
-        <h1>Dataset Integration</h1>
-        <h2>{{ctrl.integration.title || 'Create New Integration'}}</h2>
+        <h1 class="compact">Dataset Integration</h1>
+        <h2 class="compact">{{ctrl.integration.title || 'Untitled Integration'}}</h2>
     </div>
     <form id="frmIntegrationEdit" class="form-horizontal">
         <div class="row">
@@ -100,7 +112,8 @@
                 </div>
             </div>
         </div>
-
+        </form>
+        <form>
         <div id="divColumnSection">
             <div class="row">
                 <div class="span12">
@@ -139,7 +152,7 @@
                                                     <tr>
                                                         <th ng-repeat="cc in lookupCompatibleColumns(integrationColumn.ontologyId)" >
                                                         	<!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                            <select ng-model="integrationColumn.selectedDatatableColumns[$index]" ng-options="c.display_name for c in cc.compatCols"></select>
+                                                            <select class="intcol" ng-model="integrationColumn.selectedDatatableColumns[$index]" ng-options="c.display_name for c in cc.compatCols"></select>
                                                         </th>
                                                     </tr>
                                                     </thead>
