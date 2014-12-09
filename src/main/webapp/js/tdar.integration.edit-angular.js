@@ -356,7 +356,11 @@
             ).success(function(data) {
                 _setAddAll(self.integration.datatables, data[0].dataTables, "data_table_id");
                 self.integration.updateSharedOntologies(data[0].sharedOntologies);
+
+                //gather the updated node participation data
+                $scope.loadIntegrationColumnDetails(self.integration);
             });
+
         };
 
         /**
@@ -426,6 +430,9 @@
 
         self.integrateClicked = function() {
             console.debug('integrate clicked');
+            //FIXME: HACK: NEVERDOTHIS: This is absolultely not the correct way to invoke a form submission, for a number of reasons.
+            $("#btnSubmitLegacyForm").click();
+
         };
 
         self.addDatasetsClicked = function(arg) {
@@ -540,6 +547,12 @@
                     //integration.updateParticipationInfo(integration.ontologies[i], result.data);
                 });
             }) ;
+        }
+
+        //FIXME: proper validation required
+        $scope.isValid = function() {
+            console.log("isValid:: %s", self.integration.columns.length);
+            return self.integration.columns.length > 0;
         }
 
     }]);

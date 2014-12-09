@@ -7,7 +7,6 @@
     <div id="divIntegrationHeader">
         <h1>Dataset Integration</h1>
         <h2>{{ctrl.integration.title || 'Create New Integration'}}</h2>
-        <button type="button" class="btn btn-info" ng-click="loadIntegrationColumnDetails(ctrl.integration)">test intcoldetails</button>
     </div>
     <form id="frmIntegrationEdit" class="form-horizontal">
         <div class="row">
@@ -32,7 +31,7 @@
             <div class="span3">
                 <div class="btn-group">
                     <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
-                    <button type="button" class="btn" ng-click="ctrl.integrateClicked()">Integrate</button>
+                    <button type="button" class="btn" ng-disabled="!isValid()" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
             </div>
         </div>
@@ -91,7 +90,7 @@
             <div class="row">
                 <div class="span12">
 
-                    <div class="control-group">
+                    <div class="control-group" ng-show="ctrl.integration.columns.length">
                         <label class="control-label">
                             Configure Columns
                         </label>
@@ -138,7 +137,9 @@
                                                             </div>
                                                         </td>
                                                         <td ng-repeat="datatableColumn in integrationColumn.selectedDatatableColumns">
-                                                            {{nodeSelection.node.participatingDatatableColumnIds.indexOf(datatableColumn.id) === -1 ? '' : 'x' }}
+                                                            <div class="text-center">
+                                                                {{nodeSelection.node.participatingDatatableColumnIds.indexOf(datatableColumn.id) === -1 ? '' : 'x' }}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -153,6 +154,7 @@
                                                         <td>
                                                             <select ng-model="columnSelection.datatableColumn"
                                                                     ng-options="c.display_name for c in columnSelection.datatable.columns">
+                                                                <option value=""></option>
                                                             </select>
                                                         </td>
                                                     </tr>
@@ -172,10 +174,9 @@
 </div>
 
 
-<form ng-controller="LegacyFormController as legacyCtrl" id="frmLegacy" method="post" action="/workspace/display-filtered-results">
-<h2>Debug:  legacy form</h2>
+<form ng-controller="LegacyFormController as legacyCtrl" id="frmLegacy" method="post" action="/workspace/display-filtered-results" style="visibility: hidden;">
 <button type="button" class="btn" ng-disabled="legacyCtrl.integration.columns.length === 0" ng-click="legacyCtrl.dumpdata()">log to console</button>
-<input type="submit"  class="btn" ng-disabled="legacyCtrl.integration.columns.length === 0" name="submit" value="submit">
+<input type="submit" id="btnSubmitLegacyForm" class="btn" ng-disabled="legacyCtrl.integration.columns.length === 0" name="submit" value="submit">
 
 
 <fieldset>
@@ -290,7 +291,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <div class="pull-left">
+            <div class="pull-left" ng-show="false">
                 <button type="button" class="btn" ng-click="updateFilter()">Update Search</button>
                 <small class="muted"><em>Temporary button</em></small>
             </div>
