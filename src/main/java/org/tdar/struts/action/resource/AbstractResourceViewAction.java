@@ -31,6 +31,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotation;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -275,6 +277,17 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {
         return ResourceCreatorRole.getAll();
     }
+    
+    public Set<ResourceAnnotationKey> getAllResourceAnnotationKeys() {
+        Set<ResourceAnnotationKey> keys = new HashSet<>();
+        if ((getPersistable() != null) && CollectionUtils.isNotEmpty(getPersistable().getActiveResourceAnnotations())) {
+            for (ResourceAnnotation ra : getPersistable().getActiveResourceAnnotations()) {
+                keys.add(ra.getResourceAnnotationKey());
+            }
+        }
+        return keys;
+    }
+    
 
     public List<ResourceCreatorProxy> getAuthorshipProxies() {
         if (CollectionUtils.isEmpty(authorshipProxies)) {
@@ -403,6 +416,12 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     }
 
     public List<EmailMessageType> getEmailTypes() {
+        if (getResource() instanceof InformationResource) {
+            InformationResource informationResource = (InformationResource) getResource();
+            if (informationResource.hasConfidentialFiles()) {
+                emailTypes = Arrays.asList(EmailMessageType.values());
+            }
+        }
         return emailTypes;
     }
 
