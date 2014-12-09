@@ -30,7 +30,7 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                    <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
+                    <button type="button" class="btn disabled" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn" ng-disabled="!isValid()" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
             </div>
@@ -43,12 +43,29 @@
                             <div class="btn-group">
                                 <button type="button" class="btn"  id="btnAddDataset"
                                         ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
-                                <button type="button" class="btn"  id="btnAddIntegrationColumn"
-                                        ignoreme-ng-click="ctrl.addIntegrationColumnsClicked()"
-                                        ng-click="ctrl.addToIntegrationColumnsClicked()">Add Integration Columns...</button>
+                                <div class="btn-group" >
+                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
+                                        Add Integration Column
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li ng-repeat="ontology in ctrl.integration.ontologies"
+                                                ><a href="#" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.name}}</a></li>
+                                    </ul>
+                                </div>
                                 <button type="button" class="btn" id="btnAddDisplayColumn"
-                                        ng-click="ctrl.addDisplayColumnClicked()">Add Display Column</button>
+                                        ng-click="ctrl.addDisplayColumnClicked()"
+                                        ng-disabled="!ctrl.integration.ontologies.length"
+                                        >Add Display Column</button>
                             </div>
+
+
+
+
+
+
+
+
                         </div>
                     </div>
         </div>
@@ -65,10 +82,10 @@
                                     <select size="5" class="input-block-level" multiple  ng-model="selectedDatatables" ng-options="datatable.data_table_name for datatable in ctrl.integration.datatables"></select>
                                 </div>
                                 <button type="button" class="btn input-block-level"
-                                        ng-click="ctrl.removeSelectedDatasetClicked()">Remove selected dataset</button>
+                                        ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.datatables.length === 0">Remove selected dataset</button>
                             </div>
                             <div class="span4">
-                                <label>Ontologies</label>
+                                <label>Shared Ontologies</label>
                                 <div>
                                     <select size="5" class="input-block-level" multiple
                                             ng-model="selectedOntologies"
@@ -76,8 +93,6 @@
                                             ng-dblclick="ctrl.addToIntegrationColumnsClicked()"></select>
                                 </div>
 
-                                <#--<button type="button" class="btn input-block-level"-->
-                                        <#--ng-click="ctrl.addToIntegrationColumnsClicked()">Add selected as integration column</button>-->
 
                             </div>
                         </div>

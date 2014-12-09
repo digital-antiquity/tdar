@@ -492,6 +492,10 @@
             });
         };
 
+        self.addIntegrationColumnsMenuItemClicked = function(ontology) {
+            self.integration.addIntegrationColumn(ontology.name, ontology);
+        }
+
         $scope.lookupCompatibleColumns = function(id) {
             var ontology = _setGet(integration.ontologies, "id", id);
             return ontology.compatibleDatatableColumns;
