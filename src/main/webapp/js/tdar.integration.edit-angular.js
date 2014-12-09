@@ -107,9 +107,21 @@
             ontologies.forEach(_buildCompatibleDatatableColumns);
         };
 
-        self.removeDatatable = function _removeDatatable(datatable) {
-            _setRemove(self.datatables, datatable);
-        };
+        /**
+         * Remove specified datatables from the viewmodel.  This impacts all integration columns and any display columns that have datatableColumns
+         * which belong to any of the specified datatables.
+         * @param datatables
+         * @private
+         */
+        self.removeDatatables = function _removeDatatable(datatables) {
+            if(!datatables) {return;}
+            if(datatables.length === 0){return;}
+
+            datatables.forEach(function(datatable) {
+                _setRemove(self.datatables, datatable);
+            });
+
+        }
 
 
         /**
@@ -287,8 +299,7 @@
     //top-level controller for the integration viewmodel
     app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', 'integrationService', '$q',   function($scope, ModalService, $http, integration, $q){
         var self = this,
-            openModal,
-            designatedOntologies = {};
+            openModal;
 
         //fixme: remove later, expose viewmodel for debugging
         window.__viewModel= self;
@@ -367,35 +378,35 @@
          * Build list of integration columns.  Called after user selects list of ontology id's.
          * @param ontologyIds
          */
-        self.addIntegrationColumns = function(ontologyIds) {
-            //If user chooses ontologies that arent (yet) in the sharedOntologies list, we'll need to look them up.
-            var columnsToAdd = [];
-            var missingIds = [];
-            ontologyIds.forEach(function(id){
-                var ontology = _setGet(self.sharedOntologies, "id", id);
-                if(ontology) {
-                    columnsToAdd.push(ontology);
-                } else {
-                    missingIds.push(id);
-                }
-            });
-
-            //Lookup any missing ontologies and then add them to integration.columns.
-            if(missingIds.length) {
-                $http.get("/workspace/ajax/ontology-details?" + $.param({ontologyIds: missingIds}, true), {
-                }).success(function(data) {
-                    data.forEach(function(ontology){
-                        columnsToAdd.push(ontology);
-                    });
-                    processAddedIntegrationColumns(columnsToAdd);
-                });
-
-            //if no missing id's add the integration columns immediately
-            } else {
-                processAddedIntegrationColumns(columnsToAdd);
-            }
-
-        };
+        //self.addIntegrationColumns = function(ontologyIds) {
+        //    //If user chooses ontologies that arent (yet) in the sharedOntologies list, we'll need to look them up.
+        //    var columnsToAdd = [];
+        //    var missingIds = [];
+        //    ontologyIds.forEach(function(id){
+        //        var ontology = _setGet(self.sharedOntologies, "id", id);
+        //        if(ontology) {
+        //            columnsToAdd.push(ontology);
+        //        } else {
+        //            missingIds.push(id);
+        //        }
+        //    });
+        //
+        //    //Lookup any missing ontologies and then add them to integration.columns.
+        //    if(missingIds.length) {
+        //        $http.get("/workspace/ajax/ontology-details?" + $.param({ontologyIds: missingIds}, true), {
+        //        }).success(function(data) {
+        //            data.forEach(function(ontology){
+        //                columnsToAdd.push(ontology);
+        //            });
+        //            processAddedIntegrationColumns(columnsToAdd);
+        //        });
+        //
+        //    //if no missing id's add the integration columns immediately
+        //    } else {
+        //        processAddedIntegrationColumns(columnsToAdd);
+        //    }
+        //
+        //};
 
         //add and initialize an integration column associated with with the specified ontology ID
         var processAddedIntegrationColumns = function(ontologies) {
@@ -403,7 +414,7 @@
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
-        }
+        };
 
 
         self.findDataTableColumns = function(integrationColumn) {
@@ -425,12 +436,11 @@
                 });
             });
             return cols;
-
-        }
+        };
 
         self.integrateClicked = function() {
             console.debug('integrate clicked');
-            //FIXME: HACK: NEVERDOTHIS: This is absolultely not the correct way to invoke a form submission, for a number of reasons.
+            //FIXME: HACK: NEVERDOTHIS: This is absolutely not the correct way to invoke a form submission, for a number of reasons.
             $("#btnSubmitLegacyForm").click();
 
         };
@@ -478,18 +488,8 @@
         };
 
         self.removeSelectedDatasetClicked = function() {
-            if(!$scope.selectedDatatables) {return;}
-
-            $scope.selectedDatatables.forEach(function(item){
-                integration.removeDatatable(item);
-            });
-        };
-
-        self.addToIntegrationColumnsClicked = function() {
-            console.log("addToIntegrationColumnsClicked: %s", $scope.selectedOntologies);
-            $scope.selectedOntologies.forEach(function(ontology, idx){
-                self.integration.addIntegrationColumn(ontology.name, ontology);
-            });
+            integration.removeDatatables($scope.selectedDatatables);
+            _viewModelDirty();
         };
 
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {
@@ -558,6 +558,32 @@
             console.log("isValid:: %s", self.integration.columns.length);
             return self.integration.columns.length > 0;
         }
+
+        /**
+         * If the user modifies the list of datatables it will put the viewModel in an inconsistent state.   This method returns the viewModel to a consistent
+         * state with as little destruction as possible.
+         *
+         * @private
+         */
+        var _viewModelDirty = function() {
+            console.log('viewModelDirty::');
+            self.integration.ontologies.length = 0;
+
+            //hack: rebuild shared ontologies.
+            var datasetIds = [];
+            datasetIds = self.integration.datatables.map(function(dt){return dt.data_table_id});
+            $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true))
+                    .success(function(data){
+                        console.debug("resetting list of shared ontologies");
+                        console.table(data[0].sharedOntologies);
+                        self.integration.ontologies = data[0].sharedOntologies;
+                    });
+
+            //TODO: handle integration columns for ontologies that are no longer shared (e.g. if a user adds a datatable)
+
+            //TODO: handle displahy column when source datatableColumn no longer exists
+        };
+
 
     }]);
 
