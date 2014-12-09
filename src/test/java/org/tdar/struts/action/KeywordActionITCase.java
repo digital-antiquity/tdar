@@ -8,7 +8,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.struts.action.search.BrowseKeywordController;
+import org.tdar.struts.action.browse.BrowseKeywordController;
 
 public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
 

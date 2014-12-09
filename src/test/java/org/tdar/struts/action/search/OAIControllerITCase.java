@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBException;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.struts.action.oai.OAIController;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
 import org.tdar.struts.data.oai.OAIVerb;
 
