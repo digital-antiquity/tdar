@@ -17,6 +17,8 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /*
  * An activity represents a specific thing that can be "charged"
  * 
@@ -207,6 +209,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
         return getName();
     }
 
+    @JsonIgnore
     public BillingActivityModel getModel() {
         return model;
     }
