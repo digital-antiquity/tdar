@@ -56,7 +56,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
             ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(resource);
             processErrorObject(errors);
             if (resource instanceof Dataset) {
-                datasetService.remapAllColumnsAsync((Dataset)resource, resource.getProject());
+                datasetService.remapAllColumnsAsync(resource.getId(), resource.getProject().getId());
             }
         } catch (Exception e) {
             // consider removing the "sorry we were unable to ... just showing error message"
@@ -77,7 +77,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
             // note this ignores the quota changes -- it's on us
             datasetService.reprocess(dataset);
             datasetService.retranslate(dataset);
-            datasetService.remapAllColumnsAsync(dataset, resource.getProject());
+            datasetService.remapAllColumnsAsync(dataset.getId(), resource.getProject().getId());
         } else {
             addActionError(getText("reprocessResourceController.dataset_required"));
             return ERROR;
