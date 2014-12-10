@@ -180,15 +180,19 @@ navigation freemarker macros
         <#if localAction == '/'>
             <#local localAction="" />
         </#if>
+        <#if persistable??>
+            <#local _id = persistable.id />
+        <#elseif creator?? >
+            <#local _id = creator.id />
+        <#elseif keyword?? >
+            <#local _id = keyword.id />
+        </#if>
+		<#if action == 'view'>
+			<#local includeResourceId = false/>
+			<#local localAction="/${_id?c}"/>
+		</#if>
         <a href="<#compress><@s.url value="/${namespace}${localAction}">
 	        <#if includeResourceId>
-	            <#if persistable??>
-	                <#local _id = persistable.id />
-                <#elseif creator?? >
-                    <#local _id = creator.id />
-                <#elseif keyword?? >
-                    <#local _id = keyword.id />
-	            </#if>
 	            <@s.param name="id" value="${_id?c}" />
 	        </#if>
 	        </@s.url></#compress>">

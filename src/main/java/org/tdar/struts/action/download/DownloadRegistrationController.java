@@ -39,7 +39,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
                     @Result(
                             name = SUCCESS,
                             type = TdarActionSupport.REDIRECT,
-                            location = "/filestore/confirm?informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}")
+                            location = "/filestore/confirm/${informationResourceId}/${informationResourceFileVersionId}")
             })
     @HttpsOnly
     @PostOnly

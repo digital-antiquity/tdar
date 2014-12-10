@@ -4,11 +4,11 @@
 <#if informationResourceFileVersion?has_content>
     <#assign title>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
     <#assign filename>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
-    <#assign download ="/filestore/get?informationResourceFileVersionId=${informationResourceFileVersion.id?c}" />
+    <#assign download ="/filestore/get/${informationResource.id?c}/${informationResourceFileVersion.id?c}" />
 <#else>
     <#assign title>${informationResource.title!"undefined"?html}</#assign>
     <#assign filename>${informationResource.id?c}-download.zip</#assign>
-    <#assign download ="/filestore/show-download-landing?informationResourceId=${informationResource.id?c}" />
+    <#assign download ="/filestore/confirm/${informationResource.id?c}" />
 </#if>
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
@@ -26,13 +26,13 @@
           <@helptext.userAgreementSummary /></p>
         <ul class="inline">
             <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.viewable)!false) >
-                <li><img src="<@s.url value="/filestore/sm/${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
+                <li><img src="<@s.url value="/files/sm/${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
                     title="${informationResourceFileVersion.filename?html}" alt="${informationResourceFileVersion.filename?html}" /></li>
             <#else>
-                <#list (informationResource.informationResourceFiles)! as irFile>
+                <#list (informationResource.activeInformationResourceFiles)! as irFile>
                     <li>
                     <#if (irFile.latestThumbnail)?has_content && irFile.latestThumbnail.viewable >
-                    <img src="<@s.url value="/filestore/sm/${irFile.latestThumbnail.id?c}" />" 
+                    <img src="<@s.url value="/files/sm/${irFile.latestThumbnail.id?c}" />" 
                     title="${irFile.filename!""?html}" alt="${irFile.filename?html}" />
                     <#else>
                         ${irFile.filename}

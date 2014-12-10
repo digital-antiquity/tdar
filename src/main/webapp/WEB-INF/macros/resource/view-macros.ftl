@@ -549,12 +549,12 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                                    </#if>
                                    <#if lazyLoad>
                                        src="/images/image_unavailable_t.gif"
-                                       data-src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                       data-src="<@s.url value="/files/sm/${irfile.latestThumbnail.id?c}"/>" <#t>
                                    <#else>
-                                       src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                       src="<@s.url value="/files/sm/${irfile.latestThumbnail.id?c}"/>" <#t>
                                    </#if>
                                    onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" <#t>
-                                   data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>" <#t>
+                                   data-url="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>" <#t>
                                    <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>> <#lt>
                           </span>
                         </div>
@@ -587,7 +587,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 <div>
             <span id="imageContainer">
             <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}"
-                 src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+                 src="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>"/>
             <span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
                 </div>
                 <div id="downloadText">
@@ -705,7 +705,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
         <#if seenThumbnail ><#t>
             <#t><span class="thumbnail-center-spacing"></span><#t>
-            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />"
+            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/files/sm/${resource_.primaryThumbnail.id?c}" />"
                      title="${resource_.title!''}" alt="${_imageDescription(resource_.primaryThumbnail resource_)}"
                      onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"/><#t>
         <#else>

@@ -925,7 +925,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             -->
         </td>
         <td class="name">
-            <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
+            <a href="<@s.url value='/filestore/get/${id?c}/${versionId?c}'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
 
             <span class="replacement-text"></span>
         </td>
