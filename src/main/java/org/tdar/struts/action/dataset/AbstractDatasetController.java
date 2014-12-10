@@ -75,10 +75,61 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Long dataTableId;
 
     public void resolvePostSaveAction(Dataset persistable) {
+        setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
-                setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
-                setSaveSuccessSuffix("/columns");
+                setSaveSuccessPath("columns");
+            }
+        }
+    }
+
+    @SkipValidation
+    @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl") })
+    public String editColumnMetadata() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+
+        if (getDataResource().getLatestVersions().isEmpty()) {
+            addActionError(getText("abstractDatasetController.upload_data_file_first"));
+            return INPUT;
+        }
+
+        if (CollectionUtils.isEmpty(getDataResource().getDataTables())) {
+            addActionError(getText("abstractDatasetController.no_tables"));
+            return INPUT;
+        }
+        List<DataTableColumn> columns = initializePaginationHelper();
+
+        if (CollectionUtils.size(columns) > getRecordsPerPage()) {
+            columns = columns.subList(paginationHelper.getFirstItem(), paginationHelper.getLastItem() + 1);
+        }
+        for (DataTableColumn column : columns) {
+            CategoryVariable categoryVariable = column.getCategoryVariable();
+            if (categoryVariable == null) {
+                subcategories.add(null);
+            } else {
+                if (categoryVariable.getType() == CategoryType.CATEGORY) {
+                    // make sure that the subcategories get populated with the
+                    // children of the parent even though none were selected.
+                    subcategories.add(new ArrayList<CategoryVariable>(categoryVariable.getSortedChildren()));
+                } else { // category is a subcategory
+                    subcategories.add(new ArrayList<CategoryVariable>(categoryVariable.getParent().getSortedChildren()));
+                }
+            }
+        }
+        setDataTableColumns(columns);
+
+        getLogger().debug("passing off to Freemarker");
+        return SUCCESS;
+    }
+
+    @Override
+    protected void postSaveCallback(String actionMessage) {
+        super.postSaveCallback(actionMessage);
+        if (isHasFileProxyChanges()) {
+            if (isAsync()) {
+                datasetService.remapAllColumnsAsync(getId(), getProject().getId());
+            } else {
+                datasetService.remapAllColumns(getId(), getProject().getId());
             }
         }
     }

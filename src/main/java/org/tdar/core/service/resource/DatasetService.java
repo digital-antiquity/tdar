@@ -907,12 +907,16 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Transactional(readOnly = false)
     @Async
-    public void remapAllColumnsAsync(final Dataset dataset, final Project project) {
-        remapAllColumns(dataset, project);
+    public void remapAllColumnsAsync(final Long datasetId, final Long projectId) {
+        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
     }
 
     @Transactional(readOnly = false)
-    public void remapAllColumns(Dataset dataset, Project project) {
+    public void remapAllColumns(final Long datasetId, final Long projectId)  {
+        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
+    }
+
+    private void remapAllColumns(Dataset dataset, Project project) {
         List<DataTableColumn> columns = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
             for (DataTable datatable : dataset.getDataTables()) {
