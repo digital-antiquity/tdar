@@ -82,7 +82,7 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />
         </#if>
         <#if (version.viewable)>
-        <a href="<@s.url value='/filestore/download?informationResourceFileVersionId=${version.id?c}'/>"
+        <a href="<@s.url value='/filestore/download/${irfile.informationResource.id?c}/${version.id?c}'/>"
             class="download-link download-file"
            onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')"
            <#if resource.resourceType.image> target='_blank' </#if>
@@ -106,7 +106,7 @@ View freemarker macros
         <#if resource.hasConfidentialFiles() >
             Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
         <#else>
-        <a class="download-link download-zip" href="<@s.url value='/filestore/download?informationResourceId=${resource.id?c}'/>" target="_blank"
+        <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" target="_blank"
            onclick="TDAR.common.registerDownload('/filestore/download?informationResourceId=${resource.id?c}', '${id?c}')"
            title="download all as zip">Download All</a>
         </#if>

@@ -91,13 +91,16 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             response.setStatus(exception.getStatusCode());
             String resultName = getResultNameFor(exception);
             logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), resultName);
+            if (exception.getResponseStatusCode().isCritical() || !StringUtils.equalsIgnoreCase(resultName, TdarActionSupport.SUCCESS)) {
             genericService.clearCurrentSession();
             setSessionClosed(true);
+            }
             return resultName;
         }
     }
 
     private String getResultNameFor(TdarActionException exception) {
+        logger.debug(" {} {} {}",exception, exception.getResponse(), exception.getStatusCode());
         if (StringUtils.isNotBlank(exception.getResponse())) {
             return exception.getResponse();
         }

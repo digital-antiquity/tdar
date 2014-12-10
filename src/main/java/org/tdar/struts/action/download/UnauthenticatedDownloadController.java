@@ -34,12 +34,22 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    @Action(value = "download",
-            results = {
-                    @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
-                    @Result(name = DOWNLOAD_ALL, type = "redirect", location = "/filestore/downloadAllAsZip?informationResourceId=${informationResourceId}"),
-                    @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
-                    @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") })
+    @Actions(value = {
+            @Action(value = "download/{informationResourceId}/{informationResourceFileVersionId}",
+                    results = {
+                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
+                            @Result(name = DOWNLOAD_ALL, type = "redirect",
+                                    location = "/filestore/downloadAllAsZip?informationResourceId=${informationResourceId}"),
+                            @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
+                            @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") }),
+            @Action(value = "download/{informationResourceId}",
+                    results = {
+                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
+                            @Result(name = DOWNLOAD_ALL, type = "redirect",
+                                    location = "/filestore/downloadAllAsZip?informationResourceId=${informationResourceId}"),
+                            @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
+                            @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") })
+    })
     @HttpsOnly
     public String download() {
         if (!isAuthenticated()) {
