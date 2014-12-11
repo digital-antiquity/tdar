@@ -82,7 +82,7 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />
         </#if>
         <#if (version.viewable)>
-        <a href="<@s.url value='/filestore/download/${irfile.informationResource.id?c}/${version.id?c}'/>"
+        <a href="<@s.url value='/filestore/download/${(irfile.informationResource.id)!id!-1?c}/${version.id?c}'/>"
             class="download-link download-file"
            onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')"
            <#if resource.resourceType.image> target='_blank' </#if>

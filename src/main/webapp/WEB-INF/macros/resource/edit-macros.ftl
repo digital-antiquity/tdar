@@ -925,8 +925,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             -->
         </td>
         <td class="name">
+        	<#if versionId != -1>
             <a href="<@s.url value='/filestore/get/${id?c}/${versionId?c}'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
-
+			</#if>
             <span class="replacement-text"></span>
         </td>
         <td class="size"><span>${filesize} bytes</span></td>

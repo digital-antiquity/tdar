@@ -50,7 +50,7 @@ public class UnauthenticatedDownloadAction extends AbstractDownloadController im
         }
 
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null));
+                isCoverPageIncluded(), this, null, false));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }

@@ -44,10 +44,10 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
         if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersionId())) {
             setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                    isCoverPageIncluded(), this, null));
+                    isCoverPageIncluded(), this, null, false));
         } else {
             setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(),
-                    isCoverPageIncluded(), this, null));
+                    isCoverPageIncluded(), this, null, false));
         }
         setInformationResource(getDownloadTransferObject().getInformationResource());
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
@@ -73,7 +73,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null));
+                isCoverPageIncluded(), this, null, true));
         getDownloadTransferObject().setAttachment(forceAttachment);
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
@@ -92,7 +92,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
             return ERROR;
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(),
-                this, null));
+                this, null, true));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }
