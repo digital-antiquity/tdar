@@ -7,6 +7,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
@@ -36,11 +37,8 @@ public class DownloadRegistrationController extends AbstractDownloadController i
             // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
-                    @Result(
-                            name = SUCCESS,
-                            type = TdarActionSupport.REDIRECT,
-                            location = "/filestore/confirm/${informationResourceId}/${informationResourceFileVersionId}")
-            })
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
+                    @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING)            })
     @HttpsOnly
     @PostOnly
     @WriteableSession
@@ -56,6 +54,9 @@ public class DownloadRegistrationController extends AbstractDownloadController i
             if (result.getType().isValid()) {
                 getDownloadRegistration().setPerson(result.getPerson());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
+                if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersionId())) {
+                    return SUCCESS_DOWNLOAD_ALL;
+                }   
                 return TdarActionSupport.SUCCESS;
             }
         } catch (Throwable e) {

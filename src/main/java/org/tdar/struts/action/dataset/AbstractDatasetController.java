@@ -78,7 +78,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
-                setSaveSuccessPath("columns");
+                setSaveSuccessPath(getPersistable().getUrlNamespace() + "/columns");
             }
         }
     }

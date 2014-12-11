@@ -9,7 +9,7 @@
     <#assign download = "/filestore/download/${informationResourceId?c}">
     <#assign filename = "files-${informationResourceId?c}.zip">
     <#assign versionid = informationResourceId>
-</#if>
+	</#if>
 <html>
 <head>
     <title>Download: ${filename?html}</title>

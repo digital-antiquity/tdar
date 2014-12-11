@@ -33,33 +33,32 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
     private boolean forceAttachment = false;
 
-    @Actions(value={
+    @Actions(value = {
             @Action(value = "confirm/{informationResourceId}/{informationResourceFileVersionId}",
                     results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) }),
-                    @Action(value = "confirm/{informationResourceId}",
+            @Action(value = "confirm/{informationResourceId}",
                     results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) })
     })
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 
-        DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null);
-        setInformationResource(dto.getInformationResource());
-        if (dto.getResult() != DownloadResult.SUCCESS) {
+        if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersionId())) {
+            setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                    isCoverPageIncluded(), this, null));
+        } else {
+            setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(),
+                    isCoverPageIncluded(), this, null));
+        }
+        setInformationResource(getDownloadTransferObject().getInformationResource());
+        if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return ERROR;
         }
         return CONFIRM;
     }
 
-//    @Action(value = "show-download-landing/{informationResourceId}", results = {
-//            @Result(name = SUCCESS, type = FREEMARKER, location = CONFIRM_DOWNLOAD_FTL) })
-//    public String showDownloadAllLandingPage() {
-//        return SUCCESS;
-//    }
-
     @Override
     @Actions(value = {
-//            @Action(value = "get/{informationResourceFileVersionId}"),
+            // @Action(value = "get/{informationResourceFileVersionId}"),
             @Action(value = "img/md/{informationResourceFileVersionId}"),
             @Action(value = "img/lg/{informationResourceFileVersionId}"),
             @Action(value = "get/{informationResourceId}/{informationResourceFileVersionId}"),
@@ -83,7 +82,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
         return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
-    @Actions(value={
+    @Actions(value = {
             @Action(value = "zip/{informationResourceId}"),
             @Action(value = "get/{informationResourceId}")
     })

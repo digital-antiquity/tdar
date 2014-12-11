@@ -56,6 +56,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     private DownloadTransferObject downloadTransferObject;
 
+    public static final String SUCCESS_DOWNLOAD_ALL = "success-download-all";
     public static final String GET = "get";
     public static final String LOGIN_REGISTER_PROMPT = "../filestore/download-unauthenticated.ftl";
     public static final String DOWNLOAD_SUFFIX = "/${informationResourceId}/${informationResourceFileVersionId}";

@@ -182,6 +182,12 @@
         <to>/dataset/columns?id=$2</to>
     </rule>
 
+     <rule>
+        <from>^/(dataset|sensory-data|geospatial)/columns/([0-9]+)$
+        </from>
+        <to>/dataset/columns?id=$2</to>
+    </rule>
+
     <rule>
         <from>^/(sensory-data|geospatial)/view-row(.*)</from>
         <to>/dataset/view-row$1</to>
