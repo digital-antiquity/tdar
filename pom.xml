@@ -75,6 +75,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+                <dependency>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts2-bom</artifactId>
+                    <version>${struts2.version}</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+                </dependency>
         </dependencies>
     </dependencyManagement>
     <repositories>
@@ -557,7 +564,6 @@
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-core</artifactId>
-            <version>${struts2.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>javassist</artifactId>
@@ -569,19 +575,16 @@
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-sitemesh-plugin</artifactId>
-            <version>${struts2.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-spring-plugin</artifactId>
-            <version>${struts2.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-junit-plugin</artifactId>
-            <version>${struts2.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>junit</artifactId>
@@ -593,7 +596,6 @@
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-convention-plugin</artifactId>
-            <version>${struts2.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <!-- freemarker -->
