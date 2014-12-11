@@ -733,7 +733,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
             }
         }
-        if (project != null) {
+        if (Persistable.Base.isNotNullOrTransient(project) && project != Project.NULL) {
             searchIndexService.indexProject(project);
         }
     }
