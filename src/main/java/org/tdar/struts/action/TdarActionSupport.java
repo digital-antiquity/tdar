@@ -789,7 +789,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         // default is to be an error
         String errorMessage = getText("abstractPersistableController.no_permissions");
         addActionError(errorMessage);
-        abort(StatusCode.FORBIDDEN, UNAUTHORIZED, errorMessage);
+        abort(StatusCode.FORBIDDEN, FORBIDDEN, errorMessage);
     }
 
     /**

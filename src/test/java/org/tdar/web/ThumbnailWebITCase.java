@@ -142,6 +142,8 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
         int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
+        logger.debug(getPageCode());
+        logger.debug(getCurrentUrlPath());
         logger.debug("statusCode: {} ", statusCode);
         assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), statusCode);
         // FIXME: change from Gone->Forbidden changed how tDAR responds and thus
