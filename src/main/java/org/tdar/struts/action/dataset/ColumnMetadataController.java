@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
@@ -65,6 +66,9 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     private transient DatasetService datasetService;
 
     @Autowired
+    private transient CategoryVariableService categoryVariableService;
+
+    @Autowired
     private transient DataTableService dataTableService;
 
     @Autowired
@@ -74,6 +78,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     private transient XmlService xmlService;
 
     private Dataset persistable;
+    private List<CategoryVariable> allDomainCategories;
 
     private Dataset getDataResource() {
         return getPersistable();
@@ -143,7 +148,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     @SkipValidation
     @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl") })
     public String editColumnMetadata() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         if (getDataResource().getLatestVersions().isEmpty()) {
             addActionError(getText("abstractDatasetController.upload_data_file_first"));
@@ -198,7 +203,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
      * @throws TdarActionException
      */
     public String saveColumnMetadata() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Pair<Boolean, List<DataTableColumn>> updateResults = new Pair<Boolean, List<DataTableColumn>>(false, new ArrayList<DataTableColumn>());
         initializePaginationHelper();
 
@@ -388,9 +393,17 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     public Dataset getResource() {
         return persistable;
     }
-    
+
     @Override
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.EDIT_ANYTHING;
     }
+
+    public List<CategoryVariable> getAllDomainCategories() {
+        if (allDomainCategories == null) {
+            allDomainCategories = categoryVariableService.findAllCategoriesSorted();
+        }
+        return allDomainCategories;
+    }
+
 }
