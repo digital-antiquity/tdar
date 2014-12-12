@@ -765,6 +765,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             if (isHasFileProxyChanges()) {
                 return toReturn;
             }
+
+            if (getPersistable() == null || CollectionUtils.isEmpty(getPersistable().getFilesWithFatalProcessingErrors())) {
+                return toReturn;
+            }
+
             for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
                 if (file.isDeleted()) {
                     continue;
