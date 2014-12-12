@@ -44,29 +44,7 @@ import com.opensymphony.xwork2.Action;
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
 
     @Autowired
-    // FIXME: MAKE GENERIC
     protected AdvancedSearchController controller;
-
-    // FIXME:these counts will change often - need to figure a better way to keep it in sync
-    /*
-     * execute the following sql against the test database to generate the count constants:
-     * 
-     * select 'protected static final int RESOURCE_COUNT_' || resource_type|| ' = ' || count(resource_type) || ';' jabba from resource where status = 'ACTIVE'
-     * group by resource_type;
-     */
-
-    protected static final int RESOURCE_COUNT_DOCUMENT = 5;
-    protected static final int RESOURCE_COUNT_ONTOLOGY = 1;
-    protected static final int RESOURCE_COUNT_PROJECT = 12;
-    protected static final int RESOURCE_COUNT_DATASET = 2;
-    protected static final int RESOURCE_COUNT_CODING_SHEET = 4;
-    protected static final int RESOURCE_COUNT_IMAGE = 0;
-    protected static final int RESOURCE_COUNT_SENSORY_DATA = 0;
-
-    protected static final int RESOURCE_COUNT_ACTIVE = 24;
-    protected static final int RESOURCE_COUNT_DRAFT = 0;
-    protected static final int RESOURCE_COUNT_FLAGGED = 0;
-    protected static final int RESOURCE_COUNT_DELETED = 1;
 
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;

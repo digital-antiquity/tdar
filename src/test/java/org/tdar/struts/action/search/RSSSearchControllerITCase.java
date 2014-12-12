@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Autowired
-    private AdvancedSearchController controller;
+    private RSSSearchAction controller;
 
     @Autowired
     SearchIndexService searchIndexService;
