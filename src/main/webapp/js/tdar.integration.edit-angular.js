@@ -69,12 +69,12 @@
                     })
                 });
             });
-            self.mappedDatatables[ontology] = compatTables;
+            self.mappedDatatables[ontology.id] = compatTables;
         }
 
         self.getMappedDatatableColumns =  function _getMappedDatatableColumns(ontologyId) {
             var cols = [];
-            self.mappedDatatables[ontologyId].compatTables.forEach(function(compatTable){
+            self.mappedDatatables[ontologyId].forEach(function(compatTable){
                 cols = cols.concat(compatTable.compatCols);
             });
             return cols;
@@ -159,28 +159,24 @@
             self.columns.push(displayColumn);
         };
 
-        /**
-         * find ontology node by with specified ontology and node.ID
-         * @param ontology
-         * @param nodeId
-         * @private
-         */
-        function _lookupNode(ontology, nodeId) {
-            _setGet(ontology.nodes, "id", nodeId);
-        }
-
-        self.updateNodeParticipationInfo = function _updateParticipationInfo(ontology, nodeIdx,  mappedColIds, arIsPresent) {
-            var info = {
-                node: ontology.nodes[idx],
-                colIds: mappedColIds.filter(function(b,i){return arIsPresent[i]})
+        self.updateNodeParticipationInfo = function _updateParticipationInfo(ontology, mappedCols, arNodeInfo) {
+            var ontologyParticipation = {
+                ontology:ontology,
+                nodeInfoList: []
             };
 
-        }
+            arNodeInfo.forEach(function(nodeInfo, nodeIdx) {
+                var arbPresent = nodeInfo.mapping_list;
 
+                var nodeParticipation = {
+                    node: ontology.nodes[nodeIdx],
+                    colIds: mappedCols.filter(function(b,i){return arbPresent[i]}).map(function(col){return col.id})
+                };
+                ontologyParticipation.nodeInfoList.push(nodeParticipation);
+            });
+            self.ontologyParticipation[ontology.id] = ontologyParticipation;
+        };
 
-        //FIXME: implement me
-        self.lookupNodeParticipation = function _lookupNodeParticipation(nodeId, data) {
-        }
 
     }
 
@@ -479,6 +475,7 @@
         };
 
 
+
         $scope.loadIntegrationColumnDetails = function(integration) {
             //get column participation for all dataTableColumns across all shared ontologies
             var promises = [];
@@ -491,34 +488,18 @@
                     "integrationColumn.columnType": "INTEGRATION",
                     "integrationColumn.sharedOntology.id": ontology.id
                 };
-                mappedCols.forEach(function(compatTable, i){
-                    params["integrationColumn.columns[" + i + "].id"] = compatCol.id
+                mappedCols.forEach(function(mappedCol, i){
+                    params["integrationColumn.columns[" + i + "].id"] = mappedCol.id
                 });
                 config.params = params;
                 configs.push(config);
                 promises.push($http.get("/workspace/ajax/integration-column-details", config));
             });
-            console.log("ajax configs::");
-            console.log(configs);
-
             $q.all(promises).then(function(arResults){
-
-
-                console.log("requests sent:%s", arResults.length);
-                console.log(arResults);
                 arResults.forEach(function(result, ontologyIdx){
-                    var ontology = self.integration.ontologies[ontologyIdx];
-                    result.data.forEach(function(ontologyNodeInfo, nodeIdx) {
-                        var node = ontology.nodes[nodeIdx];
-                        node.participatingDatatableColumnIds = [];
-                        ontologyNodeInfo.mapping_list.forEach(function(bPresent, idx){
-                            if(bPresent) {
-                                node.participatingDatatableColumnIds.push(mappedCols[idx].id);
-                            }
-                        });
-                    });
-                    //delete ontology.reallyCompatibleDatatableColumns;
-                    //integration.updateParticipationInfo(integration.ontologies[i], result.data);
+                    var ontology = integration.ontologies[ontologyIdx];
+                    var mappedCols = integration.getMappedDatatableColumns(ontology.id);
+                    integration.updateNodeParticipationInfo(ontology, mappedCols, result.data);
                 });
             }) ;
         }
