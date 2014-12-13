@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -29,7 +28,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -40,15 +38,13 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 
 public abstract class AbstractAdvancedSearchController extends AbstractLookupController<Resource> {
@@ -121,31 +117,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return SUCCESS;
     }
 
-    protected void buildResourceCollectionQuery(QueryBuilder queryBuilder) {
-        queryBuilder.setOperator(Operator.AND);
-
-        List<String> allFields = getAllGeneralQueryFields();
-
-        if (CollectionUtils.isNotEmpty(allFields)) {
-            queryBuilder.append(new GeneralSearchQueryPart(allFields));
-        }
-        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
-
-        QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
-        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
-        if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
-            // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
-            if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
-                qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId()));
-            } else {
-                qpg.clear();
-            }
-        }
-
-        queryBuilder.append(qpg);
-    }
-
-    private List<String> getAllGeneralQueryFields() {
+    public List<String> getAllGeneralQueryFields() {
         List<String> allFields = new ArrayList<>();
         for (SearchParameters param : groups) {
             if (param == null) {
@@ -282,7 +254,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             searchService.handleSearch(queryBuilder, this, this);
             updateDisplayOrientationBasedOnSearchResults();
         } catch (SearchPaginationException spe) {
-            throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
+            throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,TdarActionSupport.NOT_FOUND);
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
@@ -573,15 +545,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
 
     }
-
-    protected void determineCollectionSearchTitle() {
-        if (StringUtils.isEmpty(query)) {
-            setSearchTitle(getText("advancedSearchController.title_all_collections"));
-        } else {
-            setSearchTitle(query);
-        }
-    }
-
     private boolean isKeywordSearch() {
         // FIXME: not always false...
         return false;
@@ -732,7 +695,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
-        try {
+//        try {
             if (explore) {
                 return exploreSearch();
             }
@@ -744,11 +707,11 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             } else {
                 return advancedSearch();
             }
-        } catch (TdarRecoverableRuntimeException trex) {
-            getLogger().error("an error happened", trex);
-            addActionError(trex.getMessage());
-            return INPUT;
-        }
+//        } catch (TdarRecoverableRuntimeException trex) {
+//            getLogger().error("an error happened", trex);
+//            addActionError(trex.getMessage());
+//            return INPUT;
+//        }
 
     }
     

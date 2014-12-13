@@ -2,18 +2,30 @@ package org.tdar.struts.action.search;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
-public class RSSSearchAction extends AdvancedSearchController {
+@Namespace("/search")
+@Component
+@Scope("prototype")
+@ParentPackage("default")
+@HttpOnlyIfUnauthenticated
+public class RSSSearchAction extends AbstractAdvancedSearchController {
 
     private static final long serialVersionUID = -1844450612633514072L;
 
@@ -39,7 +51,7 @@ public class RSSSearchAction extends AdvancedSearchController {
                 setSecondarySortField(SortOption.TITLE);
             }
             setMode("rss");
-            search();
+            performResourceSearch();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml11(getSearchPhrase()));
             setSearchDescription(getText("advancedSearchController.rss_subtitle", TdarConfiguration.getInstance().getSiteAcronym(),
                     StringEscapeUtils.escapeXml11(getSearchPhrase())));
@@ -72,6 +84,11 @@ public class RSSSearchAction extends AdvancedSearchController {
 
     public Long getContentLength() {
         return contentLength;
+    }
+
+    @Override
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        return null;
     }
 
 }

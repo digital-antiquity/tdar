@@ -26,9 +26,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
@@ -83,7 +85,7 @@ import freemarker.ext.dom.NodeModel;
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
-public class BrowseCreatorController extends AbstractLookupController implements Preparable, SlugViewAction {
+public class BrowseCreatorController extends AbstractLookupController<Resource> implements Preparable, SlugViewAction {
 
     /**
      * 

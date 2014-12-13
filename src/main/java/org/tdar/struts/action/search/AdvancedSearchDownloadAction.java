@@ -15,8 +15,12 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -36,7 +40,13 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
+@Namespace("/search")
+@Component
+@Scope("prototype")
+@ParentPackage("default")
+@HttpOnlyIfUnauthenticated
 public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchController {
     
     private static final long serialVersionUID = 7426286742246468225L;

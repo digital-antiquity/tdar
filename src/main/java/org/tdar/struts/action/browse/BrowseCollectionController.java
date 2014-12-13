@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.SearchPaginationException;
@@ -58,17 +58,12 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-public class BrowseCollectionController extends AbstractLookupController {
+public class BrowseCollectionController extends AbstractLookupController<ResourceCollection> {
 
-    public static final String FOAF_XML = ".foaf.xml";
-    public static final String SLASH = "/";
-    public static final String XML = ".xml";
-    public static final String CREATORS = "creators";
     public static final String COLLECTIONS = "collections";
     public static final String EXPLORE = "explore";
 
     private static final long serialVersionUID = -128651515783098910L;
-    private Creator creator;
     private Persistable persistable;
     private Long viewCount = 0L;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
@@ -108,9 +103,6 @@ public class BrowseCollectionController extends AbstractLookupController {
     @Autowired
     private transient ResourceService resourceService;
 
-    public Creator getAuthorityForDup() {
-        return entityService.findAuthorityFromDuplicate(creator);
-    }
 
     @Action(COLLECTIONS)
     public String browseCollections() throws TdarActionException {

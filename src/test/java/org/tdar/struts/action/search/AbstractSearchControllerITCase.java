@@ -37,6 +37,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.AbstractLookupController;
 
 import com.opensymphony.xwork2.Action;
 
@@ -159,27 +160,27 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return list;
     }
 
-    public static void doSearch(AdvancedSearchController controller, LookupSource resource) {
+    public static void doSearch(AbstractLookupController controller, LookupSource resource) {
         doSearch(controller, resource, false);
     }
 
-    public static void doSearch(AdvancedSearchController controller, LookupSource resource, Boolean b) {
+    public static void doSearch(AbstractLookupController controller, LookupSource resource, Boolean b) {
         Exception e = null;
         String msg = null;
         Logger logger = LoggerFactory.getLogger(AbstractControllerITCase.class);
         try {
             switch (resource) {
                 case COLLECTION:
-                    msg = controller.searchCollections();
+                    msg = ((CollectionSearchAction)controller).searchCollections();
                     break;
                 case PERSON:
-                    msg = controller.searchPeople();
+                    msg = ((PersonSearchAction)controller).searchPeople();
                     break;
                 case INSTITUTION:
-                    msg = controller.searchInstitutions();
+                    msg = ((InstitutionSearchAction)controller).searchInstitutions();
                     break;
                 case RESOURCE:
-                    msg = controller.search();
+                    msg = ((AdvancedSearchController)controller).search();
                     break;
                 default:
                     fail();
