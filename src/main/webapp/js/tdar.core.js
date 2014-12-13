@@ -119,22 +119,23 @@ TDAR.namespace = function () {
  * @returns {*}
  */
 TDAR.loadScript = function (url) {
-    //TODO: allow for optional callback argument  (e.g.  loadScript("foo.js", function(err, result) {})
     var _url = url;
     var head = document.getElementsByTagName("head")[0];
     var script = document.createElement("script");
     var deferred, promise;
-
+    console.log("loading url: %s", _url);
     if (typeof jQuery === "function") {
         deferred = $.Deferred()
         promise = deferred.promise();
 
         script.onload = function () {
             deferred.resolve();
+            console.log("successfully loaded:%s", _url);
         };
 
         script.onerror = function (err) {
             deferred.rejectWith(err);
+            console.log("failed to load url:%s  error:%s", _url, err);
         };
     }
     script.src = _url;
