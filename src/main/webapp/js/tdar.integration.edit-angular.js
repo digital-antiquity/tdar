@@ -40,11 +40,11 @@
          */
         self.ontologies = [];
 
-        //derived datatable participation information
-        self.compatibleDatatableColumns = [];
+        //derived datatable participation information, keyed by info
+        self.mappedDatatables = {};
 
-        //derived node participation information
-        var _nodeParticipationInformation = {};
+        //derived ontology node participation information
+        self.ontologyParticipation = {};
 
         /**
          * Build the datatable participation information for the specified ongology and store the results in ontology.compatibleDatatableColumns
@@ -69,8 +69,17 @@
                     })
                 });
             });
-            ontology.compatibleDatatableColumns = compatTables;
+            self.mappedDatatables[ontology] = compatTables;
         }
+
+        self.getMappedDatatableColumns =  function _getMappedDatatableColumns(ontologyId) {
+            var cols = [];
+            self.mappedDatatables[ontologyId].compatTables.forEach(function(compatTable){
+                cols = cols.concat(compatTable.compatCols);
+            });
+            return cols;
+        }
+
 
         /**
          * Append an 'integration column' to the columns list.
@@ -86,7 +95,7 @@
                 ontologyId: ontology.id,
                 ontology: ontology,
                 nodeSelections: [],
-                selectedDatatableColumns: ontology.compatibleDatatableColumns.map(function(dt){
+                selectedDatatableColumns: self.mappedDatatables[ontology.id].mappedDatatables.map(function(dt){
                     if(!dt.compatCols.length) return null;
                     return dt.compatCols[0];
                 })
@@ -160,9 +169,12 @@
             _setGet(ontology.nodes, "id", nodeId);
         }
 
+        self.updateNodeParticipationInfo = function _updateParticipationInfo(ontology, nodeIdx,  mappedColIds, arIsPresent) {
+            var info = {
+                node: ontology.nodes[idx],
+                colIds: mappedColIds.filter(function(b,i){return arIsPresent[i]})
+            };
 
-        //FIXME: implement me
-        self.updateParticipationInfo = function _updateParticipationInfo(ontology, data) {
         }
 
 
@@ -374,40 +386,6 @@
 
         };
 
-        /**
-         * Build list of integration columns.  Called after user selects list of ontology id's.
-         * @param ontologyIds
-         */
-        //self.addIntegrationColumns = function(ontologyIds) {
-        //    //If user chooses ontologies that arent (yet) in the sharedOntologies list, we'll need to look them up.
-        //    var columnsToAdd = [];
-        //    var missingIds = [];
-        //    ontologyIds.forEach(function(id){
-        //        var ontology = _setGet(self.sharedOntologies, "id", id);
-        //        if(ontology) {
-        //            columnsToAdd.push(ontology);
-        //        } else {
-        //            missingIds.push(id);
-        //        }
-        //    });
-        //
-        //    //Lookup any missing ontologies and then add them to integration.columns.
-        //    if(missingIds.length) {
-        //        $http.get("/workspace/ajax/ontology-details?" + $.param({ontologyIds: missingIds}, true), {
-        //        }).success(function(data) {
-        //            data.forEach(function(ontology){
-        //                columnsToAdd.push(ontology);
-        //            });
-        //            processAddedIntegrationColumns(columnsToAdd);
-        //        });
-        //
-        //    //if no missing id's add the integration columns immediately
-        //    } else {
-        //        processAddedIntegrationColumns(columnsToAdd);
-        //    }
-        //
-        //};
-
         //add and initialize an integration column associated with with the specified ontology ID
         var processAddedIntegrationColumns = function(ontologies) {
             console.debug("processAddedIntegrationColumns ::");
@@ -497,32 +475,24 @@
         }
 
         $scope.lookupCompatibleColumns = function(id) {
-            var ontology = _setGet(integration.ontologies, "id", id);
-            return ontology.compatibleDatatableColumns;
-
+            return self.integration.mappedDatatables[id];
         };
+
 
         $scope.loadIntegrationColumnDetails = function(integration) {
             //get column participation for all dataTableColumns across all shared ontologies
             var promises = [];
             var configs = [];
-            integration.ontologies.forEach(function(ontology){
-                //FIXME: rename this so that allen will stop mocking me.
-                ontology.reallyCompatibleDatatableColumns = [];
 
+            integration.ontologies.forEach(function(ontology){
+                var mappedCols = integration.getMappedDatatableColumns(ontology.id);
                 var config = {};
                 var params = {
                     "integrationColumn.columnType": "INTEGRATION",
                     "integrationColumn.sharedOntology.id": ontology.id
                 };
-                var i = 0;
-                ontology.compatibleDatatableColumns.forEach(function(compatTable){
-                    compatTable.compatCols.forEach(function(compatCol){
-                        ontology.reallyCompatibleDatatableColumns.push(compatCol);
-                        console.log("compatCol table:%s  cols:%s", compatTable.datatable.id, compatCol.id);
-                        params["integrationColumn.columns[" + i + "].id"] = compatCol.id
-                        i++;
-                    });
+                mappedCols.forEach(function(compatTable, i){
+                    params["integrationColumn.columns[" + i + "].id"] = compatCol.id
                 });
                 config.params = params;
                 configs.push(config);
@@ -543,7 +513,7 @@
                         node.participatingDatatableColumnIds = [];
                         ontologyNodeInfo.mapping_list.forEach(function(bPresent, idx){
                             if(bPresent) {
-                                node.participatingDatatableColumnIds.push(ontology.reallyCompatibleDatatableColumns[idx].id);
+                                node.participatingDatatableColumnIds.push(mappedCols[idx].id);
                             }
                         });
                     });
