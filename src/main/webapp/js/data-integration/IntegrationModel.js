@@ -1,6 +1,73 @@
 (function(angular){
     "use strict";
 
+    var app = angular.module("integrationApp");
+
+    /**
+     * Add specified object to specified array if specified array does not already contain the object.
+     *
+     * @param arr an array of objects
+     * @param obj the object to potentially add to the array
+     * @param propName the property to consider when looking for duplicate items. If undefined, function uses strict identity to find dupes.
+     * @private
+     */
+    function _setAdd(arr, obj, propName) {
+        var fn, dupes=[];
+        if(propName) {
+            fn = function(testObj) {
+                return testObj[propName] === obj[propName]
+            };
+        } else {
+            fn = function(testObj) {
+                return testObj === obj;
+            }
+        }
+        dupes = arr.filter(fn);
+        if(dupes.length === 0) {
+            arr.push(obj);
+        }
+        return dupes.length === 0
+    }
+
+    function _setAddAll(arr, objs, propName) {
+        objs.forEach(function(obj) {
+            _setAdd(arr, obj, propName);
+        });
+    }
+
+    /**
+     * Retrieve item from an array (by key), treating array as a set.  Yes, I realize setGet is a stupid function name.  Go away.
+     * @param arr
+     * @param keyName
+     * @param key
+     * @returns  object located by key, or null if not found
+     * @private
+     */
+    function _setGet(arr, keyName, key) {
+        var val = null;
+        for(var i = 0; i < arr.length; i++) {
+            if(arr[i][keyName] === key) {
+                val = arr[i];
+                break;
+            }
+        }
+        return val;
+    }
+
+    /**
+     * Remove specified item from the specified array
+     * @param arr
+     * @param item
+     * @returns {*} original, mutated array
+     * @private
+     */
+    function _setRemove(arr, item) {
+        if(arr.indexOf(item) === -1) return arr;
+        arr.splice(arr.indexOf(item), 1);
+        return arr;
+    }
+
+
 
     //Our integration model
     function Integration() {
@@ -177,10 +244,17 @@
             self.ontologyParticipation[ontology.id] = ontologyParticipation;
         };
 
+        //FIXME: implement me
+        self.addDatatables = function() {}
+        //FIXME: implement me
+        self.removeDatatable = function(){};
 
+        //FIXME: implement me
+        self.addOntologies = function() {};
+        //FIXME: implement me
+        self.removeOntology = function() {};
     }
 
-    //globally define Integration class (for now)
-    window.Integration = Integration;
+    app.service("IntegrationService", Integration);
 
 })(angular)

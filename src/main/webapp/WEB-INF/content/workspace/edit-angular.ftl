@@ -346,8 +346,7 @@ ${categoriesJson}
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <!-- fixme: cycle.js modifies global JSON object. think of a better way to incorporate this -->
 <script src="/includes/json-js-3d7767b/cycle.js"></script>
-<#--<script src="/js/data-integration/IntegrationModel.js"></script>-->
-<#--<script src="/js/data-integration/IntegrationService.js"></script>-->
+<script src="/js/data-integration/IntegrationModel.js"></script>
 <script src="/js/data-integration/app.js"></script>
 <script src="/js/data-integration/LegacyFormController.js"></script>
 <script src="/js/data-integration/ModalDialogController.js"></script>
