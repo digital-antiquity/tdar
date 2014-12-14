@@ -95,7 +95,7 @@
                 ontologyId: ontology.id,
                 ontology: ontology,
                 nodeSelections: [],
-                selectedDatatableColumns: self.mappedDatatables[ontology.id].mappedDatatables.map(function(dt){
+                selectedDatatableColumns: self.mappedDatatables[ontology.id].map(function(dt){
                     if(!dt.compatCols.length) return null;
                     return dt.compatCols[0];
                 })
@@ -305,7 +305,7 @@
     app.service('integrationService', Integration);
 
     //top-level controller for the integration viewmodel
-    app.controller('IntegrationCtrl', ['$scope', 'ModalService', '$http', 'integrationService', '$q',   function($scope, ModalService, $http, integration, $q){
+    app.controller('IntegrationController', ['$scope', 'ModalService', '$http', 'integrationService', '$q',   function($scope, ModalService, $http, integration, $q){
         var self = this,
             openModal;
 
@@ -474,8 +474,6 @@
             return self.integration.mappedDatatables[id];
         };
 
-
-
         $scope.loadIntegrationColumnDetails = function(integration) {
             //get column participation for all dataTableColumns across all shared ontologies
             var promises = [];
@@ -508,6 +506,17 @@
         $scope.isValid = function() {
             console.log("isValid:: %s", self.integration.columns.length);
             return self.integration.columns.length > 0;
+        }
+
+        /**
+         * convenience method:  does the current ontologyNodeValue occur in the current datatableColumn.
+         *
+         * @param datatableColumnId
+         */
+        $scope.ontologyValuePresent = function(ontologyId, nodeIdx, dtcId) {
+            var ontologyParticipation = self.integration.ontologyParticipation[ontologyId];
+            var nodeInfo = ontologyParticipation.nodeInfoList[nodeIdx];
+            return nodeInfo.colIds.indexOf(dtcId) > -1;
         }
 
         /**

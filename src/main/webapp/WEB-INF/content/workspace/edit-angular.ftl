@@ -15,7 +15,7 @@
         width: 90pt;
     }
 </style>
-<div id="divIntegrationMain" ng-controller="IntegrationCtrl as ctrl">
+<div id="divIntegrationMain" ng-controller="IntegrationController as ctrl">
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
         <h2 class="compact">{{ctrl.integration.title || 'Untitled Integration'}}</h2>
@@ -157,7 +157,7 @@
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr ng-repeat="nodeSelection in integrationColumn.nodeSelections">
+                                                    <tr ng-repeat="nodeSelection in integrationColumn.nodeSelections" ng-init="nodeIndex = $index">
                                                         <td><input type="checkbox" name="tbd" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
@@ -166,7 +166,7 @@
                                                         </td>
                                                         <td ng-repeat="datatableColumn in integrationColumn.selectedDatatableColumns">
                                                             <div class="text-center">
-                                                                {{nodeSelection.node.participatingDatatableColumnIds.indexOf(datatableColumn.id) === -1 ? '' : 'x' }}
+                                                                <i class="icon-ok" ng-show="ontologyValuePresent(integrationColumn.ontologyId, nodeIndex, datatableColumn.id)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
