@@ -135,38 +135,37 @@
                                 </ul>
 
                                 <div class="tab-content" >
-                                <#-- FIXME: integrationColumn is a crummy name. some are display, some are integration.  what's a good name for that? -->
                                     <div class="tab-pane" id="tab{{$index}}"
-                                         ng-repeat="integrationColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
-                                        <div ng-switch="integrationColumn.type">
+                                         ng-repeat="outputColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
+                                        <div ng-switch="outputColumn.type">
                                             <div ng-switch-when="integration" class=".integration-pane-content">
                                                 <table class="table table-bordered table-condensed">
                                                     <thead>
                                                     <tr>
                                                         <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
                                                         <th rowspan="2" style="width:99%">Node Value</th>
-                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{integrationColumn.dataTableColumns.length}}">
+                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{outputColumn.dataTableColumns.length}}">
                                                             Datasets
                                                         </th>
                                                     </tr>
                                                     <tr>
-                                                        <th ng-repeat="cc in lookupCompatibleColumns(integrationColumn.ontologyId)" >
+                                                        <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" >
                                                         	<!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                            <select class="intcol" ng-model="integrationColumn.selectedDatatableColumns[$index]" ng-options="c.display_name for c in cc.compatCols"></select>
+                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.display_name for c in cc.compatCols"></select>
                                                         </th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr ng-repeat="nodeSelection in integrationColumn.nodeSelections" ng-init="nodeIndex = $index">
+                                                    <tr ng-repeat="nodeSelection in outputColumn.nodeSelections" ng-init="nodeIndex = $index">
                                                         <td><input type="checkbox" name="tbd" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
                                                                 <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.display_name}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="datatableColumn in integrationColumn.selectedDatatableColumns">
+                                                        <td ng-repeat="datatableColumn in outputColumn.selectedDatatableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" ng-show="ontologyValuePresent(integrationColumn.ontologyId, nodeIndex, datatableColumn.id)"></i>
+                                                                <i class="icon-ok" ng-show="ontologyValuePresent(outputColumn.ontologyId, nodeIndex, datatableColumn.id)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -177,7 +176,7 @@
                                             <div ng-switch-when="display" class=".display-pane-content">
                                                 <h3>Choose source columns</h3>
                                                 <table>
-                                                    <tr ng-repeat="columnSelection in integrationColumn.datatableColumnSelections">
+                                                    <tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">
                                                         <td>{{columnSelection.datatable.data_table_name}}</td>
                                                         <td>
                                                             <select ng-model="columnSelection.datatableColumn"
@@ -347,7 +346,12 @@ ${categoriesJson}
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <!-- fixme: cycle.js modifies global JSON object. think of a better way to incorporate this -->
 <script src="/includes/json-js-3d7767b/cycle.js"></script>
+<#--<script src="/js/data-integration/IntegrationModel.js"></script>-->
+<#--<script src="/js/data-integration/IntegrationService.js"></script>-->
 <script src="/js/tdar.integration.edit-angular.js"></script>
+<script src="/js/data-integration/LegacyFormController.js"></script>
+<script src="/js/data-integration/ModalDialogController.js"></script>
+<script src="/js/data-integration/DocumentDataFactory.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
 <script src="/js/tdar.pagination.js"></script>
 </span>

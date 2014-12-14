@@ -3,6 +3,71 @@
     var app,_projects, _collections, _categories, _documentData;
     app = angular.module('integrationApp', ['angularModalService']);
 
+    /**
+     * Add specified object to specified array if specified array does not already contain the object.
+     *
+     * @param arr an array of objects
+     * @param obj the object to potentially add to the array
+     * @param propName the property to consider when looking for duplicate items. If undefined, function uses strict identity to find dupes.
+     * @private
+     */
+    function _setAdd(arr, obj, propName) {
+        var fn, dupes=[];
+        if(propName) {
+            fn = function(testObj) {
+                return testObj[propName] === obj[propName]
+            };
+        } else {
+            fn = function(testObj) {
+                return testObj === obj;
+            }
+        }
+        dupes = arr.filter(fn);
+        if(dupes.length === 0) {
+            arr.push(obj);
+        }
+        return dupes.length === 0
+    }
+
+    function _setAddAll(arr, objs, propName) {
+        objs.forEach(function(obj) {
+           _setAdd(arr, obj, propName);
+        });
+    }
+
+    /**
+     * Retrieve item from an array (by key), treating array as a set.  Yes, I realize setGet is a stupid function name.  Go away.
+     * @param arr
+     * @param keyName
+     * @param key
+     * @returns  object located by key, or null if not found
+     * @private
+     */
+    function _setGet(arr, keyName, key) {
+        var val = null;
+        for(var i = 0; i < arr.length; i++) {
+            if(arr[i][keyName] === key) {
+                val = arr[i];
+                break;
+            }
+        }
+        return val;
+    }
+
+    /**
+     * Remove specified item from the specified array
+     * @param arr
+     * @param item
+     * @returns {*} original, mutated array
+     * @private
+     */
+    function _setRemove(arr, item) {
+        if(arr.indexOf(item) === -1) return arr;
+        arr.splice(arr.indexOf(item), 1);
+        return arr;
+    }
+
+    //FIXME: break model out into seperate file
     //Our integration model
     function Integration() {
         var self = this;
@@ -101,10 +166,11 @@
                 })
             }
 
-            col.nodeSelections = ontology.nodes.map(function(node){
+            col.nodeSelections = ontology.nodes.map(function(node,i){
                 return {
                     selected: false,
-                    node: node
+                    node: node,
+                    nodeIndex:i
                 }
             });
             self.columns.push(col);
@@ -176,123 +242,8 @@
             });
             self.ontologyParticipation[ontology.id] = ontologyParticipation;
         };
-
-
     }
 
-    /**
-     * SearchFilter stores the current filter values specified by the user when interacting with the "Find Ontologies" and "Find Datasets" popup control
-     * @constructor
-     */
-    function SearchFilter() {
-        var self = this;
-        var _properties = {
-            title: "",
-            projectId: null,
-            collectionId: null,
-            categoryId: null,
-            bookmarked: false,
-            incompatible: false,
-            //fixme: get pagination info from paginationHelper / controller?
-            startRecord: 0,
-            recordsPerPage: 500
-        };
-
-        $.extend(self, _properties);
-        // FIXME: for Jim: do this dynamically so that we can just choose a prefix and all properties get prefixed by
-        // the prefix
-        self.toStrutsParams = function() {
-            return {
-                "searchFilter.title": self.title,
-                "searchFilter.projectId": self.projectId,
-                "searchFilter.collectionId": self.collectionId,
-                "searchFilter.categoryId": self.categoryId,
-                "searchFilter.bookmarked": self.bookmarked,
-                "searchFilter.ableToIntegrate": self.incompatible,
-                "startRecord": self.startRecord,
-                "recordsPerPage": self.recordsPerPage
-            };
-        }
-    };
-
-    //TODO: this function is handy - move it to tdar.core.js (blocker: TDAR is not defined yet. I really need to untangle the <script> load order.  )
-   function _loadDocumentData() {
-        var dataElements = $('[type="application/json"][id]').toArray();
-        var map = {};
-        dataElements.forEach(function(elem){
-            var key = elem.id;
-            var val = JSON.parse(elem.innerHTML);
-            map[key] = val;
-        });
-        return map;
-    }
-
-    //FIXME: HACK: this iife-global should be moved to a bootstrap/init section (what's angular way to bootstrap an app?), or maybe wrap this inside an angular service?
-    _documentData = _loadDocumentData();
-
-    /**
-     * Add specified object to specified array if specified array does not already contain the object.
-     *
-     * @param arr an array of objects
-     * @param obj the object to potentially add to the array
-     * @param propName the property to consider when looking for duplicate items. If undefined, function uses strict identity to find dupes.
-     * @private
-     */
-    function _setAdd(arr, obj, propName) {
-        var fn, dupes=[];
-        if(propName) {
-            fn = function(testObj) {
-                return testObj[propName] === obj[propName]
-            };
-        } else {
-            fn = function(testObj) {
-                return testObj === obj;
-            }
-        }
-        dupes = arr.filter(fn);
-        if(dupes.length === 0) {
-            arr.push(obj);
-        }
-        return dupes.length === 0
-    }
-
-    function _setAddAll(arr, objs, propName) {
-        objs.forEach(function(obj) {
-           _setAdd(arr, obj, propName);
-        });
-    }
-
-    /**
-     * Retrieve item from an array (by key), treating array as a set.  Yes, I realize setGet is a stupid function name.  Go away.
-     * @param arr
-     * @param keyName
-     * @param key
-     * @returns  object located by key, or null if not found
-     * @private
-     */
-    function _setGet(arr, keyName, key) {
-        var val = null;
-        for(var i = 0; i < arr.length; i++) {
-            if(arr[i][keyName] === key) {
-                val = arr[i];
-                break;
-            }
-        }
-        return val;
-    }
-
-    /**
-     * Remove specified item from the specified array
-     * @param arr
-     * @param item
-     * @returns {*} original, mutated array
-     * @private
-     */
-    function _setRemove(arr, item) {
-        if(arr.indexOf(item) === -1) return arr;
-        arr.splice(arr.indexOf(item), 1);
-        return arr;
-    }
 
     /*
      Make the integration viewmodel available to all components in this angular app.  Currently overkill (we could put this object in iife scope), but we may choose
@@ -305,7 +256,7 @@
     app.service('integrationService', Integration);
 
     //top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$scope', 'ModalService', '$http', 'integrationService', '$q',   function($scope, ModalService, $http, integration, $q){
+    app.controller('IntegrationController', ['$scope', 'ModalService',  '$http', 'integrationService', '$q',  function($scope, ModalService, $http, integration, $q){
         var self = this,
             openModal;
 
@@ -545,119 +496,6 @@
 
             //TODO: handle display column when source datatableColumn no longer exists
         };
-
-
-    }]);
-
-    //Controller that drives the add-integration-column controller
-    app.controller('ModalDialogController', ['$scope', '$http', 'close', 'options',  function($scope, $http, close, options){
-        var url = options.url, closeWait = 500;
-        console.debug("ModalDialogController:: url:%s", url);
-        $scope.title = options.title;
-        $scope.filter = new SearchFilter();
-        $scope.selectedItems = [];
-        $scope.results = [];
-
-        //initialize lookup lists
-        $scope.projects = _documentData.allProjects;
-        $scope.collections = _documentData.allCollections;
-        $scope.categories = _documentData.allCategories;
-
-        $scope.categoryFilter = options.categoryFilter;
-
-        //when non-null
-        $scope.errorMessage = null;
-
-        //ajax search fires up at launch and whenever search terms change
-        $scope.search = function() {
-            var config = {
-                params: $scope.filter.toStrutsParams()
-            };
-            //console.debug(config.params);
-            var promise = $http.get(url, config);
-            promise.success(function(data){
-                //transform date strings into dates
-
-                if(options.transformData) {
-                    $scope.results = options.transformData(data);
-                } else {
-                    $scope.results = data;
-                }
-
-            });
-
-        };
-
-        //update the filter whenever user updates filter UI
-        $scope.updateFilter = function() {
-            var data = JSON.stringify($scope.filter, null, 4);
-            $scope.search();
-        }
-
-        //called when user clicks 'Add Selected Items'
-        $scope.confirm = function(selectedIds) {
-            close(selectedIds, closeWait);
-        }
-
-        //convenience function - true if specified item is in the selecteditems list
-        $scope.isSelected = function(item) {
-            return $scope.selectedItems.indexOf(item) > -1;
-        }
-
-        //TODO:  this could be pulled out into a commmon function,  e.g.  TDAR.common.toggleArrayValue(arr, value)
-
-        //called when user selects/deslects one of the items in the select
-        $scope.toggleSelection = function(itemId, obj) {
-            console.debug("toggleSelected::");
-            var items = $scope.selectedItems,
-                    idx = items.indexOf(itemId);
-            //if in list, remove it
-            if(idx > -1 ) {
-                items.splice(idx, 1);
-            //otherwise, add it
-            } else {
-                items.push(itemId);
-            }
-
-        };
-
-        //Execute a search() whenever user updates form control bound to the filter object
-        $scope.$watch('filter', function() {
-            console.debug("filter changed");
-            $scope.search();
-        }, true);
-
-    }]);
-
-    app.controller('LegacyFormController', ['$scope', '$http', 'integrationService', function($scope, $http, integration){
-        var self = this, fields = [];
-        self.fields = fields;
-        self.integration = integration;
-        self.showForm = false;
-        self.hideForm = function() {
-            self.showForm = false;
-        };
-
-        self.dumpdata = function() {
-
-            //strip angular properties from viewmodel
-            var cleanData = angular.copy(integration);
-            var cleanDataJson = JSON.stringify(cleanData);
-
-            //replace refs with $ref objects (you will need to deserialize with JSON.retrocycle)
-            var dedupedData = JSON.decycle(cleanData);
-            var dedupedDataJson = JSON.stringify(dedupedData);
-
-
-
-            console.log("viewmodel size:%sk", (cleanDataJson.length / 1000).toFixed(2));
-            console.log(" decycled size:%sk", (dedupedDataJson.length / 1000).toFixed(2));
-            console.log("display-filter-results data::")
-            console.table($("#frmLegacy").serializeArray());
-        };
-
-
-
 
 
     }]);
