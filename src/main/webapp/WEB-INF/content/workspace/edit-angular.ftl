@@ -348,7 +348,7 @@ ${categoriesJson}
 <script src="/includes/json-js-3d7767b/cycle.js"></script>
 <#--<script src="/js/data-integration/IntegrationModel.js"></script>-->
 <#--<script src="/js/data-integration/IntegrationService.js"></script>-->
-<script src="/js/tdar.integration.edit-angular.js"></script>
+<script src="/js/data-integration/app.js"></script>
 <script src="/js/data-integration/LegacyFormController.js"></script>
 <script src="/js/data-integration/ModalDialogController.js"></script>
 <script src="/js/data-integration/DocumentDataFactory.js"></script>
