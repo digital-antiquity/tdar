@@ -108,11 +108,15 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
             }
         } catch (TdarActionException e) {
             getLogger().debug("exception: {}|{}", e.getResponse(), e.getResponseStatusCode(), e);
+            addActionErrorWithException(e.getMessage(), e);
             if (e.getResponse() == null) {
                 result = INPUT;
             } else {
                 return e.getResponse();
             }
+        } catch (Exception e) {
+            addActionErrorWithException(e.getMessage(), e);
+            result = INPUT;
         }
         return result;
     }
