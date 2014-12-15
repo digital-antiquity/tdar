@@ -215,6 +215,8 @@
             return _getOutputColumns("integration");
         }
 
+
+        //update derived properties when user removes a datatable
         function _datatablesRemoved(datatables) {
             console.debug("_datatablesRemoved::");
             var removedDatatableColumnIds = [];
@@ -229,7 +231,24 @@
 
             //todo: if any integration columns, update selected datatableColumn
             //todo: remove any paricipating datatableColumns that belong to the datatable we are removing
+
+
             _getIntegrationColumns().forEach(function(integrationColumn) {
+
+                //clean up the mappedDatatables
+                for(var ontologyId in self.mappedDatatables) {
+                    self.mappedDatatables[ontologyId] = self.mappedDatatables[ontologyId].filter(function(mappedDatatable){
+                        return datatables.indexOf(mappedDatatable.datatable) === -1;
+                    });
+                }
+
+                //clean up integrationColumn.selectedDatatableColumn
+                integrationColumn.selectedDatatableColumns = integrationColumn.selectedDatatableColumns.filter(function(datatableColumn){
+                    return removedDatatableColumnIds.indexOf(datatableColumn.id) === -1
+                });
+
+
+                //clean up the nodeParticipation information
                 for(var ontologyId in self.ontologyParticipation) {
                     var ontologyParticipation = self.ontologyParticipation[ontologyId];
                     var nodeInfoList = ontologyParticipation.nodeInfoList;
@@ -237,11 +256,10 @@
                         //remove any columnIds that belong to the datatables we are removing
                         nodeInfo.colIds = nodeInfo.colIds.filter(function(colId){
                             var idx = removedDatatableColumnIds.indexOf(colId);
-                            var removeIt = idx !== -1;
-                            if(removeIt) {
+                            if(idx === -1) {
                                 console.debug("removing %s from nodeInfo.colIds", colId);
                             }
-                            return removeIt;
+                            return idx === -1;
                         });
                     });
                 }
