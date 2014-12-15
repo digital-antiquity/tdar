@@ -19,11 +19,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.web.SessionData;
@@ -93,6 +95,22 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertEquals(document, controller.getResults().get(0));
     }
 
+    @Test
+    @Rollback(true)
+    public void testGeoRSS() throws InstantiationException, IllegalAccessException, TdarActionException, IOException {
+        InformationResource document = generateDocumentWithUser();
+        document.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(84.37156598282918, 57.89149735271034, -131.484375, 27.0703125));
+        genericService.saveOrUpdate(document);
+        controller.setSessionData(new SessionData()); // create unauthenticated session
+        searchIndexService.index(document);
+        controller.setGeoMode(GeoRssMode.POINT);
+        doSearch("");
+        controller.viewRss();
+        String xml = IOUtils.toString(controller.getInputStream());
+        logger.debug(xml);
+    }
+
+    
     @Test
     @Rollback(true)
     public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException {

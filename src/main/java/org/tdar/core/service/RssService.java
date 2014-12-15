@@ -44,8 +44,8 @@ import org.tdar.utils.MessageHelper;
 import com.opensymphony.xwork2.TextProvider;
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.feed.module.georss.GMLModuleImpl;
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
+import com.sun.syndication.feed.module.georss.SimpleModuleImpl;
 import com.sun.syndication.feed.module.georss.geometries.Envelope;
 import com.sun.syndication.feed.module.georss.geometries.Position;
 import com.sun.syndication.feed.module.opensearch.OpenSearchModule;
@@ -312,10 +312,10 @@ public class RssService implements Serializable {
     private void addGeoRssLatLongBox(GeoRssMode mode, SyndEntry entry, Resource resource, boolean hasRestrictions) {
         LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
         /*
-         * If LatLong is not Obfuscated and we don't have confidential files then ...
+         * If LatLong is not purposefully Obfuscated and we don't have confidential files then ...
          */
-        if ((latLong != null) && !latLong.isObfuscated() && !hasRestrictions) {
-            GeoRSSModule geoRss = new GMLModuleImpl();
+        if ((latLong != null) && latLong.isObfuscatedObjectDifferent() == false && hasRestrictions == false) {
+            GeoRSSModule geoRss = new SimpleModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
                 geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
                         .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
