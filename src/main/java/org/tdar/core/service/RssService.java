@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,7 +264,10 @@ public class RssService implements Serializable {
             entry.setPublishedDate(oaiResource.getDateCreated());
             entries.add(entry);
         } else {
-            throw new TdarRecoverableRuntimeException("rssService.cannot_generate_rss");
+            if (resource_ != null) {
+                logger.debug("object is not instance of OaiDCProvider" + resource_ + ClassUtils.getShortCanonicalName(resource_.getClass()));
+                throw new TdarRecoverableRuntimeException("rssService.cannot_generate_rss");
+            }
         }
         return entry;
     }
