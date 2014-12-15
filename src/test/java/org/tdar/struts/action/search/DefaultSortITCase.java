@@ -25,8 +25,9 @@ public class DefaultSortITCase extends AbstractSearchControllerITCase {
 
     @Test
     public void testRSSDefaultSort() throws TdarActionException {
-        RSSSearchAction controller_ = generateNewInitializedController(RSSSearchAction.class);
+        RSSSearchAction controller_ = null;
         try {
+        controller_ = generateNewInitializedController(RSSSearchAction.class);
             controller_.viewRss();
         } catch (Exception e) {
             logger.error("exception in rss", e);
