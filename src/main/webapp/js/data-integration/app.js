@@ -167,7 +167,6 @@
 
         self.removeSelectedDatasetClicked = function() {
             integration.removeDatatables($scope.selectedDatatables);
-            _viewModelDirty();
         };
 
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {
@@ -229,26 +228,26 @@
          *
          * @private
          */
-        var _viewModelDirty = function() {
-            console.log('viewModelDirty::');
-            self.integration.ontologies.length = 0;
-
-            //hack: rebuild shared ontologies.
-            var datasetIds = [];
-            datasetIds = self.integration.datatables.map(function(dt){return dt.data_table_id});
-            $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true))
-                    .success(function(data){
-                        console.debug("resetting list of shared ontologies");
-                        console.table(data[0].sharedOntologies);
-                        self.integration.ontologies = data[0].sharedOntologies;
-                    });
-
-            //TODO: handle integration columns for ontologies that are no longer shared (e.g. if a user adds a datatable)
-            self.integration.columns = []
-            self.setTab(0);
-
-            //TODO: handle display column when source datatableColumn no longer exists
-        };
+        //var _viewModelDirty = function() {
+        //    console.log('viewModelDirty::');
+        //    self.integration.ontologies.length = 0;
+        //
+        //    //hack: rebuild shared ontologies.
+        //    var datasetIds = [];
+        //    datasetIds = self.integration.datatables.map(function(dt){return dt.data_table_id});
+        //    $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true))
+        //            .success(function(data){
+        //                console.debug("resetting list of shared ontologies");
+        //                console.table(data[0].sharedOntologies);
+        //                self.integration.ontologies = data[0].sharedOntologies;
+        //            });
+        //
+        //    //TODO: handle integration columns for ontologies that are no longer shared (e.g. if a user adds a datatable)
+        //    self.integration.columns = []
+        //    self.setTab(0);
+        //
+        //    //TODO: handle display column when source datatableColumn no longer exists
+        //};
 
 
     }]);

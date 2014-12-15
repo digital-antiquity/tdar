@@ -190,12 +190,64 @@
          * @private
          */
         self.removeDatatables = function _removeDatatable(datatables) {
+            console.debug("removeDatatables::");
+
             if(!datatables) {return;}
             if(datatables.length === 0){return;}
 
             datatables.forEach(function(datatable) {
                 _setRemove(self.datatables, datatable);
             });
+
+            _datatablesRemoved(datatables);
+
+        }
+
+        function _getOutputColumns(type) {
+            return self.columns.filter(function(outputColumn){return outputColumn.type===type});
+        }
+
+        function _getDisplayColumns() {
+            return _getOutputColumns("display");
+        }
+
+        function _getIntegrationColumns() {
+            return _getOutputColumns("integration");
+        }
+
+        function _datatablesRemoved(datatables) {
+            console.debug("_datatablesRemoved::");
+            var removedDatatableColumnIds = [];
+            datatables.forEach(function(datatable){
+               datatable.columns.forEach(function(column){
+                   removedDatatableColumnIds.push(column.id);
+               });
+            });
+
+            console.debug(removedDatatableColumnIds);
+
+
+            //todo: if any integration columns, update selected datatableColumn
+            //todo: remove any paricipating datatableColumns that belong to the datatable we are removing
+            _getIntegrationColumns().forEach(function(integrationColumn) {
+                for(var ontologyId in self.ontologyParticipation) {
+                    var ontologyParticipation = self.ontologyParticipation[ontologyId];
+                    var nodeInfoList = ontologyParticipation.nodeInfoList;
+                    nodeInfoList.forEach(function(nodeInfo){
+                        //remove any columnIds that belong to the datatables we are removing
+                        nodeInfo.colIds = nodeInfo.colIds.filter(function(colId){
+                            var idx = removedDatatableColumnIds.indexOf(colId);
+                            var removeIt = idx !== -1;
+                            if(removeIt) {
+                                console.debug("removing %s from nodeInfo.colIds", colId);
+                            }
+                            return removeIt;
+                        });
+                    });
+                }
+            });
+
+            //if any display columns, selected datatableColumn must be removed.
 
         }
 
@@ -246,8 +298,6 @@
 
         self.addDatatables = function(dataTables) {
             _setAddAll(self.datatables, dataTables, "data_table_id");
-
-            //FIXME: update dependencies
         };
 
 
@@ -260,6 +310,10 @@
         self.removeOntology = function() {};
     }
 
+    //expose a singleton instance to the application
     app.service("IntegrationService", Integration);
+
+    //expose the class to the application in case another component wants to create a unique instance
+    app.value("IntegrationClass", Integration);
 
 })(angular)
