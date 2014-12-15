@@ -244,8 +244,13 @@
             self.ontologyParticipation[ontology.id] = ontologyParticipation;
         };
 
-        //FIXME: implement me
-        self.addDatatables = function() {}
+        self.addDatatables = function(dataTables) {
+            _setAddAll(self.datatables, dataTables, "data_table_id");
+
+            //FIXME: update dependencies
+        };
+
+
         //FIXME: implement me
         self.removeDatatable = function(){};
 

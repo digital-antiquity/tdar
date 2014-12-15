@@ -5,7 +5,7 @@
     console.log("LegacyFormController::")
     console.log("App:", app);
 
-    app.controller('LegacyFormController', ['$scope', '$http', 'integrationService', function($scope, $http, integration){
+    app.controller('LegacyFormController', ['$scope', '$http', 'IntegrationService', function($scope, $http, integration){
         var self = this, fields = [];
         self.fields = fields;
         self.integration = integration;

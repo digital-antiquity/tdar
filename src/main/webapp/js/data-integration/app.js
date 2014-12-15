@@ -4,18 +4,20 @@
     var app = angular.module('integrationApp', ['angularModalService']);
 
     //top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$scope', 'ModalService',  '$http', 'integrationService', '$q',  function($scope, ModalService, $http, integration, $q){
+    app.controller('IntegrationController', ['$scope', 'ModalService',  '$http', 'IntegrationService', '$q',  function($scope, ModalService, $http, integration, $q){
         var self = this,
             openModal;
 
-        //fixme: remove later, expose viewmodel for debugging
-        window.__viewModel = self.integration;
 
 
         //controller public fields
         self.integration = integration;
         self.tab = 0;
         self.sharedOntologies = [];
+
+        //fixme: remove later, expose viewmodel for debugging
+        window.__viewModel = self.integration;
+
 
         //'private' methods
         openModal = function(options) {
@@ -74,8 +76,8 @@
             $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true)
             ).success(function(data) {
 
-               //FIXME: replace direct array minipulation with model add/remove methods so that we know when to update functional dependencies
-                _setAddAll(self.integration.datatables, data[0].dataTables, "data_table_id");
+                //FIXME: replace direct array minipulation with model add/remove methods so that we know when to update functional dependencies
+                self.integration.addDatatables(data[0].dataTables);
                 self.integration.updateSharedOntologies(data[0].sharedOntologies);
 
                 //gather the updated node participation data
