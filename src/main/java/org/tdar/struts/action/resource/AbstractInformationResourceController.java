@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
@@ -783,6 +784,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
                 toReturn.add(pair);
             }
+        } catch (LazyInitializationException lae) {
+            getLogger().trace("lazy initializatione exception -- ignore in this case, likely session has been actively closed by SessionSecurityInterceptor");
         } catch (Exception e) {
             getLogger().error("got an exception while evaluating whether we should show one, should we?", e);
         }
