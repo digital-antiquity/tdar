@@ -45,6 +45,7 @@ import org.tdar.utils.MessageHelper;
 import com.opensymphony.xwork2.TextProvider;
 import com.rometools.modules.georss.GMLModuleImpl;
 import com.rometools.modules.georss.GeoRSSModule;
+import com.rometools.modules.georss.SimpleModuleImpl;
 import com.rometools.modules.georss.geometries.Envelope;
 import com.rometools.modules.georss.geometries.Position;
 import com.rometools.modules.opensearch.OpenSearchModule;
@@ -312,16 +313,18 @@ public class RssService implements Serializable {
         /*
          * If LatLong is not Obfuscated and we don't have confidential files then ...
          */
-        if ((latLong != null) && !latLong.isObfuscated() && !hasRestrictions) {
-            GeoRSSModule geoRss = new GMLModuleImpl();
+        if ((latLong != null) && latLong.isObfuscatedObjectDifferent() == false && hasRestrictions == false) {
+            logger.debug("{} {} {} {} ", mode, hasRestrictions, latLong, latLong.isObfuscatedObjectDifferent());
+            GeoRSSModule geoRss = new SimpleModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
                 geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
                         .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
+                entry.getModules().add(geoRss);
             }
             if (mode == GeoRssMode.POINT) {
                 geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
+                entry.getModules().add(geoRss);
             }
-            entry.getModules().add(geoRss);
         }
     }
 
