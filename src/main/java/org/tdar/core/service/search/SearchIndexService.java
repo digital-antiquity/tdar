@@ -298,14 +298,20 @@ public class SearchIndexService {
         if (indexable != null) {
             logger.debug("manual indexing ... {}", indexable.size());
             FullTextSession fullTextSession = getFullTextSession();
-
+            int count = 0;
             for (C toIndex : indexable) {
-                logger.debug("indexing: {}", toIndex);
+                count++;
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
                     fullTextSession.purge(toIndex.getClass(), toIndex.getId());
                     index(fullTextSession, genericDao.merge(toIndex));
+                    if (count % FLUSH_EVERY == 0) {
+                        logger.debug("indexing: {}", toIndex);
+                        logger.debug("flush to index");
+                        fullTextSession.flushToIndexes();
+                        fullTextSession.clear();
+                    }
                 } catch (Exception e) {
                     logger.error("exception in indexing, {} [{}]", toIndex, e);
                     logger.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
@@ -313,8 +319,10 @@ public class SearchIndexService {
                     exceptions = true;
                 }
             }
+            logger.debug("begin flushing");
             fullTextSession.flushToIndexes();
         }
+        logger.debug("Done indexing collection");
         return exceptions;
     }
 

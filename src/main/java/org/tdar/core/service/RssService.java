@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,6 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
-import com.rometools.modules.georss.GMLModuleImpl;
 import com.rometools.modules.georss.GeoRSSModule;
 import com.rometools.modules.georss.SimpleModuleImpl;
 import com.rometools.modules.georss.geometries.Envelope;
@@ -144,6 +142,7 @@ public class RssService implements Serializable {
      * @throws FeedException
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     @Cacheable(value = "rssFeed")
     public List<SyndEntry> parseFeed(URL url) throws FeedException, IOException {
         List<SyndEntry> result = new ArrayList<>();
@@ -174,6 +173,7 @@ public class RssService implements Serializable {
      * @throws IOException
      * @throws FeedException
      */
+    @SuppressWarnings({ "unused", "unchecked" })
     public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
             boolean includeEnclosures, TextProvider provider) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
@@ -199,14 +199,17 @@ public class RssService implements Serializable {
         feed.setDescription(handler.getSearchDescription());
         List<SyndEntry> entries = new ArrayList<SyndEntry>();
         for (I resource_ : handler.getResults()) {
-            createRssEntryForResource(handler, mode, includeEnclosures, entries, resource_);
+            SyndEntry entry = createRssEntryForResource(handler, mode, includeEnclosures, entries, resource_);
         }
         feed.setEntries(entries);
         feed.setPublishedDate(new Date());
-        StringWriter writer = new StringWriter();
-        SyndFeedOutput output = new SyndFeedOutput();
-        output.output(feed, writer);
-        return new ByteArrayInputStream(stripInvalidXMLCharacters(writer.toString()).getBytes());
+        if (feed != null) {
+            StringWriter writer = new StringWriter();
+            SyndFeedOutput output = new SyndFeedOutput();
+            output.output(feed, writer);
+            return new ByteArrayInputStream(stripInvalidXMLCharacters(writer.toString()).getBytes());
+        }
+        return null;
     }
 
     /**
@@ -265,10 +268,7 @@ public class RssService implements Serializable {
             entry.setPublishedDate(oaiResource.getDateCreated());
             entries.add(entry);
         } else {
-            if (resource_ != null) {
-                logger.debug("object is not instance of OaiDCProvider" + resource_ + ClassUtils.getShortCanonicalName(resource_.getClass()));
-                throw new TdarRecoverableRuntimeException("rssService.cannot_generate_rss");
-            }
+            throw new TdarRecoverableRuntimeException("rssService.cannot_generate_rss");
         }
         return entry;
     }
@@ -308,23 +308,22 @@ public class RssService implements Serializable {
      * @param resource
      * @param hasRestrictions
      */
+    @SuppressWarnings("unchecked")
     private void addGeoRssLatLongBox(GeoRssMode mode, SyndEntry entry, Resource resource, boolean hasRestrictions) {
         LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
         /*
-         * If LatLong is not Obfuscated and we don't have confidential files then ...
+         * If LatLong is not purposefully Obfuscated and we don't have confidential files then ...
          */
         if ((latLong != null) && latLong.isObfuscatedObjectDifferent() == false && hasRestrictions == false) {
-            logger.debug("{} {} {} {} ", mode, hasRestrictions, latLong, latLong.isObfuscatedObjectDifferent());
             GeoRSSModule geoRss = new SimpleModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
                 geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
                         .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
-                entry.getModules().add(geoRss);
             }
             if (mode == GeoRssMode.POINT) {
                 geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
-                entry.getModules().add(geoRss);
             }
+            entry.getModules().add(geoRss);
         }
     }
 
@@ -335,6 +334,7 @@ public class RssService implements Serializable {
      * @param entry
      * @param version
      */
+    @SuppressWarnings("unchecked")
     private void addEnclosure(TdarUser user, SyndEntry entry, InformationResourceFileVersion version) {
         if (version == null) {
             return;
@@ -344,7 +344,7 @@ public class RssService implements Serializable {
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());
             enclosure.setType(version.getMimeType());
-            enclosure.setUrl(UrlService.downloadUrl(version));
+            enclosure.setUrl(urlService.downloadUrl(version));
             entry.getEnclosures().add(enclosure);
         }
     }
