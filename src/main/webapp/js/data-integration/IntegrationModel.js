@@ -217,10 +217,10 @@
 
 
         //update derived properties when user removes a datatable
-        function _datatablesRemoved(datatables) {
+        function _datatablesRemoved(removedDatatables) {
             console.debug("_datatablesRemoved::");
             var removedDatatableColumnIds = [];
-            datatables.forEach(function(datatable){
+            removedDatatables.forEach(function(datatable){
                datatable.columns.forEach(function(column){
                    removedDatatableColumnIds.push(column.id);
                });
@@ -233,20 +233,20 @@
             //todo: remove any paricipating datatableColumns that belong to the datatable we are removing
 
 
-            _getIntegrationColumns().forEach(function(integrationColumn) {
+            //clean up the mappedDatatables
+            for(var ontologyId in self.mappedDatatables) {
+                self.mappedDatatables[ontologyId] = self.mappedDatatables[ontologyId].filter(function(mappedDatatable){
+                    return removedDatatables.indexOf(mappedDatatable.datatable) === -1;
+                });
+            }
 
-                //clean up the mappedDatatables
-                for(var ontologyId in self.mappedDatatables) {
-                    self.mappedDatatables[ontologyId] = self.mappedDatatables[ontologyId].filter(function(mappedDatatable){
-                        return datatables.indexOf(mappedDatatable.datatable) === -1;
-                    });
-                }
+            //update any affected integration output columns
+            _getIntegrationColumns().forEach(function(integrationColumn) {
 
                 //clean up integrationColumn.selectedDatatableColumn
                 integrationColumn.selectedDatatableColumns = integrationColumn.selectedDatatableColumns.filter(function(datatableColumn){
                     return removedDatatableColumnIds.indexOf(datatableColumn.id) === -1
                 });
-
 
                 //clean up the nodeParticipation information
                 for(var ontologyId in self.ontologyParticipation) {
@@ -265,10 +265,53 @@
                 }
             });
 
-            //if any display columns, selected datatableColumn must be removed.
+            //if any display columns, remove all affected datatableColumnSelections
+            _getDisplayColumns().forEach(function(displayColumn){
+                displayColumn.datatableColumnSelections = displayColumn.datatableColumnSelections.filter(function(datatableColumnSelection){
+                    return removedDatatables.indexOf(datatableColumnSelection.datatable) === -1;
+                });
+            });
+        }
+
+        function _datatablesAdded(addedDatatables) {
+            console.debug("_datatablesAdded::");
+
+            //adding a datatable column may have implicitly removed a shared ontology.  calculate new sharedOntologyId list and find out if anything went missing
+        }
+
+        function _dedupe(items) {
+            var uniqueItems = [];
+            items.forEach(function(item){
+                if(uniqueItems.indexOf(item) === -1) {
+                    uniqueItems.push(item);
+                }
+            })
+            return uniqueItems;
+        }
+
+        function _calculateSharedOntologyIds() {
+            //todo: punch jim in the face for writing this 'one-liner'
+            return _dedupe(self.datatables
+                    //flatten all of the datatable columns
+                    .reduce(function(a,b){return a.concat(b.columns)}, [])
+                    //and then filter-out the unmapped columns
+                    .filter(function(col){return !!col.default_ontology_id})
+                    //then convert that list of columns to a list of ids
+                    .map(function(c){return c.default_ontology_id})
+                    //then remove the ids that do not appear in every datatable at least once.
+                    .filter(function(ontologyId){
+                        return self.datatables.every(function(datatable){
+                            return datatable.columns.some(function(dtc){return ontologyId === dtc.default_ontology_id});
+                        });
+                    })
+                    //voila - your list of shared ontologyIds (don't forget to dedupe)
+            );
+
 
         }
 
+        //fixme: hack: expose calculatedSharedOntologies for debugging
+        self._calculateSharedOntologyIds = _calculateSharedOntologyIds;
 
         /**
          * Add a 'display column' to the columns list.  A display column contains a list of datatableColumn selections, which the system
@@ -314,13 +357,10 @@
             self.ontologyParticipation[ontology.id] = ontologyParticipation;
         };
 
-        self.addDatatables = function(dataTables) {
-            _setAddAll(self.datatables, dataTables, "data_table_id");
+        self.addDatatables = function(datatables) {
+            _setAddAll(self.datatables, datatables, "data_table_id");
+            _datatablesAdded(datatables)
         };
-
-
-        //FIXME: implement me
-        self.removeDatatable = function(){};
 
         //FIXME: implement me
         self.addOntologies = function() {};
