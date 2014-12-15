@@ -716,10 +716,18 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
      * to be mapped, and is associated with the filename associated with @InformationResourceFileVersion of any @link Resource in that @link Project.
      */
-    @Transactional
     public void remapColumns(List<DataTableColumn> columns, Project project) {
+        remapColumnsWithoutIndexing(columns, project);
+        if (Persistable.Base.isNotNullOrTransient(project) && project != Project.NULL) {
+            searchIndexService.indexProject(project);
+        }
+    }
+
+    @Transactional
+    public void remapColumnsWithoutIndexing(List<DataTableColumn> columns, Project project) {
         getLogger().info("remapping columns: {} in {} ", columns, project);
         if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
+            getDao().resetColumnMappings(project);
             // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
             getDao().refresh(project);
             // have to reindex...
@@ -732,9 +740,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             for (DataTableColumn column : columns) {
                 getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
             }
-        }
-        if (Persistable.Base.isNotNullOrTransient(project) && project != Project.NULL) {
-            searchIndexService.indexProject(project);
         }
     }
 
