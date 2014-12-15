@@ -294,7 +294,9 @@ public class PdfService {
             throws IOException {
         PDBorderStyleDictionary borderULine = new PDBorderStyleDictionary();
         borderULine.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+        borderULine.setWidth(0f);
         PDAnnotationLink txtLink = new PDAnnotationLink();
+        txtLink.setBorderStyle(borderULine);
         // add an action
         PDActionURI action = new PDActionURI();
         action.setURI(linkText);
