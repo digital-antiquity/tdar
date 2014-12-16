@@ -258,13 +258,26 @@
         function _datatablesAdded(addedDatatables) {
             console.debug("_datatablesAdded::");
 
+            //Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the datatables
             //Calculate the new list of shared ontologies, find out if any ontologies should
             var currentSharedOntologyIds = self.ontologies.map(function(ontology){return ontology.id});
             var newSharedOntologyIds = _calculateSharedOntologyIds();
-            var defunctOntologyIds = currentSharedOntologyIds.filter(function(ontologyId){return newSharedOntologyIds.indexOf(ontologyId) === -1});
+            //var defunctOntologyIds = currentSharedOntologyIds.filter(function(ontologyId){return newSharedOntologyIds.indexOf(ontologyId) === -1});
+            _sharedOntologiesRemoved(newSharedOntologyIds);
 
+            //Step 2: account for integration columns that refer to still-shared ontologies
+            //todo: need to update the nodeParticipation information for all the integrationColumns that aren't removed
+
+
+            //Step 3: account for display columns that need an additional selectedDatatableColumn entry.
+            //todo: need to update the selectedDatatables information for all displayColumns
+        }
+
+
+        function _sharedOntologiesRemoved(newSharedOntologyIds) {
+            console.debug("_sharedOntologiesRemoved::", newSharedOntologyIds);
             var outputColumnsToRemove = _getIntegrationColumns().filter(function(column){
-                    return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
+                return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
             });
 
             //remove any integration columns that are now defunct
@@ -275,12 +288,6 @@
                     self.columns.splice(self.columns.indexOf(outputColumnsToRemove[i]), 1);
                 }
             }
-
-            //todo: signal that outputColumns has changed so that controller can manage tab state
-
-            //todo: need to update the nodeParticipation information for all the integrationColumns that aren't removed
-
-            //todo: need to update the selectedDatatables information for all displayColumns
         }
 
         function _dedupe(items) {
@@ -296,22 +303,21 @@
         function _calculateSharedOntologyIds() {
             //todo: punch jim in the face for writing this 'one-liner'
             return _dedupe(self.datatables
-                    //flatten all of the datatable columns
+                    //reduce the list of all datatables into a list of all datatableColumns
                     .reduce(function(a,b){return a.concat(b.columns)}, [])
                     //and then filter-out the unmapped columns
                     .filter(function(col){return !!col.default_ontology_id})
                     //then convert that list of columns to a list of ids
                     .map(function(c){return c.default_ontology_id})
-                    //then remove the ids that do not appear in every datatable at least once.
-                    .filter(function(ontologyId){
-                        return self.datatables.every(function(datatable){
-                            return datatable.columns.some(function(dtc){return ontologyId === dtc.default_ontology_id});
-                        });
-                    })
-                    //voila - your list of shared ontologyIds (don't forget to dedupe)
-            );
-
-
+            )
+                // We now have a deduped list of all mapped ontology id's,
+                // Now we remove the ids that do not appear in every datatable at least once.
+                .filter(function(ontologyId){
+                    return self.datatables.every(function(datatable){
+                        return datatable.columns.some(function(dtc){return ontologyId === dtc.default_ontology_id});
+                    });
+                })
+                //And... scene!  Here are your shared ontology id's.
         }
 
         //fixme: hack: expose calculatedSharedOntologies for debugging
