@@ -35,24 +35,6 @@
         });
     }
 
-    /**
-     * Retrieve item from an array (by key), treating array as a set.  Yes, I realize setGet is a stupid function name.  Go away.
-     * @param arr
-     * @param keyName
-     * @param key
-     * @returns  object located by key, or null if not found
-     * @private
-     */
-    function _setGet(arr, keyName, key) {
-        var val = null;
-        for(var i = 0; i < arr.length; i++) {
-            if(arr[i][keyName] === key) {
-                val = arr[i];
-                break;
-            }
-        }
-        return val;
-    }
 
     /**
      * Remove specified item from the specified array
@@ -189,7 +171,7 @@
          * @param datatables
          * @private
          */
-        self.removeDatatables = function _removeDatatable(datatables) {
+        self.removeDatatables = function _removeDatatables(datatables) {
             console.debug("removeDatatables::");
 
             if(!datatables) {return;}
@@ -276,7 +258,29 @@
         function _datatablesAdded(addedDatatables) {
             console.debug("_datatablesAdded::");
 
-            //adding a datatable column may have implicitly removed a shared ontology.  calculate new sharedOntologyId list and find out if anything went missing
+            //Calculate the new list of shared ontologies, find out if any ontologies should
+            var currentSharedOntologyIds = self.ontologies.map(function(ontology){return ontology.id});
+            var newSharedOntologyIds = _calculateSharedOntologyIds();
+            var defunctOntologyIds = currentSharedOntologyIds.filter(function(ontologyId){return newSharedOntologyIds.indexOf(ontologyId) === -1});
+
+            var outputColumnsToRemove = _getIntegrationColumns().filter(function(column){
+                    return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
+            });
+
+            //remove any integration columns that are now defunct
+            //todo: we should do this in less-destructive way.. (e.g. flag the outputColumns as invalid instead)
+            //gotta be careful when mutating the array you are iterating over.  Let's delete from the end.
+            if(outputColumnsToRemove.length > 0) {
+                for( var i = outputColumnsToRemove.length - 1; i >= 0; i--) {
+                    self.columns.splice(self.columns.indexOf(outputColumnsToRemove[i]), 1);
+                }
+            }
+
+            //todo: signal that outputColumns has changed so that controller can manage tab state
+
+            //todo: need to update the nodeParticipation information for all the integrationColumns that aren't removed
+
+            //todo: need to update the selectedDatatables information for all displayColumns
         }
 
         function _dedupe(items) {
