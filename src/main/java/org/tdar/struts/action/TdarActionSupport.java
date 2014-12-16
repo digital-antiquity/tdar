@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
@@ -65,10 +64,12 @@ import com.opensymphony.xwork2.ActionSupport;
  * @version $Revision$
  */
 @Scope("prototype")
-@Controller
+//@Controller
 public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
 
     private static final long serialVersionUID = 7084489869489013998L;
+
+    public static final String UNAUTHORIZED_REDIRECT = "unauthorized_redirect";
 
     // result name constants
     private boolean hideExceptionArea = false;
