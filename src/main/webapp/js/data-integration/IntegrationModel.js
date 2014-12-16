@@ -88,7 +88,7 @@
          */
         self.ontologies = [];
 
-        //derived datatable participation information, keyed by info
+        //derived datatable participation information, keyed by ontologyId -> Array<DatatableInfo>
         self.mappedDatatables = {};
 
         //derived ontology node participation information

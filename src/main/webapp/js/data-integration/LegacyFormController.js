@@ -1,9 +1,7 @@
 (function(angular){
     "use strict";
     var app = angular.module('integrationApp');
-
-    console.log("LegacyFormController::")
-    console.log("App:", app);
+    console.debug("LegacyFormController::")
 
     app.controller('LegacyFormController', ['$scope', '$http', 'IntegrationService', function($scope, $http, integration){
         var self = this, fields = [];
