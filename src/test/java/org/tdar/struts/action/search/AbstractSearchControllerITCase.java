@@ -37,6 +37,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.AbstractLookupController;
 
 import com.opensymphony.xwork2.Action;
 
@@ -44,29 +45,7 @@ import com.opensymphony.xwork2.Action;
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
 
     @Autowired
-    // FIXME: MAKE GENERIC
     protected AdvancedSearchController controller;
-
-    // FIXME:these counts will change often - need to figure a better way to keep it in sync
-    /*
-     * execute the following sql against the test database to generate the count constants:
-     * 
-     * select 'protected static final int RESOURCE_COUNT_' || resource_type|| ' = ' || count(resource_type) || ';' jabba from resource where status = 'ACTIVE'
-     * group by resource_type;
-     */
-
-    protected static final int RESOURCE_COUNT_DOCUMENT = 5;
-    protected static final int RESOURCE_COUNT_ONTOLOGY = 1;
-    protected static final int RESOURCE_COUNT_PROJECT = 12;
-    protected static final int RESOURCE_COUNT_DATASET = 2;
-    protected static final int RESOURCE_COUNT_CODING_SHEET = 4;
-    protected static final int RESOURCE_COUNT_IMAGE = 0;
-    protected static final int RESOURCE_COUNT_SENSORY_DATA = 0;
-
-    protected static final int RESOURCE_COUNT_ACTIVE = 24;
-    protected static final int RESOURCE_COUNT_DRAFT = 0;
-    protected static final int RESOURCE_COUNT_FLAGGED = 0;
-    protected static final int RESOURCE_COUNT_DELETED = 1;
 
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
@@ -181,27 +160,27 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return list;
     }
 
-    public static void doSearch(AdvancedSearchController controller, LookupSource resource) {
+    public static void doSearch(AbstractLookupController controller, LookupSource resource) {
         doSearch(controller, resource, false);
     }
 
-    public static void doSearch(AdvancedSearchController controller, LookupSource resource, Boolean b) {
+    public static void doSearch(AbstractLookupController controller, LookupSource resource, Boolean b) {
         Exception e = null;
         String msg = null;
         Logger logger = LoggerFactory.getLogger(AbstractControllerITCase.class);
         try {
             switch (resource) {
                 case COLLECTION:
-                    msg = controller.searchCollections();
+                    msg = ((CollectionSearchAction)controller).searchCollections();
                     break;
                 case PERSON:
-                    msg = controller.searchPeople();
+                    msg = ((PersonSearchAction)controller).searchPeople();
                     break;
                 case INSTITUTION:
-                    msg = controller.searchInstitutions();
+                    msg = ((InstitutionSearchAction)controller).searchInstitutions();
                     break;
                 case RESOURCE:
-                    msg = controller.search();
+                    msg = ((AdvancedSearchController)controller).search();
                     break;
                 default:
                     fail();

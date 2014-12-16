@@ -2,6 +2,7 @@ package org.tdar.search.index.bridge;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
@@ -24,18 +25,26 @@ public class StringMapBridge implements FieldBridge {
 
     @Override
     public void set(String name, Object value, Document doc, LuceneOptions opts) {
-
+        if (value == null) {
+            return;
+        }
         @SuppressWarnings("unchecked")
         Map<Object, String> map = (Map<Object, String>) value;
         for (Object key : map.keySet()) {
+            if (key == null) {
+                continue;
+            }
             String keyName = "";
             if (key instanceof DataTableColumn) {
                 keyName = ((DataTableColumn) key).getName();
             } else {
                 keyName = DataUtil.extractStringValue(key);
             }
-
-            opts.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + map.get(key), doc);
+            String mapValue = map.get(key);
+            if (keyName == null || StringUtils.isBlank(mapValue)) {
+                continue;
+            }
+            opts.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + mapValue, doc);
         }
     }
 

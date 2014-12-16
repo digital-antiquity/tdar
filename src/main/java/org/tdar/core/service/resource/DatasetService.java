@@ -717,10 +717,18 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
      * to be mapped, and is associated with the filename associated with @InformationResourceFileVersion of any @link Resource in that @link Project.
      */
-    @Transactional
     public void remapColumns(List<DataTableColumn> columns, Project project) {
+        remapColumnsWithoutIndexing(columns, project);
+        if (Persistable.Base.isNotNullOrTransient(project) && project != Project.NULL) {
+            searchIndexService.indexProject(project);
+        }
+    }
+
+    @Transactional
+    public void remapColumnsWithoutIndexing(List<DataTableColumn> columns, Project project) {
         getLogger().info("remapping columns: {} in {} ", columns, project);
         if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
+            getDao().resetColumnMappings(project);
             // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
             getDao().refresh(project);
             // have to reindex...
@@ -733,9 +741,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             for (DataTableColumn column : columns) {
                 getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
             }
-        }
-        if (project != null) {
-            searchIndexService.indexProject(project);
         }
     }
 
@@ -907,12 +912,16 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Transactional(readOnly = false)
     @Async
-    public void remapAllColumnsAsync(final Dataset dataset, final Project project) {
-        remapAllColumns(dataset, project);
+    public void remapAllColumnsAsync(final Long datasetId, final Long projectId) {
+        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
     }
 
     @Transactional(readOnly = false)
-    public void remapAllColumns(Dataset dataset, Project project) {
+    public void remapAllColumns(final Long datasetId, final Long projectId)  {
+        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
+    }
+
+    private void remapAllColumns(Dataset dataset, Project project) {
         List<DataTableColumn> columns = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
             for (DataTable datatable : dataset.getDataTables()) {

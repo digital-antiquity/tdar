@@ -176,8 +176,14 @@
         <to>/$1/$3/$2?$4</to>
     </outbound-rule>
 
-     <rule>
+<!--      <rule>
         <from>^/(dataset|sensory-data|geospatial)/([0-9]+)/columns$
+        </from>
+        <to>/dataset/columns?id=$2</to>
+    </rule>
+ -->
+     <rule>
+        <from>^/(dataset|sensory-data|geospatial)/columns/([0-9]+)$
         </from>
         <to>/dataset/columns?id=$2</to>
     </rule>
@@ -197,11 +203,22 @@
         <to>/account/new</to>
     </rule>
 
-    <rule>
+
+<!--     <rule>
         <name>remove version hash</name>
         <from>^(/[a-z]+)/vc/[0-9\.a-f]+/(.*)$</from>
         <to>/$1/$2</to>
     </rule>
+ -->
+    <rule>
+        <from>^/workspace$</from>
+        <to>/workspace/select-tables</to>
+    </rule>
+    <rule>
+        <from>^/workspace/list$</from>
+        <to>/workspace/select-tables</to>
+    </rule>
+
 
     <rule>
         <from>^/entity/(person|user|institution)/([0-9]+)/(edit|address)$</from>
@@ -225,6 +242,5 @@
         like the TAG Gateway) <outbound-rule> <from>^/(search|project|collection)/(.+)\.action\?(.*)$</from> 
         <to>/$1/$2?$3</to> </outbound-rule> <outbound-rule> <from>^/(search|project|collection)/(.+)\.action$</from> 
         <to>/$1/$2</to> </outbound-rule> -->
-
 
 </urlrewrite>

@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Assert;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
+import org.tdar.struts.action.cart.CartApiController;
 import org.tdar.struts.action.cart.CartApiPollingAction;
 import org.tdar.struts.action.cart.CartBillingAccountController;
 import org.tdar.struts.action.cart.CartController;
@@ -82,6 +86,20 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         createAndTestInvoiceQuantity(controller, 10L, null);
     }
 
+    @Test
+    @Rollback
+    public void testApi() throws IOException {
+        CartApiController cac = generateNewInitializedController(CartApiController.class);
+        cac.setLookupFileCount(10L);
+        cac.prepare();
+        cac.api();
+        String result = IOUtils.toString(cac.getResultJson());
+        logger.debug(result);
+        Assert.assertFalse(result.contains("error"));
+        Assert.assertFalse(result.contains("serializer"));
+        logger.debug(result);
+    }
+        
     @Test
     @Rollback
     public void testCartCouponExact() throws TdarActionException {

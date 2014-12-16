@@ -2,14 +2,14 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
 <#if (informationResourceFileVersion??)>
-    <#assign download ="/filestore/${informationResourceFileVersion.id?c}">
+    <#assign download ="/filestore/get/${informationResourceId?c}/${informationResourceFileVersion.id?c}">
     <#assign filename = informationResourceFileVersion.filename?html>
     <#assign versionid =  informationResourceFileVersion.id>
 <#elseif (informationResourceId??)>
-    <#assign download = "/filestore/downloadAllAsZip?informationResourceId=${informationResourceId?c}">
+    <#assign download = "/filestore/download/${informationResourceId?c}">
     <#assign filename = "files-${informationResourceId?c}.zip">
     <#assign versionid = informationResourceId>
-</#if>
+	</#if>
 <html>
 <head>
     <title>Download: ${filename?html}</title>

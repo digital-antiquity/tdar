@@ -280,6 +280,48 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             logger.warn("RESULTS REQUEST TOO HIGH: {}", url);
         }
     }
+    
+    @Test
+    public void testPerson() {
+        reindex();
+        gotoPage("/search/person");
+        gotoPage("/search/people?query=Manney");
+    }
+
+    @Test
+    public void testInstitution() {
+        reindex();
+        gotoPage("/search/institution");
+        gotoPage("/search/institutions?query=Arizona");
+    }
+
+    @Test
+    public void testCollection() {
+        reindex();
+        gotoPage("/search/collection");
+        gotoPage("/search/collections?query=test");
+    }
+
+    @Test
+    public void testPaginationIssuesReturningInput() {
+        testPaginationError("/search/collections?query=test&startRecord=100000");
+        testPaginationError("/search/people?query=test&startRecord=100000");
+        testPaginationError("/search/institutions?query=test&startRecord=100000");
+        testPaginationError("/search/results?query=test&startRecord=100000");
+       
+    }
+    
+    private void testPaginationError(String string) {
+        int status = gotoPageWithoutErrorCheck(string);
+        logger.debug("status: "+ status);
+        logger.debug(getPageText());
+//        assertNotEquals(200, status);
+        assertNoEscapeIssues();
+//        assertNoErrorTextPresent();
+        assertTrue(getPageText().contains("cannot be found") || getPageText().contains("greater than total number of"));
+
+        
+    }
 
     @Test
     public void testTitleSearch() {

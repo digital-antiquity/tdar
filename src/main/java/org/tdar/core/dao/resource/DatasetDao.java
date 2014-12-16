@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.joda.time.DateTime;
@@ -148,6 +149,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
+    public void resetColumnMappings(Project project) {
+        String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s" , project.getId());
+        getCurrentSession().createSQLQuery(sql).executeUpdate();
+    }
+
     /*
      * Take the distinct column values mapped and associate them with files in tDAR based on:
      * - shared project
@@ -155,10 +161,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
      * 
      * Using a raw SQL update statement to try and simplify the execution here to use as few loops as possible...
      */
-    public List<String> mapColumnToResource(DataTableColumn column, List<String> distinctValues) {
+    public void mapColumnToResource(DataTableColumn column, List<String> distinctValues) {
         Project project = column.getDataTable().getDataset().getProject();
         // for each distinct column value
-        List<String> updatedValues = new ArrayList<String>();
+
+        long timestamp = System.currentTimeMillis();
+        String sql = String.format("CREATE TEMPORARY TABLE MATCH%s (id bigserial, primary key(id), key varchar(255),actual varchar(255))", timestamp);
+        SQLQuery create = getCurrentSession().createSQLQuery(sql);
+        logger.debug(sql);
+        create.executeUpdate();
+        int count =0;
         for (String columnValue : distinctValues) {
             List<String> valuesToMatch = new ArrayList<String>();
 
@@ -175,18 +187,35 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     valuesToMatch.set(i, FilenameUtils.getBaseName(valuesToMatch.get(i).toLowerCase()) + ".");
                 }
             }
-            String rawsql = NamedNativeQueries.updateDatasetMappings(project, column, columnValue, valuesToMatch,
-                    Arrays.asList(VersionType.UPLOADED,
-                            VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
-            logger.trace(rawsql);
-            Query query = getCurrentSession().createSQLQuery(rawsql);
-            int executeUpdate = query.executeUpdate();
-            if (executeUpdate > 0) {
-                updatedValues.add(columnValue);
+            for (String match : valuesToMatch) {
+                if (StringUtils.isBlank(match)) {
+                    continue;
+                }
+                String format = String.format("insert into MATCH%s (key,actual) values('%s','%s')", timestamp,
+                        org.apache.commons.lang.StringEscapeUtils.escapeSql(match.toLowerCase()), org.apache.commons.lang.StringEscapeUtils.escapeSql(columnValue.toLowerCase()));
+                SQLQuery insert = getCurrentSession().createSQLQuery(format);
+                insert.executeUpdate();
+                if (count % 250 == 0) {
+                    logger.debug(format);
+                }
+                count++;
             }
-            logger.debug("values to match {}  -- {} ", valuesToMatch, executeUpdate);
         }
-        return updatedValues;
+        List<VersionType> types = Arrays.asList(VersionType.UPLOADED, VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL);
+        String filenameCheck = "lower(irfv.filename)";
+        if (column.isIgnoreFileExtension()) {
+            filenameCheck = "substring(lower(irfv.filename), 0, length(irfv.filename) - length(irfv.extension) + 1)";
+        }
+        String format = String.format(
+                "update information_resource ir_ set mappeddatakeycolumn_id=%s, mappedDataKeyValue=actual from MATCH%s, information_resource ir inner join "
+                        + "information_resource_file irf on ir.id=irf.information_resource_id " +
+                        "inner join information_resource_file_version irfv on irf.id=irfv.information_resource_file_id " +
+                        "WHERE ir.project_id=%s and lower(key)=%s and irfv.internal_type in ('%s') and ir.id=ir_.id and ir.mappedDataKeyValue is null",
+                column.getId(), timestamp, project.getId(), filenameCheck, StringUtils.join(types, "','"));
+        SQLQuery matching = getCurrentSession().createSQLQuery(format);
+        logger.debug(format);
+        int executeUpdate = matching.executeUpdate();
+        logger.debug("{} rows updated", executeUpdate);
     }
 
     public void unmapAllColumnsInProject(Long projectId, List<Long> columns) {
@@ -331,5 +360,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         return query.list();
     }
+
 
 }

@@ -146,7 +146,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @Override
     protected String save(Account persistable) {
         getLogger().info("invoiceId {}", getInvoiceId());
-        setSaveSuccessPath("/billing");
+        setSaveSuccessPath("billing");
 
         // if we're coming from "choose" and we want a "new account"
         if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {

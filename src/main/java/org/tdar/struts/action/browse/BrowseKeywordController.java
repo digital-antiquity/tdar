@@ -19,6 +19,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
@@ -141,14 +142,24 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         return SUCCESS;
     }
 
-    private void prepareLuceneQuery() throws ParseException {
+    private void prepareLuceneQuery() throws TdarActionException {
+
         setMode("KeywordBrowse");
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
         rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
-        setSortField(SortOption.TITLE);
-        searchService.handleSearch(rqb, this, this);
-        bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+        if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
+//            setOrientation(DisplayOrientation.MAP);
+        }
+        try {
+            setSortField(SortOption.TITLE);
+            searchService.handleSearch(rqb, this, this);
+            bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+        } catch (SearchPaginationException spe) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, spe);
+        } catch (Exception e) {
+            addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+        }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

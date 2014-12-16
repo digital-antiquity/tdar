@@ -49,6 +49,7 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -81,11 +82,13 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
+import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
@@ -105,12 +108,15 @@ public class SearchService {
 
     private final DatasetDao datasetDao;
 
+    private final AuthorizationService authorizationService;
+    
     @Autowired
-    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao) {
+    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao, AuthorizationService authorizationService) {
         this.sessionFactory = sessionFactory;
         this.obfuscationService = obfuscationService;
         this.genericService = genericService;
         this.datasetDao = datasetDao;
+        this.authorizationService = authorizationService;
     }
 
     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
@@ -760,6 +766,28 @@ public class SearchService {
         result.setRecordsPerPage(10);
         handleSearch(qb, result, provider);
         return (List<Resource>) ((List<?>) result.getResults());
+    }
+
+    public void buildResourceCollectionQuery(QueryBuilder queryBuilder, TdarUser authenticatedUser, List<String> allFields) {
+        queryBuilder.setOperator(Operator.AND);
+
+        if (CollectionUtils.isNotEmpty(allFields)) {
+            queryBuilder.append(new GeneralSearchQueryPart(allFields));
+        }
+        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+
+        QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
+        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
+        if (Persistable.Base.isNotNullOrTransient(authenticatedUser)) {
+            // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
+            if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+                qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
+            } else {
+                qpg.clear();
+            }
+        }
+
+        queryBuilder.append(qpg);
     }
 
 }

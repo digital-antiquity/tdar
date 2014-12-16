@@ -17,10 +17,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
+import org.tdar.core.exception.SearchPaginationException;
+import org.tdar.core.exception.StatusCode;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
@@ -35,6 +38,7 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.AbstractLookupController;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -54,17 +58,12 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-public class BrowseCollectionController extends AbstractLookupController {
+public class BrowseCollectionController extends AbstractLookupController<ResourceCollection> {
 
-    public static final String FOAF_XML = ".foaf.xml";
-    public static final String SLASH = "/";
-    public static final String XML = ".xml";
-    public static final String CREATORS = "creators";
     public static final String COLLECTIONS = "collections";
     public static final String EXPLORE = "explore";
 
     private static final long serialVersionUID = -128651515783098910L;
-    private Creator creator;
     private Persistable persistable;
     private Long viewCount = 0L;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
@@ -104,21 +103,10 @@ public class BrowseCollectionController extends AbstractLookupController {
     @Autowired
     private transient ResourceService resourceService;
 
-    public Creator getAuthorityForDup() {
-        return entityService.findAuthorityFromDuplicate(creator);
-    }
 
     @Action(COLLECTIONS)
-    public String browseCollections() throws ParseException {
-        QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
-        setMode("browseCollections");
-        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-        handleSearch(qb);
-        setSearchDescription(getText("browseController.all_tdar_collections"));
-        setSearchTitle(getText("browseController.all_tdar_collections"));
+    public String browseCollections() throws TdarActionException {
+        performLuceneQuery();
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null,
@@ -127,6 +115,27 @@ public class BrowseCollectionController extends AbstractLookupController {
         }
 
         return SUCCESS;
+    }
+
+    private void performLuceneQuery() throws TdarActionException {
+        QueryBuilder qb = new ResourceCollectionQueryBuilder();
+        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
+        setMode("browseCollections");
+        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        try {
+            handleSearch(qb);
+        } catch (SearchPaginationException spe) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, spe);
+        } catch (TdarRecoverableRuntimeException tdre) {
+            getLogger().warn("search parse exception", tdre);
+            addActionError(tdre.getMessage());
+        } catch (ParseException e) {
+            getLogger().warn("search parse exception", e);
+        }
+        setSearchDescription(getText("browseController.all_tdar_collections"));
+        setSearchTitle(getText("browseController.all_tdar_collections"));
     }
 
     public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {

@@ -3,7 +3,6 @@ package org.tdar.struts.action.download;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,7 @@ import org.tdar.struts.action.TdarActionException;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespaces(value={
-        @Namespace("/filestore"),
-        @Namespace("/files")
-})
+@Namespace("/filestore")
 @Component
 @Scope("prototype")
 public class DownloadController extends AbstractDownloadController implements Preparable {
@@ -37,36 +33,35 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
     private boolean forceAttachment = false;
 
-    @Actions(value= {
-            @Action(value = "{informationResourceFileVersionId}/confirm", results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) }),
-            @Action(value = "confirm", results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) }),
+    @Actions(value = {
+            @Action(value = "confirm/{informationResourceId}/{informationResourceFileVersionId}",
+                    results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) }),
+            @Action(value = "confirm/{informationResourceId}",
+                    results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) })
     })
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 
-        DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null);
-        setInformationResource(dto.getInformationResource());
-        if (dto.getResult() != DownloadResult.SUCCESS) {
+        if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersionId())) {
+            setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                    isCoverPageIncluded(), this, null, false));
+        } else {
+            setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(),
+                    isCoverPageIncluded(), this, null, false));
+        }
+        setInformationResource(getDownloadTransferObject().getInformationResource());
+        if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return ERROR;
         }
         return CONFIRM;
     }
 
-    @Action(value = SHOW_DOWNLOAD_LANDING, results = {
-            @Result(name = SUCCESS, type = FREEMARKER, location = CONFIRM_DOWNLOAD_FTL) })
-    public String showDownloadAllLandingPage() {
-        return SUCCESS;
-    }
-
     @Override
-    @Actions(value= {
-            @Action(value = GET),
-            @Action(value = "get/{informationResourceFileVersionId}"),
+    @Actions(value = {
+            // @Action(value = "get/{informationResourceFileVersionId}"),
             @Action(value = "img/md/{informationResourceFileVersionId}"),
             @Action(value = "img/lg/{informationResourceFileVersionId}"),
-            @Action(value = "{informationResourceFileVersionId}/get"),
-            @Action(value = "{informationResourceFileVersionId}"),
+            @Action(value = "get/{informationResourceId}/{informationResourceFileVersionId}"),
     })
     public String execute() {
         getSessionData().clearPassthroughParameters();
@@ -78,7 +73,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null));
+                isCoverPageIncluded(), this, null, true));
         getDownloadTransferObject().setAttachment(forceAttachment);
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
@@ -87,14 +82,17 @@ public class DownloadController extends AbstractDownloadController implements Pr
         return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
-    @Action(value = DOWNLOAD_ALL)
+    @Actions(value = {
+            @Action(value = "zip/{informationResourceId}"),
+            @Action(value = "get/{informationResourceId}")
+    })
     public String downloadZipArchive() {
         getSessionData().clearPassthroughParameters();
         if (Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(),
-                this, null));
+                this, null, true));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }

@@ -56,14 +56,15 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     private DownloadTransferObject downloadTransferObject;
 
+    public static final String SUCCESS_DOWNLOAD_ALL = "success-download-all";
     public static final String GET = "get";
     public static final String LOGIN_REGISTER_PROMPT = "../filestore/download-unauthenticated.ftl";
-    public static final String DOWNLOAD_SUFFIX = "informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}";
-    public static final String SUCCESS_REDIRECT_DOWNLOAD = "/filestore/confirm?" + DOWNLOAD_SUFFIX;
-    public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get?" + DOWNLOAD_SUFFIX;
+    public static final String DOWNLOAD_SUFFIX = "/${informationResourceId}/${informationResourceFileVersionId}";
+    public static final String SUCCESS_REDIRECT_DOWNLOAD = "/filestore/confirm" + DOWNLOAD_SUFFIX;
+    public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get" +DOWNLOAD_SUFFIX;
     public static final String FORBIDDEN = "forbidden";
-    public static final String SHOW_DOWNLOAD_LANDING = "show-download-landing";
-    public static final String DOWNLOAD_ALL_LANDING = "/filestore/show-download-landing?" + DOWNLOAD_SUFFIX;
+//    public static final String SHOW_DOWNLOAD_LANDING = "show-download-landing";
+    public static final String DOWNLOAD_ALL_LANDING = "/filestore/confirm/${informationResourceId}";
     public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private Long informationResourceFileVersionId;
     private Long informationResourceId;
@@ -137,6 +138,8 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
             setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, irfvId));
             // bad, but force onto session until better way found
             if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
+                setInformationResource(informationResourceFileVersion.getInformationResourceFile().getInformationResource());
+                informationResourceId = informationResource.getId();
                 authorizationService.applyTransientViewableFlag(informationResourceFileVersion, getAuthenticatedUser());
             }
         }

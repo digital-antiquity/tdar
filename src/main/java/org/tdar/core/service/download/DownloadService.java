@@ -177,7 +177,7 @@ public class DownloadService {
 
     @Transactional(readOnly = false)
     public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
-            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
+            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization, boolean countDownload) {
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
         if (Persistable.Base.isNotNullOrTransient(versionToDownload)) {
             versionsToDownload.add(versionToDownload);
@@ -249,7 +249,9 @@ public class DownloadService {
         dto.setVersionsToDownload(versionsToDownload);
         try {
             constructDownloadTransferObject(dto);
-            registerDownload(dto.getStatistics());
+            if (countDownload) {
+                registerDownload(dto.getStatistics());
+            }
         } catch (TdarRecoverableRuntimeException tre) {
             logger.error("ERROR IN Download: {}", tre);
             dto.setResult(DownloadResult.ERROR);

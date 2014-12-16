@@ -31,7 +31,6 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
     private static final long serialVersionUID = 1525006233392261028L;
 
-    public static final String SUCCESS_DOWNLOAD_ALL = "success-download-all";
     private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(getH());
 
     @Autowired
@@ -73,7 +72,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
             default:
                 break;
         }
-        if (Persistable.Base.isNotNullOrTransient(getInformationResource())) {
+        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersionId())) {
             return SUCCESS_DOWNLOAD_ALL;
         }
         return SUCCESS;

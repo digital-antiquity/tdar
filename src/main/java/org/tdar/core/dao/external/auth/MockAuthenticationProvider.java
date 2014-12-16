@@ -2,6 +2,7 @@ package org.tdar.core.dao.external.auth;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,6 +47,9 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     public static final String USERNAME = "test@tdar.org";
     public static final String PASSWORD = "test";
 
+    // used for defining local passwords and rights for users
+    private Map<String,MockAuthenticationInfo> localValues = new HashMap<>();
+    
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, MockAuthenticationInfo> users = new ConcurrentHashMap<String, MockAuthenticationInfo>();
@@ -209,6 +213,12 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             if (user.getUsername().equals(USERNAME)) {
                 info.setPassword(PASSWORD);
             }
+            
+            if (localValues.containsKey(user.getUsername())) {
+                MockAuthenticationInfo local = localValues.get(user.getUsername());
+                info.setPassword(local.getPassword());
+                info.getMemberships().addAll(local.getMemberships());
+            }
             logger.trace("init: {}", user.getUsername().toLowerCase());
             users.put(user.getUsername().toLowerCase(), info);
         }
@@ -225,5 +235,13 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             }
         }
         return result;
+    }
+
+    public Map<String,MockAuthenticationInfo> getLocalValues() {
+        return localValues;
+    }
+
+    public void setLocalValues(Map<String,MockAuthenticationInfo> localValues) {
+        this.localValues = localValues;
     }
 }

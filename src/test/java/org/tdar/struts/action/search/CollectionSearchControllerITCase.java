@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -12,14 +13,19 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.index.LookupSource;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.utils.MessageHelper;
 
 @Transactional
-public class CollectionSearchControllerITCase extends AbstractSearchControllerITCase {
+public class CollectionSearchControllerITCase extends AbstractControllerITCase {
 
+    @Autowired
+    CollectionSearchAction controller;
+    
     @Test
     @Rollback(true)
     public void testFindAllSearchPhrase() {
+        controller = generateNewInitializedController(CollectionSearchAction.class);
         doSearch("");
         assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_collections"), controller.getSearchSubtitle());
     }
@@ -75,13 +81,12 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
             genericService.saveOrUpdate(collection);
         }
         searchIndexService.index(collection);
-        controller = generateNewController(AdvancedSearchController.class);
+        controller = generateNewController(CollectionSearchAction.class);
         init(controller, user);
         doSearch("Hohokam Archaeology");
         return collection;
     }
 
-    @Override
     protected void doSearch(String query) {
         controller.setQuery(query);
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.COLLECTION);

@@ -75,10 +75,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Long dataTableId;
 
     public void resolvePostSaveAction(Dataset persistable) {
+        setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
-                setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
-                setSaveSuccessSuffix("/columns");
+                setSaveSuccessPath(getPersistable().getUrlNamespace() + "/columns");
             }
         }
     }
@@ -242,9 +242,9 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         super.postSaveCallback(actionMessage);
         if (isHasFileProxyChanges()) {
             if (isAsync()) {
-                datasetService.remapAllColumnsAsync(getDataResource(), getProject());
+                datasetService.remapAllColumnsAsync(getId(), getProject().getId());
             } else {
-                datasetService.remapAllColumns(getDataResource(), getProject());
+                datasetService.remapAllColumns(getId(), getProject().getId());
             }
         }
     }

@@ -82,9 +82,10 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />
         </#if>
         <#if (version.viewable)>
-        <a href="<@s.url value='/filestore/download?informationResourceFileVersionId=${version.id?c}'/>"
+        <#local path>/filestore/download/${(irfile.informationResource.id)!id!-1?c}/${version.id?c}</#local>
+        <a href="<@s.url value='${path}'/>"
             class="download-link download-file"
-           onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')"
+           onClick="TDAR.common.registerDownload('${path}', '${id?c}')"
            <#if resource.resourceType.image> target='_blank' </#if>
            title="click to download: ${version.filename}">
             <@common.truncate version.filename 65 />
@@ -106,7 +107,7 @@ View freemarker macros
         <#if resource.hasConfidentialFiles() >
             Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
         <#else>
-        <a class="download-link download-zip" href="<@s.url value='/filestore/download?informationResourceId=${resource.id?c}'/>" target="_blank"
+        <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" target="_blank"
            onclick="TDAR.common.registerDownload('/filestore/download?informationResourceId=${resource.id?c}', '${id?c}')"
            title="download all as zip">Download All</a>
         </#if>
@@ -549,12 +550,12 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                                    </#if>
                                    <#if lazyLoad>
                                        src="/images/image_unavailable_t.gif"
-                                       data-src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                       data-src="<@s.url value="/files/sm/${irfile.latestThumbnail.id?c}"/>" <#t>
                                    <#else>
-                                       src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                       src="<@s.url value="/files/sm/${irfile.latestThumbnail.id?c}"/>" <#t>
                                    </#if>
                                    onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" <#t>
-                                   data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>" <#t>
+                                   data-url="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>" <#t>
                                    <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>> <#lt>
                           </span>
                         </div>
@@ -587,7 +588,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 <div>
             <span id="imageContainer">
             <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}"
-                 src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+                 src="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>"/>
             <span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
                 </div>
                 <div id="downloadText">
@@ -705,7 +706,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
         <#if seenThumbnail ><#t>
             <#t><span class="thumbnail-center-spacing"></span><#t>
-            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />"
+            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/files/sm/${resource_.primaryThumbnail.id?c}" />"
                      title="${resource_.title!''}" alt="${_imageDescription(resource_.primaryThumbnail resource_)}"
                      onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"/><#t>
         <#else>

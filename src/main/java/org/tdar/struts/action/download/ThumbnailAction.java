@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +20,10 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("default")
-@Namespaces(value = {
-        @Namespace("/filestore"),
-        @Namespace("/files") })
+@Namespace("/filestore")
 @Component
 @Scope("prototype")
-public class UnauthenticatedDownloadController extends AbstractDownloadController implements Preparable {
+public class ThumbnailAction extends AbstractDownloadController implements Preparable {
 
     private static final long serialVersionUID = 3682702108165100228L;
     @Autowired
@@ -34,12 +31,22 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    @Action(value = "download",
-            results = {
-                    @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
-                    @Result(name = DOWNLOAD_ALL, type = "redirect", location = "/filestore/downloadAllAsZip?informationResourceId=${informationResourceId}"),
-                    @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
-                    @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") })
+    @Actions(value = {
+            @Action(value = "download/{informationResourceId}/{informationResourceFileVersionId}",
+                    results = {
+                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
+                            @Result(name = DOWNLOAD_ALL, type = "redirect",
+                                    location = "/filestore/zip/${informationResourceId}"),
+                            @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
+                            @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") }),
+            @Action(value = "download/{informationResourceId}",
+                    results = {
+                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
+                            @Result(name = DOWNLOAD_ALL, type = "redirect",
+                                    location = "/filestore/zip/${informationResourceId}"),
+                            @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
+                            @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") })
+    })
     @HttpsOnly
     public String download() {
         if (!isAuthenticated()) {
@@ -61,8 +68,6 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
             @Action(value = "thumbnail/{informationResourceFileVersionId}"),
             @Action(value = "sm/{informationResourceFileVersionId}"),
             @Action(value = "img/sm/{informationResourceFileVersionId}"),
-            @Action(value = "{informationResourceFileVersionId}/thumbnail"),
-            @Action(value = "{informationResourceFileVersionId}/sm")
     })
     public String thumbnail() {
         getSessionData().clearPassthroughParameters();
@@ -83,7 +88,7 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         }
 
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null));
+                isCoverPageIncluded(), this, null, false));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }
