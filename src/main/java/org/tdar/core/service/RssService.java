@@ -268,6 +268,7 @@ public class RssService implements Serializable {
             entry.setPublishedDate(oaiResource.getDateCreated());
             entries.add(entry);
         } else {
+            logger.debug("resource: {} {}", resource_, resource_.getClass());
             throw new TdarRecoverableRuntimeException("rssService.cannot_generate_rss");
         }
         return entry;
