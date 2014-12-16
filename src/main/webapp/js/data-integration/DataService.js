@@ -1,3 +1,7 @@
+//FIXME: this should be a service responsible for loading/storing data to/from the server
+//TODO: migrate $http calls here
+//TODO: add an ontology cache
+//TODO: add a datatable cache
 (function(angular){
     "use strict"
     var app = angular.module("integrationApp");
@@ -12,7 +16,17 @@
         });
         return map;
     }
-    app.factory("DocumentData", _loadDocumentData);
+
+    function DataService() {
+        var documentData = _loadDocumentData();
+        var self = this;
+
+        this.getDocumentData = function() {
+            return documentData
+        }
+    }
+
+    app.service("DataService", DataService);
 
 /* global angular */
 })(angular);

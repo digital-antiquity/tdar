@@ -40,9 +40,11 @@
     };
 
     //Controller that drives the add-integration-column controller
-    app.controller('ModalDialogController', ['$scope', '$http', 'DocumentData', 'close', 'options',  function($scope, $http, DocumentData, close, options){
+    app.controller('ModalDialogController', ['$scope', '$http', 'DataService', 'close', 'options',  function($scope, $http, dataService, close, options){
         var url = options.url, closeWait = 500;
-        console.log("DocumentData: ", DocumentData);
+
+        //get map of embedded data stored in the DOM
+        var documentData = dataService.getDocumentData();
 
         console.debug("ModalDialogController:: url:%s", url);
         $scope.title = options.title;
@@ -51,9 +53,9 @@
         $scope.results = [];
 
         //initialize lookup lists
-        $scope.projects = DocumentData.allProjects;
-        $scope.collections = DocumentData.allCollections;
-        $scope.categories = DocumentData.allCategories;
+        $scope.projects = documentData.allProjects;
+        $scope.collections = documentData.allCollections;
+        $scope.categories = documentData.allCategories;
 
         $scope.categoryFilter = options.categoryFilter;
 

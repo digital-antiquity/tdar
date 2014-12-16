@@ -344,14 +344,14 @@ ${allResourceCollectionsJson}
 ${categoriesJson}
 </script>
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
-<!-- fixme: cycle.js modifies global JSON object. think of a better way to incorporate this -->
+<!-- fixme: cycle.js modifies global JSON object(which makse me nervous). think of a better way to incorporate this -->
 <script src="/includes/json-js-3d7767b/cycle.js"></script>
 <script src="/js/data-integration/app.js"></script>
 <script src="/js/data-integration/IntegrationController.js"></script>
 <script src="/js/data-integration/IntegrationModel.js"></script>
 <script src="/js/data-integration/LegacyFormController.js"></script>
 <script src="/js/data-integration/ModalDialogController.js"></script>
-<script src="/js/data-integration/DocumentDataFactory.js"></script>
+<script src="/js/data-integration/DataService.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
 <script src="/js/tdar.pagination.js"></script>
 </span>
