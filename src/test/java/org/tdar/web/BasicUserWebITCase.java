@@ -165,4 +165,10 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         }
     }
 
+    
+    @Test
+    public void testUnauthorized() {
+        gotoPage("/admin");
+        assertTextPresent("Sorry, you do not have the rights to access this page");
+    }
 }
