@@ -187,9 +187,12 @@ navigation freemarker macros
         <#elseif keyword?? >
             <#local _id = keyword.id />
         </#if>
-		<#if action == 'view'>
+		<#if action == 'view' || action == "creators">
 			<#local includeResourceId = false/>
 			<#local localAction="/${_id?c}"/>
+            <#if action == "creators">
+                <#local localAction="/creators/${_id?c}"/>
+            </#if>
 		</#if>
         <a href="<#compress><@s.url value="/${namespace}${localAction}">
 	        <#if includeResourceId>

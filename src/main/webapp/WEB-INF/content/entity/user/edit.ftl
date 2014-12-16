@@ -61,8 +61,8 @@
 
         <@entityEdit.uploadForm />
             <h3>Contributor</h3>
-
             <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />
+            <p><i>Note: after selecting this, you will be prompted to review and agree to our contributor's policy</i></p>
 
             <@s.textarea label="Please briefly describe the geographical areas, time periods, or other subjects for which you would like to contribute information"
             rows=6 cols='50' cssClass="input-xxlarge" name='contributorReason' id='contributorReasonId'  maxlength=512 />
