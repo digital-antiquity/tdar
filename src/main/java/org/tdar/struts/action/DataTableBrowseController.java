@@ -43,7 +43,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private transient DatasetService datasetService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Action(value = "browse",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {

@@ -42,7 +42,7 @@ public class WorkflowContextService {
     @Autowired
     private GenericDao genericDao;
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private DatasetService datasetService;
@@ -169,7 +169,7 @@ public class WorkflowContextService {
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
-        ctx.setXmlService(xmlService);
+        ctx.setSerializationService(serializationService);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {
             if (logger.isTraceEnabled()) {

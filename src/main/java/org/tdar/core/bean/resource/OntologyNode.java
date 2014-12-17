@@ -30,6 +30,9 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -142,6 +145,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.intervalEnd = end;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getIri() {
         return iri;
     }
@@ -158,6 +162,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.uri = uri;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getIndex() {
         return index;
     }
@@ -177,6 +182,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @Transient
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public int getNumberOfParents() {
         if (StringUtils.isEmpty(index)) {
             return 0;
@@ -195,6 +201,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return builder.toString();
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getDisplayName() {
         return displayName;
     }
@@ -334,6 +341,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @Transient
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public boolean hasMappedDataValues() {
         return mappedDataValues;
     }
@@ -342,6 +350,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.mappedDataValues = mappedDataValues;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public Map<DataTableColumn,Boolean> getColumnHasValueMap() {
         return columnHasValueMap;
     }

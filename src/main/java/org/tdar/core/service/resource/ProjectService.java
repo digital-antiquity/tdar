@@ -52,7 +52,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     private ObfuscationService obfuscationService;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     /**
      * Find @link Project resources by their submitter (@link Person).
@@ -194,6 +194,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         } catch (Exception ex) {
             throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
         }
-        return xmlService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
+        return serializationService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
     }
 }

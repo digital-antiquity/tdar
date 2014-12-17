@@ -65,7 +65,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
     private ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Action(value = ADMIN, results = {
             @Result(name = SUCCESS, location = "../resource/admin.ftl")
@@ -103,7 +103,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
         }
 
         try {
-            json = xmlService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
+            json = serializationService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
         } catch (IOException e) {
             getLogger().error("failed to convert stats to json", e);
             json = String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));

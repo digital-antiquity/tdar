@@ -70,7 +70,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     private List<Map<String, Object>> results = new ArrayList<>();
     private List<Long> ontologyIds = new ArrayList<>();
@@ -105,14 +105,14 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         for (DataTable result : findDataTables) {
             results.add(setupDatableForJson(result));
         }
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(results).getBytes()));
         return SUCCESS;
     }
 
     @Action(value = "get-shared-ontologies")
     public String findSharedOntologies() throws IOException {
         // results.addAll(serializeSharedOntologies());
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(serializeSharedOntologies()).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(serializeSharedOntologies()).getBytes()));
         return SUCCESS;
     }
 
@@ -162,7 +162,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
             HashMap<String, Object> map = setupOntologyForJson(ontology);
             results.add(map);
         }
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(results).getBytes()));
         return SUCCESS;
     }
 
@@ -209,7 +209,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
         values.put("dataTables", serializeDataTables());
         values.put("sharedOntologies", serializeSharedOntologies());
         results.add(values);
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(results).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(results).getBytes()));
         return SUCCESS;
     }
 
@@ -336,7 +336,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
      * @param obj
      */
     void stringifyThenSetInputStream(Object obj) throws IOException {
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToJson(obj).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(obj).getBytes()));
     }
 
     public List<Long> getDataTableColumnsIds() {

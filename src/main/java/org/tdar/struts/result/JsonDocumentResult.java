@@ -42,7 +42,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
     private int statusCode = StatusCode.OK.getHttpStatusCode();
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     public JsonDocumentResult() {
         super();
@@ -99,7 +99,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
                 }
             }
 
-            String jsonForStream = xmlService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
+            String jsonForStream = serializationService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
         }
 

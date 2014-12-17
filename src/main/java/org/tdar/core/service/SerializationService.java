@@ -287,7 +287,7 @@ public class SerializationService {
         Object toReturn = unmarshaller.unmarshal(new StringReader(StringUtils.join(lines, "\r\n")));// , new DefaultHandler());
 
         if (errors.size() > 0) {
-            throw new JaxbParsingException(MessageHelper.getMessage("xmlService.could_not_parse"), errors);
+            throw new JaxbParsingException(MessageHelper.getMessage("serializationService.could_not_parse"), errors);
         }
 
         return toReturn;
@@ -313,7 +313,7 @@ public class SerializationService {
                 break;
         }
         if (rdf == null) {
-            throw new TdarRecoverableRuntimeException("xmlService.cannot_determine_creator");
+            throw new TdarRecoverableRuntimeException("serializationService.cannot_determine_creator");
         }
 
         for (LogPart part : log.getCollaboratorLogPart()) {

@@ -45,7 +45,7 @@ public class UploadController extends AuthenticationAware.Base {
     private transient PersonalFilestoreService filestoreService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
@@ -140,7 +140,7 @@ public class UploadController extends AuthenticationAware.Base {
                 file.put("delete_type", "DELETE");
             }
             result.put("ticket", ticket);
-            setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
+            setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
 
             return SUCCESS;
         } else {
@@ -153,7 +153,7 @@ public class UploadController extends AuthenticationAware.Base {
     })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())
                 .getBytes()));
 
         return SUCCESS;
@@ -165,7 +165,7 @@ public class UploadController extends AuthenticationAware.Base {
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, getCallback()).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, getCallback()).getBytes()));
     }
 
     public List<File> getUploadFile() {

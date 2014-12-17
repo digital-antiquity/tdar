@@ -34,7 +34,7 @@ public class SchemaController extends TdarActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Override
     @Action(value = "current", results = {
@@ -45,7 +45,7 @@ public class SchemaController extends TdarActionSupport {
     })
     public String execute() {
         try {
-            File file = xmlService.generateSchema();
+            File file = serializationService.generateSchema();
             setInputStream(new FileInputStream(file));
         } catch (Exception e) {
             getLogger().error("could not create schema", e);

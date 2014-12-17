@@ -81,7 +81,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     @Test
     @Rollback
@@ -159,7 +159,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             ids = genericService.extractIds(resource.getSiteTypeKeywords());
             Collections.sort(ids);
             assertEquals(siteTypeKeywordIds, ids);
-            logger.debug(xmlService.convertToXML(resource));
+            logger.debug(serializationService.convertToXML(resource));
             assertEquals(1, resource.getResourceNotes().size());
             ResourceNote resourceNote = resource.getResourceNotes().iterator().next();
             assertEquals(note.getType(), resourceNote.getType());

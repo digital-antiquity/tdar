@@ -45,7 +45,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private transient OntologyService ontologyService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     // column metadata incoming data
     // Each list contains some specific piece of metadata for the given data table, where

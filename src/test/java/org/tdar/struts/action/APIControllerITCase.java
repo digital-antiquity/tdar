@@ -69,7 +69,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     ResourceService resourceService;
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     @Autowired
     GenericKeywordService genericKeywordService;
@@ -82,21 +82,21 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     public void testSerialization() throws Exception {
         FileProxy proxy = new FileProxy();
-        String convertToXML = xmlService.convertToXML(proxy);
+        String convertToXML = serializationService.convertToXML(proxy);
         logger.debug(convertToXML);
         ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
-        String convertToXML4 = xmlService.convertToXML(collection);
+        String convertToXML4 = serializationService.convertToXML(collection);
         logger.debug(convertToXML4);
         Image img = new Image();
         img.setDescription("absasda sd");
         img.setTitle("this is my title");
         img.getFileProxies().add(new FileProxy());
-        String convertToXML2 = xmlService.convertToXML(img);
+        String convertToXML2 = serializationService.convertToXML(img);
         logger.debug(convertToXML2);
         Project proj = new Project();
         proj.setDescription("absasda sd");
         proj.setTitle("this is my title");
-        String convertToXML3 = xmlService.convertToXML(proj);
+        String convertToXML3 = serializationService.convertToXML(proj);
         logger.debug(convertToXML3);
     }
 
@@ -123,14 +123,14 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
         // fake.getResourceCollections().clear();
         removeInvalidFields(fake);
-        String docXml = xmlService.convertToXML(fake);
+        String docXml = serializationService.convertToXML(fake);
         logger.info(docXml);
 
         // revert back
         Document old = resourceService.find(TEST_ID);
         genericService.markReadOnly(old);
         old.getRelatedComparativeCollections().add(new RelatedComparativeCollection("text"));
-        // final String oldDocXml = xmlService.convertToXML(old);
+        // final String oldDocXml = serializationService.convertToXML(old);
         assertEquals(1, old.getInternalResourceCollection().getAuthorizedUsers().size());
         genericService.detachFromSession(old);
         final Person oldSubmitter = old.getSubmitter();
@@ -185,7 +185,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         doc.getInformationResourceFiles().clear();
         doc.setMappedDataKeyColumn(null);
         removeInvalidFields(doc);
-        String docXml = xmlService.convertToXML(doc);
+        String docXml = serializationService.convertToXML(doc);
         logger.info(docXml);
         APIController controller = generateNewInitializedController(APIController.class);
         controller.setRecord(docXml);
@@ -288,7 +288,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         img.setFilename("1234");
         data.getSensoryDataImages().add(img);
         removeInvalidFields(data);
-        String docXml = xmlService.convertToXML(data);
+        String docXml = serializationService.convertToXML(data);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
@@ -303,7 +303,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         TdarUser user = (TdarUser) old.getSubmitter();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
-        String originalXml = xmlService.convertToXML(old);
+        String originalXml = serializationService.convertToXML(old);
         genericService.detachFromSession(old);
         old = null;
         String docXml = findADocumentToReplace(oldId);
@@ -330,7 +330,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Document document = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(document);
         document.setId(oldId);
-        String docXml = xmlService.convertToXML(document);
+        String docXml = serializationService.convertToXML(document);
         genericService.detachFromSession(document);
         return docXml;
     }
@@ -344,7 +344,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Dataset doc = findAResource(Dataset.class);
         removeInvalidFields(doc);
 
-        String datasetXml = xmlService.convertToXML(doc);
+        String datasetXml = serializationService.convertToXML(doc);
         controller.setRecord(datasetXml);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_IMAGE)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
@@ -359,7 +359,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testInvalidUser() throws Exception {
         Document doc = generateDocumentWithUser();
         removeInvalidFields(doc);
-        String docXml = xmlService.convertToXML(doc);
+        String docXml = serializationService.convertToXML(doc);
 
         APIController controller = generateNewController(APIController.class);
         init(controller, getBasicUser());
@@ -383,7 +383,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         bad.setLabel("INVAID");
         doc.getInvestigationTypes().add(bad);
         removeInvalidFields(doc);
-        String docXml = xmlService.convertToXML(doc);
+        String docXml = serializationService.convertToXML(doc);
         doc = null;
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
@@ -410,7 +410,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         genericService.markReadOnly(doc);
         doc.setResourceLanguage(Language.ENGLISH);
         removeInvalidFields(doc);
-        String docXml = xmlService.convertToXML(doc);
+        String docXml = serializationService.convertToXML(doc);
         doc = null;
         docXml = StringUtils.replace(docXml, Language.ENGLISH.name(), "FNGLISH");
         controller.setRecord(docXml);

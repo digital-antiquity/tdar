@@ -106,7 +106,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private ExcelService excelService;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private DataTableDao dataTableDao;
@@ -498,7 +498,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public void logDataTableColumns(DataTable dataTable, String message, TdarUser authenticatedUser) {
         try {
             StringWriter writer = new StringWriter();
-            xmlService.convertToXML(dataTable, writer);
+            serializationService.convertToXML(dataTable, writer);
             resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString());
             getLogger().trace("{} - xml {}", message, writer);
         } catch (Exception e) {

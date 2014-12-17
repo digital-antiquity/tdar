@@ -46,7 +46,7 @@ public class CartApiPollingAction extends AbstractCartController {
     private String callback;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Override
     public void validate() {
@@ -85,7 +85,7 @@ public class CartApiPollingAction extends AbstractCartController {
     }
 
     public void setResultJson(Object resultObject) {
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(resultObject, JsonLookupFilter.class, getCallback()).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(resultObject, JsonLookupFilter.class, getCallback()).getBytes()));
     }
 
     public String getCallback() {

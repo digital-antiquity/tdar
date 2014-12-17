@@ -46,7 +46,7 @@ public class CartApiController extends AbstractCartController implements Prepara
     private String callback;
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     @Autowired
     private transient InvoiceService invoiceService;
@@ -123,7 +123,7 @@ public class CartApiController extends AbstractCartController implements Prepara
     }
 
     public void setResultJson(Object resultObject) {
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(resultObject, null, getCallback()).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(resultObject, null, getCallback()).getBytes()));
     }
 
     public String getCallback() {

@@ -39,7 +39,7 @@ public class TableXMLDownloadAction extends AuthenticationAware.Base implements 
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
     @Autowired
     private transient AuthorizationService authorizationService;
 

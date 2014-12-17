@@ -73,7 +73,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     private transient ProjectDao projectDao;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 
@@ -225,8 +225,8 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Collections.sort(log.getKeywordLogPart(), new LogPartComparator());
 
             try {
-                xmlService.generateFOAF(creator, log);
-                xmlService.generateCreatorLog(creator, log);
+                serializationService.generateFOAF(creator, log);
+                serializationService.generateCreatorLog(creator, log);
             } catch (Exception e) {
                 getLogger().error("exception: ", e);
             }

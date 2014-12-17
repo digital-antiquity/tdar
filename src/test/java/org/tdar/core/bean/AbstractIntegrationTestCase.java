@@ -183,7 +183,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected AuthenticationService authenticationService;
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
     @Autowired
@@ -823,7 +823,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                     "schemaCache/oai-identifier.xsd"));
 
             try {
-                addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", xmlService.generateSchema());
+                addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", serializationService.generateSchema());
             } catch (Exception e) {
                 logger.error("an error occured creating the schema", e);
                 assertTrue(false);

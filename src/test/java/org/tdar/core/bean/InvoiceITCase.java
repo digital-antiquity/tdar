@@ -26,7 +26,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     GenericService genericService;
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     @Test
     @Rollback
@@ -90,7 +90,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     public void testJsonStatus() throws IOException {
         Invoice invoice = new Invoice();
         invoice.setTransactionStatus(TransactionStatus.PREPARED);
-        String json = xmlService.convertToJson(invoice);
+        String json = serializationService.convertToJson(invoice);
         assertTrue("status in json", json.indexOf(TransactionStatus.PREPARED.name()) > -1);
 
     }

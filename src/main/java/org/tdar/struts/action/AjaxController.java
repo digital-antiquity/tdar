@@ -38,7 +38,7 @@ public class AjaxController extends TdarActionSupport {
     private InputStream resultJson;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Action(value = "column-metadata-subcategories", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
@@ -53,7 +53,7 @@ public class AjaxController extends TdarActionSupport {
             e.setLabel("N/A");
             subcategories.add(e);
         }
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(subcategories, null, null).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(subcategories, null, null).getBytes()));
         return SUCCESS;
     }
 

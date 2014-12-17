@@ -28,7 +28,7 @@ public class GeoLocationController extends TdarActionSupport {
     private GeoSearchService geoSearchService;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     private Double minX;
     private Double minY;
@@ -53,7 +53,7 @@ public class GeoLocationController extends TdarActionSupport {
         try {
             Set<GeographicKeyword> allGeographicInfo = geoSearchService.extractAllGeographicInfo(latLongBox);
             latLongBox.addGeographicKeywords(allGeographicInfo);
-            String xml = xmlService.convertToXML(latLongBox);
+            String xml = serializationService.convertToXML(latLongBox);
             setInputStream(new StringInputStream(xml));
             getLogger().info(xml);
             getLogger().debug("completed external latLong lookup");

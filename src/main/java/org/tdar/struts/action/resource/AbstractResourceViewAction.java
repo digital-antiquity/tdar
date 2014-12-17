@@ -95,7 +95,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     private boolean hasDeletedFiles = false;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
@@ -172,7 +172,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         try {
             ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
             for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
-                xmlService.convertToXMLFragment(MetaTag.class, tag, sw);
+                serializationService.convertToXMLFragment(MetaTag.class, tag, sw);
                 sw.append("\n");
             }
         } catch (Exception e) {

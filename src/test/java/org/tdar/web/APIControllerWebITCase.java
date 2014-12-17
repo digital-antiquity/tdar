@@ -47,7 +47,7 @@ import com.sun.media.rtsp.protocol.StatusCode;
 public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
@@ -104,7 +104,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         doc.getInformationResourceFiles().clear();
         doc.setMappedDataKeyColumn(null);
         APIControllerITCase.removeInvalidFields(doc);
-        String docXml = xmlService.convertToXML(doc);
+        String docXml = serializationService.convertToXML(doc);
         logger.info(docXml);
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -156,7 +156,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         HttpEntity entity = response.getEntity();
         String result = IOUtils.toString(entity.getContent());
         logger.debug(result);
-        return Pair.create(response.getStatusLine().getStatusCode(), (JaxbResultContainer) xmlService.parseXml(new StringReader(result)));
+        return Pair.create(response.getStatusLine().getStatusCode(), (JaxbResultContainer) serializationService.parseXml(new StringReader(result)));
     }
 
     public void apiLogout() throws ClientProtocolException, IOException {

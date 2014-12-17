@@ -33,7 +33,7 @@ public class IntegrationOntologyLookupAction extends AbstractIntegrationAction i
     @Autowired
     private transient OntologyService ontologyService;
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Override
     public void prepare() {
@@ -47,7 +47,7 @@ public class IntegrationOntologyLookupAction extends AbstractIntegrationAction i
 
         getLogger().debug("find-ontologies:: searchFilter: {}", searchFilter);
         IntegrationOntologySearchResult result = ontologyService.findOntologies(searchFilter);
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToFilteredJson(result, JsonIntegrationFilter.class).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(result, JsonIntegrationFilter.class).getBytes()));
         return SUCCESS;
     }
     

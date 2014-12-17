@@ -113,7 +113,7 @@ public class AuthorityManagementService {
     private GenericDao genericDao;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private EmailService emailService;
@@ -378,7 +378,7 @@ public class AuthorityManagementService {
         String className = logData.getAuthority().getClass().getSimpleName();
         int numUpdated = logData.getUpdatedReferrers().keySet().size(); // number of records affected, not total reference count
         try {
-            xml = xmlService.convertToXML(logData);
+            xml = serializationService.convertToXML(logData);
         } catch (Exception e) {
             xml = MessageHelper.getMessage("authorityManagementService.xml_conversion_error");
             logger.warn("could not completely log authmgmt operation", e);

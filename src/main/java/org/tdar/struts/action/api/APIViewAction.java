@@ -19,7 +19,7 @@ public class APIViewAction extends AuthenticationAware.Base {
     private static final long serialVersionUID = 539604938603061219L;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
     @Autowired
     private transient ObfuscationService obfuscationService;
     @Autowired

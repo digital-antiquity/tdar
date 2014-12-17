@@ -97,7 +97,7 @@ public class ImportService {
     @Autowired
     private InformationResourceService informationResourceService;
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -340,9 +340,9 @@ public class ImportService {
 
         // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed
         // Long oldId = resource.getId();
-        String xml = xmlService.convertToXML(resource);
+        String xml = serializationService.convertToXML(resource);
         @SuppressWarnings("unchecked")
-        R rec = (R) xmlService.parseXml(new StringReader(xml));
+        R rec = (R) serializationService.parseXml(new StringReader(xml));
 
         rec.setId(null);
         rec.setTitle(rec.getTitle() + COPY);

@@ -124,7 +124,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     @Test
     public void testHarvest() throws Exception {
@@ -160,7 +160,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             }
             Resource find = genericService.find(Resource.class, Long.parseLong(dis));
             logger.info("found:{}", find);
-            logger.info("found:{}", xmlService.convertToXML(find));
+            logger.info("found:{}", serializationService.convertToXML(find));
         }
 
         Assert.assertEquals(

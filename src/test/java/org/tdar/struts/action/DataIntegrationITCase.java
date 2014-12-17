@@ -63,14 +63,14 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     OntologyService ontologyService;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Test
     public void testDatasetService() throws IOException {
         DatasetSearchFilter filter = new DatasetSearchFilter(100, 0);
         filter.setAuthorizedUser(getUser());
         IntegrationDataTableSearchResult findDataTables = dataTableService.findDataTables(filter);
-        logger.debug(xmlService.convertToFilteredJson(findDataTables, JsonIntegrationFilter.class));
+        logger.debug(serializationService.convertToFilteredJson(findDataTables, JsonIntegrationFilter.class));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         OntologySearchFilter filter = new OntologySearchFilter(100, 0);
         filter.setAuthorizedUser(getUser());
         IntegrationOntologySearchResult findOntologies = ontologyService.findOntologies(filter);
-        logger.debug(xmlService.convertToFilteredJson(findOntologies, JsonIntegrationFilter.class));
+        logger.debug(serializationService.convertToFilteredJson(findOntologies, JsonIntegrationFilter.class));
     }
 
     @Test

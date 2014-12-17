@@ -35,7 +35,7 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
     private transient DataTableService dataTableService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
 
     /**
@@ -59,7 +59,7 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
             }
         }
         try {
-            setDataTableColumnJson(xmlService.convertToJson(result));
+            setDataTableColumnJson(serializationService.convertToJson(result));
         } catch (Exception e) {
             getLogger().error("cannot convert to JSON: {}", e);
         }

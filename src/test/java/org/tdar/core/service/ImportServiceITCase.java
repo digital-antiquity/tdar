@@ -17,7 +17,7 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
     ImportService importService;
     
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
     
     @Test
     @Rollback
@@ -36,7 +36,7 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
         Set<CoverageDate> coverageDates2 = document.getCoverageDates();
         assertNotEmpty(coverageDates2);
         assertNotEquals(coverageDates.iterator().next().getId(), coverageDates2.iterator().next().getId());
-        logger.debug(xmlService.convertToXML(newDoc));
+        logger.debug(serializationService.convertToXML(newDoc));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
         genericService.synchronize();
         Dataset newDoc = importService.cloneResource(dataset, getAdminUser());
         genericService.synchronize();
-        logger.debug(xmlService.convertToXML(newDoc));
+        logger.debug(serializationService.convertToXML(newDoc));
 
 
 

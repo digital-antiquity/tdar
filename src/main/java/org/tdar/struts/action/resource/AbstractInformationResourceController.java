@@ -75,7 +75,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private transient AuthorizationService authorizationService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient FileProxyService fileProxyService;
@@ -400,7 +400,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         try {
-            filesJson = xmlService.convertToJson(fileProxies);
+            filesJson = serializationService.convertToJson(fileProxies);
             getLogger().debug(filesJson);
         } catch (IOException e) {
             getLogger().error("could not convert file list to json", e);

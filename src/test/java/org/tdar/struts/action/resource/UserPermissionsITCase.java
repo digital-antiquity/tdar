@@ -40,7 +40,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
     @Autowired
     EntityService entityService;
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     private List<AuthorizedUser> authUsers;
 
@@ -147,7 +147,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
             imageController.prepare();
             result = imageController.edit();
             logger.debug("action error count:{}, they are:{}", imageController.getActionErrors().size(), imageController.getActionErrors());
-            // logger.debug("brace yourself: \n\n\n\n{} \n\n\n", xmlService.convertToXML(image));
+            // logger.debug("brace yourself: \n\n\n\n{} \n\n\n", serializationService.convertToXML(image));
 
         } catch (TdarActionException e) {
             exceptionOccured = true;

@@ -103,7 +103,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private String submitterProperName = "";
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
@@ -214,7 +214,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
         StringWriter sw = new StringWriter();
         for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
-            xmlService.convertToXMLFragment(MetaTag.class, tag, sw);
+            serializationService.convertToXMLFragment(MetaTag.class, tag, sw);
             sw.append("\n");
         }
         return sw.toString();

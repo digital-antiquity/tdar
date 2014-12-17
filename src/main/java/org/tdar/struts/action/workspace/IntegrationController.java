@@ -44,7 +44,7 @@ public class IntegrationController extends AuthenticationAware.Base implements P
     @Autowired
     private AuthorizationService authorizationService;
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
     @Autowired
     private GenericService genericService;
     @Autowired
@@ -163,7 +163,7 @@ public class IntegrationController extends AuthenticationAware.Base implements P
     public String getCategoriesJson() {
         String json = "[]";
         try {
-            json = xmlService.convertToJson(categoryListJsonObject);
+            json = serializationService.convertToJson(categoryListJsonObject);
         } catch (IOException e) {
             addActionError(e.getMessage());
         }
@@ -175,7 +175,7 @@ public class IntegrationController extends AuthenticationAware.Base implements P
      String getJson(Object obj) {
          String json = "[]";
          try {
-             json = xmlService.convertToJson(obj);
+             json = serializationService.convertToJson(obj);
          } catch (IOException e) {
              addActionError(e.getMessage());
          }

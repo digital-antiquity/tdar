@@ -38,7 +38,7 @@ public class MessageService {
     private GenericDao genericDao;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     private transient final Logger logger = Logger.getLogger(getClass());
 
@@ -67,7 +67,7 @@ public class MessageService {
     private WorkflowContext extractWorkflowContext(Object msg) throws Exception {
         if (msg instanceof String) {
             String strMessage = (String) msg;
-            Object ctx_ = xmlService.parseXml(new StringReader(strMessage));
+            Object ctx_ = serializationService.parseXml(new StringReader(strMessage));
             if (ctx_ instanceof WorkflowContext) {
                 return (WorkflowContext) ctx_;
             }
@@ -128,7 +128,7 @@ public class MessageService {
         resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
-            ctx.setXmlService(xmlService);
+            ctx.setSerializationService(serializationService);
             boolean success = workflow_.run(ctx);
             // Martin: the following mandates that we wait for run to complete.
             // Surely the plan is to immediately show the user a result page with "your request is being processed" and then

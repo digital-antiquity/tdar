@@ -483,7 +483,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     private Map<String, Object> result = new HashMap<>();
 
@@ -503,7 +503,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
+        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {

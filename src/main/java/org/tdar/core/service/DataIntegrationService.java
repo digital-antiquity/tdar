@@ -85,7 +85,7 @@ public class DataIntegrationService {
     private OntologyNodeDao ontologyNodeDao;
 
     @Autowired
-    private SerializationService xmlService;
+    private SerializationService serializationService;
 
     public void setTdarDataImportDatabase(TargetDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
@@ -150,7 +150,7 @@ public class DataIntegrationService {
      */
     public String serializeIntegrationContext(List<IntegrationColumn> integrationColumns, TdarUser creator) throws Exception {
         StringWriter sw = new StringWriter();
-        xmlService.convertToXML(new IntegrationContext(creator, integrationColumns), sw);
+        serializationService.convertToXML(new IntegrationContext(creator, integrationColumns), sw);
         return sw.toString();
     }
 

@@ -82,7 +82,7 @@ public class ResourceService extends GenericService {
     }
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient EntityService entityService;

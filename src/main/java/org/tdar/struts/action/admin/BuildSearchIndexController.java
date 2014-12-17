@@ -58,7 +58,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private transient SearchIndexService searchIndexService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient EmailService emailService;
@@ -99,7 +99,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         map.put("phase", phase);
         map.put("percentDone", percentDone);
         getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
 
@@ -117,7 +117,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         map.put("phase", phase);
         map.put("percentDone", percentDone);
         // getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
 

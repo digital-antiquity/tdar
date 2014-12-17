@@ -46,7 +46,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base impleme
     private transient ResourceService resourceService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     private Long resourceId;
     private Boolean success = Boolean.FALSE;
@@ -81,7 +81,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base impleme
     private void processResultToJson() {
         Map<String, Object> result = new HashMap<>();
         result.put(SUCCESS, success);
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, callback).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, callback).getBytes()));
     }
 
     @Action(value = "bookmark",

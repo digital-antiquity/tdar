@@ -75,7 +75,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     private transient OntologyService ontologyService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     private Dataset persistable;
     private List<CategoryVariable> allDomainCategories;

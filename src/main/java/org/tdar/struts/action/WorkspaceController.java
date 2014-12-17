@@ -75,7 +75,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
     private transient PersonalFilestoreService filestoreService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     private List<Resource> bookmarkedResources;
     private Set<Ontology> sharedOntologies;
@@ -195,7 +195,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
     public String getIntegrationColumnData() {
         String data = "null";
         try {
-            data = xmlService.convertToJson(getIntegrationColumns());
+            data = serializationService.convertToJson(getIntegrationColumns());
         } catch (IOException e) {
             getLogger().warn("failed to generate integration column json", e);
         }

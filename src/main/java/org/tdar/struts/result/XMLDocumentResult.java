@@ -31,7 +31,7 @@ public class XMLDocumentResult implements Result {
     private int statusCode = StatusCode.OK.getHttpStatusCode();
 
     @Autowired
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     public XMLDocumentResult() {
         super();
@@ -77,7 +77,7 @@ public class XMLDocumentResult implements Result {
         }
         logger.debug("StatusCode: {}",getStatusCode());
         resp.setStatus(getStatusCode());
-        xmlService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
+        serializationService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
     }
 
     public int getStatusCode() {

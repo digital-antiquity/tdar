@@ -23,11 +23,11 @@ public class JsonObfuscationTestCase {
      * that's calling them.
      */
 
-    SerializationService xmlService;
+    SerializationService serializationService;
 
     public JsonObfuscationTestCase() throws ClassNotFoundException {
         // TODO Auto-generated constructor stub
-        xmlService = new SerializationService();
+        serializationService = new SerializationService();
     }
 
     @Test
@@ -35,7 +35,7 @@ public class JsonObfuscationTestCase {
         Person p = new Person();
         p.setFirstName("test");
         p.setLastName("<");
-        String json = xmlService.convertToFilteredJson(p, JsonLookupFilter.class);
+        String json = serializationService.convertToFilteredJson(p, JsonLookupFilter.class);
         logger.debug(json);
         assertFalse(json.contains("&lt;"));
         assertTrue(json.contains("test <"));
@@ -43,7 +43,7 @@ public class JsonObfuscationTestCase {
 
     @Test
     public void testNullProject() throws IOException {
-        String json = xmlService.convertToFilteredJson(Project.NULL, JsonProjectLookupFilter.class);
+        String json = serializationService.convertToFilteredJson(Project.NULL, JsonProjectLookupFilter.class);
         logger.debug(json);
         Assert.assertNotNull(json);
     }
@@ -53,7 +53,7 @@ public class JsonObfuscationTestCase {
         Person p = new Person();
         p.setFirstName("test");
         p.setLastName("O'Donnell");
-        String json = xmlService.convertToFilteredJson(p, JsonLookupFilter.class);
+        String json = serializationService.convertToFilteredJson(p, JsonLookupFilter.class);
         logger.debug(json);
         assertFalse(json.contains("\\'"));
         assertTrue(json.contains("\"O'"));
@@ -64,7 +64,7 @@ public class JsonObfuscationTestCase {
         Person p = new Person();
         p.setFirstName("test");
         p.setLastName("O\"Donnell");
-        String json = xmlService.convertToFilteredJson(p, JsonLookupFilter.class);
+        String json = serializationService.convertToFilteredJson(p, JsonLookupFilter.class);
         logger.debug(json);
         assertTrue(json.contains("\""));
         assertFalse(json.contains("&quot;"));

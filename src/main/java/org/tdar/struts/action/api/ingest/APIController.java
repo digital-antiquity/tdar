@@ -65,7 +65,7 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> processedFileNames;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
     @Autowired
     private transient ObfuscationService obfuscationService;
     @Autowired
@@ -106,7 +106,7 @@ public class APIController extends AuthenticationAware.Base {
         }
 
         try {
-            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
+            Resource incoming = (Resource) serializationService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
             xmlResultObject.setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
@@ -159,7 +159,7 @@ public class APIController extends AuthenticationAware.Base {
             getXmlResultObject().setStatus(code.toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
             xmlResultObject.setMessage(message);
-            getLogger().debug(xmlService.convertToXML(loadedRecord));
+            getLogger().debug(serializationService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
             message = "";

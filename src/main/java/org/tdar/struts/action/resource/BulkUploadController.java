@@ -82,7 +82,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private transient BulkUploadTemplateService bulkUploadTemplateService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     private InputStream resultJson;
     private String bulkFileName;
@@ -244,7 +244,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         result.put("percentDone", percentDone);
         result.put("phase", phase);
         result.put("errors", asyncErrors);
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, null).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, null).getBytes()));
         return SUCCESS;
     }
 

@@ -68,7 +68,7 @@ public class InvoiceService {
     private transient EmailService emailService;
 
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient UserNotificationService notificationService;
@@ -574,7 +574,7 @@ public class InvoiceService {
             genericDao.markWritable();
             Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
 
-            BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
+            BillingTransactionLog billingResponse = new BillingTransactionLog(serializationService.convertToJson(response), response.getTransactionId());
             billingResponse = genericDao.markWritableOnExistingSession(billingResponse);
             genericDao.saveOrUpdate(billingResponse);
             if (invoice != null && !response.isRefund()) {

@@ -34,7 +34,7 @@ public class IntegrationDatasetLookupAction extends AbstractIntegrationAction im
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient SerializationService xmlService;
+    private transient SerializationService serializationService;
 
     @Override
     public void prepare() {
@@ -48,7 +48,7 @@ public class IntegrationDatasetLookupAction extends AbstractIntegrationAction im
         getLogger().debug("find-datasets:: datasetFilter: {}", searchFilter);
 
         IntegrationDataTableSearchResult findDataTables = dataTableService.findDataTables(searchFilter);
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertToFilteredJson(findDataTables, JsonIntegrationFilter.class).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(findDataTables, JsonIntegrationFilter.class).getBytes()));
         return SUCCESS;
     }
 
