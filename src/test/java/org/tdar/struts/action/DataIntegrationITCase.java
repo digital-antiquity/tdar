@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -28,19 +26,11 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.core.dao.integration.DatasetSearchFilter;
-import org.tdar.core.dao.integration.OntologySearchFilter;
-import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;
-import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
-import org.tdar.core.service.resource.DataTableService;
-import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.json.JsonIntegrationFilter;
 
 /**
  * $Id$
@@ -55,31 +45,6 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     private static final String BONE_COMMON_NAME_COL = "bone_common_name";
     private static final String TAXON_COL = "taxon";
     private static final String SPECIES_COMMON_NAME_COL = "species_common_name";
-
-    @Autowired
-    DataTableService dataTableService;
-
-    @Autowired
-    OntologyService ontologyService;
-
-    @Autowired
-    private SerializationService serializationService;
-
-    @Test
-    public void testDatasetService() throws IOException {
-        DatasetSearchFilter filter = new DatasetSearchFilter(100, 0);
-        filter.setAuthorizedUser(getUser());
-        IntegrationDataTableSearchResult findDataTables = dataTableService.findDataTables(filter);
-        logger.debug(serializationService.convertToFilteredJson(findDataTables, JsonIntegrationFilter.class));
-    }
-
-    @Test
-    public void testOntologyService() throws IOException {
-        OntologySearchFilter filter = new OntologySearchFilter(100, 0);
-        filter.setAuthorizedUser(getUser());
-        IntegrationOntologySearchResult findOntologies = ontologyService.findOntologies(filter);
-        logger.debug(serializationService.convertToFilteredJson(findOntologies, JsonIntegrationFilter.class));
-    }
 
     @Test
     @Rollback
