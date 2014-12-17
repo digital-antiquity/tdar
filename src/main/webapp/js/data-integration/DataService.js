@@ -71,7 +71,7 @@
 
         /**
          * Returns httpPromise of an object containing: datatable objects corresponding to the specified array of
-         * datatableId's, and
+         * datatableId's
          * @param datatableIds
          * @return HttpPromise futureDatatables:httppromise<{dataTables: Array<datatable>,  sharedOntologies: Array<ontology>}>
          *
@@ -88,6 +88,31 @@
 
             return httpPromise;
         };
+
+
+        this.findDatasets = function(searchFilter) {
+            var url = "/workspace/ajax/find-datasets";
+            var futureData = $q.defer();
+            var config = {
+                //fixme: toStrutsParams belongs here (and needs to be less dumb)
+                params: searchFilter.toStrutsParams()
+            }
+            var transformer =  function(data) {
+                return data.map(function(item){
+                    var result = item;
+                    result.title = item.dataset_name;
+                    result.title += ' - ' + item.data_table_name;
+                    result.id = item.data_table_id;
+                    result.submitter_display_name  = item.dataset.submitter.properName;
+                    result.date_registered = item.dataset_date_created;
+                    return result;
+                })
+            };
+            $http.get(url, config).success(function(data){
+               futureData.resolve(transformer(data));
+            });
+            return futureData.promise;
+        }
 
 
     }
