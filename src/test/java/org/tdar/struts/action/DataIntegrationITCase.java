@@ -29,8 +29,9 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.dao.integration.DatasetSearchFilter;
-import org.tdar.core.dao.integration.IntegrationSearchFilter;
+import org.tdar.core.dao.integration.OntologySearchFilter;
 import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;
+import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
@@ -73,12 +74,11 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    public void testOntologyService() {
-        IntegrationSearchFilter filter = new IntegrationSearchFilter(100, 0);
+    public void testOntologyService() throws IOException {
+        OntologySearchFilter filter = new OntologySearchFilter(100, 0);
         filter.setAuthorizedUser(getUser());
-        for (Ontology ont : ontologyService.findOntologiesDeprecated(filter)) {
-            logger.debug("{} - {}", ont.getName(), ont.getId());
-        }
+        IntegrationOntologySearchResult findOntologies = ontologyService.findOntologies(filter);
+        logger.debug(xmlService.convertToFilteredJson(findOntologies, JsonIntegrationFilter.class));
     }
 
     @Test

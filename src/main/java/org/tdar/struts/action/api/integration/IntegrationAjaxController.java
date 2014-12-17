@@ -43,13 +43,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.opensymphony.xwork2.Preparable;
 
-@ParentPackage("secured")
-@Namespace("/api/integration")
-@Component
-@Scope("prototype")
-@Results(value = {
-        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" })
-})
+//NOT MEANT FOR DISTRIBUTION
 public class IntegrationAjaxController extends AbstractIntegrationAction implements Preparable, SimpleSearchResultHandler {
 
     private static final long serialVersionUID = 3970131518795132325L;

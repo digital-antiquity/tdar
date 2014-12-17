@@ -4,8 +4,10 @@ import java.io.Serializable;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @JsonAutoDetect 
 public class OntologyProxy implements Serializable {
@@ -20,6 +22,7 @@ public class OntologyProxy implements Serializable {
         this.submitter = ontology.getSubmitter();
     }
 
+    @JsonView(JsonIntegrationFilter.class)
     public TdarUser getSubmitter() {
         return submitter;
     }
@@ -28,6 +31,7 @@ public class OntologyProxy implements Serializable {
         this.submitter = submitter;
     }
 
+    @JsonView(JsonIntegrationFilter.class)
     public Ontology getOntology() {
         return ontology;
     }
