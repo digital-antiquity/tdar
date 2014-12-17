@@ -53,7 +53,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.api.APIController;
+import org.tdar.struts.action.api.ingest.APIController;
 import org.tdar.utils.TestConfiguration;
 
 import com.opensymphony.xwork2.Action;
