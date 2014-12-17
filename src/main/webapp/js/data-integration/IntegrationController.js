@@ -6,7 +6,7 @@
     var app = angular.module('integrationApp');
 
     //top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$scope', 'ModalService',  '$http', 'IntegrationService', '$q',  function($scope, ModalService, $http, integration, $q){
+    app.controller('IntegrationController', ['$scope', 'ModalService',  'IntegrationService', 'DataService', function($scope, ModalService, integration, dataService){
         var self = this,
                 openModal;
 
@@ -68,22 +68,17 @@
 
         /**
          * Called after user selects list of dataset id's from 'add datasets' modal.
-         * @param datasetIds
+         * @param datatableIds
          */
-        self.addDatasets = function(datasetIds) {
-            if(datasetIds.length === 0) return;
+        self.addDatasets = function(datatableIds) {
+            if(datatableIds.length === 0) return;
             //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
-            $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true)
-            ).success(function(data) {
-
-                        //FIXME: replace direct array minipulation with model add/remove methods so that we know when to update functional dependencies
-                        self.integration.addDatatables(data[0].dataTables);
-                        self.integration.updateSharedOntologies(data[0].sharedOntologies);
-
-                        //gather the updated node participation data
-                        $scope.loadIntegrationColumnDetails(self.integration);
-                    });
-
+            dataService.loadTableDetails(datatableIds).success(function(data) {
+                self.integration.addDatatables(data[0].dataTables);
+                self.integration.updateSharedOntologies(data[0].sharedOntologies);
+                //gather the updated node participation data
+                $scope.loadIntegrationColumnDetails(self.integration);
+            });
         };
 
         //add and initialize an integration column associated with with the specified ontology ID
@@ -181,32 +176,8 @@
         };
 
         $scope.loadIntegrationColumnDetails = function(integration) {
-            //get column participation for all dataTableColumns across all shared ontologies
-            var promises = [];
-            var configs = [];
-
-            integration.ontologies.forEach(function(ontology){
-                var mappedCols = integration.getMappedDatatableColumns(ontology.id);
-                var config = {};
-                var params = {
-                    "integrationColumn.columnType": "INTEGRATION",
-                    "integrationColumn.sharedOntology.id": ontology.id
-                };
-                mappedCols.forEach(function(mappedCol, i){
-                    params["integrationColumn.columns[" + i + "].id"] = mappedCol.id
-                });
-                config.params = params;
-                configs.push(config);
-                promises.push($http.get("/workspace/ajax/integration-column-details", config));
-            });
-            $q.all(promises).then(function(arResults){
-                arResults.forEach(function(result, ontologyIdx){
-                    var ontology = integration.ontologies[ontologyIdx];
-                    var mappedCols = integration.getMappedDatatableColumns(ontology.id);
-                    integration.updateNodeParticipationInfo(ontology, mappedCols, result.data);
-                });
-            }) ;
-        }
+            dataService.loadIntegrationColumnDetails(integration);
+        };
 
         //FIXME: proper validation required
         $scope.isValid = function() {
@@ -224,34 +195,6 @@
             var nodeInfo = ontologyParticipation.nodeInfoList[nodeIdx];
             return nodeInfo.colIds.indexOf(dtcId) > -1;
         }
-
-        /**
-         * If the user modifies the list of datatables it will put the viewModel in an inconsistent state.   This method returns the viewModel to a consistent
-         * state with as little destruction as possible.
-         *
-         * @private
-         */
-        //var _viewModelDirty = function() {
-        //    console.log('viewModelDirty::');
-        //    self.integration.ontologies.length = 0;
-        //
-        //    //hack: rebuild shared ontologies.
-        //    var datasetIds = [];
-        //    datasetIds = self.integration.datatables.map(function(dt){return dt.data_table_id});
-        //    $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datasetIds}, true))
-        //            .success(function(data){
-        //                console.debug("resetting list of shared ontologies");
-        //                console.table(data[0].sharedOntologies);
-        //                self.integration.ontologies = data[0].sharedOntologies;
-        //            });
-        //
-        //    //TODO: handle integration columns for ontologies that are no longer shared (e.g. if a user adds a datatable)
-        //    self.integration.columns = []
-        //    self.setTab(0);
-        //
-        //    //TODO: handle display column when source datatableColumn no longer exists
-        //};
-
 
     }]);
 
