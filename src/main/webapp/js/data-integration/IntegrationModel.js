@@ -285,7 +285,7 @@
             var currentSharedOntologyIds = self.ontologies.map(function(ontology){return ontology.id});
             var newSharedOntologyIds = _calculateSharedOntologyIds();
             //var defunctOntologyIds = currentSharedOntologyIds.filter(function(ontologyId){return newSharedOntologyIds.indexOf(ontologyId) === -1});
-            _sharedOntologiesRemoved(newSharedOntologyIds);
+            _sharedOntologiesUpdated(newSharedOntologyIds, currentSharedOntologyIds);
 
             //Step 2: account for integration columns that refer to still-shared ontologies
             _buildMappedDatatables();
@@ -298,11 +298,12 @@
 
             //Step 3: account for display columns that need an additional selectedDatatableColumn entry.
             //todo: need to update the selectedDatatables information for all displayColumns
+
         }
 
 
-        function _sharedOntologiesRemoved(newSharedOntologyIds) {
-            console.debug("_sharedOntologiesRemoved::", newSharedOntologyIds);
+        function _sharedOntologiesUpdated(newSharedOntologyIds, oldSharedOntologyIds) {
+            console.debug("_sharedOntologiesUpdated::", newSharedOntologyIds);
             var outputColumnsToRemove = _getIntegrationColumns().filter(function(column){
                 return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
             });

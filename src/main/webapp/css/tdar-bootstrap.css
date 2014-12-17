@@ -1726,3 +1726,9 @@ div.grippie {
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
     display: none !important;
 }
+
+/* Styling to distinguish the text of an 'empty' option in a select list */
+/* fixme: most browsers ignore option style. See if there's an alternate approach */
+option.emptyoption {
+    font-style: italic;
+}

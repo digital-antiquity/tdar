@@ -176,12 +176,13 @@
                                             <div ng-switch-when="display" class=".display-pane-content">
                                                 <h3>Choose source columns</h3>
                                                 <table>
-                                                    <tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">
-                                                        <td>{{columnSelection.datatable.data_table_name}}</td>
+                                                    <#--<tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">-->
+                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" og-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
+                                                        <td>{{datatable.data_table_name}}</td>
                                                         <td>
-                                                            <select ng-model="columnSelection.datatableColumn"
-                                                                    ng-options="c.display_name for c in columnSelection.datatable.columns">
-                                                                <option value=""></option>
+                                                            <select ng-model="outputColumn.datatableColumnSelections[$index]"
+                                                                    ng-options="c.display_name for c in datatable.columns">
+                                                                <option value="" class="emptyoption">No column selected</option>
                                                             </select>
                                                         </td>
                                                     </tr>
