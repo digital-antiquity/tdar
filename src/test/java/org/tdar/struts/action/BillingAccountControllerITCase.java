@@ -168,17 +168,42 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAddingUsersToAccount() throws TdarActionException {
+        Long id = setupAccountWithUsers();
+
+        Account account = genericService.find(Account.class, id);
+        assertEquals(3, account.getAuthorizedMembers().size());
+        assertTrue(account.getAuthorizedMembers().contains(getAdminUser()));
+    }
+
+    private Long setupAccountWithUsers() throws TdarActionException {
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.prepare();
         controller.getAuthorizedMembers().add(getAdminUser());
+        controller.getAuthorizedMembers().add(getBillingUser());
+        controller.getAuthorizedMembers().add(getEditorUser());
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         Long id = controller.getAccount().getId();
         assertEquals(Action.SUCCESS, save);
+        return id;
+    }
 
+    @Test
+    @Rollback
+    public void testRemovingUsersFromAccount() throws TdarActionException {
+        Long id = setupAccountWithUsers();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        controller.setId(id);
+        controller.prepare();
+        int size = controller.getAccount().getAuthorizedMembers().size();
+        controller.getAuthorizedMembers().remove(getBillingUser());
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        assertEquals(Action.SUCCESS, save);
         Account account = genericService.find(Account.class, id);
-        assertEquals(1, account.getAuthorizedMembers().size());
-        assertTrue(account.getAuthorizedMembers().contains(getAdminUser()));
+        assertEquals(size - 1, account.getAuthorizedMembers().size());
+        assertFalse(account.getAuthorizedMembers().contains(getBillingUser()));
+
     }
 
     @Test

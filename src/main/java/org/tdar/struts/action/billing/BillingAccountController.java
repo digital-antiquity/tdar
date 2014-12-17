@@ -152,8 +152,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
             getAccount().setName(getName());
             getAccount().setDescription(getDescription());
-        } else {
-            getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         }
 
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
@@ -341,4 +339,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return SUCCESS;
     }
 
+    
+    @Override
+    public void prepare() throws TdarActionException {
+        super.prepare();
+        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
+    }
 }
