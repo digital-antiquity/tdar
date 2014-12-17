@@ -27,7 +27,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ScheduledProcessService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.struts.action.AuthenticationAware;
@@ -50,7 +50,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private transient ScheduledProcessService scheduledProcessService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Autowired
     private transient AuthenticationService authenticationService;

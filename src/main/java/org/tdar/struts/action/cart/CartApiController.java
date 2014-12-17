@@ -18,7 +18,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption;
 
@@ -46,7 +46,7 @@ public class CartApiController extends AbstractCartController implements Prepara
     private String callback;
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     @Autowired
     private transient InvoiceService invoiceService;

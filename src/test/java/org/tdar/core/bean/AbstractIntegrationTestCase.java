@@ -103,7 +103,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
@@ -183,7 +183,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected AuthenticationService authenticationService;
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
     @Autowired

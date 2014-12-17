@@ -35,7 +35,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.APIControllerITCase;
 import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
@@ -47,7 +47,7 @@ import com.sun.media.rtsp.protocol.StatusCode;
 public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);

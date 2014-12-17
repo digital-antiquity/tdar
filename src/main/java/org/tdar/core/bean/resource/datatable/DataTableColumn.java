@@ -39,6 +39,9 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Metadata for a column in a data table.
@@ -185,6 +188,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.columnDataType = type;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public DataTableColumnEncodingType getColumnEncodingType() {
         return columnEncodingType;
     }
@@ -193,6 +197,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.columnEncodingType = columnEncodingType;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -408,6 +413,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Transient
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public boolean isActuallyMapped() {
         if (Persistable.Base.isNullOrTransient(getDefaultOntology())) {
             return false;
@@ -422,6 +428,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Transient
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public Ontology getMappedOntology() {
         if (getDefaultOntology() != null) {
             return getDefaultOntology();

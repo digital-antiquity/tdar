@@ -34,6 +34,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -101,6 +102,7 @@ public class DataTable extends Persistable.Base {
 
     @XmlElementWrapper(name = "dataTableColumns")
     @XmlElement(name = "dataTableColumn")
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public List<DataTableColumn> getDataTableColumns() {
         return dataTableColumns;
     }

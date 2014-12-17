@@ -49,7 +49,7 @@ import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -69,7 +69,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     ResourceService resourceService;
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     @Autowired
     GenericKeywordService genericKeywordService;

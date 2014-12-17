@@ -24,7 +24,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.index.LookupSource;
@@ -58,7 +58,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private transient SearchIndexService searchIndexService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Autowired
     private transient EmailService emailService;

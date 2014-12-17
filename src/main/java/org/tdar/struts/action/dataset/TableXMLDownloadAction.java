@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
@@ -39,7 +39,7 @@ public class TableXMLDownloadAction extends AuthenticationAware.Base implements 
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
     @Autowired
     private transient AuthorizationService authorizationService;
 

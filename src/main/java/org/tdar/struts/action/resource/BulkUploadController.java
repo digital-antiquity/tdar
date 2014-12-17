@@ -39,7 +39,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -82,7 +82,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private transient BulkUploadTemplateService bulkUploadTemplateService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     private InputStream resultJson;
     private String bulkFileName;

@@ -32,7 +32,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
@@ -75,7 +75,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
     private transient PersonalFilestoreService filestoreService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     private List<Resource> bookmarkedResources;
     private Set<Ontology> sharedOntologies;

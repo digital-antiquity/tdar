@@ -16,7 +16,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;
 
@@ -38,7 +38,7 @@ public class MessageService {
     private GenericDao genericDao;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     private transient final Logger logger = Logger.getLogger(getClass());
 

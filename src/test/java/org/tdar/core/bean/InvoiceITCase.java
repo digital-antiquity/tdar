@@ -14,7 +14,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.InvoiceService;
 
 public class InvoiceITCase extends AbstractIntegrationTestCase {
@@ -26,7 +26,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     GenericService genericService;
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     @Test
     @Rollback

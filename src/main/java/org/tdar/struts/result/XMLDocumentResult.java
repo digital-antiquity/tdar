@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
@@ -31,7 +31,7 @@ public class XMLDocumentResult implements Result {
     private int statusCode = StatusCode.OK.getHttpStatusCode();
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     public XMLDocumentResult() {
         super();

@@ -42,7 +42,7 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UserNotificationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
@@ -68,7 +68,7 @@ public class InvoiceService {
     private transient EmailService emailService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Autowired
     private transient UserNotificationService notificationService;

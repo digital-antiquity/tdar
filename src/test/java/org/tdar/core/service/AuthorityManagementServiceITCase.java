@@ -53,7 +53,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     GenericKeywordService genericKeywordService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     @Test
     public void testCreatorPersonReferrers() {

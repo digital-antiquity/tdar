@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.integration.OntologySearchFilter;
 import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.search.query.SimpleSearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -33,7 +33,7 @@ public class IntegrationOntologyLookupAction extends AbstractIntegrationAction i
     @Autowired
     private transient OntologyService ontologyService;
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Override
     public void prepare() {

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
@@ -45,7 +45,7 @@ public class UploadController extends AuthenticationAware.Base {
     private transient PersonalFilestoreService filestoreService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();

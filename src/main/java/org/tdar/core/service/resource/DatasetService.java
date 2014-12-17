@@ -61,7 +61,7 @@ import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
@@ -106,7 +106,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private ExcelService excelService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     @Autowired
     private DataTableDao dataTableDao;

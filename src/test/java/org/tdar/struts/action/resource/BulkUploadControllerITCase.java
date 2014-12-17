@@ -53,7 +53,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -81,7 +81,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     @Test
     @Rollback

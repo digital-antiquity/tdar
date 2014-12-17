@@ -113,7 +113,7 @@ public class AuthorityManagementService {
     private GenericDao genericDao;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     @Autowired
     private EmailService emailService;

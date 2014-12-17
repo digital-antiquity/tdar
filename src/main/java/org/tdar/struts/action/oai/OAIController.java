@@ -43,7 +43,7 @@ import org.tdar.core.exception.OaiErrorCode;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
@@ -132,7 +132,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     private String mode = "OAI";
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
     private ArrayList<ResourceCollection> sets;
 
     // http://.../oai-pmh/oai?

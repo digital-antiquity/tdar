@@ -17,7 +17,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
@@ -42,7 +42,7 @@ public class WorkflowContextService {
     @Autowired
     private GenericDao genericDao;
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     @Autowired
     private DatasetService datasetService;

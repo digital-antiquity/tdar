@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowContextService;
 import org.tdar.core.service.workflow.workflows.Workflow;
@@ -57,7 +57,7 @@ public final class WorkflowContext implements Serializable {
     private transient Resource transientResource;
     private boolean okToStoreInFilestore = true;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
     private transient TargetDatabase targetDatabase;
 
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
@@ -241,11 +241,11 @@ public final class WorkflowContext implements Serializable {
     }
 
     @XmlTransient
-    public XmlService getXmlService() {
+    public SerializationService getXmlService() {
         return xmlService;
     }
 
-    public void setXmlService(XmlService xmlService) {
+    public void setXmlService(SerializationService xmlService) {
         this.xmlService = xmlService;
     }
 

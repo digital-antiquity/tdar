@@ -29,7 +29,7 @@ import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
@@ -65,7 +65,7 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> processedFileNames;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
     @Autowired
     private transient ObfuscationService obfuscationService;
     @Autowired

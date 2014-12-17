@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
 import org.w3c.dom.Document;
@@ -124,7 +124,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     @Test
     public void testHarvest() throws Exception {

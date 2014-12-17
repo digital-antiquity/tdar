@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 
 /**
  * $Id$
@@ -38,7 +38,7 @@ public class AjaxController extends TdarActionSupport {
     private InputStream resultJson;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Action(value = "column-metadata-subcategories", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })

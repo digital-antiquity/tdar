@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
@@ -43,7 +43,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private transient DatasetService datasetService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Action(value = "browse",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {

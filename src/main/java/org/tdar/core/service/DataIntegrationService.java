@@ -85,7 +85,7 @@ public class DataIntegrationService {
     private OntologyNodeDao ontologyNodeDao;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     public void setTdarDataImportDatabase(TargetDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;

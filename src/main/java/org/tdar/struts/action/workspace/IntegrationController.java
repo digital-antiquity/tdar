@@ -15,7 +15,7 @@ import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -44,7 +44,7 @@ public class IntegrationController extends AuthenticationAware.Base implements P
     @Autowired
     private AuthorizationService authorizationService;
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
     @Autowired
     private GenericService genericService;
     @Autowired

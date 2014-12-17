@@ -38,7 +38,7 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DatasetService;
@@ -75,7 +75,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private transient AuthorizationService authorizationService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Autowired
     private transient FileProxyService fileProxyService;

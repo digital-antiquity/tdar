@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.integration.DatasetSearchFilter;
 import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.search.query.SimpleSearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -34,7 +34,7 @@ public class IntegrationDatasetLookupAction extends AbstractIntegrationAction im
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Override
     public void prepare() {

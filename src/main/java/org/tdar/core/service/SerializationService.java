@@ -75,7 +75,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * class to help with marshalling and unmarshalling of resources
  */
 @Service
-public class XmlService {
+public class SerializationService {
 
     private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
     private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
@@ -104,7 +104,7 @@ public class XmlService {
 
     XMLFilestoreLogger xmlFilestoreLogger;
 
-    public XmlService() throws ClassNotFoundException {
+    public SerializationService() throws ClassNotFoundException {
         xmlFilestoreLogger = new XMLFilestoreLogger();
     }
 

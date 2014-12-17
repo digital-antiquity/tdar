@@ -40,7 +40,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
@@ -95,7 +95,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     private boolean hasDeletedFiles = false;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;

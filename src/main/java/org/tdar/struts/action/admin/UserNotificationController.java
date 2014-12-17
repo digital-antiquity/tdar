@@ -20,7 +20,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.notification.UserNotificationType;
 import org.tdar.core.service.UserNotificationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -60,7 +60,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     private transient UserNotificationService userNotificationService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     @Override
     public void prepare() {

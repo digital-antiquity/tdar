@@ -40,7 +40,7 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -73,7 +73,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     private transient ProjectDao projectDao;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 

@@ -27,7 +27,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.service.DataIntegrationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
@@ -48,20 +48,17 @@ public class IntegrationAjaxController extends AbstractIntegrationAction impleme
 
     private static final long serialVersionUID = 3970131518795132325L;
 
-    private IntegrationColumn integrationColumn;
-
     private Integer startRecord = 0;
     private Integer recordsPerPage = 100;
     private IntegrationSearchFilter searchFilter = new IntegrationSearchFilter(recordsPerPage, startRecord);
 
     @Autowired
     private transient OntologyService ontologyService;
-    @Autowired
-    private transient DataIntegrationService integrationService;
+
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     private List<Map<String, Object>> results = new ArrayList<>();
     private List<Long> ontologyIds = new ArrayList<>();

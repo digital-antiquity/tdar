@@ -17,7 +17,7 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
     ImportService importService;
     
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
     
     @Test
     @Rollback

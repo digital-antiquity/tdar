@@ -27,7 +27,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
@@ -52,7 +52,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     private ObfuscationService obfuscationService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     /**
      * Find @link Project resources by their submitter (@link Person).

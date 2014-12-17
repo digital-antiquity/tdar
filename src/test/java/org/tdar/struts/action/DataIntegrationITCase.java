@@ -32,7 +32,7 @@ import org.tdar.core.dao.integration.DatasetSearchFilter;
 import org.tdar.core.dao.integration.OntologySearchFilter;
 import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
@@ -63,7 +63,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     OntologyService ontologyService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     @Test
     public void testDatasetService() throws IOException {

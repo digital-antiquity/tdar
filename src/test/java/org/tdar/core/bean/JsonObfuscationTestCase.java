@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
@@ -23,11 +23,11 @@ public class JsonObfuscationTestCase {
      * that's calling them.
      */
 
-    XmlService xmlService;
+    SerializationService xmlService;
 
     public JsonObfuscationTestCase() throws ClassNotFoundException {
         // TODO Auto-generated constructor stub
-        xmlService = new XmlService();
+        xmlService = new SerializationService();
     }
 
     @Test

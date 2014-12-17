@@ -29,7 +29,7 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.ReservedSearchParameters;
@@ -483,7 +483,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     private Map<String, Object> result = new HashMap<>();
 

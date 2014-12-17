@@ -32,7 +32,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
@@ -46,7 +46,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     private static final String NABATAEAN = "Nabataean";
 
     @Autowired
-    XmlService xmlService;
+    SerializationService xmlService;
 
     @Autowired
     ReflectionService reflectionService;

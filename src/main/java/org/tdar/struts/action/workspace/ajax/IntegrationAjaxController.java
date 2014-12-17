@@ -26,7 +26,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.service.DataIntegrationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
@@ -70,7 +70,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService xmlService;
 
     private List<Map<String, Object>> results = new ArrayList<>();
     private List<Long> ontologyIds = new ArrayList<>();

@@ -97,7 +97,7 @@ public class ImportService {
     @Autowired
     private InformationResourceService informationResourceService;
     @Autowired
-    private XmlService xmlService;
+    private SerializationService xmlService;
 
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
