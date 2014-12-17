@@ -174,7 +174,10 @@
         }
 
         $scope.lookupCompatibleColumns = function(id) {
-            return self.integration.mappedDatatables[id];
+            return self.integration.mappedDatatables[id]
+            //FIXME: angular doesn't like my getter functions - apparently they cause endless loop of detected changes (or something?)
+            //https://docs.angularjs.org/error/$rootScope/infdig
+            //return (self.integration.getMappedDatatables()[id]);
         };
 
         $scope.loadIntegrationColumnDetails = function(integration) {

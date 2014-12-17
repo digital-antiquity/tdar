@@ -104,20 +104,8 @@
          * @param ontology
          * @private
          */
-        function _buildCompatibleDatatableColumns(ontology) {
-
-            //list of maps
-            var compatTables = [];
-
-            self.datatables.forEach(function(datatable) {
-                compatTables.push({
-                    datatable: datatable,
-                    compatCols:datatable.columns.filter(function(col){
-                        return col.default_ontology_id === ontology.id;
-                    })
-                });
-            });
-            self.mappedDatatables[ontology.id] = compatTables;
+        function _buildMappedDatatables() {
+            self.mappedDatatables = self.getMappedDatatables();
         }
 
         self.getMappedDatatableColumns =  function _getMappedDatatableColumns(ontologyId) {
@@ -126,7 +114,29 @@
                 cols = cols.concat(compatTable.compatCols);
             });
             return cols;
-        }
+        };
+
+
+        self.getMappedDatatables = function() {
+            var mappedTables = {};
+            _calculateSharedOntologyIds().forEach(function(ontologyId){
+                //list of maps
+                var compatTables = [];
+
+                self.datatables.forEach(function(datatable) {
+                    compatTables.push({
+                        datatable: datatable,
+                        compatCols:datatable.columns.filter(function(col){
+                            return col.default_ontology_id === ontologyId;
+                        })
+                    });
+                });
+                mappedTables[ontologyId] = compatTables;
+            });
+            return mappedTables;
+        };
+
+
 
 
         /**
@@ -136,18 +146,29 @@
          * @returns {{type: string, title: *, ontologyId: *, nodeSelections: Array, datatableColumnIds: Array}}
          */
         self.addIntegrationColumn =  function _addIntegrationColumn(title, ontology) {
-            var self = this;
             var col = {
                 type: "integration",
                 title: title,
                 ontologyId: ontology.id,
                 ontology: ontology,
                 nodeSelections: [],
-                selectedDatatableColumns: self.mappedDatatables[ontology.id].map(function(dt){
-                    if(!dt.compatCols.length) return null;
-                    return dt.compatCols[0];
-                })
-            }
+                selectedDatatableColumns: null
+            };
+
+            //fixme: try to keep model devoid of angular conventions (angular excludes $-prefix when evaluating/copying objects)
+            //initialize, or update,  the selected datatable column selections.
+            col.$getSelectedDatatableColumns = function() {
+                if(this.selectedDatatableColumns === null) this.selectedDatatableColumns = [];
+                if(this.selectedDatatableColumns.length !== self.datatables.length) {
+                    //todo: if we're updating thie structure (e.g. adding a datatable to integration workflow) try to retain the previous selections
+                    this.selectedDatatableColumns = self.getMappedDatatables()[ontology.id].map(function(dt){
+                        if(!dt.compatCols.length) return null;
+                        return dt.compatCols[0];
+                    });
+                }
+            };
+            //init selected columns
+            col.$getSelectedDatatableColumns();
 
             col.nodeSelections = ontology.nodes.map(function(node,i){
                 return {
@@ -160,9 +181,10 @@
             return col;
         };
 
+
         self.updateSharedOntologies = function _updateSharedOntologies(ontologies) {
             _setAddAll(self.ontologies, ontologies, "id");
-            ontologies.forEach(_buildCompatibleDatatableColumns);
+            _buildMappedDatatables();
         };
 
         /**
@@ -266,7 +288,12 @@
             _sharedOntologiesRemoved(newSharedOntologyIds);
 
             //Step 2: account for integration columns that refer to still-shared ontologies
+            _buildMappedDatatables();
+            //update selected datatableColumns
+            _getIntegrationColumns().forEach(function(integrationColumn){integrationColumn.$getSelectedDatatableColumns()});
             //todo: need to update the nodeParticipation information for all the integrationColumns that aren't removed
+
+
 
 
             //Step 3: account for display columns that need an additional selectedDatatableColumn entry.
