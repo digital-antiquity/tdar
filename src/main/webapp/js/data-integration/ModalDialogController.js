@@ -40,7 +40,7 @@
     };
 
     //Controller that drives the add-integration-column controller
-    app.controller('ModalDialogController', ['$scope', '$http', 'DataService', 'close', 'options',  function($scope, $http, dataService, close, options){
+    app.controller('ModalDialogController', ['$scope', 'DataService', 'close', 'options',  function($scope, dataService, close, options){
         var url = options.url, closeWait = 500;
 
         //get map of embedded data stored in the DOM
@@ -64,22 +64,9 @@
 
         //ajax search fires up at launch and whenever search terms change
         $scope.search = function() {
-            var config = {
-                params: $scope.filter.toStrutsParams()
-            };
-            //console.debug(config.params);
-            var promise = $http.get(url, config);
-            promise.success(function(data){
-                //transform date strings into dates
-
-                if(options.transformData) {
-                    $scope.results = options.transformData(data);
-                } else {
-                    $scope.results = data;
-                }
-
+            dataService.findDatasets($scope.filter).then(function(results){
+               $scope.results = results;
             });
-
         };
 
         //update the filter whenever user updates filter UI
@@ -112,7 +99,6 @@
             } else {
                 items.push(itemId);
             }
-
         };
 
         //Execute a search() whenever user updates form control bound to the filter object
