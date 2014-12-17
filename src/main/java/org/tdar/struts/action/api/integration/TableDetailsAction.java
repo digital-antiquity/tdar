@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.DataIntegrationService;
@@ -15,6 +19,11 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 
+
+@Namespace("/api/integration")
+@ParentPackage("secured")
+@Component
+@Scope("prototype")
 public class TableDetailsAction extends AbstractIntegrationAction {
 
     private static final long serialVersionUID = 5956429144322203034L;

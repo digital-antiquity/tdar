@@ -300,6 +300,9 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
             return;
         }
         List<OntologyNode> ontologyNodes = sharedOntology.getSortedOntologyNodesByImportOrder();
+        if (ontologyNodes == null) {
+            ontologyNodes = Collections.emptyList();
+        }
         SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = sharedOntology.toOntologyNodeMap();
 
         for (OntologyNode ontologyNode : ontologyNodes) {

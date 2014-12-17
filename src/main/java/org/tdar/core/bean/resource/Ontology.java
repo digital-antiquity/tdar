@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
-import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -161,7 +160,6 @@ public class Ontology extends InformationResource implements SupportsResource {
         return getSortedOntologyNodes(null);
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public List<OntologyNode> getSortedOntologyNodesByImportOrder() {
         return getSortedOntologyNodes(IMPORT_ORDER_COMPARATOR);
     }

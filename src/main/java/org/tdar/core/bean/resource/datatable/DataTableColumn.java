@@ -40,6 +40,7 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -172,6 +173,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.dataTable = dataTable;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getName() {
         return name;
     }
@@ -271,6 +273,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return String.format("%s - %s %s", name, columnDataType, getId());
     }
 
+    @JsonView(JsonIntegrationFilter.class)
     public String getDisplayName() {
         return displayName;
     }
@@ -412,7 +415,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return values;
     }
 
-    @Transient
     @JsonView(JsonIntegrationDetailsFilter.class)
     public boolean isActuallyMapped() {
         if (Persistable.Base.isNullOrTransient(getDefaultOntology())) {
@@ -427,7 +429,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return false;
     }
 
-    @Transient
     @JsonView(JsonIntegrationDetailsFilter.class)
     public Ontology getMappedOntology() {
         if (getDefaultOntology() != null) {
