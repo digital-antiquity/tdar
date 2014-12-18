@@ -112,13 +112,13 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     @Action(value = "get-shared-ontologies")
     public String findSharedOntologies() throws IOException {
         // results.addAll(serializeSharedOntologies());
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(serializeSharedOntologies()).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(serializeSharedOntologies(true)).getBytes()));
         return SUCCESS;
     }
 
-    private ArrayNode serializeSharedOntologies() {
+    private ArrayNode serializeSharedOntologies(boolean union) {
         List<DataTable> dataTables = getGenericService().findAll(DataTable.class, dataTableIds);
-        Map<Ontology, List<DataTable>> suggestions = integrationService.getIntegrationSuggestions(dataTables, true);
+        Map<Ontology, List<DataTable>> suggestions = integrationService.getIntegrationSuggestions(dataTables, union);
         ArrayNode shared = setupOntologyListJson(suggestions.keySet());
         return shared;
     }
@@ -207,7 +207,7 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     public String dataTableDetails() throws IOException {
         HashMap<String, Object> values = new HashMap<>();
         values.put("dataTables", serializeDataTables());
-        values.put("sharedOntologies", serializeSharedOntologies());
+        values.put("sharedOntologies", serializeSharedOntologies(false));
         results.add(values);
         setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(results).getBytes()));
         return SUCCESS;
