@@ -8,7 +8,8 @@
     //top-level controller for the integration viewmodel
     app.controller('IntegrationController', ['$scope', 'ModalService',  'IntegrationService', 'DataService', function($scope, ModalService, integration, dataService){
         var self = this,
-                openModal;
+            _openModal,
+            _processAddedIntegrationColumns;
 
         //controller public fields
         self.integration = integration;
@@ -18,10 +19,9 @@
         ////fixme: remove later, expose viewmodel for debugging
         window.__viewModel = self.integration;
 
-
-        //'private' methods
-        openModal = function(options) {
+        _openModal = function(options) {
             ModalService.showModal({
+                //Note: there is no file w/ this name. Angular first checks for partials in DOM elements w/ id specified by templateUrl.
                 templateUrl: "workspace/modal-dialog.html",
                 controller: "ModalDialogController",
                 inputs: {
@@ -82,8 +82,8 @@
         };
 
         //add and initialize an integration column associated with with the specified ontology ID
-        var processAddedIntegrationColumns = function(ontologies) {
-            console.debug("processAddedIntegrationColumns ::");
+        _processAddedIntegrationColumns = function(ontologies) {
+            console.debug("_processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
@@ -120,23 +120,10 @@
 
         self.addDatasetsClicked = function(arg) {
             console.debug('Add Datasets clicked');
-            openModal({
+            _openModal({
                 title: "Add Datasets",
                 searchType: "dataset",
-                url: "/workspace/ajax/find-datasets",
-                transformData: function(data) {
-                    return data.map(function(item){
-                        var result = item;
-                        result.title = item.dataset_name;
-                        result.title += ' - ' + item.data_table_name;
-                        result.id = item.data_table_id;
-                        result.submitter_display_name  = item.dataset.submitter.properName;
-                        result.date_registered = item.dataset_date_created;
-                        return result;
-                    })
-                },
                 close: function(data) {
-                    console.debug("datasetsClicked.close::");
                     self.addDatasets(data);
                 }
 
@@ -145,10 +132,9 @@
 
         self.addIntegrationColumnsClicked = function(arg) {
             console.debug('Add Integration Columns Clicked');
-            openModal({
+            _openModal({
                 title: "Add Ontologies",
                 searchType: "ontology",
-                url: "/workspace/ajax/find-ontologies",
                 categoryFilter: true,
                 close: function(data) {
                     self.addIntegrationColumns(data);

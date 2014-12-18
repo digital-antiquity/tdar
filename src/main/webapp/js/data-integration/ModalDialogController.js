@@ -64,7 +64,13 @@
 
         //ajax search fires up at launch and whenever search terms change
         $scope.search = function() {
-            dataService.findDatasets($scope.filter).then(function(results){
+            var futureData;
+            if(options.searchType === "ontology") {
+                futureData = dataService.findOntologies($scope.filter);
+            } else {
+                futureData = dataService.findDatasets($scope.filter);
+            }
+            futureData.then(function(results){
                $scope.results = results;
             });
         };

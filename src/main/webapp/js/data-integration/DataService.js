@@ -90,13 +90,35 @@
         };
 
 
-        this.findDatasets = function(searchFilter) {
-            var url = "/workspace/ajax/find-datasets";
+        /**
+         * send $http.get to specified url, return promise<transformedData> if transformer specified, otherwise return
+         * promise<data>;
+         * @param url
+         * @param searchFilter
+         * @param transformer
+         * @returns {*}
+         * @private
+         */
+        //fixme: move SearchFilter class to DataService.js
+        function _doSearch(url, searchFilter, transformer) {
             var futureData = $q.defer();
             var config = {
-                //fixme: toStrutsParams belongs here (and needs to be less dumb)
                 params: searchFilter.toStrutsParams()
-            }
+            };
+            $http.get(url, config).success(function(rawData){
+                var data = !!transformer ? transformer(rawData) : data;
+                futureData.resolve(data);
+            });
+            return futureData.promise;
+        }
+
+
+        /**
+         * Search for datasets(actually, datatables) filtered according to specified SearchFilter.  returns promise<Array<searchResult>>
+         * @param searchFilter (note: searchFilter.categoryId ignored in dataset search)
+         * @returns {*}
+         */
+        this.findDatasets = function(searchFilter) {
             var transformer =  function(data) {
                 return data.map(function(item){
                     var result = item;
@@ -108,11 +130,20 @@
                     return result;
                 })
             };
-            $http.get(url, config).success(function(data){
-               futureData.resolve(transformer(data));
-            });
-            return futureData.promise;
-        }
+            return _doSearch("/workspace/ajax/find-datasets", searchFilter, transformer);
+        };
+
+        //todo: Note that the UI for this feature is disabled, but this function ostensibly still "works"
+        /**
+         * Search for ontologies according to specified SearchFilter.  returns promise<Array<searchResult>>
+         * @param searchFilter
+         * @returns {*}
+         */
+        this.findOntologies = function(searchFilter)  {
+            return _doSearch("/workspace/ajax/find-ontologies", searchFilter, null);
+        };
+
+
 
 
     }
