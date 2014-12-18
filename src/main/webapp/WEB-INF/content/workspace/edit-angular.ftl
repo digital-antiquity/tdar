@@ -136,6 +136,9 @@
                                          ng-repeat="outputColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
                                         <div ng-switch="outputColumn.type">
                                             <div ng-switch-when="integration" class=".integration-pane-content">
+                                                <div class="alert" ng-hide="outputColumn.isValidMapping">
+                                                    <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to a shared ontology.
+                                                </div>
                                                 <table class="table table-bordered table-condensed">
                                                     <thead>
                                                     <tr>

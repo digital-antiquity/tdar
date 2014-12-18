@@ -35,6 +35,23 @@
         });
     }
 
+    /**
+     * Create a subset of a specified array that does not contain duplicates (using object identity for equality)
+     *
+     * @param items:{Array}
+     * @returns {Array}
+     * @private
+     */
+    function _dedupe(items) {
+        var uniqueItems = [];
+        items.forEach(function(item){
+            if(uniqueItems.indexOf(item) === -1) {
+                uniqueItems.push(item);
+            }
+        })
+        return uniqueItems;
+    }
+
 
     /**
      * Remove specified item from the specified array
@@ -49,14 +66,13 @@
         return arr;
     }
 
-
-
     //Our integration model
     function Integration(dataService) {
         console.debug("Integration()::");
         console.debug(dataService);
 
         var self = this;
+        var _sharedOntologyIds = null;
 
         /**
          * Name for the current integration workflow, specified by the user. This is for organizational purposes only(e.g. picking a previous integration out
@@ -156,6 +172,7 @@
                 ontologyId: ontology.id,
                 ontology: ontology,
                 nodeSelections: [],
+                isValidMapping: true,
                 selectedDatatableColumns: null
             };
 
@@ -165,7 +182,13 @@
                 if(this.selectedDatatableColumns === null) this.selectedDatatableColumns = [];
                 if(this.selectedDatatableColumns.length !== self.datatables.length) {
                     //todo: if we're updating thie structure (e.g. adding a datatable to integration workflow) try to retain the previous selections
-                    this.selectedDatatableColumns = self.getMappedDatatables()[ontology.id].map(function(dt){
+
+                    var mappedTables = self.getMappedDatatables()[ontology.id];
+                    if(!mappedTables) {
+                        mappedTables = [];
+                    }
+
+                    this.selectedDatatableColumns = mappedTables.map(function(dt){
                         if(!dt.compatCols.length) return null;
                         return dt.compatCols[0];
                     });
@@ -224,7 +247,6 @@
             return _getOutputColumns("display");
         }
 
-
         /**
          * Returns just the integrationColumns from the outputColumns
          * @private
@@ -232,7 +254,6 @@
         function _getIntegrationColumns() {
             return _getOutputColumns("integration");
         }
-
 
         //update derived properties when user removes a datatable
         function _datatablesRemoved(removedDatatables) {
@@ -244,12 +265,8 @@
                });
             });
 
-            console.debug(removedDatatableColumnIds);
-
-
             //todo: if any integration columns, update selected datatableColumn
             //todo: remove any paricipating datatableColumns that belong to the datatable we are removing
-
 
             //clean up the mappedDatatables
             for(var ontologyId in self.mappedDatatables) {
@@ -315,36 +332,22 @@
 
         }
 
-
+        /**
+         * Called if the user implicitly/explitly modifies the current shared ontologies
+         * @param newSharedOntologyIds
+         * @param oldSharedOntologyIds
+         * @private
+         */
         function _sharedOntologiesUpdated(newSharedOntologyIds, oldSharedOntologyIds) {
             console.debug("_sharedOntologiesUpdated::", newSharedOntologyIds);
-            var outputColumnsToRemove = _getIntegrationColumns().filter(function(column){
+            var invalidIntegrationColumns = _getIntegrationColumns().filter(function(column){
                 return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
             });
-
-            //remove any integration columns that are now defunct
-            //todo: we should do this in less-destructive way.. (e.g. flag the outputColumns as invalid instead)
-            //gotta be careful when mutating the array you are iterating over.  Let's delete from the end.
-            if(outputColumnsToRemove.length > 0) {
-                for( var i = outputColumnsToRemove.length - 1; i >= 0; i--) {
-                    self.columns.splice(self.columns.indexOf(outputColumnsToRemove[i]), 1);
-                }
-            }
-        }
-
-        function _dedupe(items) {
-            var uniqueItems = [];
-            items.forEach(function(item){
-                if(uniqueItems.indexOf(item) === -1) {
-                    uniqueItems.push(item);
-                }
-            })
-            return uniqueItems;
         }
 
         function _getSharedOntologyIds() {
             //todo: punch jim in the face for writing this 'one-liner'
-            return _dedupe(self.datatables
+            var ids =  _dedupe(self.datatables
                     //reduce the list of all datatables into a list of all datatableColumns
                     .reduce(function(a,b){return a.concat(b.columns)}, [])
                     //and then filter-out the unmapped columns
@@ -359,7 +362,9 @@
                         return datatable.columns.some(function(dtc){return ontologyId === dtc.default_ontology_id});
                     });
                 })
-                //And... scene!  Here are your shared ontology id's.
+            //And... scene!  Here are your shared ontology id's.
+            _sharedOntologyIds = ids;
+            return _sharedOntologyIds;
         }
 
         /**
@@ -378,10 +383,14 @@
         function _rebuildSharedOntologies() {
             //todo: only rebuild if we detect a change
             self.ontologies = _getSharedOntologies();
-        }
 
-        //fixme: hack: expose calculatedSharedOntologies for debugging
-        self._getSharedOntologyIds = _getSharedOntologyIds;
+            //update integrationColumnStatus
+            //fixme: this really should be a computed property on integrationColumn.
+            //fixme: integrationColumn should be a proper IntegrationColumn class w/ methods and stuff.
+            _getIntegrationColumns().forEach(function(integrationColumn) {
+                integrationColumn.isValidMapping = (_sharedOntologyIds.indexOf(integrationColumn.ontologyId) > -1);
+            });
+        }
 
         /**
          * Add a 'display column' to the columns list.  A display column contains a list of datatableColumn selections, which the system
