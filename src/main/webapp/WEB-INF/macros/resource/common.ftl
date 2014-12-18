@@ -307,7 +307,7 @@ with that datapoint -->
             </#list>
     </script>
         <#if seen>
-            <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354 yaxis="log" />
+            <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354 yaxis="log" context=false />
         </#if>
     </#macro>
 
