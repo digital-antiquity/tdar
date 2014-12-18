@@ -343,6 +343,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
+        for (TdarUser user : getAccount().getAuthorizedMembers()) {
+//            getAuthorizedMembers().add(user);
+            getAuthorizedUsersFullNames().add(user.getProperName());
+        }
     }
 }

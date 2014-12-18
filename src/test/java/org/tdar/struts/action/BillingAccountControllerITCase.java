@@ -196,6 +196,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setId(id);
         controller.prepare();
         int size = controller.getAccount().getAuthorizedMembers().size();
+        controller.getAuthorizedMembers().addAll(controller.getAccount().getAuthorizedMembers());
         controller.getAuthorizedMembers().remove(getBillingUser());
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
