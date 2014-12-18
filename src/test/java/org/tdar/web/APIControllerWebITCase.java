@@ -106,7 +106,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         APIControllerITCase.removeInvalidFields(doc);
         String docXml = serializationService.convertToXML(doc);
         logger.info(docXml);
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/upload");
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody("record", docXml);
         post.setEntity(builder.build());
@@ -121,7 +121,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     public void testConfidential() throws Exception {
         JaxbResultContainer login = setupValidLogin();
         
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/upload");
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
         builder.addTextBody("record", text);
