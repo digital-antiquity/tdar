@@ -40,7 +40,7 @@ public class TableDetailsAction extends AbstractIntegrationAction {
     public String dataTableDetails() throws IOException {
         TableDetailsProxy proxy = new TableDetailsProxy();
         proxy.getDataTables().addAll(dataTableService.findAll(getDataTableIds()));
-        Map<Ontology, List<DataTable>> suggestions = integrationService.getIntegrationSuggestions(proxy.getDataTables(), true);
+        Map<Ontology, List<DataTable>> suggestions = integrationService.getIntegrationSuggestions(proxy.getDataTables(), false);
         proxy.getSharedOntologies().addAll(suggestions.keySet());
 
         setJsonInputStream(new ByteArrayInputStream(smlService.convertToFilteredJson(proxy, JsonIntegrationDetailsFilter.class).getBytes()));
