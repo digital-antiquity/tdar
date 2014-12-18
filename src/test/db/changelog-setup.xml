@@ -14329,7 +14329,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="allen.lee@asu.edu" />
+            <column name="email" value="allen.lee@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Allen" />
             <column name="last_name" value="Lee" />
@@ -14342,7 +14342,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="kintigh@asu.edu" />
+            <column name="email" value="kintigh@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Keith" />
             <column name="last_name" value="Kintigh" />
@@ -14355,7 +14355,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="mallorie.hatch@asu.edu" />
+            <column name="email" value="mallorie.hatch@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Mallorie" />
             <column name="last_name" value="Hatch" />
@@ -14368,7 +14368,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="matthew.peeples@asu.edu" />
+            <column name="email" value="matthew.peeples@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Matthew" />
             <column name="last_name" value="Peeples" />
@@ -14381,7 +14381,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="tiffany.clark@asu.edu" />
+            <column name="email" value="tiffany.clark@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Tiffany" />
             <column name="last_name" value="Clark" />
@@ -14394,7 +14394,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="michelle.elliott@asu.edu" />
+            <column name="email" value="michelle.elliott@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Michelle" />
             <column name="last_name" value="Elliott" />
@@ -14407,7 +14407,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="joshua.watts@asu.edu" />
+            <column name="email" value="joshua.watts@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Joshua" />
             <column name="last_name" value="Watts" />
@@ -14420,7 +14420,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="karen.schollmeyer@asu.edu" />
+            <column name="email" value="karen.schollmeyer@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Karen" />
             <column name="last_name" value="Schollmeyer" />
@@ -14433,7 +14433,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="pjwatson@artsci.wustl.edu" />
+            <column name="email" value="pjwatson@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Patty Jo" />
             <column name="last_name" value="Watson" />
@@ -14446,7 +14446,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="charles.redman@asu.edu" />
+            <column name="email" value="charles.redman@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Charles" />
             <column name="last_name" value="Redman" />
@@ -14472,7 +14472,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="jdr1@york.ac.uk" />
+            <column name="email" value="jdr1@york.dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Julian" />
             <column name="last_name" value="Richards" />
@@ -14485,7 +14485,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="smanney@asu.edu" />
+            <column name="email" value="smanney@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Shelby" />
             <column name="last_name" value="Manney" />
@@ -14498,7 +14498,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="shelby.manney@asu.edu" />
+            <column name="email" value="shelby.manney@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Shelby" />
             <column name="last_name" value="Manney" />
@@ -14511,7 +14511,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="fpmcmanamon@asu.edu" />
+            <column name="email" value="fpmcmanamon@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Francis" />
             <column name="last_name" value="McManamon" />
@@ -14524,7 +14524,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="candan@asu.edu" />
+            <column name="email" value="candan@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="K. Selcuk" />
             <column name="last_name" value="Candan" />
@@ -14537,7 +14537,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="kate.spielmann@asu.edu" />
+            <column name="email" value="kate.spielmann@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Katherine" />
             <column name="last_name" value="Spielmann" />
@@ -14550,7 +14550,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="adam.brin@asu.edu" />
+            <column name="email" value="adam.brin@dsu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="adam" />
             <column name="last_name" value="brin" />
@@ -14563,7 +14563,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="kintigh@tfqa.com" />
+            <column name="email" value="kintigh@dfqa.com" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Keith" />
             <column name="last_name" value="Kintigh" />
@@ -14589,7 +14589,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="cfennell@illinois.edu" />
+            <column name="email" value="cfennell@dllinois.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Christopher" />
             <column name="last_name" value="Fennell" />
@@ -14602,7 +14602,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="pshackel@anth.umd.edu" />
+            <column name="email" value="pshackel@dnth.umd.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Paul" />
             <column name="last_name" value="Shackel" />
@@ -14615,7 +14615,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="martin@museum.state.il.us" />
+            <column name="email" value="martin@duseum.state.il.us" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Terrance" />
             <column name="last_name" value="Martin" />
@@ -14628,7 +14628,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="agbe-davies@unc.edu" />
+            <column name="email" value="agbe-davies@dunc.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="Anna" />
             <column name="last_name" value="Agbe-Davies" />
@@ -14654,7 +14654,7 @@
             <column name="merge_creator_id" />
         </insert>
         <insert tableName="person">
-            <column name="email" value="james.t.devos@asu.edu" />
+            <column name="email" value="james.t.devos@dasu.edu" />
             <column name="email_public" valueBoolean="false" />
             <column name="first_name" value="jim" />
             <column name="last_name" value="DeVos" />
@@ -16948,7 +16948,7 @@
         <insert tableName="resource_revision_log">
             <column name="id" valueNumeric="4478" />
             <column name="log_message"
-                value="Document edited and saved by brin, adam [adam.brin@asu.edu | Digital Antiquity]:&#9;tdar id:4287&#9;title:[Archeological Survey and Architectural Study of Montezuma Castle National Monument]" />
+                value="Document edited and saved by brin, adam [adam.brin@dsu.edu | Digital Antiquity]:&#9;tdar id:4287&#9;title:[Archeological Survey and Architectural Study of Montezuma Castle National Monument]" />
             <column name="payload" />
             <column name="timestamp" valueDate="2011-06-04 21:41:22.241" />
             <column name="person_id" valueNumeric="8344" />
@@ -19043,7 +19043,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="allen.lee@asu.edu" />
+            <column name="username" value="allen.lee" />
             <column name="id" valueNumeric="1" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19059,7 +19059,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="kintigh@asu.edu" />
+            <column name="username" value="kintigh" />
             <column name="id" valueNumeric="6" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19075,7 +19075,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="mallorie.hatch@asu.edu" />
+            <column name="username" value="mallorie.hatch" />
             <column name="id" valueNumeric="38" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19091,7 +19091,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="matthew.peeples@asu.edu" />
+            <column name="username" value="matthew.peeples" />
             <column name="id" valueNumeric="60" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19107,7 +19107,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="michelle.elliott@asu.edu" />
+            <column name="username" value="michelle.elliott" />
             <column name="id" valueNumeric="121" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19123,7 +19123,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="joshua.watts@asu.edu" />
+            <column name="username" value="joshua.watts" />
             <column name="id" valueNumeric="5349" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19139,7 +19139,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="karen.schollmeyer@asu.edu" />
+            <column name="username" value="karen.schollmeyer" />
             <column name="id" valueNumeric="5979" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19155,7 +19155,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="jdr1@york.ac.uk" />
+            <column name="username" value="jdr1" />
             <column name="id" valueNumeric="8014" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19171,7 +19171,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="smanney@asu.edu" />
+            <column name="username" value="smanney" />
             <column name="id" valueNumeric="8018" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19187,7 +19187,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="shelby.manney@asu.edu" />
+            <column name="username" value="shelby.manney" />
             <column name="id" valueNumeric="8019" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19204,7 +19204,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="fpmcmanamon@asu.edu" />
+            <column name="username" value="fpmcmanamon" />
             <column name="id" valueNumeric="8044" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19220,7 +19220,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="candan@asu.edu" />
+            <column name="username" value="candan" />
             <column name="id" valueNumeric="8067" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19237,7 +19237,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="kate.spielmann@asu.edu" />
+            <column name="username" value="kate.spielmann" />
             <column name="id" valueNumeric="8161" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19253,7 +19253,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="kintigh@tfqa.com" />
+            <column name="username" value="kintigh2" />
             <column name="id" valueNumeric="8389" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19270,7 +19270,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="cfennell@illinois.edu" />
+            <column name="username" value="cfennell" />
             <column name="id" valueNumeric="8422" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19286,7 +19286,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="0" />
-            <column name="username" value="james.t.devos@asu.edu" />
+            <column name="username" value="james.t.devos" />
             <column name="id" valueNumeric="8608" />
             <column name="proxyinstitution_id" />
         </insert>
@@ -19302,7 +19302,7 @@
             <column name="proxy_note" />
             <column name="tos_version" valueNumeric="0" />
             <column name="total_login" valueNumeric="8" />
-            <column name="username" value="adam.brin@asu.edu" />
+            <column name="username" value="adam.brin" />
             <column name="id" valueNumeric="8344" />
             <column name="proxyinstitution_id" />
         </insert>

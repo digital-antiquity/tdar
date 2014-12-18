@@ -332,7 +332,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller = generateNewInitializedController(PersonLookupAction.class, getAdminUser());
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
-        String email = "james.t.devos@asu.edu";
+        String email = "james.t.devos@dasu.edu";
         controller.setEmail(email);
         controller.lookupPerson();
         assertEquals(1, controller.getResults().size());

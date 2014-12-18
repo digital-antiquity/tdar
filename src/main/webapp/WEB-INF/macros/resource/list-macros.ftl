@@ -52,7 +52,7 @@
         <#if resourcelist??>
             <#list resourcelist as resource>
                 <#assign key = "" />
-                <#assign defaultKeyLabel="No Project"/>
+                <#assign defaultKeyLabel="Individual Resources"/>
             <#-- if we're viewable -->
                 <#if ((resource.viewable)!false) >
                     <#local rowCount= rowCount+1 />

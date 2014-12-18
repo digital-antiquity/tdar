@@ -75,8 +75,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testDuplicateUser() {
-        TdarUser p = new TdarUser("Allen","Lee","allen.lee@asu.edu");
-        p.setUsername(p.getEmail());
+        TdarUser p = new TdarUser("Allen","Lee","allen.lee@dsu.edu");
+        p.setUsername("allen.lee");
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.getRegistration().setPerson(p);
@@ -112,15 +112,18 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         TdarUser p = new TdarUser();
-        p.setUsername("allen.lee");
+        p.setUsername("allen.lee@dsu.edu");
         p.setFirstName("Allen");
         p.setLastName("lee");
-        p.setEmail("allen.lee@asu.edu");
+        p.setEmail("allen.lee@dsu.edu");
+        controller.getRegistration().setConfirmEmail(p.getEmail());
         controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
-        logger.info(execute + " : " + controller.getActionMessages());
+        logger.info(" messages: {}", controller.getActionMessages());
+        logger.info(" errors  : {}", controller.getActionErrors());
+        logger.info("field err: {}", controller.getFieldErrors());
         assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_duplicate_email"), controller.getActionErrors()
                 .iterator().next());
     }
@@ -131,8 +134,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testExistingAuthorWithoutLogin() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         TdarUser p = new TdarUser();
-        p.setEmail("tiffany.clark@asu.edu");
-        p.setUsername("tiffany.clark@asu.edu");
+        p.setEmail("tiffany.clark@dsu.edu");
+        p.setUsername("tiffany.clark@dsu.edu");
         p.setFirstName("Tiffany");
         p.setLastName("Clark");
 
@@ -154,7 +157,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testExistingDraftUserWithoutLogin() {
         setIgnoreActionErrors(true);
-        String email = "tiffany.clark@asu.edu";
+        String email = "tiffany.clark@dsu.edu";
         TdarUser p = testCreatePerson(email, Status.ACTIVE, Action.SUCCESS);
         assertEquals(Status.ACTIVE, p.getStatus());
 
@@ -356,7 +359,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testEmailRegistration() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         assertFalse("email should not exist", controller.isUsernameRegistered("testuser@testuser.com"));
-        assertFalse("email should exist but not be registered", controller.isUsernameRegistered("tiffany.clark@asu.edu"));
+        assertFalse("email should exist but not be registered", controller.isUsernameRegistered("tiffany.clark@dsu.edu"));
         assertTrue("email should exist and be registered", controller.isUsernameRegistered("admin@tdar.org"));
     }
 

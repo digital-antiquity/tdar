@@ -90,7 +90,6 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     private ArrayList<FacetValue> documentTypeFacets = new ArrayList<>();
     private ArrayList<FacetValue> fileAccessFacets = new ArrayList<>();
     private ArrayList<FacetValue> integratableOptionFacets = new ArrayList<>();
-    private boolean collectionSearchBoxVisible = false;
 
     @Action(value = "results", results = {
             @Result(name = SUCCESS, location = "results.ftl"),
@@ -357,7 +356,6 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
      */
     public boolean isShowCollectionResults() {
         return getLookupSource() == LookupSource.RESOURCE
-                && collectionSearchBoxVisible
                 && collectionTotalRecords > 0;
     }
 

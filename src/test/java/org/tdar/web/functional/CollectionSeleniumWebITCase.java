@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,6 +137,23 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         gotoPage(url);
         Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+    }
+
+
+    @Test
+    public void testCollectionInGeneralSearch() {
+        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
+        String url = setupCollectionForTest(titles, false);
+        logout();
+        gotoPage(url);
+        Assert.assertTrue(getText().contains(TITLE));
+        gotoPage("/");
+        find(".searchbox").val("test").sendKeys(Keys.RETURN);
+        waitForPageload();
+        clearPageCache();
+        logger.debug(getText());
+        Assert.assertTrue(getText().contains(TITLE));
+        
     }
 
     @Test
