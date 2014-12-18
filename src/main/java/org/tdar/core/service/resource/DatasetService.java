@@ -923,7 +923,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     private void remapAllColumns(Dataset dataset, Project project) {
         List<DataTableColumn> columns = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
+        if (dataset != null && project != null && CollectionUtils.isNotEmpty(dataset.getDataTables())) {
             for (DataTable datatable : dataset.getDataTables()) {
                 if (CollectionUtils.isNotEmpty(datatable.getDataTableColumns())) {
                     for (DataTableColumn col : datatable.getDataTableColumns()) {
