@@ -40,7 +40,7 @@ import freemarker.template.Configuration;
  * 
  * Tests AccountController's action methods.
  * 
- * @author <a href='mailto:allen.lee@dsu.edu'>Allen Lee</a>
+ * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  * @param <E>
  */
@@ -76,7 +76,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testDuplicateUser() {
         TdarUser p = new TdarUser("Allen","Lee","allen.lee@dsu.edu");
-        p.setUsername(p.getEmail());
+        p.setUsername("allen.lee");
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.getRegistration().setPerson(p);
@@ -112,15 +112,18 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         TdarUser p = new TdarUser();
-        p.setUsername("allen.lee");
+        p.setUsername("allen.lee@dsu.edu");
         p.setFirstName("Allen");
         p.setLastName("lee");
         p.setEmail("allen.lee@dsu.edu");
+        controller.getRegistration().setConfirmEmail(p.getEmail());
         controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
-        logger.info(execute + " : " + controller.getActionMessages());
+        logger.info(" messages: {}", controller.getActionMessages());
+        logger.info(" errors  : {}", controller.getActionErrors());
+        logger.info("field err: {}", controller.getFieldErrors());
         assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_duplicate_email"), controller.getActionErrors()
                 .iterator().next());
     }

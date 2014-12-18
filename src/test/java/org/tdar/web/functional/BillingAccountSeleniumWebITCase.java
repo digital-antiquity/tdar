@@ -15,13 +15,16 @@ public class BillingAccountSeleniumWebITCase extends AbstractEditorSeleniumWebIT
     @Test
     public void testAddRemoveAccount() {
         gotoPage("/billing/1/edit");
+        assertFalse(getSource().toLowerCase().contains("kintigh") && getText().toLowerCase().contains("keith"));
         find(".addanother").click();
         WebElement last = find(".userAutoComplete").last();
         selectAutocompleteValue(last, "Kintigh", "Kintigh","person-6");
         submitForm();
         assertTrue(getText().contains("Kintigh"));
         gotoPage("/billing/1/edit");
-        assertTrue(getText().contains("Kintigh"));
+        clearPageCache();
+        logger.debug(getSource());
+        assertTrue(getSource().toLowerCase().contains("kintigh") || getText().toLowerCase().contains("keith"));
         find(".repeat-row-delete").click();
         submitForm();
         assertFalse(getText().contains("Kintigh"));
