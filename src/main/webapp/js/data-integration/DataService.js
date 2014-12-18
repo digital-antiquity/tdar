@@ -143,6 +143,16 @@
             return _doSearch("/workspace/ajax/find-ontologies", searchFilter, null);
         };
 
+        /**
+         * Return an array previously-loaded ontologies in the same order of the specified array of ontologyId's
+         * @param ontologyIds
+         */
+        this.getCachedOntologies = function(ontologyIds) {
+            return ontologyIds.map(function(ontologyId) {
+                return self.ontologyCache.get(ontologyId);
+            });
+        };
+
 
 
 

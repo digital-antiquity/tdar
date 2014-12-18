@@ -52,7 +52,10 @@
 
 
     //Our integration model
-    function Integration() {
+    function Integration(dataService) {
+        console.debug("Integration()::");
+        console.debug(dataService);
+
         var self = this;
 
         /**
@@ -72,6 +75,7 @@
          * This list describes columns in the final integration results.  Here a column may be either an "integration" column or a "display" column.
          * @type {Array}
          */
+        //fixme: rename to outputColumns. We've got too many "columns" around here to be ambiguous.
         self.columns = [];
 
         /**
@@ -88,10 +92,10 @@
          */
         self.ontologies = [];
 
-        //derived datatable participation information, keyed by ontologyId -> Array<DatatableInfo>
+        /** transient datatable participation information, keyed by ontologyId -> Array<DatatableInfo> **/
         self.mappedDatatables = {};
 
-        //derived ontology node participation information
+        /** transient ontology node participation information **/
         self.ontologyParticipation = {};
 
         /**
@@ -119,7 +123,7 @@
 
         self.getMappedDatatables = function() {
             var mappedTables = {};
-            _calculateSharedOntologyIds().forEach(function(ontologyId){
+            _getSharedOntologyIds().forEach(function(ontologyId){
                 //list of maps
                 var compatTables = [];
 
@@ -204,6 +208,7 @@
             });
 
             _datatablesRemoved(datatables);
+            _rebuildSharedOntologies();
 
         }
 
@@ -211,10 +216,19 @@
             return self.columns.filter(function(outputColumn){return outputColumn.type===type});
         }
 
+        /**
+         * Returns just the displayColumns from the list of outputColumns
+         * @private
+         */
         function _getDisplayColumns() {
             return _getOutputColumns("display");
         }
 
+
+        /**
+         * Returns just the integrationColumns from the outputColumns
+         * @private
+         */
         function _getIntegrationColumns() {
             return _getOutputColumns("integration");
         }
@@ -283,7 +297,7 @@
             //Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the datatables
             //Calculate the new list of shared ontologies, find out if any ontologies should
             var currentSharedOntologyIds = self.ontologies.map(function(ontology){return ontology.id});
-            var newSharedOntologyIds = _calculateSharedOntologyIds();
+            var newSharedOntologyIds = _getSharedOntologyIds();
             //var defunctOntologyIds = currentSharedOntologyIds.filter(function(ontologyId){return newSharedOntologyIds.indexOf(ontologyId) === -1});
             _sharedOntologiesUpdated(newSharedOntologyIds, currentSharedOntologyIds);
 
@@ -328,7 +342,7 @@
             return uniqueItems;
         }
 
-        function _calculateSharedOntologyIds() {
+        function _getSharedOntologyIds() {
             //todo: punch jim in the face for writing this 'one-liner'
             return _dedupe(self.datatables
                     //reduce the list of all datatables into a list of all datatableColumns
@@ -348,8 +362,26 @@
                 //And... scene!  Here are your shared ontology id's.
         }
 
+        /**
+         * Return an array of ongologies shared by the datatables used by this integration.
+         * @return Array<ontology>
+         * @private
+         */
+        function _getSharedOntologies() {
+            return dataService.getCachedOntologies(_getSharedOntologyIds());
+        }
+
+        /**
+         * Replace the current list of ontologies w/ a computed list of shared ontologies
+         * @private
+         */
+        function _rebuildSharedOntologies() {
+            //todo: only rebuild if we detect a change
+            self.ontologies = _getSharedOntologies();
+        }
+
         //fixme: hack: expose calculatedSharedOntologies for debugging
-        self._calculateSharedOntologyIds = _calculateSharedOntologyIds;
+        self._getSharedOntologyIds = _getSharedOntologyIds;
 
         /**
          * Add a 'display column' to the columns list.  A display column contains a list of datatableColumn selections, which the system
@@ -398,18 +430,24 @@
         self.addDatatables = function(datatables) {
             _setAddAll(self.datatables, datatables, "data_table_id");
             _datatablesAdded(datatables)
+            _rebuildSharedOntologies();
         };
 
-        //FIXME: implement me
-        self.addOntologies = function() {};
-        //FIXME: implement me
-        self.removeOntology = function() {};
+        /**
+         * remove the outputColumn at the specified index
+         * @param idx
+         * @private
+         */
+        self.removeOutputColumn = function _removeOutputColumn(idx) {
+            self.columns.splice(idx, 1);
+        };
+
     }
 
     //expose a singleton instance to the application
-    app.service("IntegrationService", Integration);
+    app.service("IntegrationService",["DataService", Integration]);
 
-    //expose the class to the application in case another component wants to create a unique instance
-    app.value("IntegrationClass", Integration);
+    ////expose the class to the application in case another component wants to create a unique instance
+    //app.value("IntegrationClass", Integration);
 
 })(angular)

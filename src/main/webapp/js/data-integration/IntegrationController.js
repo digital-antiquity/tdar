@@ -21,7 +21,7 @@
 
         _openModal = function(options) {
             ModalService.showModal({
-                //Note: there is no file w/ this name. Angular first checks for partials in DOM elements w/ id specified by templateUrl.
+                //Note: there is no file w/ this name. Angular first looks for partials in DOM elements w/ id specified by templateUrl.
                 templateUrl: "workspace/modal-dialog.html",
                 controller: "ModalDialogController",
                 inputs: {
@@ -58,7 +58,7 @@
         }
 
         self.closeTab = function(idx) {
-            integration.columns.splice(idx, 1);
+            integration.removeOutputColumn(idx);
         }
 
         self.saveClicked = function() {
@@ -75,7 +75,7 @@
             //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
             dataService.loadTableDetails(datatableIds).success(function(data) {
                 self.integration.addDatatables(data[0].dataTables);
-                self.integration.updateSharedOntologies(data[0].sharedOntologies);
+                //self.integration.updateSharedOntologies(data[0].sharedOntologies);
                 //gather the updated node participation data
                 $scope.loadIntegrationColumnDetails(self.integration);
             });
@@ -87,28 +87,6 @@
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
-        };
-
-
-        self.findDataTableColumns = function(integrationColumn) {
-            var cols = [];
-            var ontologyId = integrationColumn.ontologyId;
-            //troll through each column of each datatable and determine which ones match the specified ontology in the integrationColumn
-            self.integration.datatables.forEach(function(table) {
-                console.debug("table:%s", table.display_name);
-                table.columns.forEach(function(col){
-                    if(ontologyId === col.id) {
-                        console.log("\t matching ontology:%s table:%s  column:%s", ontologyId, table.display_name, col.name);
-                        cols.push({
-                            id: col.id,
-                            name: col.name,
-                            dataTableColumn: col,
-                            dataTable: table
-                        });
-                    }
-                });
-            });
-            return cols;
         };
 
         self.integrateClicked = function() {
