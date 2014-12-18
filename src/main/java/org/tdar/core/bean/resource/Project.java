@@ -44,7 +44,7 @@ public class Project extends Resource implements Sortable {
 
         @Override
         public String getDescription() {
-            return "No description";
+            return "";
         }
 
         @Override
@@ -54,7 +54,7 @@ public class Project extends Resource implements Sortable {
 
         @Override
         public String getTitle() {
-            return "No Associated Project";
+            return "";
         }
 
         @Override
