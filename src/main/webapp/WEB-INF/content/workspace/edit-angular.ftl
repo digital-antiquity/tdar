@@ -91,21 +91,18 @@
                             <div class="span4">
                                 <label>Selected Datasets</label>
                                 <div>
-                                    <select size="5" class="input-block-level" multiple  ng-model="selectedDatatables" ng-options="datatable.data_table_name for datatable in ctrl.integration.datatables"></select>
+                                    <select size="5" class="input-block-level" multiple
+                                            ng-model="selectedDatatables"
+                                            ng-options="datatable|dtDisplayName|titleCase for datatable in ctrl.integration.datatables"></select>
                                 </div>
                                 <button type="button" class="btn input-block-level"
                                         ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.datatables.length === 0">Remove selected dataset</button>
                             </div>
                             <div class="span4">
                                 <label>Shared Ontologies</label>
-                                <div>
-                                    <select size="5" class="input-block-level" multiple
-                                            ng-model="selectedOntologies"
-                                            ng-options="ontology.name for ontology in ctrl.integration.ontologies"
-                                            ng-dblclick="ctrl.addToIntegrationColumnsClicked()"></select>
-                                </div>
-
-
+                                <ul>
+                                    <li ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -353,6 +350,7 @@ ${categoriesJson}
 <script src="/js/data-integration/LegacyFormController.js"></script>
 <script src="/js/data-integration/ModalDialogController.js"></script>
 <script src="/js/data-integration/DataService.js"></script>
+<script src="/js/data-integration/customFilters.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
 <script src="/js/tdar.pagination.js"></script>
 </span>
