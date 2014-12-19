@@ -307,6 +307,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.parent = parent;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public boolean[] getColumnHasValueArray() {
         return columnHasValueArray;
     }

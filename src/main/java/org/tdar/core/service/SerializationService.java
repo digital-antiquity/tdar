@@ -57,7 +57,9 @@ import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -166,13 +168,7 @@ public class SerializationService {
      */
     @Transactional
     public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-        mapper.registerModules(new JaxbAnnotationModule());
-        Hibernate4Module hibernate4Module = new Hibernate4Module();
-        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-        mapper.registerModules(hibernate4Module);
+        ObjectMapper mapper = initializeObjectMapper();
         ObjectWriter objectWriter = mapper.writer();
         
         if (view != null) {
@@ -180,6 +176,25 @@ public class SerializationService {
             objectWriter = mapper.writerWithView(view);
         }
         objectWriter.writeValue(writer, object);
+    }
+
+    @Transactional
+    public <C> C readObjectFromJson(Class<C> cls, String json) throws JsonParseException, JsonMappingException, IOException {
+        // test me, no idea if it works
+        ObjectMapper mapper = initializeObjectMapper();
+        return mapper.readValue(json, cls);
+    }
+    
+    private ObjectMapper initializeObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        mapper.registerModules(new JaxbAnnotationModule());
+        Hibernate4Module hibernate4Module = new Hibernate4Module();
+        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+        mapper.registerModules(hibernate4Module);
+        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
+        return mapper;
     }
 
     /**

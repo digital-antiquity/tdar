@@ -273,7 +273,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return String.format("%s - %s %s", name, columnDataType, getId());
     }
 
-    @JsonView(JsonIntegrationFilter.class)
+    @JsonView(value={JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class})
     public String getDisplayName() {
         return displayName;
     }
