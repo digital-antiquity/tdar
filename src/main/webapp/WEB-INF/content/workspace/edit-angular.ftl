@@ -181,10 +181,10 @@
                                                 <h3>Choose source columns</h3>
                                                 <table>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">-->
-                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" og-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
+                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" ng-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
                                                         <td>{{datatable.displayName}}</td>
                                                         <td>
-                                                            <select ng-model="outputColumn.datatableColumnSelections[$index]"
+                                                            <select ng-model="columnSelection.datatableColumn"
                                                                     ng-options="c.displayName for c in datatable.dataTableColumns">
                                                                 <option value="" class="emptyoption">No column selected</option>
                                                             </select>
@@ -199,10 +199,10 @@
                                                 <h3>Choose source columns</h3>
                                                 <table>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">-->
-                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" og-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
+                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" ng-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
                                                         <td>{{datatable.displayName}}</td>
                                                         <td>
-                                                            <select ng-model="outputColumn.datatableColumnSelections[$index]"
+                                                            <select ng-model="columnSelection.datatableColumn"
                                                                     ng-options="c.displayName for c in datatable.dataTableColumns | filter:filterCount">
                                                                 <option value="" class="emptyoption">No column selected</option>
                                                             </select>
