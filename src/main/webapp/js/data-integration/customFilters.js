@@ -6,12 +6,11 @@
     //prettify ontology
     app.filter('ontDisplayName', function(){
         return function(ontology) {
-            var name = ontology.displayName;
-
+            var name = ontology.title;
             //designated displayName trumps all
-            if(name) return name;
+//            if(name) return name;
 
-            name  = ontology.name;
+//            name  = ontology.name;
 
             //avoid the 'Alan Parsons Project Project' effect
             name = name.replace(/\s*Ontology\s*$/i, '');
@@ -24,16 +23,18 @@
     //prettify datatables
     app.filter ('dtDisplayName',  function() {
         return function(datatable) {
-            var name = (datatable.data_table_name
-                //ditch the ugly prefix
-                .replace(/[de]_\d+_/,'')
-                //strip filename from table name
-                .replace(/^.*?_(mdb)_/, '')
-                //deslug
-                .replace(/_/g, ' ')
-            );
+//            console.log(datatable);
+//            var name = datatable.displayName;
+//            (
+//                //ditch the ugly prefix
+//                .replace(/[de]_\d+_/,'')
+//                //strip filename from table name
+//                .replace(/^.*?_(mdb)_/, '')
+//                //deslug
+//                .replace(/_/g, ' ')
+//            );
 
-            return datatable.dataset_name + ' :: ' + name;
+            return datatable.displayName;
         };
     });
 

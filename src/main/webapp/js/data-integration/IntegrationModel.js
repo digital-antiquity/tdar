@@ -146,8 +146,11 @@
                 self.datatables.forEach(function(datatable) {
                     compatTables.push({
                         datatable: datatable,
-                        compatCols:datatable.columns.filter(function(col){
-                            return col.default_ontology_id === ontologyId;
+                        compatCols:datatable.dataTableColumns.filter(function(col){
+                            if (col == undefined || col.mappedOntology == undefined) {
+                                return false;
+                            }
+                            return col.mappedOntology.id === ontologyId;
                         })
                     });
                 });
@@ -248,6 +251,14 @@
         }
 
         /**
+         * Returns just the displayColumns from the list of outputColumns
+         * @private
+         */
+        function _getCountColumns() {
+            return _getOutputColumns("count");
+        }
+
+        /**
          * Returns just the integrationColumns from the outputColumns
          * @private
          */
@@ -260,7 +271,7 @@
             console.debug("_datatablesRemoved::");
             var removedDatatableColumnIds = [];
             removedDatatables.forEach(function(datatable){
-               datatable.columns.forEach(function(column){
+               datatable.dataTableColumns.forEach(function(column){
                    removedDatatableColumnIds.push(column.id);
                });
             });
@@ -306,7 +317,14 @@
                     return removedDatatables.indexOf(datatableColumnSelection.datatable) === -1;
                 });
             });
-        }
+
+            //if any display columns, remove all affected datatableColumnSelections
+            _getCountColumns().forEach(function(displayColumn){
+                displayColumn.datatableColumnSelections = displayColumn.datatableColumnSelections.filter(function(datatableColumnSelection){
+                    return removedDatatables.indexOf(datatableColumnSelection.datatable) === -1;
+                });
+            });
+}
 
         function _datatablesAdded(addedDatatables) {
             console.debug("_datatablesAdded::");
@@ -349,17 +367,18 @@
             //todo: punch jim in the face for writing this 'one-liner'
             var ids =  _dedupe(self.datatables
                     //reduce the list of all datatables into a list of all datatableColumns
-                    .reduce(function(a,b){return a.concat(b.columns)}, [])
+                    .reduce(function(a,b){return a.concat(b.dataTableColumns)}, [])
                     //and then filter-out the unmapped columns
-                    .filter(function(col){return !!col.default_ontology_id})
+                    .filter(function(col){
+                        return !(col == undefined) && col.actuallyMapped})
                     //then convert that list of columns to a list of ids
-                    .map(function(c){return c.default_ontology_id})
+                    .map(function(c){return c.mappedOntology.id})
             )
                 // We now have a deduped list of all mapped ontology id's,
                 // Now we remove the ids that do not appear in every datatable at least once.
                 .filter(function(ontologyId){
                     return self.datatables.every(function(datatable){
-                        return datatable.columns.some(function(dtc){return ontologyId === dtc.default_ontology_id});
+                        return datatable.dataTableColumns.some(function(dtc){return ontologyId === dtc.mappedOntology.id});
                     });
                 })
             //And... scene!  Here are your shared ontology id's.
@@ -418,6 +437,44 @@
             self.columns.push(displayColumn);
         };
 
+        /**
+         * Add a 'count column'
+         */
+        self.addCountColumn = function _addCountColumn(title) {
+
+            var countColumn = {
+                type: 'count',
+                title: title,
+                datatableColumnSelections: []
+            };
+
+            self.datatables.forEach(function(table){
+                var selection = {
+                    datatable: table,
+                    datatableColumn: null
+                }
+                countColumn.datatableColumnSelections.push(selection);
+            });
+            self.columns.push(countColumn);
+        };
+        
+        self.isCountColumnEnabled = function() {
+            var cols = _getCountColumns();
+            if (cols == undefined || cols.length == 1) {
+                return false;
+            }
+            var hasCountColumn = false;
+            self.datatables.forEach(function(table){
+                table.dataTableColumns.forEach(function(col){
+                    if (col.columnEncodingType == 'COUNT') {
+                        hasCountColumn = true;
+                    }
+                });
+            });
+            return hasCountColumn;
+        };
+
+
         self.updateNodeParticipationInfo = function _updateParticipationInfo(ontology, mappedCols, arNodeInfo) {
             var ontologyParticipation = {
                 ontology:ontology,
@@ -425,8 +482,7 @@
             };
 
             arNodeInfo.forEach(function(nodeInfo, nodeIdx) {
-                var arbPresent = nodeInfo.mapping_list;
-
+                var arbPresent = nodeInfo.columnHasValueArray;
                 var nodeParticipation = {
                     node: ontology.nodes[nodeIdx],
                     colIds: mappedCols.filter(function(b,i){return arbPresent[i]}).map(function(col){return col.id})
@@ -437,7 +493,7 @@
         };
 
         self.addDatatables = function(datatables) {
-            _setAddAll(self.datatables, datatables, "data_table_id");
+            _setAddAll(self.datatables, datatables, "id");
             _datatablesAdded(datatables)
             _rebuildSharedOntologies();
         };

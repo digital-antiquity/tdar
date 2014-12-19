@@ -74,7 +74,7 @@
             if(datatableIds.length === 0) return;
             //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
             dataService.loadTableDetails(datatableIds).success(function(data) {
-                self.integration.addDatatables(data[0].dataTables);
+                self.integration.addDatatables(data.dataTables);
                 //self.integration.updateSharedOntologies(data[0].sharedOntologies);
                 //gather the updated node participation data
                 $scope.loadIntegrationColumnDetails(self.integration);
@@ -124,13 +124,30 @@
             integration.addDisplayColumn("display column");
         };
 
+        self.addCountColumnClicked = function(arg) {
+            integration.addCountColumn("count column");
+        };
+
         self.removeSelectedDatasetClicked = function() {
             integration.removeDatatables($scope.selectedDatatables);
         };
 
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {
-            self.integration.addIntegrationColumn(ontology.name, ontology);
+            self.integration.addIntegrationColumn(ontology.title, ontology);
         }
+
+        self.isCountColumnDisabled = function() {
+            return !self.integration.isCountColumnEnabled();
+        };
+        
+        $scope.filterCount = function(col) {
+            if(col.columnEncodingType =='COUNT')
+            {
+                return true; // this will be listed in the results
+            }
+
+            return false; // otherwise it won't be within the results
+        };
 
         $scope.lookupCompatibleColumns = function(id) {
             return self.integration.mappedDatatables[id]

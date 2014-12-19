@@ -478,7 +478,8 @@
                         + " lower(ds.title) like :titleLookup and "
                         + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
                         + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
-                        + "(:bookmarked=false or ds.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
+                        + "(:bookmarked=false or ds.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
+                        + ""),// order by dt.displayName
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,
                 // 

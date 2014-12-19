@@ -28,8 +28,7 @@
                        Integration Name
                    </label>
                    <div class="controls">
-                       <input type="text" class="input-block-level" name="integration.title"
-                              ng-model="ctrl.integration.title">
+                       <input type="text" class="input-block-level" name="integration.title" ng-model="ctrl.integration.title">
                    </div>
                </div>
                <div class="control-group">
@@ -62,13 +61,18 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
-                                                ><a href="#" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.name}}</a></li>
+                                                ><a href="#" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 </div>
                                 <button type="button" class="btn" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
                                         ng-disabled="!ctrl.integration.ontologies.length"
                                         >Add Display Column</button>
+
+                                <button type="button" class="btn" id="btnAddCountColumn"
+                                        ng-click="ctrl.addCountColumnClicked()"
+                                        ng-disabled="ctrl.isCountColumnDisabled()"
+                                        >Add Count Column</button>
                             </div>
 
 
@@ -151,7 +155,7 @@
                                                     <tr>
                                                         <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" >
                                                         	<!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.display_name for c in cc.compatCols"></select>
+                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
                                                         </th>
                                                     </tr>
                                                     </thead>
@@ -160,7 +164,7 @@
                                                         <td><input type="checkbox" name="tbd" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
-                                                                <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.display_name}}</label>
+                                                                <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
                                                         <td ng-repeat="datatableColumn in outputColumn.selectedDatatableColumns">
@@ -178,10 +182,10 @@
                                                 <table>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">-->
                                                     <tr ng-repeat="datatable in ctrl.integration.datatables" og-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
-                                                        <td>{{datatable.data_table_name}}</td>
+                                                        <td>{{datatable.displayName}}</td>
                                                         <td>
                                                             <select ng-model="outputColumn.datatableColumnSelections[$index]"
-                                                                    ng-options="c.display_name for c in datatable.columns">
+                                                                    ng-options="c.displayName for c in datatable.dataTableColumns">
                                                                 <option value="" class="emptyoption">No column selected</option>
                                                             </select>
                                                         </td>
@@ -189,6 +193,26 @@
 
                                                 </table>
                                             </div>
+
+
+                                            <div ng-switch-when="count" class=".count-pane-content">
+                                                <h3>Choose source columns</h3>
+                                                <table>
+                                                    <#--<tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">-->
+                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" og-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
+                                                        <td>{{datatable.displayName}}</td>
+                                                        <td>
+                                                            <select ng-model="outputColumn.datatableColumnSelections[$index]"
+                                                                    ng-options="c.displayName for c in datatable.dataTableColumns | filter:filterCount">
+                                                                <option value="" class="emptyoption">No column selected</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+                                            </div>
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -209,7 +233,7 @@
 
 <fieldset>
     <div ng-repeat="col in legacyCtrl.integration.columns" ng-init="columnIndex=$index">
-        <input type="hidden" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
+        <input type="text" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
         <div ng-switch="col.type">
             <span ng-switch-when="integration">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
@@ -222,9 +246,14 @@
                        value="{{colSelection.datatableColumn.id}}"
                        ng-repeat="colSelection in col.datatableColumnSelections | filter: {datatableColumn: '!!'}">
             </span>
+            <span ng-switch-when="count">
+                <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
+                       value="{{colSelection.datatableColumn.id}}"
+                       ng-repeat="colSelection in col.datatableColumnSelections | filter: {datatableColumn: '!!'}">
+            </span>
         </div>
     </div>
-    <input ng-repeat="datatable in legacyCtrl.integration.datatables" type="hidden" name="tableIds[{{$index}}]" value="{{datatable.data_table_id}}">
+    <input ng-repeat="datatable in legacyCtrl.integration.datatables" type="hidden" name="tableIds[{{$index}}]" value="{{datatable.id}}">
 </fieldset>
 </form>
 

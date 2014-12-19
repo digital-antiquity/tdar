@@ -57,13 +57,14 @@
                 });
                 config.params = params;
                 configs.push(config);
-                promises.push($http.get("/workspace/ajax/integration-column-details", config));
+                promises.push($http.get("/api/integration/integration-column-details", config));
             });
             $q.all(promises).then(function(arResults){
                 arResults.forEach(function(result, ontologyIdx){
                     var ontology = integration.ontologies[ontologyIdx];
                     var mappedCols = integration.getMappedDatatableColumns(ontology.id);
-                    integration.updateNodeParticipationInfo(ontology, mappedCols, result.data);
+                    console.log(result);
+                    integration.updateNodeParticipationInfo(ontology, mappedCols, result.data.flattenedNodes);
                 });
             }) ;
         };
@@ -78,12 +79,12 @@
          */
         this.loadTableDetails = function(datatableIds) {
             //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
-            var httpPromise =  $http.get('/workspace/ajax/table-details?' + $.param({dataTableIds: datatableIds}, true));
+            var httpPromise =  $http.get('/api/integration/table-details?' + $.param({dataTableIds: datatableIds}, true));
 
             //we also want to cache the results, so we tack on a callback of our own
             httpPromise.success(function(data){
-                data[0].dataTables.forEach(function(datatable){self.datatableCache.put(datatable.data_table_id, datatable)});
-                data[0].sharedOntologies.forEach(function(ontology){self.ontologyCache.put(ontology.id, ontology)});
+                data.dataTables.forEach(function(datatable){self.datatableCache.put(datatable.data_table_id, datatable)});
+                data.sharedOntologies.forEach(function(ontology){self.ontologyCache.put(ontology.id, ontology)});
             });
 
             return httpPromise;
@@ -100,12 +101,16 @@
          * @private
          */
         //fixme: move SearchFilter class to DataService.js
-        function _doSearch(url, searchFilter, transformer) {
+        function _doSearch(url, searchFilter, transformer, prefix) {
             var futureData = $q.defer();
             var config = {
                 params: searchFilter.toStrutsParams()
             };
-            $http.get(url, config).success(function(rawData){
+            $http.get(url, config).success(function(rawData_){
+                var rawData = rawData_;
+                if (prefix !== undefined) {
+                    rawData = rawData_[prefix];
+                }
                 var data = !!transformer ? transformer(rawData) : data;
                 futureData.resolve(data);
             });
@@ -121,16 +126,18 @@
         this.findDatasets = function(searchFilter) {
             var transformer =  function(data) {
                 return data.map(function(item){
+                    var d = new Date(0);
+                    d.setUTCSeconds(parseInt(item.dataset.dateCreated) / 1000);
                     var result = item;
-                    result.title = item.dataset_name;
-                    result.title += ' - ' + item.data_table_name;
-                    result.id = item.data_table_id;
-                    result.submitter_display_name  = item.dataset.submitter.properName;
-                    result.date_registered = item.dataset_date_created;
+                    result.title = item.dataset.title;
+                    result.title += ' - ' + item.dataTable.displayName;
+                    result.id = item.dataTable.id;
+                    result.submitter_display_name  = item.submitter.properName;
+                    result.date_created = d;
                     return result;
                 })
             };
-            return _doSearch("/workspace/ajax/find-datasets", searchFilter, transformer);
+            return _doSearch("/api/integration/find-datasets", searchFilter, transformer, "dataTables");
         };
 
         //todo: Note that the UI for this feature is disabled, but this function ostensibly still "works"
@@ -140,7 +147,8 @@
          * @returns {*}
          */
         this.findOntologies = function(searchFilter)  {
-            return _doSearch("/workspace/ajax/find-ontologies", searchFilter, null);
+            // FIXME: write transformer
+            return _doSearch("/api/integration/find-ontologies", searchFilter, null, "ontology");
         };
 
         /**

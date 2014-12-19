@@ -173,6 +173,7 @@ public class SerializationService {
         Hibernate4Module hibernate4Module = new Hibernate4Module();
         hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
         mapper.registerModules(hibernate4Module);
+        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
         ObjectWriter objectWriter = mapper.writer();
         
         if (view != null) {
