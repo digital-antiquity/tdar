@@ -17,6 +17,7 @@ import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+import org.tdar.utils.json.JsonNodeParticipationFilter;
 
 @Namespace("/api/integration")
 @ParentPackage("secured")
@@ -44,7 +45,7 @@ public class IntegrationColumnDetailsAction extends AbstractIntegrationAction {
         if (flattenedOntologyNodeList != null) {
             proxy.getFlattenedNodes().addAll(flattenedOntologyNodeList);
         }
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(proxy, JsonIntegrationDetailsFilter.class).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(proxy, JsonNodeParticipationFilter.class).getBytes()));
 
         return SUCCESS;
     }

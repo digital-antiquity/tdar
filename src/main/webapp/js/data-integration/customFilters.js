@@ -23,19 +23,17 @@
     //prettify datatables
     app.filter ('dtDisplayName',  function() {
         return function(datatable) {
-//            console.log(datatable);
-//            var name = datatable.displayName;
-//            (
-//                //ditch the ugly prefix
-//                .replace(/[de]_\d+_/,'')
-//                //strip filename from table name
-//                .replace(/^.*?_(mdb)_/, '')
-//                //deslug
-//                .replace(/_/g, ' ')
-//            );
-
-            return datatable.displayName;
-        };
+            console.log(datatable);
+            var name = (datatable.displayName
+                //ditch the ugly prefix
+                .replace(/[de]_\d+_/, '')
+                //strip filename from table name
+                .replace(/^.*?_(mdb)_/, '')
+                //deslug
+                .replace(/_/g, ' ')
+            );
+            return datatable.datasetTitle + ' :: ' + name;
+        }
     });
 
     app.filter('titleCase', function() {

@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,10 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.tdar.utils.json.JsonNodeParticipationFilter;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 /**
  * $Id$
@@ -50,6 +55,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "ontology_node_interval_end_index", columnList = "interval_end"),
         @Index(name = "ontology_node_index", columnList = "index")
 })
+@JsonInclude(NON_NULL)
 public class OntologyNode extends Persistable.Base implements Comparable<OntologyNode> {
 
     private static final long serialVersionUID = 6997306639142513872L;
@@ -133,10 +139,12 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return intervalStart;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public void setIntervalStart(Integer start) {
         this.intervalStart = start;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public Integer getIntervalEnd() {
         return intervalEnd;
     }
@@ -145,7 +153,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.intervalEnd = end;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getIri() {
         return iri;
     }
@@ -182,7 +189,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @Transient
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public int getNumberOfParents() {
         if (StringUtils.isEmpty(index)) {
             return 0;
@@ -307,7 +313,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.parent = parent;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
+    @JsonView(JsonNodeParticipationFilter.class)
+    @JsonInclude(NON_EMPTY)
     public boolean[] getColumnHasValueArray() {
         return columnHasValueArray;
     }
@@ -342,7 +349,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @Transient
-    @JsonView(JsonIntegrationDetailsFilter.class)
+    /** @deprecated  invalid getter name, and pointless anyway. **/
     public boolean hasMappedDataValues() {
         return mappedDataValues;
     }
@@ -351,7 +358,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.mappedDataValues = mappedDataValues;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
+    @JsonView(JsonNodeParticipationFilter.class)
+    @JsonInclude(NON_EMPTY)
     public Map<DataTableColumn,Boolean> getColumnHasValueMap() {
         return columnHasValueMap;
     }

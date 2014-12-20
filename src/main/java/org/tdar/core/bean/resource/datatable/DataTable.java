@@ -303,6 +303,11 @@ public class DataTable extends Persistable.Base {
         return displayName;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    public String getDatasetTitle() {
+        return getDataset().getTitle();
+    }
+
     public String getInternalName() {
         return getName().replaceAll("^((\\w+)_)(\\d+)(_?)", "");
     }
@@ -318,8 +323,4 @@ public class DataTable extends Persistable.Base {
         return columns;
     }
     
-    @Transient
-    public String getAjaxSort() {
-        return dataset.getTitleSort() + " " + getDisplayName();
-    }
 }

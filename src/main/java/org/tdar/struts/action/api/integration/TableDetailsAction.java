@@ -41,7 +41,7 @@ public class TableDetailsAction extends AbstractIntegrationAction {
         TableDetailsProxy proxy = new TableDetailsProxy();
         proxy.getDataTables().addAll(dataTableService.findAll(getDataTableIds()));
         Map<Ontology, List<DataTable>> suggestions = integrationService.getIntegrationSuggestions(proxy.getDataTables(), false);
-        proxy.getSharedOntologies().addAll(suggestions.keySet());
+        proxy.getMappedOntologies().addAll(suggestions.keySet());
 
         setJsonInputStream(new ByteArrayInputStream(smlService.convertToFilteredJson(proxy, JsonIntegrationDetailsFilter.class).getBytes()));
         return SUCCESS;

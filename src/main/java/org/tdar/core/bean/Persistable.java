@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -84,7 +85,7 @@ public interface Persistable extends Serializable {
          */
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @JsonView(JsonLookupFilter.class)
+        @JsonView({JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class})
         private Long id = -1L;
 
         // @XmlTransient

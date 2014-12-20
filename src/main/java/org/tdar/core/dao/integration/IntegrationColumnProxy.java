@@ -10,6 +10,7 @@ import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.tdar.utils.json.JsonNodeParticipationFilter;
 
 @JsonAutoDetect
 public class IntegrationColumnProxy implements Serializable {
@@ -19,7 +20,6 @@ public class IntegrationColumnProxy implements Serializable {
     private Ontology sharedOntology;
     private List<OntologyNode> flattenedNodes = new ArrayList<>();
     
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public Ontology getSharedOntology() {
         return sharedOntology;
     }
@@ -28,7 +28,7 @@ public class IntegrationColumnProxy implements Serializable {
         this.sharedOntology = shared;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
+    @JsonView(JsonNodeParticipationFilter.class)
     public List<OntologyNode> getFlattenedNodes() {
         return flattenedNodes;
     }

@@ -34,6 +34,8 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
+import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.
@@ -109,7 +111,7 @@ public class Dataset extends InformationResource {
 
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
 //    @Transient
-    @JsonView(JsonIntegrationFilter.class)
+    @JsonView({JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class})
     public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {

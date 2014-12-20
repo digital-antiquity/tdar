@@ -129,10 +129,7 @@
                     compatTables.push({
                         datatable: datatable,
                         compatCols:datatable.dataTableColumns.filter(function(col){
-                            if (col == undefined || col.mappedOntology == undefined) {
-                                return false;
-                            }
-                            return col.mappedOntology.id === ontologyId;
+                            return col.mappedOntologyId === ontologyId;
                         })
                     });
                 });
@@ -351,20 +348,15 @@
                     //reduce the list of all datatables into a list of all datatableColumns
                     .reduce(function(a,b){return a.concat(b.dataTableColumns)}, [])
                     //and then filter-out the unmapped columns
-                    .filter(function(col){
-                        return !(col == undefined) && col.actuallyMapped})
+                    .filter(function(col){return !!col.mappedOntologyId})
                     //then convert that list of columns to a list of ids
-                    .map(function(c){return c.mappedOntology.id})
+                    .map(function(c){return c.mappedOntologyId})
             )
                 // We now have a deduped list of all mapped ontology id's,
                 // Now we remove the ids that do not appear in every datatable at least once.
                 .filter(function(ontologyId){
                     return self.datatables.every(function(datatable){
-                        return datatable.dataTableColumns.some(function(dtc){
-                            if (dtc.mappedOntology == undefined) {
-                                return false;
-                            }
-                            return ontologyId === dtc.mappedOntology.id});
+                        return datatable.dataTableColumns.some(function(dtc){return ontologyId === dtc.mappedOntologyId});
                     });
                 })
             //And... scene!  Here are your shared ontology id's.
@@ -461,7 +453,6 @@
             });
             return hasCountColumn;
         };
-
 
         self.updateNodeParticipationInfo = function _updateParticipationInfo(ontology, mappedCols, arNodeInfo) {
             var ontologyParticipation = {

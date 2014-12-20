@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -44,6 +45,9 @@ import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static org.tdar.core.bean.Persistable.Base.isTransient;
+
 /**
  * Metadata for a column in a data table.
  * 
@@ -58,6 +62,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "data_table_column_default_coding_sheet_id_idx", columnList = "default_coding_sheet_id")
 })
 @XmlRootElement
+@JsonInclude(NON_NULL)
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
 
     private static final long serialVersionUID = 430090539610139732L;
@@ -199,9 +204,14 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.columnEncodingType = columnEncodingType;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
+    }
+
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    public Long getCategoryVariableId() {
+        if(isTransient(categoryVariable)) return null;
+        return categoryVariable.getId();
     }
 
     public void setCategoryVariable(CategoryVariable categoryVariable) {
@@ -415,8 +425,15 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return values;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
+    /**
+     * Return true if this column has a mapped ontology and has a mapped coding sheet that is not invalid.
+     * @return
+     * @deprecated  Don't use this property. The name is ambiguous, and more importantly it obfuscates the reason why
+     * this column cannot participate in an IntegrationColumn.
+     */
+    @Deprecated
     public boolean isActuallyMapped() {
+    // a more accurate name would be isShouldTdarHaveEverAllowedTheUserToChooseThisCodingSheetOnTheEditColumnMetadataPageInTheFirstPlace()
         if (Persistable.Base.isNullOrTransient(getDefaultOntology())) {
             return false;
         }
@@ -429,7 +446,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return false;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public Ontology getMappedOntology() {
         if (getDefaultOntology() != null) {
             return getDefaultOntology();
@@ -438,6 +454,12 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
             return getDefaultCodingSheet().getDefaultOntology();
         }
         return null;
+    }
+
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    public Long getMappedOntologyId(){
+        if(getDefaultOntology() == null) return null;
+        return getDefaultOntology().getId();
     }
 
 }

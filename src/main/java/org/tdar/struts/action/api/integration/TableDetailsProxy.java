@@ -29,7 +29,7 @@ public class TableDetailsProxy implements Serializable {
     }
 
     @JsonView(JsonIntegrationDetailsFilter.class)
-    public List<Ontology> getSharedOntologies() {
+    public List<Ontology> getMappedOntologies() {
         return sharedOntologies;
     }
 

@@ -219,7 +219,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         } catch (Exception e) {
             getLogger().error("could not serialize to XML", e);
         }
-        getLogger().debug(integrationContextXml);
+        getLogger().trace(integrationContextXml);
         try {
             // ADD ERROR CHECKING LOGIC
 

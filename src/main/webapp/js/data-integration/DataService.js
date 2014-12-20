@@ -113,7 +113,7 @@
                         datatableColumnCache.put(dtc.id, dtc);
                     });
                 });
-                data.sharedOntologies.forEach(function(ontology){
+                data.mappedOntologies.forEach(function(ontology){
                     ontologyCache.put(ontology.id, ontology);
                     ontology.nodes.forEach(function(ontologyNode){
                         ontologyNodeCache.put(ontologyNode.id, ontologyNode);
@@ -211,20 +211,15 @@
 
             //first, lists build ontology-to-columns map;  map<ontologyId, list<datatableColumnId>>
             var dtcIdLists =  datatableColumns
-                    .filter(function(dtc) {
-                        if (dtc.mappedOntology == undefined) {
-                            return false;
-                        };
-                        return true;
+                .filter(function(dtc) {return !!dtc.mappedOntologyId})
+                .reduce(function(obj,dtc){
+                    if(!obj[dtc.mappedOntologyId]){
+                        obj[dtc.mappedOntologyId] = [];
                     }
-                        )
-                    .reduce(function(obj,dtc){
-                        if(!obj[dtc.mappedOntology.id]){
-                            obj[dtc.mappedOntology.id] = [];
-                        }
-                        obj[dtc.mappedOntology.id].push(dtc.id);
-                        return obj;
-                    }, {});
+                    obj[dtc.mappedOntologyId].push(dtc.id);
+                    return obj;
+                }, {});
+
 
             //now, let's build request parameters for request we need to make
             var ontologyIds = Object.keys(dtcIdLists);
