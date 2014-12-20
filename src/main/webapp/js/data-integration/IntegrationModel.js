@@ -360,7 +360,11 @@
                 // Now we remove the ids that do not appear in every datatable at least once.
                 .filter(function(ontologyId){
                     return self.datatables.every(function(datatable){
-                        return datatable.dataTableColumns.some(function(dtc){return ontologyId === dtc.mappedOntology.id});
+                        return datatable.dataTableColumns.some(function(dtc){
+                            if (dtc.mappedOntology == undefined) {
+                                return false;
+                            }
+                            return ontologyId === dtc.mappedOntology.id});
                     });
                 })
             //And... scene!  Here are your shared ontology id's.
