@@ -126,7 +126,7 @@
     </div>
 
     <div class="tdarresults">
-        <#if showCollectionResults>
+        <#if (showCollectionResults && (collectionResults![])?size > 0)>
         <#--split the collection list into, at most, two sublists -->
         <#assign _lastIndex = (collectionResults?size -1)>
         <#if (_lastIndex > 9)><#assign _lastIndex = 9></#if>
