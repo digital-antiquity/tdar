@@ -396,6 +396,8 @@
                 integrationColumn.isValidMapping = (_sharedOntologyIds.indexOf(integrationColumn.ontologyId) > -1);
             });
         }
+        
+        
 
         /**
          * Add a 'display column' to the columns list.  A display column contains a list of datatableColumn selections, which the system

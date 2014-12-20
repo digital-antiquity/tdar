@@ -1,24 +1,12 @@
 <head>
     <title>Dataset Integration: Edit</title>
-    <link rel="stylesheet" href="/css/tdar.integration.css" media="screen">
+    <link rel="stylesheet" href="/css/tdar-integration.css" media="screen">
 </head>
 <body>
-<style type="text/css">
-    h1.compact {
-        margin-top:0 !important;
-        margin-bottom: -3pt ;
-    }
-    h2.compact {
-        margin-top:-3pt ;
-    }
-    input.intcol, select.intcol {
-        width: 90pt;
-    }
-</style>
 <div id="divIntegrationMain" ng-controller="IntegrationController as ctrl">
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
-        <h2 class="compact">{{ctrl.integration.title || 'Untitled Integration'}}</h2>
+<!--        <h2 class="compact">{{ctrl.integration.title || 'Untitled Integration'}}</h2> -->
     </div>
     <form id="frmIntegrationEdit" class="form-horizontal">
         <div class="row">
@@ -155,7 +143,17 @@
                                                     <tr>
                                                         <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" >
                                                         	<!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                        	<div ng-switch on="cc.compatCols.length">
+                                                        	<div ng-switch-when="1">
+                                                        		{{cc.compatCols[0].displayName}}
+                                                        		<!-- FIXME: this is "hidden", but is it even needed? -->
+                                                        		<!-- FIXME: shouldn't this be the dataset name? -->
+	                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+														    </div>
+														    <div ng-switch-default>
+	                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+														    </div>
+                                                        	</div>
                                                         </th>
                                                     </tr>
                                                     </thead>

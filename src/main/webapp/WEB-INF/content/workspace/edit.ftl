@@ -1,6 +1,6 @@
 <head>
     <title>Dataset Integration: Edit</title>
-    <link rel="stylesheet" href="/css/tdar.integration.css" media="screen">
+    <link rel="stylesheet" href="/css/tdar-integration.css" media="screen">
 </head>
 <body>
 <div id="divIntegrationHeader">
