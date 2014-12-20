@@ -108,7 +108,7 @@
             //we also want to cache the results, so we tack on a callback of our own
             httpPromise.success(function(data){
                 data.dataTables.forEach(function(datatable){
-                    datatableCache.put(datatable.data_table_id, datatable);
+                    datatableCache.put(datatable.id, datatable);
                     datatable.dataTableColumns.forEach(function(dtc){
                         datatableColumnCache.put(dtc.id, dtc);
                     });
@@ -211,12 +211,18 @@
 
             //first, lists build ontology-to-columns map;  map<ontologyId, list<datatableColumnId>>
             var dtcIdLists =  datatableColumns
-                    .filter(function(dtc) {return !!dtc.default_ontology_id})
+                    .filter(function(dtc) {
+                        if (dtc.mappedOntology == undefined) {
+                            return false;
+                        };
+                        return true;
+                    }
+                        )
                     .reduce(function(obj,dtc){
-                        if(!obj[dtc.default_ontology_id]){
-                            obj[dtc.default_ontology_id] = [];
+                        if(!obj[dtc.mappedOntology.id]){
+                            obj[dtc.mappedOntology.id] = [];
                         }
-                        obj[dtc.default_ontology_id].push(dtc.id);
+                        obj[dtc.mappedOntology.id].push(dtc.id);
                         return obj;
                     }, {});
 
