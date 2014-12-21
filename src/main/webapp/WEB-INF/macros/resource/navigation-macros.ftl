@@ -57,7 +57,8 @@ navigation freemarker macros
         <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-                    <@makeLink "collection" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+                    <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+                    <@makeLink namespace "stats" "stats" "stats" current />
         </#if>
         <#nested>
 			</ul>

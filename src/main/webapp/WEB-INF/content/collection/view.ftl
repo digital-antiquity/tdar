@@ -49,9 +49,6 @@
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 
     <#if visible>
-    <#if editor>
-    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="stats?id=${id?c}"/>">ADMIN</a></div>
-    </#if>
 
         <#if !collections.empty>
         <!-- Don't show header if header doesn't exist -->
