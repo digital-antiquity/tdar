@@ -72,8 +72,8 @@
          */
         self.addDatasets = function(datatableIds) {
             if(datatableIds.length === 0) return;
-            dataService.loadTableDetails(datatableIds).success(function(data) {
-                self.integration.addDatatables(data.dataTables);
+            dataService.loadTableDetails(datatableIds).then(function(datatables) {
+                self.integration.addDatatables(datatables);
             });
         };
 

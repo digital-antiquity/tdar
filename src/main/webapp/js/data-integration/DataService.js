@@ -98,26 +98,47 @@
          *
          */
         this.loadTableDetails = function(datatableIds) {
+            var futureData = $q.defer();
+
+            //only load tables that aren't already in the cache
+            var missingTableIds = datatableIds.filter(function(datatableId){return !datatableCache.get(datatableId)});
+            //not sure if dupe tableIds will ever occur, but dedupe anyway.
+            missingTableIds = _dedupe(missingTableIds);
+
+
+            if(missingTableIds.length > 0) {
+                var httpPromise =  $http.get('/api/integration/table-details?' + $.param({dataTableIds: missingTableIds}, true));
+
+                httpPromise.success(function(data){
+
+                    //add this new data to our caches
+                    data.dataTables.forEach(function(datatable){
+                        datatableCache.put(datatable.id, datatable);
+                        datatable.dataTableColumns.forEach(function(dtc){
+                            datatableColumnCache.put(dtc.id, dtc);
+                        });
+                    });
+                    data.mappedOntologies.forEach(function(ontology){
+                        ontologyCache.put(ontology.id, ontology);
+                        ontology.nodes.forEach(function(ontologyNode){
+                            ontologyNodeCache.put(ontologyNode.id, ontologyNode);
+                        });
+                    });
+
+                    //now that we have everything in the cache, return the requested datatables back to the caller
+                    futureData.resolve(self.getCachedDatatables(datatableIds));
+
+                });
+
+            } else {
+                //in the event that there's nothing to load,  callback immediately with the results
+                futureData.resolve(self.getCachedDatatables(datatableIds));
+
+            }
+
             //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
-            var httpPromise =  $http.get('/api/integration/table-details?' + $.param({dataTableIds: datatableIds}, true));
 
-            //we also want to cache the results, so we tack on a callback of our own
-            httpPromise.success(function(data){
-                data.dataTables.forEach(function(datatable){
-                    datatableCache.put(datatable.id, datatable);
-                    datatable.dataTableColumns.forEach(function(dtc){
-                        datatableColumnCache.put(dtc.id, dtc);
-                    });
-                });
-                data.mappedOntologies.forEach(function(ontology){
-                    ontologyCache.put(ontology.id, ontology);
-                    ontology.nodes.forEach(function(ontologyNode){
-                        ontologyNodeCache.put(ontologyNode.id, ontologyNode);
-                    });
-                });
-            });
-
-            return httpPromise;
+            return futureData.promise;
         };
 
         /**
@@ -182,10 +203,21 @@
          * Return an array previously-loaded ontologies in the same order of the specified array of ontologyId's
          * @param ontologyIds
          */
-        this.getCachedOntologies = function(ontologyIds) {
+        this.getCachedOntologies = function _getCachedOntologies(ontologyIds) {
             return ontologyIds.map(function(ontologyId) {
                 return self.ontologyCache.get(ontologyId);
             });
+        };
+
+        /**
+         *
+         * Return an array of previously-loaded ontologies in the same order of the specified datatableIds.  Note it is not necessary
+         * to actively consult the cache before attempting to load them.  DataService.loadTableDetails()  will automagically pull from cached results when
+         * available.
+         * @param datatableIds
+         */
+        this.getCachedDatatables = function _getCachedDatatables(datatableIds) {
+            return datatableIds.map(function (id) {return datatableCache.get(id);});
         };
 
         /**

@@ -98,7 +98,7 @@
         self.mappedDatatables = {};
 
         /** transient ontology node participation information **/
-        self.ontologyParticipation = {};
+        //self.ontologyParticipation = {};
 
 
 
@@ -283,20 +283,20 @@
                 });
 
                 //clean up the nodeParticipation information
-                for(var ontologyId in self.ontologyParticipation) {
-                    var ontologyParticipation = self.ontologyParticipation[ontologyId];
-                    var nodeInfoList = ontologyParticipation.nodeInfoList;
-                    nodeInfoList.forEach(function(nodeInfo){
-                        //remove any columnIds that belong to the datatables we are removing
-                        nodeInfo.colIds = nodeInfo.colIds.filter(function(colId){
-                            var idx = removedDatatableColumnIds.indexOf(colId);
-                            if(idx === -1) {
-                                console.debug("removing %s from nodeInfo.colIds", colId);
-                            }
-                            return idx === -1;
-                        });
-                    });
-                }
+                //for(var ontologyId in self.ontologyParticipation) {
+                //    var ontologyParticipation = self.ontologyParticipation[ontologyId];
+                //    var nodeInfoList = ontologyParticipation.nodeInfoList;
+                //    nodeInfoList.forEach(function(nodeInfo){
+                //        //remove any columnIds that belong to the datatables we are removing
+                //        nodeInfo.colIds = nodeInfo.colIds.filter(function(colId){
+                //            var idx = removedDatatableColumnIds.indexOf(colId);
+                //            if(idx === -1) {
+                //                console.debug("removing %s from nodeInfo.colIds", colId);
+                //            }
+                //            return idx === -1;
+                //        });
+                //    });
+                //}
             });
 
             //if any display columns, remove all affected datatableColumnSelections
@@ -463,22 +463,22 @@
             return hasCountColumn;
         };
 
-        self.updateNodeParticipationInfo = function _updateParticipationInfo(ontology, mappedCols, arNodeInfo) {
-            var ontologyParticipation = {
-                ontology:ontology,
-                nodeInfoList: []
-            };
-
-            arNodeInfo.forEach(function(nodeInfo, nodeIdx) {
-                var arbPresent = nodeInfo.columnHasValueArray;
-                var nodeParticipation = {
-                    node: ontology.nodes[nodeIdx],
-                    colIds: mappedCols.filter(function(b,i){return arbPresent[i]}).map(function(col){return col.id})
-                };
-                ontologyParticipation.nodeInfoList.push(nodeParticipation);
-            });
-            self.ontologyParticipation[ontology.id] = ontologyParticipation;
-        };
+        //self.updateNodeParticipationInfo = function _updateParticipationInfo(ontology, mappedCols, arNodeInfo) {
+        //    var ontologyParticipation = {
+        //        ontology:ontology,
+        //        nodeInfoList: []
+        //    };
+        //
+        //    arNodeInfo.forEach(function(nodeInfo, nodeIdx) {
+        //        var arbPresent = nodeInfo.columnHasValueArray;
+        //        var nodeParticipation = {
+        //            node: ontology.nodes[nodeIdx],
+        //            colIds: mappedCols.filter(function(b,i){return arbPresent[i]}).map(function(col){return col.id})
+        //        };
+        //        ontologyParticipation.nodeInfoList.push(nodeParticipation);
+        //    });
+        //    self.ontologyParticipation[ontology.id] = ontologyParticipation;
+        //};
 
         /**
          * Gather any datatableColumns that have missing participation information and tell dataService to fetch it.
