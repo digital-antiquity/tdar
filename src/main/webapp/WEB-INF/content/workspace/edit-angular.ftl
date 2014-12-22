@@ -167,7 +167,7 @@
                                                         </td>
                                                         <td ng-repeat="datatableColumn in outputColumn.selectedDatatableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" ng-show="ontologyValuePresent(outputColumn.ontologyId, nodeIndex, datatableColumn.id)"></i>
+                                                                <i class="icon-ok" ng-show="ontologyValuePresent(datatableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>

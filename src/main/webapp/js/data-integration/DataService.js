@@ -1,7 +1,3 @@
-//FIXME: this should be a service responsible for loading/storing data to/from the server
-//TODO: migrate $http calls here
-//TODO: add an ontology cache
-//TODO: add a datatable cache
 (function(angular){
     "use strict"
     var app = angular.module("integrationApp");
@@ -193,97 +189,24 @@
         };
 
         /**
-         * Returns promise of ontology node participation data, stored as a map (keyed by datatableColumnId) of lists of ontologyNodeIds.  Each ontologyNodeId
-         * in the list indicates that the node value occurs in the dataTable in the column indicated by the datatableColumnId.
-         *
-         * @param datatableColumns
-         * @returns promise<<map<ontologyId,list<ontologyNodeId>>>
-         */
-        this.loadDatatableColumnParticipation = function(datatableColumns) {
-            var futureData = $q.defer();
-            var endpointUrl = "/workspace/ajax/integration-column-details";
-
-            //Here we are (mis)using the integration-column-details endpoint to get us the data we need.  So to do this we need to construct an
-            //"IntegrationColumn object" that holds an ontologyId, and all of the dataTableColumns that map to that ontology.  Furthermore,  the endpoint
-            //only accepts one integrationColumn per request, so we need to make N requests (one for each mapped ontology), wait for N responses to arrive,
-            //then stitch the data back together, then transform that data into format that we need.
-
-
-            //first, lists build ontology-to-columns map;  map<ontologyId, list<datatableColumnId>>
-            var dtcIdLists =  datatableColumns
-                .filter(function(dtc) {return !!dtc.mappedOntologyId})
-                .reduce(function(obj,dtc){
-                    if(!obj[dtc.mappedOntologyId]){
-                        obj[dtc.mappedOntologyId] = [];
-                    }
-                    obj[dtc.mappedOntologyId].push(dtc.id);
-                    return obj;
-                }, {});
-
-
-            //now, let's build request parameters for request we need to make
-            var ontologyIds = Object.keys(dtcIdLists);
-            var promises = ontologyIds.map(function(ontologyId){
-                console.debug("integration-column-details::  ontologyId:%s  colcount:%s", ontologyId, dtcIdLists[ontologyId].length);
-                var config = _integrationColumnRequestConfig(ontologyId, dtcIdLists[ontologyId]);
-                return $http.get(endpointUrl, config);
-            });
-
-            $q.all(promises).then(function(responses) {
-                var participationLists = {};
-
-                responses.forEach(function(response, ontIdx){
-                    var ontologyId = ontologyIds[ontIdx];
-                    var ontology = ontologyCache.get(ontologyId);
-                    var nodeProxies = response.data;
-                    var dtcIds = dtcIdLists[ontologyId];
-
-                    dtcIds.forEach(function(dtcId){
-                        participationLists[dtcId] = [];
-                    });
-
-                    //the layout of the data is kinda like this
-                    //  data := array<nodeProxy>
-                    //  nodeProxy := {id:<ontologyId>,  mapping_list:array<bool>}
-                    //  - the top array follows same sequence as ontology.nodes  (fixme: confirm this is correct)
-                    //  - the mapping_list array follows same sequence as datatable.columns
-                    //so now let's transpose the data to be datatableColumn centric,  and convert the bit-array to a list of participating ontologyNodeId's
-                    nodeProxies.forEach(function(nodeProxy, nodeIdx){
-                        var ontologyNode = ontology.nodes[nodeIdx];
-                        if(nodeProxy.id !== ontologyNode.id) {
-                            console.error ("ontology mismatch::  idx:%s \tnodeProxy:%s \tontologyNode:%s", nodeIdx, nodeProxy.id, ontologyNode.id);
-                        }
-                        nodeProxy.mapping_list.forEach(function(isPresent, idx){
-                            if(isPresent) {
-                                var dtcid = dtcIds[idx];
-                                participationLists[dtcid].push(ontologyNode.id);
-                            }
-                        });
-                    });
-
-                });
-                futureData.resolve(participationLists);
-            });
-
-
-            return futureData.promise;
-        };
-
-        /**
-         * store the ontologyNodeValues that occur in each specified datatableColumn
+         * Returns a promise of the ontologyNodeValues that occur in each specified datatableColumn
          * @param datatableColumnIds
          */
         this.loadNodeParticipation = function(datatableColumnIds) {
             var url = '/api/integration/node-participation?' + $.param({dataTableColumnIds: datatableColumnIds}, true);
             var httpPromise =  $http.get(url);
+            var futureWork = $q.defer();
             httpPromise.success(function(nodeIdsByColumnId) {
                 Object.keys(nodeIdsByColumnId).forEach(function(datatableColumnId){
                     var nodeIds = nodeIdsByColumnId[datatableColumnId];
                     var nodes = nodeIds.map(function(nodeId){return ontologyNodeCache.get(nodeId)});
                     var datatableColumn = datatableColumnCache.get(datatableColumnId);
-                    datatableColumn.transientParticipatingNodes = nodes;
+                    datatableColumn.transientNodeParticipation = nodes;
                 });
+                //Note that we mutate the data directly, so there is not anything to "return". We're just notifying the caller that we are done.
+                futureWork.resolve();
             });
+            return futureWork.promise;
         };
 
         //FIXME: HACK: for debugging purposes only ;

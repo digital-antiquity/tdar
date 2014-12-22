@@ -3,6 +3,10 @@
 
     var app = angular.module("integrationApp");
 
+    function _restore() {
+
+    }
+
     /**
      * Add specified object to specified array if specified array does not already contain the object.
      *
@@ -96,26 +100,31 @@
         /** transient ontology node participation information **/
         self.ontologyParticipation = {};
 
-        /**
-         * Build the datatable participation information for the specified ongology and store the results in ontology.compatibleDatatableColumns
-         *
-         * compatibleDatatableColumns is a 2d array of datatableColumns that map to the specified ontology.
-         *
-         * Not to be
-         * confused with datatableColumn list in an integration context.
-         * @param ontology
-         * @private
-         */
+
+
+        //fixme: jsdoc
         function _buildMappedDatatables() {
             self.mappedDatatables = self.getMappedDatatables();
         }
 
+        /**
+         * Return a list of datatable columns that have a mapped ontology.  If caller specifies ontologyId,  filter the list to columns that map
+         * to the specified ontologyId.
+         *
+         * @param {number} [ontologyId]
+         * @returns {*}
+         * @private
+         */
         self.getMappedDatatableColumns =  function _getMappedDatatableColumns(ontologyId) {
-            var cols = [];
-            self.mappedDatatables[ontologyId].forEach(function(compatTable){
-                cols = cols.concat(compatTable.compatCols);
-            });
-            return cols;
+            var mappedCols = self.datatables.reduce(function(cols, datatable){
+                return cols.concat(datatable.dataTableColumns.filter(function(col){
+                            return !!col.mappedOntologyId;
+                        }
+                ))}, []);
+            if(typeof ontologyId !== "undefined") {
+                mappedCols = mappedCols.filter(function(col){return col.mappedOntologyId === ontologyId});
+            }
+            return mappedCols;
         };
 
 
@@ -471,11 +480,48 @@
             self.ontologyParticipation[ontology.id] = ontologyParticipation;
         };
 
+        /**
+         * Gather any datatableColumns that have missing participation information and tell dataService to fetch it.
+         * @private
+         */
+        var _loadUpdatedParticipationInformation = function() {
+            //find datatableColumns that are missing transientNodeParticipation,  request it from dataService
+            var unprocessedDatatableColumns = self.getMappedDatatableColumns().filter(function(col){return !col.transientNodeParticipation});
+            var unprocessedIds  = unprocessedDatatableColumns.map(function(col) {return col.id});
+            if(unprocessedIds.length === 0) { return}
+
+            //todo: signal to the UI we are waiting on data for these columns
+            //fixme: jtd full-disclosure,  I'm torn on whether the angular controller should be loading this data or whether the 'model' should be.  leaving be for now.
+            dataService.loadNodeParticipation(unprocessedIds).then(function(){
+                //todo: signal to the UI that these columns are ready
+            });
+        };
+
+        /**
+         * Add specified datatable to the viewModel.datatables array. Duplicates are ignored.  This is the recommended way of manipulating this list, as
+         * opposed to direct array manipulation.
+         * @param datatables
+         */
         self.addDatatables = function(datatables) {
             _setAddAll(self.datatables, datatables, "id");
             _datatablesAdded(datatables)
             _rebuildSharedOntologies();
+            _loadUpdatedParticipationInformation();
         };
+
+        /**
+         * Return 'tri-state' value indicating the participation status of the specified node w.r.t. the specified datatableColumn.  True means the node
+         * is present in the column, False means it does not, and NULL means that IntegrationModel is currently loading participation data for
+         * the specified datatableColumn.
+         * @param datatableColumn
+         * @param {object} ontologyNode
+         * @private
+         */
+        self.isNodePresent = function _isNodePresent(datatableColumn, ontologyNode) {
+            if(!datatableColumn.transientNodeParticipation) return null;
+            return datatableColumn.transientNodeParticipation.indexOf(ontologyNode) >= 0;
+        }
+
 
         /**
          * remove the outputColumn at the specified index

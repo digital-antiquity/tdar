@@ -72,12 +72,8 @@
          */
         self.addDatasets = function(datatableIds) {
             if(datatableIds.length === 0) return;
-            //TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
             dataService.loadTableDetails(datatableIds).success(function(data) {
                 self.integration.addDatatables(data.dataTables);
-                //self.integration.updateSharedOntologies(data[0].sharedOntologies);
-                //gather the updated node participation data
-                $scope.loadIntegrationColumnDetails(self.integration);
             });
         };
 
@@ -156,10 +152,6 @@
             //return (self.integration.getMappedDatatables()[id]);
         };
 
-        $scope.loadIntegrationColumnDetails = function(integration) {
-            dataService.loadIntegrationColumnDetails(integration);
-        };
-
         //FIXME: proper validation required
         $scope.isValid = function() {
             console.log("isValid:: %s", self.integration.columns.length);
@@ -171,10 +163,14 @@
          *
          * @param datatableColumnId
          */
-        $scope.ontologyValuePresent = function(ontologyId, nodeIdx, dtcId) {
-            var ontologyParticipation = self.integration.ontologyParticipation[ontologyId];
-            var nodeInfo = ontologyParticipation.nodeInfoList[nodeIdx];
-            return nodeInfo.colIds.indexOf(dtcId) > -1;
+        $scope.ontologyValuePresent = function(datatableColumn, ontology) {
+            //console.log("ontologyValuePresent::");
+            //console.deg(ontology);
+            return self.integration.isNodePresent(datatableColumn, ontology);
+            //return false;
+            //var ontologyParticipation = self.integration.ontologyParticipation[ontologyId];
+            //var nodeInfo = ontologyParticipation.nodeInfoList[nodeIdx];
+            //return nodeInfo.colIds.indexOf(dtcId) > -1;
         }
 
     }]);
