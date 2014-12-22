@@ -269,6 +269,23 @@
             return futureData.promise;
         };
 
+        /**
+         * store the ontologyNodeValues that occur in each specified datatableColumn
+         * @param datatableColumnIds
+         */
+        this.loadNodeParticipation = function(datatableColumnIds) {
+            var url = '/api/integration/node-participation?' + $.param({dataTableColumnIds: datatableColumnIds}, true);
+            var httpPromise =  $http.get(url);
+            httpPromise.success(function(nodeIdsByColumnId) {
+                Object.keys(nodeIdsByColumnId).forEach(function(datatableColumnId){
+                    var nodeIds = nodeIdsByColumnId[datatableColumnId];
+                    var nodes = nodeIds.map(function(nodeId){return ontologyNodeCache.get(nodeId)});
+                    var datatableColumn = datatableColumnCache.get(datatableColumnId);
+                    datatableColumn.transientParticipatingNodes = nodes;
+                });
+            });
+        };
+
         //FIXME: HACK: for debugging purposes only ;
         window.__ds = this;
     }
