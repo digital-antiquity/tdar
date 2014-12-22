@@ -1,0 +1,10 @@
+{
+  "name": "tdar.src",
+  "description": "tDAR bower dependencies",
+  "private": true,
+  "depenencies": {},
+  "dependencies": {
+    "angular-modal-service": "~0.4.0",
+    "JSON-js": "*"
+  }
+}
