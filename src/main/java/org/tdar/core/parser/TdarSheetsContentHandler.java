@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler.SheetContentsHandler;
+import org.apache.poi.xssf.usermodel.XSSFComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +38,7 @@ public class TdarSheetsContentHandler implements SheetContentsHandler {
     }
 
     @Override
-    public void endRow() {
-        logger.info("[{},{}] --> {}", rowNum, row);
-    }
-
-    @Override
-    public void cell(String cellReference, String formattedValue) {
+    public void cell(String cellReference, String formattedValue,XSSFComment arg2) {
         int colNum = getColNum(cellReference);
 
         if (count <= toRead) {
@@ -74,5 +70,10 @@ public class TdarSheetsContentHandler implements SheetContentsHandler {
             retVal += multiplier * Math.pow(26, i);
         }
         return retVal;
+    }
+
+    @Override
+    public void endRow(int rowNum) {
+        logger.info("[{},{}] --> {}", rowNum, row);
     }
 }
