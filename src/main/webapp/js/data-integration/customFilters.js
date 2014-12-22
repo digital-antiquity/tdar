@@ -23,7 +23,6 @@
     //prettify datatables
     app.filter ('dtDisplayName',  function() {
         return function(datatable) {
-            console.log(datatable);
             var name = (datatable.displayName
                 //ditch the ugly prefix
                 .replace(/[de]_\d+_/, '')

@@ -15,7 +15,7 @@
         self.integration = integration;
         self.tab = 0;
         self.sharedOntologies = [];
-
+        
         ////fixme: remove later, expose viewmodel for debugging
         window.__viewModel = self.integration;
 
@@ -66,6 +66,11 @@
             console.log(JSON.stringify(integration, null, 4));
         };
 
+        
+        self.loadJSON = function() {
+            var json = dataService.loadExistingIntegration(dataService.getDocumentData().jsondata , self.integration);
+         };
+        
         /**
          * Called after user selects list of dataset id's from 'add datasets' modal.
          * @param datatableIds
@@ -114,14 +119,17 @@
                     self.addIntegrationColumns(data);
                 }
             });
+            self.setTab(integration.columns.length -1);
         };
 
         self.addDisplayColumnClicked = function(arg) {
             integration.addDisplayColumn("display column");
+            self.setTab(integration.columns.length -1);
         };
 
         self.addCountColumnClicked = function(arg) {
             integration.addCountColumn("count column");
+            self.setTab(integration.columns.length -1);
         };
 
         self.removeSelectedDatasetClicked = function() {
