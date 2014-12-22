@@ -46,9 +46,8 @@ public class IntegrationDatasetLookupAction extends AbstractIntegrationAction im
     @Action(value = "find-datasets")
     public String findDatasets() throws IOException {
         getLogger().debug("find-datasets:: datasetFilter: {}", searchFilter);
-
         IntegrationDataTableSearchResult findDataTables = dataTableService.findDataTables(searchFilter);
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(findDataTables, JsonIntegrationFilter.class).getBytes()));
+        setJsonObject(findDataTables, JsonIntegrationFilter.class);
         return SUCCESS;
     }
 

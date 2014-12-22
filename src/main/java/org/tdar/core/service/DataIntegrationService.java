@@ -399,14 +399,18 @@ public class DataIntegrationService {
         //so now we can start making Integration Columns.
         List<IntegrationColumn> integrationColumns = new ArrayList<>();
         for(Ontology ontology : columnsByOntology.keySet()) {
-            IntegrationColumn integrationColumn = new IntegrationColumn(ontology, dataTableColumns);
+            IntegrationColumn integrationColumn = new IntegrationColumn(ontology, columnsByOntology.get(ontology));
             getColumnDetails(integrationColumn);
             integrationColumns.add(integrationColumn);
 
+            //Basically we are transposing flattened node list; Instead of a list of nodes with column presence info,
+            //  we are making a map of columns with node presence info.
             for(OntologyNode node : integrationColumn.getFlattenedOntologyNodeList()) {
-                for(Map.Entry<DataTableColumn, Boolean> valuePresent : node.getColumnHasValueMap().entrySet()) {
-                    DataTableColumn dataTableColumn = valuePresent.getKey();
-                    if(valuePresent.getValue()) {
+                //fixme: not sure where getColumnHasValueMap() gets set, but it isn't via getDetails()
+                boolean[] hasValueArray = node.getColumnHasValueArray();
+                for(int i = 0; i < hasValueArray.length; i++) {
+                    DataTableColumn dataTableColumn = integrationColumn.getColumns().get(i);
+                    if(hasValueArray[i]) {
                         List<OntologyNode> ontologyNodes = nodesByColumn.get(dataTableColumn);
                         ontologyNodes.add(node);
                     }

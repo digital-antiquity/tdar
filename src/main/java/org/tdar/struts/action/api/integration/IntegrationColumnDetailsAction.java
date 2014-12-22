@@ -32,9 +32,6 @@ public class IntegrationColumnDetailsAction extends AbstractIntegrationAction {
     @Autowired
     private transient DataIntegrationService integrationService;
 
-    @Autowired
-    private transient SerializationService serializationService;
-
     @Action(value = "integration-column-details")
     public String integrationColumnDetails() throws IOException {
         integrationService.getColumnDetails(getIntegrationColumn());
@@ -45,8 +42,8 @@ public class IntegrationColumnDetailsAction extends AbstractIntegrationAction {
         if (flattenedOntologyNodeList != null) {
             proxy.getFlattenedNodes().addAll(flattenedOntologyNodeList);
         }
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(proxy, JsonNodeParticipationFilter.class).getBytes()));
 
+        setJsonObject(proxy, JsonNodeParticipationFilter.class);
         return SUCCESS;
     }
 

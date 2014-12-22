@@ -47,7 +47,7 @@ public class IntegrationOntologyLookupAction extends AbstractIntegrationAction i
 
         getLogger().debug("find-ontologies:: searchFilter: {}", searchFilter);
         IntegrationOntologySearchResult result = ontologyService.findOntologies(searchFilter);
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(result, JsonIntegrationFilter.class).getBytes()));
+        setJsonObject(result, JsonIntegrationFilter.class);
         return SUCCESS;
     }
     
