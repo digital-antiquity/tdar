@@ -28,11 +28,9 @@
         <thead>
         <tr>
             <#list integrationColumns as column>
-                <th>
                     <#if column.integrationColumn>
-        ${column.name}
-    </#if>
-                </th>
+                		<th>${column.name}</th>
+    				</#if>
             </#list>
             <#list selectedDataTables as table>
                 <th>${table.displayName}</th>
