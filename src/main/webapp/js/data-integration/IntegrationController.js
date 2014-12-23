@@ -119,7 +119,6 @@
                     self.addIntegrationColumns(data);
                 }
             });
-            self.setTab(integration.columns.length -1);
         };
 
         self.addDisplayColumnClicked = function(arg) {
@@ -138,6 +137,7 @@
 
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {
             self.integration.addIntegrationColumn(ontology.title, ontology);
+            self.setTab(integration.columns.length -1);
         }
 
         self.isCountColumnDisabled = function() {

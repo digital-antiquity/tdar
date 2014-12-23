@@ -177,11 +177,17 @@
                                             </div>
 
                                             <div ng-switch-when="display" class=".display-pane-content">
-                                                <h3>Choose source columns</h3>
+                                                <h3>Select Columns</h3>
+                                                <br/>
                                                 <table>
+                                                	<thead>
+                                                		<tr>
+                                                			<th>Table</th> <th>Column</th>
+                                                		</tr>
+                                                	</thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
-                                                        <td>{{dataTable.displayName}}</td>
+                                                        <th>{{dataTable.displayName}}</th>
                                                         <td>
                                                             <select ng-model="columnSelection.dataTableColumn"
                                                                     ng-options="c.displayName for c in dataTable.dataTableColumns  | orderBy: 'displayName' ">
@@ -195,11 +201,17 @@
 
 
                                             <div ng-switch-when="count" class=".count-pane-content">
-                                                <h3>Choose source columns</h3>
+                                                <h3>Select Columns</h3>
+                                                <br/>
                                                 <table>
+                                                	<thead>
+                                                		<tr>
+                                                			<th>Table</th> <th>Column</th>
+                                                		</tr>
+                                                	</thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
-                                                        <td>{{dataTable.displayName}}</td>
+                                                        <th>{{dataTable.displayName}}</th>
                                                         <td>
                                                             <select ng-model="columnSelection.dataTableColumn"
                                                                     ng-options="c.displayName for c in dataTable.dataTableColumns  | orderBy: 'displayName'  | filter:filterCount">
