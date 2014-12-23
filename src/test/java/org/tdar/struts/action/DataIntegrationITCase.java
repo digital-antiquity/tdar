@@ -209,9 +209,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
                 logger.trace("node: {} ", node);
                 if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {
-                    logger.trace("node: {} - {}", node, node.getColumnHasValueArray());
+                    logger.trace("node: {} - {}", node, node.getColumnHasValueMap());
                     boolean oneTrue = false;
-                    for (boolean val : node.getColumnHasValueArray()) {
+                    for (boolean val : node.getColumnHasValueMap().values()) {
                         if (val) {
                             oneTrue = true;
                             break;

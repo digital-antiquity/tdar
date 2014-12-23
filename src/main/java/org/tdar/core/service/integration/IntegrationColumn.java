@@ -313,11 +313,8 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = sharedOntology.toOntologyNodeMap();
 
         for (OntologyNode ontologyNode : ontologyNodes) {
-            boolean[] columnHasValueArray = new boolean[columns.size()];
-            // assume integrationColumns and data value maps have already been
-            // populated
+            
             for (int index = 0; index < columns.size(); index++) {
-                columnHasValueArray[index] = false;
                 DataTableColumn column = columns.get(index);
                 CodingSheet codingSheet = column.getDefaultCodingSheet();
                 if (codingSheet == null) {
@@ -335,14 +332,13 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
                 if (CollectionUtils.isNotEmpty(rules)) {
                     for (CodingRule rule : rules) {
                         if ((rule != null) && rule.isMappedToData(column)) {
-                            columnHasValueArray[index] = true;
                             ontologyNode.setMappedDataValues(true);
+                            ontologyNode.getColumnHasValueMap().put(column, true);
                         }
                     }
                 }
 
             }
-            ontologyNode.setColumnHasValueArray(columnHasValueArray);
         }
         // could probably do it in one pass recursively
         for (OntologyNode ontologyNode : ontologyNodes) {
@@ -350,10 +346,10 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
             if (CollectionUtils.isNotEmpty(children)) {
                 ontologyNode.setParent(true);
                 // should we set the children list directly on this OntologyNode?
-                if (!ontologyNode.hasMappedDataValues()) {
+                if (!ontologyNode.isMappedDataValues()) {
                     // this parent node has no direct mapped data values, check if any children do
                     for (OntologyNode child : children) {
-                        if (child.hasMappedDataValues()) {
+                        if (child.isMappedDataValues()) {
                             ontologyNode.setMappedDataValues(true);
                             break;
                         }

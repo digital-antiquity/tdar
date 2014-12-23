@@ -1,5 +1,8 @@
 package org.tdar.core.bean.resource;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +23,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,12 +34,10 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
-
-import com.fasterxml.jackson.annotation.JsonView;
 import org.tdar.utils.json.JsonNodeParticipationFilter;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -107,7 +107,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     // true if this ontology node or its children doesn't have any mapped data
     private transient boolean mappedDataValues;
     private transient boolean parent;
-    private transient boolean[] columnHasValueArray;
     private transient Map<DataTableColumn,Boolean> columnHasValueMap = new HashMap<>();
 
     private transient OntologyNode parentNode;
@@ -313,16 +312,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.parent = parent;
     }
 
-    @JsonView(JsonNodeParticipationFilter.class)
-    @JsonInclude(NON_EMPTY)
-    public boolean[] getColumnHasValueArray() {
-        return columnHasValueArray;
-    }
-
-    public void setColumnHasValueArray(boolean[] columnsWithValue) {
-        this.columnHasValueArray = columnsWithValue;
-    }
-
     @XmlTransient
     public boolean isSynonym() {
         return synonym;
@@ -349,8 +338,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @Transient
-    /** @deprecated  invalid getter name, and pointless anyway. **/
-    public boolean hasMappedDataValues() {
+    public boolean isMappedDataValues() {
         return mappedDataValues;
     }
 

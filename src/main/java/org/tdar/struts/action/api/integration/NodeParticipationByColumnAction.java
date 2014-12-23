@@ -29,6 +29,7 @@ import java.util.Map;
 @Scope("prototype")
 public class NodeParticipationByColumnAction extends AbstractIntegrationAction implements Preparable{
 
+    private static final long serialVersionUID = 499550761252167428L;
     private List<Long> dataTableColumnIds = new ArrayList<>();
     private Map<Long, List<Long>> nodeIdsByColumnId = new HashMap<>();
     private Map<DataTableColumn, List<OntologyNode>> nodesByColumn;
