@@ -7,6 +7,7 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
 
     private static final long serialVersionUID = 55621693166486755L;
     private List<Long> ontologyIds = new ArrayList<>();
+    private boolean ableToIntegrate = false;
 
     public DatasetSearchFilter(int maxResults, int firstResult) {
         super(maxResults, firstResult);
@@ -26,6 +27,16 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
     public void setOntologyIds(List<Long> ontologyIds) {
         this.ontologyIds = ontologyIds;
     }
+    
+    public boolean isAbleToIntegrate() {
+        return ableToIntegrate;
+    }
+
+    public void setAbleToIntegrate(boolean ableToIntegrate) {
+        this.ableToIntegrate = ableToIntegrate;
+    }
+
+
 
     public boolean isHasOntologies() {
         return !getOntologyIds().isEmpty();

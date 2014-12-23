@@ -47,25 +47,15 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         query.setProperties(searchFilter);
         query.setMaxResults(searchFilter.getMaxResults());
         query.setFirstResult(searchFilter.getFirstResult());
+        query.setReadOnly(true);
         List<DataTableProxy> proxies = new ArrayList<>();
-        for (DataTable dataTable : (List<DataTable>) query.list()) {
+        for (Object[] obj_ : (List<Object[]>) query.list()) {
+            DataTable dataTable = (DataTable) obj_[0];
             proxies.add(new DataTableProxy(dataTable));
         }
         IntegrationDataTableSearchResult result = new IntegrationDataTableSearchResult();
         result.getDataTables().addAll(proxies);
         return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public List<DataTable> findDataTablesDeprecated(IntegrationSearchFilter filter) throws IOException {
-
-        // FIXME: rewrite query to run twice, once for total count, and once for the paginated data
-        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE);
-        query.setProperties(filter);
-        query.setMaxResults(filter.getMaxResults());
-        query.setFirstResult(filter.getFirstResult());
-        return query.list();
     }
 
 }

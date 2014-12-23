@@ -92,11 +92,5 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         return getDao().findDataTables(searchFilter);
 
     }
-    @Transactional(readOnly = true)
-    @Deprecated
-    public List<DataTable> findDataTablesDeprecated(IntegrationSearchFilter searchFilter) throws IOException {
-        return getDao().findDataTablesDeprecated(searchFilter);
-
-    }
 
 }

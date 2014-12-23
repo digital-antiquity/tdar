@@ -18,7 +18,6 @@ public class AbstractIntegrationSearchFilter implements Serializable {
     private Long projectId = -1L;
     private Long collectionId = -1L;
     private boolean bookmarked = false;
-    private boolean ableToIntegrate = false;
     private String title;
 
     /*
@@ -54,16 +53,7 @@ public class AbstractIntegrationSearchFilter implements Serializable {
                 .append("project", projectId)
                 .append("collection", collectionId)
                 .append("bookmarked", bookmarked)
-                .append("isAbleToIntegrate", ableToIntegrate)
                 .append("authuser", authorizedUser).build();
-    }
-
-    public boolean isAbleToIntegrate() {
-        return ableToIntegrate;
-    }
-
-    public void setAbleToIntegrate(boolean ableToIntegrate) {
-        this.ableToIntegrate = ableToIntegrate;
     }
 
     public Long getProjectId() {

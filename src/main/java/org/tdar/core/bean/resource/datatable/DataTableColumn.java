@@ -1,5 +1,7 @@
 package org.tdar.core.bean.resource.datatable;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -43,10 +44,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static org.tdar.core.bean.Persistable.Base.isTransient;
 
 /**
  * Metadata for a column in a data table.

@@ -97,17 +97,6 @@ public class IntegrationAjaxController extends AuthenticationAware.Base implemen
     // angularjs needs either 8601 format or epochtime
     DateFormat formatter = new ISO8601DateFormat();
 
-    @Action(value = "find-datasets")
-    public String findDatasets() throws IOException {
-        getLogger().debug("find-datasets:: datasetFilter: {}", searchFilter);
-
-        List<DataTable> findDataTables = dataTableService.findDataTablesDeprecated(searchFilter);
-        for (DataTable result : findDataTables) {
-            results.add(setupDatableForJson(result));
-        }
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(results).getBytes()));
-        return SUCCESS;
-    }
 
     @Action(value = "get-shared-ontologies")
     public String findSharedOntologies() throws IOException {

@@ -1,21 +1,29 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.DatasetSearchFilter;
 import org.tdar.core.dao.integration.OntologySearchFilter;
 import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.api.integration.IntegrationColumnDetailsAction;
+import org.tdar.struts.action.api.integration.NodeParticipationByColumnAction;
 import org.tdar.struts.action.api.integration.TableDetailsAction;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
@@ -67,6 +75,43 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         detailsAction.setIntegrationColumn(column);
         detailsAction.integrationColumnDetails();
         logger.debug(IOUtils.toString(detailsAction.getJsonInputStream()));
+    }
+
+    @Autowired
+    GenericService genericService;
+
+
+    @Test
+    public void testNodeParticipation() throws IOException {
+        NodeParticipationByColumnAction action;
+        //get all the mapped dataTableColumns
+        action = generateNewController(NodeParticipationByColumnAction.class);
+        List<DataTableColumn> dataTableColumns = new ArrayList<>(genericService.findAll(DataTableColumn.class));
+        List<Long> dtcIds = new ArrayList<>();
+        for(DataTableColumn dtc : dataTableColumns) {
+            if(dtc.getDefaultOntology() != null) {
+                dtcIds.add(dtc.getId());
+            }
+        }
+
+        action.getDataTableColumnIds().addAll(dtcIds);
+        action.prepare();
+        action.execute();
+        logger.debug("results:{}", action.getNodeIdsByColumnId());
+
+        //we expect to have at least one node value present
+        int nodesPresent = 0;
+        for(List<OntologyNode> nodes : action.getNodesByColumn().values()) {
+            nodesPresent += nodes.size();
+        }
+        MatcherAssert.assertThat(nodesPresent, Matchers.greaterThan(0));
+
+
+        nodesPresent = 0;
+        for(List<Long> nodeids : action.getNodeIdsByColumnId().values()) {
+            nodesPresent += nodeids.size();
+        }
+        MatcherAssert.assertThat(nodesPresent, Matchers.greaterThan(0));
     }
 
 }

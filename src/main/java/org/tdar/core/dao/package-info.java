@@ -471,18 +471,16 @@
                 query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
-                // 
-                query = "select distinct dt from DataTable dt inner join dt.dataTableColumns as dtc inner join dtc.defaultOntology as ont join dt.dataset as ds left join ds.resourceCollections as rc"
-                        + " left join rc.parentIds parentId  "
+                query = "select distinct dt, ds.title from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
                         + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
                         + " lower(ds.title) like :titleLookup and "
-                        + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
+                        + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
                         + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
-                        + "(:bookmarked=false or ds.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
-                        + ""),// order by dt.displayName
+                        + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and " 
+                        + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
+                        + "order by ds.title, dt.displayName"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,
-                // 
                 query = "select distinct ont from Ontology ont left join ont.resourceCollections as rc"
                         + " left join rc.parentIds parentId  "
                         + "where ont.status='ACTIVE' and (:projectId=-1L or ont.project.id=:projectId) and "
