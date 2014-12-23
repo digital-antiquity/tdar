@@ -1,9 +1,9 @@
 package org.tdar.web;
 
-import net.sf.json.JSONArray;
-import org.junit.Test;
-
 import static org.junit.Assert.assertNotNull;
+import net.sf.json.JSONArray;
+
+import org.junit.Test;
 
 /**
  * Created by jimdevos on 12/1/14.
