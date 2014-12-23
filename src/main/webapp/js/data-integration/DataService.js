@@ -25,8 +25,8 @@
             var tempList = column.selectedDatatableColumns;
             if (tempList == undefined) {
                 tempList = [];
-                column.datatableColumnSelections.forEach(function(col) {
-                    tempList.push(col.datatableColumn);
+                column.dataTableColumnSelections.forEach(function(col) {
+                    tempList.push(col.dataTableColumn);
                 });
             }
             
@@ -70,7 +70,7 @@
             out.ontologies.push(ont);
         });
 
-        integration.datatables.forEach(function(dataTable) {
+        integration.dataTables.forEach(function(dataTable) {
             var table = {
                     id: dataTable.id,
                     name: dataTable.name,
@@ -106,15 +106,15 @@
         var self = this,
             documentData = _loadDocumentData(),
             ontologyCache = $cacheFactory('ontologyCache'),
-            datatableCache = $cacheFactory('datatableCache'),
+            dataTableCache = $cacheFactory('dataTableCache'),
             ontologyNodeCache = $cacheFactory('ontologyNodeCache'),
-            datatableColumnCache = $cacheFactory('datatableColumnCache');
+            dataTableColumnCache = $cacheFactory('dataTableColumnCache');
 
         // expose these caches for now,  though a better solution is have find() methods that consult cache before making ajax call
         this.ontologyCache = ontologyCache;
         this.ontologyNodeCache = ontologyNodeCache;
-        this.datatableCache = datatableCache;
-        this.datatableColumnCache = datatableColumnCache;
+        this.dataTableCache = dataTableCache;
+        this.dataTableColumnCache = dataTableColumnCache;
 
 
 
@@ -153,8 +153,8 @@
             integration.description = json.description;
                 console.log("starting...");
                 // Load the datasets and then use the results to build the columns out
-                self.loadTableDetails(dataTableIds).then(function(datatables) {
-                    integration.addDatatables(datatables);
+                self.loadTableDetails(dataTableIds).then(function(dataTables) {
+                    integration.addDatatables(dataTables);
                     json.columns.forEach(function(column){
                         var name = column.name;
                         if (name == undefined) {
@@ -204,12 +204,12 @@
          */
         self._loadDisplayIntegrationColumns = function(ids, col) {
             
-            col.datatableColumnSelections.forEach(function(selection) {
+            col.dataTableColumnSelections.forEach(function(selection) {
                 console.log(selection);
-                selection.datatable.dataTableColumns.forEach(function(dtc){
+                selection.dataTable.dataTableColumns.forEach(function(dtc){
                     ids.forEach(function(id) {
                         if (dtc.id == id) {
-                            selection.datatableColumn = dtc;
+                            selection.dataTableColumn = dtc;
                             ids.splice(ids.indexOf(id),1);
                         }
                     });
@@ -254,17 +254,17 @@
         };
 
         /**
-         * Returns httpPromise of an object containing: datatable objects corresponding to the specified array of
-         * datatableId's
-         * @param datatableIds
-         * @return HttpPromise futureDatatables:httppromise<{dataTables: Array<datatable>,  sharedOntologies: Array<ontology>}>
+         * Returns httpPromise of an object containing: dataTable objects corresponding to the specified array of
+         * dataTableId's
+         * @param dataTableIds
+         * @return HttpPromise futureDatatables:httppromise<{dataTables: Array<dataTable>,  sharedOntologies: Array<ontology>}>
          *
          */
-        this.loadTableDetails = function(datatableIds) {
+        this.loadTableDetails = function(dataTableIds) {
             var futureData = $q.defer();
 
             //only load tables that aren't already in the cache
-            var missingTableIds = datatableIds.filter(function(datatableId){return !datatableCache.get(datatableId)});
+            var missingTableIds = dataTableIds.filter(function(dataTableId){return !dataTableCache.get(dataTableId)});
             //not sure if dupe tableIds will ever occur, but dedupe anyway.
             missingTableIds = _dedupe(missingTableIds);
 
@@ -275,10 +275,10 @@
                 httpPromise.success(function(data){
 
                     //add this new data to our caches
-                    data.dataTables.forEach(function(datatable){
-                        datatableCache.put(datatable.id, datatable);
-                        datatable.dataTableColumns.forEach(function(dtc){
-                            datatableColumnCache.put(dtc.id, dtc);
+                    data.dataTables.forEach(function(dataTable){
+                        dataTableCache.put(dataTable.id, dataTable);
+                        dataTable.dataTableColumns.forEach(function(dtc){
+                            dataTableColumnCache.put(dtc.id, dtc);
                         });
                     });
                     data.mappedOntologies.forEach(function(ontology){
@@ -288,14 +288,14 @@
                         });
                     });
 
-                    //now that we have everything in the cache, return the requested datatables back to the caller
-                    futureData.resolve(self.getCachedDatatables(datatableIds));
+                    //now that we have everything in the cache, return the requested dataTables back to the caller
+                    futureData.resolve(self.getCachedDatatables(dataTableIds));
 
                 });
 
             } else {
                 //in the event that there's nothing to load,  callback immediately with the results
-                futureData.resolve(self.getCachedDatatables(datatableIds));
+                futureData.resolve(self.getCachedDatatables(dataTableIds));
 
             }
 
@@ -330,7 +330,7 @@
         }
 
         /**
-         * Search for datasets(actually, datatables) filtered according to specified SearchFilter.  returns promise<Array<searchResult>>
+         * Search for datasets(actually, dataTables) filtered according to specified SearchFilter.  returns promise<Array<searchResult>>
          * @param searchFilter (note: searchFilter.categoryId ignored in dataset search)
          * @returns {*}
          */
@@ -374,13 +374,13 @@
 
         /**
         *
-        * Return an array of previously-loaded datatables in the same order of the specified datatableIds.  Note it is not necessary
+        * Return an array of previously-loaded dataTables in the same order of the specified dataTableIds.  Note it is not necessary
         * to actively consult the cache before attempting to load them.  DataService.loadTableDetails()  will automagically pull from cached results when
         * available.
-        * @param datatableIds
+        * @param dataTableIds
         */
-       this.getCachedDatatables = function _getCachedDatatables(datatableIds) {
-           return datatableIds.map(function (id) {return datatableCache.get(id);});
+       this.getCachedDatatables = function _getCachedDatatables(dataTableIds) {
+           return dataTableIds.map(function (id) {return dataTableCache.get(id);});
        };
 
        /**
@@ -389,25 +389,25 @@
         */
        this.getCachedDataTableColumns = function _getDataTableColumns(dataTableColumnIds) {
            return dataTableColumnIds.map(function(dataTableColumnId) {
-               return self.datatableColumnCache.get(dataTableColumnId);
+               return self.dataTableColumnCache.get(dataTableColumnId);
            });
        };
        
        
         /**
-         * Returns a promise of the ontologyNodeValues that occur in each specified datatableColumn
-         * @param datatableColumnIds
+         * Returns a promise of the ontologyNodeValues that occur in each specified dataTableColumn
+         * @param dataTableColumnIds
          */
-        this.loadNodeParticipation = function(datatableColumnIds) {
-            var url = '/api/integration/node-participation?' + $.param({dataTableColumnIds: datatableColumnIds}, true);
+        this.loadNodeParticipation = function(dataTableColumnIds) {
+            var url = '/api/integration/node-participation?' + $.param({dataTableColumnIds: dataTableColumnIds}, true);
             var httpPromise =  $http.get(url);
             var futureWork = $q.defer();
             httpPromise.success(function(nodeIdsByColumnId) {
-                Object.keys(nodeIdsByColumnId).forEach(function(datatableColumnId){
-                    var nodeIds = nodeIdsByColumnId[datatableColumnId];
+                Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId){
+                    var nodeIds = nodeIdsByColumnId[dataTableColumnId];
                     var nodes = nodeIds.map(function(nodeId){return ontologyNodeCache.get(nodeId)});
-                    var datatableColumn = datatableColumnCache.get(datatableColumnId);
-                    datatableColumn.transientNodeParticipation = nodes;
+                    var dataTableColumn = dataTableColumnCache.get(dataTableColumnId);
+                    dataTableColumn.transientNodeParticipation = nodes;
                 });
                 //Note that we mutate the data directly, so there is not anything to "return". We're just notifying the caller that we are done.
                 futureWork.resolve();
@@ -420,13 +420,13 @@
     }
 
     //build parms for single request to integration-column-details endpoint
-    function _integrationColumnRequestConfig(ontologyId, datatableColumnIds) {
+    function _integrationColumnRequestConfig(ontologyId, dataTableColumnIds) {
         var params = {
             "integrationColumn.columnType": "INTEGRATION",
             "integrationColumn.sharedOntology.id": ontologyId
         };
-        datatableColumnIds.forEach(function(datatableColumnId, i){
-            params["integrationColumn.columns[" + i + "].id"] = datatableColumnId
+        dataTableColumnIds.forEach(function(dataTableColumnId, i){
+            params["integrationColumn.columns[" + i + "].id"] = dataTableColumnId
         });
         return {"params": params};
     }

@@ -16,7 +16,7 @@
             collectionId: null,
             categoryId: null,
             bookmarked: false,
-            incompatible: false,
+            integrationCompatible: true,
             //fixme: get pagination info from paginationHelper / controller?
             startRecord: 0,
             recordsPerPage: 500
@@ -32,7 +32,7 @@
                 "searchFilter.collectionId": self.collectionId,
                 "searchFilter.categoryId": self.categoryId,
                 "searchFilter.bookmarked": self.bookmarked,
-                "searchFilter.ableToIntegrate": self.incompatible,
+                "searchFilter.ableToIntegrate": self.integrationCompatible,
                 "startRecord": self.startRecord,
                 "recordsPerPage": self.recordsPerPage
             };

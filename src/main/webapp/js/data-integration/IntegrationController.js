@@ -73,12 +73,12 @@
         
         /**
          * Called after user selects list of dataset id's from 'add datasets' modal.
-         * @param datatableIds
+         * @param dataTableIds
          */
-        self.addDatasets = function(datatableIds) {
-            if(datatableIds.length === 0) return;
-            dataService.loadTableDetails(datatableIds).then(function(datatables) {
-                self.integration.addDatatables(datatables);
+        self.addDatasets = function(dataTableIds) {
+            if(dataTableIds.length === 0) return;
+            dataService.loadTableDetails(dataTableIds).then(function(dataTables) {
+                self.integration.addDatatables(dataTables);
             });
         };
 
@@ -167,14 +167,14 @@
         }
 
         /**
-         * convenience method:  does the current ontologyNodeValue occur in the current datatableColumn.
+         * convenience method:  does the current ontologyNodeValue occur in the current dataTableColumn.
          *
-         * @param datatableColumnId
+         * @param dataTableColumnId
          */
-        $scope.ontologyValuePresent = function(datatableColumn, ontology) {
+        $scope.ontologyValuePresent = function(dataTableColumn, ontology) {
             //console.log("ontologyValuePresent::");
             //console.deg(ontology);
-            return self.integration.isNodePresent(datatableColumn, ontology);
+            return self.integration.isNodePresent(dataTableColumn, ontology);
             //return false;
             //var ontologyParticipation = self.integration.ontologyParticipation[ontologyId];
             //var nodeInfo = ontologyParticipation.nodeInfoList[nodeIdx];

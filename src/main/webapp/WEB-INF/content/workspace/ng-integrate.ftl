@@ -85,11 +85,11 @@
                                 <label>Selected Datasets</label>
                                 <div>
                                     <select size="5" class="input-block-level" multiple
-                                            ng-model="selectedDatatables"
-                                            ng-options="datatable|dtDisplayName|titleCase for datatable in ctrl.integration.datatables"></select>
+                                            ng-model="selecteddataTables"
+                                            ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
                                 </div>
                                 <button type="button" class="btn input-block-level"
-                                        ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.datatables.length === 0">Remove selected dataset</button>
+                                        ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
                             </div>
                             <div class="span4">
                                 <label>Shared Ontologies</label>
@@ -166,9 +166,9 @@
                                                                 <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="datatableColumn in outputColumn.selectedDatatableColumns">
+                                                        <td ng-repeat="dataTableColumn in outputColumn.selectedDatatableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" ng-show="ontologyValuePresent(datatableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -179,12 +179,12 @@
                                             <div ng-switch-when="display" class=".display-pane-content">
                                                 <h3>Choose source columns</h3>
                                                 <table>
-                                                    <#--<tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">-->
-                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" ng-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
-                                                        <td>{{datatable.displayName}}</td>
+                                                    <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
+                                                    <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
+                                                        <td>{{dataTable.displayName}}</td>
                                                         <td>
-                                                            <select ng-model="columnSelection.datatableColumn"
-                                                                    ng-options="c.displayName for c in datatable.dataTableColumns">
+                                                            <select ng-model="columnSelection.dataTableColumn"
+                                                                    ng-options="c.displayName for c in dataTable.dataTableColumns  | orderBy: 'displayName' ">
                                                                 <option value="" class="emptyoption">No column selected</option>
                                                             </select>
                                                         </td>
@@ -197,12 +197,12 @@
                                             <div ng-switch-when="count" class=".count-pane-content">
                                                 <h3>Choose source columns</h3>
                                                 <table>
-                                                    <#--<tr ng-repeat="columnSelection in outputColumn.datatableColumnSelections">-->
-                                                    <tr ng-repeat="datatable in ctrl.integration.datatables" ng-init="columnSelection = outputColumn.datatableColumnSelections[$index]">
-                                                        <td>{{datatable.displayName}}</td>
+                                                    <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
+                                                    <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
+                                                        <td>{{dataTable.displayName}}</td>
                                                         <td>
-                                                            <select ng-model="columnSelection.datatableColumn"
-                                                                    ng-options="c.displayName for c in datatable.dataTableColumns | filter:filterCount">
+                                                            <select ng-model="columnSelection.dataTableColumn"
+                                                                    ng-options="c.displayName for c in dataTable.dataTableColumns  | orderBy: 'displayName'  | filter:filterCount">
                                                                 <option value="" class="emptyoption">No column selected</option>
                                                             </select>
                                                         </td>
@@ -242,17 +242,17 @@
             </span>
             <span ng-switch-when="display">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
-                       value="{{colSelection.datatableColumn.id}}"
-                       ng-repeat="colSelection in col.datatableColumnSelections | filter: {datatableColumn: '!!'}">
+                       value="{{colSelection.dataTableColumn.id}}"
+                       ng-repeat="colSelection in col.dataTableColumnSelections | filter: {dataTableColumn: '!!'}">
             </span>
             <span ng-switch-when="count">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
-                       value="{{colSelection.datatableColumn.id}}"
-                       ng-repeat="colSelection in col.datatableColumnSelections | filter: {datatableColumn: '!!'}">
+                       value="{{colSelection.dataTableColumn.id}}"
+                       ng-repeat="colSelection in col.dataTableColumnSelections | filter: {dataTableColumn: '!!'}">
             </span>
         </div>
     </div>
-    <input ng-repeat="datatable in legacyCtrl.integration.datatables" type="hidden" name="tableIds[{{$index}}]" value="{{datatable.id}}">
+    <input ng-repeat="dataTable in legacyCtrl.integration.dataTables" type="hidden" name="tableIds[{{$index}}]" value="{{dataTable.id}}">
 </fieldset>
 </form>
 
@@ -308,7 +308,7 @@
                                 <label class="control-label">Other Filters</label>
                                 <div class="controls form-inline">
                                     <label class="checkbox inline"><input type="checkbox" name="searchFilter.bookmarked" ng-model="filter.bookmarked">Bookmarked Items</label>
-                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.incompatible" ng-model="filter.incompatible" value="true">Integration-compatible</label>
+                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.integrationCompatible" ng-model="filter.integrationCompatible" value="true">Integration-compatible</label>
                                 </div>
                             </div>
                         </fieldset>

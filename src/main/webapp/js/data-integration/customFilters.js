@@ -20,10 +20,10 @@
         }
     });
 
-    //prettify datatables
+    //prettify dataTables
     app.filter ('dtDisplayName',  function() {
-        return function(datatable) {
-            var name = (datatable.displayName
+        return function(dataTable) {
+            var name = (dataTable.displayName
                 //ditch the ugly prefix
                 .replace(/[de]_\d+_/, '')
                 //strip filename from table name
@@ -31,7 +31,7 @@
                 //deslug
                 .replace(/_/g, ' ')
             );
-            return datatable.datasetTitle + ' :: ' + name;
+            return dataTable.datasetTitle + ' :: ' + name;
         }
     });
 
