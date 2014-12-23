@@ -185,7 +185,7 @@
                             integration.addIntegrationColumn(name, ontology);
                             var col = integration.columns[integration.columns.length -1];
         
-                            //FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work
+                            //FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work  //jtd: I'd prefer access via  setter on IntegrationModel
                             col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
                             col.nodeSelections.forEach(function(node) {
                                 column.nodeSelection.forEach(function(nodeRef) {
@@ -220,38 +220,6 @@
                 console.error("did not restore all ids");
             }
 
-        };
-
-
-            //fixme: refactor to return a promise of return data instead of modifying integration directly
-        this.loadIntegrationColumnDetails = function(integration) {
-            //AB: scope being passed back for really bad hack to replace a promise. This ensure that the result is entirely loaded before the UI continues loading
-            
-            //get column participation for all dataTableColumns across all shared ontologies
-            var promises = [];
-            var configs = [];
-
-            integration.ontologies.forEach(function(ontology){
-                var mappedCols = integration.getMappedDatatableColumns(ontology.id);
-                var config = {};
-                var params = {
-                    "integrationColumn.columnType": "INTEGRATION",
-                    "integrationColumn.sharedOntology.id": ontology.id
-                };
-                mappedCols.forEach(function(mappedCol, i){
-                    params["integrationColumn.columns[" + i + "].id"] = mappedCol.id
-                });
-                config.params = params;
-                configs.push(config);
-                promises.push($http.get("/api/integration/integration-column-details", config));
-            });
-            $q.all(promises).then(function(arResults){
-                arResults.forEach(function(result, ontologyIdx){
-                    var ontology = integration.ontologies[ontologyIdx];
-                    var mappedCols = integration.getMappedDatatableColumns(ontology.id);
-                    integration.updateNodeParticipationInfo(ontology, mappedCols, result.data.flattenedNodes);
-                });
-            });
         };
 
         /**
@@ -359,7 +327,6 @@
          * @returns {*}
          */
         this.findOntologies = function(searchFilter)  {
-            // FIXME: write transformer
             return _doSearch("/api/integration/find-ontologies", searchFilter, null, "ontology");
         };
 

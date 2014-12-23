@@ -100,9 +100,10 @@
         /** transient ontology node participation information **/
         //self.ontologyParticipation = {};
 
-
-
-        //fixme: jsdoc
+        /**
+         * Compute, then cache,  the mappedDatatables structure.
+         * @private
+         */
         function _buildMappedDatatables() {
             self.mappedDatatables = self.getMappedDatatables();
         }
@@ -282,21 +283,6 @@
                     return removedDatatableColumnIds.indexOf(datatableColumn.id) === -1
                 });
 
-                //clean up the nodeParticipation information
-                //for(var ontologyId in self.ontologyParticipation) {
-                //    var ontologyParticipation = self.ontologyParticipation[ontologyId];
-                //    var nodeInfoList = ontologyParticipation.nodeInfoList;
-                //    nodeInfoList.forEach(function(nodeInfo){
-                //        //remove any columnIds that belong to the datatables we are removing
-                //        nodeInfo.colIds = nodeInfo.colIds.filter(function(colId){
-                //            var idx = removedDatatableColumnIds.indexOf(colId);
-                //            if(idx === -1) {
-                //                console.debug("removing %s from nodeInfo.colIds", colId);
-                //            }
-                //            return idx === -1;
-                //        });
-                //    });
-                //}
             });
 
             //if any display columns, remove all affected datatableColumnSelections
@@ -328,10 +314,6 @@
             _buildMappedDatatables();
             //update selected datatableColumns
             _getIntegrationColumns().forEach(function(integrationColumn){integrationColumn.$getSelectedDatatableColumns()});
-            //todo: need to update the nodeParticipation information for all the integrationColumns that aren't removed
-
-
-
 
             //Step 3: account for display columns that need an additional selectedDatatableColumn entry.
             //todo: need to update the selectedDatatables information for all displayColumns
@@ -352,7 +334,6 @@
         }
 
         function _getSharedOntologyIds() {
-            //todo: punch jim in the face for writing this 'one-liner'
             var ids =  dataService.dedupe(self.datatables
                     //reduce the list of all datatables into a list of all datatableColumns
                     .reduce(function(a,b){return a.concat(b.dataTableColumns)}, [])
@@ -387,7 +368,6 @@
          * @private
          */
         function _rebuildSharedOntologies() {
-            //todo: only rebuild if we detect a change
             self.ontologies = _getSharedOntologies();
 
             //update integrationColumnStatus

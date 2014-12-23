@@ -12,7 +12,6 @@ instructions:
 results:
     The integration works without errors, ana that the integration results include *2* datatables.
 
-
 name: integration column stress test
 instructions:
     - find 2 datasets that use a REALLY HUGE ontology (like 900+ nodes or more)

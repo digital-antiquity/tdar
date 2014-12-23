@@ -143,18 +143,18 @@
         self.isCountColumnDisabled = function() {
             return !self.integration.isCountColumnEnabled();
         };
-        
-        $scope.filterCount = function(col) {
-            if(col.columnEncodingType =='COUNT')
-            {
-                return true; // this will be listed in the results
-            }
 
-            return false; // otherwise it won't be within the results
+        /**
+         * Output column filter: show only 'count' columns
+         * @param col
+         * @returns {boolean}
+         */
+        $scope.filterCount = function(col) {
+            return col.columnEncodingType === 'COUNT';
         };
 
         $scope.lookupCompatibleColumns = function(id) {
-            return self.integration.mappedDatatables[id]
+            return self.integration.mappedDatatables[id];
             //FIXME: angular doesn't like my getter functions - apparently they cause endless loop of detected changes (or something?)
             //https://docs.angularjs.org/error/$rootScope/infdig
             //return (self.integration.getMappedDatatables()[id]);
