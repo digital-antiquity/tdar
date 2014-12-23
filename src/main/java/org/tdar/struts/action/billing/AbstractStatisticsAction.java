@@ -28,7 +28,7 @@ public abstract class AbstractStatisticsAction extends AuthenticationAware.Base 
     @Autowired
     protected StatisticService statisticsService;
     
-    @Action("stats")
+    @Action("usage")
     @Override
     public String execute() throws Exception {
         // TODO Auto-generated method stub

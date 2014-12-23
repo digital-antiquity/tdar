@@ -40,6 +40,9 @@ navigation freemarker macros
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
 			        </#if>
 					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+			        <#if editable>
+						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
+					</#if>
 			    </#if>
 			    <#nested>
 			</ul>
@@ -57,7 +60,8 @@ navigation freemarker macros
         <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-                    <@makeLink "collection" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+                    <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+                    <@makeLink namespace "usage?id=${persistable.id?c}" "usage" "stats" current />
         </#if>
         <#nested>
 			</ul>
@@ -73,13 +77,20 @@ navigation freemarker macros
         <#if (sessionData.authenticated)!false>
         <div class="span12 resource-nav  screen " id="toolbars" parse="true">
             <ul>
-        <@makeLink namespace "view" "view" "view" current />
-        <#if editable>
+	        	<@makeLink namespace "view" "view" "view" current />
+    		    <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink "account" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-        </#if>
-        <#nested>
+		        </#if>
+	        	<@makeLink "cart" "add?accountId=${persistable.id?c}" "add invoice" "add" "" false false />
+    	    	<#if administrator>
+    		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
+    	    	    <@makeLink "billing" "fix?id=${persistable.id?c}" "Fix Initial Billing" "add" "" false false />
+		        </#if>
+    		    <#if editable>
+	                <@makeLink namespace "usage?id=${persistable.id?c}" "usage" "stats" current />
+		        </#if>
 			</ul>
 		</div>
 
@@ -187,7 +198,7 @@ navigation freemarker macros
         <#elseif keyword?? >
             <#local _id = keyword.id />
         </#if>
-		<#if action == 'view' || action == "creators">
+		<#if action == 'view' || action == "creators" || action == 'stats' || action=='usage'>
 			<#local includeResourceId = false/>
 			<#local localAction="/${_id?c}"/>
             <#if action == "creators">
