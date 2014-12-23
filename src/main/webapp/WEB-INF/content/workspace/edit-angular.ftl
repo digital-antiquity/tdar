@@ -386,6 +386,9 @@ ${categoriesJson}
 <script src="/js/data-integration/customFilters.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
 <script src="/js/tdar.pagination.js"></script>
+
+<#-- Include the file below to run some barebones tests -->
+<#--<script src="/js/data-integration/tests.js"></script>-->
 </span>
 
 
