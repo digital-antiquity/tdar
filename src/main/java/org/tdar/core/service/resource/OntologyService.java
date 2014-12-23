@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.dao.integration.OntologySearchFilter;
 import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
@@ -269,12 +268,6 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     public String toOwlXml(Long id, String fileTextInput) {
         OwlOntologyConverter converter = new OwlOntologyConverter();
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
-    }
-
-    @Transactional(readOnly=true)
-    @Deprecated
-    public List<Ontology> findOntologiesDeprecated(IntegrationSearchFilter searchFilter) {
-        return getDao().findOntologiesDeprecated(searchFilter);
     }
 
     @Transactional(readOnly=true)

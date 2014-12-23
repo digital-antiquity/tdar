@@ -53,6 +53,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
+import org.tdar.struts.action.workspace.WorkspaceController;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 

@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
@@ -30,88 +31,26 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/workspace")
 @Component
 @Scope("prototype")
-/**
- * Don't get used to this class, kid.  It's only here as a placeholder to define the overall workflow.
- * Expect that the actual action methods will be recklessly scattered across a myriad of obtusely-named action classes. YOU HAVE
- * BEEN WARNED.
- */
-public class IntegrationController extends AuthenticationAware.Base implements Preparable {
+public class AngularIntegrationAction extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -2356381511354062946L;
 
     private Object categoryListJsonObject;
 
     @Autowired
-    private AuthorizationService authorizationService;
+    private transient AuthorizationService authorizationService;
     @Autowired
-    private SerializationService serializationService;
+    private transient SerializationService serializationService;
     @Autowired
-    private GenericService genericService;
+    private transient GenericService genericService;
     @Autowired
-    private ProjectService projectService;
+    private transient ProjectService projectService;
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private transient ResourceCollectionService resourceCollectionService;
 
 
     private List<Resource> fullUserProjects = new ArrayList<>();
-    private Collection allResourceCollections = new ArrayList<>();
-
-    // @Actions({
-    //
-    // //list all saved executions for the current user
-    // @Action("list"),
-    //
-    // //generate new, transient integration object for editing
-    // @Action(value="add", results={
-    // @Result(name="success", location="edit.ftl")
-    // }),
-    //
-    // //load existing integration object for editing
-    // @Action("edit/{id}"),
-    //
-    // //delete integration
-    // //TODO: this action accepts both GET and POST
-    // @Action(value = "delete/{id}", results = {
-    // @Result(name = "postonly", location = "delete-confirm.ftl"),
-    // @Result(name = "success", type = "redirect", location="list")
-    // }),
-    //
-    // //find ontologies matching specified filter terms
-    // @Action(value = "ajax/find-ontologies", results = {
-    // @Result(name="success", type="jsonresult")
-    // }),
-    //
-    // //find datasets matching specified filter terms
-    // @Action(value = "ajax/find-datasets", results = {
-    // @Result(name="success", type="jsonresult")
-    // }),
-    //
-    // //return full json for specified data table id's
-    // @Action(value = "ajax/data-table", results = {
-    // @Result(name="success", type="jsonresult")
-    // }),
-    //
-    // //return full json for specified ontology id's
-    // @Action(value = "ajax/ontology", results = {
-    // @Result(name="success", type="jsonresult")
-    // }),
-    //
-    // //return ontology-node participation information for the specified list of dataTable id's
-    // //(similar to data returned to the view in the old '/workspace/filter' action)
-    // @Action(value = "ajax/node-value-stats", results = {
-    // @Result(name="success", type="jsonresult")
-    // })
-    //
-    // //Actions from old WorkspaceController that we intend to keep:
-    // // @Action(value = "display-filtered-results")
-    // // @Action(value = "download")
-    //
-    //
-    //
-    //
-    //
-    //
-    // })
+    private Collection<ResourceCollection> allResourceCollections = new ArrayList<>();
 
     @Override
     public void prepare() {
@@ -124,8 +63,8 @@ public class IntegrationController extends AuthenticationAware.Base implements P
             @Action(value = "add", results = {
                     @Result(name = "success", location = "edit.ftl")
             }),
-            @Action(value = "add-angular", results = {
-                    @Result(name = "success", location = "edit-angular.ftl")
+            @Action(value = "integrate", results = {
+                    @Result(name = "success", location = "ng-integrate.ftl")
             })
     })
     public String execute() {

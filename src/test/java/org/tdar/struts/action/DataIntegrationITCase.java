@@ -30,6 +30,7 @@ import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
+import org.tdar.struts.action.workspace.WorkspaceController;
 import org.tdar.utils.MessageHelper;
 
 /**

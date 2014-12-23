@@ -65,16 +65,6 @@ public class OntologyDao extends ResourceDao<Ontology> {
     }
 
     @SuppressWarnings("unchecked")
-    @Deprecated
-    public List<Ontology> findOntologiesDeprecated(IntegrationSearchFilter searchFilter) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
-        query.setProperties(searchFilter);
-        query.setFirstResult(searchFilter.getFirstResult());
-        query.setMaxResults(searchFilter.getMaxResults());
-        return Collections.checkedList(query.list(), Ontology.class);
-    }
-
-    @SuppressWarnings("unchecked")
     public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
         query.setProperties(searchFilter);

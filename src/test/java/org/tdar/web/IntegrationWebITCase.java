@@ -18,8 +18,7 @@ public class IntegrationWebITCase extends AbstractAdminAuthenticatedWebTestCase 
 
     @Test
     public void testFindOntologyDefault() {
-        //perform ontology search with all default filters
-        String json = gotoJson("/workspace/ajax/find-ontologies?incompatible=false&recordsPerPage=500&title=&unbookmarked=false");
+        String json = gotoJson("/api/integration/find-ontologies?incompatible=false&recordsPerPage=500&title=&unbookmarked=false");
         JSONArray obj = JSONArray.fromObject(json);
         assertNotNull(obj);
     }

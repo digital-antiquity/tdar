@@ -106,7 +106,7 @@
     <p>
         Please click the link below to access the new Dataset Integration UI  (currently under development).
     </p>
-        <a href="add-angular">New Integration UI</a>
+        <a href="integrate">New Integration UI</a>
 
 </div>
 

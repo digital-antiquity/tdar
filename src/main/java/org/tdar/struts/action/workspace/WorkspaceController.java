@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.workspace;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,11 +35,12 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
-import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
