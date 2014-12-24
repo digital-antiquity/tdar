@@ -35,7 +35,6 @@
                 </div>
             </div>
         </div>
-
         <div id="divActionsSection">
                     <div class="control-group">
                         <label class="control-label">Actions</label>
@@ -63,13 +62,6 @@
                                         ng-disabled="ctrl.isCountColumnDisabled()"
                                         >Add Count Column</button>
                             </div>
-
-
-
-
-
-
-
 
                         </div>
                     </div>
@@ -136,7 +128,16 @@
                                                     <thead>
                                                     <tr>
                                                         <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
-                                                        <th rowspan="2" style="width:99%">Node Value</th>
+                                                        <th rowspan="2" style="width:99%">
+                                                            <div class="pull-right">
+                                                                Select values that appear in
+                                                                <div class="btn-group">
+                                                                    <button class="btn btn-mini" type="button" ng-click="selectMatchingNodes('some')">Any column</button>
+                                                                    <button class="btn btn-mini" type="button" ng-click="selectMatchingNodes('every')">Every column</button>
+                                                                </div>
+                                                            </div>
+                                                            <div>Node Value</div>
+                                                        </th>
                                                         <th rowspan="1" style="white-space: nowrap;" colspan="{{outputColumn.dataTableColumns.length}}">
                                                             Datasets
                                                         </th>

@@ -172,14 +172,26 @@
          * @param dataTableColumnId
          */
         $scope.ontologyValuePresent = function(dataTableColumn, ontology) {
-            //console.log("ontologyValuePresent::");
-            //console.deg(ontology);
             return self.integration.isNodePresent(dataTableColumn, ontology);
-            //return false;
-            //var ontologyParticipation = self.integration.ontologyParticipation[ontologyId];
-            //var nodeInfo = ontologyParticipation.nodeInfoList[nodeIdx];
-            //return nodeInfo.colIds.indexOf(dtcId) > -1;
         }
+
+        /**
+         *
+         *
+         * @param criteria "some" or "every"
+         */
+        $scope.selectMatchingNodes = function(criteria) {
+            var integrationColumn = self.integration.columns[self.tab];
+            var nodeSelections = integrationColumn.nodeSelections;
+            nodeSelections.forEach(function(selectionInfo){
+                var ontologyNode = selectionInfo.node;
+                var mappedColumns = self.integration.getMappedDatatableColumns(integrationColumn.ontologyId)
+                selectionInfo.selected = mappedColumns[criteria](function(dtc){
+                    return self.integration.isNodePresent(dtc, ontologyNode)
+                });
+            });
+
+        };
 
     }]);
 
