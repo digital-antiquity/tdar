@@ -186,7 +186,7 @@
             nodeSelections.forEach(function(selectionInfo){
                 var ontologyNode = selectionInfo.node;
                 var mappedColumns = self.integration.getMappedDatatableColumns(integrationColumn.ontologyId)
-                selectionInfo.selected = mappedColumns[criteria](function(dtc){
+                selectionInfo.selected = selectionInfo.selected ||  mappedColumns[criteria](function(dtc){
                     return self.integration.isNodePresent(dtc, ontologyNode)
                 });
             });
