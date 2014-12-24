@@ -143,7 +143,6 @@ TDAR.inheritance = (function () {
             }
         }
         ;
-        console.log(obj);
         return obj;
     }
 

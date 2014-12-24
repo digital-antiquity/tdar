@@ -182,12 +182,14 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         // was rendered as a ?query= search
         if (!getSiteNameKeywords().isEmpty()
                 || !getUncontrolledCultureKeywords().isEmpty()
+                || !getUncontrolledMaterialKeywords().isEmpty()
                 || !getUncontrolledSiteTypeKeywords().isEmpty()
                 || !getGeographicKeywords().isEmpty()) {
             getLogger().trace("legacy api: uncontrolled keyword");
             groups.clear();
             setLegacyFieldtypes(SearchFieldType.FFK_SITE, getSiteNameKeywords());
             setLegacyFieldtypes(SearchFieldType.FFK_CULTURAL, getUncontrolledCultureKeywords());
+            setLegacyFieldtypes(SearchFieldType.FFK_MATERIAL, getUncontrolledMaterialKeywords());
             setLegacyFieldtypes(SearchFieldType.FFK_SITE_TYPE, getUncontrolledSiteTypeKeywords());
             setLegacyFieldtypes(SearchFieldType.FFK_GEOGRAPHIC, getGeographicKeywords());
             groups.add(legacySearchParameters);
@@ -492,6 +494,11 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         legacySearchParameters.setUncontrolledCultureKeywords(kwds);
     }
 
+    // legacy keyword lookup support
+    public void setMaterialCultureKeywords(List<String> kwds) {
+        legacySearchParameters.setUncontrolledMaterialKeywords(kwds);
+    }
+
     // setter's are required here
     public void setGeographicKeywords(List<String> kwds) {
         legacySearchParameters.setGeographicKeywords(kwds);
@@ -563,6 +570,11 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     // legacy keyword lookup support
     public List<String> getUncontrolledCultureKeywords() {
         return legacySearchParameters.getUncontrolledCultureKeywords();
+    }
+
+    // legacy keyword lookup support
+    public List<String> getUncontrolledMaterialKeywords() {
+        return legacySearchParameters.getUncontrolledMaterialKeywords();
     }
 
     // legach keyword lookup support

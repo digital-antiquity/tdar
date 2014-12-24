@@ -512,6 +512,7 @@ TDAR.common = function (TDAR, fileupload) {
         TDAR.autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
         TDAR.autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
         TDAR.autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+        TDAR.autocomplete.delegateKeyword("#uncontrolledMaterialKeywordsRepeatable", "material", "MaterialKeyword");
         TDAR.autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
         TDAR.autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
         TDAR.autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
