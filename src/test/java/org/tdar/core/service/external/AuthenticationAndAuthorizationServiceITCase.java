@@ -22,7 +22,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AuthNotice;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Image;
@@ -35,6 +34,7 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.UserAgreementController;
 import org.tdar.struts.action.account.UserAccountController;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -190,7 +190,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         logger.info("errors: {}", controller.getActionErrors());
         assertEquals("result is not input :" + execute, execute, Action.INPUT);
         logger.info("person:{}", person);
-        assertTrue("person should not have an id", Persistable.Base.isTransient(person));
+        assertTrue("person should not have an id", PersistableUtils.isTransient(person));
     }
 
 }

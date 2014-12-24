@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -32,6 +31,7 @@ import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * FIXME: getting too big, needs refactoring. also rename to BillingService?
@@ -65,7 +65,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @return
      */
     public List<Account> listAvailableAccountsForUser(TdarUser user, Status... statuses) {
-        if (Persistable.Base.isNullOrTransient(user)) {
+        if (PersistableUtils.isNullOrTransient(user)) {
             return Collections.emptyList();
         }
         return getDao().findAccountsForUser(user, statuses);
@@ -78,7 +78,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @return
      */
     public List<Invoice> listUnassignedInvoicesForUser(Person user) {
-        if (Persistable.Base.isNullOrTransient(user)) {
+        if (PersistableUtils.isNullOrTransient(user)) {
             return Collections.emptyList();
         }
         return getDao().findUnassignedInvoicesForUser(user);
@@ -287,17 +287,17 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         coupon.setDateCreated(new Date());
         coupon.setDateExpires(dateExpires);
         genericDao.markWritableOnExistingSession(account);
-        if (Persistable.Base.isNotNullOrTransient(numberOfFiles)) {
+        if (PersistableUtils.isNotNullOrTransient(numberOfFiles)) {
             coupon.setNumberOfFiles(numberOfFiles);
         }
-        if (Persistable.Base.isNotNullOrTransient(numberOfMb)) {
+        if (PersistableUtils.isNotNullOrTransient(numberOfMb)) {
             coupon.setNumberOfMb(numberOfMb);
         }
         if ((coupon.getNumberOfFiles() > 0L) && (coupon.getNumberOfMb() > 0L)) {
             throw new TdarRecoverableRuntimeException("accountService.specify_either_space_or_files");
         }
 
-        if ((Persistable.Base.isNullOrTransient(numberOfFiles) || (numberOfFiles < 1)) && (Persistable.Base.isNullOrTransient(numberOfMb) || (numberOfMb < 1))) {
+        if ((PersistableUtils.isNullOrTransient(numberOfFiles) || (numberOfFiles < 1)) && (PersistableUtils.isNullOrTransient(numberOfMb) || (numberOfMb < 1))) {
             throw new TdarRecoverableRuntimeException("accountService.cannot_generate_a_coupon_for_nothing");
         }
 
@@ -358,7 +358,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (invoice.getOwner() == null) {
             invoice.setOwner(authenticatedUser);
         }
-        if (Persistable.Base.isTransient(acct)) {
+        if (PersistableUtils.isTransient(acct)) {
             acct.markUpdated(invoice.getOwner());
             acct.setStatus(Status.ACTIVE);
         }

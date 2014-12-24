@@ -17,12 +17,12 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
 /**
@@ -50,7 +50,7 @@ public class CartApiPollingAction extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (Persistable.Base.isTransient(getAuthenticatedUser())) {
+        if (PersistableUtils.isTransient(getAuthenticatedUser())) {
             addActionError(getText("cartApiPollingController.must_be_logged_in"));
         }
 

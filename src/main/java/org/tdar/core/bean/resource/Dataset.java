@@ -32,10 +32,9 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.json.JsonIntegrationFilter;
+import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
-import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.

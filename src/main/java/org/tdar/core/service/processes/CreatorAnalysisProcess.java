@@ -30,7 +30,6 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Project;
@@ -45,6 +44,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -142,7 +142,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          */
         List<Creator> results = genericDao.findAll(getPersistentClass());
         if (CollectionUtils.isNotEmpty(results)) {
-            return Persistable.Base.extractIds(results);
+            return PersistableUtils.extractIds(results);
         }
         return null;
     }

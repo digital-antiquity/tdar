@@ -17,7 +17,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -28,6 +27,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.image.ImageController;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -103,7 +103,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         image.setTitle("test image");
         image.setDescription("test description");
         imageController.setServletRequest(getServletPostRequest());
-        assertTrue(Persistable.Base.isNotNullOrTransient(coll));
+        assertTrue(PersistableUtils.isNotNullOrTransient(coll));
         imageController.getResourceCollections().add(coll);
         imageController.save();
         final Long imgId = image.getId();

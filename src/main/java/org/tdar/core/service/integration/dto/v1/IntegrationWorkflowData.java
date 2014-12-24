@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -16,6 +15,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
+import org.tdar.utils.PersistableUtils;
 
 public class IntegrationWorkflowData implements Serializable {
 
@@ -63,7 +63,7 @@ public class IntegrationWorkflowData implements Serializable {
         ArrayList<IntegrationColumn> integrationColumns = new ArrayList<>();
         // FIXME: less efficient than having a master list of ids and pulling all entities in one fell swoop instead of iteratively querying
         for (IntegrationColumnDTO column : columns) {
-            List<Long> columnIds = Persistable.Base.extractIds(column.getDataTableColumns());
+            List<Long> columnIds = PersistableUtils.extractIds(column.getDataTableColumns());
 
             IntegrationColumn integrationColumn = new IntegrationColumn(column.getType());
             List<DataTableColumn> dataTableColumns = service.findAll(DataTableColumn.class, columnIds);
@@ -71,7 +71,7 @@ public class IntegrationWorkflowData implements Serializable {
             if (column.getType() == ColumnType.INTEGRATION) {
                 Ontology sharedOntology = service.find(Ontology.class, column.getOntology().getId());
                 integrationColumn.setSharedOntology(sharedOntology);
-                List<Long> selectedNodeIds = Persistable.Base.extractIds(column.getNodeSelection());
+                List<Long> selectedNodeIds = PersistableUtils.extractIds(column.getNodeSelection());
 
                 Set<OntologyNode> selectedNodes = new HashSet<>(service.findAll(OntologyNode.class, selectedNodeIds));
                 integrationColumn.getFilteredOntologyNodes().addAll(selectedNodes);
@@ -87,7 +87,7 @@ public class IntegrationWorkflowData implements Serializable {
      * @param service
      */
     public void validateDatasets(GenericService service) {
-        List<Long> datasetIds = Persistable.Base.extractIds(datasets);
+        List<Long> datasetIds = PersistableUtils.extractIds(datasets);
         List<Dataset> datasets_ = service.findAll(Dataset.class, datasetIds);
         // FIXME: no place to put the datasets on IntegrationContext currently
     }
@@ -98,7 +98,7 @@ public class IntegrationWorkflowData implements Serializable {
      * @param service
      */
     public void validateOntologies(GenericService service) {
-        List<Long> ontologyIds = Persistable.Base.extractIds(ontologies);
+        List<Long> ontologyIds = PersistableUtils.extractIds(ontologies);
         List<Ontology> ontologies_ = service.findAll(Ontology.class, ontologyIds);
         // FIXME: no place on IntegrationContext for all participating ontologies currently
     }
@@ -109,7 +109,7 @@ public class IntegrationWorkflowData implements Serializable {
      * @param service
      */
     public void validateDataTables(GenericService service) {
-        List<Long> dataTableIds = Persistable.Base.extractIds(dataTables);
+        List<Long> dataTableIds = PersistableUtils.extractIds(dataTables);
         List<DataTable> tables = service.findAll(DataTable.class, dataTableIds);
         integrationContext.setDataTables(tables);
     }

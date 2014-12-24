@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -36,6 +35,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResult
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.web.SessionData;
 
 @Service
@@ -330,7 +330,7 @@ public class AuthenticationService {
         TdarUser findByUsername = personDao.findByUsername(person.getUsername());
         TdarUser findByEmail = personDao.findUserByEmail(person.getEmail());
         // short circut the login process -- if there username and password are registered and valid -- just move on.
-        if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
+        if (PersistableUtils.isNotNullOrTransient(findByUsername)) {
             try {
                 UserLogin userLogin = new UserLogin(findByUsername.getUsername(), reg.getPassword(), null);
                 AuthenticationResult result = authenticatePerson(userLogin, request, response, sessionData);
@@ -345,9 +345,9 @@ public class AuthenticationService {
         person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
         // if there's a user with this email, that takes precedence
         person = reconcilePersonWithTransient(person, findByEmail, MessageHelper.getMessage("userAccountController.error_duplicate_email"));
-        if (Persistable.Base.isTransient(person)) {
+        if (PersistableUtils.isTransient(person)) {
             Person findByEmail2 = personDao.findByEmail(person.getEmail());
-            if (Persistable.Base.isNotNullOrTransient(findByEmail2)) {
+            if (PersistableUtils.isNotNullOrTransient(findByEmail2)) {
                 person = personDao.findConvertPersonToUser(findByEmail2, person.getUsername());
                 logger.info("person: {}", person);
             }
@@ -427,7 +427,7 @@ public class AuthenticationService {
     }
 
     private TdarUser reconcilePersonWithTransient(TdarUser incoming, TdarUser resultOfLookup, String error) {
-        if ((resultOfLookup != null) && Persistable.Base.isNullOrTransient(incoming)) {
+        if ((resultOfLookup != null) && PersistableUtils.isNullOrTransient(incoming)) {
             switch (resultOfLookup.getStatus()) {
                 default:
                     logger.debug("user is not valid");

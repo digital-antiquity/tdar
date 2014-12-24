@@ -29,6 +29,7 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -117,7 +118,7 @@ public class GenericService {
      * @return
      */
     public <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
-        return Persistable.Base.extractIds(persistables);
+        return PersistableUtils.extractIds(persistables);
     }
 
     /**
@@ -208,11 +209,11 @@ public class GenericService {
             throw new TdarRecoverableRuntimeException("error.not_implemented");
         }
         // get a unique set of Ids
-        Map<Long, P> ids = Persistable.Base.createIdMap(sparseObjects);
+        Map<Long, P> ids = PersistableUtils.createIdMap(sparseObjects);
         logger.info("{}", ids);
         // populate and put into a unique map
         @SuppressWarnings("unchecked")
-        Map<Long, P> skeletons = Persistable.Base.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));
+        Map<Long, P> skeletons = PersistableUtils.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));
 
         List<P> toReturn = new ArrayList<P>();
 

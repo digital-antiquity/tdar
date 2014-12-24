@@ -17,7 +17,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
@@ -45,6 +44,7 @@ import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id: AbstractInformationResourceService.java 1466 2011-01-18 20:32:38Z abrin$
@@ -314,7 +314,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     // case: id == -1 -- cause, likely that there was a validation error caught in the WorkflowContext
                     // case: id > -1, but not in DB -- cause, likely that the transaction failed in the workflow context (access database died in tDAR database
                     // creation)
-                    if (Persistable.Base.isNotNullOrTransient(proxy.getFileId())) {
+                    if (PersistableUtils.isNotNullOrTransient(proxy.getFileId())) {
                         logger.debug("resetting: {} {}", proxy, proxy.getAction());
                         rollbackIssues.add(proxy);
                         if (proxy.getAction() == FileAction.REPLACE) {
@@ -370,7 +370,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
 
         // first unmap all columns from the removed tables
-        datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), Persistable.Base.extractIds(columnsToUnmap));
+        datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
 
         // remove affected relationships prior to deleting columns
         dataset.getRelationships().removeAll(relationshipsToRemove);

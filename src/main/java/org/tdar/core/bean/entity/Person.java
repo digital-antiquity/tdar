@@ -35,11 +35,11 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -346,7 +346,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
                 && ((i == null) || StringUtils.isBlank(i.getName()))
                 && StringUtils.isBlank(lastName)
                 && StringUtils.isBlank(firstName)
-                && Persistable.Base.isNullOrTransient(getId());
+                && PersistableUtils.isNullOrTransient(getId());
     }
 
     @Override

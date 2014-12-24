@@ -21,7 +21,6 @@ import org.hibernate.criterion.SimpleExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -42,6 +41,7 @@ import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -277,7 +277,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             criteria.createCriteria("informationResourceFiles");
         }
 
-        if (Persistable.Base.isNotNullOrTransient(project)) {
+        if (PersistableUtils.isNotNullOrTransient(project)) {
             criteria.createCriteria("project").add(Restrictions.eq("id", project.getId()));
         }
 

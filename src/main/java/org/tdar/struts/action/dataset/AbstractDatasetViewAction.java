@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -18,6 +17,7 @@ import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
+import org.tdar.utils.PersistableUtils;
 
 public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dataset> {
 
@@ -50,7 +50,7 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomViewMetadata();
         List<Map<String, Object>> result = new ArrayList<>();
-        if (Persistable.Base.isNotNullOrTransient(getDataTable())) {
+        if (PersistableUtils.isNotNullOrTransient(getDataTable())) {
             for (DataTableColumn dtc : getDataTable().getSortedDataTableColumnsByImportOrder()) {
                 Map<String, Object> col = new HashMap<>();
                 col.put("simpleName", dtc.getJsSimpleName());
@@ -87,7 +87,7 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
     }
 
     public void setDataTableId(Long dataTableId) {
-        if (Persistable.Base.isNullOrTransient(dataTableId)) {
+        if (PersistableUtils.isNullOrTransient(dataTableId)) {
             getLogger().error("Trying to set data table id to null or -1: " + dataTableId);
             return;
         }

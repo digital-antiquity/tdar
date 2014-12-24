@@ -11,7 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.FileStatus;
@@ -26,6 +25,7 @@ import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
@@ -141,7 +141,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         if (getPersistable() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) getPersistable();
             getLogger().info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
-            if (Persistable.Base.isNullOrTransient(subcategoryId)) {
+            if (PersistableUtils.isNullOrTransient(subcategoryId)) {
                 supporting.setCategoryVariable(categoryVariableService.find(categoryId));
             } else {
                 supporting.setCategoryVariable(categoryVariableService.find(subcategoryId));

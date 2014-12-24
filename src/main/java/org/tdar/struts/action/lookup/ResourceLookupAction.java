@@ -12,7 +12,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -25,6 +24,7 @@ import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
 /**
@@ -70,11 +70,11 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
 
         q.append(new CategoryTermQueryPart(getTerm(), getSortCategoryId()));
 
-        if (Persistable.Base.isNotNullOrTransient(getProjectId())) {
+        if (PersistableUtils.isNotNullOrTransient(getProjectId())) {
             q.append(new ProjectIdLookupQueryPart(getProjectId()));
         }
 
-        appendIf(Persistable.Base.isNotNullOrTransient(getCollectionId()), q, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, getCollectionId());
+        appendIf(PersistableUtils.isNotNullOrTransient(getCollectionId()), q, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, getCollectionId());
 
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
@@ -89,7 +89,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             return ERROR;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getSelectResourcesFromCollectionid())) {
+        if (PersistableUtils.isNotNullOrTransient(getSelectResourcesFromCollectionid())) {
             ResourceCollection collectionContainer = getGenericService().find(ResourceCollection.class, getSelectResourcesFromCollectionid());
             if (collectionContainer != null) {
                 Set<Long> resourceIds = new HashSet<Long>();

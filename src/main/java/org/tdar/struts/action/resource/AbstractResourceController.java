@@ -77,6 +77,7 @@ import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -222,7 +223,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public String loadAddMetadata() {
-        if (Persistable.Base.isNotNullOrTransient(getResource())) {
+        if (PersistableUtils.isNotNullOrTransient(getResource())) {
             setSubmitter(getResource().getSubmitter());
         } else {
             setSubmitter(getAuthenticatedUser());
@@ -231,7 +232,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateTransientAccountInfo(getResource());
             setActiveAccounts(new ArrayList<>(determineActiveAccounts()));
-            if (Persistable.Base.isNotNullOrTransient(getResource()) && Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
+            if (PersistableUtils.isNotNullOrTransient(getResource()) && PersistableUtils.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
             for (Account account : getActiveAccounts()) {
@@ -316,7 +317,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     private void setupSubmitterField() {
-        if (Persistable.Base.isNotNullOrTransient(getSubmitter()) && StringUtils.isNotBlank(getSubmitter().getProperName())) {
+        if (PersistableUtils.isNotNullOrTransient(getSubmitter()) && StringUtils.isNotBlank(getSubmitter().getProperName())) {
             if (getSubmitter().getFirstName() != null && getSubmitter().getLastName() != null)
                 setSubmitterProperName(getSubmitter().getProperName());
         } else {
@@ -433,13 +434,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Set<SiteTypeKeyword> siteTypeKeys = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, uncontrolledSiteTypeKeywords);
         siteTypeKeys.addAll(genericKeywordService.findAll(SiteTypeKeyword.class, approvedSiteTypeKeywordIds));
 
-        Persistable.Base.reconcileSet(res.getSiteNameKeywords(), gks.findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
-        Persistable.Base.reconcileSet(res.getOtherKeywords(), gks.findOrCreateByLabels(OtherKeyword.class, otherKeywords));
-        Persistable.Base.reconcileSet(res.getMaterialKeywords(), gks.findAll(MaterialKeyword.class, materialKeywordIds));
-        Persistable.Base.reconcileSet(res.getInvestigationTypes(), gks.findAll(InvestigationType.class, investigationTypeIds));
+        PersistableUtils.reconcileSet(res.getSiteNameKeywords(), gks.findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
+        PersistableUtils.reconcileSet(res.getOtherKeywords(), gks.findOrCreateByLabels(OtherKeyword.class, otherKeywords));
+        PersistableUtils.reconcileSet(res.getMaterialKeywords(), gks.findAll(MaterialKeyword.class, materialKeywordIds));
+        PersistableUtils.reconcileSet(res.getInvestigationTypes(), gks.findAll(InvestigationType.class, investigationTypeIds));
 
-        Persistable.Base.reconcileSet(res.getCultureKeywords(), culKeys);
-        Persistable.Base.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
+        PersistableUtils.reconcileSet(res.getCultureKeywords(), culKeys);
+        PersistableUtils.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
     }
 
     private void cleanupKeywords(List<String> kwds) {
@@ -473,7 +474,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // calendar and radiocarbon dates are null for Ontologies
         resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, coverageDates,
                 getResource().getCoverageDates(), CoverageDate.class);
-        Persistable.Base.reconcileSet(getPersistable().getTemporalKeywords(),
+        PersistableUtils.reconcileSet(getPersistable().getTemporalKeywords(),
                 genericKeywordService.findOrCreateByLabels(TemporalKeyword.class, temporalKeywords));
     }
 
@@ -487,7 +488,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 && !(this instanceof AbstractSupportingInformationResourceController)) {
             addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(getResource().getResourceType().getLabel())));
         }
-        Persistable.Base.reconcileSet(getPersistable().getGeographicKeywords(),
+        PersistableUtils.reconcileSet(getPersistable().getGeographicKeywords(),
                 genericKeywordService.findOrCreateByLabels(GeographicKeyword.class, geographicKeywords));
 
         resourceService.processManagedKeywords(getPersistable(), getPersistable().getLatitudeLongitudeBoxes());
@@ -511,7 +512,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             resourceService.saveOrUpdate(getPersistable());
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getSubmitter())) {
+        if (PersistableUtils.isNotNullOrTransient(getSubmitter())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
             // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
@@ -1088,7 +1089,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
-        return Persistable.Base.extractIds(persistables);
+        return PersistableUtils.extractIds(persistables);
     }
 
     public List<EmailMessageType> getEmailTypes() {

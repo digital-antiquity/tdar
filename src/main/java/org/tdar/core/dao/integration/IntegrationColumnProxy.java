@@ -6,11 +6,10 @@ import java.util.List;
 
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+import org.tdar.utils.json.JsonNodeParticipationFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.tdar.utils.json.JsonNodeParticipationFilter;
 
 @JsonAutoDetect
 public class IntegrationColumnProxy implements Serializable {

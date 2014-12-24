@@ -1,10 +1,11 @@
 package org.tdar.core.dao.resource.integration;
 
+import static org.apache.commons.lang3.StringUtils.abbreviate;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
@@ -14,8 +15,6 @@ import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonView;
-
-import static org.apache.commons.lang3.StringUtils.abbreviate;
 
 
 @JsonAutoDetect 

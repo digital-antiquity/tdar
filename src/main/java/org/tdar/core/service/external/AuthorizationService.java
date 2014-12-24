@@ -46,6 +46,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.search.ReservedSearchParameters;
+import org.tdar.utils.PersistableUtils;
 
 /*
  * This service is designed to hide the complexity of users and permissions from the rest of tDAR.  It handles a number different functions including:
@@ -411,7 +412,7 @@ public class AuthorizationService implements Accessible {
         }
 
         // ab added:12/11/12
-        if (Persistable.Base.isTransient(resource) && (resource.getSubmitter() == null)) {
+        if (PersistableUtils.isTransient(resource) && (resource.getSubmitter() == null)) {
             logger.trace("resource is transient");
             return true;
         }
@@ -437,7 +438,7 @@ public class AuthorizationService implements Accessible {
         if (irFile == null) {
             return false;
         }
-        if (irFile.isDeleted() && Persistable.Base.isNullOrTransient(person)) {
+        if (irFile.isDeleted() && PersistableUtils.isNullOrTransient(person)) {
             return false;
         }
         if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {

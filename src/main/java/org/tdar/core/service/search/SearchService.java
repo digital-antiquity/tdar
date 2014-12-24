@@ -92,6 +92,7 @@ import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -286,7 +287,7 @@ public class SearchService {
             }
             if (projectionModel == ProjectionModel.HIBERNATE_DEFAULT) {
                 p = (Indexable) obj[0];
-                if (Persistable.Base.isNullOrTransient(p)) {
+                if (PersistableUtils.isNullOrTransient(p)) {
                     logger.error("persistable is null? {} ", obj);
                 } else {
                     ids.put(p.getId(), obj);
@@ -313,7 +314,7 @@ public class SearchService {
             }
 
             for (Indexable p : toReturn) {
-                if (Persistable.Base.isNullOrTransient(p)) {
+                if (PersistableUtils.isNullOrTransient(p)) {
                     continue;
                 }
                 Object[] obj = ids.get(p.getId());
@@ -323,7 +324,7 @@ public class SearchService {
                     p.setExplanation(ex);
                 }
                 if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()
-                        && Persistable.Base.isNullOrTransient(resultHandler.getAuthenticatedUser())) {
+                        && PersistableUtils.isNullOrTransient(resultHandler.getAuthenticatedUser())) {
                     obfuscationService.obfuscate((Obfuscatable) p, resultHandler.getAuthenticatedUser());
                 }
                 getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, resultHandler.getAuthenticatedUser());
@@ -418,7 +419,7 @@ public class SearchService {
             }
             for (T fieldValue : (List<T>) partList.get(i).getFieldValues()) {
                 // T cast = (T) fieldValue;
-                if (Persistable.Base.isNotTransient(fieldValue)) {
+                if (PersistableUtils.isNotTransient(fieldValue)) {
                     lookupMap.get(cls).add(fieldValue);
                 } else {
                     logger.trace("not adding {} ", fieldValue);
@@ -436,7 +437,7 @@ public class SearchService {
             }
             logger.trace("toLookup: {} {} result: {}", cls, lookupMap.get(cls), hydrated);
 
-            idLookupMap.put(cls, (Map<Long, Persistable>) Persistable.Base.createIdMap(hydrated));
+            idLookupMap.put(cls, (Map<Long, Persistable>) PersistableUtils.createIdMap(hydrated));
         }
 
         // repopulate
@@ -445,7 +446,7 @@ public class SearchService {
             Class<T> cls = part.getActualClass();
             for (int j = 0; j < part.getFieldValues().size(); j++) {
                 T fieldValue = (T) part.getFieldValues().get(j);
-                if (Persistable.Base.isNotTransient(fieldValue)) {
+                if (PersistableUtils.isNotTransient(fieldValue)) {
                     part.getFieldValues().set(j, idLookupMap.get(cls).get(fieldValue.getId()));
                 } else {
                     logger.trace("not adding: {} ", idLookupMap.get(cls), fieldValue);
@@ -654,7 +655,7 @@ public class SearchService {
             if ((rc != null) && proxy.isValid()) {
                 ArrayList<ResourceCreatorProxy> values = new ArrayList<>();
                 Creator creator = rc.getCreator();
-                if (Persistable.Base.isTransient(creator)) {
+                if (PersistableUtils.isTransient(creator)) {
                     resolveCreator(maxToResolve, replacements, proxy, rc, values, creator);
                 }
             } else {
@@ -778,7 +779,7 @@ public class SearchService {
 
         QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
         qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
-        if (Persistable.Base.isNotNullOrTransient(authenticatedUser)) {
+        if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
             // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
             if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));

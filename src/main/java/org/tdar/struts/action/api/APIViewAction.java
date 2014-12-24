@@ -9,7 +9,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ObfuscationService;
@@ -20,6 +19,7 @@ import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
 @Namespace("/api")
@@ -50,7 +50,7 @@ public class APIViewAction extends AuthenticationAware.Base {
     @Action(value = "view", results = {
             @Result(name = SUCCESS, type = "xmldocument") })
     public String view() throws Exception {
-        if (Persistable.Base.isNotNullOrTransient(getId())) {
+        if (PersistableUtils.isNotNullOrTransient(getId())) {
             Resource resource = resourceService.find(getId());
             if (!isAdministrator() && !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());

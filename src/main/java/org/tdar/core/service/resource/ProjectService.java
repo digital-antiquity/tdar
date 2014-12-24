@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -26,8 +25,9 @@ import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.ServiceInterface;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
@@ -153,7 +153,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         Set<ResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
 
         // find all of the editable projects for the user (either directly assigned or via the specified collections)
-        List<Long> collectionIds = Persistable.Base.extractIds(collections);
+        List<Long> collectionIds = PersistableUtils.extractIds(collections);
         List<Resource> editableResources = authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true, collectionIds);
 
         return editableResources;
@@ -184,7 +184,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         Object result = new HashMap<String, Object>();
 
         try {
-            if (Persistable.Base.isNotNullOrTransient(project)) {
+            if (PersistableUtils.isNotNullOrTransient(project)) {
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 // obfuscationService.obfuscate(project, user);
                 result = project;

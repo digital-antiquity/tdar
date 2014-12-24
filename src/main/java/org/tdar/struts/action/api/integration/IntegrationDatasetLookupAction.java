@@ -1,6 +1,5 @@
 package org.tdar.struts.action.api.integration;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.apache.struts2.convention.annotation.Action;

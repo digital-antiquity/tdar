@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
@@ -23,6 +22,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Responsible for processing payments and viewing finalized invoices.
@@ -84,7 +84,7 @@ public class CartController extends AbstractCartController {
     })
     @HttpsOnly
     public String processPaymentRequest() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(getInvoice())) {
+        if (PersistableUtils.isNullOrTransient(getInvoice())) {
             return ADD;
         }
 

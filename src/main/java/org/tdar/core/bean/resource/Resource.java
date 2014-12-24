@@ -125,7 +125,9 @@ import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -509,7 +511,7 @@ public class Resource implements Persistable,
             writable.addAll(collection.getUsersWhoCan(GeneralPermissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
-            if (Persistable.Base.isNullOrTransient(p)) {
+            if (PersistableUtils.isNullOrTransient(p)) {
                 continue;
             }
             users.add(p.getId());
@@ -538,7 +540,7 @@ public class Resource implements Persistable,
                     GeneralPermissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
-            if (Persistable.Base.isNullOrTransient(p)) {
+            if (PersistableUtils.isNullOrTransient(p)) {
                 continue;
             }
             users.add(p.getId());
@@ -1075,7 +1077,7 @@ public class Resource implements Persistable,
 
     @Transient
     public boolean isTransient() {
-        return Persistable.Base.isTransient(this);
+        return PersistableUtils.isTransient(this);
     }
 
     /**
@@ -1274,12 +1276,12 @@ public class Resource implements Persistable,
 
     @Override
     public boolean equals(Object candidate) {
-        return Persistable.Base.isEqual(this, (Persistable) candidate);
+        return PersistableUtils.isEqual(this, (Persistable) candidate);
     }
 
     @Override
     public int hashCode() {
-        return Persistable.Base.toHashCode(this);
+        return PersistableUtils.toHashCode(this);
     }
 
     public void setCoverageDates(Set<CoverageDate> coverageDates) {
@@ -1892,7 +1894,7 @@ public class Resource implements Persistable,
 
     @XmlTransient
     public Long getSpaceUsedInMb() {
-        return Persistable.Base.divideByRoundUp(spaceInBytesUsed, ONE_MB);
+        return MathUtils.divideByRoundUp(spaceInBytesUsed, ONE_MB);
     }
 
     @XmlTransient

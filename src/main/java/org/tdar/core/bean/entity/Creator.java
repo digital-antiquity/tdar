@@ -70,6 +70,7 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -283,7 +284,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
             return false;
         }
         try {
-            return Persistable.Base.isEqual(this, Creator.class.cast(candidate));
+            return PersistableUtils.isEqual(this, Creator.class.cast(candidate));
         } catch (ClassCastException e) {
             logger.debug("cannot cast creator: ", e);
             return false;
@@ -293,7 +294,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     // private transient int hashCode = -1;
 
     /*
-     * copied from Persistable.Base.hashCode() (non-Javadoc)
+     * copied from PersistableUtils.hashCode() (non-Javadoc)
      * 
      * @see java.lang.Object#hashCode()
      */
@@ -301,10 +302,10 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     public int hashCode() {
         Logger logger = LoggerFactory.getLogger(getClass());
         int hashCode = -1;
-        if (Persistable.Base.isNullOrTransient(this)) {
+        if (PersistableUtils.isNullOrTransient(this)) {
             hashCode = super.hashCode();
         } else {
-            hashCode = Persistable.Base.toHashCode(this);
+            hashCode = PersistableUtils.toHashCode(this);
         }
 
         Object[] obj = { hashCode, getClass().getSimpleName(), getId() };

@@ -1,7 +1,6 @@
 package org.tdar.core.dao.resource;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -9,15 +8,14 @@ import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.dao.integration.OntologySearchFilter;
 import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.resource.integration.OntologyProxy;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * 
@@ -49,7 +47,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
     public void removeReferencesToOntologyNodes(List<OntologyNode> incoming) {
         List<OntologyNode> toDelete = new ArrayList<OntologyNode>();
         for (OntologyNode node : incoming) {
-            if (Persistable.Base.isNullOrTransient(node)) {
+            if (PersistableUtils.isNullOrTransient(node)) {
                 continue;
             }
             toDelete.add(node);

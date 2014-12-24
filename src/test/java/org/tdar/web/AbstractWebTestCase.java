@@ -50,7 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -63,6 +62,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.CSSParseException;
@@ -1334,7 +1334,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
         }
         List<TdarUser> users = entityService.findAllRegisteredUsers(3);
-        List<Long> userIds = Persistable.Base.extractIds(users);
+        List<Long> userIds = PersistableUtils.extractIds(users);
         for (int i = 0; i < userIds.size(); i++) {
             setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
         }

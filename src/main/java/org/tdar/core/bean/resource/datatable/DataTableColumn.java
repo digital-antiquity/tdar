@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
@@ -209,7 +210,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @JsonView(JsonIntegrationDetailsFilter.class)
     public Long getCategoryVariableId() {
-        if(isTransient(categoryVariable)) return null;
+        if(PersistableUtils.isTransient(categoryVariable)) return null;
         return categoryVariable.getId();
     }
 
@@ -427,13 +428,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     /**
      * Return true if this column has a mapped ontology and has a mapped coding sheet that is not invalid.
      * @return
-     * @deprecated  Don't use this property. The name is ambiguous, and more importantly it obfuscates the reason why
-     * this column cannot participate in an IntegrationColumn.
      */
-    @Deprecated
     public boolean isActuallyMapped() {
-    // a more accurate name would be isShouldTdarHaveEverAllowedTheUserToChooseThisCodingSheetOnTheEditColumnMetadataPageInTheFirstPlace()
-        if (Persistable.Base.isNullOrTransient(getDefaultOntology())) {
+        if (PersistableUtils.isNullOrTransient(getDefaultOntology())) {
             return false;
         }
 

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.utils.json.JsonNodeParticipationFilter;
 
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" })

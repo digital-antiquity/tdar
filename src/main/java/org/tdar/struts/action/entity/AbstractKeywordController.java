@@ -1,11 +1,11 @@
 package org.tdar.struts.action.entity;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -46,7 +46,7 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
 
     @Override
     public void prepare() throws Exception {
-        if (Persistable.Base.isNullOrTransient(getId())) {
+        if (PersistableUtils.isNullOrTransient(getId())) {
             addActionError(getText("simpleKeywordAction.id_required"));
         }
         if (getKeywordType() == null) {

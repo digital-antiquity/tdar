@@ -14,7 +14,6 @@ import org.tdar.utils.MessageHelper;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonAutoDetect(getterVisibility=Visibility.PUBLIC_ONLY)
 public class PricingOption implements Serializable {

@@ -66,6 +66,7 @@ import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * The service that handles the import of info from the API into tDAR... Ideally this should be merged wih the BulkUploadService
@@ -134,7 +135,7 @@ public class ImportService {
         // If the object already has a tDAR ID
         created = reconcileIncomingObjectWithExisting(authorizedUser, incomingResource, created);
 
-        if (Persistable.Base.isNotNullOrTransient(projectId) && (incoming_ instanceof InformationResource)) {
+        if (PersistableUtils.isNotNullOrTransient(projectId) && (incoming_ instanceof InformationResource)) {
             ((InformationResource) incoming_).setProject(genericService.find(Project.class, projectId));
         }
 
@@ -198,7 +199,7 @@ public class ImportService {
      * @throws APIException
      */
     private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created) throws APIException {
-        if (Persistable.Base.isNotTransient(incomingResource)) {
+        if (PersistableUtils.isNotTransient(incomingResource)) {
             @SuppressWarnings("unchecked")
             R existing = (R) genericService.find(incomingResource.getClass(), incomingResource.getId());
 
@@ -291,7 +292,7 @@ public class ImportService {
             if (CollectionUtils.isNotEmpty(codingSheet.getMappedValues()) ||
                     CollectionUtils.isNotEmpty(codingSheet.getAssociatedDataTableColumns()) ||
                     CollectionUtils.isNotEmpty(codingSheet.getCodingRules()) ||
-                    Persistable.Base.isNotNullOrTransient(codingSheet.getDefaultOntology())) {
+                    PersistableUtils.isNotNullOrTransient(codingSheet.getDefaultOntology())) {
                 throw new APIException(MessageHelper.getMessage("importService.coding_sheet_mappings_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
         }
@@ -317,7 +318,7 @@ public class ImportService {
                 throw new APIException(MessageHelper.getMessage("importService.related_dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
 
-            if (Persistable.Base.isNotNullOrTransient(informationResource.getMappedDataKeyColumn())) {
+            if (PersistableUtils.isNotNullOrTransient(informationResource.getMappedDataKeyColumn())) {
                 throw new APIException(MessageHelper.getMessage("importService.related_dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
         }
@@ -471,7 +472,7 @@ public class ImportService {
     public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException {
         P toReturn = property;
         // if we're not transient, find by id...
-        if (Persistable.Base.isNotNullOrTransient(property)) {
+        if (PersistableUtils.isNotNullOrTransient(property)) {
             toReturn = (P) findById(property.getClass(), property.getId());
             if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
@@ -480,7 +481,7 @@ public class ImportService {
             }
             if (toReturn instanceof Person) {
                 Institution inst = ((Person) toReturn).getInstitution();
-                if (Persistable.Base.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
+                if (PersistableUtils.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
                     ((Person) toReturn).setInstitution(findById(Institution.class, inst.getId()));
                 }
             }

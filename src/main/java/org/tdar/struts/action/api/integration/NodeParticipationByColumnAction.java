@@ -1,7 +1,11 @@
 package org.tdar.struts.action.api.integration;
 
-import com.opensymphony.xwork2.Preparable;
-import org.apache.avro.generic.GenericData;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -12,11 +16,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.DataIntegrationService;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * This action uses the provided list of dataTableColumnIds and creates a map of ontologyNode lists by dataTableColumn

@@ -19,7 +19,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -39,6 +38,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
@@ -149,16 +149,16 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         setSaveSuccessPath("billing");
 
         // if we're coming from "choose" and we want a "new account"
-        if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
+        if (PersistableUtils.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
             getAccount().setName(getName());
             getAccount().setDescription(getDescription());
         }
 
-        if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
+        if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
             Invoice invoice = getInvoice();
             getLogger().info("attaching invoice: {} ", invoice);
             // if we have rights
-            if (Persistable.Base.isTransient(getAccount())) {
+            if (PersistableUtils.isTransient(getAccount())) {
                 getAccount().setOwner(invoice.getOwner());
             }
             accountService.checkThatInvoiceBeAssigned(invoice, getAccount()); // throw exception if you cannot

@@ -5,10 +5,10 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
+import org.tdar.utils.PersistableUtils;
 
 
 @Component
@@ -26,7 +26,7 @@ public class CodingSheetViewAction extends AbstractResourceViewAction<CodingShee
         CodingSheet persistable = (CodingSheet)getPersistable();
         if (persistable.getResourceType().isCodingSheet()) {
             Ontology defaultOntology = persistable.getDefaultOntology();
-            if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
+            if (PersistableUtils.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
                 getLogger().debug("cannot map, ontology issues, null or transient");
                 return false;
             }

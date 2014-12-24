@@ -14,7 +14,6 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -46,6 +45,7 @@ import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractAdvancedSearchController extends AbstractLookupController<Resource> {
 
@@ -154,7 +154,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         // search on the same querystring)
 
         // legacy search by id?
-        if (Persistable.Base.isNotNullOrTransient(getId())) {
+        if (PersistableUtils.isNotNullOrTransient(getId())) {
             getLogger().trace("legacy api:  tdar id");
             groups.clear();
             groups.add(new SearchParameters());
@@ -286,7 +286,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
 
             // contextual search: resource collection
-            if (Persistable.Base.isNotNullOrTransient(collectionId)) {
+            if (PersistableUtils.isNotNullOrTransient(collectionId)) {
                 getLogger().debug("contextual search: collection {}", collectionId);
                 ResourceCollection rc = new ResourceCollection();
                 rc.setId(collectionId);
@@ -295,7 +295,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
                 terms.getAllFields().add(0, null);
 
                 // contextual search: project
-            } else if (Persistable.Base.isNotNullOrTransient(projectId)) {
+            } else if (PersistableUtils.isNotNullOrTransient(projectId)) {
                 getLogger().debug("contextual search: project {}", projectId);
                 Project project = new Project();
                 project.setId(projectId);

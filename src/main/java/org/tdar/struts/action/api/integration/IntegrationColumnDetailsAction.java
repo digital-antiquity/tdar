@@ -1,6 +1,5 @@
 package org.tdar.struts.action.api.integration;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -14,9 +13,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnProxy;
 import org.tdar.core.service.DataIntegrationService;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.IntegrationColumn;
-import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonNodeParticipationFilter;
 
 @Namespace("/api/integration")

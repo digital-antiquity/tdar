@@ -122,6 +122,7 @@ import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
@@ -510,7 +511,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (controller != null) {
             TdarUser user_ = null;
             controller.setSessionData(getSessionData());
-            if ((user != null) && Persistable.Base.isTransient(user)) {
+            if ((user != null) && PersistableUtils.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
                 user_ = genericService.find(TdarUser.class, user.getId());
@@ -593,7 +594,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected TdarUser getUser(Long id) {
         TdarUser p = genericService.find(TdarUser.class, id);
-        if (Persistable.Base.isNullOrTransient(p)) {
+        if (PersistableUtils.isNullOrTransient(p)) {
             fail("failed to load user:" + id);
         }
         genericService.refresh(p);

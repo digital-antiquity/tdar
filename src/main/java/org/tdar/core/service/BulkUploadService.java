@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -56,6 +55,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 
 import com.google.common.cache.Cache;
@@ -152,7 +152,7 @@ public class BulkUploadService {
                 logger.debug("exception happened when reading excel file", e);
                 manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
                 manifestProxy.getAsyncUpdateReceiver().addError(e);
-                if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+                if (PersistableUtils.isNotNullOrTransient(ticketId)) {
                     asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
                 }
             } finally {
@@ -280,7 +280,7 @@ public class BulkUploadService {
 
     private void reindexProject(Long projectId, AsyncUpdateReceiver updateReciever) {
         try {
-            if (Persistable.Base.isNotNullOrTransient(projectId)) {
+            if (PersistableUtils.isNotNullOrTransient(projectId)) {
                 boolean exceptions = searchIndexService.indexProject(projectId);
                 if (exceptions) {
                     throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
@@ -465,7 +465,7 @@ public class BulkUploadService {
         Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
         BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, excelService, bulkUploadTemplateService, entityService,
                 reflectionService);
-        if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+        if (PersistableUtils.isNotNullOrTransient(ticketId)) {
             asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
         }
         proxy.setSubmitter(submitter);

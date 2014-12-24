@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.ActivityManager;
@@ -33,6 +32,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 
@@ -76,7 +76,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
             getLogger().info("to reindex: {}", toReindex);
             Person person = null;
-            if (Persistable.Base.isNotNullOrTransient(getUserId())) {
+            if (PersistableUtils.isNotNullOrTransient(getUserId())) {
                 person = getGenericService().find(Person.class, getUserId());
             }
 

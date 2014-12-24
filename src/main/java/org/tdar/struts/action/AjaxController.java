@@ -13,9 +13,9 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.service.SerializationService;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -43,7 +43,7 @@ public class AjaxController extends TdarActionSupport {
     @Action(value = "column-metadata-subcategories", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String columnMetadataSubcategories() {
-        if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
+        if (PersistableUtils.isNullOrTransient(categoryVariableId)) {
             getLogger().debug("Invalid category variable: " + categoryVariableId);
         }
         List<CategoryVariable> subcategories = getSubcategories();
@@ -67,7 +67,7 @@ public class AjaxController extends TdarActionSupport {
      * @return
      */
     public List<CategoryVariable> getSubcategories() {
-        if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
+        if (PersistableUtils.isNullOrTransient(categoryVariableId)) {
             return new ArrayList<CategoryVariable>();
         }
         return new ArrayList<CategoryVariable>(getCategoryVariable().getSortedChildren());

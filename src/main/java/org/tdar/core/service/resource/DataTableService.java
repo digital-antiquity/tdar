@@ -12,7 +12,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.DatasetSearchFilter;
-import org.tdar.core.dao.integration.IntegrationSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;

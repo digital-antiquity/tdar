@@ -17,7 +17,6 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.Account;
@@ -55,6 +54,7 @@ import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -204,7 +204,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         loadCustomViewMetadata();
         resourceService.updateTransientAccessCount(getResource());
         // don't count if we're an admin
-        if (!Persistable.Base.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
+        if (!PersistableUtils.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
             resourceService.incrementAccessCounter(getPersistable());
         }
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
@@ -439,7 +439,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
      */
     public void setTransientViewableStatus(InformationResource ir, TdarUser p) {
         authorizationService.applyTransientViewableFlag(ir, p);
-        if (Persistable.Base.isNotNullOrTransient(p)) {
+        if (PersistableUtils.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 informationResourceFileService.updateTransientDownloadCount(irf);
                 if (irf.isDeleted()) {

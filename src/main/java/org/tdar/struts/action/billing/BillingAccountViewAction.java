@@ -10,7 +10,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -25,6 +24,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
@@ -67,7 +67,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     @Override
     public boolean authorize() {
         getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
-        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
+        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
 
@@ -103,7 +103,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         setAccountGroup(accountService.getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         getResources().addAll(getAccount().getResources());
-        Persistable.Base.sortByUpdatedDate(getResources());
+        PersistableUtils.sortByUpdatedDate(getResources());
 
         for (TdarUser au : getAuthorizedMembers()) {
             String name = null;

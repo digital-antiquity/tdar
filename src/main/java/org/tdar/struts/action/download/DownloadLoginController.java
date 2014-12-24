@@ -7,7 +7,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
@@ -19,6 +18,7 @@ import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -72,7 +72,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
             default:
                 break;
         }
-        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersionId())) {
+        if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersionId())) {
             return SUCCESS_DOWNLOAD_ALL;
         }
         return SUCCESS;
