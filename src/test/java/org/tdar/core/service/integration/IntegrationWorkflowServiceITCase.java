@@ -23,7 +23,8 @@ public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCas
         DataIntegrationWorkflow workflow = new DataIntegrationWorkflow();
         workflow.setJsonData(json);
         IntegrationContext context = service.toIntegrationContext(workflow);
-        getLogger().debug("{}", context);
+        getLogger().debug("{}", context.getDataTables());
+        getLogger().debug("{}", context.getIntegrationColumns());
     }
 
 }

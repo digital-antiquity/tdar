@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 
 /**
  * Service class serving as a bridge between json data and IntegrationContext objects.

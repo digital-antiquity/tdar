@@ -134,7 +134,8 @@ public class DataIntegrationService {
         // for each of the integration columns, grab the unique set of all children within an ontology
 
         // that is, even if child is not selected, should get all children for query and pull up
-        integrationColumn.setOntologyNodesForSelect(ontologyNodeDao.getAllChildren(filteredOntologyNodes));
+        
+        integrationColumn.buildNodeChildHierarchy(ontologyNodeDao);
 
         logger.debug("after: {} - {}", integrationColumn, filteredOntologyNodes);
         logger.info("integration column: {}", integrationColumn);

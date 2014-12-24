@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.dao.resource.OntologyNodeDao;
 
 /**
  * 
@@ -39,10 +40,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 public class IntegrationColumn implements Serializable, Sequenceable<IntegrationColumn> {
 
     private static final long serialVersionUID = -1497513480240727318L;
-
-    public enum ColumnType {
-        INTEGRATION, DISPLAY, COUNT;
-    }
 
     private String name;
     private Ontology sharedOntology;
@@ -60,7 +57,6 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     public IntegrationColumn() {
     }
-
 
     public IntegrationColumn(ColumnType columnType, DataTableColumn... incomingColumns) {
         this.columnType = columnType;
@@ -125,28 +121,34 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     @XmlElementWrapper(name = "filteredOntologyNodes")
     @XmlElement(name = "ontologyNode")
+    /**
+     * The list of OntologyNodes specified by the "filter" process (specifying which nodes should be actually used in the integration)
+     * @return
+     */
     public List<OntologyNode> getFilteredOntologyNodes() {
         return filteredOntologyNodes;
     }
 
+    /**
+     * The list of OntologyNodes specified by the "filter" process (specifying which nodes should be actually used in the integration).
+     * When we set the filtered ontology nodes, we sort them and then try and get the parent
+     * child relationships set into a custom hierarchy map that's used by getMappedOntologyNodeDisplayName
+     * which is used when we pull data back out of the DB for display
+     */
     public void setFilteredOntologyNodes(List<OntologyNode> filteredOntologyNodes) {
         filteredOntologyNodes.removeAll(Collections.singletonList(null));
         this.filteredOntologyNodes = filteredOntologyNodes;
-        // when we set the filtered ontology nodes, we sort them and then try and get the parent
-        // child relationships set into a custom hierarchy map that's used by getMappedOntologyNodeDisplayName
-        // which is used when we pull data back out of the DB for display
-
     }
 
-    @SuppressWarnings("unused")
-    private boolean isChildOf(OntologyNode parent, OntologyNode child) {
-        return (parent != null) && (parent.getIntervalStart() < child.getIntervalStart()) && (parent.getIntervalEnd() > child.getIntervalEnd());
-    }
-
-    public Map<OntologyNode, OntologyNode> getNearestParentMap() {
+    /**
+     * Create a Map of Node -> node that provides the nearest parent of the selected ontology nodes
+     * 
+     * @return
+     */
+    private Map<OntologyNode, OntologyNode> getNearestParentMap() {
         if (parentMap.isEmpty()) {
             // loop through all of the ontology nodes from the select statement
-            // if the node has a parent inside the filtered node set, then evaluate the distance betwee
+            // if the node has a parent inside the filtered node set, then evaluate the distance between
             // the intervals (shorter is better). maintain the parent as the shortest.
             for (OntologyNode node : getOntologyNodesForSelect()) {
                 int distance = Integer.MAX_VALUE;
@@ -256,14 +258,12 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return name;
     }
 
-    /**
-     * @param allChildren
-     */
-    public void setOntologyNodesForSelect(Set<OntologyNode> allChildren) {
-        ontologyNodesForSelect = allChildren;
-    }
-
     @XmlTransient
+    /**
+     * This is the fully-formed list of ontology nodes that has the filter/flatten process applied the node Hierarchy
+     * includes all childen that are necessary for the hierarchical query. 
+     * @return
+     */
     public Set<OntologyNode> getOntologyNodesForSelect() {
         return ontologyNodesForSelect;
     }
@@ -291,6 +291,12 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return sharedOntology;
     }
 
+    /**
+     * Transforms the Ontology nodes associated with the specified Ontology to be hierarchical (parent/child set) and have transient
+     * mappings for dataTableColumns that have actual data (lack of entries in the map are equivalent to lack of data)
+     * 
+     * @return
+     */
     public List<OntologyNode> getFlattenedOntologyNodeList() {
         if (flattenedOntologyNodeList == null) {
             flatten();
@@ -300,7 +306,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     /**
      * Flattens sharedOntology's nodes into a single List<OntologyNode> and sets
-     * transient metadata on each OntologyNode
+     * transient metadata on each OntologyNode to specify what nodes have mapped data and what nodes do not.
      */
     public void flatten() {
         if ((sharedOntology == null) || !isIntegrationColumn()) {
@@ -313,7 +319,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = sharedOntology.toOntologyNodeMap();
 
         for (OntologyNode ontologyNode : ontologyNodes) {
-            
+
             for (int index = 0; index < columns.size(); index++) {
                 DataTableColumn column = columns.get(index);
                 CodingSheet codingSheet = column.getDefaultCodingSheet();
@@ -366,6 +372,10 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     public void setTempTableDataTableColumn(DataTableColumn dataTableColumn) {
         this.tempTableDataTableColumn = dataTableColumn;
+    }
+
+    public void buildNodeChildHierarchy(OntologyNodeDao ontologyNodeDao) {
+        ontologyNodesForSelect = ontologyNodeDao.getAllChildren(filteredOntologyNodes);
     }
 
 }
