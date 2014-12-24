@@ -308,7 +308,7 @@ public class SearchIndexService {
                     index(fullTextSession, genericDao.merge(toIndex));
                     if (count % FLUSH_EVERY == 0) {
                         logger.debug("indexing: {}", toIndex);
-                        logger.debug("flush to index");
+                        logger.debug("flush to index ... every {}", FLUSH_EVERY);
                         fullTextSession.flushToIndexes();
                         fullTextSession.clear();
                     }
