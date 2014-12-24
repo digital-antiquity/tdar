@@ -59,6 +59,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.jaxb.IdList;
 import org.tdar.utils.jaxb.converters.JaxbMapConverter;
@@ -113,7 +114,7 @@ public class AuthorityManagementService {
     private GenericDao genericDao;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private EmailService emailService;
@@ -378,7 +379,7 @@ public class AuthorityManagementService {
         String className = logData.getAuthority().getClass().getSimpleName();
         int numUpdated = logData.getUpdatedReferrers().keySet().size(); // number of records affected, not total reference count
         try {
-            xml = xmlService.convertToXML(logData);
+            xml = serializationService.convertToXML(logData);
         } catch (Exception e) {
             xml = MessageHelper.getMessage("authorityManagementService.xml_conversion_error");
             logger.warn("could not completely log authmgmt operation", e);
@@ -581,7 +582,7 @@ public class AuthorityManagementService {
         }
         for (Entry<Keyword, Set<Keyword>> entry : dups.entrySet()) {
             processSynonyms(entry.getKey(), entry.getValue(), DupeMode.MARK_DUPS_ONLY);
-            updateReferrers(user, (Class<? extends Dedupable<?>>) cls, Persistable.Base.extractIds(entry.getValue()), entry.getKey().getId(),
+            updateReferrers(user, (Class<? extends Dedupable<?>>) cls, PersistableUtils.extractIds(entry.getValue()), entry.getKey().getId(),
                     DupeMode.MARK_DUPS_ONLY, false);
         }
     }

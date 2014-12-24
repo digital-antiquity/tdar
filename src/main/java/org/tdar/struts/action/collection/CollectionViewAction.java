@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Resource;
@@ -40,6 +39,7 @@ import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
@@ -149,7 +149,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     @Override
     public void loadExtraViewMetadata() {
-        if (Persistable.Base.isNullOrTransient(getPersistable())) {
+        if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return;
         }
         getLogger().trace("child collections: begin");
@@ -160,7 +160,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             findAllChildCollections = getPersistable().getTransientChildren();
 
             if (isEditor()) {
-                List<Long> collectionIds = Persistable.Base.extractIds(resourceCollectionService.buildCollectionTreeForController(getPersistable(),
+                List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.buildCollectionTreeForController(getPersistable(),
                         getAuthenticatedUser(), CollectionType.SHARED));
                 collectionIds.add(getId());
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, collectionIds, null,

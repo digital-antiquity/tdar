@@ -3,7 +3,6 @@ package org.tdar.struts.action.browse;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Resource;
@@ -33,6 +31,7 @@ import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -91,7 +90,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     @Override
     public void prepare() throws Exception {
-        if (Persistable.Base.isNullOrTransient(getId())) {
+        if (PersistableUtils.isNullOrTransient(getId())) {
             addActionError(getText("simpleKeywordAction.id_required"));
         }
         if (getKeywordPath() == null) {
@@ -105,7 +104,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         getLogger().debug("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
-        if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
+        if (PersistableUtils.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
         getLogger().debug("id:{}  slug:{}", getId(), getSlug());
@@ -128,12 +127,12 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (redirectBadSlug) {
             return BAD_SLUG;
 		}
-        if (Persistable.Base.isNotNullOrTransient(keyword)  && keyword.isDuplicate()) {
+        if (PersistableUtils.isNotNullOrTransient(keyword)  && keyword.isDuplicate()) {
             setKeyword(genericKeywordService.findAuthority(keyword));
             return BAD_SLUG;
         }
 
-        if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
+        if (PersistableUtils.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {

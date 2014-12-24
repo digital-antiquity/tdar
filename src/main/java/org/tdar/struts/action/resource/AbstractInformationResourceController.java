@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -38,7 +37,7 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DatasetService;
@@ -51,6 +50,7 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -75,7 +75,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private transient AuthorizationService authorizationService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient FileProxyService fileProxyService;
@@ -164,7 +164,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     public void setTransientViewableStatus(InformationResource ir, TdarUser p) {
         authorizationService.applyTransientViewableFlag(ir, p);
-        if (Persistable.Base.isNotNullOrTransient(p)) {
+        if (PersistableUtils.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 informationResourceFileService.updateTransientDownloadCount(irf);
                 if (irf.isDeleted()) {
@@ -290,7 +290,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // load resource provider institution and publishers
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
         setPublisherName(getResource().getPublisherName());
-        if (isCopyrightMandatory() && Persistable.Base.isNotNullOrTransient(getResource().getCopyrightHolder())) {
+        if (isCopyrightMandatory() && PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
             copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
         }
     }
@@ -387,7 +387,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     private void loadFilesJson() {
-        if (Persistable.Base.isNullOrTransient(getResource())) {
+        if (PersistableUtils.isNullOrTransient(getResource())) {
             return;
         }
 
@@ -400,7 +400,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         try {
-            filesJson = xmlService.convertToJson(fileProxies);
+            filesJson = serializationService.convertToJson(fileProxies);
             getLogger().debug(filesJson);
         } catch (IOException e) {
             getLogger().error("could not convert file list to json", e);
@@ -478,7 +478,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     protected void resolveProject() {
         project = Project.NULL;
-        if (Persistable.Base.isNotNullOrTransient(projectId)) {
+        if (PersistableUtils.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         }
         json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), null);

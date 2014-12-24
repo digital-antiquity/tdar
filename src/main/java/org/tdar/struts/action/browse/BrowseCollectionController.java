@@ -42,6 +42,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -110,7 +111,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null,
-                    Persistable.Base.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+                    PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 

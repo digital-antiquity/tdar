@@ -8,12 +8,11 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
-import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -42,7 +41,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 
-        if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersionId())) {
+        if (PersistableUtils.isNotNullOrTransient(getInformationResourceFileVersionId())) {
             setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
                     isCoverPageIncluded(), this, null, false));
         } else {
@@ -65,11 +64,11 @@ public class DownloadController extends AbstractDownloadController implements Pr
     })
     public String execute() {
         getSessionData().clearPassthroughParameters();
-        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
+        if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().debug("no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
         }
-        if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
+        if (PersistableUtils.isNotNullOrTransient(getInformationResourceId())) {
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
@@ -88,7 +87,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
     })
     public String downloadZipArchive() {
         getSessionData().clearPassthroughParameters();
-        if (Persistable.Base.isNullOrTransient(getInformationResource())) {
+        if (PersistableUtils.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(),

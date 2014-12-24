@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -26,6 +25,7 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -247,7 +247,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return null;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(transientPerson.getId())) {
+        if (PersistableUtils.isNotNullOrTransient(transientPerson.getId())) {
             if (getDao().sessionContains(transientPerson)) {
                 return transientPerson;
             }
@@ -294,7 +294,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return null;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(transientInstitution.getId())) {
+        if (PersistableUtils.isNotNullOrTransient(transientInstitution.getId())) {
             return getDao().find(Institution.class, transientInstitution.getId());
         }
 
@@ -387,7 +387,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Creator findAuthorityFromDuplicate(Creator dup) {
-        if (Persistable.Base.isNullOrTransient(dup) || !dup.isDuplicate()) {
+        if (PersistableUtils.isNullOrTransient(dup) || !dup.isDuplicate()) {
             return null;
         }
         if (dup instanceof Person) {
@@ -424,7 +424,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Long getCreatorViewCount(Creator creator) {
-        if (Persistable.Base.isNullOrTransient(creator)) {
+        if (PersistableUtils.isNullOrTransient(creator)) {
             return 0L;
         }
         return getDao().getCreatorViewCount(creator);

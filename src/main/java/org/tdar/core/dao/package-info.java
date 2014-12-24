@@ -470,10 +470,32 @@
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
                 query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
+                query = "select distinct dt, ds.title from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
+                        + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
+                        + " lower(ds.title) like :titleLookup and "
+                        + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
+                        + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
+                        + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and " 
+                        + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
+                        + "order by ds.title, dt.displayName"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,
+                query = "select distinct ont from Ontology ont left join ont.resourceCollections as rc"
+                        + " left join rc.parentIds parentId  "
+                        + "where ont.status='ACTIVE' and (:projectId=-1L or ont.project.id=:projectId) and "
+                        + " ont.title like :titleLookup and "
+                        + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
+                        + "(:categoryVariableId=-1L or ont.categoryVariable.id=:categoryVariableId) and "
+                        + "(:hasDatasets=false or ont.id in "
+                            + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
+                        + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
                 query = "from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
                 @org.hibernate.annotations.NamedQuery(
                         name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
                         query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true")})
+
 package org.tdar.core.dao;
 

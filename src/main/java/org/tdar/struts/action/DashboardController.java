@@ -19,7 +19,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.notification.UserNotification;
@@ -44,6 +43,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -154,8 +154,8 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
         getLogger().trace("accessible collections");
         getSharedResourceCollections().addAll(entityService.findAccessibleResourceCollections(getAuthenticatedUser()));
-        List<Long> collectionIds = Persistable.Base.extractIds(getAllResourceCollections());
-        collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
+        List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
+        collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
         getLogger().trace("reconcile tree1");
         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(), collectionIds);
         getLogger().trace("reconcile tree2");

@@ -29,7 +29,7 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.ReservedSearchParameters;
@@ -483,7 +483,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     @Autowired
-    XmlService xmlService;
+    SerializationService serializationService;
 
     private Map<String, Object> result = new HashMap<>();
 
@@ -503,7 +503,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
+        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {

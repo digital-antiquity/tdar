@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,6 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -26,10 +26,12 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.dao.resource.OntologyNodeDao;
+import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
-import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
+import org.tdar.struts.action.workspace.WorkspaceController;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -46,6 +48,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     private static final String TAXON_COL = "taxon";
     private static final String SPECIES_COMMON_NAME_COL = "species_common_name";
 
+    @Autowired
+    private OntologyNodeDao ontologyNodeDao;
+    
     @Test
     @Rollback
     public void testFilteredNodesSurviveHierarchy() throws Exception {
@@ -100,8 +105,10 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(gadidae);
         IntegrationColumn integrationColumn = new IntegrationColumn();
         integrationColumn.setFilteredOntologyNodes(Arrays.asList(pleuronectiformesOntologyNode, plaiceFlounderOntologyNode, paracanthopt));
-        integrationColumn.setOntologyNodesForSelect(new HashSet<OntologyNode>(Arrays.asList(pleuronectiformesOntologyNode, plaiceFlounderOntologyNode, gadidae,
-                paracanthopt)));
+        integrationColumn.buildNodeChildHierarchy(ontologyNodeDao);
+
+//        integrationColumn.setOntologyNodesForSelect(new HashSet<OntologyNode>(Arrays.asList(pleuronectiformesOntologyNode, plaiceFlounderOntologyNode, gadidae,
+//                paracanthopt)));
         // tests that the mapped ontology node is not aggregated up to pleuronectiformes
         for (String term : plaiceFlounderTerms) {
             assertEquals(plaiceFlounderOntologyNode.getDisplayName(),
@@ -208,9 +215,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
                 logger.trace("node: {} ", node);
                 if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {
-                    logger.trace("node: {} - {}", node, node.getColumnHasValueArray());
+                    logger.trace("node: {} - {}", node, node.getColumnHasValueMap());
                     boolean oneTrue = false;
-                    for (boolean val : node.getColumnHasValueArray()) {
+                    for (boolean val : node.getColumnHasValueMap().values()) {
                         if (val) {
                             oneTrue = true;
                             break;
@@ -280,15 +287,15 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         for (int i = 0; i < names.size(); i++) {
             Cell cell = row.getCell(i);
             if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                assertEquals((int)Double.parseDouble(row3[i]), (int)cell.getNumericCellValue() );
+                assertEquals((int) Double.parseDouble(row3[i]), (int) cell.getNumericCellValue());
             } else {
                 assertEquals(row3[i], cell.getStringCellValue());
-                
+
             }
         }
 
         // assertions on descriptions too?
-        
+
         logger.info("hi, we're done here");
     }
 

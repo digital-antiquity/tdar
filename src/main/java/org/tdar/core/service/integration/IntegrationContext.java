@@ -1,12 +1,8 @@
-/**
- * $Id$
- * 
- * @author $Author$
- * @version $Revision$
- */
 package org.tdar.core.service.integration;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +32,8 @@ public class IntegrationContext implements Serializable {
     private Date dateCreated = new Date();
     private List<IntegrationColumn> integrationColumns;
     private List<DataTable> dataTables;
+    
+    private List<String> errorMessages = new ArrayList<>();
 
     public IntegrationContext() {
     }
@@ -105,6 +103,14 @@ public class IntegrationContext implements Serializable {
 
     public void setTempTable(DataTable tempTable) {
         this.tempTable = tempTable;
+    }
+    
+    public void setErrorMessages(List<String> messages) {
+        this.errorMessages = messages;
+    }
+
+    public List<String> getErrorMessages() {
+        return Collections.unmodifiableList(errorMessages);
     }
 
 }

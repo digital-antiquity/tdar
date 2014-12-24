@@ -11,7 +11,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
@@ -23,6 +22,7 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -127,21 +127,21 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     @Override
     public void validate() {
-        if (Persistable.Base.isTransient(from)) {
+        if (PersistableUtils.isTransient(from)) {
             addActionError(getText("emailController.from_not_found"));
         }
-        if (Persistable.Base.isTransient(to)) {
+        if (PersistableUtils.isTransient(to)) {
             addActionError(getText("emailController.to_not_found"));
         }
         if (StringUtils.isBlank(messageBody)) {
             addActionError(getText("emailController.no_message"));
         }
-        if (Persistable.Base.isNotNullOrTransient(resourceId) && Persistable.Base.isNullOrTransient(resource)) {
+        if (PersistableUtils.isNotNullOrTransient(resourceId) && PersistableUtils.isNullOrTransient(resource)) {
             addActionError(getText("emailController.no_resource"));
         }
         if (type == null) {
             addActionError(getText("emailController.no_type"));
-        } else if (getType().requiresResource() && Persistable.Base.isNullOrTransient(resource)) {
+        } else if (getType().requiresResource() && PersistableUtils.isNullOrTransient(resource)) {
             addActionError(getText("emailController.no_resource"));
         }
 

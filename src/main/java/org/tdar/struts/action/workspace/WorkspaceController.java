@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.workspace;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,14 +32,15 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
-import org.tdar.core.service.integration.IntegrationColumn.ColumnType;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -75,7 +76,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
     private transient PersonalFilestoreService filestoreService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     private List<Resource> bookmarkedResources;
     private Set<Ontology> sharedOntologies;
@@ -182,10 +183,20 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         return SUCCESS;
     }
 
+    @Actions({
+        @Action("filter-ng"),
+        @Action("filter-ang"),
+        @Action("select-columns-ng")
+    })
+
+    public String filterPartDeux() {
+        return "success";
+    }
+
     public String getIntegrationColumnData() {
         String data = "null";
         try {
-            data = xmlService.convertToJson(getIntegrationColumns());
+            data = serializationService.convertToJson(getIntegrationColumns());
         } catch (IOException e) {
             getLogger().warn("failed to generate integration column json", e);
         }
@@ -209,7 +220,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         } catch (Exception e) {
             getLogger().error("could not serialize to XML", e);
         }
-
+        getLogger().trace(integrationContextXml);
         try {
             // ADD ERROR CHECKING LOGIC
 

@@ -1,14 +1,9 @@
 package org.tdar.core.bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -22,18 +17,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -84,7 +76,7 @@ public interface Persistable extends Serializable {
          */
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @JsonView(JsonLookupFilter.class)
+        @JsonView({JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class})
         private Long id = -1L;
 
         // @XmlTransient
@@ -95,11 +87,6 @@ public interface Persistable extends Serializable {
             return id;
         }
 
-        // @XmlID
-        // public String getXmlId() {
-        // return getId().toString();
-        // }
-
         @Override
         public void setId(Long id) {
             this.id = id;
@@ -107,7 +94,7 @@ public interface Persistable extends Serializable {
 
         @XmlTransient
         public boolean isTransient() {
-            return isTransient(this);
+            return PersistableUtils.isTransient(this);
         }
 
         /**
@@ -124,12 +111,10 @@ public interface Persistable extends Serializable {
                 return true;
             }
             if ((object instanceof Persistable) && getClass().isInstance(object)) {
-                return isEqual(this, getClass().cast(object));
+                return PersistableUtils.isEqual(this, getClass().cast(object));
             }
             return false;
         }
-
-        // private transient int hashCode = -1;
 
         /**
          * Returns a sensible hashCode() for persisted objects. For transient/unsaved objects, uses
@@ -138,7 +123,7 @@ public interface Persistable extends Serializable {
         @Override
         public int hashCode() {
             Logger logger = LoggerFactory.getLogger(getClass());
-            int hashCode = toHashCode(this);
+            int hashCode = PersistableUtils.toHashCode(this);
             if (logger.isTraceEnabled()) {
                 Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
                 logger.trace("setting hashCode to {} ({}) {}", obj);
@@ -146,102 +131,6 @@ public interface Persistable extends Serializable {
             return hashCode;
         }
 
-        /**
-         * Should only be invoked after performing basic checks within your equals(Object) method to ensure that it's not null and equivalent types.
-         * 
-         * Returns true if
-         * <ol>
-         * <li>the two ids for both persistables are equal OR
-         * <li>each element in the class specific List returned by getEqualityFields() are equal
-         * </ol>
-         * 
-         * NOTE: if the two ids for both persistables are equal, the rest of the equality fields *should* also be equal, otherwise
-         * we will run into problems with hashCode().
-         * 
-         * Returns false otherwise.
-         * 
-         * @param <T>
-         * @param a
-         * @param b
-         * @return
-         */
-        public static boolean isEqual(Persistable a, Persistable b) {
-            // null is never equal to anything
-            if (a == null) {
-                LoggerFactory.getLogger(Persistable.class).trace("false b/c 'a' is null");
-                return false;
-            }
-            Logger logger = LoggerFactory.getLogger(a.getClass());
-            if (b == null) {
-                logger.trace("false b/c 'b' is null");
-                return false;
-            }
-
-            // objects that are the same are equal
-            if (a == b) {
-                logger.trace("object equality");
-                return true;
-            }
-
-            /*
-             * Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
-             * eg: AdvancedSearchControllerITCase.testResourceCreatorPerson:
-             * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class
-             * org.tdar.core.bean.resource.Document_$$_javassist_62
-             */
-            if (!(a.getClass().isAssignableFrom(b.getClass()) || b.getClass().isAssignableFrom(a.getClass()))) {
-                logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
-                return false;
-            }
-
-            EqualsBuilder equalsBuilder = new EqualsBuilder();
-
-            if (a.getEqualityFields().isEmpty()) {
-                if (isTransient(a) || isTransient(b)) {
-                    return false;
-                } else {
-                    equalsBuilder.append(a.getId(), b.getId());
-                }
-            } else {
-                Object[] selfEqualityFields = a.getEqualityFields().toArray();
-                Object[] candidateEqualityFields = b.getEqualityFields().toArray();
-                logger.trace("comparing equality fields {} != {} ", selfEqualityFields, candidateEqualityFields);
-                equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
-            }
-
-            return equalsBuilder.isEquals();
-        }
-
-        public static <P extends Persistable> Map<Long, P> createIdMap(Collection<P> items) {
-            Map<Long, P> map = new HashMap<>();
-            for (P item : items) {
-                if (item == null) {
-                    continue;
-                }
-                map.put(item.getId(), item);
-            }
-            return map;
-        }
-
-        public static int toHashCode(Persistable persistable) {
-            // since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
-            if (persistable == null) {
-                return 0;
-            }
-            HashCodeBuilder builder = new HashCodeBuilder(23, 37);
-
-            if (CollectionUtils.isEmpty(persistable.getEqualityFields())) {
-                if (isTransient(persistable)) {
-                    return System.identityHashCode(persistable);
-                } else {
-                    builder.append(persistable.getId());
-                }
-            } else {
-                builder.append(persistable.getEqualityFields().toArray());
-            }
-
-            return builder.toHashCode();
-        }
 
         /**
          * By default, base the hashcode off of object's inherent hashcode.
@@ -251,136 +140,6 @@ public interface Persistable extends Serializable {
         public List<?> getEqualityFields() {
             return Collections.emptyList();
         }
-
-        /*
-         * Adds the contents of the collection to the set, and removes anything was not in the incoming collections (intersection) + add all
-         * 
-         * @return boolean representing whether the exiting set was changed in any way
-         */
-        public static <C> boolean reconcileSet(Set<C> existing, Collection<C> incoming) {
-            if (existing == null) {
-                throw new TdarRuntimeException("persistable.collection_null");
-            }
-            if (incoming == null) {
-                if (!CollectionUtils.isEmpty(existing)) {
-                    existing.clear();
-                    return true;
-                }
-                return false;
-            }
-
-            boolean changedRetain = existing.retainAll(incoming);
-            boolean changedAddAll = existing.addAll(incoming);
-
-            return (changedRetain || changedAddAll);
-        }
-
-        public static boolean isNotTransient(Persistable persistable) {
-            return !isTransient(persistable);
-        }
-
-        public static boolean isNotNullOrTransient(Persistable persistable) {
-            return !isNullOrTransient(persistable);
-        }
-
-        public static boolean isNotNullOrTransient(Number persistable) {
-            return !isNullOrTransient(persistable);
-        }
-
-        public static boolean isTransient(Persistable persistable) {
-            // object==primative only works for certain primative values (see http://stackoverflow.com/a/3815760/103814)
-            return (persistable == null) || isNullOrTransient(persistable.getId());
-        }
-
-        public static boolean isNullOrTransient(Persistable persistable) {
-            return (persistable == null) || isTransient(persistable);
-        }
-
-        public static boolean isNullOrTransient(Number val) {
-            return (val == null) || (val.longValue() == -1L);
-        }
-
-        public static <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
-            List<Long> ids = new ArrayList<>();
-            for (T persistable : persistables) {
-                if (persistable != null) {
-                    ids.add(persistable.getId());
-                } else {
-                    ids.add(null);
-                }
-            }
-            return ids;
-        }
-
-        public static <T extends Persistable> List<Long> extractIds(Collection<T> persistables, int max) {
-            List<Long> ids = new ArrayList<>();
-            int count = 0;
-            for (T persistable : persistables) {
-                if (persistable != null) {
-                    ids.add(persistable.getId());
-                } else {
-                    ids.add(null);
-                }
-                count++;
-                if (count == max) {
-                    break;
-                }
-            }
-            return ids;
-        }
-
-        public static long divideByRoundUp(Number number1, Number number2) {
-            return (long) Math.ceil(divideBy(number1, number2));
-        }
-
-        public static long divideByRoundDown(Number number1, Number number2) {
-            return (long) Math.floor(divideBy(number1, number2));
-        }
-
-        public static double divideBy(Number number1, Number number2) {
-            double n1 = 0;
-            double n2 = 0;
-            if (number1 != null) {
-                n1 = number1.doubleValue();
-            }
-            if (number2 != null) {
-                n2 = number2.doubleValue();
-            }
-            return n1 / n2;
-        }
-
-        /**
-         * Sort @link Updatable by their updated date.
-         * 
-         * @param resourcesToEvaluate
-         */
-        public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {
-            Collections.sort(resourcesToEvaluate, new Comparator<T>() {
-
-                @Override
-                public int compare(T o1, T o2) {
-                    return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
-                }
-            });
-
-        }
-
-        /**
-         * Sort @link Updatable by their created date.
-         * 
-         * @param resourcesToEvaluate
-         */
-        public static <T extends Updatable> void sortByCreatedDate(List<T> resourcesToEvaluate) {
-            Collections.sort(resourcesToEvaluate, new Comparator<T>() {
-
-                @Override
-                public int compare(T o1, T o2) {
-                    return ObjectUtils.compare(o1.getDateCreated(), o2.getDateCreated());
-                }
-            });
-
-        }
-
     }
 
     @MappedSuperclass

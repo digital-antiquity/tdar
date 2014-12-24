@@ -12,18 +12,18 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -51,7 +51,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
     private ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Action(value = ADMIN, results = {
             @Result(name = SUCCESS, location = "../resource/admin.ftl")
@@ -64,7 +64,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
 
     @Override
     public void prepare() throws Exception {
-        if (Persistable.Base.isNotNullOrTransient(getId())) {
+        if (PersistableUtils.isNotNullOrTransient(getId())) {
             setResource(resourceService.find(getId()));
         } else {
             addActionError(getText("resourceAdminController.valid_resource_required"));

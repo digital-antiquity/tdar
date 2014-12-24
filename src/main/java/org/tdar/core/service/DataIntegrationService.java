@@ -85,7 +85,7 @@ public class DataIntegrationService {
     private OntologyNodeDao ontologyNodeDao;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     public void setTdarDataImportDatabase(TargetDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
@@ -134,7 +134,8 @@ public class DataIntegrationService {
         // for each of the integration columns, grab the unique set of all children within an ontology
 
         // that is, even if child is not selected, should get all children for query and pull up
-        integrationColumn.setOntologyNodesForSelect(ontologyNodeDao.getAllChildren(filteredOntologyNodes));
+        
+        integrationColumn.buildNodeChildHierarchy(ontologyNodeDao);
 
         logger.debug("after: {} - {}", integrationColumn, filteredOntologyNodes);
         logger.info("integration column: {}", integrationColumn);
@@ -150,7 +151,7 @@ public class DataIntegrationService {
      */
     public String serializeIntegrationContext(List<IntegrationColumn> integrationColumns, TdarUser creator) throws Exception {
         StringWriter sw = new StringWriter();
-        xmlService.convertToXML(new IntegrationContext(creator, integrationColumns), sw);
+        serializationService.convertToXML(new IntegrationContext(creator, integrationColumns), sw);
         return sw.toString();
     }
 
@@ -351,6 +352,74 @@ public class DataIntegrationService {
         }
 
         return allOntologies;
+    }
+
+    @Transactional(readOnly = false)
+    public void getColumnDetails(IntegrationColumn integrationColumn) {
+        // rehydrate all of the resources being passed in, we just had empty beans with ids
+        integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
+        integrationColumn.setColumns(genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class));
+
+        // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
+        for (DataTableColumn column : integrationColumn.getColumns()) {
+            logger.info("{} ({})", column, column.getDefaultOntology());
+            logger.info("{} ({})", column, column.getDefaultCodingSheet());
+            updateMappedCodingRules(column);
+        }
+    }
+
+    /**
+     * Compute the node participation for the DataTableColumns described by the specified list of ID's. The method
+     * returns the results in a map of (flattened) OntologyNode lists by DataTableColumn.
+     *
+     * @param dataTableColumnIds
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Map<DataTableColumn, List<OntologyNode>> getNodeParticipationByColumn(List<Long> dataTableColumnIds) {
+        Map<DataTableColumn, List<OntologyNode>> nodesByColumn = new HashMap<>();
+        Map<Ontology, ArrayList<DataTableColumn>> columnsByOntology = new HashMap<>();
+
+        // First, get a set of distinct ontologies
+        List<DataTableColumn> dataTableColumns = genericDao.findAll(DataTableColumn.class, dataTableColumnIds);
+
+        for (DataTableColumn dataTableColumn : dataTableColumns) {
+            nodesByColumn.put(dataTableColumn, new ArrayList<OntologyNode>());
+            Ontology mappedOntology = dataTableColumn.getDefaultOntology();
+
+            if (mappedOntology == null) {
+                continue;
+            }
+                
+            ArrayList<DataTableColumn> columns = columnsByOntology.get(mappedOntology);
+            if (columns == null) {
+                columns = new ArrayList<>();
+                columnsByOntology.put(mappedOntology, columns);
+            }
+            columns.add(dataTableColumn);
+        }
+
+        // so now we can start making Integration Columns.
+        List<IntegrationColumn> integrationColumns = new ArrayList<>();
+        for (Ontology ontology : columnsByOntology.keySet()) {
+            logger.debug("ontology: {}", ontology);
+            IntegrationColumn integrationColumn = new IntegrationColumn(ontology, columnsByOntology.get(ontology));
+            getColumnDetails(integrationColumn);
+            integrationColumns.add(integrationColumn);
+
+            // Basically we are transposing flattened node list; Instead of a list of nodes with column presence info,
+            // we are making a map of columns with node presence info.
+            for (OntologyNode node : integrationColumn.getFlattenedOntologyNodeList()) {
+                Map<DataTableColumn, Boolean> columnHasValueMap = node.getColumnHasValueMap();
+                for (DataTableColumn column : integrationColumn.getColumns()) {
+                    if (columnHasValueMap.containsKey(column) && columnHasValueMap.get(column) == Boolean.TRUE) {
+                        List<OntologyNode> ontologyNodes = nodesByColumn.get(column);
+                        ontologyNodes.add(node);
+                    }
+                }
+            }
+        }
+        return nodesByColumn;
     }
 
     @Transactional

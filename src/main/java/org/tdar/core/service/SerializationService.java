@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -48,6 +47,7 @@ import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
@@ -75,7 +75,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * class to help with marshalling and unmarshalling of resources
  */
 @Service
-public class XmlService {
+public class SerializationService {
 
     private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
     private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
@@ -104,7 +104,7 @@ public class XmlService {
 
     XMLFilestoreLogger xmlFilestoreLogger;
 
-    public XmlService() throws ClassNotFoundException {
+    public SerializationService() throws ClassNotFoundException {
         xmlFilestoreLogger = new XMLFilestoreLogger();
     }
 
@@ -166,13 +166,7 @@ public class XmlService {
      */
     @Transactional
     public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-        mapper.registerModules(new JaxbAnnotationModule());
-        Hibernate4Module hibernate4Module = new Hibernate4Module();
-        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-        mapper.registerModules(hibernate4Module);
+        ObjectMapper mapper = initializeObjectMapper();
         ObjectWriter objectWriter = mapper.writer();
         
         if (view != null) {
@@ -180,6 +174,23 @@ public class XmlService {
             objectWriter = mapper.writerWithView(view);
         }
         objectWriter.writeValue(writer, object);
+    }
+
+    public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
+        ObjectMapper mapper = initializeObjectMapper();
+        return mapper.readValue(json, cls);
+    }
+    
+    private ObjectMapper initializeObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        mapper.registerModules(new JaxbAnnotationModule());
+        Hibernate4Module hibernate4Module = new Hibernate4Module();
+        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+        mapper.registerModules(hibernate4Module);
+        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
+        return mapper;
     }
 
     /**
@@ -287,7 +298,7 @@ public class XmlService {
         Object toReturn = unmarshaller.unmarshal(new StringReader(StringUtils.join(lines, "\r\n")));// , new DefaultHandler());
 
         if (errors.size() > 0) {
-            throw new JaxbParsingException(MessageHelper.getMessage("xmlService.could_not_parse"), errors);
+            throw new JaxbParsingException(MessageHelper.getMessage("serializationService.could_not_parse"), errors);
         }
 
         return toReturn;
@@ -313,7 +324,7 @@ public class XmlService {
                 break;
         }
         if (rdf == null) {
-            throw new TdarRecoverableRuntimeException("xmlService.cannot_determine_creator");
+            throw new TdarRecoverableRuntimeException("serializationService.cannot_determine_creator");
         }
 
         for (LogPart part : log.getCollaboratorLogPart()) {
@@ -381,7 +392,7 @@ public class XmlService {
         person_.addProperty(FOAF.family_name, person.getLastName());
         person_.addProperty(RDFS.seeAlso, String.format(S_BROWSE_CREATORS_S_RDF, baseUrl, person.getId()));
         Institution institution = person.getInstitution();
-        if (Persistable.Base.isNotNullOrTransient(institution)) {
+        if (PersistableUtils.isNotNullOrTransient(institution)) {
             person_.addProperty(FOAF.member, addInstitution(model, baseUrl, institution));
         }
         return person_;

@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -47,7 +47,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             if (getFieldValues().get(i) == null) {
                 continue;
             }
-            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
+            if (PersistableUtils.isNotNullOrTransient(getFieldValues().get(i))) {
                 ids.add(getFieldValues().get(i).getId());
             } else if (StringUtils.isNotBlank(getFieldValues().get(i).getLabel())) {
                 labels.add(getFieldValues().get(i).getLabel());

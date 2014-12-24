@@ -17,7 +17,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
@@ -42,7 +42,7 @@ public class WorkflowContextService {
     @Autowired
     private GenericDao genericDao;
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private DatasetService datasetService;
@@ -169,7 +169,7 @@ public class WorkflowContextService {
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
-        ctx.setXmlService(xmlService);
+        ctx.setSerializationService(serializationService);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {
             if (logger.isTraceEnabled()) {

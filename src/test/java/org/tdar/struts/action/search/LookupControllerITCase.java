@@ -18,7 +18,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -39,6 +38,7 @@ import org.tdar.struts.action.lookup.PersonLookupAction;
 import org.tdar.struts.action.lookup.ResourceAnnotationKeyLookupAction;
 import org.tdar.struts.action.lookup.ResourceLookupAction;
 import org.tdar.struts.action.project.ProjectController;
+import org.tdar.utils.PersistableUtils;
 
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
@@ -81,7 +81,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setPermission(GeneralPermissions.MODIFY_METADATA);
         controller.lookupResource();
         logger.debug("results:{}", controller.getResults());
-        List<Long> ids = Persistable.Base.extractIds(controller.getResults());
+        List<Long> ids = PersistableUtils.extractIds(controller.getResults());
 
         controller = generateNewController(ResourceLookupAction.class);
         init(controller, getAdminUser());
@@ -90,7 +90,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setPermission(GeneralPermissions.MODIFY_METADATA);
         controller.lookupResource();
         logger.debug("results:{}", controller.getResults());
-        List<Long> ids2 = Persistable.Base.extractIds(controller.getResults());
+        List<Long> ids2 = PersistableUtils.extractIds(controller.getResults());
         Assert.assertArrayEquals(ids.toArray(), ids2.toArray());
     }
 
@@ -250,7 +250,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
             genericService.synchronize();
 
         }
-        List<Long> sheetIds = Persistable.Base.extractIds(sheets);
+        List<Long> sheetIds = PersistableUtils.extractIds(sheets);
         sheets = null;
         genericService.synchronize();
         genericService.findAll(CodingSheet.class);
@@ -261,7 +261,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.lookupResource();
         logger.info("{}", controller.getResults());
         logger.info("{}", sheetIds);
-        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
+        assertTrue(PersistableUtils.extractIds(controller.getResults()).containsAll(sheetIds));
 
         controller = generateNewInitializedController(ResourceLookupAction.class, getBasicUser());
         controller.setRecordsPerPage(10);
@@ -270,7 +270,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setSortCategoryId(85l);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
+        assertTrue(PersistableUtils.extractIds(controller.getResults()).containsAll(sheetIds));
         Resource col = ((Resource) controller.getResults().get(0));
         assertEquals("Taxonomic Level 1", col.getName());
 
@@ -280,7 +280,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setSortCategoryId(85l);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
+        assertTrue(PersistableUtils.extractIds(controller.getResults()).containsAll(sheetIds));
         genericService.synchronize();
 
     }

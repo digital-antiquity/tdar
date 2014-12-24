@@ -1,4 +1,4 @@
-package org.tdar.struts.action.api;
+package org.tdar.struts.action.api.ingest;
 
 import java.io.File;
 import java.io.InputStream;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
@@ -30,7 +29,7 @@ import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
@@ -44,7 +43,7 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 
 @SuppressWarnings("serial")
-@Namespace("/api")
+@Namespace("/api/ingest")
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -66,7 +65,7 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> processedFileNames;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
     @Autowired
     private transient ObfuscationService obfuscationService;
     @Autowired
@@ -91,21 +90,6 @@ public class APIController extends AuthenticationAware.Base {
         getLogger().info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
     }
 
-    @Action(value = "view", results = {
-            @Result(name = SUCCESS, type = "xmldocument") })
-    public String view() throws Exception {
-        if (Persistable.Base.isNotNullOrTransient(getId())) {
-            Resource resource = resourceService.find(getId());
-            if (!isAdministrator() && !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
-                obfuscationService.obfuscate(resource, getAuthenticatedUser());
-            }
-            logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            getXmlResultObject().setResult(resource);
-            return SUCCESS;
-        }
-        return INPUT;
-    }
-
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
@@ -122,7 +106,7 @@ public class APIController extends AuthenticationAware.Base {
         }
 
         try {
-            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
+            Resource incoming = (Resource) serializationService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
             xmlResultObject.setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
@@ -175,7 +159,7 @@ public class APIController extends AuthenticationAware.Base {
             getXmlResultObject().setStatus(code.toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
             xmlResultObject.setMessage(message);
-            getLogger().debug(xmlService.convertToXML(loadedRecord));
+            getLogger().debug(serializationService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
             message = "";

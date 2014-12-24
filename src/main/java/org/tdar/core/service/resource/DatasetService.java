@@ -34,8 +34,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
@@ -61,7 +59,7 @@ import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
@@ -71,6 +69,7 @@ import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -106,7 +105,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private ExcelService excelService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private DataTableDao dataTableDao;
@@ -498,7 +497,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public void logDataTableColumns(DataTable dataTable, String message, TdarUser authenticatedUser) {
         try {
             StringWriter writer = new StringWriter();
-            xmlService.convertToXML(dataTable, writer);
+            serializationService.convertToXML(dataTable, writer);
             resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString());
             getLogger().trace("{} - xml {}", message, writer);
         } catch (Exception e) {
@@ -678,7 +677,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         if (project == Project.NULL) {
             throw new TdarRecoverableRuntimeException("datasetService.no_project_specified");
         }
-        getDao().unmapAllColumnsInProject(project.getId(), Persistable.Base.extractIds(columns));
+        getDao().unmapAllColumnsInProject(project.getId(), PersistableUtils.extractIds(columns));
         for (DataTableColumn column : columns) {
             getLogger().info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
@@ -719,7 +718,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         remapColumnsWithoutIndexing(columns, project);
-        if (Persistable.Base.isNotNullOrTransient(project) && project != Project.NULL) {
+        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL) {
             searchIndexService.indexProject(project);
         }
     }
@@ -770,7 +769,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             CodingSheet incomingCodingSheet = incomingColumn.getDefaultCodingSheet();
             CodingSheet existingCodingSheet = existingColumn.getDefaultCodingSheet();
             Ontology defaultOntology = null;
-            if (!Base.isNullOrTransient(incomingCodingSheet)) {
+            if (!PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 // load the full hibernate entity and set it back on the incoming column
                 incomingCodingSheet = getDao().find(CodingSheet.class, incomingCodingSheet.getId());
                 incomingColumn.setDefaultCodingSheet(incomingCodingSheet);
@@ -787,7 +786,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getLogger().debug("default ontology: {}", defaultOntology);
             getLogger().debug("incoming coding sheet: {}", incomingCodingSheet);
             incomingColumn.setDefaultOntology(defaultOntology);
-            if ((defaultOntology != null) && Base.isNullOrTransient(incomingCodingSheet)) {
+            if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
                         defaultOntology);
@@ -798,7 +797,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // incoming ontology or coding sheet from the web was not null but the column encoding type was set to something that
             // doesn't support either, we set it to null
             // incoming ontology or coding sheet is explicitly set to null
-            if (!Base.isNullOrTransient(defaultOntology)) {
+            if (!PersistableUtils.isNullOrTransient(defaultOntology)) {
                 if (incomingColumn.getColumnEncodingType().isSupportsOntology()) {
                     hasOntologies = true;
                 }

@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -53,6 +52,8 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
+import org.tdar.struts.action.workspace.WorkspaceController;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
@@ -201,7 +202,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         controller.setCodingRules(toSave);
         controller.saveValueOntologyNodeMapping();
 
-        Set<Long> idSet = Base.createIdMap(toSave).keySet();
+        Set<Long> idSet = PersistableUtils.createIdMap(toSave).keySet();
         for (Long toCheck : idSet) {
             CodingRule find = genericService.find(CodingRule.class, toCheck);
             assertNotNull(find.getOntologyNode());

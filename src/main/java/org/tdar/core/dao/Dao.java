@@ -250,6 +250,5 @@ public interface Dao<T> {
         public Class<P> getPersistentClass() {
             return persistentClass;
         }
-
     }
 }

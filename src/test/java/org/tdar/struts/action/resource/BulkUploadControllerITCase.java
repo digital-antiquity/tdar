@@ -53,7 +53,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -81,7 +81,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
-    XmlService xmlService;
+    SerializationService serializationService;
 
     @Test
     @Rollback
@@ -159,7 +159,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             ids = genericService.extractIds(resource.getSiteTypeKeywords());
             Collections.sort(ids);
             assertEquals(siteTypeKeywordIds, ids);
-            logger.debug(xmlService.convertToXML(resource));
+            logger.debug(serializationService.convertToXML(resource));
             assertEquals(1, resource.getResourceNotes().size());
             ResourceNote resourceNote = resource.getResourceNotes().iterator().next();
             assertEquals(note.getType(), resourceNote.getType());

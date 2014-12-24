@@ -9,13 +9,13 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -56,7 +56,7 @@ public class ThumbnailAction extends AbstractDownloadController implements Prepa
             return LOGIN;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
+        if (PersistableUtils.isNotNullOrTransient(getInformationResourceFileVersion())) {
             return SUCCESS;
         } else {
             return DOWNLOAD_ALL;
@@ -71,7 +71,7 @@ public class ThumbnailAction extends AbstractDownloadController implements Prepa
     })
     public String thumbnail() {
         getSessionData().clearPassthroughParameters();
-        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
+        if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
         }

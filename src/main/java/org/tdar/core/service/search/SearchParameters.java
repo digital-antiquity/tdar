@@ -45,6 +45,7 @@ import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.StringRange;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -315,10 +316,10 @@ public class SearchParameters {
                 getOperator(), filenames));
 
         if (creatorOwner != null) {
-            if (Persistable.Base.isNotNullOrTransient(creatorOwner.getPerson())) {
+            if (PersistableUtils.isNotNullOrTransient(creatorOwner.getPerson())) {
                 queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson()));
             }
-            if (Persistable.Base.isNotNullOrTransient(creatorOwner.getInstitution())) {
+            if (PersistableUtils.isNotNullOrTransient(creatorOwner.getInstitution())) {
                 queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution()));
             }
         }

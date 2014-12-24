@@ -19,7 +19,6 @@ import org.junit.Assert;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingItem;
@@ -55,6 +54,7 @@ import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -173,7 +173,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (resources != null) {
-            controller.getToAdd().addAll(Persistable.Base.extractIds(resources));
+            controller.getToAdd().addAll(PersistableUtils.extractIds(resources));
         }
 
         if (users != null) {
@@ -281,7 +281,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             return null;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(id)) {
+        if (PersistableUtils.isNotNullOrTransient(id)) {
             controller.setId(id);
         }
         controller.prepare();

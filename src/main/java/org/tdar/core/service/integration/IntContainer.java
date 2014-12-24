@@ -14,11 +14,11 @@ public class IntContainer {
     }
     
     public void increment() {
-        val = val +1;
+        val++;
     }
     
     public void add(int num) {
-        val = val + num;
+        val += num;
     }
     
     @Override

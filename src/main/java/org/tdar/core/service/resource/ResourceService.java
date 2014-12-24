@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
@@ -62,10 +61,11 @@ import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -82,7 +82,7 @@ public class ResourceService extends GenericService {
     }
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient EntityService entityService;
@@ -277,7 +277,7 @@ public class ResourceService extends GenericService {
                     datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
                             FindOptions.FIND_FIRST_OR_CREATE));
         }
-        Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
+        PersistableUtils.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
     }
 
     @Transactional
@@ -323,7 +323,7 @@ public class ResourceService extends GenericService {
          */
 
         current.retainAll(incoming);
-        Map<Long, H> idMap = Persistable.Base.createIdMap(current);
+        Map<Long, H> idMap = PersistableUtils.createIdMap(current);
         if (CollectionUtils.isNotEmpty(incoming)) {
             logger.debug("Incoming Collection of {}s ({})  : {} ", new Object[] { cls.getSimpleName(), incoming.size(), incoming });
             Iterator<H> incomingIterator = incoming.iterator();
@@ -339,7 +339,7 @@ public class ResourceService extends GenericService {
                      * If we're not transient, compare the two beans on all of their local properties (non-recursive) -- if there are differences
                      * copy. otherwise, move on. Question -- it may be more work to compare than to just "copy"... is it worth it?
                      */
-                    if (Persistable.Base.isNotNullOrTransient(existing) && !EqualsBuilder.reflectionEquals(existing, hasResource_)) {
+                    if (PersistableUtils.isNotNullOrTransient(existing) && !EqualsBuilder.reflectionEquals(existing, hasResource_)) {
                         try {
                             logger.trace("copying bean properties for entry in existing set");
                             BeanUtils.copyProperties(existing, hasResource_);
@@ -495,7 +495,7 @@ public class ResourceService extends GenericService {
                 InformationResource informationResource = (InformationResource) resource;
                 informationResource.setDate(proxyInformationResource.getDate());
                 // force project into the session
-                if (Persistable.Base.isNotNullOrTransient(proxyInformationResource.getProject())) {
+                if (PersistableUtils.isNotNullOrTransient(proxyInformationResource.getProject())) {
                     Project project = proxyInformationResource.getProject();
                     // refresh(project);
                     informationResource.setProject(project);
@@ -644,7 +644,7 @@ public class ResourceService extends GenericService {
      */
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
-        if (Persistable.Base.isNullOrTransient(resource)) {
+        if (PersistableUtils.isNullOrTransient(resource)) {
             return Collections.emptyList();
         }
         return datasetDao.getLogEntriesForResource(resource);

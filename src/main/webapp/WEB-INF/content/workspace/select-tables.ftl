@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-
     <#macro listDatasets datasetList>
     <table class="tableFormat table">
         <thead>
@@ -102,9 +101,18 @@
 </head>
 
 <body>
-<div class="glide">
-    <h1>Data Integration</h1>
+<h1>Data Integration</h1>
+<div class="well">
+    <p>
+        Please click the link below to access the new Dataset Integration UI  (currently under development).
+    </p>
+        <a href="integrate">New Integration UI</a>
 
+</div>
+
+
+
+<div class="glide">
     <div class="row">
         <#if (bookmarkedDataTables)?? && !bookmarkedDataTables.empty >
             <div class="span12">

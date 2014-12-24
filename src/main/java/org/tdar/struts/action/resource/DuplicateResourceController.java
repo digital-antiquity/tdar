@@ -7,12 +7,12 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -82,7 +82,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
 
     @Override
     public void validate() {
-        if (Persistable.Base.isNullOrTransient(id)) {
+        if (PersistableUtils.isNullOrTransient(id)) {
             addFieldError("id", getText("duplicateResourceController.id_invalid"));
         }
 

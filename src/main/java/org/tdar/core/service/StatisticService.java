@@ -13,7 +13,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.ResourceType;
@@ -27,6 +26,7 @@ import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 import com.ibm.icu.util.GregorianCalendar;
 import com.opensymphony.xwork2.TextProvider;
@@ -167,10 +167,10 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
         Set<Long> ids = new HashSet<>();
         if (collection != null && CollectionUtils.isNotEmpty(collection.getResources())) {
-            ids.addAll(Persistable.Base.extractIds(collection.getResources()));
+            ids.addAll(PersistableUtils.extractIds(collection.getResources()));
             for (ResourceCollection child : resourceCollectionDao.getAllChildCollections(collection)) {
                 if (child != null && CollectionUtils.isNotEmpty(child.getResources())) {
-                    ids.addAll(Persistable.Base.extractIds(child.getResources()));
+                    ids.addAll(PersistableUtils.extractIds(child.getResources()));
                 }
             }
         }
@@ -184,7 +184,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     public StatsResultObject getStatsForAccount(Account account, TextProvider provider, DateGranularity granularity) {
         Set<Long> ids = new HashSet<>();
         if (account != null && CollectionUtils.isNotEmpty(account.getResources())) {
-            ids.addAll(Persistable.Base.extractIds(account.getResources()));
+            ids.addAll(PersistableUtils.extractIds(account.getResources()));
         }
         if (CollectionUtils.isNotEmpty(ids)) {
             return getStats(ids, provider, granularity);
