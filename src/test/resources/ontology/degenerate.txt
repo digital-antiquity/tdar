@@ -1,0 +1,18 @@
+Parent
+	First Child
+		First Child's Child
+		First Child's Second Child
+		First Child's Child
+
+	Second Child
+
+	Third Child
+		Third Child's Child
+		Third Child's Child
+
+	Fourth Child
+				Fourth Child's Degenerate Child
+		Fourth Child's Nondegenerate Child
+
+Second Root Parent
+		Second Root Parent's Degenerate Child
