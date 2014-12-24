@@ -198,5 +198,20 @@
 			<column name="json_data" type="clob" />
 		</createTable>
 	</changeSet>
+	
+	<changeSet id="munsell-12-feature-integration-ko" author="alee">
+		<comment>adding fields to data integration workflow entity</comment>
+		<addColumn tableName="data_integration_workflow">
+            <column name='date_created' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='last_updated' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='version' type='int4'>
+                <constraints nullable='false' />
+            </column>
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>

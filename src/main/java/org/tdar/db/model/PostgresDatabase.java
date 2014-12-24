@@ -760,7 +760,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 continue;
             }
             for (OntologyNode node : integrationColumn.getFilteredOntologyNodes()) {
-                DataTableColumn column = integrationColumn.getDataTableColumn();
+                DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
 
                 WhereCondition whereCond = new WhereCondition(column.getName());
                 Set<String> nodeSet = new HashSet<>();
@@ -812,7 +812,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 dtc.setDisplayName(column.getName());
                 dtc.setName(normalizeTableOrColumnNames(column.getName()));
                 tempTable.getDataTableColumns().add(dtc);
-                column.setDataTableColumn(dtc);
+                column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
                     DataTableColumn dtc2 = new DataTableColumn();

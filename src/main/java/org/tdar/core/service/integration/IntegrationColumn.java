@@ -51,7 +51,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     private Set<OntologyNode> ontologyNodesForSelect = new HashSet<>();
     private HashMap<OntologyNode, OntologyNode> parentMap = new HashMap<>();
     private Integer sequenceNumber;
-    private DataTableColumn dataTableColumn;
+    private DataTableColumn tempTableDataTableColumn;
     private ColumnType columnType;
 
     // true if NULLS should be included with the integration results
@@ -360,12 +360,12 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         flattenedOntologyNodeList = ontologyNodes;
     }
 
-    public DataTableColumn getDataTableColumn() {
-        return dataTableColumn;
+    public DataTableColumn getTempTableDataTableColumn() {
+        return tempTableDataTableColumn;
     }
 
-    public void setDataTableColumn(DataTableColumn dataTableColumn) {
-        this.dataTableColumn = dataTableColumn;
+    public void setTempTableDataTableColumn(DataTableColumn dataTableColumn) {
+        this.tempTableDataTableColumn = dataTableColumn;
     }
 
 }
