@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -43,7 +43,7 @@ public class CartBillingAccountController extends AbstractCartController {
     private transient InvoiceService invoiceService;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Override
     public void prepare() {

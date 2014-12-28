@@ -17,7 +17,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -42,7 +42,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
-    private transient AccountService cartService;
+    private transient BillingAccountService cartService;
 
     @Autowired
     private transient InvoiceService invoiceService;

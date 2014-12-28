@@ -18,7 +18,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.billing.BillingAccountController;
@@ -39,7 +39,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     // @Transactional(propagation=Propagation.REQUIRES_NEW, isolation=Isolation.SERIALIZABLE)
 
     @Autowired
-    AccountService accountService;
+    BillingAccountService accountService;
 
     public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();

@@ -46,11 +46,11 @@ import org.tdar.utils.PersistableUtils;
  * @version $Revision$
  */
 @Component
-public class AccountDao extends Dao.HibernateBase<Account> {
+public class BillingAccountDao extends Dao.HibernateBase<Account> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public AccountDao() {
+    public BillingAccountDao() {
         super(Account.class);
     }
 

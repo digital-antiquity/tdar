@@ -19,7 +19,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -56,7 +56,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     private Date expires = new DateTime().plusYears(1).toDate();
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
     @Autowired
     private transient AuthorizationService authorizationService;
 

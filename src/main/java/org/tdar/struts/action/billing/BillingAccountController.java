@@ -29,7 +29,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
@@ -71,7 +71,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private Date expires = new DateTime().plusYears(1).toDate();
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
     @Autowired
     private transient AuthorizationService authorizationService;
 

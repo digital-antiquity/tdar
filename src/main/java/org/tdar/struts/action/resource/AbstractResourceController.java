@@ -62,7 +62,7 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
@@ -125,7 +125,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private AccountService accountService;
+    private BillingAccountService accountService;
 
     @Autowired
     private InformationResourceService informationResourceService;

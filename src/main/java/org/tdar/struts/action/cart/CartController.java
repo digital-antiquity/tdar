@@ -16,7 +16,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -49,7 +49,7 @@ public class CartController extends AbstractCartController {
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Autowired
     private transient InvoiceService invoiceService;

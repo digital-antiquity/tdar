@@ -22,13 +22,13 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.AccountAdditionStatus;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 
 public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    AccountService accountService;
+    BillingAccountService accountService;
     
     @Autowired
     InvoiceService invoiceService;

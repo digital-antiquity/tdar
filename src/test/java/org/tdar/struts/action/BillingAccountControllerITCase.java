@@ -22,7 +22,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.billing.BillingAccountController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
@@ -32,7 +32,7 @@ import com.opensymphony.xwork2.Action;
 public class BillingAccountControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
-    AccountService accountService;
+    BillingAccountService accountService;
 
     @Test
     @Rollback

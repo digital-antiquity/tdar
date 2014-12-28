@@ -19,7 +19,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
@@ -39,7 +39,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     @Autowired
     private transient ObfuscationService obfuscationService;
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
     @Autowired
     private transient AuthenticationService authenticationService;
 

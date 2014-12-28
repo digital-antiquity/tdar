@@ -34,7 +34,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.struts.action.cart.CartApiController;
@@ -53,7 +53,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     NelNetPaymentDao dao;
 
     @Autowired
-    AccountService accountService;
+    BillingAccountService accountService;
 
     @Autowired
     private SendEmailProcess sendEmailProcess;

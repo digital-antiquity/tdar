@@ -30,7 +30,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -73,7 +73,7 @@ public class APIController extends AuthenticationAware.Base {
     @Autowired
     private transient ImportService importService;
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     private Resource importedRecord;
     private String message;

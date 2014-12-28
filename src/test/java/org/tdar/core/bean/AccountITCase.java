@@ -40,12 +40,12 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    AccountService accountService;
+    BillingAccountService accountService;
 
 
     @Test

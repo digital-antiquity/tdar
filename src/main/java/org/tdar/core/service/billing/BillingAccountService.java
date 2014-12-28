@@ -25,24 +25,16 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountAdditionStatus;
-import org.tdar.core.dao.AccountDao;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.utils.PersistableUtils;
 
-/**
- * FIXME: getting too big, needs refactoring. also rename to BillingService?
- * 
- */
 @Transactional(readOnly = true)
 @Service
-public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
-
-    @Autowired
-    private transient GenericDao genericDao;
+public class BillingAccountService extends ServiceInterface.TypedDaoBase<Account, BillingAccountDao> {
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -183,7 +175,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 logger.trace("account:{}   invoice{}   user:{}", account, invoice, user);
                 account.getInvoices().add(invoice);
             }
-            genericDao.saveOrUpdate(account);
+            getDao().saveOrUpdate(account);
         }
         return !unassignedInvoices.isEmpty();
     }
@@ -204,7 +196,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             account = new Account();
             account.setName("Generated account for " + user.getProperName());
             account.markUpdated(user);
-            genericDao.saveOrUpdate(account);
+            getDao().saveOrUpdate(account);
         }
         return account;
     }
@@ -286,7 +278,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         Coupon coupon = new Coupon();
         coupon.setDateCreated(new Date());
         coupon.setDateExpires(dateExpires);
-        genericDao.markWritableOnExistingSession(account);
+        getDao().markWritableOnExistingSession(account);
         if (PersistableUtils.isNotNullOrTransient(numberOfFiles)) {
             coupon.setNumberOfFiles(numberOfFiles);
         }
@@ -307,7 +299,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             logger.debug("{} < {} ", account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
             throw new TdarRecoverableRuntimeException("accountService.not_enough_space_or_files");
         }
-        genericDao.save(coupon);
+        getDao().save(coupon);
 
         StringBuilder code = new StringBuilder();
         code.append(coupon.getId()).append("-");
@@ -320,16 +312,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         coupon.setCode(code.toString());
         account.getCoupons().add(coupon);
         logger.info("adding coupon: {}  to account: {}", coupon, account);
-        genericDao.saveOrUpdate(account);
-        genericDao.saveOrUpdate(coupon);
+        getDao().saveOrUpdate(account);
+        getDao().saveOrUpdate(coupon);
         return coupon;
     }
 
     public void resetAccountTotalsToHaveOneFileLeft(Account account) {
-        genericDao.markWritableOnExistingSession(account);
+        getDao().markWritableOnExistingSession(account);
         getLogger().debug(">>>>> F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
         updateQuota(account, account.getResources());
-        genericDao.refresh(account);
+        getDao().refresh(account);
         getLogger().debug(":::: F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
         if (CollectionUtils.isNotEmpty(account.getInvoices()) && (account.getInvoices().size() == 1)) {
             Invoice invoice = account.getInvoices().iterator().next();
@@ -346,7 +338,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                     item.setQuantity(files.intValue());
                 }
             }
-            genericDao.saveOrUpdate(invoice.getItems());
+            getDao().saveOrUpdate(invoice.getItems());
         }
         updateQuota(account, account.getResources());
         getLogger().debug("<<<<<< F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
@@ -391,7 +383,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 selectedAccount = processBillingAccountChoice(invoice, invoice.getOwner());
             }
         } else {
-            selectedAccount = genericDao.find(Account.class, id);
+            selectedAccount = getDao().find(Account.class, id);
         }
         return selectedAccount;
     }
