@@ -14,23 +14,26 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 
 /**
  * Created by jim on 12/8/14.
  */
 @Entity
 @Table(name = "data_integration_workflow")
-public class DataIntegrationWorkflow extends Persistable.Base implements HasSubmitter {
+public class DataIntegrationWorkflow extends Persistable.Base implements HasSubmitter, Updatable {
 
     private static final long serialVersionUID = -3687383363452908687L;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = FieldLength.FIELD_LENGTH_255)
     private String title;
 
-    @Column(length=2047)
+    @Column(length = FieldLength.FIELD_LENGTH_2048)
     private String description;
 
     @Column(name = "json_data")
@@ -41,18 +44,18 @@ public class DataIntegrationWorkflow extends Persistable.Base implements HasSubm
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
-    
+
     @Column(name = "last_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date lastUpdated = new Date();
-    
+    private Date dateUpdated = new Date();
+
     @Column(nullable = false)
     private int version = 1;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "user_id")
     @NotNull
-    private TdarUser user;
+    private TdarUser submitter;
 
     public String getTitle() {
         return title;
@@ -83,26 +86,42 @@ public class DataIntegrationWorkflow extends Persistable.Base implements HasSubm
     }
 
     public TdarUser getSubmitter() {
-        return user;
+        return submitter;
     }
 
-    public TdarUser getUser() {
-        return user;
+    public void setSubmitter(TdarUser user) {
+        this.submitter = user;
     }
 
-    public void setUser(TdarUser user) {
-        this.user = user;
-    }
-
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated() {
-        this.lastUpdated = new Date();
-    }
-    
     public String toString() {
-        return String.format("%s: %s (%s)\nJSON: \t%s", title, user, dateCreated, jsonData); 
+        return String.format("%s: %s (%s)\nJSON: \t%s", title, submitter, getDateCreated(), jsonData);
+    }
+
+    @Override
+    public void markUpdated(TdarUser p) {
+        setSubmitter(p);
+        if (getDateCreated() == null) {
+            setDateCreated(new Date());
+        }
+        setDateUpdated(new Date());
+    }
+
+    @Override
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public void copyValuesFromJson(IntegrationWorkflowWrapper data, String json) {
+        this.setTitle(data.getTitle());
+        this.setDescription(data.getDescription());
+        this.setJsonData(json);
     }
 }

@@ -52,7 +52,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.action.workspace.WorkspaceController;
+import org.tdar.struts.action.workspace.LegacyWorkspaceController;
 import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
@@ -229,7 +229,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     public Object performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
             HashMap<Ontology, String[]> nodeSelectionMap) throws IOException {
-        WorkspaceController controller = generateNewInitializedController(WorkspaceController.class);
+        LegacyWorkspaceController controller = generateNewInitializedController(LegacyWorkspaceController.class);
         performIntegrationFiltering(integrationColumns, nodeSelectionMap);
         controller.setTableIds(tableIds);
         controller.setIntegrationColumns(integrationColumns);
@@ -242,7 +242,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         Long ticketId = controller.getTicketId();
         assertNotNull(ticketId);
         ModernIntegrationDataResult result = controller.getResult();
-        controller = generateNewInitializedController(WorkspaceController.class);
+        controller = generateNewInitializedController(LegacyWorkspaceController.class);
         controller.setTicketId(ticketId);
         controller.downloadIntegrationDataResults();
         InputStream integrationDataResultsInputStream = controller.getIntegrationDataResultsInputStream();

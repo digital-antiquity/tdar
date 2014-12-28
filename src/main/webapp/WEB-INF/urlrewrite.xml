@@ -220,13 +220,8 @@
 
     <rule>
         <from>^/workspace$</from>
-        <to>/workspace/select-tables</to>
+        <to>/workspace/list</to>
     </rule>
-    <rule>
-        <from>^/workspace/list$</from>
-        <to>/workspace/select-tables</to>
-    </rule>
-
 
     <!-- http://stackoverflow.com/questions/962729/is-it-possible-to-disable-jsessionid-in-tomcat-servlet -->
     <outbound-rule encodefirst="true">

@@ -476,7 +476,7 @@
                         + " lower(ds.title) like :titleLookup and "
                         + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
                         + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
-                        + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and " 
+                        + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
                         + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
                         + "order by ds.title, dt.displayName"),
         @org.hibernate.annotations.NamedQuery(
@@ -488,14 +488,17 @@
                         + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
                         + "(:categoryVariableId=-1L or ont.categoryVariable.id=:categoryVariableId) and "
                         + "(:hasDatasets=false or ont.id in "
-                            + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
+                        + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
                         + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
                 query = "from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
-                @org.hibernate.annotations.NamedQuery(
-                        name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
-                        query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true")})
-
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
+                query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.WORKFLOWS_BY_USER,
+                query = "from DataIntegrationWorkflow where submitter.id=:userId")
+})
 package org.tdar.core.dao;
 

@@ -17,16 +17,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.integration.IntegrationWorkflowService;
+import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
+import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.PersistableLoadingAction;
+import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 /**
  *
@@ -36,11 +45,15 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/workspace")
 @Component
 @Scope("prototype")
-public class AngularIntegrationAction extends AuthenticationAware.Base implements Preparable {
+public class AngularIntegrationAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
 
     private static final long serialVersionUID = -2356381511354062946L;
 
+    private int currentJsonVersion = 1;
     private Object categoryListJsonObject;
+
+    private Long id;
+    private DataIntegrationWorkflow workflow;
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -52,13 +65,27 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
     private transient ProjectService projectService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-
+    @Autowired
+    private transient IntegrationWorkflowService integrationWorkflowService;
 
     private List<Resource> fullUserProjects = new ArrayList<>();
     private Collection<ResourceCollection> allResourceCollections = new ArrayList<>();
 
+    private IntegrationWorkflowWrapper data;
+
     @Override
-    public void prepare() {
+    public void prepare() throws TdarActionException {
+        prepareAndLoad(this, RequestType.VIEW);
+        if (workflow != null) {
+            try {
+                data = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (data.getVersion() != currentJsonVersion) {
+                // do something
+            }
+        }
         prepareCategories();
         prepareProjectStuff();
         prepareCollections();
@@ -66,14 +93,17 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
 
     @Actions({
             @Action(value = "add", results = {
-                    @Result(name = "success", location = "edit.ftl")
+                    @Result(name = SUCCESS, location = "edit.ftl")
             }),
             @Action(value = "integrate", results = {
-                    @Result(name = "success", location = "ng-integrate.ftl")
+                    @Result(name = SUCCESS, location = "ng-integrate.ftl")
+            }),
+            @Action(value = "integrate/{id}", results = {
+                    @Result(name = SUCCESS, location = "ng-integrate.ftl")
             })
     })
     public String execute() {
-        return "success";
+        return SUCCESS;
     }
 
     private void prepareCategories() {
@@ -114,17 +144,19 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
         return json;
     }
 
+    public String getWorkflowJson() {
+        return workflow.getJsonData();
+    }
 
-
-     String getJson(Object obj) {
-         String json = "[]";
-         try {
-             json = serializationService.convertToJson(obj);
-         } catch (IOException e) {
-             addActionError(e.getMessage());
-         }
-         return json;
-     }
+    String getJson(Object obj) {
+        String json = "[]";
+        try {
+            json = serializationService.convertToJson(obj);
+        } catch (IOException e) {
+            addActionError(e.getMessage());
+        }
+        return json;
+    }
 
     public List<Resource> getFullUserProjects() {
         return fullUserProjects;
@@ -143,12 +175,61 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
         fullUserProjects = new ArrayList<>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), false));
         Collections.sort(fullUserProjects);
     }
+
     private void prepareCollections() {
         // For now, you just get flattened list of collections. Because.
         allResourceCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
     }
-    
+
     public String getNgApplicationName() {
         return "integrationApp";
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean authorize() throws TdarActionException {
+        return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
+    }
+
+    @Override
+    public DataIntegrationWorkflow getPersistable() {
+        return workflow;
+    }
+
+    @Override
+    public Class<DataIntegrationWorkflow> getPersistableClass() {
+        return DataIntegrationWorkflow.class;
+    }
+
+    @Override
+    public void setPersistable(DataIntegrationWorkflow persistable) {
+        this.workflow = persistable;
+    }
+
+    @Override
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.VIEW_ANYTHING;
+    }
+
+    public DataIntegrationWorkflow getWorkflow() {
+        return workflow;
+    }
+
+    public void setWorkflow(DataIntegrationWorkflow workflow) {
+        this.workflow = workflow;
+    }
+
+    @Override
+    public void validate() {
+        if (data != null) {
+            integrationWorkflowService.validateWorkflow(data);
+        }
     }
 }

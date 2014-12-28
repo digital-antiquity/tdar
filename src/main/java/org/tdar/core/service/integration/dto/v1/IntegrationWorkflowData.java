@@ -13,13 +13,14 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.service.GenericService;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
+import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.utils.PersistableUtils;
 
-public class IntegrationWorkflowData implements Serializable {
+public class IntegrationWorkflowData implements Serializable, IntegrationWorkflowWrapper {
 
     private static final long serialVersionUID = -4483089478294270554L;
 
@@ -28,6 +29,7 @@ public class IntegrationWorkflowData implements Serializable {
     private String title;
     private String description;
 
+    @Override
     public int getVersion() {
         return version;
     }
@@ -47,11 +49,9 @@ public class IntegrationWorkflowData implements Serializable {
      * @param service
      * @return
      */
-    public IntegrationContext toIntegrationContext(GenericService service) {
-        validateIntegrationColumns(service);
-        validateDatasets(service);
-        validateOntologies(service);
-        validateDataTables(service);
+    @Override
+    public IntegrationContext toIntegrationContext(GenericDao service) {
+        validate(service);
         integrationContext.setErrorMessages(errors);
         return integrationContext;
     }
@@ -61,7 +61,7 @@ public class IntegrationWorkflowData implements Serializable {
      * 
      * @param service
      */
-    public void validateIntegrationColumns(GenericService service) {
+    private void validateIntegrationColumns(GenericDao service) {
         ArrayList<IntegrationColumn> integrationColumns = new ArrayList<>();
         // FIXME: less efficient than having a master list of ids and pulling all entities in one fell swoop instead of iteratively querying
         for (IntegrationColumnDTO column : columns) {
@@ -83,12 +83,20 @@ public class IntegrationWorkflowData implements Serializable {
         integrationContext.setIntegrationColumns(integrationColumns);
     }
 
+    @Override
+    public void validate(GenericDao service) {
+        validateIntegrationColumns(service);
+        validateDatasets(service);
+        validateOntologies(service);
+        validateDataTables(service);
+    }
+    
     /**
      * FIXME: add error checking for missing ids
      * 
      * @param service
      */
-    public void validateDatasets(GenericService service) {
+    private void validateDatasets(GenericDao service) {
         List<Long> datasetIds = PersistableUtils.extractIds(datasets);
         List<Dataset> datasets_ = service.findAll(Dataset.class, datasetIds);
         // FIXME: no place to put the datasets on IntegrationContext currently
@@ -99,7 +107,7 @@ public class IntegrationWorkflowData implements Serializable {
      * 
      * @param service
      */
-    public void validateOntologies(GenericService service) {
+    private void validateOntologies(GenericDao service) {
         List<Long> ontologyIds = PersistableUtils.extractIds(ontologies);
         List<Ontology> ontologies_ = service.findAll(Ontology.class, ontologyIds);
         // FIXME: no place on IntegrationContext for all participating ontologies currently
@@ -110,16 +118,18 @@ public class IntegrationWorkflowData implements Serializable {
      * 
      * @param service
      */
-    public void validateDataTables(GenericService service) {
+    private void validateDataTables(GenericDao service) {
         List<Long> dataTableIds = PersistableUtils.extractIds(dataTables);
         List<DataTable> tables = service.findAll(DataTable.class, dataTableIds);
         integrationContext.setDataTables(tables);
     }
 
+    @Override
     public boolean isValid() {
         return errors.isEmpty();
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -128,6 +138,7 @@ public class IntegrationWorkflowData implements Serializable {
         this.title = title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
