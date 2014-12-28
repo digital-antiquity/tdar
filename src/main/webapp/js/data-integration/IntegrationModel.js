@@ -94,18 +94,18 @@
          */
         self.ontologies = [];
 
-        /** transient dataTable participation information, keyed by ontologyId -> Array<DatatableInfo> **/
-        self.mappedDatatables = {};
+        /** transient dataTable participation information, keyed by ontologyId -> Array<DataTableInfo> **/
+        self.mappedDataTables = {};
 
         /** transient ontology node participation information **/
         //self.ontologyParticipation = {};
 
         /**
-         * Compute, then cache,  the mappedDatatables structure.
+         * Compute, then cache,  the mappedDataTables structure.
          * @private
          */
-        function _buildMappedDatatables() {
-            self.mappedDatatables = self.getMappedDatatables();
+        function _buildMappedDataTables() {
+            self.mappedDataTables = self.getMappedDataTables();
         }
 
         /**
@@ -116,7 +116,7 @@
          * @returns {*}
          * @private
          */
-        self.getMappedDatatableColumns =  function _getMappedDatatableColumns(ontologyId) {
+        self.getMappedDataTableColumns =  function _getMappedDataTableColumns(ontologyId) {
             var mappedCols = self.dataTables.reduce(function(cols, dataTable){
                 return cols.concat(dataTable.dataTableColumns.filter(function(col){
                             return !!col.mappedOntologyId;
@@ -129,7 +129,7 @@
         };
 
 
-        self.getMappedDatatables = function() {
+        self.getMappedDataTables = function() {
             var mappedTables = {};
             _getSharedOntologyIds().forEach(function(ontologyId){
                 //list of maps
@@ -165,29 +165,29 @@
                 ontology: ontology,
                 nodeSelections: [],
                 isValidMapping: true,
-                selectedDatatableColumns: null
+                selectedDataTableColumns: null
             };
 
             //fixme: try to keep model devoid of angular conventions (angular excludes $-prefix when evaluating/copying objects)
             //initialize, or update,  the selected dataTable column selections.
-            col.$getSelectedDatatableColumns = function() {
-                if(this.selectedDatatableColumns === null) this.selectedDatatableColumns = [];
-                if(this.selectedDatatableColumns.length !== self.dataTables.length) {
+            col.$getSelectedDataTableColumns = function() {
+                if(this.selectedDataTableColumns === null) this.selectedDataTableColumns = [];
+                if(this.selectedDataTableColumns.length !== self.dataTables.length) {
                     //todo: if we're updating thie structure (e.g. adding a dataTable to integration workflow) try to retain the previous selections
 
-                    var mappedTables = self.getMappedDatatables()[ontology.id];
+                    var mappedTables = self.getMappedDataTables()[ontology.id];
                     if(!mappedTables) {
                         mappedTables = [];
                     }
 
-                    this.selectedDatatableColumns = mappedTables.map(function(dt){
+                    this.selectedDataTableColumns = mappedTables.map(function(dt){
                         if(!dt.compatCols.length) return null;
                         return dt.compatCols[0];
                     });
                 }
             };
             //init selected columns
-            col.$getSelectedDatatableColumns();
+            col.$getSelectedDataTableColumns();
 
             col.nodeSelections = ontology.nodes.map(function(node,i){
                 return {
@@ -203,7 +203,7 @@
 
         self.updateSharedOntologies = function _updateSharedOntologies(ontologies) {
             _setAddAll(self.ontologies, ontologies, "id");
-            _buildMappedDatatables();
+            _buildMappedDataTables();
         };
 
         /**
@@ -212,8 +212,8 @@
          * @param dataTables
          * @private
          */
-        self.removeDatatables = function _removeDatatables(dataTables) {
-            console.debug("removeDatatables::");
+        self.removeDataTables = function _removeDataTables(dataTables) {
+            console.debug("removeDataTables::");
 
             if(!dataTables) {return;}
             if(dataTables.length === 0){return;}
@@ -256,31 +256,31 @@
         }
 
         //update derived properties when user removes a dataTable
-        function _dataTablesRemoved(removedDatatables) {
+        function _dataTablesRemoved(removedDataTables) {
             console.debug("_dataTablesRemoved::");
-            var removedDatatableColumnIds = [];
-            removedDatatables.forEach(function(dataTable){
+            var removedDataTableColumnIds = [];
+            removedDataTables.forEach(function(dataTable){
                dataTable.dataTableColumns.forEach(function(column){
-                   removedDatatableColumnIds.push(column.id);
+                   removedDataTableColumnIds.push(column.id);
                });
             });
 
             //todo: if any integration columns, update selected dataTableColumn
             //todo: remove any paricipating dataTableColumns that belong to the dataTable we are removing
 
-            //clean up the mappedDatatables
-            for(var ontologyId in self.mappedDatatables) {
-                self.mappedDatatables[ontologyId] = self.mappedDatatables[ontologyId].filter(function(mappedDatatable){
-                    return removedDatatables.indexOf(mappedDatatable.dataTable) === -1;
+            //clean up the mappedDataTables
+            for(var ontologyId in self.mappedDataTables) {
+                self.mappedDataTables[ontologyId] = self.mappedDataTables[ontologyId].filter(function(mappedDataTable){
+                    return removedDataTables.indexOf(mappedDataTable.dataTable) === -1;
                 });
             }
 
             //update any affected integration output columns
             _getIntegrationColumns().forEach(function(integrationColumn) {
 
-                //clean up integrationColumn.selectedDatatableColumn
-                integrationColumn.selectedDatatableColumns = integrationColumn.selectedDatatableColumns.filter(function(dataTableColumn){
-                    return removedDatatableColumnIds.indexOf(dataTableColumn.id) === -1
+                //clean up integrationColumn.selectedDataTableColumn
+                integrationColumn.selectedDataTableColumns = integrationColumn.selectedDataTableColumns.filter(function(dataTableColumn){
+                    return removedDataTableColumnIds.indexOf(dataTableColumn.id) === -1
                 });
 
             });
@@ -288,22 +288,22 @@
             //if any display columns, remove all affected dataTableColumnSelections
             _getDisplayColumns().forEach(function(displayColumn){
                 displayColumn.dataTableColumnSelections = displayColumn.dataTableColumnSelections.filter(function(dataTableColumnSelection){
-                    return removedDatatables.indexOf(dataTableColumnSelection.dataTable) === -1;
+                    return removedDataTables.indexOf(dataTableColumnSelection.dataTable) === -1;
                 });
             });
 
             //if any display columns, remove all affected dataTableColumnSelections
             _getCountColumns().forEach(function(displayColumn){
                 displayColumn.dataTableColumnSelections = displayColumn.dataTableColumnSelections.filter(function(dataTableColumnSelection){
-                    return removedDatatables.indexOf(dataTableColumnSelection.dataTable) === -1;
+                    return removedDataTables.indexOf(dataTableColumnSelection.dataTable) === -1;
                 });
             });
 }
 
-        function _dataTablesAdded(addedDatatables) {
+        function _dataTablesAdded(addedDataTables) {
             console.debug("_dataTablesAdded::");
 
-            addedDatatables.forEach(function(dataTable) {
+            addedDataTables.forEach(function(dataTable) {
                 console.log(dataTable);
             });
             //Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the dataTables
@@ -314,12 +314,12 @@
             _sharedOntologiesUpdated(newSharedOntologyIds, currentSharedOntologyIds);
 
             //Step 2: account for integration columns that refer to still-shared ontologies
-            _buildMappedDatatables();
+            _buildMappedDataTables();
             //update selected dataTableColumns
-            _getIntegrationColumns().forEach(function(integrationColumn){integrationColumn.$getSelectedDatatableColumns()});
+            _getIntegrationColumns().forEach(function(integrationColumn){integrationColumn.$getSelectedDataTableColumns()});
 
-            //Step 3: account for display columns that need an additional selectedDatatableColumn entry.
-            //todo: need to update the selectedDatatables information for all displayColumns
+            //Step 3: account for display columns that need an additional selectedDataTableColumn entry.
+            //todo: need to update the selectedDataTables information for all displayColumns
 
         }
 
@@ -469,8 +469,8 @@
          */
         var _loadUpdatedParticipationInformation = function() {
             //find dataTableColumns that are missing transientNodeParticipation,  request it from dataService
-            var unprocessedDatatableColumns = self.getMappedDatatableColumns().filter(function(col){return !col.transientNodeParticipation});
-            var unprocessedIds  = unprocessedDatatableColumns.map(function(col) {return col.id});
+            var unprocessedDataTableColumns = self.getMappedDataTableColumns().filter(function(col){return !col.transientNodeParticipation});
+            var unprocessedIds  = unprocessedDataTableColumns.map(function(col) {return col.id});
             if(unprocessedIds.length === 0) { return}
 
             //todo: signal to the UI we are waiting on data for these columns
@@ -485,7 +485,7 @@
          * opposed to direct array manipulation.
          * @param dataTables
          */
-        self.addDatatables = function(dataTables) {
+        self.addDataTables = function(dataTables) {
             _setAddAll(self.dataTables, dataTables, "id");
             _dataTablesAdded(dataTables)
             _rebuildSharedOntologies();

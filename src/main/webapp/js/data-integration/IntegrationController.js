@@ -78,7 +78,7 @@
         self.addDatasets = function(dataTableIds) {
             if(dataTableIds.length === 0) return;
             dataService.loadTableDetails(dataTableIds).then(function(dataTables) {
-                self.integration.addDatatables(dataTables);
+                self.integration.addDataTables(dataTables);
             });
         };
 
@@ -132,7 +132,7 @@
         };
 
         self.removeSelectedDatasetClicked = function() {
-            integration.removeDatatables($scope.selectedDatatables);
+            integration.removeDataTables($scope.selectedDataTables);
         };
 
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {
@@ -154,10 +154,10 @@
         };
 
         $scope.lookupCompatibleColumns = function(id) {
-            return self.integration.mappedDatatables[id];
+            return self.integration.mappedDataTables[id];
             //FIXME: angular doesn't like my getter functions - apparently they cause endless loop of detected changes (or something?)
             //https://docs.angularjs.org/error/$rootScope/infdig
-            //return (self.integration.getMappedDatatables()[id]);
+            //return (self.integration.getMappedDataTables()[id]);
         };
 
         //FIXME: proper validation required
@@ -185,7 +185,7 @@
             var nodeSelections = integrationColumn.nodeSelections;
             nodeSelections.forEach(function(selectionInfo){
                 var ontologyNode = selectionInfo.node;
-                var mappedColumns = self.integration.getMappedDatatableColumns(integrationColumn.ontologyId)
+                var mappedColumns = self.integration.getMappedDataTableColumns(integrationColumn.ontologyId)
                 selectionInfo.selected = selectionInfo.selected ||  mappedColumns[criteria](function(dtc){
                     return self.integration.isNodePresent(dtc, ontologyNode)
                 });

@@ -22,7 +22,7 @@
                     dataTableColumns: []
             };
             
-            var tempList = column.selectedDatatableColumns;
+            var tempList = column.selectedDataTableColumns;
             if (tempList == undefined) {
                 tempList = [];
                 column.dataTableColumnSelections.forEach(function(col) {
@@ -154,7 +154,7 @@
                 console.log("starting...");
                 // Load the datasets and then use the results to build the columns out
                 self.loadTableDetails(dataTableIds).then(function(dataTables) {
-                    integration.addDatatables(dataTables);
+                    integration.addDataTables(dataTables);
                     json.columns.forEach(function(column){
                         var name = column.name;
                         if (name == undefined) {
@@ -231,7 +231,7 @@
             var configs = [];
 
             integration.ontologies.forEach(function(ontology){
-                var mappedCols = integration.getMappedDatatableColumns(ontology.id);
+                var mappedCols = integration.getMappedDataTableColumns(ontology.id);
                 var config = {};
                 var params = {
                     "integrationColumn.columnType": "INTEGRATION",
@@ -247,7 +247,7 @@
             $q.all(promises).then(function(arResults){
                 arResults.forEach(function(result, ontologyIdx){
                     var ontology = integration.ontologies[ontologyIdx];
-                    var mappedCols = integration.getMappedDatatableColumns(ontology.id);
+                    var mappedCols = integration.getMappedDataTableColumns(ontology.id);
                     integration.updateNodeParticipationInfo(ontology, mappedCols, result.data.flattenedNodes);
                 });
             });
@@ -257,7 +257,7 @@
          * Returns httpPromise of an object containing: dataTable objects corresponding to the specified array of
          * dataTableId's
          * @param dataTableIds
-         * @return HttpPromise futureDatatables:httppromise<{dataTables: Array<dataTable>,  sharedOntologies: Array<ontology>}>
+         * @return HttpPromise futureDataTables:httppromise<{dataTables: Array<dataTable>,  sharedOntologies: Array<ontology>}>
          *
          */
         this.loadTableDetails = function(dataTableIds) {
@@ -289,13 +289,13 @@
                     });
 
                     //now that we have everything in the cache, return the requested dataTables back to the caller
-                    futureData.resolve(self.getCachedDatatables(dataTableIds));
+                    futureData.resolve(self.getCachedDataTables(dataTableIds));
 
                 });
 
             } else {
                 //in the event that there's nothing to load,  callback immediately with the results
-                futureData.resolve(self.getCachedDatatables(dataTableIds));
+                futureData.resolve(self.getCachedDataTables(dataTableIds));
 
             }
 
@@ -379,7 +379,7 @@
         * available.
         * @param dataTableIds
         */
-       this.getCachedDatatables = function _getCachedDatatables(dataTableIds) {
+       this.getCachedDataTables = function _getCachedDataTables(dataTableIds) {
            return dataTableIds.map(function (id) {return dataTableCache.get(id);});
        };
 

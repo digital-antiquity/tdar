@@ -77,7 +77,7 @@
                                 <label>Selected Datasets</label>
                                 <div>
                                     <select size="5" class="input-block-level" multiple
-                                            ng-model="selecteddataTables"
+                                            ng-model="selectedDataTables"
                                             ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
                                 </div>
                                 <button type="button" class="btn input-block-level"
@@ -150,10 +150,10 @@
                                                         		{{cc.compatCols[0].displayName}}
                                                         		<!-- FIXME: this is "hidden", but is it even needed? -->
                                                         		<!-- FIXME: shouldn't this be the dataset name? -->
-	                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+	                                                            <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
 														    </div>
 														    <div ng-switch-default>
-	                                                            <select class="intcol" ng-model="outputColumn.selectedDatatableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+	                                                            <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
 														    </div>
                                                         	</div>
                                                         </th>
@@ -167,7 +167,7 @@
                                                                 <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="dataTableColumn in outputColumn.selectedDatatableColumns">
+                                                        <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
                                                             <div class="text-center">
                                                                 <i class="icon-ok" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
@@ -249,7 +249,7 @@
         <div ng-switch="col.type">
             <span ng-switch-when="integration">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
-                       value="{{dtc.id}}"  ng-repeat="dtc in col.selectedDatatableColumns">
+                       value="{{dtc.id}}"  ng-repeat="dtc in col.selectedDataTableColumns">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].filteredOntologyNodes.id"
                        value="{{nodeSelection.node.id}}" ng-repeat="nodeSelection in col.nodeSelections | filter: {selected:true}">
             </span>
