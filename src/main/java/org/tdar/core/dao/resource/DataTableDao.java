@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.Dao;
-import org.tdar.core.dao.integration.DatasetSearchFilter;
-import org.tdar.core.dao.resource.integration.DataTableProxy;
-import org.tdar.core.dao.resource.integration.IntegrationDataTableSearchResult;
+import org.tdar.core.dao.integration.DataTableProxy;
+import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
+import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 
 /**
  * $Id$

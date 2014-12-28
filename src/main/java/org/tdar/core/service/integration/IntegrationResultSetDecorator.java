@@ -13,14 +13,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.MessageHelper;
 
 /**
- * Wrapping an iterator for a ResultSet which is used by the workbook to write out the results.  This wrapper does two separate things:
+ * Wrapping an iterator for a ResultSet which is used by the workbook to write out the results. This wrapper does two separate things:
  * 1. it enables faceting or "pseudo" pivot table values for the result
- * 2. it extracts the previews of 10 rows.
+ * 2. it extracts the previews of XX rows.
  *
  * @author abrin
  *
@@ -30,11 +30,9 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
     public IntegrationResultSetDecorator(Iterator<Object[]> iterator, IntegrationContext context) {
         super(iterator);
         this.context = context;
-        this.tempTable = context.getTempTable();
     }
 
     private IntegrationContext context;
-    private DataTable tempTable;
     private Map<List<OntologyNode>, HashMap<String, IntContainer>> pivot = new HashMap<>();
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private Object[] row;
@@ -52,34 +50,37 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         return row;
     }
 
+    /**
+     * Reads a row from the result set into the excel workbook(s)
+     * 
+     * @throws SQLException
+     */
     private void readRowToExcel() throws SQLException {
         int resultSetPosition = 1;
         List<String> values = new ArrayList<>();
+        // the list off ontology nodes, in order becomes the "key" for the pivot table
         List<OntologyNode> ontologyNodes = new ArrayList<>();
+        // first column is the table name
         String tableName = (String) row[0];
         extractPreviewContents();
 
         int countVal = -1;
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
             // note SQL iterator is 1 based; java iterator is 0 based
-//            DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
-            String value = "";
-//            if (column != null) { // RAW VALUE
-                value = (String) row[resultSetPosition];
-                if (StringUtils.isBlank(value)) {
-                    value = MessageHelper.getMessage("database.null_empty_integration_value");
-                    row[resultSetPosition] = value;
-                }
-//            }
+            // DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
+            String value = initializeDefaultValue(resultSetPosition);
 
-
-             if (integrationColumn.isCountColumn()) {
-                 countVal = Integer.parseInt(value);
-             }
-
+            // add value to the output array
             values.add(value);
+
+            // set count value if needed
+            if (integrationColumn.isCountColumn()) {
+                countVal = Integer.parseInt(value);
+            }
+
+            // if it's an integration column, add mapped value as well
             if (integrationColumn.isIntegrationColumn()) { // MAPPED VALUE if not display column
-                resultSetPosition = resultSetPosition+1;
+                resultSetPosition = resultSetPosition + 1;
                 String mappedVal = (String) row[resultSetPosition];
 
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
@@ -98,8 +99,15 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             }
             resultSetPosition++;
         }
-        logger.trace("{}",StringUtils.join(row,"|"));
+        logger.trace("{}", StringUtils.join(row, "|"));
 
+        buildPivotDataForRow(ontologyNodes, tableName, countVal);
+    }
+
+    /**
+     * Take the list of ontology nodes, the table, and countValue if there is a count column and build a pivot table for the reuslts.
+     */
+    private void buildPivotDataForRow(List<OntologyNode> ontologyNodes, String tableName, int countVal) {
         HashMap<String, IntContainer> pivotVal = getPivot().get(ontologyNodes);
         if (pivotVal == null) {
             pivotVal = new HashMap<String, IntContainer>();
@@ -109,13 +117,23 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         if (groupCount == null) {
             groupCount = new IntContainer();
         }
+
         if (countVal == -1) {
             groupCount.increment();
         } else {
             groupCount.add(countVal);
         }
-        // logger.debug("{} - {} [{}]", tableName, values, groupCount);
         pivotVal.put(tableName, groupCount);
+    }
+
+    private String initializeDefaultValue(int resultSetPosition) {
+        String value;
+        value = (String) row[resultSetPosition];
+        if (StringUtils.isBlank(value)) {
+            value = MessageHelper.getMessage("database.null_empty_integration_value");
+            row[resultSetPosition] = value;
+        }
+        return value;
     }
 
     private void extractPreviewContents() {
@@ -124,8 +142,8 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         if (rowCount == null) {
             rowCount = 0;
         }
-        if (rowCount < 10) {
-            logger.trace("{} {}{}",row);
+        if (rowCount < TdarConfiguration.getIntegrationPreviewSizePerDataTable()) {
+            logger.trace("{} {}{}", row);
             getPreviewData().add(ArrayUtils.clone(row));
             previewCount.put(tableName, rowCount++);
         }

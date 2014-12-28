@@ -1,4 +1,4 @@
-package org.tdar.core.dao.resource.integration;
+package org.tdar.core.dao.integration;
 
 import static org.apache.commons.lang3.StringUtils.abbreviate;
 

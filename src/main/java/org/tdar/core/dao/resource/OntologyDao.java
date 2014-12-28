@@ -12,9 +12,9 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.integration.OntologySearchFilter;
-import org.tdar.core.dao.resource.integration.IntegrationOntologySearchResult;
-import org.tdar.core.dao.resource.integration.OntologyProxy;
+import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
+import org.tdar.core.dao.integration.OntologyProxy;
+import org.tdar.core.dao.integration.search.OntologySearchFilter;
 import org.tdar.utils.PersistableUtils;
 
 /**

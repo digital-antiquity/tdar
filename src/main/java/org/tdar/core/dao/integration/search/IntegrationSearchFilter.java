@@ -1,4 +1,4 @@
-package org.tdar.core.dao.integration;
+package org.tdar.core.dao.integration.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;
