@@ -303,6 +303,9 @@
         function _dataTablesAdded(addedDatatables) {
             console.debug("_dataTablesAdded::");
 
+            addedDatatables.forEach(function(dataTable) {
+                console.log(dataTable);
+            });
             //Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the dataTables
             //Calculate the new list of shared ontologies, find out if any ontologies should
             var currentSharedOntologyIds = self.ontologies.map(function(ontology){return ontology.id});

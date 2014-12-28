@@ -129,6 +129,7 @@ import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
@@ -257,7 +258,7 @@ public class Resource implements Persistable,
     @BulkImportField(key = "TITLE", required = true, order = -100)
     @NotNull
     @Column(length = 512)
-    @JsonView({JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class})
+    @JsonView(JsonIdNameFilter.class)
     @Length(max = 512)
     private String title;
 

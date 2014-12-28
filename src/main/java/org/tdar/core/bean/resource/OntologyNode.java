@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,7 +54,6 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "ontology_node_interval_end_index", columnList = "interval_end"),
         @Index(name = "ontology_node_index", columnList = "index")
 })
-@JsonInclude(NON_NULL)
 public class OntologyNode extends Persistable.Base implements Comparable<OntologyNode> {
 
     private static final long serialVersionUID = 6997306639142513872L;
@@ -138,12 +136,10 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return intervalStart;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public void setIntervalStart(Integer start) {
         this.intervalStart = start;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
     public Integer getIntervalEnd() {
         return intervalEnd;
     }
@@ -152,6 +148,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.intervalEnd = end;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getIri() {
         return iri;
     }

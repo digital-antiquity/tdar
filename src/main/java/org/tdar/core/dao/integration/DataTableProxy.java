@@ -1,11 +1,10 @@
 package org.tdar.core.dao.integration;
 
-import static org.apache.commons.lang3.StringUtils.abbreviate;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
@@ -27,47 +26,16 @@ public class DataTableProxy implements Serializable {
 
     public DataTableProxy(DataTable dataTable) {
         dataset = dataTable.getDataset();
-        //Truncate verbose descriptions that we aren't displaying to twitter-safe proportions.
-        //FIXME: I suspect there's a better place to do this. Also I hope these objects aren't writeable.
-        //FIXME: In the event that the previous fixme was too subtle I should point out that, yes, these persisted objects are in fact TOTALLY WRITABLE.
-        dataset.setDescription(abbreviate(dataset.getDescription(), 140));
-
         this.setDataTable(dataTable);
         this.setSubmitter(dataTable.getDataset().getSubmitter());
     }
 
-
-    //search result rows should be smaller than a megabyte.
-    class MappedOntology {
-        @JsonView(JsonIntegrationFilter.class)
-        Long id;
-        @JsonView(JsonIntegrationFilter.class)
-        String title;
-        MappedOntology(Ontology o) {
-            id = o.getId();
-            title = o.getTitle();
-        }
-    }
-
-    //Like a person, but less so.
-    class Person {
-        @JsonView(JsonIntegrationFilter.class)
-        Long id;
-        @JsonView(JsonIntegrationFilter.class)
-        String properName;
-        Person(TdarUser u) {
-            id = u.getId();
-            properName = u.getProperName();
-        }
-    }
-
-
     @JsonView(JsonIntegrationFilter.class)
-    public Set<MappedOntology> getMappedOntologies() {
-        Set<MappedOntology> ontologies = new HashSet<>();
+    public Set<Ontology> getMappedOntologies() {
+        Set<Ontology> ontologies = new HashSet<>();
         for (DataTableColumn column : getDataTable().getDataTableColumns()) {
             if (column.getDefaultOntology() != null) {
-                ontologies.add(new MappedOntology(column.getDefaultOntology()));
+                ontologies.add(column.getMappedOntology());
             }
         }
         return ontologies;
@@ -79,7 +47,7 @@ public class DataTableProxy implements Serializable {
     }
 
     public void setSubmitter(TdarUser submitter) {
-        this.submitter = new Person(submitter);
+        this.submitter = submitter;
     }
 
     @JsonView(JsonIntegrationFilter.class)
