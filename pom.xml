@@ -1984,7 +1984,6 @@
                 <dependency>
                     <groupId>org.apache.struts</groupId>
                     <artifactId>struts2-config-browser-plugin</artifactId>
-                    <version>${struts2.version}</version>
                     <!-- LICENSE: APACHE 2.0 -->
                 </dependency>
             </dependencies>
