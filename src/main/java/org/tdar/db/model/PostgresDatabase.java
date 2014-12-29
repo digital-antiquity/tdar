@@ -85,6 +85,8 @@ import com.opensymphony.xwork2.TextProvider;
 @Component
 public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
 
+    private static final String INTEGRATION_SUFFIX = "_int";
+    private static final String SORT_SUFFIX = "_sort";
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=?";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
@@ -93,6 +95,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
     private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE \"%s\"=?";
     private static final String ADD_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" character varying";
+    private static final String ADD_NUMERIC_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" bigint";
     private static final String RENAME_COLUMN = "ALTER TABLE %s RENAME COLUMN \"%s\" TO \"%s\"";
     private static final String UPDATE_COLUMN_TO_NULL = "UPDATE %s SET \"%s\"=NULL";
     private static final String ORIGINAL_KEY = "_original_";
@@ -212,11 +215,19 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Deprecated
-    public <T> T selectAllFromTable(DataTable table,
-            ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
+    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
+
+    @Override
+    @Deprecated
+    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
+        SqlSelectBuilder builder = getSelectAll(table, false);
+        builder.getOrderBy().addAll(Arrays.asList(orderBy));
+        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+    }
+
 
     private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
@@ -228,8 +239,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
-    public <T> T selectAllFromTableInImportOrder(DataTable table,
-            ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
+    public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         builder.getOrderBy().add(DataTableColumn.TDAR_ROW_ID.getName());
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
@@ -731,18 +741,32 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    /**
+     * Takes the IntegrationContext and produces a ModernIntegrationResult that contains the Excel Workbook and proxy information such as pivot data
+     * and preview data.
+     */
     public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
+        @SuppressWarnings("unused")
         ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, excelService, result);
         createIntegrationTempTable(proxy);
-        populateInterationTable(proxy);
+        populateTempInterationTable(proxy);
         applyOntologyMappings(proxy);
         extractIntegationResults(result);
         return result;
     }
 
+    /**
+     * Runs the "final" select for the integration result that allows us to sort and extract records from the temporary table
+     * @param result
+     */
     private void extractIntegationResults(final ModernIntegrationDataResult result) {
-        jdbcTemplate.execute("select * from " + result.getIntegrationContext().getTempTableName());
+        List<String> sortColumns = new ArrayList<>();
+        for (DataTableColumn col : result.getIntegrationContext().getTempTable().getDataTableColumns()) {
+            if (col.getName().endsWith(SORT_SUFFIX)) {
+                sortColumns.add(col.getName());
+            }
+        }
         selectAllFromTable(result.getIntegrationContext().getTempTable(), new ResultSetExtractor<Object>() {
 
             @Override
@@ -753,9 +777,16 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 workbook.generate();
                 return null;
             }
-        }, false);
+        }, sortColumns.toArray(new String[0]));
     }
 
+    /**
+     * For each integration column in the context, iterate through each and find the values that are actually mapped in the data as opposed to unmapped columns
+     * (i.e. no data). We then take those mappings and translate them into "update" statements that go into one of the extra columns in the temp table. We also
+     * use the moment to set the import sort order that we have specified in the ontology and put it into the "third" extra column.
+     * 
+     * @param proxy
+     */
     private void applyOntologyMappings(final IntegrationContext proxy) {
         /*
          * instead of doing this, consider creating a separate lookup table for value -> mapped value
@@ -787,7 +818,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 whereCond.setIncludeNulls(false);
                 StringBuilder sb = new StringBuilder("UPDATE ");
                 sb.append(proxy.getTempTableName());
-                sb.append(" SET ").append(quote(column.getName() + "_int")).append("=").append(quote(node.getDisplayName(), false));
+                sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
+                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=").append(node.getImportOrder());
                 sb.append(" WHERE ");
                 sb.append(whereCond.toSql());
                 executeUpdateOrDelete(sb.toString());
@@ -795,12 +827,23 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         }
     }
 
-    private void populateInterationTable(final IntegrationContext proxy) {
+    /**
+     * Dump data into the Temp Table for Integration
+     * 
+     * @param proxy
+     */
+    private void populateTempInterationTable(final IntegrationContext proxy) {
         for (DataTable table : proxy.getDataTables()) {
             generateModernIntegrationResult(proxy, table);
         }
     }
 
+    /**
+     * Creates a temporary table for the integration with extra (internal) columns for the Mapped Columns and Sort Columns
+     * 
+     * @param proxy
+     * @return
+     */
     private DataTable createIntegrationTempTable(final IntegrationContext proxy) {
         final DataTable tempTable = new DataTable();
         tempTable.setName(proxy.getTempTableName());
@@ -821,18 +864,32 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
-                    DataTableColumn dtc2 = new DataTableColumn();
-                    dtc2.setDisplayName(column.getName());
-                    dtc2.setName(normalizeTableOrColumnNames(column.getName() + "_int"));
-                    tempTable.getDataTableColumns().add(dtc2);
-                    executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc2.getName()));
+                    // integrated name
+                    DataTableColumn integrationColumn = new DataTableColumn();
+                    integrationColumn.setDisplayName(column.getName());
+                    integrationColumn.setName(normalizeTableOrColumnNames(column.getName() + INTEGRATION_SUFFIX));
+                    tempTable.getDataTableColumns().add(integrationColumn);
+                    executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
+
+                    DataTableColumn sortColumn = new DataTableColumn();
+                    sortColumn.setDisplayName(column.getName());
+                    sortColumn.setName(normalizeTableOrColumnNames(column.getName() + SORT_SUFFIX));
+                    tempTable.getDataTableColumns().add(sortColumn);
+                    executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));
                 }
             }
         }
         return tempTable;
     }
 
-    public void generateModernIntegrationResult(final IntegrationContext proxy, final DataTable table) {
+    /**
+     * Populate the Temporary Integration Table for the specified DataTable and integration Context. This expects that the temp table has been built and just
+     * handles the "insert"
+     * 
+     * @param proxy
+     * @param table
+     */
+    private void generateModernIntegrationResult(final IntegrationContext proxy, final DataTable table) {
         StringBuilder sb = new StringBuilder();
         joinListWithCommas(sb, proxy.getTempTable().getColumnNames(), true);
         String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateOntologyEnhancedSelect(table, proxy);
@@ -844,6 +901,14 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         executeUpdateOrDelete(selectSql);
     }
 
+    /**
+     * Builds the complex select statement to get the Integration contents from the specified DataTable. It needs to pull out integration columns
+     * multiple times so that we handle sorting and mapping properly.
+     * 
+     * @param table
+     * @param proxy
+     * @return
+     */
     private String generateOntologyEnhancedSelect(DataTable table, IntegrationContext proxy) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
@@ -856,6 +921,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 // pull the column name twice if an integration column so we have mapped and unmapped values
                 if (integrationColumn.isIntegrationColumn()) {
                     builder.getColumns().add(column.getName());
+                    builder.getColumns().add(null);
                 }
             } else {
                 builder.getColumns().add(null);

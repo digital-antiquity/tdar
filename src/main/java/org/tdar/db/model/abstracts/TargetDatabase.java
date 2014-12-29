@@ -54,6 +54,9 @@ public interface TargetDatabase extends Database {
     @Deprecated
     <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
+    @Deprecated
+    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String ... orderBy);
+
     <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
     <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);

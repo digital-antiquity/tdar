@@ -63,7 +63,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         // first column is the table name
         String tableName = (String) row[0];
         extractPreviewContents();
-
+        values.add(tableName);
         int countVal = -1;
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
             // note SQL iterator is 1 based; java iterator is 0 based
@@ -96,9 +96,12 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 }
                 row[resultSetPosition] = mappedVal;
                 values.add(mappedVal);
+                // increment for "sort" column
+                resultSetPosition++;
             }
             resultSetPosition++;
         }
+        row = values.toArray();
         logger.trace("{}", StringUtils.join(row, "|"));
 
         buildPivotDataForRow(ontologyNodes, tableName, countVal);
