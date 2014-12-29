@@ -2,6 +2,7 @@ package org.tdar.struts.action.billing;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,8 @@ public abstract class AbstractStatisticsAction extends AuthenticationAware.Base 
 
     @Autowired
     protected StatisticService statisticsService;
-    
-    @Action("usage")
+
+    @Action(value = "usage", results = { @Result(name = SUCCESS, location = "stats.ftl") })
     @Override
     public String execute() throws Exception {
         // TODO Auto-generated method stub
@@ -58,6 +59,5 @@ public abstract class AbstractStatisticsAction extends AuthenticationAware.Base 
     public void setGranularity(DateGranularity granularity) {
         this.granularity = granularity;
     }
-
 
 }

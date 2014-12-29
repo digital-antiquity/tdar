@@ -11,17 +11,6 @@
         <div id="chart1" style="width:100%; height:400px" title="Views & Downloads"></div>
     </div>
 </div>
-    <#noescape>
-    <script>
-        $(function () {
-            var usageStats = (${jsonStats});
-            TDAR.charts.adminUsageStats({
-                rawData: usageStats,
-                label: "Views & Downloads"
-            });
-        });
-    </script>
-    </#noescape>
 <#-- The '&' is being escaped, hence no need for '&amp;' -->
 <#--<@common.barGraph data="data" graphLabel="views & downloads" xaxis="date" graphHeight=200/>-->
 <table class="tableFormat table">
@@ -29,13 +18,34 @@
         <th>views</th>
         <th>day</th>
     </tr>
+	<#assign total = 0/>
     <#list usageStatsForResources as stats>
         <tr>
             <td>${stats.count}</td>
             <td>${stats.aggregateDate?date}</td>
         </tr>
+        	<#assign total = total + stats.count />
     </#list>
 </table>
+<#if (total > 0)>
+    <#noescape>
+    <script>
+        $(function () {
+            var usageStats = (${jsonStats});
+            
+            TDAR.charts.adminUsageStats({
+                rawData: usageStats,
+                label: "Views & Downloads"
+            });
+        });
+    </script>
+    </#noescape>
+<#else>
+	<style>
+	#chart1 {display:none;visibile:hidden}
+	</style>
+        <p><b>None</b></p>
+</#if>
 
     <#if downloadStats?has_content>
     <h2>Download Stats</h2>
