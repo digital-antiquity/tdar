@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.FileStatus;
@@ -30,6 +29,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 public class InformationResourceFileDao extends HibernateBase<InformationResourceFile> {
@@ -98,7 +98,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public void deleteVersionImmediately(InformationResourceFileVersion version) {
-        if (Persistable.Base.isNullOrTransient(version)) {
+        if (PersistableUtils.isNullOrTransient(version)) {
             throw new TdarRecoverableRuntimeException("error.cannot_delete_transient");
         }
 

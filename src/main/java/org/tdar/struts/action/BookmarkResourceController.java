@@ -16,7 +16,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -46,7 +46,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base impleme
     private transient ResourceService resourceService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     private Long resourceId;
     private Boolean success = Boolean.FALSE;
@@ -81,7 +81,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base impleme
     private void processResultToJson() {
         Map<String, Object> result = new HashMap<>();
         result.put(SUCCESS, success);
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, callback).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, callback).getBytes()));
     }
 
     @Action(value = "bookmark",

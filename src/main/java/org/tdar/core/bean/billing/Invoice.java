@@ -26,12 +26,12 @@ import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -412,7 +412,7 @@ public class Invoice extends Base implements Updatable {
 
     @Transient
     public boolean isProxy() {
-        if (Persistable.Base.isNullOrTransient(owner) || Persistable.Base.isNullOrTransient(transactedBy)) {
+        if (PersistableUtils.isNullOrTransient(owner) || PersistableUtils.isNullOrTransient(transactedBy)) {
             return false;
         }
         return ObjectUtils.notEqual(owner.getId(), transactedBy.getId());

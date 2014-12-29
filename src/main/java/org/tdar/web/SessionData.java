@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -39,7 +39,7 @@ public class SessionData implements Serializable {
     }
 
     public boolean isAuthenticated() {
-        return Persistable.Base.isNotNullOrTransient(tdarUserId);
+        return PersistableUtils.isNotNullOrTransient(tdarUserId);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class SessionData implements Serializable {
     }
 
     public void setTdarUser(TdarUser user) {
-        if (Persistable.Base.isNotNullOrTransient(user)) {
+        if (PersistableUtils.isNotNullOrTransient(user)) {
             this.tdarUserId = user.getId();
         } else {
             this.tdarUserId = null;

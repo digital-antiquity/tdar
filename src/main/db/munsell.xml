@@ -182,6 +182,38 @@
 
 	</changeSet>
 
+	<changeSet id="munsell-004766b0e703-feature-integration-ko" author="jdevos">
+		<comment>adding top-level table for persisted workflow integrations</comment>
+		<createTable tableName="data_integration_workflow">
+			<column name="id" type="bigserial" />
+			<column name="user_id" type="bigint" >
+			<!-- TODO: proposal: put fk names in form of fk_sourcetable__sourcecolumn__destinationtable instead of fk_sourcetable__destinationtable__destinationcolumn -->
+			<constraints nullable="false" references="tdar_user"
+						 foreignKeyName="fk_data_integration_workflow__tdar_user_id" />
+			</column>
+			<column name="title" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(2047)" defaultValue="" />
+			<column name="json_data" type="clob" />
+		</createTable>
+	</changeSet>
+	
+	<changeSet id="munsell-12-feature-integration-ko" author="alee">
+		<comment>adding fields to data integration workflow entity</comment>
+		<addColumn tableName="data_integration_workflow">
+            <column name='date_created' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='last_updated' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='version' type='int4'>
+                <constraints nullable='false' />
+            </column>
+		</addColumn>
+	</changeSet>
+
 	<changeSet id="munsell-12" author="abrin">
 		<comment>adding material keyword</comment>
 		<addColumn tableName="material_keyword">

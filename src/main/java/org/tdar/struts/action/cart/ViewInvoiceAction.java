@@ -11,7 +11,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -34,7 +34,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
     private String inputResultName;
 
     @Autowired
-    private AccountService accountService;
+    private BillingAccountService accountService;
 
     private Account account;
 

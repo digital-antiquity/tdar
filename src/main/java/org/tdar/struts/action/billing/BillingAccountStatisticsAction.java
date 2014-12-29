@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -22,7 +22,7 @@ public class BillingAccountStatisticsAction extends AbstractStatisticsAction imp
     private Account account;
     
     @Autowired
-    private AccountService accountService;
+    private BillingAccountService accountService;
     
     @Override
     public void prepare() throws Exception {

@@ -35,6 +35,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.AccountEvaluationHelper;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -45,11 +46,11 @@ import org.tdar.utils.AccountEvaluationHelper;
  * @version $Revision$
  */
 @Component
-public class AccountDao extends Dao.HibernateBase<Account> {
+public class BillingAccountDao extends Dao.HibernateBase<Account> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public AccountDao() {
+    public BillingAccountDao() {
         super(Account.class);
     }
 
@@ -89,19 +90,19 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public List<Long> findResourcesWithDifferentAccount(List<Resource> resourcesToEvaluate, Account account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
         query.setParameter("accountId", account.getId());
-        query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
+        query.setParameterList("ids", PersistableUtils.extractIds(resourcesToEvaluate));
         return query.list();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithNullAccount(List<Resource> resourcesToEvaluate) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
-        query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
+        query.setParameterList("ids", PersistableUtils.extractIds(resourcesToEvaluate));
         return query.list();
     }
 
     public void updateTransientAccountOnResources(Collection<Resource> resourcesToEvaluate) {
-        Map<Long, Resource> resourceIdMap = Persistable.Base.createIdMap(resourcesToEvaluate);
+        Map<Long, Resource> resourceIdMap = PersistableUtils.createIdMap(resourcesToEvaluate);
         String sql = String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES, StringUtils.join(resourceIdMap.keySet().toArray()));
         if (CollectionUtils.isEmpty(resourceIdMap.keySet()) || ((resourceIdMap.keySet().size() == 1) && resourceIdMap.keySet().contains(-1L))) {
             return;
@@ -173,7 +174,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public Coupon findCoupon(String code, Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACTIVE_COUPON);
         query.setParameter("code", code.toLowerCase());
-        if (Persistable.Base.isNotNullOrTransient(user)) {
+        if (PersistableUtils.isNotNullOrTransient(user)) {
             query.setParameter("ownerId", user.getId());
         } else {
             query.setParameter("ownerId", null);
@@ -257,7 +258,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
 
-        if (Persistable.Base.isNullOrTransient(account)) {
+        if (PersistableUtils.isNullOrTransient(account)) {
             throw new TdarRecoverableRuntimeException("accountService.account_is_null");
         }
         /* evaluate resources based on the model, and update their counts of files and space */
@@ -422,7 +423,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
      */
     private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate) {
         List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
-        Persistable.Base.sortByCreatedDate(resourceList);
+        PersistableUtils.sortByCreatedDate(resourceList);
         processResourceGroup(helper, resourceList, Mode.ADD);
     }
 
@@ -549,7 +550,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             }
             account.getResources().add(resource);
 
-            if (Persistable.Base.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
+            if (PersistableUtils.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
                 helper.getNewItems().add(resource);
                 continue;
             }

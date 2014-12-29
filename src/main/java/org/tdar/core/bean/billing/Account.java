@@ -38,6 +38,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.utils.MathUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -268,7 +269,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     public Long getTotalSpaceInMb() {
         initTotals();
-        return divideByRoundUp(totalSpaceInBytes, Persistable.ONE_MB);
+        return MathUtils.divideByRoundUp(totalSpaceInBytes, Persistable.ONE_MB);
     }
 
     public Long getTotalSpaceInBytes() {
@@ -288,7 +289,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public Long getAvailableSpaceInMb() {
-        return divideByRoundDown(getAvailableSpaceInBytes(), (double) Persistable.ONE_MB);
+        return MathUtils.divideByRoundDown(getAvailableSpaceInBytes(), (double) Persistable.ONE_MB);
     }
 
     public Long getAvailableResources() {
@@ -382,7 +383,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public Long getSpaceUsedInMb() {
-        return divideByRoundUp(spaceUsedInBytes, Persistable.ONE_MB);
+        return MathUtils.divideByRoundUp(spaceUsedInBytes, Persistable.ONE_MB);
     }
 
     public void setSpaceUsedInBytes(Long spaceUsed) {

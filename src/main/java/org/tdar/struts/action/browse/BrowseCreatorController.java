@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -43,7 +42,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
@@ -59,6 +58,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 
@@ -121,7 +121,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private boolean redirectBadSlug;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -192,17 +192,17 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Override
     public void prepare() throws Exception {
-        if (Persistable.Base.isNotNullOrTransient(getId())) {
+        if (PersistableUtils.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
         } else {
             addActionError(getText("browseCreatorController.creator_does_not_exist"));
         }
-        if (Persistable.Base.isNullOrTransient(creator)) {
+        if (PersistableUtils.isNullOrTransient(creator)) {
             getLogger().debug("not found -- {}", creator);
             throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");
         }
 
-        if (Persistable.Base.isTransient(getAuthenticatedUser()) && !creator.isBrowsePageVisible() && !Objects.equals(getAuthenticatedUser(), creator)) {
+        if (PersistableUtils.isTransient(getAuthenticatedUser()) && !creator.isBrowsePageVisible() && !Objects.equals(getAuthenticatedUser(), creator)) {
             throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
         if (!handleSlugRedirect(creator, this)) {
@@ -240,7 +240,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             setViewCount(entityService.getCreatorViewCount(creator));
         }
 
-        if (!isEditor() && !Persistable.Base.isEqual(creator, getAuthenticatedUser())) {
+        if (!isEditor() && !PersistableUtils.isEqual(creator, getAuthenticatedUser())) {
             CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), creator);
             getGenericService().saveOrUpdate(cvs);
         }
@@ -275,7 +275,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         setPersistable(creator);
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);
-        if (Persistable.Base.isNotNullOrTransient(creator)) {
+        if (PersistableUtils.isNotNullOrTransient(creator)) {
             String descr = getText("browseController.all_resource_from", creator.getProperName());
             setSearchDescription(descr);
             setSearchTitle(descr);

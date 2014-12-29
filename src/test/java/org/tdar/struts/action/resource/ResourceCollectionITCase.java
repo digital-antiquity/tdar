@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -57,6 +56,7 @@ import org.tdar.struts.action.collection.CollectionViewAction;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -1197,7 +1197,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc.setId(rcid);
         vc.prepare();
         vc.view();
-        List<Long> results = Persistable.Base.extractIds(vc.getResults());
+        List<Long> results = PersistableUtils.extractIds(vc.getResults());
         logger.debug("pid: {}  | {}", pid, results);
         Assert.assertFalse("deleted resource should not appear on edit page", results.contains(pid));
 
@@ -1241,7 +1241,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         searchIndexService.index(project2);
 
         logger.info("{}", project2.getResourceCollections());
-        assertTrue(Persistable.Base.extractIds(project2.getResourceCollections()).contains(rcid));
+        assertTrue(PersistableUtils.extractIds(project2.getResourceCollections()).contains(rcid));
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(rcid);
         vc.prepare();

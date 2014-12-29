@@ -58,21 +58,35 @@ TDAR.loadScript = function (url) {
 }
 
 /**
+ * Scan the DOM for SCRIPT nodes of type "application/json", parse their content, and return a map of the parsed objects (keyed by script.id).  Useful
+ * for ingesting inlined data from server.
+ * @returns {{}}
+ * @private
+ */
+TDAR.loadDocumentData = function _loadDocumentData() {
+    var dataElements = $('[type="application/json"][id]').toArray();
+    var map = {};
+    dataElements.forEach(function(elem){
+        var key = elem.id;
+        var val = JSON.parse(elem.innerHTML);
+        map[key] = val;
+    });
+    return map;
+}
+
+
+/**
  * Define dummy console + log methods if not defined by browser.
  */
 if (!window.console) {
     console = {};
 }
 
-console.log = console.log || function () {
-};
-console.warn = console.warn || function () {
-};
-console.debug = console.debug || function () {
-};
-console.error = console.error || function () {
-};
-console.info = console.info || function () {
-};
-console.trace = function () {
-};
+console.log = console.log || function () {};
+console.trace = console.trace || console.log;
+console.info = console.info || console.log;
+console.error = console.error || console.log;
+console.warn = console.warn || console.log;
+console.debug = console.debug || console.log;
+console.table = console.table || console.log;
+

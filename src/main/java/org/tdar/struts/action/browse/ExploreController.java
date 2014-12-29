@@ -30,7 +30,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
@@ -82,7 +82,7 @@ public class ExploreController extends AbstractLookupController {
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;

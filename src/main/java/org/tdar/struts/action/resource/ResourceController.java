@@ -12,7 +12,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AuthenticationAware;
 
 /**
@@ -35,7 +35,7 @@ public class ResourceController extends AuthenticationAware.Base {
     public static final String BILLING = "billing";
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     // incoming data from /resource/add
     private ResourceType resourceType;

@@ -8,11 +8,14 @@ import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
+import org.tdar.core.dao.integration.OntologyProxy;
+import org.tdar.core.dao.integration.search.OntologySearchFilter;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * 
@@ -44,7 +47,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
     public void removeReferencesToOntologyNodes(List<OntologyNode> incoming) {
         List<OntologyNode> toDelete = new ArrayList<OntologyNode>();
         for (OntologyNode node : incoming) {
-            if (Persistable.Base.isNullOrTransient(node)) {
+            if (PersistableUtils.isNullOrTransient(node)) {
                 continue;
             }
             toDelete.add(node);
@@ -58,5 +61,19 @@ public class OntologyDao extends ResourceDao<Ontology> {
         query.executeUpdate();
 
     }
+
+    @SuppressWarnings("unchecked")
+    public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
+        query.setProperties(searchFilter);
+        query.setFirstResult(searchFilter.getFirstResult());
+        query.setMaxResults(searchFilter.getMaxResults());
+        IntegrationOntologySearchResult result = new IntegrationOntologySearchResult();
+        for (Ontology ontology : (List<Ontology>)query.list()) {
+            result.getOntologies().add(new OntologyProxy(ontology));
+        }
+        return result;
+    }
+
 
 }

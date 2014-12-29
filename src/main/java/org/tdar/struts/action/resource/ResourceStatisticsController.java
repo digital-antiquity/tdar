@@ -24,7 +24,7 @@ import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.DateGranularity;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
@@ -55,7 +55,7 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
     private AuthorizationService authorizationService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Override
     @Action(value = "usage/{id}", results = {
@@ -88,7 +88,7 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
         }
 
         try {
-            json = xmlService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
+            json = serializationService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
         } catch (IOException e) {
             getLogger().error("failed to convert stats to json", e);
             json = String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));

@@ -36,6 +36,7 @@ import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 import com.opensymphony.xwork2.Preparable;
@@ -326,7 +327,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     })
     @HttpsOnly
     public String edit() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(getPersistable() )) {
+        if (PersistableUtils.isNullOrTransient(getPersistable() )) {
             throw new TdarActionException(StatusCode.NOT_FOUND,getText("abstractPersistableController.not_found"));
         }
         logAction("EDITING");
@@ -397,7 +398,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     protected boolean isPersistableIdSet() {
-        return Persistable.Base.isNotNullOrTransient(getPersistable());
+        return PersistableUtils.isNotNullOrTransient(getPersistable());
     }
 
     @Override

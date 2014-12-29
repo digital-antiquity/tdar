@@ -29,7 +29,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
@@ -42,6 +42,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -77,7 +78,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private Long contentLength;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
@@ -110,7 +111,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null,
-                    Persistable.Base.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+                    PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 

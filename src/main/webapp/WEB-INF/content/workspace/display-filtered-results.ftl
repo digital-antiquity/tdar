@@ -28,11 +28,9 @@
         <thead>
         <tr>
             <#list integrationColumns as column>
-                <th>
                     <#if column.integrationColumn>
-        ${column.name}
-    </#if>
-                </th>
+                		<th>${column.name}</th>
+    				</#if>
             </#list>
             <#list selectedDataTables as table>
                 <th>${table.displayName}</th>
@@ -71,7 +69,7 @@
     <#list result.integrationContext.integrationColumns as integrationColumn>
         <th>${integrationColumn.name}</th>
         <#if !integrationColumn.displayColumn>
-            <th>Mapped ontology value for ${integrationColumn.name}</th>
+            <th>${integrationColumn.name} (Mapped)</th>
         </#if>
     </#list>
 </tr></thead>

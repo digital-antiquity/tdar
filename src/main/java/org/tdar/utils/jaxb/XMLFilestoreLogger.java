@@ -65,7 +65,7 @@ public class XMLFilestoreLogger implements Serializable {
                     .storeAndRotate(ObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + resource, e);
-            throw new TdarRecoverableRuntimeException("xmlService.could_not_save");
+            throw new TdarRecoverableRuntimeException("serializationService.could_not_save");
         }
         logger.trace("done saving");
     }

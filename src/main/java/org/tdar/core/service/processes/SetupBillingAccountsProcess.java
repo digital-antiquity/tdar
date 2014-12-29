@@ -23,7 +23,7 @@ import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption;
 import org.tdar.core.service.resource.ResourceService;
@@ -49,7 +49,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Autowired
     private transient InvoiceService invoiceService;

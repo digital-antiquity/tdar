@@ -10,7 +10,6 @@ import java.util.SortedMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
@@ -21,12 +20,13 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractDatasetController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
@@ -45,7 +45,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private transient OntologyService ontologyService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     // column metadata incoming data
     // Each list contains some specific piece of metadata for the given data table, where
@@ -114,7 +114,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     public void setDataTableId(Long dataTableId) {
-        if (Persistable.Base.isNullOrTransient(dataTableId)) {
+        if (PersistableUtils.isNullOrTransient(dataTableId)) {
             getLogger().error("Trying to set data table id to null or -1: " + dataTableId);
             return;
         }
@@ -140,7 +140,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     public void setColumnId(Long columnId) {
-        if (Persistable.Base.isNullOrTransient(columnId)) {
+        if (PersistableUtils.isNullOrTransient(columnId)) {
             getLogger().warn("Trying to set data table column id to null or -1: " + columnId);
             return;
         }

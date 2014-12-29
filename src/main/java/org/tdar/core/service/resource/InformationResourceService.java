@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -16,6 +15,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.InformationResourceDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -98,7 +98,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
      */
     public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
         List<ResourceCollection> collections = null;
-        if (Persistable.Base.isNotNullOrTransient(collectionId)) {
+        if (PersistableUtils.isNotNullOrTransient(collectionId)) {
             collections = resourceCollectionDao.findCollectionsOfParent(collectionId, false, CollectionType.SHARED);
             return getDao().findRandomFeaturedResourceInCollection(restrictToFiles, collections, maxResults);
         }
