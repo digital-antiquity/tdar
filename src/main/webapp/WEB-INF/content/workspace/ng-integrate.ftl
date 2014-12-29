@@ -333,8 +333,8 @@
                                 <tr>
                                     <th>Select</th>
                                     <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Date</th>
+                                    <th nowrap>Date</th>
+                                    <th>Mapped Ontologies</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -349,8 +349,10 @@
                                                 ng-click="toggleSelection(result.id, this)">
                                     </td>
                                     <td><label for="cbResult{{result.id}}">{{result.title}}</label></td>
-                                    <td>{{result.submitter_display_name}}</td>
-                                    <td>{{result.date_created | date }}</td>
+                                    <td nowrap>{{result.date_created | date }}</td>
+                                    <td>
+                                    	<span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

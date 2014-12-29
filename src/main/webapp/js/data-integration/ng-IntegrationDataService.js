@@ -381,8 +381,11 @@
                     result.title = item.dataset.title;
                     result.title += ' - ' + item.dataTable.displayName;
                     result.id = item.dataTable.id;
-                    result.submitter_display_name = item.submitter.properName;
                     result.date_created = d;
+                    result.ontologies = [];
+                    item.mappedOntologies.forEach(function(ontology){
+                        result.ontologies.push(ontology.title + "("+ontology.id+")");
+                    });
                     return result;
                 })
             };
