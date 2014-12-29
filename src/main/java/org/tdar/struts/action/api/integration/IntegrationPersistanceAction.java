@@ -17,7 +17,6 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;

@@ -241,7 +241,13 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             return Collections.emptyList();
         }
         SqlSelectBuilder builder = new SqlSelectBuilder();
-        builder.setDistinct(true);
+        boolean groupByAsDistinct = true;
+        // trying out http://stackoverflow.com/a/6598931/667818
+        if (groupByAsDistinct) {
+            builder.setDistinct(true);
+        } else {
+            builder.getGroupBy().add(dataTableColumn.getName());
+        }
         builder.getColumns().add(dataTableColumn.getName());
         builder.getTableNames().add(dataTableColumn.getDataTable().getName());
         builder.getOrderBy().add(dataTableColumn.getName());
@@ -767,7 +773,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 // do these need to be per-table-updates?
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
                     nodeSet.addAll(actualColumn.getMappedDataValues(node));
-                    //check parent mapping logic to make sure that we don't apply to the grantparent if multiple nodes in tree are selected
+                    // check parent mapping logic to make sure that we don't apply to the grantparent if multiple nodes in tree are selected
                     for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
                         if (node_.isChildOf(node) && !integrationColumn.getFilteredOntologyNodes().contains(node_)) {
                             nodeSet.addAll(actualColumn.getMappedDataValues(node_));
@@ -916,7 +922,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         builder.getTableNames().add(column.getDataTable().getName());
         return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
-
 
     @Override
     public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {

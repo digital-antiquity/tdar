@@ -49,7 +49,6 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
     private static final long serialVersionUID = -2356381511354062946L;
 
     private int currentJsonVersion = 1;
-    private Object categoryListJsonObject;
 
     private Long id;
     private DataIntegrationWorkflow workflow;
