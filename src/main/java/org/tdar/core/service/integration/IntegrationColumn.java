@@ -53,6 +53,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     // true if NULLS should be included with the integration results
     private boolean nullIncluded = true;
+    @Deprecated
     private List<OntologyNode> flattenedOntologyNodeList;
 
     public IntegrationColumn() {
@@ -297,6 +298,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
      * 
      * @return
      */
+    @Deprecated
     public List<OntologyNode> getFlattenedOntologyNodeList() {
         if (flattenedOntologyNodeList == null) {
             flatten();
@@ -308,7 +310,8 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
      * Flattens sharedOntology's nodes into a single List<OntologyNode> and sets
      * transient metadata on each OntologyNode to specify what nodes have mapped data and what nodes do not.
      */
-    public void flatten() {
+    @Deprecated
+    private void flatten() {
         if ((sharedOntology == null) || !isIntegrationColumn()) {
             return;
         }
@@ -363,7 +366,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
                 }
             }
         }
-        flattenedOntologyNodeList = ontologyNodes;
+//        flattenedOntologyNodeList = ontologyNodes;
     }
 
     public DataTableColumn getTempTableDataTableColumn() {
