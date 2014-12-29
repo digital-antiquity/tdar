@@ -25,7 +25,7 @@
 
         integration.columns.forEach(function(column) {
             var outputColumn = {
-                name : column.title,
+                name : column.name,
                 type : column.type.toUpperCase(),
                 dataTableColumns : []
             };

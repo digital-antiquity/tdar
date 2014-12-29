@@ -60,14 +60,16 @@
 
         self.saveClicked = function() {
             console.log("Saving.")
-            console.log(JSON.stringify(integration, null, 4));
             dataService.saveIntegration(self.integration);
             
         };
 
         
         self.loadJSON = function() {
-            var json = dataService.loadExistingIntegration(dataService.getDocumentData().jsondata , self.integration);
+            var jsonData = dataService.getDocumentData().jsondata;
+            if (jsonData.title != undefined && jsonData.dataTables != undefined) {
+                var json = dataService.loadExistingIntegration(dataService.getDocumentData().jsondata , self.integration);
+            }
          };
         
         /**
@@ -164,10 +166,10 @@
         // FIXME: proper validation required
         $scope.isValid = function() {
             if (self.integration.title == undefined || $.trim(self.integration.title) == "") {
-                console.log("invalid title");
+//                console.log("invalid title");
                 return false;
             }
-            console.log("isValid:: %s", self.integration.columns.length);
+//            console.log("isValid:: %s", self.integration.columns.length);
             return self.integration.columns.length > 0;
         }
 

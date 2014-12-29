@@ -255,6 +255,7 @@ public class IntegrationWorkflowData implements Serializable, IntegrationWorkflo
 
         private static final long serialVersionUID = 9061205188321045416L;
         private ColumnType type;
+        private String name;
         private List<DataTableColumnDTO> dataTableColumns;
         private OntologyDTO ontology;
         private List<OntologyNodeDTO> nodeSelection = new ArrayList<>();
@@ -289,6 +290,14 @@ public class IntegrationWorkflowData implements Serializable, IntegrationWorkflo
 
         public void setType(ColumnType type) {
             this.type = type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
     

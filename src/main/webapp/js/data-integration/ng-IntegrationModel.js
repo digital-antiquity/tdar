@@ -168,7 +168,7 @@
         self.addIntegrationColumn = function _addIntegrationColumn(title, ontology) {
             var col = {
                 type : "integration",
-                title : title,
+                name : title,
                 ontologyId : ontology.id,
                 ontology : ontology,
                 nodeSelections : [],
@@ -426,7 +426,7 @@
 
             var displayColumn = {
                 type : 'display',
-                title : title,
+                name : title,
                 dataTableColumnSelections : []
             };
 
@@ -447,7 +447,7 @@
 
             var countColumn = {
                 type : 'count',
-                title : title,
+                name : title,
                 dataTableColumnSelections : []
             };
 

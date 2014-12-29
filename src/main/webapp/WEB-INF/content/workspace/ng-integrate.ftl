@@ -8,7 +8,7 @@
         <h1 class="compact">Dataset Integration</h1>
 <!--        <h2 class="compact">{{ctrl.integration.title || 'Untitled Integration'}}</h2> -->
     </div>
-    <form id="frmIntegrationEdit" class="form-horizontal">
+    <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
         <div class="row">
             <div class="span9">
                <div class="control-group">
@@ -29,8 +29,7 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                    <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
-                    <button type="button" class="btn" ng-click="ctrl.loadJSON()" ng-disabled="ctrl.integration.columns.length != 0" >Load</button>
+                    <button type="button" class="btn" ng-disabled="!isValid()" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn" ng-disabled="!isValid()" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
             </div>
@@ -110,7 +109,7 @@
                                 <ul class="nav nav-tabs">
                                     <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
                                         <a href="#tab{{$index}}">
-                                            {{column.title}}
+                                            <input type="text" name="column.name" ng-model="column.name" />
                                             <button class="close" ng-click="ctrl.closeTab($index)">x</button>
                                         </a>
                                     </li>
@@ -245,7 +244,8 @@
 
 <fieldset>
     <div ng-repeat="col in legacyCtrl.integration.columns" ng-init="columnIndex=$index">
-        <input type="text" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
+        <input type="hidden" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
+        <input type="hidden" name="integrationColumns[{{$index}}].name" value="{{col.name}}">
         <div ng-switch="col.type">
             <span ng-switch-when="integration">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
