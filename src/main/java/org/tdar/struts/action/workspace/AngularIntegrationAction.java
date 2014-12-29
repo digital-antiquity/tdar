@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -33,6 +31,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.utils.json.JsonLookupFilter;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -86,7 +85,6 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
                 // do something
             }
         }
-        prepareCategories();
         prepareProjectStuff();
         prepareCollections();
     }
@@ -106,38 +104,10 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
         return SUCCESS;
     }
 
-    private void prepareCategories() {
-        // We really just need a flattened list of categories (client will build the hierarchy).
-        // FIXME: make more efficient by ensuring we never lazy-init the parent associations (n+1 select)
-        List<CategoryVariable> cats = genericService.findAll(CategoryVariable.class);
-        Map<Long, String> parentNames = new HashMap<>();
-        List<Map<String, Object>> subcats = new ArrayList<>();
-
-        // pass 1: build the parentNames (we assume depth of 2 with no childless parents)
-        for (CategoryVariable cat : cats) {
-            if (cat.getParent() == null) {
-                parentNames.put(cat.getId(), cat.getName());
-            }
-        }
-
-        // pass 2: list of subcat maps
-        for (CategoryVariable cat : cats) {
-            if (cat.getParent() != null) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", cat.getId());
-                map.put("name", cat.getName());
-                map.put("parent_name", parentNames.get(cat.getParent().getId()));
-                subcats.add(map);
-            }
-        }
-
-        categoryListJsonObject = subcats;
-    }
-
     public String getCategoriesJson() {
         String json = "[]";
         try {
-            json = serializationService.convertToJson(categoryListJsonObject);
+            json = serializationService.convertToFilteredJson(genericService.findAll(CategoryVariable.class), JsonLookupFilter.class);
         } catch (IOException e) {
             addActionError(e.getMessage());
         }
@@ -171,13 +141,13 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
     }
 
     private void prepareProjectStuff() {
-        // FIXME: isAdmin should not be an argument here; ProjectService can derive isAdmin by tapping authservice.
+        //FIXME: Remove and replace with AJAX lookup / autocomplete
         fullUserProjects = new ArrayList<>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), false));
         Collections.sort(fullUserProjects);
     }
 
     private void prepareCollections() {
-        // For now, you just get flattened list of collections. Because.
+        //FIXME: Remove and replace with AJAX lookup / autocomplete
         allResourceCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
     }
 

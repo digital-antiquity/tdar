@@ -14,7 +14,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnProxy;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationColumn;
-import org.tdar.utils.json.JsonNodeParticipationFilter;
+import org.tdar.utils.json.JsonIdNameFilter;
 
 @Namespace("/api/integration")
 @ParentPackage("secured")
@@ -40,7 +40,7 @@ public class IntegrationColumnDetailsAction extends AbstractIntegrationAction {
             proxy.getFlattenedNodes().addAll(flattenedOntologyNodeList);
         }
 
-        setJsonObject(proxy, JsonNodeParticipationFilter.class);
+        setJsonObject(proxy, JsonIdNameFilter.class);
         return SUCCESS;
     }
 

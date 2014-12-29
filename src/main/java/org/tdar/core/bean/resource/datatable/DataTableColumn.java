@@ -1,7 +1,5 @@
 package org.tdar.core.bean.resource.datatable;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,10 +40,12 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -62,7 +62,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "data_table_column_default_coding_sheet_id_idx", columnList = "default_coding_sheet_id")
 })
 @XmlRootElement
-@JsonInclude(NON_NULL)
+@JsonInclude(Include.NON_NULL)
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
 
     private static final long serialVersionUID = 430090539610139732L;
@@ -178,7 +178,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.dataTable = dataTable;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
+    @JsonView({JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class})
     public String getName() {
         return name;
     }

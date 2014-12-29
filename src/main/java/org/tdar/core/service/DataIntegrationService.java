@@ -34,6 +34,8 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.integration.IntegrationColumnProxy;
+import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -113,7 +115,7 @@ public class DataIntegrationService {
         logger.info("matching coding rule terms to column values");
         for (CodingRule rule : codingSheet.getCodingRules()) {
             if (values.contains(rule.getTerm())) {
-                logger.debug("mapping rule {} to column {}", rule, column);
+                logger.trace("mapping rule {} to column {}", rule, column);
                 rule.setMappedToData(column);
             }
         }
@@ -323,6 +325,7 @@ public class DataIntegrationService {
         return columnAutoList;
     }
 
+    @Transactional(readOnly = true)
     public Map<Ontology, List<DataTable>> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
         HashMap<Ontology, List<DataTable>> allOntologies = new HashMap<>();
         if (CollectionUtils.isEmpty(bookmarkedDataTables)) {
@@ -370,56 +373,70 @@ public class DataIntegrationService {
 
     /**
      * Compute the node participation for the DataTableColumns described by the specified list of ID's. The method
-     * returns the results in a map of (flattened) OntologyNode lists by DataTableColumn.
+     * returns the results in a map of OntologyNode lists by DataTableColumn.
      *
      * @param dataTableColumnIds
      * @return
      */
     @Transactional(readOnly = true)
-    public Map<DataTableColumn, List<OntologyNode>> getNodeParticipationByColumn(List<Long> dataTableColumnIds) {
-        Map<DataTableColumn, List<OntologyNode>> nodesByColumn = new HashMap<>();
-        Map<Ontology, ArrayList<DataTableColumn>> columnsByOntology = new HashMap<>();
+    public List<IntegrationColumnProxy> getNodeParticipationByColumn(List<Long> dataTableColumnIds) {
+        List<IntegrationColumnProxy> results = new ArrayList<>();
+        Set<DataTableColumn> dataTableColumns = new HashSet<>(genericDao.findAll(DataTableColumn.class, dataTableColumnIds));
+        Map<Ontology, Set<DataTableColumn>> columnsByOntology = buildOntologyToColumnMap(dataTableColumns);
 
-        // First, get a set of distinct ontologies
-        List<DataTableColumn> dataTableColumns = genericDao.findAll(DataTableColumn.class, dataTableColumnIds);
+        // For each ontology, update tdar-data database mappings, and get the list of correlated & mapped ontology nodes 
+        for (Ontology ontology : columnsByOntology.keySet()) {
+            logger.trace("ontology: {}", ontology);
+            for (DataTableColumn col : columnsByOntology.get(ontology)) {
+                if (!col.isActuallyMapped()) {
+                    continue;
+                }
+                IntegrationColumnProxy icp = new IntegrationColumnProxy();
+                icp.setDataTableColumn(col);
+                icp.setSharedOntology(ontology);
+                results.add(icp);
+                // get the actual mappings from tdardata
+                updateMappedCodingRules(col);
 
+                for (CodingRule rule : col.getDefaultCodingSheet().getCodingRules()) {
+                    if (!rule.isMappedToData(col)) {
+                        continue;
+                    }
+                    OntologyNode node = rule.getOntologyNode();
+                    if (node != null) {
+                        icp.getFlattenedNodes().add(node);
+                    }
+                }
+            }
+            logger.trace("nodesByColumn: {}", results);
+        }
+        return results;
+    }
+
+    /**
+     * Creates a reverse-map of Ontologies->DataTableColumns for mapped dataTableColumns
+     * @param dataTableColumns
+     * @return
+     */
+    private Map<Ontology, Set<DataTableColumn>> buildOntologyToColumnMap(Set<DataTableColumn> dataTableColumns) {
+        Map<Ontology, Set<DataTableColumn>> columnsByOntology = new HashMap<>();
+
+        // for each DataTableColumn, create an inverse-map of Ontologies->DataTableColumns
         for (DataTableColumn dataTableColumn : dataTableColumns) {
-            nodesByColumn.put(dataTableColumn, new ArrayList<OntologyNode>());
-            Ontology mappedOntology = dataTableColumn.getDefaultOntology();
+            Ontology mappedOntology = dataTableColumn.getMappedOntology();
 
             if (mappedOntology == null) {
                 continue;
             }
 
-            ArrayList<DataTableColumn> columns = columnsByOntology.get(mappedOntology);
+            Set<DataTableColumn> columns = columnsByOntology.get(mappedOntology);
             if (columns == null) {
-                columns = new ArrayList<>();
+                columns = new HashSet<>();
                 columnsByOntology.put(mappedOntology, columns);
             }
             columns.add(dataTableColumn);
         }
-
-        // so now we can start making Integration Columns.
-        List<IntegrationColumn> integrationColumns = new ArrayList<>();
-        for (Ontology ontology : columnsByOntology.keySet()) {
-            logger.debug("ontology: {}", ontology);
-            IntegrationColumn integrationColumn = new IntegrationColumn(ontology, columnsByOntology.get(ontology));
-            getColumnDetails(integrationColumn);
-            integrationColumns.add(integrationColumn);
-
-            // Basically we are transposing flattened node list; Instead of a list of nodes with column presence info,
-            // we are making a map of columns with node presence info.
-            for (OntologyNode node : integrationColumn.getFlattenedOntologyNodeList()) {
-                Map<DataTableColumn, Boolean> columnHasValueMap = node.getColumnHasValueMap();
-                for (DataTableColumn column : integrationColumn.getColumns()) {
-                    if (columnHasValueMap.containsKey(column) && columnHasValueMap.get(column) == Boolean.TRUE) {
-                        List<OntologyNode> ontologyNodes = nodesByColumn.get(column);
-                        ontologyNodes.add(node);
-                    }
-                }
-            }
-        }
-        return nodesByColumn;
+        return columnsByOntology;
     }
 
     @Transactional
@@ -449,5 +466,14 @@ public class DataIntegrationService {
         }
 
         return ticket;
+    }
+
+    @Transactional(readOnly = true)
+    public TableDetailsProxy getTableDetails(List<Long> dataTableIds) {
+        TableDetailsProxy proxy = new TableDetailsProxy();
+        proxy.getDataTables().addAll(genericDao.findAll(DataTable.class, dataTableIds));
+        Map<Ontology, List<DataTable>> suggestions = getIntegrationSuggestions(proxy.getDataTables(), false);
+        proxy.getMappedOntologies().addAll(suggestions.keySet());
+        return proxy;
     }
 }

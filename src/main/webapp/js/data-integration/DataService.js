@@ -402,11 +402,13 @@
             var url = '/api/integration/node-participation?' + $.param({dataTableColumnIds: dataTableColumnIds}, true);
             var httpPromise =  $http.get(url);
             var futureWork = $q.defer();
-            httpPromise.success(function(nodeIdsByColumnId) {
-                Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId){
-                    var nodeIds = nodeIdsByColumnId[dataTableColumnId];
-                    var nodes = nodeIds.map(function(nodeId){return ontologyNodeCache.get(nodeId)});
-                    var dataTableColumn = dataTableColumnCache.get(dataTableColumnId);
+            httpPromise.success(function(nodesByColumn) {
+                nodesByColumn.forEach(function(container) {
+                    var dataTableColumn = dataTableColumnCache.get(container.dataTableColumn.id);
+                    var nodes = [];
+                    container.flattenedNodes.forEach(function(nodeRef){
+                        nodes.push(ontologyNodeCache.get(nodeRef.id));
+                    });
                     dataTableColumn.transientNodeParticipation = nodes;
                 });
                 //Note that we mutate the data directly, so there is not anything to "return". We're just notifying the caller that we are done.

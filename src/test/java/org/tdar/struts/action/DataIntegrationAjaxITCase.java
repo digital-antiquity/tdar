@@ -6,12 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.dao.integration.IntegrationColumnProxy;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
@@ -25,6 +24,7 @@ import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.api.integration.IntegrationColumnDetailsAction;
 import org.tdar.struts.action.api.integration.NodeParticipationByColumnAction;
 import org.tdar.struts.action.api.integration.TableDetailsAction;
+import org.tdar.struts.action.workspace.AngularIntegrationAction;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
@@ -80,6 +80,13 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
     @Autowired
     GenericService genericService;
 
+    @Test
+    public void testCatVariableJson() throws TdarActionException {
+        AngularIntegrationAction ia = generateNewInitializedController(AngularIntegrationAction.class, getAdminUser());
+        ia.prepare();
+        ia.execute();
+        logger.debug(ia.getCategoriesJson());
+    }
 
     @Test
     public void testNodeParticipation() throws IOException {
@@ -97,21 +104,19 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         action.getDataTableColumnIds().addAll(dtcIds);
         action.prepare();
         action.execute();
-        logger.debug("results:{}", action.getNodeIdsByColumnId());
+        logger.debug("results:{}", action.getNodesByColumn());
 
         //we expect to have at least one node value present
         int nodesPresent = 0;
-        for(List<OntologyNode> nodes : action.getNodesByColumn().values()) {
-            nodesPresent += nodes.size();
+        int proxiesPresent = 0;
+        for(IntegrationColumnProxy proxy: action.getNodesByColumn()) {
+            nodesPresent += proxy.getFlattenedNodes().size();
+            proxiesPresent++;
         }
-        MatcherAssert.assertThat(nodesPresent, Matchers.greaterThan(0));
+        logger.debug("nodesPresent:{}", nodesPresent);
+        Assert.assertEquals(184, nodesPresent);
+        Assert.assertEquals(4, proxiesPresent);
 
-
-        nodesPresent = 0;
-        for(List<Long> nodeids : action.getNodeIdsByColumnId().values()) {
-            nodesPresent += nodeids.size();
-        }
-        MatcherAssert.assertThat(nodesPresent, Matchers.greaterThan(0));
     }
 
 }

@@ -1,7 +1,5 @@
 package org.tdar.core.bean.resource;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,10 +30,9 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
-import org.tdar.utils.json.JsonNodeParticipationFilter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -148,7 +145,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.intervalEnd = end;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
+    @JsonView({JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class})
     public String getIri() {
         return iri;
     }
@@ -343,8 +340,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.mappedDataValues = mappedDataValues;
     }
 
-    @JsonView(JsonNodeParticipationFilter.class)
-    @JsonInclude(NON_EMPTY)
     public Map<DataTableColumn,Boolean> getColumnHasValueMap() {
         return columnHasValueMap;
     }

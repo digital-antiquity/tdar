@@ -1,4 +1,4 @@
-package org.tdar.struts.action.api.integration;
+package org.tdar.core.dao.integration;
 
 import java.io.Serializable;
 import java.util.ArrayList;

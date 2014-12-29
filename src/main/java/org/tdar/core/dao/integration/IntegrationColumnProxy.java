@@ -1,12 +1,13 @@
 package org.tdar.core.dao.integration;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.utils.json.JsonNodeParticipationFilter;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.utils.json.JsonIdNameFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -17,8 +18,10 @@ public class IntegrationColumnProxy implements Serializable {
     private static final long serialVersionUID = -6564768298774032395L;
 
     private Ontology sharedOntology;
-    private List<OntologyNode> flattenedNodes = new ArrayList<>();
-    
+    private Set<OntologyNode> flattenedNodes = new HashSet<>();
+    private DataTableColumn dataTableColumn;
+
+    @JsonView({ JsonIdNameFilter.class })
     public Ontology getSharedOntology() {
         return sharedOntology;
     }
@@ -27,13 +30,22 @@ public class IntegrationColumnProxy implements Serializable {
         this.sharedOntology = shared;
     }
 
-    @JsonView(JsonNodeParticipationFilter.class)
-    public List<OntologyNode> getFlattenedNodes() {
+    @JsonView({ JsonIdNameFilter.class })
+    public Set<OntologyNode> getFlattenedNodes() {
         return flattenedNodes;
     }
 
-    public void setFlattenedNodes(List<OntologyNode> flattenedNodes) {
+    public void setFlattenedNodes(Set<OntologyNode> flattenedNodes) {
         this.flattenedNodes = flattenedNodes;
+    }
+
+    @JsonView({ JsonIdNameFilter.class })
+    public DataTableColumn getDataTableColumn() {
+        return dataTableColumn;
+    }
+
+    public void setDataTableColumn(DataTableColumn dataTableColumn) {
+        this.dataTableColumn = dataTableColumn;
     }
 
 }
