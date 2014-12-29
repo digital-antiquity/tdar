@@ -3,10 +3,6 @@
 
     var app = angular.module("integrationApp");
 
-    function _restore() {
-
-    }
-
     /**
      * Add specified object to specified array if specified array does not already contain the object.
      *
@@ -85,6 +81,8 @@
          * @type {Array}
          */
         self.dataTables = [];
+        
+        self.id = -1;
 
         /**
          * List of ontologies that the user may integrate over. To be added as an integration column,   the ontology must be "shared" by all of this integration

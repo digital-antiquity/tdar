@@ -112,7 +112,7 @@
 
 <#list workflows as workflow>
 <ul>
-	<li>${workflow.title} - ${workflow.dateCreated?short}<br>${workflow.description!""}</li>
+	<li><a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""}</li>
 </ul>
 </#list>
 

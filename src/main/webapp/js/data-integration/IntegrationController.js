@@ -64,6 +64,8 @@
         self.saveClicked = function() {
             console.log("Saving.")
             console.log(JSON.stringify(integration, null, 4));
+            dataService.saveIntegration(self.integration);
+            
         };
 
         

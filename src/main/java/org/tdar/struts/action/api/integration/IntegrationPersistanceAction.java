@@ -1,5 +1,9 @@
 package org.tdar.struts.action.api.integration;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -13,10 +17,12 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
+import org.tdar.filestore.WorkflowContext;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -25,7 +31,7 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/api/integration")
 @Component
 @Scope("prototype")
-public class IntegrationPersistanceAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>,
+public class IntegrationPersistanceAction extends AbstractIntegrationAction implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>,
         Validateable {
 
     private static final long serialVersionUID = 9053098961621133695L;
@@ -47,8 +53,14 @@ public class IntegrationPersistanceAction extends AuthenticationAware.Base imple
             @Action("save/{id}"),
             @Action("save")
     })
-    protected String save(DataIntegrationWorkflow persistable) throws TdarActionException {
-        integrationWorkflowService.saveForController(persistable, jsonData, getAuthenticatedUser());
+    @PostOnly
+    @WriteableSession
+    public String save() throws TdarActionException, IOException {
+        integrationWorkflowService.saveForController(getPersistable(), jsonData, getAuthenticatedUser());
+        Map<String,Object>result = new HashMap<>();
+        result.put("status","success");
+        result.put("id", workflow.getId());
+        setJsonObject(result);
         return SUCCESS;
     }
 
@@ -90,11 +102,16 @@ public class IntegrationPersistanceAction extends AuthenticationAware.Base imple
     @Override
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.SAVE);
+        getLogger().debug(integration);
         jsonData = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
+        if (workflow == null) {
+            workflow = new DataIntegrationWorkflow();
+        }
         workflow.copyValuesFromJson(jsonData, integration);
 
     }
 
+    
     public String getIntegration() {
         return integration;
     }

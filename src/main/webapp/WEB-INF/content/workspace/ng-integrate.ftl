@@ -29,7 +29,7 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                    <button type="button" class="btn disabled" ng-click="ctrl.saveClicked()">Save</button>
+                    <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn" ng-click="ctrl.loadJSON()" ng-disabled="ctrl.integration.columns.length != 0" >Load</button>
                     <button type="button" class="btn" ng-disabled="!isValid()" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
@@ -372,7 +372,7 @@
     </div>
 </script>
 <script type="application/json" id="jsondata">
-{"title":"adam's test integration","description":"this is a test","columns":[{"type":"INTEGRATION","dataTableColumns":[{"id":31710,"name":"species_common_name"},{"id":32450,"name":"taxon"}],"ontology":{"id":42940,"title":"Fauna Taxon Ontology "},"nodeSelection":[{"id":56930},{"id":62840}]},{"type":"DISPLAY","dataTableColumns":[{"id":31800,"name":"age"},{"id":32590,"name":"bfuncgrp"}]},{"type":"INTEGRATION","dataTableColumns":[{"id":31730,"name":"bone_common_name"},{"id":32460,"name":"belement"}],"ontology":{"id":42950,"title":"Fauna Element Ontology"},"nodeSelection":[{"id":68780},{"id":69020},{"id":67010},{"id":68840}]}],"datasets":[],"dataTables":[{"id":3091,"displayName":"Main table"},{"id":3104,"displayName":"qryBone"}],"ontologies":[{"id":42940,"title":"Fauna Taxon Ontology "},{"id":42950,"title":"Fauna Element Ontology"}]}
+${workflowJson!"{}"}
 </script>
 <!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
 <!-- FIXME: too much crap - we just need ID and title and submitterId -->

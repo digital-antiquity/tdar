@@ -7,14 +7,22 @@
      */
     function _dumpObject(integration) {
         var out = {
-                title: integration.title,
-                description: integration.description,
+                title: "untitled",
+                description: "",
                 columns: [],
                 datasets: [],
                 dataTables: [],
                 ontologies: []
         };
         
+        if (integration.description != undefined) {
+            out.description = integration.description;
+        }
+
+        if (integration.title != undefined) {
+            out.title = integration.title;
+        }
+
         integration.columns.forEach(function(column) {
             var outputColumn = {
                     name:column.title,
@@ -117,8 +125,6 @@
         this.dataTableColumnCache = dataTableColumnCache;
 
 
-
-
         /**
          * Return a map<str, obj> of objects that were embedded in the DOM using script tags of type "application/json".
          * for each entry in the map, the  entry key is the script element's ID attribute, and the key value is the
@@ -138,8 +144,41 @@
         this.dedupe = _dedupe;
         this.dumpObject = _dumpObject;
         this.loadExistingIntegration = _loadExistingIntegration;
+        this.saveIntegration = _saveIntegration;
         
+        /**
+         * Takes a JSON representation of the integration and saves it to the server.  Server will pass back an ID and status
+         * if an ID is not already defined
+         */
+        function _saveIntegration(integration) {
+            var futureData = $q.defer();
+            var jsonData = self.dumpObject(integration);
+            var path = '/api/integration/save';
+            var done = false;
+            
+            // if we're doing an update
+            if (parseInt(integration.id) > -1) {
+                path += "/" + integration.id;
+            }
+            console.log(path);
+            console.log(jsonData);
+            var httpPromise =  $http({
+                method:"POST",
+                url:path,
+                data: $.param({integration: JSON.stringify(jsonData)}),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            });
+            
+//            .post(path , , true));
+            httpPromise.success(function(data){
+                integration.id=data.id;
+                //now that we have everything in the cache, return the requested dataTables back to the caller
+                futureData.resolve(done);
+            });
 
+            return futureData.promise;
+        }
+        
         /**
          * Based on the specified JSON representation of a data object, try and rebuild the integration
          */
