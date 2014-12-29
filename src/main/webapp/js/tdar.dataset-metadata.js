@@ -143,7 +143,7 @@
         TDAR.common.applyWatermarks(document);
 
         $('#table_select').change(function () {
-            window.location = '?dataTableId=' + $(this).val();
+            window.location = '?dataTableId=' + $(this).val() + "&id="+$("#resource_id").val();
         });
 
         $form.delegate(":input", "blur change", TDAR.datasetMetadata.registerCheckboxInfo);
