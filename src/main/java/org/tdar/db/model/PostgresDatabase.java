@@ -860,20 +860,21 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 DataTableColumn dtc = new DataTableColumn();
                 dtc.setDisplayName(column.getName());
                 dtc.setName(normalizeTableOrColumnNames(column.getName()));
+                String name = dtc.getName();
                 tempTable.getDataTableColumns().add(dtc);
                 column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
                     // integrated name
                     DataTableColumn integrationColumn = new DataTableColumn();
-                    integrationColumn.setDisplayName(column.getName());
-                    integrationColumn.setName(normalizeTableOrColumnNames(column.getName() + INTEGRATION_SUFFIX));
+                    integrationColumn.setDisplayName(name);
+                    integrationColumn.setName(name + INTEGRATION_SUFFIX);
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
 
                     DataTableColumn sortColumn = new DataTableColumn();
-                    sortColumn.setDisplayName(column.getName());
-                    sortColumn.setName(normalizeTableOrColumnNames(column.getName() + SORT_SUFFIX));
+                    sortColumn.setDisplayName(name);
+                    sortColumn.setName(name + SORT_SUFFIX);
                     tempTable.getDataTableColumns().add(sortColumn);
                     executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));
                 }
@@ -894,9 +895,11 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         joinListWithCommas(sb, proxy.getTempTable().getColumnNames(), true);
         String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateOntologyEnhancedSelect(table, proxy);
 
-        if (!selectSql.toLowerCase().contains(" where ")) {
-            throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
-        }
+        // This may be outdated logic, disabling... old logic required that you must have "one" item selected or checked in the filter dialogs
+        
+        // if (!selectSql.toLowerCase().contains(" where ")) {
+        // throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
+        // }
 
         executeUpdateOrDelete(selectSql);
     }

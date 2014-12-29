@@ -69,7 +69,7 @@
     <#list result.integrationContext.integrationColumns as integrationColumn>
         <th>${integrationColumn.name}</th>
         <#if !integrationColumn.displayColumn>
-            <th>Mapped ontology value for ${integrationColumn.name}</th>
+            <th>${integrationColumn.name} (Mapped)</th>
         </#if>
     </#list>
 </tr></thead>

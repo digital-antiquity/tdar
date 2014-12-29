@@ -62,7 +62,6 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         List<OntologyNode> ontologyNodes = new ArrayList<>();
         // first column is the table name
         String tableName = (String) row[0];
-        extractPreviewContents();
         values.add(tableName);
         int countVal = -1;
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
@@ -105,6 +104,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         logger.trace("{}", StringUtils.join(row, "|"));
 
         buildPivotDataForRow(ontologyNodes, tableName, countVal);
+        extractPreviewContents();
     }
 
     /**
