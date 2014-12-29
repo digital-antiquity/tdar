@@ -391,14 +391,13 @@ ${categoriesJson}
 <!-- fixme: cycle.js modifies global JSON object(which makse me nervous). think of a better way to incorporate this -->
 <script src="/includes/json-js-3d7767b/cycle.js"></script>
 <script src="/js/data-integration/app.js"></script>
-<script src="/js/data-integration/IntegrationController.js"></script>
-<script src="/js/data-integration/IntegrationModel.js"></script>
-<script src="/js/data-integration/LegacyFormController.js"></script>
-<script src="/js/data-integration/ModalDialogController.js"></script>
-<script src="/js/data-integration/DataService.js"></script>
-<script src="/js/data-integration/customFilters.js"></script>
+<script src="/js/data-integration/ng-IntegrationController.js"></script>
+<script src="/js/data-integration/ng-IntegrationModel.js"></script>
+<script src="/js/data-integration/ng-IntegrationLegacyFormController.js"></script>
+<script src="/js/data-integration/ng-IntegrationModalDialogController.js"></script>
+<script src="/js/data-integration/ng-IntegrationDataService.js"></script>
+<script src="/js/data-integration/ng-IntegrationCustomFilters.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
-<script src="/js/tdar.pagination.js"></script>
 
 <#-- Include the file below to run some barebones tests -->
 <#--<script src="/js/data-integration/tests.js"></script>-->

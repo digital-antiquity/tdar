@@ -160,7 +160,6 @@
             if (parseInt(integration.id) > -1) {
                 path += "/" + integration.id;
             }
-            console.log(path);
             console.log(jsonData);
             var httpPromise =  $http({
                 method:"POST",
@@ -169,10 +168,9 @@
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             });
             
-//            .post(path , , true));
+            // promise is not 100% used here, but in the future, perhaps needed
             httpPromise.success(function(data){
                 integration.id=data.id;
-                //now that we have everything in the cache, return the requested dataTables back to the caller
                 futureData.resolve(done);
             });
 
