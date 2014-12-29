@@ -366,7 +366,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
                 }
             }
         }
-//        flattenedOntologyNodeList = ontologyNodes;
+        flattenedOntologyNodeList = ontologyNodes;
     }
 
     public DataTableColumn getTempTableDataTableColumn() {
