@@ -16,9 +16,6 @@
         self.tab = 0;
         self.sharedOntologies = [];
         
-        // //fixme: remove later, expose viewmodel for debugging
-        window.__viewModel = self.integration;
-
         _openModal = function(options) {
             ModalService.showModal({
                 // Note: there is no file w/ this name. Angular first looks for partials in DOM elements w/ id specified by templateUrl.
@@ -166,6 +163,10 @@
 
         // FIXME: proper validation required
         $scope.isValid = function() {
+            if (self.integration.title == undefined || $.trim(self.integration.title) == "") {
+                console.log("invalid title");
+                return false;
+            }
             console.log("isValid:: %s", self.integration.columns.length);
             return self.integration.columns.length > 0;
         }
