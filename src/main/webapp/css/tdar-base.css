@@ -672,8 +672,8 @@ h2 {
     line-height: 64px;
     margin: 70px 0 0 0px;
     letter-spacing: -1px;
-    margin-top: 50px ;
-    margin-bottom: 20px;
+    margin-top: 50px !important;
+    margin-bottom: 20px !important;
 }
 
 .cols h1 {
