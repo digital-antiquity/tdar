@@ -432,6 +432,12 @@
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
             <version>2.5.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jmock</groupId>
@@ -1172,6 +1178,12 @@
             <artifactId>arquillian-phantom-driver</artifactId>
             <version>1.1.2.Final</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>

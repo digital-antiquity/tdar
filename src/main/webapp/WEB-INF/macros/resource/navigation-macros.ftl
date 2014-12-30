@@ -88,7 +88,7 @@ navigation freemarker macros
     		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
     	    	    <@makeLink "billing" "fix?id=${persistable.id?c}" "Fix Initial Billing" "add" "" false false />
 		        </#if>
-    		    <#if editable>
+    		    <#if editable || administrator>
 	                <@makeLink namespace "usage?id=${persistable.id?c}" "usage" "stats" current />
 		        </#if>
 			</ul>
