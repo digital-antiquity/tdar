@@ -890,6 +890,14 @@ public abstract class AbstractSeleniumWebITCase {
         AbstractSeleniumWebITCase.reindexed = val;
     }
 
+    public static void setRequiresIndexing(boolean val) {
+        AbstractSeleniumWebITCase.reindexed = !val;
+    }
+
+    public boolean testRequiresLucene() {
+        return false;
+    }
+    
     public void reindex() {
         logout();
         loginAdmin();

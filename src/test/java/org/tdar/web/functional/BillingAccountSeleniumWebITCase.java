@@ -29,8 +29,6 @@ public class BillingAccountSeleniumWebITCase extends AbstractEditorSeleniumWebIT
         find(".repeat-row-delete").click();
         submitForm();
         assertFalse(getText().contains("Kintigh"));
-        
-
     }
 
 }

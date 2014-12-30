@@ -226,7 +226,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     @Override
     public void login() {
         setScreenshotsAllowed(false);
-        reindexOnce();
+//        reindexOnce();
         loginAdmin();
         setIgnoreModals(false);
         setScreenshotsAllowed(true);

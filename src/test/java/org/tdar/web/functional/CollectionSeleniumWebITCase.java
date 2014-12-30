@@ -30,10 +30,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Before
-    public void setup() {
-        reindexOnce();
-    }
 
     @Test
     public void testCollectionPermissionsAndVisible() {
@@ -294,5 +290,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
             }
         }
         Assert.assertTrue("should have found at least one remove button with matching title: " + title, found);
+    }
+
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
     }
 }

@@ -226,20 +226,4 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     }
 
 
-    // @Test
-    // public void testManualInvoice() {
-    //     loginAdmin();
-    //     gotoPage(CART_ADD);
-
-    //     //admins get ability to select extra paymeent options
-    //     assertThat( find(withLabel(MANUAL.getLabel()), hasSize(1));
-    //     assertThat( find(withLabel(INVOICE.getLabel())), hasSize(1));
-
-    //     //fill out the form and select manual invoice
-    //     find( withLabel("Number of Files")).val("100");
-    //     find( withLabel(MANUAL.getLabel())).click();
-
-    //     submitForm();
-    // }
-
 }

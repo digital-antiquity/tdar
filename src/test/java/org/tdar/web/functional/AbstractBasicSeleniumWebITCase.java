@@ -9,7 +9,9 @@ public class AbstractBasicSeleniumWebITCase extends AbstractSeleniumWebITCase {
     @Override
     public void login() {
         setScreenshotsAllowed(false);
-        super.reindexOnce();
+        if (testRequiresLucene()) {
+            super.reindexOnce();
+        }
         super.login();
         setIgnoreModals(false);
         setScreenshotsAllowed(true);

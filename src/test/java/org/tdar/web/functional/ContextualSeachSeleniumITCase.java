@@ -27,7 +27,11 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     @Before
     public void setupContextSearch() {
         force1024x768();
-        reindexOnce();
+    }
+
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
     }
 
     @After

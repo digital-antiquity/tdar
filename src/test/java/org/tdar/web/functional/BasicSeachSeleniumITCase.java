@@ -3,7 +3,6 @@ package org.tdar.web.functional;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -18,10 +17,6 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
 
     private static final String SEARCH_RESULTS = "/search/results";
 
-    @Before
-    public void setup() {
-        reindexOnce();
-    }
 
     @Test
     public void testBrowse() {
@@ -77,4 +72,8 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
         }
     }
 
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
+    }
 }
