@@ -101,12 +101,12 @@
 </head>
 
 <body>
-<h1>New Data Integration</h1>
+<h1>Data Integration</h1>
 <div class="well">
     <p>
-        Please click the link below to access the new Dataset Integration UI  (currently under development).
+        Please click the link below to start your dataset integration.
     </p>
-        <a href="integrate">New Integration UI</a>
+        <a href="integrate">Start Now</a>
 
 </div>
 
@@ -118,21 +118,6 @@
 
 
 <div class="glide">
-    <div class="row">
-        <#if (bookmarkedDataTables)?? && !bookmarkedDataTables.empty >
-            <div class="span12">
-                <h3>Step 1: Select Datasets to Integrate or Display</h3>
-                <@s.form name='selectDTForm' method='post' action='select-columns'>
-                    <@s.token name='struts.csrf.token' />
-                    <@listDatasets bookmarkedDatasets />
-
-                    <div class="form-actions">
-                        <@s.submit value='Next: select columns' cssClass="btn btn-primary submitButton"/>
-                    </div>
-                </@s.form>
-            </div>
-        </#if>
-    </div>
 
     <div class="row">
         <div class="span6">
@@ -140,25 +125,9 @@
 
             <p>${siteAcronym}'s revolutionary data integration tool is a simple interface to help you combine two or more disparate data sets into a single, new
                 data set. The resulting data set can be easily downloaded and fed into SASS, SPSS, or R for analysis.</p>
-
-            <h3>Getting Started</h3>
-
-            <p>To get started, you either upload a data set to ${siteAcronym} or find data sets and bookmark them. You then ensure that at least one column from
-                each data set is mapped to the same ontology. In ${siteAcronym},
-                the key to integrating columns from different data sets is the ontology. It is a classification tool that helps reconcile different variable
-                states from separate data sets. For example, an ontology might reconcile the values "chair" and "seat" as similar values, or it could even
-                associate both values under the broader category "Furniture." </p>
-
-            <p>After you have mapped data sets to ontologies, you can then filter the results to create the integrated data set. You simply select the
-                columns you want to appear in the final set. You can read more about data integration <a
-                        href="https://dev.tdar.org/confluence/display/TDAR/Data+Integration">here</a>.
-            <ul>
-                <li><a href="<@s.url value="/search/results?integratableOptions=YES&startRecord=0"/>">Find Data Sets</a></li>
-                <li><a href="https://dev.tdar.org/confluence/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">How to Bookmark Data Sets</a></li>
-            </ul>
         </div>
         <div class="span6">
-            <img src="/images/r4/data_integration.png" class="responsive-image"/>
+            <img src="/images/r4/data_integration.png" class="responsive-image" alt="integrate" title="Integrate" />
         </div>
 
     </div>

@@ -1,7 +1,7 @@
 package org.tdar.web;
 
 import static org.junit.Assert.assertNotNull;
-import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.junit.Test;
 
@@ -11,15 +11,15 @@ import org.junit.Test;
 public class IntegrationWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testWorkspaceAdd() {
-        //angular templates will likely break all html validation
         skipHtmlValidation = true;
-        gotoPage("/workspace/add-angular");
+        gotoPage("/workspace/list");
+        gotoPage("/workspace/integrate");
     }
 
     @Test
     public void testFindOntologyDefault() {
         String json = gotoJson("/api/integration/find-ontologies?incompatible=false&recordsPerPage=500&title=&unbookmarked=false");
-        JSONArray obj = JSONArray.fromObject(json);
+        JSONObject obj = JSONObject.fromObject(json);
         assertNotNull(obj);
     }
 }
