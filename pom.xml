@@ -1416,7 +1416,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <keystore>src/main/resources/jetty-ssl.keystore</keystore>
+                    <keystore>src/main/resources/jetty/jetty-ssl.keystore</keystore>
                     <dname>cn=localhost</dname>
                     <keypass>jetty6</keypass>
                     <skipIfExist>true</skipIfExist>
@@ -1582,7 +1582,7 @@
                     <testClassesDirectory>src/test/resources/</testClassesDirectory>
                     <useTestClasspath>${use.test.classpath}</useTestClasspath>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <contextXml>src/main/resources/jetty-context.xml</contextXml>
+                    <contextXml>src/main/resources/jetty/jetty-context.xml</contextXml>
                     <connectors>
                         <connector
                             implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -1593,13 +1593,13 @@
                             implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
                             <port>${jetty.ssl.port}</port>
                             <maxIdleTime>60000</maxIdleTime>
-                            <keystore>src/main/resources/jetty-ssl.keystore</keystore>
+                            <keystore>src/main/resources/jetty/jetty-ssl.keystore</keystore>
                             <password>jetty6</password>
                             <keyPassword>jetty6</keyPassword>
                         </connector>
                     </connectors>
                     <!-- <contextPath>/</contextPath> -->
-                    <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
+                    <webDefaultXml>src/main/resources/jetty/webdefault.xml</webDefaultXml>
                     <scanIntervalSeconds>0</scanIntervalSeconds>
                     <stopKey>tdar</stopKey>
                     <webApp>
