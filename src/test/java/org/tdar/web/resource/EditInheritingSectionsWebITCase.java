@@ -1,4 +1,4 @@
-package org.tdar.web;
+package org.tdar.web.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,6 +22,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 

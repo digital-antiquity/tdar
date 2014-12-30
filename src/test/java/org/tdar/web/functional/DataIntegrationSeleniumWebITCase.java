@@ -28,6 +28,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.web.functional.util.WebElementSelection;
 
 @Ignore
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {

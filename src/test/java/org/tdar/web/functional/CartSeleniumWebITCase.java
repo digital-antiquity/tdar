@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.service.external.UserRegistration;
 import org.tdar.utils.Pair;
+import org.tdar.web.functional.util.WebElementSelection;
 
 import com.opensymphony.xwork2.interceptor.annotations.After;
 

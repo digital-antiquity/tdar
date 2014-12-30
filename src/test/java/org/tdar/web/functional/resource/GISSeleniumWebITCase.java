@@ -4,7 +4,7 @@
  *
  */
 
-package org.tdar.web.functional;
+package org.tdar.web.functional.resource;
 
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
@@ -32,6 +32,7 @@ import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.functional.AbstractBasicSeleniumWebITCase;
 
 public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());

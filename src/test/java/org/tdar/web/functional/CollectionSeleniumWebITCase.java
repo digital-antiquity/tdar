@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.functional.util.WebElementSelection;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 

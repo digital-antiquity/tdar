@@ -1,9 +1,10 @@
-package org.tdar.web;
+package org.tdar.web.resource;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.tdar.TestConstants;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class UploadITWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 

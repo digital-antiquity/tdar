@@ -4,7 +4,7 @@
  *
  */
 
-package org.tdar.web.functional;
+package org.tdar.web.functional.resource;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +27,8 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.functional.AbstractBasicSeleniumWebITCase;
+import org.tdar.web.functional.util.WebElementSelection;
 
 public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());

@@ -87,6 +87,8 @@ import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.functional.util.ByLabelText;
+import org.tdar.web.functional.util.WebElementSelection;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;

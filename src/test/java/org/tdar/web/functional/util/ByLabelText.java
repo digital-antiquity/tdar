@@ -1,4 +1,4 @@
-package org.tdar.web.functional;
+package org.tdar.web.functional.util;
 
 import java.util.ArrayList;
 import java.util.List;

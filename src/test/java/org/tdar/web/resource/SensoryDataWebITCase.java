@@ -1,4 +1,4 @@
-package org.tdar.web;
+package org.tdar.web.resource;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,6 +10,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;

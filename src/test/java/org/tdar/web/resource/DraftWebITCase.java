@@ -1,9 +1,10 @@
-package org.tdar.web;
+package org.tdar.web.resource;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class DraftWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 

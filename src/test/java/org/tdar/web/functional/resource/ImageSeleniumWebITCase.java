@@ -1,4 +1,4 @@
-package org.tdar.web.functional;
+package org.tdar.web.functional.resource;
 
 /**
  * Created with IntelliJ IDEA.

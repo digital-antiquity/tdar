@@ -1,4 +1,4 @@
-package org.tdar.web;
+package org.tdar.web.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,6 +23,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })

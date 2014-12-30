@@ -4,7 +4,7 @@
  *
  */
 
-package org.tdar.web.functional;
+package org.tdar.web.functional.resource;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.functional.AbstractBasicSeleniumWebITCase;
 
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());

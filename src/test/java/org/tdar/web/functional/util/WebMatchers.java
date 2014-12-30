@@ -1,4 +1,4 @@
-package org.tdar.web.functional;
+package org.tdar.web.functional.util;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

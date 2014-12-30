@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.functional.util.WebElementSelection;
 
 /**
  * Created by jimdevos on 3/12/14.
@@ -21,7 +22,6 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     public void setup() {
         reindexOnce();
     }
-    
 
     @Test
     public void testBrowse() {
@@ -59,7 +59,7 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
             gotoPage(SEARCH_RESULTS);
             gotoPage(url);
         }
-        
+
         gotoPage(SEARCH_RESULTS);
         Select sel = new Select(getDriver().findElement(By.id("recordsPerPage")));
         int size = sel.getOptions().size();
