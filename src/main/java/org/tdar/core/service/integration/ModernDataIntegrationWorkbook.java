@@ -172,7 +172,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         int max = 2 + increment * count;
         for (DataTable table : context.getDataTables()) {
             max = 2 + increment * count;
-            dataTableNameheader[max] = table.getName();
+            dataTableNameheader[max] = formatTableName(table);
             datasetNameheader[max] = provider.getText("dataIntegrationWorkbook.name_paren_id",
                     Arrays.asList(table.getDataset().getName(), table.getDataset().getId()));
             count++;
@@ -271,7 +271,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             // Map<List<OntologyNode>, HashMap<String, IntContainer>>
             Map<String, IntContainer> vals = pivot.get(key);
             for (DataTable table : context.getDataTables()) {
-                IntContainer integer = vals.get(table.getName());
+                IntContainer integer = vals.get(formatTableName(table));
                 if (integer == null) {
                     rowData.add("0");
                 } else {
@@ -280,6 +280,10 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
             excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
         }
+    }
+
+    public static String formatTableName(DataTable table) {
+        return String.format("%s - %s", table.getDataset().getTitle(), table.getName());
     }
 
     public ExcelService getExcelService() {

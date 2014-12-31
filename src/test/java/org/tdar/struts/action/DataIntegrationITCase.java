@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.workspace.LegacyWorkspaceController;
@@ -276,8 +277,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
                 names.add(col.getName());
             }
         }
-        names.add(alexandriaTable.getName());
-        names.add(spitalMainTable.getName());
+        names.add(ModernDataIntegrationWorkbook.formatTableName(alexandriaTable));
+        names.add(ModernDataIntegrationWorkbook.formatTableName(spitalMainTable));
         Row row = summarySheet.getRow(3);
         List<String> seen = new ArrayList<String>();
         for (int i = 0; i < names.size(); i++) {
