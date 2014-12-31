@@ -85,10 +85,6 @@ These style definitions will likely go away when I'm certain that they don't scr
     font-size: 15pt;
 }
 
-h1.compact {
-    margin-top:0 !important;
-    margin-bottom: -3pt ;
-}
 h2.compact {
     margin-top:-3pt ;
 }
