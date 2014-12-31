@@ -248,8 +248,8 @@
 
     <#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
     <div class="" id="organizeSection">
+			<#-- use 1 beacause we prepend with a blank for -1 -->
 		<#assign showProjects = (potentialParents?has_content && potentialParents?size > 1) />
-${showProjects?string}
     	<#if !showProjects && !resource.resourceType.project >
 			<input type="hidden" name="projectId" value="-1"/>
 		</#if>
