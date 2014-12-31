@@ -12,7 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
@@ -58,7 +58,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testAccountGroups() {
-        AccountGroup group = new AccountGroup();
+        BillingAccountGroup group = new BillingAccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
         BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
@@ -135,7 +135,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testAccountGroupPermissions()  {
-        AccountGroup group = new AccountGroup();
+        BillingAccountGroup group = new BillingAccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
         BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());

@@ -36,7 +36,7 @@ import org.tdar.core.bean.resource.Status;
  */
 @Entity
 @Table(name = "pos_account_group")
-public class AccountGroup extends Base implements Updatable {
+public class BillingAccountGroup extends Base implements Updatable {
 
     private static final long serialVersionUID = 3939132209828344622L;
 

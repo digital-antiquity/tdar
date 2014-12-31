@@ -338,7 +338,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT,
-                query = "select grp from AccountGroup grp inner join grp.accounts as account where account.id =:accountId"
+                query = "select grp from BillingAccountGroup grp inner join grp.accounts as account where account.id =:accountId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
@@ -346,7 +346,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON,
-                query = "from AccountGroup act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
+                query = "from BillingAccountGroup act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LOGS_FOR_RESOURCE,

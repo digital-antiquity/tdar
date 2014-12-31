@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
@@ -115,7 +115,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param account
      * @return
      */
-    public AccountGroup getAccountGroup(BillingAccount account) {
+    public BillingAccountGroup getAccountGroup(BillingAccount account) {
         return getDao().getAccountGroup(account);
     }
 

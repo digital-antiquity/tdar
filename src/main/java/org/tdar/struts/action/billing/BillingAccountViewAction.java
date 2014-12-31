@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
@@ -44,7 +44,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
 
-    private AccountGroup accountGroup;
+    private BillingAccountGroup accountGroup;
     private List<TdarUser> authorizedMembers = new ArrayList<>();
     private Long accountGroupId;
     private String name;
@@ -133,11 +133,11 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         this.accounts = accounts;
     }
 
-    public AccountGroup getAccountGroup() {
+    public BillingAccountGroup getAccountGroup() {
         return accountGroup;
     }
 
-    public void setAccountGroup(AccountGroup accountGroup) {
+    public void setAccountGroup(BillingAccountGroup accountGroup) {
         this.accountGroup = accountGroup;
     }
 

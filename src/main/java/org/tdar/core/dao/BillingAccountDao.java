@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
@@ -65,14 +65,14 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         query.setParameter("personid", user.getId());
         query.setParameterList("statuses", statuses);
         accountGroups.addAll(query.list());
-        for (AccountGroup group : findAccountGroupsForUser(user)) {
+        for (BillingAccountGroup group : findAccountGroupsForUser(user)) {
             accountGroups.addAll(group.getAccounts());
         }
         return new ArrayList<>(accountGroups);
     }
 
     @SuppressWarnings("unchecked")
-    public List<AccountGroup> findAccountGroupsForUser(Person user) {
+    public List<BillingAccountGroup> findAccountGroupsForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON);
         query.setParameter("personid", user.getId());
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE));
@@ -80,10 +80,10 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
     }
 
-    public AccountGroup getAccountGroup(BillingAccount account) {
+    public BillingAccountGroup getAccountGroup(BillingAccount account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT);
         query.setParameter("accountId", account.getId());
-        return (AccountGroup) query.uniqueResult();
+        return (BillingAccountGroup) query.uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
