@@ -413,11 +413,12 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
     @Transactional(readOnly=false)
     public DeleteIssue getDeletionIssues(TextProvider provider, BillingAccount persistable) {
         DeleteIssue deleteIssue = new DeleteIssue();
-        if (persistable.getResources().size() > 0) {
+        if (CollectionUtils.isNotEmpty(persistable.getResources()) || CollectionUtils.isNotEmpty(persistable.getCoupons())) {
             deleteIssue.setIssue(provider.getText("billingAccount.cannot_delete"));
             deleteIssue.getRelatedItems().addAll(persistable.getResources());
+            return deleteIssue;
         }
-        return deleteIssue;
+        return null;
     }
 
 }

@@ -19,6 +19,7 @@ import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 
 /**
@@ -26,7 +27,7 @@ import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
  */
 @Entity
 @Table(name = "data_integration_workflow")
-public class DataIntegrationWorkflow extends Persistable.Base implements HasSubmitter, Updatable {
+public class DataIntegrationWorkflow extends Persistable.Base implements HasSubmitter, Updatable, Addressable {
 
     private static final long serialVersionUID = -3687383363452908687L;
 
@@ -123,5 +124,15 @@ public class DataIntegrationWorkflow extends Persistable.Base implements HasSubm
         this.setTitle(data.getTitle());
         this.setDescription(data.getDescription());
         this.setJsonData(json);
+    }
+
+    @Override
+    public String getUrlNamespace() {
+        return "workspace";
+    }
+    
+    //convenience for deletion
+    public String getName() {
+        return title;
     }
 }

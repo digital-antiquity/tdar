@@ -57,7 +57,9 @@ import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -89,7 +91,7 @@ public class SerializationService {
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
     @SuppressWarnings("unchecked")
-    private static final Class<Class<?>>[] rootClasses = new Class[]{Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class};
+    private static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class };
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -168,7 +170,7 @@ public class SerializationService {
     public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = initializeObjectMapper();
         ObjectWriter objectWriter = mapper.writer();
-        
+
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
             objectWriter = mapper.writerWithView(view);
@@ -176,11 +178,12 @@ public class SerializationService {
         objectWriter.writeValue(writer, object);
     }
 
-    public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
+    @Transactional(readOnly = true)
+    public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException, JsonParseException, JsonMappingException {
         ObjectMapper mapper = initializeObjectMapper();
         return mapper.readValue(json, cls);
     }
-    
+
     private ObjectMapper initializeObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
 

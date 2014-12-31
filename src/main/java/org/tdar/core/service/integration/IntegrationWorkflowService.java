@@ -17,6 +17,8 @@ import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * Service class serving as a bridge between json data and IntegrationContext objects.
  * 
@@ -59,5 +61,10 @@ public class IntegrationWorkflowService  extends ServiceInterface.TypedDaoBase<D
     @Transactional(readOnly=true)
     public List<DataIntegrationWorkflow> getWorkflowsForUser(TdarUser authorizedUser) {
         return getDao().getWorkflowsForUser(authorizedUser);
+    }
+
+    @Transactional(readOnly=false)
+    public void deleteForController(TextProvider provider, DataIntegrationWorkflow persistable, TdarUser authenticatedUser) {
+        getDao().delete(persistable);
     }
 }

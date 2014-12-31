@@ -33,6 +33,8 @@ import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
@@ -77,9 +79,15 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
         if (workflow != null) {
             try {
                 data = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
+            } catch (JsonParseException jpe) {
+                // not technically needed, but using for explicitness
+                getLogger().error("json parsing exception", jpe);
+            } catch (JsonMappingException jme) {
+                getLogger().error("json mapping exception", jme);
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().error("other exception", e);
             }
+            
             if (data.getVersion() != currentJsonVersion) {
                 // do something
             }
@@ -140,13 +148,13 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
     }
 
     private void prepareProjectStuff() {
-        //FIXME: Remove and replace with AJAX lookup / autocomplete
+        // FIXME: Remove and replace with AJAX lookup / autocomplete
         fullUserProjects = new ArrayList<>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), false));
         Collections.sort(fullUserProjects);
     }
 
     private void prepareCollections() {
-        //FIXME: Remove and replace with AJAX lookup / autocomplete
+        // FIXME: Remove and replace with AJAX lookup / autocomplete
         allResourceCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
     }
 
