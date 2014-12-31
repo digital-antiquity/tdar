@@ -93,11 +93,11 @@
                             <#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
                                 <#assign numberOfParents=ontologyNode.numberOfParents>
                                 <#assign checkForUser=true />
-                                <#list ontologyNode.columnHasValueArray as hasValue>
+								<#list ontologyNode.legacyColumnHasValueMap?values as hasValue >
                                     <#if !hasValue>
                                         <#assign checkForUser=false />
                                     </#if>
-                                </#list>
+								</#list>
                                 <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
                             <tr class="<#if ontologyNode.disabled>disabled</#if>">
                                 <td style="white-space: nowrap;">
@@ -120,16 +120,20 @@
                                     </label>
 
                                 </td>
-                                <#list ontologyNode.columnHasValueArray as hasValue>
-                                    <td>
-                                        <#if hasValue>
-                                            <img src="<@s.url value="/images/checked.gif" />"/>
-                                        <#else>
-                                            <img src="<@s.url value="/images/unchecked.gif" />"/>
-                                        </#if>
-                                    </td>
-                                </#list>
-                            </tr>
+
+								<#list integrationColumn.columns as column>
+								<#assign seenCol=false>
+								<#list ontologyNode.columnHasValueMap?keys as col >
+                                    <#if col.id==column.id>
+											<#assign seenCol = true>
+                                           <td> <img src="<@s.url value="/images/checked.gif" />"/></td>
+                                    </#if>
+								</#list>
+									<#if !seenCol>
+                                            <td><img src="<@s.url value="/images/unchecked.gif" />"/></td>
+									</#if>
+								</#list>
+       </tr>
                             </#list>
                         </tbody>
                     </table>
