@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 
 public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCase {
     
@@ -17,7 +18,7 @@ public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCas
     private String testJson = "src/test/resources/data_integration_tests/test-integration.json";
     
     @Test
-    public void testIntegrationWorkflowData() throws IOException {
+    public void testIntegrationWorkflowData() throws IOException, IntegrationDeserializationException {
         String json = FileUtils.readFileToString(new File(testJson));
         getLogger().debug(json);
         DataIntegrationWorkflow workflow = new DataIntegrationWorkflow();

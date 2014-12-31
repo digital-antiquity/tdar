@@ -14,6 +14,7 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.integration.IntegrationWorkflowDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 
@@ -39,7 +40,7 @@ public class IntegrationWorkflowService  extends ServiceInterface.TypedDaoBase<D
     private transient GenericDao genericDao;
 
     @Transactional
-    public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow) throws IOException {
+    public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow) throws IOException, IntegrationDeserializationException {
         IntegrationWorkflowData workflowData = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
         IntegrationContext context = workflowData.toIntegrationContext(genericDao);
         // perform validity checks?
@@ -47,14 +48,14 @@ public class IntegrationWorkflowService  extends ServiceInterface.TypedDaoBase<D
     }
 
     @Transactional(readOnly = false)
-    public void saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data, TdarUser authUser) {
+    public void saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data, TdarUser authUser) throws IntegrationDeserializationException {
         validateWorkflow(data);
         persistable.markUpdated(authUser);
         genericDao.saveOrUpdate(persistable);
     }
 
     @Transactional(readOnly = true)
-    public void validateWorkflow(IntegrationWorkflowWrapper data) {
+    public void validateWorkflow(IntegrationWorkflowWrapper data) throws IntegrationDeserializationException {
         data.validate(genericDao);
     }
     

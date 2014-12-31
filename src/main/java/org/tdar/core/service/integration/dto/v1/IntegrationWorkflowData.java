@@ -17,10 +17,12 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
+import org.tdar.core.service.integration.dto.AbstractIntegrationWorkfllowData;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.utils.PersistableUtils;
 
-public class IntegrationWorkflowData implements Serializable, IntegrationWorkflowWrapper {
+public class IntegrationWorkflowData extends AbstractIntegrationWorkfllowData implements Serializable, IntegrationWorkflowWrapper {
 
     private static final long serialVersionUID = -4483089478294270554L;
 
@@ -48,11 +50,21 @@ public class IntegrationWorkflowData implements Serializable, IntegrationWorkflo
      * 
      * @param service
      * @return
+     * @throws IntegrationDeserializationException
      */
     @Override
-    public IntegrationContext toIntegrationContext(GenericDao service) {
+    public IntegrationContext toIntegrationContext(GenericDao service) throws IntegrationDeserializationException {
         validate(service);
         integrationContext.setErrorMessages(errors);
+        for (IntegrationColumnDTO ic_ : columns) {
+            IntegrationColumn col = new IntegrationColumn(ic_.getType());
+            col.getColumns().addAll(service.findAll(DataTableColumn.class, PersistableUtils.extractIds(ic_.dataTableColumns)));
+            if (ic_.getType() == ColumnType.INTEGRATION) {
+                col.getOntologyNodesForSelect().addAll(service.findAll(OntologyNode.class, PersistableUtils.extractIds(ic_.nodeSelection)));
+                col.setSharedOntology(service.find(Ontology.class, ic_.getOntology().getId()));
+            }
+        }
+        integrationContext.setDataTables(service.findAll(DataTable.class, PersistableUtils.extractIds(dataTables)));
         return integrationContext;
     }
 
@@ -60,68 +72,25 @@ public class IntegrationWorkflowData implements Serializable, IntegrationWorkflo
      * FIXME: add error checking for missing entity ids or ontology node values
      * 
      * @param service
+     * @throws IntegrationDeserializationException
      */
-    private void validateIntegrationColumns(GenericDao service) {
-        ArrayList<IntegrationColumn> integrationColumns = new ArrayList<>();
-        // FIXME: less efficient than having a master list of ids and pulling all entities in one fell swoop instead of iteratively querying
+    private void validateIntegrationColumns(GenericDao service) throws IntegrationDeserializationException {
+        Set<DataTableColumnDTO> dtcs = new HashSet<>();
+        Set<OntologyNodeDTO> nodes = new HashSet<>();
         for (IntegrationColumnDTO column : columns) {
-            List<Long> columnIds = PersistableUtils.extractIds(column.getDataTableColumns());
-
-            IntegrationColumn integrationColumn = new IntegrationColumn(column.getType());
-            List<DataTableColumn> dataTableColumns = service.findAll(DataTableColumn.class, columnIds);
-            integrationColumn.setColumns(dataTableColumns);
-            if (column.getType() == ColumnType.INTEGRATION) {
-                Ontology sharedOntology = service.find(Ontology.class, column.getOntology().getId());
-                integrationColumn.setSharedOntology(sharedOntology);
-                List<Long> selectedNodeIds = PersistableUtils.extractIds(column.getNodeSelection());
-
-                Set<OntologyNode> selectedNodes = new HashSet<>(service.findAll(OntologyNode.class, selectedNodeIds));
-                integrationColumn.getFilteredOntologyNodes().addAll(selectedNodes);
-            }
-            integrationColumns.add(integrationColumn);
+            dtcs.addAll(column.getDataTableColumns());
+            nodes.addAll(column.getNodeSelection());
         }
-        integrationContext.setIntegrationColumns(integrationColumns);
+        super.validate(service, new ArrayList<DataTableColumnDTO>(dtcs), DataTableColumn.class);
+        super.validate(service, new ArrayList<OntologyNodeDTO>(nodes), OntologyNode.class);
     }
 
     @Override
-    public void validate(GenericDao service) {
+    public void validate(GenericDao service) throws IntegrationDeserializationException {
+        super.validate(service, dataTables, DataTable.class);
+        super.validate(service, datasets, Dataset.class);
+        super.validate(service, ontologies, Ontology.class);
         validateIntegrationColumns(service);
-        validateDatasets(service);
-        validateOntologies(service);
-        validateDataTables(service);
-    }
-    
-    /**
-     * FIXME: add error checking for missing ids
-     * 
-     * @param service
-     */
-    private void validateDatasets(GenericDao service) {
-        List<Long> datasetIds = PersistableUtils.extractIds(datasets);
-        List<Dataset> datasets_ = service.findAll(Dataset.class, datasetIds);
-        // FIXME: no place to put the datasets on IntegrationContext currently
-    }
-
-    /**
-     * FIXME: add error checking for missing ids
-     * 
-     * @param service
-     */
-    private void validateOntologies(GenericDao service) {
-        List<Long> ontologyIds = PersistableUtils.extractIds(ontologies);
-        List<Ontology> ontologies_ = service.findAll(Ontology.class, ontologyIds);
-        // FIXME: no place on IntegrationContext for all participating ontologies currently
-    }
-
-    /**
-     * FIXME: add error checking for missing ids
-     * 
-     * @param service
-     */
-    private void validateDataTables(GenericDao service) {
-        List<Long> dataTableIds = PersistableUtils.extractIds(dataTables);
-        List<DataTable> tables = service.findAll(DataTable.class, dataTableIds);
-        integrationContext.setDataTables(tables);
     }
 
     @Override
@@ -300,25 +269,29 @@ public class IntegrationWorkflowData implements Serializable, IntegrationWorkflo
             this.name = name;
         }
     }
-    
+
     private static class OntologyDTO implements Serializable, Persistable {
 
         private static final long serialVersionUID = -7234646396247780253L;
         private Long id;
         private String title;
+
         public Long getId() {
             return id;
         }
+
         public void setId(Long id) {
             this.id = id;
         }
+
         public String getTitle() {
             return title;
         }
+
         public void setTitle(String displayName) {
             this.title = displayName;
         }
-        
+
         @Override
         public List<?> getEqualityFields() {
             return Arrays.asList(id);
@@ -346,7 +319,7 @@ public class IntegrationWorkflowData implements Serializable, IntegrationWorkflo
         public void setIri(String iri) {
             this.iri = iri;
         }
-        
+
         @Override
         public List<?> getEqualityFields() {
             return Arrays.asList(id);

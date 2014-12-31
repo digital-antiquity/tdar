@@ -14,7 +14,7 @@ public interface IntegrationWorkflowWrapper {
 
     boolean isValid();
 
-    void validate(GenericDao service);
+    void validate(GenericDao service) throws IntegrationDeserializationException;
     
-    IntegrationContext toIntegrationContext(GenericDao service);
+    IntegrationContext toIntegrationContext(GenericDao service) throws IntegrationDeserializationException;
 }

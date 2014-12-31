@@ -24,6 +24,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.ProjectService;
@@ -206,7 +207,11 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
     @Override
     public void validate() {
         if (data != null) {
-            integrationWorkflowService.validateWorkflow(data);
+            try {
+                integrationWorkflowService.validateWorkflow(data);
+            } catch (IntegrationDeserializationException e) {
+               getLogger().error("cannot validate", e);
+            }
         }
     }
 }

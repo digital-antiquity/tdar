@@ -120,12 +120,6 @@ public class DataIntegrationWorkflow extends Persistable.Base implements HasSubm
         this.dateCreated = dateCreated;
     }
 
-    public void copyValuesFromJson(IntegrationWorkflowWrapper data, String json) {
-        this.setTitle(data.getTitle());
-        this.setDescription(data.getDescription());
-        this.setJsonData(json);
-    }
-
     @Override
     public String getUrlNamespace() {
         return "workspace";

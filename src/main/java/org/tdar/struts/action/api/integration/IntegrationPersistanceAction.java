@@ -16,6 +16,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.PersistableLoadingAction;
@@ -54,7 +55,7 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
     })
     @PostOnly
     @WriteableSession
-    public String save() throws TdarActionException, IOException {
+    public String save() throws TdarActionException, IOException, IntegrationDeserializationException {
         integrationWorkflowService.saveForController(getPersistable(), jsonData, getAuthenticatedUser());
         Map<String,Object>result = new HashMap<>();
         result.put("status","success");
@@ -70,7 +71,11 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
 
     @Override
     public void validate() {
-        integrationWorkflowService.validateWorkflow(jsonData);
+        try {
+            integrationWorkflowService.validateWorkflow(jsonData);
+        } catch (IntegrationDeserializationException e) {
+           getLogger().error("cannot validate", e);
+        }
     }
 
     @Override
@@ -106,7 +111,7 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
         if (workflow == null) {
             workflow = new DataIntegrationWorkflow();
         }
-        workflow.copyValuesFromJson(jsonData, integration);
+        jsonData.copyValuesToBean(workflow, integration);
 
     }
 
