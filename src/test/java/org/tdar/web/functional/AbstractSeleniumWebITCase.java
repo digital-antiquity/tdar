@@ -949,6 +949,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void waitForPageload() {
         waitForPageload(60);
+        clearPageCache();
     }
 
     public List<String> getJavascriptErrors() {

@@ -3,28 +3,31 @@ package org.tdar.web.functional;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
 public class BillingAccountSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
+    private static final String HATCH_PROP = "Hatch";
+    private static final String HATCH = "hatch";
+
     @Test
     public void testAddRemoveAccount() {
         gotoPage("/billing/1/edit");
-        assertFalse(getSource().toLowerCase().contains("kintigh") && getText().toLowerCase().contains("keith"));
+        assertFalse(getSource().toLowerCase().contains(HATCH) && getText().toLowerCase().contains(HATCH));
         find(".addanother").click();
         WebElement last = find(".userAutoComplete").last();
-        selectAutocompleteValue(last, "Kintigh", "Kintigh", "person-6");
+        selectAutocompleteValue(last, HATCH_PROP, HATCH_PROP, "person-38");
         submitForm();
-        assertTrue(getText().contains("Kintigh"));
+        assertTrue(getText().contains(HATCH_PROP));
         gotoPage("/billing/1/edit");
         clearPageCache();
-        logger.debug(getSource());
-        assertTrue(getSource().toLowerCase().contains("kintigh") || getText().toLowerCase().contains("keith"));
+        assertTrue(getSource().toLowerCase().contains(HATCH) || getText().toLowerCase().contains(HATCH));
         find(".repeat-row-delete").click();
         submitForm();
-        assertFalse(getText().contains("Kintigh"));
+        clearPageCache();
+        logger.debug(getText());
+        assertFalse(getText().contains(HATCH_PROP));
     }
 
     @Override
