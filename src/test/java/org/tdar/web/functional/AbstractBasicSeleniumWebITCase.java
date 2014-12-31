@@ -22,6 +22,7 @@ public class AbstractBasicSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void logout() {
         // if we're shutting things down after aborted/failed test, don't bug me with formnavigate popups
         setIgnoreModals(true);
+        setScreenshotsAllowed(false);
         // the test is over, so screenshots at this point aren't helpful
         super.logout();
     }

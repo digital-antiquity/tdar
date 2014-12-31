@@ -29,8 +29,8 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                    <button type="button" class="btn" ng-disabled="!isValid()" ng-click="ctrl.saveClicked()">Save</button>
-                    <button type="button" class="btn" ng-disabled="!isValid()" ng-click="ctrl.integrateClicked()">Integrate</button>
+                    <button type="button" class="btn" ng-disabled="!isMinimallyValid()" id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
                                         Add Integration Column
                                         <span class="caret"></span>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu" id="btnSetAddIntegrationColumns">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
                                                 ><a href="#" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
@@ -76,16 +76,16 @@
                                 <label>Selected Datasets</label>
                                 <div>
                                     <select size="5" class="input-block-level" multiple
-                                            ng-model="selectedDataTables"
+                                            ng-model="selectedDataTables" name="selectedDatasets" id="selDatasets"
                                             ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
                                 </div>
-                                <button type="button" class="btn input-block-level"
+                                <button type="button" class="btn input-block-level" id="rmDatasetBtn"
                                         ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
                             </div>
                             <div class="span4">
                                 <label>Shared Ontologies</label>
                                 <ul>
-                                    <li ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
+                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
                                 </ul>
                             </div>
                         </div>
@@ -108,8 +108,8 @@
                             <div id="tabControl">
                                 <ul class="nav nav-tabs">
                                     <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
-                                        <a href="#tab{{$index}}">
-                                            <input type="text" name="column.name" ng-model="column.name" />
+                                        <a href="#tab{{$index}}" id="tabtab{{$index}}">
+                                            <input type="text" name="column.name{{$index}}" ng-model="column.name" />
                                             <button class="close" ng-click="ctrl.closeTab($index)">x</button>
                                         </a>
                                     </li>
@@ -117,7 +117,7 @@
 
                                 <div class="tab-content" >
                                     <div class="tab-pane" id="tab{{$index}}"
-                                         ng-repeat="outputColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}" ng-init="columnIndex=$index">
+                                         ng-repeat="outputColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}">
                                         <div ng-switch="outputColumn.type">
                                             <div ng-switch-when="integration" class=".integration-pane-content">
                                                 <div class="alert" ng-hide="outputColumn.isValidMapping">
@@ -160,7 +160,7 @@
                                                     </thead>
                                                     <tbody>
                                                     <tr ng-repeat="nodeSelection in outputColumn.nodeSelections" ng-init="nodeIndex = $index">
-                                                        <td><input type="checkbox" name="tbd" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
+                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
                                                                 <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.displayName}}</label>
@@ -177,6 +177,7 @@
                                             </div>
 
                                             <div ng-switch-when="display" class=".display-pane-content">
+                                            
                                                 <h3>Select Columns</h3>
                                                 <br/>
                                                 <table>
@@ -189,7 +190,7 @@
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
                                                         <th>{{dataTable.displayName}}</th>
                                                         <td>
-                                                            <select ng-model="columnSelection.dataTableColumn"
+                                                            <select ng-model="columnSelection.dataTableColumn" id="dt_{{$parent.$index}}_{{dataTable.id}}"
                                                                     ng-options="c.displayName for c in dataTable.dataTableColumns  | orderBy: 'displayName' ">
                                                                 <option value="" class="emptyoption">No column selected</option>
                                                             </select>

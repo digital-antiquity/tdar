@@ -165,12 +165,17 @@
 
         // FIXME: proper validation required
         $scope.isValid = function() {
-            if (self.integration.title == undefined || $.trim(self.integration.title) == "") {
-//                console.log("invalid title");
+            if (!$scope.isMinimallyValid()) {
                 return false;
             }
-//            console.log("isValid:: %s", self.integration.columns.length);
             return self.integration.columns.length > 0;
+        }
+
+        $scope.isMinimallyValid = function() {
+            if (self.integration.title == undefined || $.trim(self.integration.title) == "") {
+                return false;
+            }
+            return true;
         }
 
         /**

@@ -8,10 +8,6 @@ import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
 public class BillingAccountSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
-    @Before
-    public void setup() {
-        reindexOnce();
-    }
 
     @Test
     public void testAddRemoveAccount() {
@@ -19,7 +15,7 @@ public class BillingAccountSeleniumWebITCase extends AbstractEditorSeleniumWebIT
         assertFalse(getSource().toLowerCase().contains("kintigh") && getText().toLowerCase().contains("keith"));
         find(".addanother").click();
         WebElement last = find(".userAutoComplete").last();
-        selectAutocompleteValue(last, "Kintigh", "Kintigh","person-6");
+        selectAutocompleteValue(last, "Kintigh", "Kintigh", "person-6");
         submitForm();
         assertTrue(getText().contains("Kintigh"));
         gotoPage("/billing/1/edit");
@@ -31,4 +27,8 @@ public class BillingAccountSeleniumWebITCase extends AbstractEditorSeleniumWebIT
         assertFalse(getText().contains("Kintigh"));
     }
 
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
+    }
 }
