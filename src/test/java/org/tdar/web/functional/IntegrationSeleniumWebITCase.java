@@ -60,7 +60,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         
         removeDatasetByPartialName("Knowth");
         Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
-        assertTrue(getText().contains("Knowth"));
+        assertFalse(getText().contains("Knowth"));
         waitFor(ExpectedConditions.elementToBeClickable(By.linkText("Add Integration Column")));
     }
 
