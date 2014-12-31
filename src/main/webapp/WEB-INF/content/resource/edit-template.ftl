@@ -248,7 +248,14 @@
 
     <#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
     <div class="" id="organizeSection">
-        <#if !resource.resourceType.project>
+
+		<#assign showProjects = !(potentialParents?size > 0) />
+    	<#if !showProjects && !resource.resourceType.project >
+			<input type="hidden" name="projectId" value="-1"/>
+		</#if>
+
+        <#if !resource.resourceType.project && showProjects>
+
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <h4>Add to a Collection</h4>
             <@edit.resourceCollectionSection />
@@ -260,12 +267,13 @@
                 Select a project with which your <@edit.resourceTypeLabel /> will be associated. This is an important choice because it will allow metadata to
                 be inherited from the project further down this form
             </div>
+
             <h4>Choose a Project</h4>
 
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
-                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
+	                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
+	                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+	                truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
             </div>
 
             <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
@@ -286,6 +294,7 @@
             </div>
 
             <@helptext.inheritance />
+
             <div class="control-group" data-tiplabel="Inherit Metadata from Selected Project" data-tooltipcontent="#divSelectAllInheritanceTooltipContent"
                  id="divInheritFromProject">
                 <div class="controls">
@@ -298,6 +307,11 @@
         <#else>
             <h2>${siteAcronym} Collections</h2>
             <@edit.resourceCollectionSection />
+
+        <#if !resource.resourceType.project>
+            <h4>Create a Project</h4>
+			<p><a href="/project/add">Go here to create a Project</a>.  Projects in ${siteAcronym} are not required, be are useful for creating and managing metadaat for large groups of resources.</p>
+		</#if>
         </#if>
     </div>
 
