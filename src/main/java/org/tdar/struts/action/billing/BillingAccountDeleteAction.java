@@ -34,13 +34,13 @@ public class BillingAccountDeleteAction extends AbstractDeleteAction<BillingAcco
     }
 
     @Override
-    protected void delete(BillingAccount collection) {
-        billingAccountService.deleteForController(collection, getDeletionReason(), getAuthenticatedUser());
+    protected void delete(BillingAccount account) {
+        billingAccountService.deleteForController(this, account, getDeletionReason(), getAuthenticatedUser());
     }
 
     @Override
     protected DeleteIssue getDeletionIssues() {
-        return billingAccountService.getDeletionIssues(getPersistable());
+        return billingAccountService.getDeletionIssues(this, getPersistable());
     }
 
     @Override

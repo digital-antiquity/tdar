@@ -33,6 +33,8 @@ import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.utils.PersistableUtils;
 
+import com.opensymphony.xwork2.TextProvider;
+
 @Transactional(readOnly = true)
 @Service
 public class BillingAccountService extends ServiceInterface.TypedDaoBase<BillingAccount, BillingAccountDao> {
@@ -400,8 +402,8 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
     }
 
     @Transactional(readOnly=false)
-    public void deleteForController(BillingAccount account, String deletionReason, TdarUser authenticatedUser) {
-        if (StringUtils.isNotBlank(getDeletionIssues(account).getIssue())) {
+    public void deleteForController(TextProvider provider, BillingAccount account, String deletionReason, TdarUser authenticatedUser) {
+        if (StringUtils.isNotBlank(getDeletionIssues(provider, account).getIssue())) {
             return;
         }
         delete(account);
@@ -409,10 +411,10 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
     }
 
     @Transactional(readOnly=false)
-    public DeleteIssue getDeletionIssues(BillingAccount persistable) {
+    public DeleteIssue getDeletionIssues(TextProvider provider, BillingAccount persistable) {
         DeleteIssue deleteIssue = new DeleteIssue();
         if (persistable.getResources().size() > 0) {
-            deleteIssue.setIssue("has resources left");
+            deleteIssue.setIssue(provider.getText("billingAccount.cannot_delete"));
             deleteIssue.getRelatedItems().addAll(persistable.getResources());
         }
         return deleteIssue;
