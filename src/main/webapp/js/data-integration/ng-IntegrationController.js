@@ -165,10 +165,21 @@
 
         // FIXME: proper validation required
         $scope.isValid = function() {
+            // do we have title or enough to "save"
             if (!$scope.isMinimallyValid()) {
                 return false;
             }
-            return self.integration.columns.length > 0;
+            
+            // do we have a mapped dataset
+            if (integration.dataTables.length < 1) {
+                return false;
+            }
+
+            // do we have an integration column
+            if (integration.getIntegrationColumns().length > 0) {
+                return true;
+            }
+            return false;
         }
 
         $scope.isMinimallyValid = function() {

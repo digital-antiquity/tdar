@@ -369,7 +369,7 @@
             </div>
 
             <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
-            <button class="btn btn-primary" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
+            <button class="btn btn-primary" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
 
         </div>
     </div>

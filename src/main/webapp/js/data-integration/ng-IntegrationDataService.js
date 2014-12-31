@@ -23,6 +23,7 @@
             out.title = integration.title;
         }
 
+        // for each column
         integration.columns.forEach(function(column) {
             var outputColumn = {
                 name : column.name,
@@ -30,6 +31,7 @@
                 dataTableColumns : []
             };
 
+            // get the data table columns in the same structure for Integration, Display, and Count columns
             var tempList = column.selectedDataTableColumns;
             if (tempList == undefined) {
                 tempList = [];
@@ -38,6 +40,7 @@
                 });
             }
 
+            // add the id/name
             tempList.forEach(function(dtc) {
                 if (dtc.id != undefined) {
                     var dtc_ = {
@@ -48,11 +51,14 @@
                 outputColumn.dataTableColumns.push(dtc_);
             });
 
+            // get the nodes and ontologes
             if (column.type == 'integration') {
                 outputColumn.ontology = {
                     id : column.ontology.id,
                     title : column.ontology.title
                 }
+                
+                // get the selected nodes
                 if (!(column.nodeSelections == undefined)) {
                     outputColumn.nodeSelection = [];
                     column.nodeSelections.forEach(function(node) {
@@ -72,6 +78,7 @@
             out.columns.push(outputColumn);
         });
 
+        // add any ontologies
         integration.ontologies.forEach(function(ontology) {
             var ont = {
                 id : ontology.id,
@@ -80,6 +87,7 @@
             out.ontologies.push(ont);
         });
 
+        // add all data tables
         integration.dataTables.forEach(function(dataTable) {
             var table = {
                 id : dataTable.id,

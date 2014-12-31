@@ -270,7 +270,7 @@
          * 
          * @private
          */
-        function _getIntegrationColumns() {
+        self.getIntegrationColumns = function getIntegrationColumns() {
             return _getOutputColumns("integration");
         }
 
@@ -295,7 +295,7 @@
             }
 
             // update any affected integration output columns
-            _getIntegrationColumns().forEach(function(integrationColumn) {
+            self.getIntegrationColumns().forEach(function(integrationColumn) {
 
                 // clean up integrationColumn.selectedDataTableColumn
                 integrationColumn.selectedDataTableColumns = integrationColumn.selectedDataTableColumns.filter(function(dataTableColumn) {
@@ -337,7 +337,7 @@
             // Step 2: account for integration columns that refer to still-shared ontologies
             _buildMappedDataTables();
             // update selected dataTableColumns
-            _getIntegrationColumns().forEach(function(integrationColumn) {
+            self.getIntegrationColumns().forEach(function(integrationColumn) {
                 integrationColumn.$getSelectedDataTableColumns()
             });
 
@@ -355,7 +355,7 @@
          */
         function _sharedOntologiesUpdated(newSharedOntologyIds, oldSharedOntologyIds) {
             console.debug("_sharedOntologiesUpdated::", newSharedOntologyIds);
-            var invalidIntegrationColumns = _getIntegrationColumns().filter(function(column) {
+            var invalidIntegrationColumns = self.getIntegrationColumns().filter(function(column) {
                 return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
             });
         }
@@ -409,7 +409,7 @@
             // update integrationColumnStatus
             // fixme: this really should be a computed property on integrationColumn.
             // fixme: integrationColumn should be a proper IntegrationColumn class w/ methods and stuff.
-            _getIntegrationColumns().forEach(function(integrationColumn) {
+            self.getIntegrationColumns().forEach(function(integrationColumn) {
                 integrationColumn.isValidMapping = (_sharedOntologyIds.indexOf(integrationColumn.ontologyId) > -1);
             });
         }
