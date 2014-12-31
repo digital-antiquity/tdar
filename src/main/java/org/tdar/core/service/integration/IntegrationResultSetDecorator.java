@@ -104,7 +104,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         logger.trace("{}", StringUtils.join(row, "|"));
 
         buildPivotDataForRow(ontologyNodes, tableName, countVal);
-        extractPreviewContents();
+        extractPreviewContents(tableName, values);
     }
 
     /**
@@ -139,16 +139,17 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         return value;
     }
 
-    private void extractPreviewContents() {
-        String tableName = (String) row[0];
-        Integer rowCount = previewCount.get(tableName);
-        if (rowCount == null) {
-            rowCount = 0;
+    private void extractPreviewContents(String tableName, List<String> values) {
+        int rowCount = 0;
+        if (previewCount.containsKey(tableName)) {
+            rowCount = previewCount.get(tableName);
         }
+        logger.debug("{} - {} [{}]", tableName, rowCount, TdarConfiguration.getIntegrationPreviewSizePerDataTable());
         if (rowCount < TdarConfiguration.getIntegrationPreviewSizePerDataTable()) {
+            rowCount++;
             logger.trace("{} {}{}", row);
-            getPreviewData().add(ArrayUtils.clone(row));
-            previewCount.put(tableName, rowCount++);
+            getPreviewData().add(values.toArray(new String[0]));
+            previewCount.put(tableName, new Integer(rowCount));
         }
     }
 

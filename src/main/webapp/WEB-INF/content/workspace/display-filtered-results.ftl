@@ -33,7 +33,7 @@
     				</#if>
             </#list>
             <#list selectedDataTables as table>
-                <th>${table.displayName}</th>
+                <th>${table.dataset.title} - ${table.displayName}</th>
             </#list>
             <th>Total</th>
         </tr>

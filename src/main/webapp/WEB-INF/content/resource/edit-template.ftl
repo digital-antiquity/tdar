@@ -263,7 +263,8 @@
             <h4>Choose a Project</h4>
 
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
+                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
                 truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
             </div>
 
