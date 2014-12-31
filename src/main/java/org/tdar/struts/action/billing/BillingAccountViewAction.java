@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
@@ -31,7 +31,7 @@ import org.tdar.utils.PersistableUtils;
 @ParentPackage("secured")
 @Namespace("/billing")
 @HttpsOnly
-public class BillingAccountViewAction extends AbstractPersistableViewableAction<Account> {
+public class BillingAccountViewAction extends AbstractPersistableViewableAction<BillingAccount> {
 
     private static final long serialVersionUID = 3896385613294762404L;
     public static final String UPDATE_QUOTAS = "updateQuotas";
@@ -40,7 +40,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     public static final String VIEW_ID = "view?id=${id}";
     public static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
-    private List<Account> accounts = new ArrayList<>();
+    private List<BillingAccount> accounts = new ArrayList<>();
     private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
 
@@ -83,19 +83,12 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     }
 
     public boolean isEditable() {
-        if (authorizationService.can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
-            return true;
-        }
-
-        if (getAuthenticatedUser().equals(getAccount().getOwner()) || getAccount().getAuthorizedMembers().contains(getAuthenticatedUser())) {
-            return true;
-        }
-        return false;
+        return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
     }
 
     @Override
-    public Class<Account> getPersistableClass() {
-        return Account.class;
+    public Class<BillingAccount> getPersistableClass() {
+        return BillingAccount.class;
     }
 
     @Override
@@ -116,11 +109,11 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         return SUCCESS;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return getPersistable();
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(BillingAccount account) {
         setPersistable(account);
     }
 
@@ -132,11 +125,11 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         this.invoiceId = invoiceId;
     }
 
-    public List<Account> getAccounts() {
+    public List<BillingAccount> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
 

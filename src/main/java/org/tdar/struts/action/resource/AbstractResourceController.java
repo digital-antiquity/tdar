@@ -22,7 +22,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -167,7 +167,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // private List<String> relatedCitations;
     private List<RelatedComparativeCollection> relatedComparativeCollections;
     private Long accountId;
-    private List<Account> activeAccounts;
+    private List<BillingAccount> activeAccounts;
 
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -236,7 +236,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             if (PersistableUtils.isNotNullOrTransient(getResource()) && PersistableUtils.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
-            for (Account account : getActiveAccounts()) {
+            for (BillingAccount account : getActiveAccounts()) {
                 getLogger().trace(" - active accounts to {} files: {} mb: {}", account, account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb());
             }
         }
@@ -246,10 +246,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
-    protected List<Account> determineActiveAccounts() {
-        List<Account> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
+    protected List<BillingAccount> determineActiveAccounts() {
+        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
         if (getResource() != null) {
-            Account resourceAccount = getResource().getAccount();
+            BillingAccount resourceAccount = getResource().getAccount();
             if ((resourceAccount != null) && !accounts.contains(resourceAccount)) {
                 accounts.add(0, resourceAccount);
             }
@@ -344,7 +344,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 if (getResource().getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                     getResource().setStatus(getResource().getPreviousStatus());
                 }
-                updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
+                updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), getResource());
             }
         } else {
             loadAddMetadata();
@@ -359,7 +359,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void setupAccountForSaving() {
         accountService.updateTransientAccountInfo(getResource());
-        List<Account> accounts = determineActiveAccounts();
+        List<BillingAccount> accounts = determineActiveAccounts();
         if (accounts.size() == 1) {
             setAccountId(accounts.get(0).getId());
         }
@@ -1026,14 +1026,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.accountId = accountId;
     }
 
-    public List<Account> getActiveAccounts() {
+    public List<BillingAccount> getActiveAccounts() {
         if (activeAccounts == null) {
             activeAccounts = new ArrayList<>(determineActiveAccounts());
         }
         return activeAccounts;
     }
 
-    public void setActiveAccounts(List<Account> activeAccounts) {
+    public void setActiveAccounts(List<BillingAccount> activeAccounts) {
         this.activeAccounts = activeAccounts;
     }
 
@@ -1072,7 +1072,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return isEditor();
     }
 
-    public void updateQuota(Account account, Resource resource) {
+    public void updateQuota(BillingAccount account, Resource resource) {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateQuota(account, resource);
         }

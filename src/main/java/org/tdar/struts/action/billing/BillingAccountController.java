@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
@@ -45,7 +45,7 @@ import org.tdar.utils.PersistableUtils;
 @ParentPackage("secured")
 @Namespace("/billing")
 @HttpsOnly
-public class BillingAccountController extends AbstractPersistableController<Account> {
+public class BillingAccountController extends AbstractPersistableController<BillingAccount> {
 
     public static final String UPDATE_QUOTAS = "updateQuotas";
     public static final String FIX_FOR_DELETE_ISSUE = "fix";
@@ -55,7 +55,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public static final String NEW_ACCOUNT = "new_account";
     private static final String LIST_INVOICES = "listInvoices";
     private Long invoiceId;
-    private List<Account> accounts = new ArrayList<>();
+    private List<BillingAccount> accounts = new ArrayList<>();
     private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
 
@@ -144,7 +144,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     @Override
-    protected String save(Account persistable) {
+    protected String save(BillingAccount persistable) {
         getLogger().info("invoiceId {}", getInvoiceId());
         setSaveSuccessPath("billing");
 
@@ -201,11 +201,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     @Override
-    public Class<Account> getPersistableClass() {
-        return Account.class;
+    public Class<BillingAccount> getPersistableClass() {
+        return BillingAccount.class;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         if (getPersistable() == null) {
             setPersistable(createPersistable());
         }
@@ -213,7 +213,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return getPersistable();
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(BillingAccount account) {
         setPersistable(account);
     }
 
@@ -225,11 +225,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         this.invoiceId = invoiceId;
     }
 
-    public List<Account> getAccounts() {
+    public List<BillingAccount> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
 
@@ -344,7 +344,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public void prepare() throws TdarActionException {
         super.prepare();
         for (TdarUser user : getAccount().getAuthorizedMembers()) {
-//            getAuthorizedMembers().add(user);
             getAuthorizedUsersFullNames().add(user.getProperName());
         }
     }

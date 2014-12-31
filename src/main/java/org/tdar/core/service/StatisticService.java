@@ -13,7 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
@@ -181,7 +181,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     }
 
     @Transactional(readOnly = true)
-    public StatsResultObject getStatsForAccount(Account account, TextProvider provider, DateGranularity granularity) {
+    public StatsResultObject getStatsForAccount(BillingAccount account, TextProvider provider, DateGranularity granularity) {
         Set<Long> ids = new HashSet<>();
         if (account != null && CollectionUtils.isNotEmpty(account.getResources())) {
             ids.addAll(PersistableUtils.extractIds(account.getResources()));

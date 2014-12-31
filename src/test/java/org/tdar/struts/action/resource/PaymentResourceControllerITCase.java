@@ -18,7 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -157,7 +157,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         BillingActivityModel model = new BillingActivityModel();
         model.setCountingResources(false);
         genericService.saveOrUpdate(model);
-        Account account = setupAccountWithInvoiceFiveResourcesAndSpace(model, getUser());
+        BillingAccount account = setupAccountWithInvoiceFiveResourcesAndSpace(model, getUser());
         genericService.saveOrUpdate(account);
 
         String fmt = "pass %s";
@@ -171,13 +171,13 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         }
     }
 
-    private UsagePair amountRemaining(Account account) {
+    private UsagePair amountRemaining(BillingAccount account) {
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, accountService.getLatestActivityModel());
         UsagePair pair = new UsagePair(helper.getAvailableNumberOfFiles(), helper.getAvailableSpaceInBytes());
         return pair;
     }
 
-    private void extracted(String title, Account expectedAccount) throws TdarActionException, FileNotFoundException {
+    private void extracted(String title, BillingAccount expectedAccount) throws TdarActionException, FileNotFoundException {
         controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
         d.setStatus(Status.DRAFT);
@@ -190,7 +190,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         UsagePair statsAfter = amountRemaining(expectedAccount);
         assertEquals("files remainning should be the same because resource has no files", statsBefore, statsAfter);
         Long id = d.getId();
-        Account account = accountService.find(controller.getAccountId());
+        BillingAccount account = accountService.find(controller.getAccountId());
         assertEquals(expectedAccount, account);
 
         d = null;

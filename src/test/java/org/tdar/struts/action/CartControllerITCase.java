@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
@@ -144,7 +144,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private Invoice setupAccountWithCouponForFiles(long numFilesForCoupon, long numberOfFilesForInvoice) throws TdarActionException {
-        Account account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
+        BillingAccount account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
         Invoice invoice_ = account.getInvoices().iterator().next();
         String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_);
         InvoiceController controller = generateNewInitializedController(InvoiceController.class);
@@ -332,7 +332,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         invoice.setInvoiceNumber(invoiceNumber);
         invoice.setPaymentMethod(PaymentMethod.INVOICE);
         invoice.setOtherReason("this is my reasoning");
-        Account account = createAccount(getBasicUser());
+        BillingAccount account = createAccount(getBasicUser());
         CartBillingAccountController billingAccountController = generateNewInitializedController(CartBillingAccountController.class);
         billingAccountController.setId(account.getId());
         billingAccountController.prepare();

@@ -54,7 +54,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "pos_account")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.billing.Account")
-public class Account extends Persistable.Base implements Updatable, HasStatus, Addressable {
+public class BillingAccount extends Persistable.Base implements Updatable, HasStatus, Addressable {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
@@ -124,10 +124,10 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
 
-    public Account() {
+    public BillingAccount() {
     }
 
-    public Account(String name) {
+    public BillingAccount(String name) {
         this.name = name;
     }
 

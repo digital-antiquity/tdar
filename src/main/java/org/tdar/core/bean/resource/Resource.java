@@ -92,7 +92,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.XmlLoggable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -447,7 +447,7 @@ public class Resource implements Persistable,
     @IndexedEmbedded
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
 
-    private transient Account account;
+    private transient BillingAccount account;
 
     // used by the import service to determine whether a record has been
     // "created" or updated
@@ -1836,11 +1836,11 @@ public class Resource implements Persistable,
     }
 
     @XmlTransient
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(BillingAccount account) {
         this.account = account;
     }
 

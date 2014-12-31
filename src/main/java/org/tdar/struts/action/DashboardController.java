@@ -19,7 +19,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.FileStatus;
@@ -72,8 +72,8 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     private List<ResourceCollection> sharedResourceCollections = new ArrayList<ResourceCollection>();
     private Map<ResourceType, Long> resourceCountForUser = new HashMap<ResourceType, Long>();
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
-    private Set<Account> accounts = new HashSet<Account>();
-    private Set<Account> overdrawnAccounts = new HashSet<Account>();
+    private Set<BillingAccount> accounts = new HashSet<BillingAccount>();
+    private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
     private List<InformationResource> resourcesWithErrors;
 
     @Autowired
@@ -135,7 +135,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(getAuthenticatedUser(),
                 Arrays.asList(Status.ACTIVE, Status.DRAFT), Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
         getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
-        for (Account account : getAccounts()) {
+        for (BillingAccount account : getAccounts()) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 overdrawnAccounts.add(account);
             }
@@ -385,19 +385,19 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         this.sharedResourceCollections = sharedResourceCollections;
     }
 
-    public Set<Account> getAccounts() {
+    public Set<BillingAccount> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(Set<Account> accounts) {
+    public void setAccounts(Set<BillingAccount> accounts) {
         this.accounts = accounts;
     }
 
-    public Set<Account> getOverdrawnAccounts() {
+    public Set<BillingAccount> getOverdrawnAccounts() {
         return overdrawnAccounts;
     }
 
-    public void setOverdrawnAccounts(Set<Account> overdrawnAccounts) {
+    public void setOverdrawnAccounts(Set<BillingAccount> overdrawnAccounts) {
         this.overdrawnAccounts = overdrawnAccounts;
     }
 

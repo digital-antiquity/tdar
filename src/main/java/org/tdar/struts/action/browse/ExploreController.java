@@ -14,7 +14,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -78,7 +78,7 @@ public class ExploreController extends AbstractLookupController {
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
 
-    private List<Account> accounts = new ArrayList<Account>();
+    private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     @Autowired
@@ -222,11 +222,11 @@ public class ExploreController extends AbstractLookupController {
         this.groups = groups;
     }
 
-    public List<Account> getAccounts() {
+    public List<BillingAccount> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
 

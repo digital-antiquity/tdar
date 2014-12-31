@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -351,7 +351,7 @@ public class BulkUploadService {
         try {
             logger.info("bulk: finishing quota work");
             if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-                Account account = genericDao.find(Account.class, accountId);
+                BillingAccount account = genericDao.find(BillingAccount.class, accountId);
                 accountService.updateQuota(account, resources);
             }
         } catch (Throwable t) {

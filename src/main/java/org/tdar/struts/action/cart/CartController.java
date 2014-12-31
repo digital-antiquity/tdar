@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.dao.external.payment.PaymentMethod;
@@ -39,7 +39,7 @@ public class CartController extends AbstractCartController {
     public static final String SIMPLE = "simple";
     public static final String POLLING = "polling";
     private String redirectUrl;
-    private Account account;
+    private BillingAccount account;
 
     private PaymentMethod paymentMethod;
 
@@ -143,7 +143,7 @@ public class CartController extends AbstractCartController {
         this.redirectUrl = redirectUrl;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 

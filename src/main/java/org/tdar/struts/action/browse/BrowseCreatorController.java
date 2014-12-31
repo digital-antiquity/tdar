@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -103,7 +103,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private List<String> groups = new ArrayList<String>();
 
     private String creatorXml;
-    private List<Account> accounts = new ArrayList<Account>();
+    private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
@@ -334,11 +334,11 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         this.creatorXml = creatorXml;
     }
 
-    public List<Account> getAccounts() {
+    public List<BillingAccount> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
 

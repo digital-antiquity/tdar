@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Institution;
@@ -56,7 +56,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         return rcp;
     }
 
-    public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, Account account, Invoice invoice) throws TdarActionException {
+    public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, BillingAccount account, Invoice invoice) throws TdarActionException {
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
@@ -68,7 +68,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         return controller.getAccount().getCoupons().iterator().next().getCode();
     }
 
-    public BillingAccountController setupContrllerForCoupon(Account account, Invoice invoice) throws TdarActionException {
+    public BillingAccountController setupContrllerForCoupon(BillingAccount account, Invoice invoice) throws TdarActionException {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
         genericService.saveOrUpdate(invoice);

@@ -5,8 +5,9 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.struts.action.AbstractStatisticsAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -19,7 +20,7 @@ import com.opensymphony.xwork2.Preparable;
 public class BillingAccountStatisticsAction extends AbstractStatisticsAction implements Preparable {
 
     private static final long serialVersionUID = -668002786160683089L;
-    private Account account;
+    private BillingAccount account;
     
     @Autowired
     private BillingAccountService accountService;
@@ -30,11 +31,11 @@ public class BillingAccountStatisticsAction extends AbstractStatisticsAction imp
         setStatsForAccount(statisticsService.getStatsForAccount(account,this, getGranularity()));
     }
     
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(BillingAccount account) {
         this.account = account;
     }
 

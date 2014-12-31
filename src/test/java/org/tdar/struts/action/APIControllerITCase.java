@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -222,7 +222,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         APIController controller = generateNewInitializedController(APIController.class);
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
         Project project = genericService.findAll(Project.class, 1).get(0);
-        Account account = setupAccountForPerson(getUser());
+        BillingAccount account = setupAccountForPerson(getUser());
         controller.setRecord(text);
         logger.info(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_IMAGE)));

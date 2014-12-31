@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
@@ -37,8 +37,8 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testAccountList() {
         TdarUser p = createAndSaveNewPerson();
-        Account account = setupAccountForPerson(p);
-        Account accountWithPermissions = new Account("my account");
+        BillingAccount account = setupAccountForPerson(p);
+        BillingAccount accountWithPermissions = new BillingAccount("my account");
         TdarUser p2 = createAndSaveNewPerson("a@aas", "bb");
         accountWithPermissions.setOwner(p2);
         accountWithPermissions.markUpdated(getUser());
@@ -46,7 +46,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         accountWithPermissions.getAuthorizedMembers().add(p);
         genericService.saveOrUpdate(accountWithPermissions);
 
-        List<Account> accountsForUser = accountService.listAvailableAccountsForUser(p);
+        List<BillingAccount> accountsForUser = accountService.listAvailableAccountsForUser(p);
         assertTrue(accountsForUser.contains(account));
         assertTrue(accountsForUser.contains(accountWithPermissions));
 
@@ -61,8 +61,8 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         AccountGroup group = new AccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
-        Account accountForPerson = setupAccountForPerson(getBasicUser());
-        Account accountForPerson2 = setupAccountForPerson(createAndSaveNewPerson());
+        BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
+        BillingAccount accountForPerson2 = setupAccountForPerson(createAndSaveNewPerson());
         accountForPerson2.getAuthorizedMembers().add(getBasicUser());
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);
@@ -73,7 +73,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(false)
     public void updateOverdrawnAccountTest() throws InstantiationException, IllegalAccessException {
-        Account account = setupAccountForPerson(getBasicUser());
+        BillingAccount account = setupAccountForPerson(getBasicUser());
         BillingActivityModel model = new BillingActivityModel();
         model.setCountingResources(false);
         model.setCountingFiles(true);
@@ -108,7 +108,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         setVerifyTransactionCallback(new TransactionCallback<Document>() {
             @Override
             public Document doInTransaction(org.springframework.transaction.TransactionStatus status) {
-                Account account = genericService.find(Account.class, accountId);
+                BillingAccount account = genericService.find(BillingAccount.class, accountId);
                 Document resource2 = genericService.find(Document.class, rid);
                 genericService.update(resource2);
                 assertFalse(resource2.isUpdated());
@@ -138,8 +138,8 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         AccountGroup group = new AccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
-        Account accountForPerson = setupAccountForPerson(getBasicUser());
-        Account accountForPerson2 = setupAccountForPerson(getBasicUser());
+        BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
+        BillingAccount accountForPerson2 = setupAccountForPerson(getBasicUser());
         accountForPerson2.getAuthorizedMembers().add(getBasicUser());
         TdarUser person = createAndSaveNewPerson();
         group.getAuthorizedMembers().add(person);

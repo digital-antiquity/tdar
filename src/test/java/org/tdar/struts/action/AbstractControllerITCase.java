@@ -20,7 +20,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
@@ -74,8 +74,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         removeBookmark(r, false, user);
     }
 
-    public Account createAccount(TdarUser owner) {
-        Account account = new Account("my account");
+    public BillingAccount createAccount(TdarUser owner) {
+        BillingAccount account = new BillingAccount("my account");
         account.setDescription("this is an account for : " + owner.getProperName());
         account.setOwner(owner);
         account.markUpdated(owner);

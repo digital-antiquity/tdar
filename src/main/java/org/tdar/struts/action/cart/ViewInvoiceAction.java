@@ -7,7 +7,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -36,7 +36,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
     @Autowired
     private BillingAccountService accountService;
 
-    private Account account;
+    private BillingAccount account;
 
     @Override
     public void prepare() {
@@ -80,11 +80,11 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
         return inputResultName;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(BillingAccount account) {
         this.account = account;
     }
 

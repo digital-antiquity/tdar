@@ -26,6 +26,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -311,7 +312,7 @@ public class AuthorizationService implements Accessible {
         } else if (item instanceof ResourceCollection) {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof Institution) {
-          return canEditInstitution(authenticatedUser, (Institution)item);  
+            return canEditInstitution(authenticatedUser, (Institution) item);
         } else {
             return can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser);
         }
@@ -582,7 +583,7 @@ public class AuthorizationService implements Accessible {
         }
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
             HttpServletRequest request) throws MalformedURLException {
         String referrer = request.getHeader("referer");
@@ -599,9 +600,23 @@ public class AuthorizationService implements Accessible {
         }
     }
 
+    @Transactional(readOnly = true)
     public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
         if (PersistableUtils.isNullOrTransient(workflow) ||
                 PersistableUtils.isNotNullOrTransient(workflow) && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canEditAccount(BillingAccount account, TdarUser authenticatedUser) {
+        if (can(InternalTdarRights.EDIT_BILLING_INFO, authenticatedUser)) {
+            return true;
+        }
+
+        if (authenticatedUser.equals(account.getOwner()) || account.getAuthorizedMembers().contains(authenticatedUser)) {
             return true;
         }
         return false;

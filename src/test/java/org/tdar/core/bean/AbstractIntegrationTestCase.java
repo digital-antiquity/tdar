@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
@@ -887,23 +887,23 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
         initAccount(account, activity, getUser());
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -911,8 +911,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -920,8 +920,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -929,8 +929,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -938,7 +938,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    private Invoice initAccount(Account account, BillingActivity activity, TdarUser user) {
+    private Invoice initAccount(BillingAccount account, BillingActivity activity, TdarUser user) {
         account.markUpdated(user);
         Invoice invoice = setupInvoice(activity, user);
         account.getInvoices().add(invoice);
@@ -960,8 +960,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return invoice;
     }
 
-    public Account setupAccountForPerson(TdarUser p) {
-        Account account = new Account("my account");
+    public BillingAccount setupAccountForPerson(TdarUser p) {
+        BillingAccount account = new BillingAccount("my account");
         account.setOwner(p);
         account.setStatus(Status.ACTIVE);
         account.markUpdated(getUser());

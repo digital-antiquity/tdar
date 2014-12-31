@@ -342,7 +342,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
-                query = "from Account act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
+                query = "from BillingAccount act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON,
@@ -412,7 +412,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE,
-                query = "select account from Account account join account.invoices as invoice where invoice.id = :id"),
+                query = "select account from BillingAccount account join account.invoices as invoice where invoice.id = :id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER,
                 query = "select rescol from ResourceCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),

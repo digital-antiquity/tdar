@@ -42,7 +42,7 @@ public class AccountGroup extends Base implements Updatable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = true, updatable = true, name = "account_group_id")
-    private Set<Account> accounts = new HashSet<Account>();
+    private Set<BillingAccount> accounts = new HashSet<BillingAccount>();
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
@@ -79,7 +79,7 @@ public class AccountGroup extends Base implements Updatable {
             nullable = false, name = "account_id") })
     private Set<TdarUser> authorizedMembers = new HashSet<>();
 
-    public Set<Account> getAccounts() {
+    public Set<BillingAccount> getAccounts() {
         return accounts;
     }
 
@@ -93,7 +93,7 @@ public class AccountGroup extends Base implements Updatable {
         setModifiedBy(p);
     }
 
-    public void setAccounts(Set<Account> accounts) {
+    public void setAccounts(Set<BillingAccount> accounts) {
         this.accounts = accounts;
     }
 

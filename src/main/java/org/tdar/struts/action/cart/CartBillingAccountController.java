@@ -8,7 +8,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
@@ -34,10 +34,10 @@ public class CartBillingAccountController extends AbstractCartController {
     private long id = -1L;
 
     // account chosen from the dropdown list
-    private Account selectedAccount = null;
+    private BillingAccount selectedAccount = null;
 
     // Or a user can specify a new account name
-    private Account account = new Account();
+    private BillingAccount account = new BillingAccount();
 
     @Autowired
     private transient InvoiceService invoiceService;
@@ -108,11 +108,11 @@ public class CartBillingAccountController extends AbstractCartController {
         return SUCCESS;
     }
 
-    public Account getSelectedAccount() {
+    public BillingAccount getSelectedAccount() {
         return selectedAccount;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 

@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
@@ -67,7 +67,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
         updateModel(model, true, false, false);
-        Account account = new Account();
+        BillingAccount account = new BillingAccount();
         assertFalse(re.accountHasMinimumForNewResource(account, null));
 
         updateModel(model, true, false, false);
@@ -94,7 +94,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountCanAddResourceDefaultCases() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
-        Account account = new Account();
+        BillingAccount account = new BillingAccount();
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         updateModel(model, true, false, false);
@@ -120,7 +120,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
-        Account account = setupAccountWithInvoiceForOneResource(model, getUser());
+        BillingAccount account = setupAccountWithInvoiceForOneResource(model, getUser());
         updateModel(model, true, false, false);
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
         updateModel(model, false, true, false);
@@ -143,7 +143,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountUpdateQuotaValid() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         updateModel(model, false, false, true);
-        Account account = setupAccountWithInvoiceFor6Mb(model, getUser());
+        BillingAccount account = setupAccountWithInvoiceFor6Mb(model, getUser());
         ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
@@ -170,7 +170,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setActive(true);
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
-        Account account = setupAccountForPerson(getUser());
+        BillingAccount account = setupAccountForPerson(getUser());
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
@@ -203,7 +203,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setActive(true);
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
-        Account account = setupAccountWithInvoiceForOneFile(model, getUser());
+        BillingAccount account = setupAccountWithInvoiceForOneFile(model, getUser());
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         Document resource2 = generateDocumentWithFileAndUseDefaultUser();
         // ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
@@ -247,7 +247,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setActive(true);
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
-        Account account = setupAccountWithInvoiceForOneFile(model, getUser());
+        BillingAccount account = setupAccountWithInvoiceForOneFile(model, getUser());
         Document resource = generateDocumentWithUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
 
@@ -321,7 +321,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testDeletedRemovesFromAccount() throws InstantiationException, IllegalAccessException, IOException {
         BillingActivityModel model = accountService.getLatestActivityModel();
-        Account account = setupAccountWithInvoiceSomeResourcesAndSpace(model, getUser());
+        BillingAccount account = setupAccountWithInvoiceSomeResourcesAndSpace(model, getUser());
         Document doc = createAndSaveNewInformationResource(Document.class);
         addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
         accountService.getResourceEvaluator(doc);
@@ -344,7 +344,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
         model.setCountingResources(true);
-        assertFalse(re.accountHasMinimumForNewResource(new Account(), null));
+        assertFalse(re.accountHasMinimumForNewResource(new BillingAccount(), null));
         Image img = new Image();
         InformationResource irfile = generateDocumentWithFileAndUseDefaultUser();
         InformationResource irfile2 = generateDocumentWithFileAndUseDefaultUser();
@@ -381,7 +381,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         items.add(new BillingItem(new BillingActivity("1 file", 100f, 0, 0L, 2L, 0L, model), 2));
         items.add(new BillingItem(new BillingActivity("1 mb", .1f, 0, 0L, 0L, 3L, model), 2));
         Invoice invoice = new Invoice(getUser(), PaymentMethod.INVOICE, 10L, 0L, items);
-        Account account = new Account("my account");
+        BillingAccount account = new BillingAccount("my account");
         account.getInvoices().add(invoice);
         // genericService.saveOrUpdate(invoice);
 

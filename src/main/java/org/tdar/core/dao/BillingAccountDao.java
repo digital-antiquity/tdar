@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Coupon;
@@ -46,21 +46,21 @@ import org.tdar.utils.PersistableUtils;
  * @version $Revision$
  */
 @Component
-public class BillingAccountDao extends Dao.HibernateBase<Account> {
+public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public BillingAccountDao() {
-        super(Account.class);
+        super(BillingAccount.class);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Account> findAccountsForUser(Person user, Status... statuses) {
+    public List<BillingAccount> findAccountsForUser(Person user, Status... statuses) {
         if (ArrayUtils.isEmpty(statuses)) {
             statuses = new Status[] { Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE };
         }
         // this does not return unique results
-        List<Account> accountGroups = new ArrayList<>();
+        List<BillingAccount> accountGroups = new ArrayList<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personid", user.getId());
         query.setParameterList("statuses", statuses);
@@ -80,14 +80,14 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
 
     }
 
-    public AccountGroup getAccountGroup(Account account) {
+    public AccountGroup getAccountGroup(BillingAccount account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT);
         query.setParameter("accountId", account.getId());
         return (AccountGroup) query.uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
-    public List<Long> findResourcesWithDifferentAccount(List<Resource> resourcesToEvaluate, Account account) {
+    public List<Long> findResourcesWithDifferentAccount(List<Resource> resourcesToEvaluate, BillingAccount account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
         query.setParameter("accountId", account.getId());
         query.setParameterList("ids", PersistableUtils.extractIds(resourcesToEvaluate));
@@ -109,7 +109,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
         }
         Query query = getCurrentSession().createSQLQuery(sql);
 
-        Map<Long, Account> accountIdMap = new HashMap<>();
+        Map<Long, BillingAccount> accountIdMap = new HashMap<>();
         for (Object objs : query.list()) {
             Object[] obj = (Object[]) objs;
             Long resourceId = ((BigInteger) obj[0]).longValue();
@@ -117,7 +117,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
             if (obj[1] != null) {
                 accountId = ((BigInteger) obj[1]).longValue();
             }
-            Account account = accountIdMap.get(accountId);
+            BillingAccount account = accountIdMap.get(accountId);
             if (account == null) {
                 account = find(accountId);
                 accountIdMap.put(accountId, account);
@@ -132,7 +132,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
         }
     }
 
-    public void updateAccountInfo(Account account, ResourceEvaluator re) {
+    public void updateAccountInfo(BillingAccount account, ResourceEvaluator re) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_QUOTA_INIT);
         query.setParameter("accountId", account.getId());
         List<Status> statuses = new ArrayList<>(CollectionUtils.disjunction(Arrays.asList(Status.values()), re.getUncountedResourceStatuses()));
@@ -196,10 +196,10 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
         }
     }
 
-    public Account getAccountForInvoice(Invoice invoice) {
+    public BillingAccount getAccountForInvoice(Invoice invoice) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE);
         query.setParameter("id", invoice.getId());
-        return (Account) query.uniqueResult();
+        return (BillingAccount) query.uniqueResult();
     }
 
     /**
@@ -254,7 +254,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
      * @param resourcesToEvaluate
      * @return
      */
-    public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
+    public AccountAdditionStatus updateQuota(BillingAccount account, Collection<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
 
@@ -333,11 +333,11 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
         return status;
     }
 
-    private boolean isOverdrawn(Account account, ResourceEvaluator resourceEvaluator) {
+    private boolean isOverdrawn(BillingAccount account, ResourceEvaluator resourceEvaluator) {
         return canAddResource(account, resourceEvaluator) != AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 
-    public AccountAdditionStatus canAddResource(Account account, ResourceEvaluator re) {
+    public AccountAdditionStatus canAddResource(BillingAccount account, ResourceEvaluator re) {
         if (re.evaluatesNumberOfFiles()) {
             logger.debug("available files {} trying to use {}", account.getAvailableNumberOfFiles(), re.getFilesUsed());
             if ((account.getAvailableNumberOfFiles() - re.getFilesUsed()) < 0) {
@@ -532,9 +532,9 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
      * @param helper
      * @return
      */
-    private boolean updateAccountAssociations(Account account, Collection<Resource> resourcesToEvaluate, AccountEvaluationHelper helper) {
+    private boolean updateAccountAssociations(BillingAccount account, Collection<Resource> resourcesToEvaluate, AccountEvaluationHelper helper) {
         // Account localAccount = account;
-        Set<Account> additionalAccountsToCleanup = new HashSet<>();
+        Set<BillingAccount> additionalAccountsToCleanup = new HashSet<>();
         boolean hasUpdates = false;
 
         // try this without the merge
@@ -557,7 +557,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
 
             // if we're dealing with multiple accounts ...
             if (!account.equals(resource.getAccount())) {
-                Account oldAccount = resource.getAccount();
+                BillingAccount oldAccount = resource.getAccount();
                 additionalAccountsToCleanup.add(oldAccount);
                 oldAccount.getResources().remove(resource);
                 helper.getNewItems().add(resource);
@@ -566,7 +566,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
             helper.getExistingItems().add(resource);
         }
 
-        for (Account old : additionalAccountsToCleanup) {
+        for (BillingAccount old : additionalAccountsToCleanup) {
             updateAccountInfo(old, getResourceEvaluator());
         }
         return hasUpdates;
@@ -578,7 +578,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
      * @param account
      * @param helper
      */
-    private void logAccountAndHelperState(Account account, AccountEvaluationHelper helper) {
+    private void logAccountAndHelperState(BillingAccount account, AccountEvaluationHelper helper) {
         Object[] log = { account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes(), account.getFilesUsed(), account.getAvailableNumberOfFiles() };
         logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
         Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
@@ -586,7 +586,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
         logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
     }
 
-    public Number findCountOfFlaggedResourcesInAccount(Account account) {
+    public Number findCountOfFlaggedResourcesInAccount(BillingAccount account) {
         Criteria criteria = getCriteria(Resource.class).add(Restrictions.eq("status", Status.FLAGGED_ACCOUNT_BALANCE)).setProjection(Projections.rowCount());
         Number result = (Number) criteria.uniqueResult();
         return result;
@@ -598,7 +598,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
      * We always update quotas even if a resource overdraws because it's impossible later to reconcile how much something was overdrawn easily...
      * eg. was it because it was a "new resource" or because it was a new file, or 2k over
      */
-    public void updateQuotas(Account account, ResourceEvaluator endingEvaluator, Collection<Resource> list) {
+    public void updateQuotas(BillingAccount account, ResourceEvaluator endingEvaluator, Collection<Resource> list) {
         AccountAdditionStatus status = canAddResource(account, endingEvaluator);
         account.getResources().addAll(list);
         account.setFilesUsed(account.getFilesUsed() + endingEvaluator.getFilesUsed());
@@ -609,7 +609,7 @@ public class BillingAccountDao extends Dao.HibernateBase<Account> {
         }
     }
 
-    public boolean hasMinimumForNewRecord(Account account, ResourceEvaluator resourceEvaluator, ResourceType type) {
+    public boolean hasMinimumForNewRecord(BillingAccount account, ResourceEvaluator resourceEvaluator, ResourceType type) {
         // init totals
         account.getTotalNumberOfResources();
         return (resourceEvaluator.accountHasMinimumForNewResource(account, type));

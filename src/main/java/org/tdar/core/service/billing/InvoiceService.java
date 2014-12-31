@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingItem;
@@ -408,7 +408,7 @@ public class InvoiceService {
         }
         genericDao.saveOrUpdate(invoice);
         if (PersistableUtils.isNotNullOrTransient(accountId)) {
-            Account account = genericDao.find(Account.class, accountId);
+            BillingAccount account = genericDao.find(BillingAccount.class, accountId);
             account.getInvoices().add(invoice);
         }
 
@@ -701,7 +701,7 @@ public class InvoiceService {
     public void completeInvoice(Invoice invoice) {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.getOwner().setContributor(true);
-        Account account = accountDao.getAccountForInvoice(invoice);
+        BillingAccount account = accountDao.getAccountForInvoice(invoice);
         genericDao.saveOrUpdate(invoice);
         try {
             if (account != null) {

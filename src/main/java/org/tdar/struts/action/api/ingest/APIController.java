@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.InformationResource;
@@ -136,7 +136,7 @@ public class APIController extends AuthenticationAware.Base {
             }
 
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, fileProxies, projectId, true);
-            updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
+            updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
@@ -329,7 +329,7 @@ public class APIController extends AuthenticationAware.Base {
         getLogger().debug("Contenty type of uploaded item is: " + type);
     }
 
-    public void updateQuota(Account account, Resource resource) {
+    public void updateQuota(BillingAccount account, Resource resource) {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateQuota(account, resource);
         }

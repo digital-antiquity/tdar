@@ -12,7 +12,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
@@ -52,7 +52,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     private Boolean contributor;
     private String contributorReason;
     private String proxyNote;
-    private List<Account> accounts;
+    private List<BillingAccount> accounts;
     private List<String> groups = new ArrayList<String>();
 
     public static final String MYPROFILE = "myprofile";
@@ -232,9 +232,9 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         this.newUsername = newUserName;
     }
 
-    public List<Account> getAccounts() {
+    public List<BillingAccount> getAccounts() {
         if (accounts == null) {
-            accounts = new ArrayList<Account>();
+            accounts = new ArrayList<BillingAccount>();
             accounts.addAll(accountService.listAvailableAccountsForUser(getPersistable(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         }
         return accounts;
