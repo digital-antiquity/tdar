@@ -3,7 +3,7 @@
     var app = angular.module("integrationApp");
 
     /**
-     * generating a simpler JavaScript object that represents an integration. This object is a proposal for a DTO
+     * generating a simpler JavaScript object that represents an integration. 
      */
     function _dumpObject(integration) {
         var out = {

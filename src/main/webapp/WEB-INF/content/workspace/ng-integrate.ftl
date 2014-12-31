@@ -328,8 +328,9 @@
                         </fieldset>
 
                         <fieldset>
-                            <legend>Select Results</legend>
-                            <table class="table table-striped table-modal-results table-hover table-condensed">
+                            <legend>Select Results <span class="small" ng-show="modalSearching">Searching...</span></legend>
+                            
+                            <table class="table table-striped table-modal-results table-hover table-condensed" id="modalResults" ng-class="{active: !modalSearching, disabled: modalSearching}">
                                 <thead>
                                 <tr>
                                     <th>Select</th>
@@ -346,6 +347,7 @@
                                                 id="cbResult{{result.id}}"
                                                 name="selectedItems[]"
                                                 value="{{result.id}}"
+                                                ng-enabled="!modalSearching"
                                                 ng-checked="isSelected(result.id)"
                                                 ng-click="toggleSelection(result.id, this)">
                                     </td>

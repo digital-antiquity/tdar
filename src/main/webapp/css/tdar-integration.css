@@ -95,3 +95,9 @@ h2.compact {
 input.intcol, select.intcol {
     width: 90pt;
 }
+
+#modalResults.disabled {
+	zoom: 1;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+}

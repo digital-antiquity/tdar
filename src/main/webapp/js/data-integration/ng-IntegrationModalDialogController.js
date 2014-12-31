@@ -62,10 +62,12 @@
 
         // when non-null
         $scope.errorMessage = null;
+        $scope.modalSearching = false;
 
         // ajax search fires up at launch and whenever search terms change
         $scope.search = function() {
             var futureData;
+            $scope.modalSearching = true;
             if (options.searchType === "ontology") {
                 futureData = dataService.findOntologies($scope.filter);
             } else {
@@ -73,6 +75,7 @@
             }
             futureData.then(function(results) {
                 $scope.results = results;
+                $scope.modalSearching = false;
             });
         };
 
