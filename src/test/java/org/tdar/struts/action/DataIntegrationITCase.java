@@ -279,9 +279,15 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         names.add(alexandriaTable.getName());
         names.add(spitalMainTable.getName());
         Row row = summarySheet.getRow(3);
+        List<String> seen = new ArrayList<String>();
         for (int i = 0; i < names.size(); i++) {
-            assertEquals(names.get(i), row.getCell(i).getStringCellValue());
+            seen.add(row.getCell(i).getStringCellValue());
         }
+        
+        names.removeAll(seen);
+        logger.debug("colNames:{}", names);
+        assertTrue(names.isEmpty());
+        
         String[] row3 = new String[] { "Felis catus (Cat)", "Ulna", "23", "15" };
         row = summarySheet.getRow(4);
         for (int i = 0; i < names.size(); i++) {

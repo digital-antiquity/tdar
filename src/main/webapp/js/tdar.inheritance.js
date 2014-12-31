@@ -508,9 +508,8 @@ TDAR.inheritance = (function () {
 //update the project json variable and update the inherited sections
     function _projectChangedCallback(data) {
         TDAR.inheritance.project = data;
-
         // if user picked blank option, then clear the sections
-        if (!TDAR.inheritance.project.id) {
+        if (!TDAR.inheritance.project.id || TDAR.inheritance.project.id == -1) {
             TDAR.inheritance.project = _getBlankProject();
         } else if (TDAR.inheritance.project.resourceType === 'INDEPENDENT_RESOURCES_PROJECT') {
             TDAR.inheritance.project = _getBlankProject();
@@ -823,12 +822,14 @@ TDAR.inheritance = (function () {
 
         //update the checked inheritable sections with the updated project data
         var $form = $("#" + formId);
-        $.each($form.data("inheritOptionsList"), function (idx, options) {
-            if ($(options.cbSelector).prop('checked')) {
-                options.inheritSectionCallback();
-            }
-        });
-
+        var iData = $form.data("inheritOptionsList");
+        if (iData != undefined) {
+            $.each(iData, function (idx, options) {
+                if ($(options.cbSelector).prop('checked')) {
+                    options.inheritSectionCallback();
+                }
+            });
+        };
     }
 
     function _selectAllInheritanceClicked() {
