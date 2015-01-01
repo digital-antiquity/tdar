@@ -37,7 +37,9 @@ public class AbstractIntegrationAction extends AuthenticationAware.Base {
      * @throws IOException
      */
     protected final void setJsonObject(Object obj, Class<?> jsonFilter) throws IOException {
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToFilteredJson(obj, jsonFilter).getBytes()));
+        String message = serializationService.convertToFilteredJson(obj, jsonFilter);
+        getLogger().debug(message);
+        setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
 
     /**
@@ -46,7 +48,7 @@ public class AbstractIntegrationAction extends AuthenticationAware.Base {
      * @throws IOException
      */
     protected final void setJsonObject(Object obj) throws IOException {
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertToJson(obj).getBytes()));
+        setJsonObject(obj, null);
     }
 
 }

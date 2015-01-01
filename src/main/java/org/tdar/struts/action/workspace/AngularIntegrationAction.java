@@ -80,6 +80,7 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
         if (workflow != null) {
             try {
                 data = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
+                
             } catch (JsonParseException jpe) {
                 // not technically needed, but using for explicitness
                 getLogger().error("json parsing exception", jpe);
@@ -124,6 +125,10 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
 
     public String getWorkflowJson() {
         return workflow.getJsonData();
+    }
+    
+    public Long getIntegrationId() {
+        return getPersistable().getId();
     }
 
     String getJson(Object obj) {

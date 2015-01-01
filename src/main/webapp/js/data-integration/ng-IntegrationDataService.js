@@ -22,7 +22,7 @@
         if (integration.title != undefined) {
             out.title = integration.title;
         }
-
+        
         // for each column
         integration.columns.forEach(function(column) {
             var outputColumn = {
@@ -158,11 +158,11 @@
             var jsonData = self.dumpObject(integration);
             var path = '/api/integration/save';
             var done = false;
-
             // if we're doing an update
             if (parseInt(integration.id) > -1) {
                 path += "/" + integration.id;
             }
+            console.log("savePath:" + path + " -- " + integration.id);
             console.log(jsonData);
             var httpPromise = $http({
                 method : "POST",
@@ -178,7 +178,7 @@
             // promise is not 100% used here, but in the future, perhaps needed
             httpPromise.success(function(data) {
                 integration.id = data.id;
-                futureData.resolve(done);
+                futureData.resolve(data);
             });
 
             return futureData.promise;
@@ -188,6 +188,7 @@
          * Based on the specified JSON representation of a data object, try and rebuild the integration
          */
         function _loadExistingIntegration(json, integration) {
+            var futureData = $q.defer();
 
             var dataTableIds = [];
             json.dataTables.forEach(function(dataTable) {
@@ -195,52 +196,58 @@
             });
             integration.title = json.title;
             integration.description = json.description;
+            integration.id = json.id;
             console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
                 integration.addDataTables(dataTables);
-                json.columns.forEach(function(column) {
-                    var name = column.name;
-                    if (name == undefined) {
-                        name = "column";
-                    }
+                var result = self.loadUpdatedParticipationInformation(integration);
+                result.then(function(status) {
+                    json.columns.forEach(function(column) {
+                        var name = column.name;
+                        if (name == undefined) {
+                            name = "column";
+                        }
 
-                    var ids = [];
-                    column.dataTableColumns.forEach(function(col) {
-                        ids.push(col.id);
-                    });
-
-                    if (column.type == 'DISPLAY') {
-                        integration.addDisplayColumn(name);
-                        self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
-                    }
-                    if (column.type == 'COUNT') {
-                        integration.addCountColumn(name);
-                        self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
-                    }
-                    if (column.type == 'INTEGRATION') {
-                        var ontology = undefined;
-                        integration.ontologies.forEach(function(ont) {
-                            if (ont.id == column.ontology.id) {
-                                ontology = ont;
-                            }
+                        var ids = [];
+                        column.dataTableColumns.forEach(function(col) {
+                            ids.push(col.id);
                         });
 
-                        integration.addIntegrationColumn(name, ontology);
-                        var col = integration.columns[integration.columns.length - 1];
-
-                        // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
-                        col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
-                        col.nodeSelections.forEach(function(node) {
-                            column.nodeSelection.forEach(function(nodeRef) {
-                                if (nodeRef.id == node.node.id) {
-                                    node.selected = true;
+                        if (column.type == 'DISPLAY') {
+                            integration.addDisplayColumn(name);
+                            self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
+                        }
+                        if (column.type == 'COUNT') {
+                            integration.addCountColumn(name);
+                            self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
+                        }
+                        if (column.type == 'INTEGRATION') {
+                            var ontology = undefined;
+                            integration.ontologies.forEach(function(ont) {
+                                if (ont.id == column.ontology.id) {
+                                    ontology = ont;
                                 }
                             });
-                        });
-                    }
+
+                            integration.addIntegrationColumn(name, ontology);
+                            var col = integration.columns[integration.columns.length - 1];
+
+                            // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
+                            col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
+                            col.nodeSelections.forEach(function(node) {
+                                column.nodeSelection.forEach(function(nodeRef) {
+                                    if (nodeRef.id == node.node.id) {
+                                        node.selected = true;
+                                    }
+                                });
+                            });
+                        }
+                    });
+                    futureData.resolve(true); 
                 });
             });
+            return futureData.promise;
         }
 
         /**
@@ -264,34 +271,31 @@
             }
 
         };
+        
+        /**
+         * Gather any dataTableColumns that have missing participation information and tell dataService to fetch it.
+         * FIXME: Move into data service
+         * @private
+         */
+        this.loadUpdatedParticipationInformation = function(integration) {
+            var futureData = $q.defer();
 
-        // fixme: refactor to return a promise of return data instead of modifying integration directly
-        this.loadIntegrationColumnDetails = function(integration) {
-            // get column participation for all dataTableColumns across all shared ontologies
-            var promises = [];
-            var configs = [];
-
-            integration.ontologies.forEach(function(ontology) {
-                var mappedCols = integration.getMappedDataTableColumns(ontology.id);
-                var config = {};
-                var params = {
-                    "integrationColumn.columnType" : "INTEGRATION",
-                    "integrationColumn.sharedOntology.id" : ontology.id
-                };
-                mappedCols.forEach(function(mappedCol, i) {
-                    params["integrationColumn.columns[" + i + "].id"] = mappedCol.id
-                });
-                config.params = params;
-                configs.push(config);
-                promises.push($http.get("/api/integration/integration-column-details", config));
+            // find dataTableColumns that are missing transientNodeParticipation, request it from dataService
+            var unprocessedDataTableColumns = integration.getMappedDataTableColumns().filter(function(col) {
+                return !col.transientNodeParticipation;
             });
-            $q.all(promises).then(function(arResults) {
-                arResults.forEach(function(result, ontologyIdx) {
-                    var ontology = integration.ontologies[ontologyIdx];
-                    var mappedCols = integration.getMappedDataTableColumns(ontology.id);
-                    integration.updateNodeParticipationInfo(ontology, mappedCols, result.data.flattenedNodes);
-                });
+            var unprocessedIds = unprocessedDataTableColumns.map(function(col) {
+                return col.id
             });
+            if (unprocessedIds.length === 0) {
+                futureData.resolve(true);
+            } else {
+               self.loadNodeParticipation(unprocessedIds).then(function() {
+                    // todo: signal to the UI that these columns are ready
+                    futureData.resolve(true);
+                });
+            }            
+            return futureData.promise;
         };
 
         /**
@@ -409,6 +413,7 @@
          */
         this.findOntologies = function(searchFilter) {
             // FIXME: write transformer
+            // NOT IMPLEMENTED
             return _doSearch("/api/integration/find-ontologies", searchFilter, null, "ontology");
         };
 
@@ -473,8 +478,6 @@
             return futureWork.promise;
         };
 
-        // FIXME: HACK: for debugging purposes only ;
-        window.__ds = this;
     }
 
     // build parms for single request to integration-column-details endpoint

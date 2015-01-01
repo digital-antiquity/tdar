@@ -1,8 +1,6 @@
 package org.tdar.struts.action.api.integration;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -15,6 +13,7 @@ import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.integration.IntegrationSaveResult;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
@@ -23,6 +22,7 @@ import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -41,26 +41,23 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
 
     @Autowired
     IntegrationWorkflowService integrationWorkflowService;
-    
+
     @Autowired
     AuthorizationService authorizationService;
-    
+
     @Autowired
     SerializationService serializationService;
     private IntegrationWorkflowData jsonData;
 
-    @Actions(value={
+    @Actions(value = {
             @Action("save/{id}"),
             @Action("save")
     })
     @PostOnly
     @WriteableSession
     public String save() throws TdarActionException, IOException, IntegrationDeserializationException {
-        integrationWorkflowService.saveForController(getPersistable(), jsonData, getAuthenticatedUser());
-        Map<String,Object>result = new HashMap<>();
-        result.put("status","success");
-        result.put("id", workflow.getId());
-        setJsonObject(result);
+        IntegrationSaveResult result = integrationWorkflowService.saveForController(getPersistable(), jsonData, integration, getAuthenticatedUser());
+        setJsonObject(result, JsonIntegrationFilter.class);
         return SUCCESS;
     }
 
@@ -74,7 +71,7 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
         try {
             integrationWorkflowService.validateWorkflow(jsonData);
         } catch (IntegrationDeserializationException e) {
-           getLogger().error("cannot validate", e);
+            getLogger().error("cannot validate", e);
         }
     }
 
@@ -111,11 +108,8 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
         if (workflow == null) {
             workflow = new DataIntegrationWorkflow();
         }
-        jsonData.copyValuesToBean(workflow, integration);
-
     }
 
-    
     public String getIntegration() {
         return integration;
     }

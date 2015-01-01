@@ -6,7 +6,6 @@
 <div id="divIntegrationMain" ng-controller="IntegrationController as ctrl">
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
-<!--        <h2 class="compact">{{ctrl.integration.title || 'Untitled Integration'}}</h2> -->
     </div>
     <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
         <div class="row">
@@ -65,6 +64,10 @@
                         </div>
                     </div>
         </div>
+
+	<div>
+	{{statusMessage}} {{$scope.statusMessage}}
+	</div>
 
         <div id="divSelectedItemsSection">
             <div class="row">
@@ -379,6 +382,12 @@
 <script type="application/json" id="jsondata">
 ${workflowJson!"{}"}
 </script>
+
+<script type="application/json" id="jsondataId">
+{ "id" : ${(integrationId!-1)?c} }
+</script>
+
+
 <!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
 <!-- FIXME: too much crap - we just need ID and title and submitterId -->
 <script type="application/json" id="allProjects">

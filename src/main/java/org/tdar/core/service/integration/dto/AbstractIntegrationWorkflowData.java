@@ -9,12 +9,18 @@ import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.utils.PersistableUtils;
 
-public class AbstractIntegrationWorkfllowData {
+/**
+ * Abstract class to handle shared metadata for all Integration Workflow objects
+ */
+public abstract class AbstractIntegrationWorkflowData {
 
+    public abstract String getTitle();
+    
+    public abstract String getDescription();
 
     public void copyValuesToBean(DataIntegrationWorkflow workflow, String json) {
-        workflow.setTitle(workflow.getTitle());
-        workflow.setDescription(workflow.getDescription());
+        workflow.setTitle(getTitle());
+        workflow.setDescription(getDescription());
         workflow.setJsonData(json);
     }
 

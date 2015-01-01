@@ -17,12 +17,12 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
-import org.tdar.core.service.integration.dto.AbstractIntegrationWorkfllowData;
+import org.tdar.core.service.integration.dto.AbstractIntegrationWorkflowData;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.utils.PersistableUtils;
 
-public class IntegrationWorkflowData extends AbstractIntegrationWorkfllowData implements Serializable, IntegrationWorkflowWrapper {
+public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData implements Serializable, IntegrationWorkflowWrapper {
 
     private static final long serialVersionUID = -4483089478294270554L;
 

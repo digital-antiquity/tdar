@@ -60,15 +60,27 @@
 
         self.saveClicked = function() {
             console.log("Saving.")
-            dataService.saveIntegration(self.integration);
+            $scope.statusMessage = "Saving...";
+            dataService.saveIntegration(self.integration).then(function(status) {
+                $scope.statusMessage = "Save: " + status.status;
+            });
             
         };
 
         
         self.loadJSON = function() {
             var jsonData = dataService.getDocumentData().jsondata;
+            $scope.statusMessage = "Loading...";
+            console.log(jsonData.title);
+            console.log(jsonData.dataTables);
+            jsonData.id = dataService.getDocumentData().jsondataId.id;
             if (jsonData.title != undefined && jsonData.dataTables != undefined) {
-                var json = dataService.loadExistingIntegration(dataService.getDocumentData().jsondata , self.integration);
+                var result = dataService.loadExistingIntegration(jsonData , self.integration);
+                result.then(function(status){
+                    $scope.statusMessage = "Done loading";
+                });
+            } else {
+                $scope.statusMessage = "Done loading";
             }
          };
         
@@ -79,9 +91,16 @@
          */
         self.addDatasets = function(dataTableIds) {
             if(dataTableIds.length === 0) return;
+            $scope.statusMessage = "loading data table information...";
             dataService.loadTableDetails(dataTableIds).then(function(dataTables) {
                 self.integration.addDataTables(dataTables);
+                $scope.statusMessage = "done loading data table information";
+                $scope.statusMessage = "loading column details";
+                dataService.loadUpdatedParticipationInformation(integration).then(function(status){
+                    $scope.statusMessage = "done loading column details";
+                });
             });
+//            dataService.loadColumnDetails();
         };
 
         // add and initialize an integration column associated with with the specified ontology ID

@@ -20,7 +20,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
-import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 
 /**
  * Created by jim on 12/8/14.

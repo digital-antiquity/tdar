@@ -477,30 +477,6 @@
             return hasCountColumn;
         };
 
-        /**
-         * Gather any dataTableColumns that have missing participation information and tell dataService to fetch it.
-         * 
-         * @private
-         */
-        var _loadUpdatedParticipationInformation = function() {
-            // find dataTableColumns that are missing transientNodeParticipation, request it from dataService
-            var unprocessedDataTableColumns = self.getMappedDataTableColumns().filter(function(col) {
-                return !col.transientNodeParticipation
-            });
-            var unprocessedIds = unprocessedDataTableColumns.map(function(col) {
-                return col.id
-            });
-            if (unprocessedIds.length === 0) {
-                return
-            }
-
-            // todo: signal to the UI we are waiting on data for these columns
-            // fixme: jtd full-disclosure, I'm torn on whether the angular controller should be loading this data or whether the 'model' should be. leaving be
-            // for now.
-            dataService.loadNodeParticipation(unprocessedIds).then(function() {
-                // todo: signal to the UI that these columns are ready
-            });
-        };
 
         /**
          * Add specified dataTable to the viewModel.dataTables array. Duplicates are ignored. This is the recommended way of manipulating this list, as opposed
@@ -512,7 +488,6 @@
             _setAddAll(self.dataTables, dataTables, "id");
             _dataTablesAdded(dataTables)
             _rebuildSharedOntologies();
-            _loadUpdatedParticipationInformation();
         };
 
         /**

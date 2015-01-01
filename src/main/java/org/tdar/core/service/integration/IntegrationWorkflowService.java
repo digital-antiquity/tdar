@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.GenericDao;
@@ -28,7 +29,7 @@ import com.opensymphony.xwork2.TextProvider;
  * 
  */
 @Service
-public class IntegrationWorkflowService  extends ServiceInterface.TypedDaoBase<DataIntegrationWorkflow, IntegrationWorkflowDao>{
+public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<DataIntegrationWorkflow, IntegrationWorkflowDao> {
 
     @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -48,23 +49,39 @@ public class IntegrationWorkflowService  extends ServiceInterface.TypedDaoBase<D
     }
 
     @Transactional(readOnly = false)
-    public void saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data, TdarUser authUser) throws IntegrationDeserializationException {
-        validateWorkflow(data);
-        persistable.markUpdated(authUser);
-        genericDao.saveOrUpdate(persistable);
+    public IntegrationSaveResult saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data,String json, TdarUser authUser) {
+        IntegrationSaveResult result = new IntegrationSaveResult();
+        result.setStatus("error");
+        try {
+            validateWorkflow(data);
+            persistable.markUpdated(authUser);
+            data.copyValuesToBean(persistable, json);
+            genericDao.saveOrUpdate(persistable);
+            result.setStatus("success");
+            result.setId(persistable.getId());
+        } catch (IntegrationDeserializationException e) {
+            result.getErrors().add(e.getMessage());
+            for (Persistable p : e.getPersistables()) {
+                //fixme: make more intelligible
+                result.getErrors().add(p.toString());
+            }
+        } catch (Exception e) {
+            logger.error("error", e);
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public void validateWorkflow(IntegrationWorkflowWrapper data) throws IntegrationDeserializationException {
         data.validate(genericDao);
     }
-    
-    @Transactional(readOnly=true)
+
+    @Transactional(readOnly = true)
     public List<DataIntegrationWorkflow> getWorkflowsForUser(TdarUser authorizedUser) {
         return getDao().getWorkflowsForUser(authorizedUser);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void deleteForController(TextProvider provider, DataIntegrationWorkflow persistable, TdarUser authenticatedUser) {
         getDao().delete(persistable);
     }
