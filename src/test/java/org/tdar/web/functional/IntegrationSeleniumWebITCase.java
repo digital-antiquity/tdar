@@ -40,7 +40,6 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // add three datasets that don't work, remove one, assert that we get back to an integratable state
         
         setFieldByName("integration.title", "test integration");
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("btnSave")));
         // assert save enabled
         openDatasetsModal();
         // uncheck
@@ -94,6 +93,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(rabbit).click();
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         find(sheep).click();
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("btnSave")));
 
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
         find(By.id("btnIntegrate")).click();
@@ -133,6 +133,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("btnSave")));
 
         // remove the datasets
         removeDatasetByPartialName("Spital");
@@ -154,7 +155,6 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     private void setupSpitalfieldsAlexandriaForTest() throws InterruptedException {
         setFieldByName("integration.title", "test integration");
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("btnSave")));
         // assert save enabled
         openDatasetsModal();
         findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);

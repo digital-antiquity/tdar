@@ -60,26 +60,33 @@
 
         self.saveClicked = function() {
             console.log("Saving.")
-            $scope.statusMessage = "Saving...";
+            self.updateStatus("Saving...");
             dataService.saveIntegration(self.integration).then(function(status) {
-                $scope.statusMessage = "Save: " + status.status;
+                self.updateStatus("Save: " + status.status);
             });
             
         };
+        
+        /**
+         * shows the user a status message
+         */
+        self.updateStatus = function(msg) {
+            $scope.statusMessage = msg;
+        }
 
         
         self.loadJSON = function() {
             var jsonData = dataService.getDocumentData().jsondata;
-            $scope.statusMessage = "Loading...";
+            self.updateStatus("Loading...");
             console.log(jsonData);
             jsonData.id = dataService.getDocumentData().jsondataId.id;
             if (jsonData.title != undefined && jsonData.dataTables != undefined) {
                 var result = dataService.loadExistingIntegration(jsonData , self.integration);
                 result.then(function(status){
-                    $scope.statusMessage = "Done loading";
+                    self.updateStatus("Done loading");
                 });
             } else {
-                $scope.statusMessage = "Done loading";
+                self.updateStatus("Done loading");
             }
          };
         
@@ -90,13 +97,13 @@
          */
         self.addDatasets = function(dataTableIds) {
             if(dataTableIds.length === 0) return;
-            $scope.statusMessage = "loading data table information...";
+            self.updateStatus("loading data table information...");
             dataService.loadTableDetails(dataTableIds).then(function(dataTables) {
-                self.integration.addDataTables(dataTables);
-                $scope.statusMessage = "done loading data table information";
-                $scope.statusMessage = "loading column details";
+                dataService.addDataTables(integration, dataTables);
+                self.updateStatus("done loading data table information");
+                self.updateStatus("loading column details");
                 dataService.loadUpdatedParticipationInformation(integration).then(function(status){
-                    $scope.statusMessage = "done loading column details";
+                    self.updateStatus("done loading column details");
                 });
             });
 //            dataService.loadColumnDetails();
@@ -152,7 +159,7 @@
         };
 
         self.removeSelectedDatasetClicked = function() {
-            integration.removeDataTables($scope.selectedDataTables);
+            dataService.removeDataTables(integration, $scope.selectedDataTables);
         };
 
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {

@@ -221,7 +221,7 @@
             console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
-                integration.addDataTables(dataTables);
+                self.addDataTables(integration, dataTables);
                 var result = self.loadUpdatedParticipationInformation(integration);
                 result.then(function(status) {
                     json.columns.forEach(function(column) {
@@ -274,6 +274,33 @@
             return futureData.promise;
         }
 
+        self.addDataTables = function(integration, tablesToAdd) {
+            integration.addDataTables(tablesToAdd);
+            _rebuildSharedOntologies(integration);
+        }
+        
+        self.removeDataTables = function(integration, tablesToRemove) {
+            integration.removeDataTables(tablesToRemove);
+            _rebuildSharedOntologies(integration);
+        }
+        
+        /**
+         * Replace the current list of ontologies w/ a computed list of shared ontologies
+         * 
+         * @private
+         */
+        function _rebuildSharedOntologies(integration) {
+            integration.ontologies = self.getCachedOntologies(integration.getSharedOntologyIds())
+
+            // update integrationColumnStatus
+            // fixme: this really should be a computed property on integrationColumn.
+            // fixme: integrationColumn should be a proper IntegrationColumn class w/ methods and stuff.
+            integration.getIntegrationColumns().forEach(function(integrationColumn) {
+                integrationColumn.isValidMapping = (integration.getSharedOntologyIds().indexOf(integrationColumn.ontologyId) > -1);
+            });
+        }
+
+        
         /**
          * internal method to initialize a Display or Count column in loading
          */

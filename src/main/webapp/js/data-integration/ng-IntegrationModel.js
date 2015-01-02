@@ -141,7 +141,7 @@
 
         self.getMappedDataTables = function() {
             var mappedTables = {};
-            _getSharedOntologyIds().forEach(function(ontologyId) {
+            self.getSharedOntologyIds().forEach(function(ontologyId) {
                 // list of maps
                 var compatTables = [];
 
@@ -237,8 +237,6 @@
             });
 
             _dataTablesRemoved(dataTables);
-            _rebuildSharedOntologies();
-
         }
 
         function _getOutputColumns(type) {
@@ -330,7 +328,7 @@
             var currentSharedOntologyIds = self.ontologies.map(function(ontology) {
                 return ontology.id
             });
-            var newSharedOntologyIds = _getSharedOntologyIds();
+            var newSharedOntologyIds = self.getSharedOntologyIds();
             // var defunctOntologyIds = currentSharedOntologyIds.filter(function(ontologyId){return newSharedOntologyIds.indexOf(ontologyId) === -1});
             _sharedOntologiesUpdated(newSharedOntologyIds, currentSharedOntologyIds);
 
@@ -360,7 +358,7 @@
             });
         }
 
-        function _getSharedOntologyIds() {
+        self.getSharedOntologyIds = function() {
             var ids = dataService.dedupe(self.dataTables
             // reduce the list of all dataTables into a list of all dataTableColumns
             .reduce(function(a, b) {
@@ -388,31 +386,6 @@
             return _sharedOntologyIds;
         }
 
-        /**
-         * Return an array of ongologies shared by the dataTables used by this integration.
-         * 
-         * @return Array<ontology>
-         * @private
-         */
-        function _getSharedOntologies() {
-            return dataService.getCachedOntologies(_getSharedOntologyIds());
-        }
-
-        /**
-         * Replace the current list of ontologies w/ a computed list of shared ontologies
-         * 
-         * @private
-         */
-        function _rebuildSharedOntologies() {
-            self.ontologies = _getSharedOntologies();
-
-            // update integrationColumnStatus
-            // fixme: this really should be a computed property on integrationColumn.
-            // fixme: integrationColumn should be a proper IntegrationColumn class w/ methods and stuff.
-            self.getIntegrationColumns().forEach(function(integrationColumn) {
-                integrationColumn.isValidMapping = (_sharedOntologyIds.indexOf(integrationColumn.ontologyId) > -1);
-            });
-        }
 
         /**
          * Add a 'display column' to the columns list. A display column contains a list of dataTableColumn selections, which the system will include in the
@@ -487,7 +460,6 @@
         self.addDataTables = function(dataTables) {
             _setAddAll(self.dataTables, dataTables, "id");
             _dataTablesAdded(dataTables)
-            _rebuildSharedOntologies();
         };
 
         /**
