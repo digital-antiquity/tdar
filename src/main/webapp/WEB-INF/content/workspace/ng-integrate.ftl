@@ -28,7 +28,8 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                    <button type="button" class="btn" ng-disabled="!isMinimallyValid()" id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
+                	<!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
+                    <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
             </div>

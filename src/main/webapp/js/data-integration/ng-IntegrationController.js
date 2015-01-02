@@ -71,8 +71,7 @@
         self.loadJSON = function() {
             var jsonData = dataService.getDocumentData().jsondata;
             $scope.statusMessage = "Loading...";
-            console.log(jsonData.title);
-            console.log(jsonData.dataTables);
+            console.log(jsonData);
             jsonData.id = dataService.getDocumentData().jsondataId.id;
             if (jsonData.title != undefined && jsonData.dataTables != undefined) {
                 var result = dataService.loadExistingIntegration(jsonData , self.integration);

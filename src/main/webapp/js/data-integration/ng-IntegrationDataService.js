@@ -3,7 +3,7 @@
     var app = angular.module("integrationApp");
 
     /**
-     * generating a simpler JavaScript object that represents an integration. 
+     * generating a simpler JavaScript object that represents an integration.
      */
     function _dumpObject(integration) {
         var out = {
@@ -22,80 +22,101 @@
         if (integration.title != undefined) {
             out.title = integration.title;
         }
-        
+
+        // we create an internal map for ontologies so we can keep track of All referenced ontologies as "view model" may remove integration.ontologies even if
+        // they're used by a column
+        var ontologies = {};
         // for each column
-        integration.columns.forEach(function(column) {
-            var outputColumn = {
-                name : column.name,
-                type : column.type.toUpperCase(),
-                dataTableColumns : []
-            };
+        if (integration.columns != undefined) {
+            integration.columns.forEach(function(column) {
+                var outputColumn = {
+                    name : column.name,
+                    type : column.type.toUpperCase(),
+                    dataTableColumns : []
+                };
 
-            // get the data table columns in the same structure for Integration, Display, and Count columns
-            var tempList = column.selectedDataTableColumns;
-            if (tempList == undefined) {
-                tempList = [];
-                column.dataTableColumnSelections.forEach(function(col) {
-                    tempList.push(col.dataTableColumn);
-                });
-            }
-
-            // add the id/name
-            tempList.forEach(function(dtc) {
-                if (dtc.id != undefined) {
-                    var dtc_ = {
-                        id : dtc.id,
-                        name : dtc.name
+                // get the data table columns in the same structure for Integration, Display, and Count columns
+                var tempList = column.selectedDataTableColumns;
+                if (tempList == undefined) {
+                    tempList = [];
+                    if (column.dataTableColumnSelections != undefined) {
+                        column.dataTableColumnSelections.forEach(function(col) {
+                            if (col != undefined) {
+                                tempList.push(col.dataTableColumn);
+                            }
+                        });
                     }
                 }
-                outputColumn.dataTableColumns.push(dtc_);
+
+                // add the id/name
+                tempList.forEach(function(dtc) {
+                    if (dtc != undefined && dtc.id != undefined) {
+                        var dtc_ = {
+                            id : dtc.id,
+                            name : dtc.name
+                        }
+                    }
+                    outputColumn.dataTableColumns.push(dtc_);
+                });
+
+                // get the nodes and ontologes
+                if (column.type == 'integration') {
+                    var ont = {
+                            id : column.ontology.id,
+                            title : column.ontology.title
+                        };
+                    outputColumn.ontology = ont;
+                    ontologies[column.ontology.id] = ont;
+
+                    // get the selected nodes
+                    if (!(column.nodeSelections == undefined)) {
+                        outputColumn.nodeSelection = [];
+                        column.nodeSelections.forEach(function(node) {
+                            if (node.selected) {
+                                var node_ = {
+                                    id : node.node.id,
+                                    iri : node.node.iri
+                                };
+                                outputColumn.nodeSelection.push(node_);
+                            }
+                            ;
+                        });
+                    }
+                    ;
+                }
+
+                out.columns.push(outputColumn);
             });
 
-            // get the nodes and ontologes
-            if (column.type == 'integration') {
-                outputColumn.ontology = {
-                    id : column.ontology.id,
-                    title : column.ontology.title
-                }
-                
-                // get the selected nodes
-                if (!(column.nodeSelections == undefined)) {
-                    outputColumn.nodeSelection = [];
-                    column.nodeSelections.forEach(function(node) {
-                        if (node.selected) {
-                            var node_ = {
-                                id : node.node.id,
-                                iri : node.node.iri
-                            };
-                            outputColumn.nodeSelection.push(node_);
-                        }
-                        ;
-                    });
-                }
-                ;
-            }
-
-            out.columns.push(outputColumn);
-        });
+        }
 
         // add any ontologies
-        integration.ontologies.forEach(function(ontology) {
-            var ont = {
-                id : ontology.id,
-                title : ontology.title
-            };
-            out.ontologies.push(ont);
-        });
+        if (integration.ontologies != undefined) {
+            integration.ontologies.forEach(function(ontology) {
+                var ont = {
+                    id : ontology.id,
+                    title : ontology.title
+                };
+                ontologies[ontology.id] = ont;
+            });
+        }
+
+
+        $.each(ontologies,function(ontId, ontology){
+            out.ontologies.push(ontology);
+        })
 
         // add all data tables
-        integration.dataTables.forEach(function(dataTable) {
-            var table = {
-                id : dataTable.id,
-                name : dataTable.name,
-                displayName : dataTable.displayName
-            };
-            out.dataTables.push(table);
-        });
+        if (integration.dataTables != undefined) {
+            integration.dataTables.forEach(function(dataTable) {
+                var table = {
+                    id : dataTable.id,
+                    name : dataTable.name,
+                    displayName : dataTable.displayName
+                };
+                out.dataTables.push(table);
+            });
+        }
         return out;
     }
 
@@ -211,7 +232,9 @@
 
                         var ids = [];
                         column.dataTableColumns.forEach(function(col) {
-                            ids.push(col.id);
+                            if (col != undefined && col.id != undefined) {
+                                ids.push(col.id);
+                            }
                         });
 
                         if (column.type == 'DISPLAY') {
@@ -229,7 +252,8 @@
                                     ontology = ont;
                                 }
                             });
-
+                            
+                            //FIXME: if not loaded, then need to go to the server for ontology details
                             integration.addIntegrationColumn(name, ontology);
                             var col = integration.columns[integration.columns.length - 1];
 
@@ -244,7 +268,7 @@
                             });
                         }
                     });
-                    futureData.resolve(true); 
+                    futureData.resolve(true);
                 });
             });
             return futureData.promise;
@@ -271,10 +295,10 @@
             }
 
         };
-        
+
         /**
-         * Gather any dataTableColumns that have missing participation information and tell dataService to fetch it.
-         * FIXME: Move into data service
+         * Gather any dataTableColumns that have missing participation information and tell dataService to fetch it. FIXME: Move into data service
+         * 
          * @private
          */
         this.loadUpdatedParticipationInformation = function(integration) {
@@ -290,11 +314,11 @@
             if (unprocessedIds.length === 0) {
                 futureData.resolve(true);
             } else {
-               self.loadNodeParticipation(unprocessedIds).then(function() {
+                self.loadNodeParticipation(unprocessedIds).then(function() {
                     // todo: signal to the UI that these columns are ready
                     futureData.resolve(true);
                 });
-            }            
+            }
             return futureData.promise;
         };
 
@@ -395,8 +419,8 @@
                     result.id = item.dataTable.id;
                     result.date_created = d;
                     result.ontologies = [];
-                    item.mappedOntologies.forEach(function(ontology){
-                        result.ontologies.push(ontology.title + "("+ontology.id+")");
+                    item.mappedOntologies.forEach(function(ontology) {
+                        result.ontologies.push(ontology.title + "(" + ontology.id + ")");
                     });
                     return result;
                 })
