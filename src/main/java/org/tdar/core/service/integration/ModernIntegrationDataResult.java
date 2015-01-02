@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.OntologyNode;
 
 /**
@@ -22,6 +23,7 @@ public class ModernIntegrationDataResult implements Serializable {
     private ModernDataIntegrationWorkbook workbook;
     private Map<List<OntologyNode>, HashMap<String, IntContainer>> pivotData;
     private List<Object[]> previewData;
+    private PersonalFilestoreTicket ticket;
     
     public ModernIntegrationDataResult(IntegrationContext proxy) {
         this.setIntegrationContext(proxy);
@@ -57,5 +59,13 @@ public class ModernIntegrationDataResult implements Serializable {
 
     public List<Object[]> getPreviewData() {
         return previewData;
+    }
+
+    public PersonalFilestoreTicket getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(PersonalFilestoreTicket ticket) {
+        this.ticket = ticket;
     }
 }

@@ -1,8 +1,6 @@
 package org.tdar.struts.action.workspace;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,10 +35,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
-import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
@@ -85,14 +81,8 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
     private List<Long> tableIds;
     private List<DataTable> selectedDataTables;
     private ModernIntegrationDataResult result;
-    private boolean modernIntegrationResult = true;
-    // private List<String> ontologyNodeFilterSelections;
 
     private Long ticketId;
-
-    private String integrationDataResultsFilename;
-    private long integrationDataResultsContentLength;
-    private transient InputStream integrationDataResultsInputStream;
 
 
     /**
@@ -184,16 +174,6 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
         return SUCCESS;
     }
 
-    @Actions({
-        @Action("filter-ng"),
-        @Action("filter-ang"),
-        @Action("select-columns-ng")
-    })
-
-    public String filterPartDeux() {
-        return "success";
-    }
-
     public String getIntegrationColumnData() {
         String data = "null";
         try {
@@ -248,35 +228,6 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
         return SUCCESS;
     }
 
-    @Action(value = "download", results = {
-            @Result(name = SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "application/vnd.ms-excel",
-                            "inputName", "integrationDataResultsInputStream",
-                            "contentDisposition", "attachment;filename=\"${integrationDataResultsFilename}\"",
-                            "contentLength", "${integrationDataResultsContentLength}"
-                    }),
-            @Result(name = INPUT, type = "redirect", location = "select-tables")
-    })
-    public String downloadIntegrationDataResults() {
-        // create temporary file
-        try {
-            List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(getTicketId());
-            for (PersonalFilestoreFile target : files) {
-                if (target.getFile().getName().endsWith(".xls")) {
-                    integrationDataResultsInputStream = new FileInputStream(target.getFile());
-                    integrationDataResultsContentLength = target.getFile().length();
-                    integrationDataResultsFilename = target.getFile().getName();
-                }
-            }
-
-        } catch (IOException exception) {
-            addActionErrorWithException("Unable to access file.", exception);
-        }
-
-        return SUCCESS;
-    }
-
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
             bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
@@ -321,18 +272,6 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
             selectedDataTables = getGenericService().findAll(DataTable.class, tableIds);
         }
         return selectedDataTables;
-    }
-
-    public String getIntegrationDataResultsFilename() {
-        return integrationDataResultsFilename;
-    }
-
-    public InputStream getIntegrationDataResultsInputStream() {
-        return integrationDataResultsInputStream;
-    }
-
-    public long getIntegrationDataResultsContentLength() {
-        return integrationDataResultsContentLength;
     }
 
     public List<List<DataTableColumn>> getDataTableColumnIntegrationSuggestions() {
@@ -407,14 +346,6 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
 
     public void setResult(ModernIntegrationDataResult result) {
         this.result = result;
-    }
-
-    public boolean isModernIntegrationResult() {
-        return modernIntegrationResult;
-    }
-
-    public void setModernIntegrationResult(boolean modernIntegrationResult) {
-        this.modernIntegrationResult = modernIntegrationResult;
     }
 
 }

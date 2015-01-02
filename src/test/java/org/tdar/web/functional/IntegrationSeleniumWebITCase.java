@@ -16,11 +16,13 @@ import org.tdar.web.functional.util.WebElementSelection;
 
 public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
+    private static final String TEST_INTEGRATION = "test integration";
     private static final String SPITAL_DT_ID = "3091";
     private static final String ALEX_DT_ID = "3104";
     private static final String SPITALFIELD_CHECKBOX = "cbResult" + SPITAL_DT_ID;
     private static final String ALEXANDRIA_CHECKBOX = "cbResult" + ALEX_DT_ID;
 
+    private static final By saveButton = By.id("btnSave");
     By aves = By.id("cbont_64870");
     By rabbit = By.id("cbont_63000");
     By sheep = By.id("cbont_62580");
@@ -39,7 +41,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     public void testInvalidIntegrate() throws InterruptedException {
         // add three datasets that don't work, remove one, assert that we get back to an integratable state
         
-        setFieldByName("integration.title", "test integration");
+        setFieldByName("integration.title", TEST_INTEGRATION);
         // assert save enabled
         openDatasetsModal();
         // uncheck
@@ -63,7 +65,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(ExpectedConditions.elementToBeClickable(By.linkText("Add Integration Column")));
     }
 
-    
+
     @Test
     public void testValidIntegrate() throws InterruptedException {
         // add two datasets that work, assert that we get back to an integratable state
@@ -93,7 +95,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(rabbit).click();
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         find(sheep).click();
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("btnSave")));
+        waitFor(ExpectedConditions.elementToBeClickable(saveButton));
 
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
         find(By.id("btnIntegrate")).click();
@@ -102,14 +104,75 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         clearPageCache();
         logger.debug(getText());
         assertTrue(getText().contains("Summary of Integration Results"));
+        // test ontology present
         assertTrue(getText().contains("Fauna Taxon"));
+        // test nodes present
         assertTrue(getText().contains("Aves"));
         assertTrue(getText().toLowerCase().contains("sheep"));
         assertTrue(getText().toLowerCase().contains("rabbit"));
+        // test databases present
         assertTrue(getText().contains("Spitalfields"));
         assertTrue(getText().contains("Alexandria"));
     }
 
+    
+
+    @Test
+    public void testSaveAndReload() throws InterruptedException {
+        // add two datasets that work, assert that we get back to an integratable state
+        
+        setupSpitalfieldsAlexandriaForTest();
+        Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
+
+        find(By.id("btnAddDisplayColumn")).click();
+        By tab1 = By.id("tab0");
+        waitFor(tab1).isDisplayed();
+        // dt_ + tabid + _ + data_table_id
+        By spital_select = By.id("dt_0_" + SPITAL_DT_ID);
+        chooseSelectByName("Site Code", spital_select);
+        By alex_select = By.id("dt_0_" + ALEX_DT_ID);
+        chooseSelectByName("LOCATION", alex_select);
+
+        takeScreenshot();
+        find(By.linkText("Add Integration Column")).click();
+        find(By.linkText("Fauna Taxon Ontology")).click();
+        // wait for tab visible
+        waitFor(By.id("tabtab1")).isDisplayed();
+        // wait for tab contents is visible
+        waitFor(By.id("tab1")).isDisplayed();
+        logger.debug(getText());
+
+        find(aves).click();
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(By.id("cbont_64870"), true).apply(getDriver()).booleanValue());
+
+        find(rabbit).click();
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
+        find(sheep).click();
+        waitFor(ExpectedConditions.elementToBeClickable(saveButton));
+
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+        find(saveButton).click();
+        waitFor(4);
+        gotoPage("/workspace/list");
+        logger.debug(getText());
+        find(By.partialLinkText(TEST_INTEGRATION)).first().click();
+        waitForPageload();
+        logger.debug(getText());
+        clearPageCache();
+        assertTrue(getText().contains(TEST_INTEGRATION));
+        assertTrue(getText().toLowerCase().contains("aves"));
+        assertTrue(getText().toLowerCase().contains("rabbit"));
+        assertTrue(getText().toLowerCase().contains("spitalfield"));
+        assertTrue(getText().toLowerCase().contains("alexandria"));
+        assertTrue(getText().toLowerCase().contains("taxon"));
+        assertTrue(getText().toLowerCase().contains("element"));
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+
+    }
+
+    
     
     @Test
     public void testIntegrateRetainCheckboxOnClearAll() throws InterruptedException {
@@ -133,7 +196,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("btnSave")));
+        waitFor(ExpectedConditions.elementToBeClickable(saveButton));
 
         // remove the datasets
         removeDatasetByPartialName("Spital");
@@ -154,7 +217,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     private void setupSpitalfieldsAlexandriaForTest() throws InterruptedException {
-        setFieldByName("integration.title", "test integration");
+        setFieldByName("integration.title", TEST_INTEGRATION);
         // assert save enabled
         openDatasetsModal();
         findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);

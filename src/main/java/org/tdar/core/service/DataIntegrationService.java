@@ -1,12 +1,14 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +31,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -43,6 +46,8 @@ import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
+import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -50,6 +55,8 @@ import org.tdar.utils.Pair;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -439,7 +446,14 @@ public class DataIntegrationService {
         return columnsByOntology;
     }
 
+    /**
+     * Take the entire Integration Context, hydrate it (if needed) and run the integration
+     * @param context
+     * @param provider
+     * @return
+     */
     @Transactional
+    @Deprecated
     public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext context, TextProvider provider) {
         context.setDataTables(genericDao.loadFromSparseEntities(context.getDataTables(), DataTable.class));
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
@@ -447,9 +461,42 @@ public class DataIntegrationService {
         }
 
         ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider, excelService);
+        storeResult(result);
         return result;
     }
 
+    public ModernIntegrationDataResult generateModernIntegrationResult(String integration, TextProvider provider, TdarUser authenticatedUser) throws JsonParseException, JsonMappingException, IOException, IntegrationDeserializationException {
+        logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
+        IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
+        IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao);
+        ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)",null, authenticatedUser);
+        log.setTimestamp(new Date());
+        log.setPayload(integration);
+        genericDao.saveOrUpdate(log);
+        logger.trace(integration);
+        // ADD ERROR CHECKING LOGIC
+
+        // // ok, at this point we have the integration columns that we're interested in + the ontology
+        // // nodes that we want to use to filter values of interest and for aggregation.
+        // // getLogger().debug("table columns are: " + tableToIntegrationColumns);
+        // // getLogger().debug("ontology node hierarchy map: " + tableToOntologyHierarchyMap);
+        // if (CollectionUtils.isEmpty(tableToIntegrationColumns)) {
+        // addActionError("Either no integration columns or filter values were selected, please go back and select both");
+        // return INPUT;
+        // }
+        //
+
+
+        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(integrationContext, provider, excelService);
+        storeResult(result);
+        return result;
+    }
+
+    /**
+     * Take the result of the integration and store it in the personal filestore for retrieval
+     * @param result
+     * @return
+     */
     @Transactional
     public PersonalFilestoreTicket storeResult(ModernIntegrationDataResult result) {
         ModernDataIntegrationWorkbook workbook = result.getWorkbook();
@@ -460,6 +507,7 @@ public class DataIntegrationService {
             File resultFile = workbook.writeToTempFile();
             PersonalFilestore filestore = filestoreService.getPersonalFilestore(result.getIntegrationContext().getCreator());
             filestore.store(ticket, resultFile, workbook.getFileName());
+            result.setTicket(ticket);
         } catch (Exception exception) {
             logger.error("an error occurred when producing the integration excel file", exception);
             throw new TdarRecoverableRuntimeException("dataIntegrationService.could_not_save_file");
