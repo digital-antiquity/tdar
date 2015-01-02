@@ -287,6 +287,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         
         names.removeAll(seen);
         logger.debug("colNames:{}", names);
+        logger.debug("seen    :{}", seen);
         assertTrue(names.isEmpty());
         
         String[] row3 = new String[] { "Felis catus (Cat)", "Ulna", "23", "15" };

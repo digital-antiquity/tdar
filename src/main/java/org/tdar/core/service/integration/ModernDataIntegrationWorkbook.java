@@ -18,6 +18,7 @@ import org.apache.commons.dbutils.ResultSetIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -81,7 +82,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         // FIXME: in poi 3.7 turning this on causes a warning notice in Excel that the file is corrupted, disabling
         // sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, columnIndex - 1));
 
-        createSummarySheet();
+        createPivotSheet();
         createDescriptionSheet();
 
     }
@@ -200,18 +201,20 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     row[size + 2] = dtc.getColumnDataType().getLabel();
                     Ontology defaultOntology = dtc.getDefaultOntology();
                     if (defaultOntology != null) {
-                        row[size + 3] = provider.getText("dataIntegrationWorkbook.name_paren_id", Arrays.asList(defaultOntology.getName(), defaultOntology.getId()));
+                        row[size + 3] = provider.getText("dataIntegrationWorkbook.name_paren_id",
+                                Arrays.asList(defaultOntology.getName(), defaultOntology.getId()));
                     }
                     CodingSheet defaultCodingSheet = dtc.getDefaultCodingSheet();
                     if (defaultCodingSheet != null) {
-                        row[size + 4] = provider.getText("dataIntegrationWorkbook.name_paren_id", Arrays.asList(defaultCodingSheet.getName(), defaultCodingSheet.getId()));
+                        row[size + 4] = provider.getText("dataIntegrationWorkbook.name_paren_id",
+                                Arrays.asList(defaultCodingSheet.getName(), defaultCodingSheet.getId()));
                     }
                     size = size + 5;
                 }
             }
             excelService.addDataRow(summarySheet, currentRow, 0, Arrays.asList(row));
             // if real integration column, show the mapping info
-            
+
             if (col.isIntegrationColumn()) {
                 List<String> row2 = new ArrayList<>(Arrays.asList(row));
                 row2.set(0, provider.getText("dataIntegrationWorkbook.col_mapped", Arrays.asList(row[0])));
@@ -238,13 +241,15 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      * @param columnNames
      * @param pivot
      */
-    private void createSummarySheet() {
+    private void createPivotSheet() {
         int rowIndex;
         Sheet pivotSheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.summary_worksheet"));
         String title = provider.getText("dataIntegrationWorkbook.title",
                 Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
         excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
+        addMergedRegion(0, 0 , 0, 8, pivotSheet);
         excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
+        addMergedRegion(1, 1, 0, 8, pivotSheet);
 
         rowIndex = 4;
         List<String> rowHeaders = new ArrayList<>();
@@ -254,7 +259,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
         }
         for (DataTable table : context.getDataTables()) {
-            rowHeaders.add(table.getName());
+            rowHeaders.add(formatTableName(table));
         }
 
         excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW + 3, ExcelService.FIRST_COLUMN, rowHeaders);
@@ -280,6 +285,17 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
             excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
         }
+        excelService.addDataRow(pivotSheet, rowIndex + 2, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_note")));
+        addMergedRegion(rowIndex +2, rowIndex+3, 0, 8, pivotSheet);
+    }
+
+    private void addMergedRegion(int startRow, int endRow, int startCol, int endCol, Sheet pivotSheet) {
+        pivotSheet.addMergedRegion(new CellRangeAddress(
+                startRow, // first row (0-based)
+                endRow, // last row (0-based)
+                startCol, // first column (0-based)
+                endCol // last column (0-based)
+                ));
     }
 
     public static String formatTableName(DataTable table) {
