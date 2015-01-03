@@ -10,7 +10,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.dao.integration.IntegrationColumnProxy;
+import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.utils.json.JsonIdNameFilter;
 
@@ -29,7 +29,7 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
 
     private static final long serialVersionUID = 499550761252167428L;
     private List<Long> dataTableColumnIds = new ArrayList<>();
-    private List<IntegrationColumnProxy> nodesByColumn;
+    private List<IntegrationColumnPartProxy> nodesByColumn;
 
     @Autowired
     DataIntegrationService integrationService;
@@ -42,7 +42,7 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
         this.dataTableColumnIds = dataTableColumnIds;
     }
 
-    public List<IntegrationColumnProxy> getNodesByColumn() {
+    public List<IntegrationColumnPartProxy> getNodesByColumn() {
         return nodesByColumn;
     }
 

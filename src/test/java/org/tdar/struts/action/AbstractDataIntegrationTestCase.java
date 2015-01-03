@@ -43,7 +43,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.integration.IntegrationColumnProxy;
+import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.conversion.DatasetConversionFactory;
@@ -260,19 +260,20 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
             if (!integrationColumn.isIntegrationColumn()) {
                 continue;
             }
-            if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
+            String[] nodeSelections = nodeSelectionMap.get(integrationColumn.getSharedOntology());
+            if (nodeSelections != null) {
                 int foundNodeCount = 0;
-                IntegrationColumnProxy columnDetails = dataIntegrationService.getColumnDetails(integrationColumn);
-                for (OntologyNode nodeData : columnDetails.getFlattenedNodes()) {
-                    if (ArrayUtils.contains(nodeSelectionMap.get(integrationColumn.getSharedOntology()), nodeData.getDisplayName())) {
-                        logger.trace("comparing " + nodeData.getDisplayName() + " <-> "
-                                + StringUtils.join(nodeSelectionMap.get(integrationColumn.getSharedOntology()), "|"));
+                for (OntologyNode nodeData : dataIntegrationService.getFilteredOntologyNodes(integrationColumn)) {
+                    String name = nodeData.getDisplayName();
+                    logger.debug("comparing {} <-> {}", name, StringUtils.join(nodeSelections, "|"));
+                    if (ArrayUtils.contains(nodeSelections, name)) {
                         foundNodeCount++;
                         integrationColumn.getFilteredOntologyNodes().add(new OntologyNode(nodeData.getId()));
 
                     }
                 }
-                assertEquals(foundNodeCount, nodeSelectionMap.get(integrationColumn.getSharedOntology()).length);
+                logger.debug("nodeSelections: {}", Arrays.asList(nodeSelections));
+                assertEquals(foundNodeCount, nodeSelections.length);
             } else {
                 assertTrue("found unexpected ontology", false);
             }

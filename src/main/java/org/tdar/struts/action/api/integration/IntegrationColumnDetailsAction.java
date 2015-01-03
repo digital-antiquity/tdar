@@ -1,6 +1,7 @@
 package org.tdar.struts.action.api.integration;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -9,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.dao.integration.IntegrationColumnProxy;
+import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.utils.json.JsonIdNameFilter;
@@ -29,9 +31,11 @@ public class IntegrationColumnDetailsAction extends AbstractIntegrationAction {
 
     @Action(value = "integration-column-details")
     public String integrationColumnDetails() throws IOException {
-        IntegrationColumnProxy proxy = integrationService.getColumnDetails(getIntegrationColumn());
+        Set<OntologyNode> sharedNodes = integrationService.getFilteredOntologyNodes(getIntegrationColumn());
         Ontology sharedOntology = getIntegrationColumn().getSharedOntology();
+        IntegrationColumnPartProxy proxy = new IntegrationColumnPartProxy();
         proxy.setSharedOntology(sharedOntology);
+        proxy.setFlattenedNodes(sharedNodes);
         setJsonObject(proxy, JsonIdNameFilter.class);
         return SUCCESS;
     }

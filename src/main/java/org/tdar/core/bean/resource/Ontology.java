@@ -61,7 +61,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     private transient Map<String, OntologyNode> iriMap = new WeakHashMap<>();
     private transient Map<String, OntologyNode> nameMap = new WeakHashMap<>();
 
-    private final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
+    public final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
         @Override
         public int compare(OntologyNode o1, OntologyNode o2) {
             int comparison = o1.getImportOrder().compareTo(o2.getImportOrder());

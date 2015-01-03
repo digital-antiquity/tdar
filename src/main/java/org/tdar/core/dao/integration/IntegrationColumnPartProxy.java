@@ -13,7 +13,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @JsonAutoDetect
-public class IntegrationColumnProxy implements Serializable {
+/**
+ * Represents one DataTableColumn in one Integration Column
+ * @author abrin
+ *
+ */
+public class IntegrationColumnPartProxy implements Serializable {
 
     private static final long serialVersionUID = -6564768298774032395L;
 

@@ -93,11 +93,13 @@
                             <#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
                                 <#assign numberOfParents=ontologyNode.numberOfParents>
                                 <#assign checkForUser=true />
-								<#list ontologyNode.legacyColumnHasValueMap?values as hasValue >
-                                    <#if !hasValue>
-                                        <#assign checkForUser=false />
-                                    </#if>
-								</#list>
+								<#if  ontologyNode.legacyColumnHasValueMap?has_content>
+									<#list ontologyNode.legacyColumnHasValueMap?values as hasValue >
+                                	    <#if !hasValue>
+                                    	    <#assign checkForUser=false />
+	                                    </#if>
+									</#list>
+								</#if>
                                 <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
                             <tr class="<#if ontologyNode.disabled>disabled</#if>">
                                 <td style="white-space: nowrap;">

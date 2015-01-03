@@ -38,7 +38,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.integration.IntegrationColumnProxy;
+import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
@@ -367,10 +367,13 @@ public class DataIntegrationService {
     }
 
     @Transactional(readOnly = false)
-    public IntegrationColumnProxy getColumnDetails(IntegrationColumn integrationColumn) {
-        List<IntegrationColumnProxy> list = getNodeParticipationByColumn(PersistableUtils.extractIds(integrationColumn.getColumns()));
-        return list.get(0);
-
+    public Set<OntologyNode> getFilteredOntologyNodes(IntegrationColumn integrationColumn) {
+        List<IntegrationColumnPartProxy> list = getNodeParticipationByColumn(PersistableUtils.extractIds(integrationColumn.getColumns()));
+        Set<OntologyNode> nodes = new HashSet<>();
+        for (IntegrationColumnPartProxy icp : list) {
+            nodes.addAll(icp.getFlattenedNodes());
+        }
+        return nodes;
     }
 
     /**
@@ -381,8 +384,8 @@ public class DataIntegrationService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<IntegrationColumnProxy> getNodeParticipationByColumn(List<Long> dataTableColumnIds) {
-        List<IntegrationColumnProxy> results = new ArrayList<>();
+    public List<IntegrationColumnPartProxy> getNodeParticipationByColumn(List<Long> dataTableColumnIds) {
+        List<IntegrationColumnPartProxy> results = new ArrayList<>();
         Set<DataTableColumn> dataTableColumns = new HashSet<>(genericDao.findAll(DataTableColumn.class, dataTableColumnIds));
         Map<Ontology, Set<DataTableColumn>> columnsByOntology = buildOntologyToColumnMap(dataTableColumns);
 
@@ -393,7 +396,7 @@ public class DataIntegrationService {
                 if (!col.isActuallyMapped()) {
                     continue;
                 }
-                IntegrationColumnProxy icp = new IntegrationColumnProxy();
+                IntegrationColumnPartProxy icp = new IntegrationColumnPartProxy();
                 icp.setDataTableColumn(col);
                 icp.setSharedOntology(ontology);
                 results.add(icp);
@@ -407,33 +410,39 @@ public class DataIntegrationService {
         return results;
     }
 
-    private void applyLegacyFilter(Ontology ontology, DataTableColumn col, IntegrationColumnProxy icp) {
+    /**
+     * Originally ported from IntegrationColumn.flatten(); this method takes the integration column and gets the associated coding sheet
+     * and thus, ontology and ontology nodes to find what should be marked as "checked"
+     * @param ontology
+     * @param col
+     * @param icp
+     */
+    private void applyLegacyFilter(Ontology ontology, DataTableColumn col, IntegrationColumnPartProxy icp) {
         SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = ontology.toOntologyNodeMap();
-        for (OntologyNode ontologyNode : ontology.getOntologyNodes()) {
-
-                // check mapping first to see if the value should be translated a second
-                // time to the common ontology format.
-
-                // check if distinctValues has any values in common with mapped data values
-                // if the two lists are disjoint (nothing in common), then there is no
-                // data value if one of the distinct values is already equivalent to the ontology
-                // node label, go with that.
-
-                List<CodingRule> rules = col.getDefaultCodingSheet().findRuleMappedToOntologyNode(ontologyNode);
-                if (CollectionUtils.isNotEmpty(rules)) {
-                    for (CodingRule rule : rules) {
-                        if ((rule != null) && rule.isMappedToData(col)) {
-                            ontologyNode.setMappedDataValues(true);
-                            ontologyNode.getColumnHasValueMap().put(col, true);
-                            icp.getFlattenedNodes().add(ontologyNode);
-                        }
-                    }
-                }
-        }
-
+        
+        // check mapping first to see if the value should be translated a second
+        // time to the common ontology format.
+        
+        // check if distinctValues has any values in common with mapped data values
+        // if the two lists are disjoint (nothing in common), then there is no
+        // data value if one of the distinct values is already equivalent to the ontology
+        // node label, go with that.
+        
         
         for (OntologyNode ontologyNode : ontology.getOntologyNodes()) {
             List<OntologyNode> children = ontologyNodeParentChildMap.get(Integer.valueOf(ontologyNode.getIntervalStart()));
+            List<CodingRule> rules = col.getDefaultCodingSheet().findRulesMappedToOntologyNode(ontologyNode);
+
+            // Step 1: find direct value matches
+            if (CollectionUtils.isNotEmpty(rules)) {
+                for (CodingRule rule : rules) {
+                    if ((rule != null) && rule.isMappedToData(col)) {
+                        markAdded(col, icp, ontologyNode);
+                    }
+                }
+            }
+
+            // check if any of the children of this node matches
             if (CollectionUtils.isNotEmpty(children)) {
                 ontologyNode.setParent(true);
                 // should we set the children list directly on this OntologyNode?
@@ -441,14 +450,25 @@ public class DataIntegrationService {
                     // this parent node has no direct mapped data values, check if any children do
                     for (OntologyNode child : children) {
                         if (child.isMappedDataValues()) {
-                            icp.getFlattenedNodes().add(ontologyNode);
-                            ontologyNode.setMappedDataValues(true);
+                            markAdded(col, icp, ontologyNode);
                             break;
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * convenience method setting mapped to true for an ontologyNode, and thena dding it to the flattened nodes list
+     * @param col
+     * @param icp
+     * @param ontologyNode
+     */
+    private void markAdded(DataTableColumn col, IntegrationColumnPartProxy icp, OntologyNode ontologyNode) {
+        ontologyNode.setMappedDataValues(true);
+        ontologyNode.getColumnHasValueMap().put(col, true);
+        icp.getFlattenedNodes().add(ontologyNode);
     }
 
     /**

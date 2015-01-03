@@ -28,7 +28,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.integration.IntegrationColumnProxy;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -164,8 +163,11 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
 
                     dataIntegrationService.updateMappedCodingRules(column);
                 }
-                IntegrationColumnProxy proxy = dataIntegrationService.getColumnDetails(integrationColumn);
-                integrationColumn.setFlattenedOntologyNodeList(new ArrayList<OntologyNode>(proxy.getFlattenedNodes()));
+                Set<OntologyNode> flattenedNodes = dataIntegrationService.getFilteredOntologyNodes(integrationColumn);
+                flattenedNodes.addAll(defaultOntology.getOntologyNodes());
+                ArrayList<OntologyNode> sortedList = new ArrayList<OntologyNode>(flattenedNodes);
+                Collections.sort(sortedList, Ontology.IMPORT_ORDER_COMPARATOR);
+                integrationColumn.setFlattenedOntologyNodeList(sortedList);
             }
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace("intermediate: {}",

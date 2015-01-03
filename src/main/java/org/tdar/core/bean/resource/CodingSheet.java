@@ -244,7 +244,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
         return mappedValues;
     }
 
-    public List<CodingRule> findRuleMappedToOntologyNode(OntologyNode node) {
+    public List<CodingRule> findRulesMappedToOntologyNode(OntologyNode node) {
         if ((node == null) || CollectionUtils.isEmpty(getCodingRules())) {
             return new ArrayList<>();
         }

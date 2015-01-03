@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.dao.integration.IntegrationColumnProxy;
+import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
@@ -108,12 +108,13 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         //we expect to have at least one node value present
         int nodesPresent = 0;
         int proxiesPresent = 0;
-        for(IntegrationColumnProxy proxy: action.getNodesByColumn()) {
+        for(IntegrationColumnPartProxy proxy: action.getNodesByColumn()) {
             nodesPresent += proxy.getFlattenedNodes().size();
             proxiesPresent++;
         }
         logger.debug("nodesPresent:{}", nodesPresent);
-        Assert.assertEquals(184, nodesPresent);
+        // NOTE: this was 184 prior to the change to the filter node logic (reversion to older logic) in r6881. 
+        Assert.assertEquals(227, nodesPresent);
         Assert.assertEquals(4, proxiesPresent);
 
     }
