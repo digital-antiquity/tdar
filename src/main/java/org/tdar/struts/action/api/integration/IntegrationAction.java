@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.service.DataIntegrationService;
+import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;

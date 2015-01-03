@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.integration;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +43,9 @@ import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.integration.IntegrationColumn;
-import org.tdar.core.service.integration.IntegrationContext;
-import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
-import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.InformationResourceService;

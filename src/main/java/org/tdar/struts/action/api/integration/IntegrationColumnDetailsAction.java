@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
-import org.tdar.core.service.DataIntegrationService;
+import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.utils.json.JsonIdNameFilter;
 
