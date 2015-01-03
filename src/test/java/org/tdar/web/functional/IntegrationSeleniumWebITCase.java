@@ -155,20 +155,24 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(4);
         gotoPage("/workspace/list");
         logger.debug(getText());
+        clearPageCache();
         find(By.partialLinkText(TEST_INTEGRATION)).first().click();
         waitForPageload();
+        
+        find(By.id("tabtab1")).click();
+        waitFor(2);
         logger.debug(getText());
-        clearPageCache();
-        assertTrue(getText().contains(TEST_INTEGRATION));
+        takeScreenshot();
+        assertEquals(find(By.name("integration.title")).val(),TEST_INTEGRATION);
         assertTrue(getText().toLowerCase().contains("aves"));
         assertTrue(getText().toLowerCase().contains("rabbit"));
-        assertTrue(getText().toLowerCase().contains("spitalfield"));
-        assertTrue(getText().toLowerCase().contains("alexandria"));
         assertTrue(getText().toLowerCase().contains("taxon"));
         assertTrue(getText().toLowerCase().contains("element"));
         assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+        assertTrue(getText().toLowerCase().contains("spitalfield"));
+        assertTrue(getText().toLowerCase().contains("alexandria"));
 
     }
 
