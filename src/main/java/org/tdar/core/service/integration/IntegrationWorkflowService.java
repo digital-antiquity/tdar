@@ -51,13 +51,13 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     @Transactional(readOnly = false)
     public IntegrationSaveResult saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data,String json, TdarUser authUser) {
         IntegrationSaveResult result = new IntegrationSaveResult();
-        result.setStatus("error");
+        result.setStatus(IntegrationSaveResult.ERROR);
         try {
             validateWorkflow(data);
             persistable.markUpdated(authUser);
             data.copyValuesToBean(persistable, json);
             genericDao.saveOrUpdate(persistable);
-            result.setStatus("success");
+            result.setStatus(IntegrationSaveResult.SUCCESS);
             result.setId(persistable.getId());
         } catch (IntegrationDeserializationException e) {
             result.getErrors().add(e.getMessage());

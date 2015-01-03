@@ -1,6 +1,8 @@
 package org.tdar.struts.action.api.integration;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -48,6 +50,8 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
     @Autowired
     SerializationService serializationService;
     private IntegrationWorkflowData jsonData;
+    private IntegrationSaveResult result;
+    private List<String> errors = new ArrayList<>();
 
     @Actions(value = {
             @Action("save/{id}"),
@@ -56,8 +60,12 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
     @PostOnly
     @WriteableSession
     public String save() throws TdarActionException, IOException, IntegrationDeserializationException {
-        IntegrationSaveResult result = integrationWorkflowService.saveForController(getPersistable(), jsonData, integration, getAuthenticatedUser());
-        setJsonObject(result, JsonIntegrationFilter.class);
+        setResult(integrationWorkflowService.saveForController(getPersistable(), jsonData, integration, getAuthenticatedUser()));
+        setJsonObject(getResult(), JsonIntegrationFilter.class);
+        if (result.getStatus() != IntegrationSaveResult.SUCCESS) {
+            result.getErrors().addAll(errors);
+            return INPUT;
+        }
         return SUCCESS;
     }
 
@@ -66,12 +74,42 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
         return DataIntegrationWorkflow.class;
     }
 
+
+    @Override
+    public void prepare() throws Exception {
+        prepareAndLoad(this, RequestType.SAVE);
+        getLogger().trace(integration);
+        try {
+            jsonData = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
+            if (workflow == null) {
+                workflow = new DataIntegrationWorkflow();
+            }
+        } catch (Exception e) {
+            getLogger().error("cannot prepare json", e);
+            errors.add(e.getMessage());
+            setupErrorResult();
+        }
+    }
+
     @Override
     public void validate() {
         try {
             integrationWorkflowService.validateWorkflow(jsonData);
         } catch (IntegrationDeserializationException e) {
             getLogger().error("cannot validate", e);
+            getLogger().error("error validating json", e);
+            errors.add(e.getMessage());
+            setupErrorResult();
+        }
+    }
+
+    private void setupErrorResult() {
+        try {
+            setResult(new IntegrationSaveResult(errors));
+            setJsonObject(getResult(), JsonIntegrationFilter.class);
+            getActionErrors().addAll(errors);
+        } catch (IOException e1) {
+            getLogger().error("erro setting up error json", e1);
         }
     }
 
@@ -100,16 +138,6 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
         return InternalTdarRights.EDIT_ANYTHING;
     }
 
-    @Override
-    public void prepare() throws Exception {
-        prepareAndLoad(this, RequestType.SAVE);
-        getLogger().debug(integration);
-        jsonData = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
-        if (workflow == null) {
-            workflow = new DataIntegrationWorkflow();
-        }
-    }
-
     public String getIntegration() {
         return integration;
     }
@@ -128,5 +156,13 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public IntegrationSaveResult getResult() {
+        return result;
+    }
+
+    public void setResult(IntegrationSaveResult result) {
+        this.result = result;
     }
 }

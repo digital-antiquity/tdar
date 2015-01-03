@@ -13,9 +13,19 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class IntegrationSaveResult implements Serializable {
 
     private static final long serialVersionUID = 1012921456837760027L;
+    public static final String ERROR = "error";
     private Long id;
+    public static String SUCCESS = "success";
     private String status;
     private List<String> errors = new ArrayList<>();
+
+    public IntegrationSaveResult(List<String> errors2) {
+        this.errors = errors2;
+        this.status= ERROR;
+    }
+
+    public IntegrationSaveResult() {
+    }
 
     @JsonView(JsonIntegrationFilter.class)
     public Long getId() {

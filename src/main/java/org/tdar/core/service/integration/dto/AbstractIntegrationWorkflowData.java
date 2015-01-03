@@ -31,7 +31,7 @@ public abstract class AbstractIntegrationWorkflowData {
             ids.remove(object.getId());
         }
         if (CollectionUtils.isNotEmpty(ids.keySet())) {
-            throw new IntegrationDeserializationException(ids.values());
+            throw new IntegrationDeserializationException(cls, ids.values());
         }
         return objects;
     }
