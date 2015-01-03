@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.integration.IntegrationColumnProxy;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.conversion.DatasetConversionFactory;
@@ -229,7 +230,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     public Object performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
-            HashMap<Ontology, String[]> nodeSelectionMap) throws IOException {
+            HashMap<Ontology, String[]> nodeSelectionMap) throws Exception {
         LegacyWorkspaceController controller = generateNewInitializedController(LegacyWorkspaceController.class);
         performIntegrationFiltering(integrationColumns, nodeSelectionMap);
         controller.setTableIds(tableIds);
@@ -245,6 +246,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         ModernIntegrationDataResult result = controller.getResult();
         IntegrationDownloadAction dc = generateNewInitializedController(IntegrationDownloadAction.class);
         dc.setTicketId(ticketId);
+        dc.prepare();
         dc.downloadIntegrationDataResults();
         InputStream integrationDataResultsInputStream = dc.getIntegrationDataResultsInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(integrationDataResultsInputStream));
@@ -260,7 +262,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
             }
             if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
                 int foundNodeCount = 0;
-                for (OntologyNode nodeData : integrationColumn.getFlattenedOntologyNodeList()) {
+                IntegrationColumnProxy columnDetails = dataIntegrationService.getColumnDetails(integrationColumn);
+                for (OntologyNode nodeData : columnDetails.getFlattenedNodes()) {
                     if (ArrayUtils.contains(nodeSelectionMap.get(integrationColumn.getSharedOntology()), nodeData.getDisplayName())) {
                         logger.trace("comparing " + nodeData.getDisplayName() + " <-> "
                                 + StringUtils.join(nodeSelectionMap.get(integrationColumn.getSharedOntology()), "|"));

@@ -68,8 +68,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
     @Test
     public void testIntegrationColumnDetailsAction() throws IOException {
         IntegrationColumnDetailsAction detailsAction = generateNewInitializedController(IntegrationColumnDetailsAction.class,getAdminUser());
-        IntegrationColumn column = new IntegrationColumn();
-        column.setColumnType(ColumnType.INTEGRATION);
+        IntegrationColumn column = new IntegrationColumn(ColumnType.INTEGRATION);
         column.getColumns().add(dataTableService.find(SPITAL_MAIN_ID).getColumnByName("species_common_name"));
         column.setSharedOntology(ontologyService.find(TAXON_ID));
         detailsAction.setIntegrationColumn(column);

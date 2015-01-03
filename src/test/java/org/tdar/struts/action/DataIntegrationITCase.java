@@ -213,6 +213,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             if (!column.isIntegrationColumn()) {
                 continue;
             }
+            
             for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
                 logger.trace("node: {} ", node);
                 if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {

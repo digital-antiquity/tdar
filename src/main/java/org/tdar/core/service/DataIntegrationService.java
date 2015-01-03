@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -52,6 +53,7 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -365,17 +367,10 @@ public class DataIntegrationService {
     }
 
     @Transactional(readOnly = false)
-    public void getColumnDetails(IntegrationColumn integrationColumn) {
-        // rehydrate all of the resources being passed in, we just had empty beans with ids
-        integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
-        integrationColumn.setColumns(genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class));
+    public IntegrationColumnProxy getColumnDetails(IntegrationColumn integrationColumn) {
+        List<IntegrationColumnProxy> list = getNodeParticipationByColumn(PersistableUtils.extractIds(integrationColumn.getColumns()));
+        return list.get(0);
 
-        // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
-        for (DataTableColumn column : integrationColumn.getColumns()) {
-            logger.info("{} ({})", column, column.getDefaultOntology());
-            logger.info("{} ({})", column, column.getDefaultCodingSheet());
-            updateMappedCodingRules(column);
-        }
     }
 
     /**
@@ -404,20 +399,56 @@ public class DataIntegrationService {
                 results.add(icp);
                 // get the actual mappings from tdardata
                 updateMappedCodingRules(col);
+                applyLegacyFilter(ontology, col, icp);
 
-                for (CodingRule rule : col.getDefaultCodingSheet().getCodingRules()) {
-                    if (!rule.isMappedToData(col)) {
-                        continue;
-                    }
-                    OntologyNode node = rule.getOntologyNode();
-                    if (node != null) {
-                        icp.getFlattenedNodes().add(node);
-                    }
-                }
             }
             logger.trace("nodesByColumn: {}", results);
         }
         return results;
+    }
+
+    private void applyLegacyFilter(Ontology ontology, DataTableColumn col, IntegrationColumnProxy icp) {
+        SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = ontology.toOntologyNodeMap();
+        for (OntologyNode ontologyNode : ontology.getOntologyNodes()) {
+
+                // check mapping first to see if the value should be translated a second
+                // time to the common ontology format.
+
+                // check if distinctValues has any values in common with mapped data values
+                // if the two lists are disjoint (nothing in common), then there is no
+                // data value if one of the distinct values is already equivalent to the ontology
+                // node label, go with that.
+
+                List<CodingRule> rules = col.getDefaultCodingSheet().findRuleMappedToOntologyNode(ontologyNode);
+                if (CollectionUtils.isNotEmpty(rules)) {
+                    for (CodingRule rule : rules) {
+                        if ((rule != null) && rule.isMappedToData(col)) {
+                            ontologyNode.setMappedDataValues(true);
+                            ontologyNode.getColumnHasValueMap().put(col, true);
+                            icp.getFlattenedNodes().add(ontologyNode);
+                        }
+                    }
+                }
+        }
+
+        
+        for (OntologyNode ontologyNode : ontology.getOntologyNodes()) {
+            List<OntologyNode> children = ontologyNodeParentChildMap.get(Integer.valueOf(ontologyNode.getIntervalStart()));
+            if (CollectionUtils.isNotEmpty(children)) {
+                ontologyNode.setParent(true);
+                // should we set the children list directly on this OntologyNode?
+                if (!ontologyNode.isMappedDataValues()) {
+                    // this parent node has no direct mapped data values, check if any children do
+                    for (OntologyNode child : children) {
+                        if (child.isMappedDataValues()) {
+                            icp.getFlattenedNodes().add(ontologyNode);
+                            ontologyNode.setMappedDataValues(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

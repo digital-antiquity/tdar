@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,11 +17,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.resource.CodingRule;
-import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -300,73 +297,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
      */
     @Deprecated
     public List<OntologyNode> getFlattenedOntologyNodeList() {
-        if (flattenedOntologyNodeList == null) {
-            flatten();
-        }
         return flattenedOntologyNodeList;
-    }
-
-    /**
-     * Flattens sharedOntology's nodes into a single List<OntologyNode> and sets
-     * transient metadata on each OntologyNode to specify what nodes have mapped data and what nodes do not.
-     */
-    @Deprecated
-    private void flatten() {
-        if ((sharedOntology == null) || !isIntegrationColumn()) {
-            return;
-        }
-        List<OntologyNode> ontologyNodes = sharedOntology.getSortedOntologyNodesByImportOrder();
-        if (ontologyNodes == null) {
-            ontologyNodes = Collections.emptyList();
-        }
-        SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = sharedOntology.toOntologyNodeMap();
-
-        for (OntologyNode ontologyNode : ontologyNodes) {
-
-            for (int index = 0; index < columns.size(); index++) {
-                DataTableColumn column = columns.get(index);
-                CodingSheet codingSheet = column.getDefaultCodingSheet();
-                if (codingSheet == null) {
-                    continue;
-                }
-                // check mapping first to see if the value should be translated a second
-                // time to the common ontology format.
-
-                // check if distinctValues has any values in common with mapped data values
-                // if the two lists are disjoint (nothing in common), then there is no
-                // data value if one of the distinct values is already equivalent to the ontology
-                // node label, go with that.
-
-                List<CodingRule> rules = codingSheet.findRuleMappedToOntologyNode(ontologyNode);
-                if (CollectionUtils.isNotEmpty(rules)) {
-                    for (CodingRule rule : rules) {
-                        if ((rule != null) && rule.isMappedToData(column)) {
-                            ontologyNode.setMappedDataValues(true);
-                            ontologyNode.getColumnHasValueMap().put(column, true);
-                        }
-                    }
-                }
-
-            }
-        }
-        // could probably do it in one pass recursively
-        for (OntologyNode ontologyNode : ontologyNodes) {
-            List<OntologyNode> children = ontologyNodeParentChildMap.get(Integer.valueOf(ontologyNode.getIntervalStart()));
-            if (CollectionUtils.isNotEmpty(children)) {
-                ontologyNode.setParent(true);
-                // should we set the children list directly on this OntologyNode?
-                if (!ontologyNode.isMappedDataValues()) {
-                    // this parent node has no direct mapped data values, check if any children do
-                    for (OntologyNode child : children) {
-                        if (child.isMappedDataValues()) {
-                            ontologyNode.setMappedDataValues(true);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        flattenedOntologyNodeList = ontologyNodes;
     }
 
     public DataTableColumn getTempTableDataTableColumn() {
@@ -379,6 +310,11 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     public void buildNodeChildHierarchy(OntologyNodeDao ontologyNodeDao) {
         ontologyNodesForSelect = ontologyNodeDao.getAllChildren(filteredOntologyNodes);
+    }
+
+    @Deprecated
+    public void setFlattenedOntologyNodeList(List<OntologyNode> flattenedOntologyNodeList) {
+        this.flattenedOntologyNodeList = flattenedOntologyNodeList;
     }
 
 }
