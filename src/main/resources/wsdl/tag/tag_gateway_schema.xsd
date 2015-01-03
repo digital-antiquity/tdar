@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tag="http://archaeologydataservice.ac.uk/tag/schema" 
+	targetNamespace="http://archaeologydataservice.ac.uk/tag/schema" 
+	version="1.0">
+	<xs:include schemaLocation="tag_gateway_query.xsd"/>
+	<xs:include schemaLocation="tag_gateway_results.xsd"/>
+	<xs:element name="GetVersion" type="tag:GetVersion"/>
+	<xs:element name="GetVersionResponse" type="tag:GetVersionResponse"/>
+	<xs:element name="GetTopRecords" type="tag:GetTopRecords"/>
+	<xs:element name="GetTopRecordsResponse" type="tag:GetTopRecordsResponse"/>
+	<xs:element name="GetXsltTemplate" type="tag:GetXsltTemplate"/>
+	<xs:element name="GetXsltTemplateResponse" type="tag:GetXsltTemplateResponse"/>
+	<xs:complexType name="GetVersion">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="GetVersionResponse">
+		<xs:sequence>
+			<xs:element name="version" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GetXsltTemplate">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="GetXsltTemplateResponse">
+		<xs:sequence><xs:any /></xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GetTopRecords">
+		<xs:sequence>
+			<xs:element name="sessionId" type="xs:string"/>
+			<xs:element ref="tag:Query"/>
+			<xs:element name="numberOfRecords" type="xs:int"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GetTopRecordsResponse">
+		<xs:sequence>
+			<xs:element ref="tag:SearchResults"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
