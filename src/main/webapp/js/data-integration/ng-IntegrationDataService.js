@@ -62,9 +62,9 @@
                 // get the nodes and ontologes
                 if (column.type == 'integration') {
                     var ont = {
-                            id : column.ontology.id,
-                            title : column.ontology.title
-                        };
+                        id : column.ontology.id,
+                        title : column.ontology.title
+                    };
                     outputColumn.ontology = ont;
                     ontologies[column.ontology.id] = ont;
 
@@ -101,8 +101,7 @@
             });
         }
 
-
-        $.each(ontologies,function(ontId, ontology){
+        $.each(ontologies, function(ontId, ontology) {
             out.ontologies.push(ontology);
         })
 
@@ -142,7 +141,12 @@
     }
 
     function DataService($http, $cacheFactory, $q) {
-        var self = this, documentData = _loadDocumentData(), ontologyCache = $cacheFactory('ontologyCache'), dataTableCache = $cacheFactory('dataTableCache'), ontologyNodeCache = $cacheFactory('ontologyNodeCache'), dataTableColumnCache = $cacheFactory('dataTableColumnCache');
+        var self = this;
+        var documentData = _loadDocumentData();
+        var ontologyCache = $cacheFactory('ontologyCache');
+        var dataTableCache = $cacheFactory('dataTableCache');
+        var ontologyNodeCache = $cacheFactory('ontologyNodeCache');
+        var dataTableColumnCache = $cacheFactory('dataTableColumnCache');
 
         // expose these caches for now, though a better solution is have find() methods that consult cache before making ajax call
         this.ontologyCache = ontologyCache;
@@ -247,23 +251,37 @@
                         }
                         if (column.type == 'INTEGRATION') {
                             var ontology = undefined;
+                            var ids = new Array();
+                            var ontologies = new Array();
                             integration.ontologies.forEach(function(ont) {
-                                if (ont.id == column.ontology.id) {
-                                    ontology = ont;
+                                ontologies.push(ont);
+                            });
+                            ontologies.push(column.ontology);
+                            
+                            ontologies.forEach(function(ont) {
+                                var cached = ontologyCache.get(ont.id);
+                                if (cached == undefined) {
+                                    ids.push(ont.id);
+                                } else {
+                                    ontology = cached;
                                 }
                             });
-                            
-                            //FIXME: if not loaded, then need to go to the server for ontology details
-                            integration.addIntegrationColumn(name, ontology);
-                            var col = integration.columns[integration.columns.length - 1];
+                            self.loadOntologyDetails(ids).then(function() {
+                                ontology = ontologyCache.get(column.ontology.id);
+                                integration.ontologies.push(ontology);
+                                _rebuildSharedOntologies(integration);
+                                // FIXME: if not loaded, then need to go to the server for ontology details
+                                integration.addIntegrationColumn(name, ontology);
+                                var col = integration.columns[integration.columns.length - 1];
 
-                            // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
-                            col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
-                            col.nodeSelections.forEach(function(node) {
-                                column.nodeSelection.forEach(function(nodeRef) {
-                                    if (nodeRef.id == node.node.id) {
-                                        node.selected = true;
-                                    }
+                                // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
+                                col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
+                                col.nodeSelections.forEach(function(node) {
+                                    column.nodeSelection.forEach(function(nodeRef) {
+                                        if (nodeRef.id == node.node.id) {
+                                            node.selected = true;
+                                        }
+                                    });
                                 });
                             });
                         }
@@ -278,12 +296,12 @@
             integration.addDataTables(tablesToAdd);
             _rebuildSharedOntologies(integration);
         }
-        
+
         self.removeDataTables = function(integration, tablesToRemove) {
             integration.removeDataTables(tablesToRemove);
             _rebuildSharedOntologies(integration);
         }
-        
+
         /**
          * Replace the current list of ontologies w/ a computed list of shared ontologies
          * 
@@ -300,7 +318,6 @@
             });
         }
 
-        
         /**
          * internal method to initialize a Display or Count column in loading
          */
@@ -400,6 +417,51 @@
 
             // TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
 
+            return futureData.promise;
+        };
+
+        /**
+         * Returns httpPromise of an object containing: dataTable objects corresponding to the specified array of dataTableId's
+         * 
+         * @param dataTableIds
+         * @return HttpPromise futureDataTables:httppromise<{dataTables: Array<dataTable>, sharedOntologies: Array<ontology>}>
+         * 
+         */
+        this.loadOntologyDetails = function(ontologyIds) {
+            var futureData = $q.defer();
+            console.log("loading info for ontologies from server:", ontologyIds);
+            // only load tables that aren't already in the cache
+            var missingOntologyIds = ontologyIds.filter(function(ontologyId) {
+                return !ontologyCache.get(ontologyId)
+            });
+            // not sure if dupe tableIds will ever occur, but dedupe anyway.
+            ontologyIds = _dedupe(ontologyIds);
+
+            if (ontologyIds.length > 0) {
+                var httpPromise = $http.get('/api/integration/ontology-details?' + $.param({
+                    ontologyIds : ontologyIds
+                }, true));
+
+                httpPromise.success(function(data) {
+                    console.log(data);
+                    // add this new data to our caches
+                    data.forEach(function(proxy) {
+                        proxy.ontology.nodes = [];
+                        proxy.ontology.nodes.concat(proxy.nodes);
+                        ontologyCache.put(proxy.ontology.id, proxy.ontology);
+                        proxy.nodes.forEach(function(ontologyNode) {
+                            ontologyNodeCache.put(ontologyNode.id, ontologyNode);
+                        });
+                    });
+
+                    futureData.resolve(true);
+
+                });
+
+            } else {
+                // in the event that there's nothing to load, callback immediately with the results
+                futureData.resolve(true);
+            }
             return futureData.promise;
         };
 
