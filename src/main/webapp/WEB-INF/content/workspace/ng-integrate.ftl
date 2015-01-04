@@ -370,6 +370,9 @@
             </div>
         </div>
         <div class="modal-footer">
+        	<div class="row">
+        	Total Results: {{modalTotalResults}}
+        	</div>
             <div class="pull-left" ng-show="false">
                 <button type="button" class="btn" ng-click="updateFilter()">Update Search</button>
                 <small class="muted"><em>Temporary button</em></small>

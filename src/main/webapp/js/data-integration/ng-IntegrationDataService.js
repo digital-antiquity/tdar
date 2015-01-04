@@ -421,10 +421,10 @@
         };
 
         /**
-         * Returns httpPromise of an object containing: dataTable objects corresponding to the specified array of dataTableId's
+         * Returns httpPromise of an object containing: ontology objects corresponding to the specified array of ontologyId's
          * 
-         * @param dataTableIds
-         * @return HttpPromise futureDataTables:httppromise<{dataTables: Array<dataTable>, sharedOntologies: Array<ontology>}>
+         * @param ontologyIds
+         * @return HttpPromise futureOntologies:httppromise
          * 
          */
         this.loadOntologyDetails = function(ontologyIds) {
@@ -464,6 +464,31 @@
             }
             return futureData.promise;
         };
+        
+
+        /**
+         * Returns httpPromise of an object containing: integration results
+         * 
+         * @param integration model
+         * @return HttpPromise integrationResult:httppromise
+         * 
+         */
+        this.performIntegration = function(integration) {
+            var futureData = $q.defer();
+            console.log("starting integration:");
+            var integrationJson = self._dumpObject(integration);
+            
+            var httpPromise = $http.get('/api/integration/integrate?' + $.param({
+                integration : integrationJson
+            }, true));
+
+            httpPromise.success(function(data) {
+                futureData.resolve(data);
+
+            });
+
+            return futureData.promise;
+        };
 
         /**
          * send $http.get to specified url, return promise<transformedData> if transformer specified, otherwise return promise<data>;
@@ -484,8 +509,13 @@
                 if (prefix !== undefined) {
                     rawData = rawData_[prefix];
                 }
+                var total = rawData_.totalResults;
                 var data = !!transformer ? transformer(rawData) : data;
-                futureData.resolve(data);
+                var ret = {
+                        "totalRecords": total,
+                        "results": data
+                }
+                futureData.resolve(ret);
             });
             return futureData.promise;
         }
@@ -509,7 +539,7 @@
                     result.date_created = d;
                     result.ontologies = [];
                     item.mappedOntologies.forEach(function(ontology) {
-                        result.ontologies.push(ontology.title + "(" + ontology.id + ")");
+                        result.ontologies.push(ontology.title + " (" + ontology.id + ")");
                     });
                     return result;
                 })

@@ -63,7 +63,7 @@
         // when non-null
         $scope.errorMessage = null;
         $scope.modalSearching = false;
-
+        $scope.modalTotalResults = 0;
         // ajax search fires up at launch and whenever search terms change
         $scope.search = function() {
             var futureData;
@@ -74,8 +74,9 @@
                 futureData = dataService.findDatasets($scope.filter);
             }
             futureData.then(function(results) {
-                $scope.results = results;
+                $scope.results = results.results;
                 $scope.modalSearching = false;
+                $scope.modalTotalResults = results.totalRecords;
             });
         };
 
