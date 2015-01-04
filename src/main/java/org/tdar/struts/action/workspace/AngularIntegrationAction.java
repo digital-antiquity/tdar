@@ -74,13 +74,16 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
 
     private IntegrationWorkflowWrapper data;
 
+    private String workflowJson;
+
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.VIEW);
         if (workflow != null) {
             try {
                 data = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
-                
+                data.setId(workflow.getId());
+                workflowJson = serializationService.convertToJson(data);
             } catch (JsonParseException jpe) {
                 // not technically needed, but using for explicitness
                 getLogger().error("json parsing exception", jpe);
@@ -89,7 +92,7 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
             } catch (IOException e) {
                 getLogger().error("other exception", e);
             }
-            
+
             if (data.getVersion() != currentJsonVersion) {
                 // do something
             }
@@ -124,11 +127,7 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
     }
 
     public String getWorkflowJson() {
-        return workflow.getJsonData();
-    }
-    
-    public Long getIntegrationId() {
-        return getPersistable().getId();
+        return workflowJson;
     }
 
     String getJson(Object obj) {
@@ -215,7 +214,7 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
             try {
                 integrationWorkflowService.validateWorkflow(data);
             } catch (IntegrationDeserializationException e) {
-               getLogger().error("cannot validate", e);
+                getLogger().error("cannot validate", e);
             }
         }
     }

@@ -17,4 +17,6 @@ public interface IntegrationWorkflowWrapper {
     void validate(GenericDao service) throws IntegrationDeserializationException;
     
     IntegrationContext toIntegrationContext(GenericDao service) throws IntegrationDeserializationException;
+
+    void setId(Long id);
 }

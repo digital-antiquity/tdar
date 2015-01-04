@@ -385,11 +385,6 @@
 ${workflowJson!"{}"}
 </script>
 
-<script type="application/json" id="jsondataId">
-{ "id" : ${(integrationId!-1)?c} }
-</script>
-
-
 <!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
 <!-- FIXME: too much crap - we just need ID and title and submitterId -->
 <script type="application/json" id="allProjects">

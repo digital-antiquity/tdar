@@ -79,7 +79,6 @@
             var jsonData = dataService.getDocumentData().jsondata;
             self.updateStatus("Loading...");
             console.log(jsonData);
-            jsonData.id = dataService.getDocumentData().jsondataId.id;
             if (jsonData.title != undefined && jsonData.dataTables != undefined) {
                 var result = dataService.loadExistingIntegration(jsonData , self.integration);
                 result.then(function(status){
