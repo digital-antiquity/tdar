@@ -244,6 +244,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private void createPivotSheet() {
         int rowIndex;
         Sheet pivotSheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.summary_worksheet"));
+        logger.debug("{} - {}", provider, person);
         String title = provider.getText("dataIntegrationWorkbook.title",
                 Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
         excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));

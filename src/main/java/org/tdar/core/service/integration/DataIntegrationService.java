@@ -519,6 +519,7 @@ public class DataIntegrationService {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
         IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao);
+        integrationContext.setCreator(authenticatedUser);
         ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)",null, authenticatedUser);
         log.setTimestamp(new Date());
         log.setPayload(integration);

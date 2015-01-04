@@ -7,6 +7,10 @@ import java.util.Map;
 
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.utils.json.JsonIntegrationFilter;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -16,6 +20,7 @@ import org.tdar.core.bean.resource.OntologyNode;
  * @author <a href='mailto:Adam.Brin@asu.edu'>Adam Brin</a>
  * @version $Rev$
  */
+@JsonAutoDetect
 public class ModernIntegrationDataResult implements Serializable {
 
     private static final long serialVersionUID = 3466986630097086581L;
@@ -49,6 +54,7 @@ public class ModernIntegrationDataResult implements Serializable {
         this.pivotData = pivot;
     }
     
+    @JsonView(JsonIntegrationFilter.class)
     public Map<List<OntologyNode>, HashMap<String, IntContainer>> getPivotData() {
         return pivotData;
     }
@@ -57,10 +63,12 @@ public class ModernIntegrationDataResult implements Serializable {
         this.previewData = previewData;
     }
 
+    @JsonView(JsonIntegrationFilter.class)
     public List<Object[]> getPreviewData() {
         return previewData;
     }
 
+    @JsonView(JsonIntegrationFilter.class)
     public PersonalFilestoreTicket getTicket() {
         return ticket;
     }
