@@ -113,7 +113,8 @@
                                 <ul class="nav nav-tabs">
                                     <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
                                         <a href="#tab{{$index}}" id="tabtab{{$index}}">
-                                            <input type="text" name="column.name{{$index}}" ng-model="column.name" />
+                                        {{column.name}}
+                                            <input type="hidden" name="column.name{{$index}}" ng-model="column.name" />
                                             <button class="close" ng-click="ctrl.closeTab($index)">x</button>
                                         </a>
                                     </li>
@@ -402,6 +403,7 @@ ${allResourceCollectionsJson}
 <script type="application/json" id="allCategories">
 ${categoriesJson}
 </script>
+<script src="/includes/js-emca-5.1-polyfill.js""></script>
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <!-- fixme: cycle.js modifies global JSON object(which makse me nervous). think of a better way to incorporate this -->
 <script src="/js/data-integration/app.js"></script>
