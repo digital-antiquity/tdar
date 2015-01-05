@@ -340,7 +340,6 @@
         /**
          * Gather any dataTableColumns that have missing participation information and tell dataService to fetch it. FIXME: Move into data service
          * 
-         * @private
          */
         this.loadUpdatedParticipationInformation = function(integration) {
             var futureData = $q.defer();

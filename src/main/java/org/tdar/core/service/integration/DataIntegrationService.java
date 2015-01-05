@@ -441,19 +441,10 @@ public class DataIntegrationService {
                 }
             }
 
+            //NOTE: this can be removed once the legacy filter page is removed
             // check if any of the children of this node matches
             if (CollectionUtils.isNotEmpty(children)) {
                 ontologyNode.setParent(true);
-                // should we set the children list directly on this OntologyNode?
-                if (!ontologyNode.isMappedDataValues()) {
-                    // this parent node has no direct mapped data values, check if any children do
-                    for (OntologyNode child : children) {
-                        if (child.isMappedDataValues()) {
-                            markAdded(col, icp, ontologyNode);
-                            break;
-                        }
-                    }
-                }
             }
         }
     }
