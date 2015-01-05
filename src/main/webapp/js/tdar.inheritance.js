@@ -567,7 +567,7 @@ TDAR.inheritance = (function () {
                             _inheritingRepeatRowsIsSafe('#allMaterialInformation', TDAR.inheritance.json.materialInformation.uncontrolledMaterialKeywords);
                 },
                 inheritSectionCallback: function () {
-                    _inheritMaterialInformation('#divMaterialInformation', TDAR.inheritance.json);
+                    _inheritMaterialInformation('#allMaterialInformation', TDAR.inheritance.json);
                 }
             },
             {
