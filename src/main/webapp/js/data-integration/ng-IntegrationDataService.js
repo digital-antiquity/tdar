@@ -251,23 +251,34 @@
                         }
                         if (column.type == 'INTEGRATION') {
                             var ontology = undefined;
+                            var ontologyIds = new Array();
+                            var ontologies = new Array();
+                            
                             integration.ontologies.forEach(function(ont) {
-                                if (ont.id == column.ontology.id) {
+                                if (column.ontology.id == ont.id) {
                                     ontology = ont;
+                                } else {
+                                    ontologyIds.push(ont.id);
                                 }
                             });
-                            
-                            //FIXME: if not loaded, then need to go to the server for ontology details
-                            integration.addIntegrationColumn(name, ontology);
-                            var col = integration.columns[integration.columns.length - 1];
+                            self.loadOntologyDetails(ontologyIds).then(function() {
+                                if (ontology == undefined) {
+                                    ontology = ontologyCache.get(column.ontology.id);
+                                    integration.ontologies.push(ontology);
+                                    _rebuildSharedOntologies(integration);
+                                }
+                                // FIXME: if not loaded, then need to go to the server for ontology details
+                                integration.addIntegrationColumn(name, ontology);
+                                var col = integration.columns[integration.columns.length - 1];
 
-                            // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
-                            col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
-                            col.nodeSelections.forEach(function(node) {
-                                column.nodeSelection.forEach(function(nodeRef) {
-                                    if (nodeRef.id == node.node.id) {
-                                        node.selected = true;
-                                    }
+                                // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
+                                col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
+                                col.nodeSelections.forEach(function(node) {
+                                    column.nodeSelection.forEach(function(nodeRef) {
+                                        if (nodeRef.id == node.node.id) {
+                                            node.selected = true;
+                                        }
+                                    });
                                 });
                             });
                         }
