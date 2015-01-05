@@ -173,7 +173,7 @@
                                                         </td>
                                                         <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" id="cbx-{{dataTableColumn.id}}-{{nodeSelection.node.id}}" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
