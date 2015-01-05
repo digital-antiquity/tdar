@@ -35,6 +35,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.AccountEvaluationHelper;
+import org.tdar.utils.MathUtils;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -150,7 +151,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         for (Coupon coupon : account.getCoupons()) {
             totalFiles += coupon.getNumberOfFiles();
-            totalSpaceInBytes += coupon.getNumberOfMb() * Persistable.ONE_MB;
+            totalSpaceInBytes += coupon.getNumberOfMb() * MathUtils.ONE_MB;
         }
         account.setFilesUsed(totalFiles);
         account.setSpaceUsedInBytes(totalSpaceInBytes);
@@ -296,7 +297,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
             for (Coupon coupon : account.getCoupons()) {
                 account.setFilesUsed(coupon.getNumberOfFiles() + account.getFilesUsed());
-                account.setSpaceUsedInBytes((coupon.getNumberOfMb() * Persistable.ONE_MB) + account.getSpaceUsedInBytes());
+                account.setSpaceUsedInBytes((coupon.getNumberOfMb() * MathUtils.ONE_MB) + account.getSpaceUsedInBytes());
             }
 
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());

@@ -1905,7 +1905,7 @@ public class Resource implements Persistable,
 
     @XmlTransient
     public Long getSpaceUsedInMb() {
-        return MathUtils.divideByRoundUp(spaceInBytesUsed, ONE_MB);
+        return MathUtils.divideByRoundUp(spaceInBytesUsed, MathUtils.ONE_MB);
     }
 
     @XmlTransient

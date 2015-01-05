@@ -2,6 +2,8 @@ package org.tdar.utils;
 
 public class MathUtils {
 
+    public static final long ONE_MB = 1048576L;
+
     public static long divideByRoundUp(Number number1, Number number2) {
         return (long) Math.ceil(divideBy(number1, number2));
     }

@@ -40,9 +40,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 public interface Persistable extends Serializable {
 
+    @JsonView({ JsonIdNameFilter.class })
     Long getId();
-
-    static final long ONE_MB = 1048576L;
 
     void setId(Long number);
 
