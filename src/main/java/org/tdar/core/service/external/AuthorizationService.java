@@ -583,6 +583,15 @@ public class AuthorizationService implements Accessible {
         }
     }
 
+    /**
+     * Takes the request, and compares the referrer to the known list of referrers in the DB. If one matches, then we're okay
+     * 
+     * @param informationResourceFileVersion
+     * @param apiKey
+     * @param request
+     * @return
+     * @throws MalformedURLException
+     */
     @Transactional(readOnly = true)
     public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
             HttpServletRequest request) throws MalformedURLException {

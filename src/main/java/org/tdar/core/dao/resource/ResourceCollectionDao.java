@@ -183,6 +183,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Return download authorizations that have a host name that matches the referrer and the APIKey that matches the one in the DB.
+     * Does Hierarchical Collection Query 
+     * 
+     * @param informationResourceFileVersion
+     * @param apiKey
+     * @param referrer
+     * @return
+     */
     public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
         List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
         if (CollectionUtils.isEmpty(sharedCollectionIds )) {
