@@ -71,7 +71,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
     @Override
     public String getSaveSuccessPath() {
         // instead of a custom view page we will co-opt the browse/creator page.
-        String path = "/browse/creators";
+        String path = "browse/creators";
         getLogger().debug("{}?id={}", path, getId());
         return path;
     }

@@ -81,6 +81,15 @@
                 cssClass='resizable input-xxlarge' title="Please enter the description " />
             </#if>
 
+        <#if editor>
+            <div class="control-group">
+                <label class="control-label">Associate an Image/Logo with this Collection</label>
+                <div class="controls">
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+                </div>
+            </div>
+        </#if>
+
         </div>
 
         <div id="divBrowseOptionsTips" style="display:none">
