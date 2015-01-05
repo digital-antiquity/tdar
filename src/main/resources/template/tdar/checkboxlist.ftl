@@ -66,7 +66,7 @@
  title="${parameters.title?html}"<#rt/>
         </#if>
         <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
->
+/>
 <label for="${parameters.name?html}-${itemCount}" class="checkboxLabel" <#rt>
 <#if itemTitle??>
  title="${itemTitle}"<#rt/>
@@ -80,6 +80,6 @@
 <#if parameters.disabled?default(false)>
  disabled="disabled"<#rt/>
 </#if>
- >
+ /> 
  </table>
  <#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />

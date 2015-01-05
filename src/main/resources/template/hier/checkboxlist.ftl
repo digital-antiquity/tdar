@@ -16,7 +16,7 @@
 <#if parameters.disabled?default(false)>
  disabled="disabled"<#rt/>
 </#if>
- >
+ /> 
 </#if>
 <#--render a HierarchicalKeyword object as a 'treeview' widget with checkboxes at each node
     @param node:HierarchicalKeyword the keyword object that should serve as the "root" node
@@ -58,7 +58,7 @@
            </#if>
            <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
            <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
->
+/>
 <label for="${parameters.name?html}-${itemCount}" class="checkboxLabel" <#if itemTitle??>title="${itemTitle}"</#if> >${itemLabel?html}</label>
         <#else>
         ${itemLabel?html}<#rt/>

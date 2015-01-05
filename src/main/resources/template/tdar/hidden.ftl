@@ -16,4 +16,4 @@
  disabled="disabled"<#rt/>
 </#if>
 <#include "/${parameters.templateDir}/simple/dynamic-attributes.ftl" />
->
+/>

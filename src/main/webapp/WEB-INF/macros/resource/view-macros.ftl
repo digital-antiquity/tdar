@@ -705,7 +705,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
         <#if seenThumbnail ><#t>
             <#t><span class="thumbnail-center-spacing"></span><#t>
-            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/files/sm/${resource_.primaryThumbnail.id?c}">"
+            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/files/sm/${resource_.primaryThumbnail.id?c}" />"
                      title="${resource_.title!''}" alt="${_imageDescription(resource_.primaryThumbnail resource_)}"
                      onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"/><#t>
         <#else>
@@ -720,7 +720,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     <div class="item <#if count==0>active</#if>">
         <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
         <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-            <img title="map" alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}">
+            <img title="map" alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
         <#else>
             <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
         </#if>
@@ -757,7 +757,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         <h3>License</h3>
             <#if (resource.licenseType.imageURI != "")>
             <a href="${resource.licenseType.URI}"><img alt="license image" title="license image"
-                                                       src="<#if secure>${resource.licenseType.secureImageURI}<#else>${resource.licenseType.imageURI}</#if>"></a>
+                                                       src="<#if secure>${resource.licenseType.secureImageURI}<#else>${resource.licenseType.imageURI}</#if>"/></a>
             </#if>
             <#if (resource.licenseType.URI != "")>
             <h4>${resource.licenseType.licenseName}</h4>

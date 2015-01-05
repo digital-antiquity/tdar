@@ -102,28 +102,28 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             <td></td>
                             <td>
                                 <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
-                                <input type="text" id='d_maxy' placeholder="Latitude (max)" class="ne-lat-display span2">
+                                <input type="text" id='d_maxy' placeholder="Latitude (max)" class="ne-lat-display span2"/>
                             </td>
                             <td></td>
                         </tr>
                         <tr>
                             <td style="width:33%;text-align:center">
                                 <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
-                                <input type="text" id='d_minx' placeholder="Longitude (min)" class="sw-lng-display span2">
+                                <input type="text" id='d_minx' placeholder="Longitude (min)" class="sw-lng-display span2"/>
                             </td>
                             <td style="width:33%;text-align:center">
-                                <input type="button" id="locate" value="Locate" class="btn locateCoordsButton">
+                                <input type="button" id="locate" value="Locate" class="btn locateCoordsButton"/>
                             </td>
                             <td style="width:33%;text-align:center">
                                 <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
-                                <input type="text" id='d_maxx' placeholder="Longitude (max)" class="ne-lng-display span2">
+                                <input type="text" id='d_maxx' placeholder="Longitude (max)" class="ne-lng-display span2"/>
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td>
                                 <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" />
-                                <input type="text" id="d_miny" placeholder="Latitude (min)" class="sw-lat-display span2">
+                                <input type="text" id="d_miny" placeholder="Latitude (min)" class="sw-lat-display span2"/>
                             </td>
                             <td></td>
                         </tr>
@@ -433,7 +433,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div class="form-actions" id="editFormActions">
                 <#nested>
                 <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}" id="${buttonid}">
-                <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none">
+                <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
             </div>
         </div>
     </div>
@@ -1288,10 +1288,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             
 
             <div class="fileProxyFields">
-                <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}">
-                <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}">
-                <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}">
-                <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}">
+                <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
+                <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
+                <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
+                <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
             </div>
         </td>
     </tr>
@@ -1338,7 +1338,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none">
+                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>
         </div>

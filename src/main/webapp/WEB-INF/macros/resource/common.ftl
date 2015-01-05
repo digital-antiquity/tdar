@@ -368,7 +368,7 @@ with that datapoint -->
         </script>
 
         <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
-        <img class="worldmap" alt="World Map" title="World Map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png">" width=480
+        <img class="worldmap" alt="World Map" title="World Map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480
              height=304 usemap="#world">
 
         <div id="map_legend">

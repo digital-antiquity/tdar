@@ -26,6 +26,6 @@ ${parameters.labelseparator?default("")?html}<#t/>
 </label><#t/>
 </#if>
 <#if parameters.labelposition?exists && parameters.labelposition.equalsIgnoreCase('top')>
-  <br>
+  <br/>
 </#if>
 <#lt/>
