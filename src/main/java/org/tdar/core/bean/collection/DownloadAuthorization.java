@@ -28,6 +28,9 @@ public class DownloadAuthorization extends Persistable.Base {
     @Column(name = "api_key")
     private String apiKey;
 
+    /**
+     * Fully qualified host name
+     */
     @ElementCollection()
     @CollectionTable(name = "referrer_hostnames", joinColumns = @JoinColumn(name = "download_authorization_id"))
     @Column(name = "hostname")

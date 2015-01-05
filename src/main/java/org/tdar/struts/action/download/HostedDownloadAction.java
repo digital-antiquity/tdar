@@ -31,10 +31,8 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
     @Autowired
     private transient DownloadService downloadService;
 
-    @Action(
-            value = "{informationResourceFileVersionId}/{apiKey}"
-            )
-            public String execute() {
+    @Action(value = "{informationResourceFileVersionId}/{apiKey}")
+    public String execute() {
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
                 isCoverPageIncluded(), this, null, true));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
