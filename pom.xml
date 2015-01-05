@@ -2651,6 +2651,94 @@
             <skipUpgradeLiquibase>false</skipUpgradeLiquibase>
         </properties>
     </profile>
+
+    <profile>
+    <!-- this profile is intended to reset liquibase's change log (if something gets out of sync)
+
+        Enabling this profile activates the liquibase.properties 
+        and sets skipUpgradeLiquibase=false which means that liquibase is processed 
+        during the setup process. -->
+        <id>changelogSync</id>
+       <build>
+                <defaultGoal>liquibase:changelogSync</defaultGoal>
+                <resources>
+                    <resource>
+                        <!-- switch filtering off for all but the desired set -->
+                        <filtering>false</filtering>
+                        <directory>${basedir}/src/main/resources</directory>
+                        <excludes>
+                            <exclude>tdar.properties</exclude>
+                            <exclude>crowd.properties</exclude>
+                            <exclude>hibernate.properties</exclude>
+                            <exclude>local-wro-config.properties</exclude>
+                            <exclude>log4j.properties</exclude>
+                            <exclude>struts-local-settings.xml</exclude>
+                            <exclude>common.json</exclude>
+                            <exclude>liquibase.properties</exclude>
+                        </excludes>
+                    </resource>
+                    <resource>
+                        <!-- And on for the set of files -->
+                        <!-- Having to do it as mutually exclusive but that's how Maven works -->
+                        <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+                        <filtering>true</filtering>
+                        <directory>${basedir}/src/main/resources</directory>
+                        <includes>
+                            <include>liquibase.properties</include>
+                            <include>hibernate.properties</include>
+                        </includes>
+                    </resource>
+                </resources>
+                <filters>
+                    <filter>src/main/resources/hibernate.properties</filter>
+                    <filter>src/main/resources/liquibase.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/main/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <configuration>
+                            <username>${javax.persistence.jdbc.user}</username>
+                            <password>${javax.persistence.jdbc.password}</password>
+                            <url>${javax.persistence.jdbc.url}</url>
+                            <driver>${javax.persistence.jdbc.driver}</driver>
+                            <changeLogFile>src/main/db/changelog.xml</changeLogFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>changelogSync</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        <properties>
+<!--             <skipUpgradeLiquibase>false</skipUpgradeLiquibase>
+ -->        </properties>
+    </profile>
+
         <!--profile: skip-web-tests - when activated,  skip all integration tests with title ending in WebITCase.java -->
         <!--TODO: don't fire up webserver when this profile is active -->
         <profile>
