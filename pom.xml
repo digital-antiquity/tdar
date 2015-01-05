@@ -2722,6 +2722,7 @@
                             <url>${javax.persistence.jdbc.url}</url>
                             <driver>${javax.persistence.jdbc.driver}</driver>
                             <changeLogFile>src/main/db/changelog.xml</changeLogFile>
+                            <clearCheckSums>true</clearCheckSums>
                         </configuration>
                         <executions>
                             <execution>
