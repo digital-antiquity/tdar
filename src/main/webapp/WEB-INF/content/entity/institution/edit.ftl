@@ -10,12 +10,6 @@
         <title>Add a new Institution</title>
     </#if>
 
-    <script type="text/javascript">
-        $(function () {
-            initializeView();
-            TDAR.common.initEditPage($('#frmInstitution')[0]);
-        });
-    </script>
 </head>
 <body>
 
@@ -53,5 +47,12 @@
         <@edit.submit "Save" false />
 
     </@s.form>
+    <script type="text/javascript">
+        $(function () {
+            initializeView();
+            TDAR.common.initEditPage($('#frmInstitution')[0]);
+            TDAR.common.validateProfileImage();
+        });
+    </script>
 </body>
 </#escape>

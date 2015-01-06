@@ -85,7 +85,7 @@
             <div class="control-group">
                 <label class="control-label">Associate an Image/Logo with this Collection</label>
                 <div class="controls">
-                    <@s.file theme="simple" name='file' cssClass="input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' />
                 </div>
             </div>
         </#if>
@@ -170,12 +170,12 @@
             <h2>Modifications</h2>
 
             <div id="divToAdd">
-                <h3>The following resources will be added to the collection</h3>
+                <h4>The following resources will be added to the collection</h4>
                 <table id="tblToAdd" class="table table-condensed"></table>
             </div>
 
             <div id="divToRemove">
-                <h3>The following resources will be removed from the collection</h3>
+                <h4>The following resources will be removed from the collection</h4>
                 <table id="tblToRemove" class="table table-condensed"></table>
             </div>
         </div>
@@ -207,11 +207,11 @@
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
+                TDAR.common.validateProfileImage();
         });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />
     </#compress>
-<div style="display:none"
 </body>
 </#escape>
