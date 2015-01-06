@@ -88,7 +88,6 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(By.id("tabtab1")).isDisplayed();
         // wait for tab contents is visible
         waitFor(By.id("tab1")).isDisplayed();
-        logger.debug(getText());
         find(ByLabelText.byLabelText("Aves")).click();// this is really slow, so do it once
         assertTrue(ExpectedConditions.elementSelectionStateToBe(By.id("cbont_64870"), true).apply(getDriver()).booleanValue());
 
@@ -97,6 +96,10 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(sheep).click();
         waitFor(ExpectedConditions.elementToBeClickable(saveButton));
 
+        assertTrue("Perca flavescens node should be visible for spitalfields", find(By.id("cbx-32450-60600")).isDisplayed());
+        assertTrue("Coding error should be visible for alexandria", find(By.id("cbx-31710-56490")).isDisplayed());
+
+        
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
         find(By.id("btnIntegrate")).click();
         waitForPageload();
