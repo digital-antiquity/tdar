@@ -472,10 +472,11 @@
          *            ontologyNode
          * @private
          */
-        self.isNodePresent = function _isNodePresent(dataTableColumn, ontologyNode) {
-            if (!dataTableColumn.transientNodeParticipation)
+        self.isNodePresent = function _isNodePresent(dataTableColumn, ontologyNodeId) {
+            if (!dataTableColumn.transientNodeParticipation) {
                 return null;
-            return dataTableColumn.transientNodeParticipation.indexOf(ontologyNode) >= 0;
+            }
+            return dataTableColumn.transientNodeParticipation.indexOf(ontologyNodeId) >= 0;
         }
 
         /**

@@ -354,8 +354,7 @@
             if (unprocessedIds.length === 0) {
                 futureData.resolve(true);
             } else {
-                self.loadNodeParticipation(unprocessedIds).then(function() {
-                    // todo: signal to the UI that these columns are ready
+                self.loadNodeParticipation(unprocessedIds).then(function(newColumns) {
                     futureData.resolve(true);
                 });
             }
@@ -602,17 +601,19 @@
             }, true);
             var httpPromise = $http.get(url);
             var futureWork = $q.defer();
+            var dataTableColumns = new Array(); 
             httpPromise.success(function(nodesByColumn) {
                 nodesByColumn.forEach(function(container) {
                     var dataTableColumn = dataTableColumnCache.get(container.dataTableColumn.id);
                     var nodes = [];
                     container.flattenedNodes.forEach(function(nodeRef) {
-                        nodes.push(ontologyNodeCache.get(nodeRef.id));
+                        nodes.push(nodeRef.id);
                     });
                     dataTableColumn.transientNodeParticipation = nodes;
+                    dataTableColumns.push(dataTableColumn);
                 });
                 // Note that we mutate the data directly, so there is not anything to "return". We're just notifying the caller that we are done.
-                futureWork.resolve();
+                futureWork.resolve(dataTableColumns);
             });
             return futureWork.promise;
         };
