@@ -8,6 +8,8 @@ TDAR.inheritance = (function () {
     var TYPE_PERSON = "PERSON";
     var TYPE_INSTITUTION = "INSTITUTION";
 
+    var removedRowsHack = null;
+
     /**
      * convenience function for $.populate()
      *
@@ -979,7 +981,9 @@ TDAR.inheritance = (function () {
      * @param newSize the number of rows the table will contain.
      */
     var resetRepeatable = function (repeatableSelector, newSize) {
-        $(repeatableSelector).find(".repeat-row:not(:first)").remove();
+        //FIXME: hack: remove row from dom/but retain references.  This is a guess at working around TDAR-4287 (chrome becomes haunted by ghosts of deleted rows)
+        removedRowsHack = $(repeatableSelector).find(".repeat-row:not(:first)").detach();
+        //$(repeatableSelector).find(".repeat-row:not(:first)").remove();
         var $firstRow = $('.repeat-row', repeatableSelector);
         _resetIndexedAttributes($firstRow);
         for (var i = 0; i < newSize - 1; i++) {
