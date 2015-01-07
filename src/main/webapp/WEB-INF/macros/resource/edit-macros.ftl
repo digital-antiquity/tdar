@@ -31,7 +31,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <#-- emit a single row of the choose-a-collection section -->
                     <div id="resourceCollectionRow_${resourceCollection_index}_" class="controls-row repeat-row">
                         <@s.hidden name="resourceCollections[${resourceCollection_index}].id"  id="resourceCollectionRow_${resourceCollection_index}_id" />
-                <@s.textfield theme="simple" id="resourceCollectionRow_${resourceCollection_index}_id" name="resourceCollections[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+                <@s.textfield theme="simple" id="txtResourceCollectionRow_${resourceCollection_index}_id" name="resourceCollections[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
                     autocompleteIdElement="#resourceCollectionRow_${resourceCollection_index}_id" maxlength=255
                     autocompleteParentElement="#resourceCollectionRow_${resourceCollection_index}_" />
                 <@nav.clearDeleteButton id="resourceCollectionRow" />
@@ -490,7 +490,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#local plural = "${prefix}s" />
     <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
     <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
-        <@s.textarea rows="4" theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
+        <@s.textarea rows="4" cols="80" theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
         <div class="span1">
             <@nav.clearDeleteButton id="${prefix}Row${index}" />
         </div>
@@ -696,13 +696,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
             <#if includeRole || includeRights>
                 <#if includeRole>
-                    <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles
+                    <@s.select theme="tdar" name="${strutsPrefix}.role" id="metadataForm_authorshipProxies_${_indexNumber?c}__userrole"  autocomplete="off" listValue='label' list=relevantPersonRoles
                     cssClass="creator-role-select span2" />
                 <#else>
                     <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false'
                     listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                 <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
-                    <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                    <@s.hidden name="${strutsPrefix}.generalPermission" id="hdn${strutsPrefix}_generalPermission" cssClass="repeat-row-remove" />
                 </#if>
             <#else>
                 <span class="span2">&nbsp;</span>
@@ -1470,7 +1470,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             />
 
             <#if includeRole>
-                <@s.select theme="tdar" name="${strutsPrefix}.role" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span2" />
+                <@s.select theme="tdar" name="${strutsPrefix}.role" id="metadataForm_authorshipProxies_${_indexNumber?c}__institutionrole" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span2" />
             <#else>
             <#-- is includeRole ever false?  if not we should ditch the parm entirely, perhaps the entire macro. -->
                 <div class="span2">&nbsp;</div>

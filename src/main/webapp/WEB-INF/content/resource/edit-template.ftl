@@ -207,7 +207,7 @@
             <div id="t-abstract" class="clear"
                  data-tiplabel="Abstract / Description"
                  data-tooltipcontent="Short description of the <@edit.resourceTypeLabel />.">
-                <@s.textarea rows="4" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+                <@s.textarea rows="4" cols="80" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
             </div>
         </div>
         </#if>
@@ -276,10 +276,10 @@
 	                truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
             </div>
 
-            <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+            <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="inheritOverwriteValidationErrorModalLabel" aria-hidden="true">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="validationErrorModalLabel">Overwrite Existing Values?</h3>
+                    <h3 id="inheritOverwriteValidationErrorModalLabel">Overwrite Existing Values?</h3>
                 </div>
                 <div class="modal-body">
                     <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections

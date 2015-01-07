@@ -4,10 +4,10 @@
     <#global multipleUpload=true />
 
     <#macro basicInformation>
-    <p id="t-located" data-tooltipcontent="Actual physical location of a copy of the image, e.g. an agency, repository,
+    <div id="t-located" data-tooltipcontent="Actual physical location of a copy of the image, e.g. an agency, repository,
         or library." data-tiplabel="Copy Location">
         <@s.textfield labelposition='left' id='copyLocation' label='Storage Loc.' name='image.copyLocation' cssClass="longfield"  maxlength=255/>
-    </p>
+    </div>
 
 
     </#macro>
