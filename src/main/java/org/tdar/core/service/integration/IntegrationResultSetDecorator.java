@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.MessageHelper;
@@ -34,11 +35,11 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
     }
 
     private IntegrationContext context;
-    private Map<List<OntologyNode>, HashMap<String, IntContainer>> pivot = new HashMap<>();
+    private Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot = new HashMap<>();
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private Object[] row;
     private List<Object[]> previewData = new ArrayList<>();
-    private Map<String, Integer> previewCount = new HashMap<>();
+    private Map<Long, Integer> previewCount = new HashMap<>();
 
     @Override
     public Object[] next() {
@@ -62,7 +63,16 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         // the list off ontology nodes, in order becomes the "key" for the pivot table
         List<OntologyNode> ontologyNodes = new ArrayList<>();
         // first column is the table name
-        String tableName = (String) row[0];
+        Long tableId = Long.parseLong((String)row[0]);
+        String tableName = "";
+        for (DataTable dt : context.getDataTables()) {
+            if (tableId.equals(dt.getId())) {
+                tableName = ModernDataIntegrationWorkbook.formatTableName(dt);
+            } 
+        }
+        if (StringUtils.isEmpty(tableName)) {
+            logger.warn("Table Name is not defined for: " + tableId);
+        }
         values.add(tableName);
         Double countVal = -1d;
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
@@ -103,26 +113,27 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 values.add(mappedVal);
                 // increment for "sort" column
                 resultSetPosition++;
+                values.add(row[resultSetPosition].toString());
             }
             resultSetPosition++;
         }
         row = values.toArray();
         logger.trace("{}", StringUtils.join(row, "|"));
 
-        buildPivotDataForRow(ontologyNodes, tableName, countVal);
-        extractPreviewContents(tableName, values);
+        buildPivotDataForRow(ontologyNodes, tableId, countVal);
+        extractPreviewContents(tableId, values);
     }
 
     /**
      * Take the list of ontology nodes, the table, and countValue if there is a count column and build a pivot table for the reuslts.
      */
-    private void buildPivotDataForRow(List<OntologyNode> ontologyNodes, String tableName, Double countVal) {
-        HashMap<String, IntContainer> pivotVal = getPivot().get(ontologyNodes);
+    private void buildPivotDataForRow(List<OntologyNode> ontologyNodes, Long tableId, Double countVal) {
+        HashMap<Long, IntContainer> pivotVal = getPivot().get(ontologyNodes);
         if (pivotVal == null) {
-            pivotVal = new HashMap<String, IntContainer>();
+            pivotVal = new HashMap<Long, IntContainer>();
             getPivot().put(ontologyNodes, pivotVal);
         }
-        IntContainer groupCount = pivotVal.get(tableName);
+        IntContainer groupCount = pivotVal.get(tableId);
         if (groupCount == null) {
             groupCount = new IntContainer();
         }
@@ -132,7 +143,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         } else {
             groupCount.add(countVal.intValue());
         }
-        pivotVal.put(tableName, groupCount);
+        pivotVal.put(tableId, groupCount);
     }
 
     private String initializeDefaultValue(int resultSetPosition) {
@@ -145,24 +156,24 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         return value;
     }
 
-    private void extractPreviewContents(String tableName, List<String> values) {
+    private void extractPreviewContents(Long tableId, List<String> values) {
         int rowCount = 0;
-        if (previewCount.containsKey(tableName)) {
-            rowCount = previewCount.get(tableName);
+        if (previewCount.containsKey(tableId)) {
+            rowCount = previewCount.get(tableId);
         }
         if (rowCount < TdarConfiguration.getIntegrationPreviewSizePerDataTable()) {
             rowCount++;
             logger.trace("{} {}{}", row);
             getPreviewData().add(values.toArray(new String[0]));
-            previewCount.put(tableName, new Integer(rowCount));
+            previewCount.put(tableId, new Integer(rowCount));
         }
     }
 
-    public Map<List<OntologyNode>, HashMap<String, IntContainer>> getPivot() {
+    public Map<List<OntologyNode>, HashMap<Long, IntContainer>> getPivot() {
         return pivot;
     }
 
-    public void setPivot(Map<List<OntologyNode>, HashMap<String, IntContainer>> pivot) {
+    public void setPivot(Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot) {
         this.pivot = pivot;
     }
 

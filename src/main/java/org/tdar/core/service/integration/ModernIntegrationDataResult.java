@@ -26,7 +26,7 @@ public class ModernIntegrationDataResult implements Serializable {
     private static final long serialVersionUID = 3466986630097086581L;
     private IntegrationContext integrationContext;
     private ModernDataIntegrationWorkbook workbook;
-    private Map<List<OntologyNode>, HashMap<String, IntContainer>> pivotData;
+    private Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivotData;
     private List<Object[]> previewData;
     private PersonalFilestoreTicket ticket;
     
@@ -50,12 +50,12 @@ public class ModernIntegrationDataResult implements Serializable {
         this.integrationContext = integrationContext;
     }
 
-    public void setPivotData(Map<List<OntologyNode>, HashMap<String, IntContainer>> pivot) {
+    public void setPivotData(Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot) {
         this.pivotData = pivot;
     }
     
     @JsonView(JsonIntegrationFilter.class)
-    public Map<List<OntologyNode>, HashMap<String, IntContainer>> getPivotData() {
+    public Map<List<OntologyNode>, HashMap<Long, IntContainer>> getPivotData() {
         return pivotData;
     }
 

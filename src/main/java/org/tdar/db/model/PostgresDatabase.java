@@ -846,7 +846,12 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 StringBuilder sb = new StringBuilder("UPDATE ");
                 sb.append(proxy.getTempTableName());
                 sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
-                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=").append(node.getImportOrder());
+                String order = node.getImportOrder().toString();
+                if (node.getImportOrder() == 0 || StringUtils.isBlank(order)) {
+                    order = node.getIndex();
+                }
+
+                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=").append(order);
                 sb.append(" WHERE ");
                 sb.append(whereCond.toSql());
                 executeUpdateOrDelete(sb.toString());
@@ -942,13 +947,13 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private String generateOntologyEnhancedSelect(DataTable table, IntegrationContext proxy) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
-        builder.setStringSelectValue(table.getName());
+        builder.setStringSelectValue(table.getId().toString());
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
             logger.info("table:" + table + " column: " + integrationColumn);
             DataTableColumn column = integrationColumn.getColumnForTable(table);
             if (column != null) {
                 builder.getColumns().add(column.getName());
-                // pull the column name twice if an integration column so we have mapped and unmapped values
+                // pull the column name thrice if an integration column so we have mapped and unmapped values, and sort
                 if (integrationColumn.isIntegrationColumn()) {
                     builder.getColumns().add(column.getName());
                     builder.getColumns().add(null);

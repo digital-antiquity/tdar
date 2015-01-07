@@ -256,6 +256,8 @@
             <span ng-switch-when="integration">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
                        value="{{dtc.id}}"  ng-repeat="dtc in col.selectedDataTableColumns">
+                <input type="hidden" name="integrationColumns[{{columnIndex}}].sharedOntology.id"
+                       value="{{col.ontologyId}}">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].filteredOntologyNodes.id"
                        value="{{nodeSelection.node.id}}" ng-repeat="nodeSelection in col.nodeSelections | filter: {selected:true}">
             </span>

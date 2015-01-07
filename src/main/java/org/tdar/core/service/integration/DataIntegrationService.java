@@ -137,6 +137,7 @@ public class DataIntegrationService {
         if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
             filteredOntologyNodes.removeAll(Collections.singletonList(null));
         }
+        integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
 
         logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
         filteredOntologyNodes = genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class);
