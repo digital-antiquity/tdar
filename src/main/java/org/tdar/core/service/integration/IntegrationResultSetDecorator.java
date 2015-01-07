@@ -1,6 +1,8 @@
 package org.tdar.core.service.integration;
 
 import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.iterators.AbstractIteratorDecorator;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         // first column is the table name
         String tableName = (String) row[0];
         values.add(tableName);
-        int countVal = -1;
+        Double countVal = -1d;
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
             // note SQL iterator is 1 based; java iterator is 0 based
             // DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
@@ -74,7 +75,12 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
 
             // set count value if needed
             if (integrationColumn.isCountColumn()) {
-                countVal = Integer.parseInt(value);
+                // we go back to original version as initialized value may have been set
+                try {
+                    countVal = NumberFormat.getInstance().parse((String) row[resultSetPosition]).doubleValue();
+                } catch (ParseException nfe) {
+                    logger.trace("numberParseIssue", nfe);
+                }
             }
 
             // if it's an integration column, add mapped value as well
@@ -110,7 +116,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
     /**
      * Take the list of ontology nodes, the table, and countValue if there is a count column and build a pivot table for the reuslts.
      */
-    private void buildPivotDataForRow(List<OntologyNode> ontologyNodes, String tableName, int countVal) {
+    private void buildPivotDataForRow(List<OntologyNode> ontologyNodes, String tableName, Double countVal) {
         HashMap<String, IntContainer> pivotVal = getPivot().get(ontologyNodes);
         if (pivotVal == null) {
             pivotVal = new HashMap<String, IntContainer>();
@@ -124,7 +130,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         if (countVal == -1) {
             groupCount.increment();
         } else {
-            groupCount.add(countVal);
+            groupCount.add(countVal.intValue());
         }
         pivotVal.put(tableName, groupCount);
     }
