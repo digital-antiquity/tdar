@@ -1164,7 +1164,7 @@ TDAR.common = function (TDAR, fileupload) {
      * @private
      */
     var _collectionTreeview = function () {
-        $(".collection-treeview").find(".hidden").removeClass("hidden").end().treeview();
+        $(".collection-treeview").find(".hidden").removeClass("hidden").end().treeview({collapsed:true});
     }
 
     /**
