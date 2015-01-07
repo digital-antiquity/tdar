@@ -8,8 +8,6 @@ TDAR.inheritance = (function () {
     var TYPE_PERSON = "PERSON";
     var TYPE_INSTITUTION = "INSTITUTION";
 
-    var removedRowsHack = null;
-
     /**
      * convenience function for $.populate()
      *
@@ -27,6 +25,35 @@ TDAR.inheritance = (function () {
             noIndicesFor: indexExclusions
         });
     }
+
+    //FIXME: HACK:  workaround chrome-specific rendering issue that occurs when updating inherited sections (TDAR-4358)
+    /**
+     * Alter opacity for 1 tick to force a repaint in Chrome .  This (appears to) remove 'ghost' elements that appear
+     * even after we these elements from the DOM (via jQuery.remove).  When chrome repaints the affected region the ghosts disappear, so we tweak the opacity
+     * to force a repaint of the affected region.
+     *
+     * @param $parentElement jquery selection containing the div to repaint.
+     * @private
+     */
+    function _forceChromeRepaint($parentElement) {
+        //if client supports opacity, change it
+        var oldOpacity = $parentElement.css("opacity");
+        if(!oldOpacity) return;
+        $parentElement.css({opacity:0.9});
+        console.debug("_forceChromeRepaint::opacity:0.9");
+        //set timeout is required: new opacity must be applied in a different tick or chrome wont repaint
+        setTimeout(function(){
+            $parentElement.css({opacity: oldOpacity});
+            console.debug("_forceChromeRepaint::opacity:%s", oldOpacity);
+        }, 1);
+
+    }
+
+    //function _wrapInheritCallback(options) {
+    //    var cb = options.inheritSectionCallback
+    //    var $div = options.options.divSelector
+    //
+    //}
 
 // convert a serialized project into the json format needed by the form.
     function _convertToFormJson(rawJson) {
@@ -947,7 +974,6 @@ TDAR.inheritance = (function () {
         }
     }
 
-//FIXME: kill this function.
     function _populateLatLongTextFields() {
         $("#d_minx").val(Geo.toLon($("#minx").val()));
         $("#d_miny").val(Geo.toLat($("#miny").val()));
@@ -955,7 +981,6 @@ TDAR.inheritance = (function () {
         $("#d_maxy").val(Geo.toLat($("#maxy").val()));
     }
 
-//FIXME: kill this function.
     function _disableMap() {
         var $mapdiv = $('#editmapv3');
         $mapdiv.addClass('opaque');
@@ -964,7 +989,6 @@ TDAR.inheritance = (function () {
         }
     }
 
-//FIXME: kill this function.
     function _enableMap() {
         var $mapdiv = $('#editmapv3');
         $mapdiv.removeClass('opaque');
@@ -981,14 +1005,15 @@ TDAR.inheritance = (function () {
      * @param newSize the number of rows the table will contain.
      */
     var resetRepeatable = function (repeatableSelector, newSize) {
-        //FIXME: hack: remove row from dom/but retain references.  This is a guess at working around TDAR-4287 (chrome becomes haunted by ghosts of deleted rows)
-        removedRowsHack = $(repeatableSelector).find(".repeat-row:not(:first)").detach();
-        //$(repeatableSelector).find(".repeat-row:not(:first)").remove();
+        $(repeatableSelector).find(".repeat-row:not(:first)").remove();
         var $firstRow = $('.repeat-row', repeatableSelector);
         _resetIndexedAttributes($firstRow);
         for (var i = 0; i < newSize - 1; i++) {
             TDAR.repeatrow.cloneSection($('.repeat-row:last', repeatableSelector)[0]);
         }
+        //fixme: tdar-4385: hide any ghost elements
+        // if this hack doesn't work, try adding a hack that replaces options.inheritSectionCallback  with wrapped function that executes the hack after callling the wrapped function.
+        _forceChromeRepaint($(repeatableSelector));
     };
 
     /**
@@ -1050,8 +1075,9 @@ TDAR.inheritance = (function () {
             enableSectionCallback: _enableSection //fixme: move to namespace
         };
         $.extend(_options, options);
+        //_wrapInheritCallback(_options);
         $form.data("inheritOptionsList").push(_options);
-        $checkbox.data("inheritOptions", _options);
+        $checkbox.data("inheritOptions", _options)
 
         //update contents/state of section when checkbox for that section is toggled
         $(_options.cbSelector).change(function (e) {
