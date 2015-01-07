@@ -14,7 +14,6 @@
 
 </head>
 <body>
-    <#compress>
 
     <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
         <div class="">
@@ -212,6 +211,6 @@
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />
-    </#compress>
+<div style="display:none"></div>
 </body>
 </#escape>
