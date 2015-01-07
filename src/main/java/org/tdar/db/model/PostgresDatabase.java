@@ -228,7 +228,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
 
-
     private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         if (!includeGeneratedValues) {
@@ -660,9 +659,10 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         PreparedStatementCallback<Object> translateColumnCallback = new PreparedStatementCallback<Object>() {
             @Override
             public Object doInPreparedStatement(PreparedStatement preparedStatement) throws SQLException, DataAccessException {
-                for (CodingRule codingRule : codingSheet.getCodingRules()) {
-                    String code = codingRule.getCode();
-                    String term = codingRule.getTerm();
+                Map<String, String> codeMap = createSanitizedKeyMap(codingSheet);
+
+                for (String code : codeMap.keySet()) {
+                    String term = codeMap.get(code);
                     // 1st parameter is the translated term that we want to set
                     preparedStatement.setString(1, term);
                     logger.trace("code:" + code + " term:" + term + " " + columnDataType + " [" + updateColumnSql + "]");
@@ -694,8 +694,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                             break;
                     }
                     if (okToExecute) {
-                        logger.trace("Prepared statement is: "
-                                + preparedStatement.toString());
+                        logger.trace("Prepared statement is: " + preparedStatement.toString());
                         preparedStatement.addBatch();
                     } else {
                         logger.debug("code:" + code + " was not a valid type for " + columnDataType);
@@ -714,6 +713,33 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         // getLogger().debug("updating untranslated rows: " +
         // updateUntranslatedRows);
         jdbcTemplate.execute(updateUntranslatedRows);
+    }
+
+    /**
+     * Takes a Coding Rule and tries to deal with appropriate permutations of padded integers
+     * 
+     * @param codingSheet
+     * @return
+     */
+    private Map<String, String> createSanitizedKeyMap(final CodingSheet codingSheet) {
+        Map<String, String> codeMap = new HashMap<>();
+        for (CodingRule codingRule : codingSheet.getCodingRules()) {
+            codeMap.put(codingRule.getCode(), codingRule.getTerm());
+        }
+        ;
+
+        // handling issues of 01 vs. 1
+        for (String code : new ArrayList<String>(codeMap.keySet())) {
+            try {
+                Integer integer = Integer.parseInt(code);
+                String newCode = String.valueOf(integer);
+                if (!codeMap.containsKey(newCode)) {
+                    codeMap.put(newCode, codeMap.get(code));
+                }
+            } catch (NumberFormatException exception) {
+            }
+        }
+        return codeMap;
     }
 
     @Override
@@ -758,6 +784,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     /**
      * Runs the "final" select for the integration result that allows us to sort and extract records from the temporary table
+     * 
      * @param result
      */
     private void extractIntegationResults(final ModernIntegrationDataResult result) {
@@ -896,7 +923,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateOntologyEnhancedSelect(table, proxy);
 
         // This may be outdated logic, disabling... old logic required that you must have "one" item selected or checked in the filter dialogs
-        
+
         // if (!selectSql.toLowerCase().contains(" where ")) {
         // throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
         // }
