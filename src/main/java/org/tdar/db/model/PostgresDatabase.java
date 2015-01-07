@@ -738,9 +738,10 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         PreparedStatementCallback<Object> translateColumnCallback = new PreparedStatementCallback<Object>() {
             @Override
             public Object doInPreparedStatement(PreparedStatement preparedStatement) throws SQLException, DataAccessException {
-                for (CodingRule codingRule : codingSheet.getCodingRules()) {
-                    String code = codingRule.getCode();
-                    String term = codingRule.getTerm();
+                Map<String, String> codeMap = createSanitizedKeyMap(codingSheet);
+
+                for (String code : codeMap.keySet()) {
+                    String term = codeMap.get(code);
                     // 1st parameter is the translated term that we want to set
                     preparedStatement.setString(1, term);
                     logger.trace("code:" + code + " term:" + term + " " + columnDataType + " [" + updateColumnSql + "]");
@@ -771,8 +772,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                             break;
                     }
                     if (okToExecute) {
-                        logger.trace("Prepared statement is: "
-                                + preparedStatement.toString());
+                        logger.trace("Prepared statement is: " + preparedStatement.toString());
                         preparedStatement.addBatch();
                     } else {
                         logger.debug("code:" + code + " was not a valid type for " + columnDataType);
@@ -791,6 +791,33 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         // getLogger().debug("updating untranslated rows: " +
         // updateUntranslatedRows);
         jdbcTemplate.execute(updateUntranslatedRows);
+    }
+
+    /**
+     * Takes a Coding Rule and tries to deal with appropriate permutations of padded integers
+     * 
+     * @param codingSheet
+     * @return
+     */
+    private Map<String, String> createSanitizedKeyMap(final CodingSheet codingSheet) {
+        Map<String, String> codeMap = new HashMap<>();
+        for (CodingRule codingRule : codingSheet.getCodingRules()) {
+            codeMap.put(codingRule.getCode(), codingRule.getTerm());
+        }
+        ;
+
+        // handling issues of 01 vs. 1
+        for (String code : new ArrayList<String>(codeMap.keySet())) {
+            try {
+                Integer integer = Integer.parseInt(code);
+                String newCode = String.valueOf(integer);
+                if (!codeMap.containsKey(newCode)) {
+                    codeMap.put(newCode, codeMap.get(code));
+                }
+            } catch (NumberFormatException exception) {
+            }
+        }
+        return codeMap;
     }
 
     @Override
