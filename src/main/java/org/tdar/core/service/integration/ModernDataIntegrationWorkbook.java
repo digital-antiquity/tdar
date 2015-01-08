@@ -221,7 +221,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             currentRow++;
             String[] row = new String[header.size()];
             row[0] = col.getName();
-            row[1] = col.getColumnType().name();
+            row[1] = "";
+            if (col.getColumnType() != null) {
+                row[1] = col.getColumnType().name();
+            }
+            
             int size = 2;
             for (DataTable table : context.getDataTables()) {
                 DataTableColumn dtc = col.getColumnForTable(table);

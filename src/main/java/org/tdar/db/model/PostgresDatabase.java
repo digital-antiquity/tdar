@@ -460,13 +460,15 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         while (iterator.hasNext()) {
             DataTableColumn column = iterator.next();
-            if (columnNames.contains(column.getName())) {
-                column.setName(column.getName() + i);
+            String name = column.getName();
+            if (columnNames.contains(name)) {
+                name = name + i;
+                column.setName(name);
                 column.setDisplayName(column.getDisplayName() + i);
             }
-            columnNames.add(column.getName());
+            columnNames.add(name);
             i++;
-            tableColumnBuilder.append(String.format(COL_DEF, column.getName(),
+            tableColumnBuilder.append(String.format(COL_DEF, name,
                     this.toImplementedTypeDeclaration(column.getColumnDataType(), column.getLength())));
             if (iterator.hasNext()) {
                 tableColumnBuilder.append(", ");
