@@ -1282,12 +1282,6 @@ function checkWindowSize() {
 $(document).ready(function () {
     checkWindowSize();
     $(window).resize(checkWindowSize);
-    if ($.cookie("hide_jira_button")) {
-        setTimeout(function () {
-            $('#atlwdg-trigger').hide()
-        }, 700);
-    }
-
     TDAR.common.sessionTimeoutWarning();
     $(document).delegate(".bookmark-link", "click", TDAR.common.applyBookmarks);
 
