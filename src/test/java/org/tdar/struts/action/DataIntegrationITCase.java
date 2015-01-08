@@ -258,11 +258,12 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            logger.trace("{} | {}", row.getCell(2).getStringCellValue(), row.getCell(4).getStringCellValue());
+//            logger.trace(" {} | {} | {} | {} | {}", row.getCell(0).getRichStringCellValue(), row.getCell(1).getRichStringCellValue(),
+//                    row.getCell(2).getRichStringCellValue(), row.getCell(3).getRichStringCellValue(), row.getCell(4).getRichStringCellValue());
             if (row.getCell(1).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                 seenElementNull = true;
             }
-            if (row.getCell(3).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
+            if (row.getCell(4).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                 seenSpeciesNull = true;
             }
         }

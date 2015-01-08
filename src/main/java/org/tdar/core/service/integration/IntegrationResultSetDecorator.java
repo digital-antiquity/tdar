@@ -113,7 +113,11 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 values.add(mappedVal);
                 // increment for "sort" column
                 resultSetPosition++;
+                if (row[resultSetPosition] != null) {
                 values.add(row[resultSetPosition].toString());
+                } else {
+                    values.add(null);
+                }
             }
             resultSetPosition++;
         }
