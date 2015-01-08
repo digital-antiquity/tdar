@@ -17,13 +17,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -120,7 +120,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         evictCache();
 
         Document document = genericService.find(Document.class, id);
-        assertTrue(Persistable.Base.isNotNullOrTransient(document));
+        assertTrue(PersistableUtils.isNotNullOrTransient(document));
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         // controller.setInformationResourceId(document.getId());
 
@@ -143,7 +143,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         evictCache();
 
         Document document = genericService.find(Document.class, id);
-        assertTrue(Persistable.Base.isNotNullOrTransient(document));
+        assertTrue(PersistableUtils.isNotNullOrTransient(document));
         DownloadController controller = generateNewInitializedController(DownloadController.class, getBasicUser());
 
         controller.setInformationResourceFileVersionId(document.getFirstInformationResourceFile().getLatestPDF().getId());

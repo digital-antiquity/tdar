@@ -13,4 +13,5 @@
 	<include file="src/test/db/reset-sequences.xml"/>
 	<!-- load the production updates -->
 	<include file="src/main/db/changelog.xml" />
+	<include file="src/test/db/additional-munsell-test-setup.xml"/>
 </databaseChangeLog>

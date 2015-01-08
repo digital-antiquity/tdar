@@ -1,9 +1,9 @@
 The following files will be un-embargoed tomorrow:
-<#list toExpire as file>
+<#if toExpire?has_content><#list toExpire as file>
  - ${file}
-</#list>
+</#list></#if>
 
 The following files have been unembargoed:
-<#list expired as file>
+<#if expired?has_content><#list expired as file>
  - ${file}
-</#list>
+</#list></#if>

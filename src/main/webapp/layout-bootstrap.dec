@@ -3,7 +3,7 @@
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" lang="en"> <!--<![endif]-->
+<html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 
 <#global jquery_version="1.10.2">
 <#global jquery_ui_version="1.8.23">
@@ -76,7 +76,7 @@
     <@common.globalJavascript />
 
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>" <#if ngApplicationName?has_content>ng-cloak</#if>>
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
@@ -164,7 +164,7 @@
                     <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>
                     <#if sessionData?? && sessionData.authenticated>
                         <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
-                        <li><a href="<@s.url value="/workspace/select-tables"/>"><@s.text name="menu.integrate"/></a></li>
+                        <li><a href="<@s.url value="/workspace/list"/>"><@s.text name="menu.integrate"/></a></li>
                         <#if editor>
                             <li><a href="<@s.url value="/admin"/>"><@s.text name="menu.admin"/></a></li>
                         </#if>

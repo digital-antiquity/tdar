@@ -45,6 +45,7 @@ import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.StringRange;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -83,6 +84,7 @@ public class SearchParameters {
     private List<String> otherKeywords = new ArrayList<String>();
     private List<String> siteNames = new ArrayList<String>();
     private List<String> uncontrolledCultureKeywords = new ArrayList<String>();
+    private List<String> uncontrolledMaterialKeywords = new ArrayList<String>();
     private List<String> temporalKeywords = new ArrayList<String>();
     private List<String> geographicKeywords = new ArrayList<String>();
     private List<String> uncontrolledSiteTypes = new ArrayList<String>();
@@ -314,10 +316,10 @@ public class SearchParameters {
                 getOperator(), filenames));
 
         if (creatorOwner != null) {
-            if (Persistable.Base.isNotNullOrTransient(creatorOwner.getPerson())) {
+            if (PersistableUtils.isNotNullOrTransient(creatorOwner.getPerson())) {
                 queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson()));
             }
-            if (Persistable.Base.isNotNullOrTransient(creatorOwner.getInstitution())) {
+            if (PersistableUtils.isNotNullOrTransient(creatorOwner.getInstitution())) {
                 queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution()));
             }
         }
@@ -337,7 +339,9 @@ public class SearchParameters {
             appendKeywordQueryParts(subgroup, KeywordType.SITE_NAME_KEYWORD, Arrays.asList(siteNames));
             queryPartGroup.append(subgroup);
         }
+        
         appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, Arrays.asList(this.getUncontrolledCultureKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_TYPE, Arrays.asList(this.getUncontrolledMaterialKeywords()));
         appendKeywordQueryParts(queryPartGroup, KeywordType.TEMPORAL_KEYWORD, Arrays.asList(this.getTemporalKeywords()));
         appendKeywordQueryParts(queryPartGroup, KeywordType.GEOGRAPHIC_KEYWORD, Arrays.asList(this.getGeographicKeywords()));
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, Arrays.asList(this.getUncontrolledSiteTypes()));
@@ -576,6 +580,14 @@ public class SearchParameters {
 
     public void setCreatorOwner(ResourceCreatorProxy creatorOwner) {
         this.creatorOwner = creatorOwner;
+    }
+
+    public List<String> getUncontrolledMaterialKeywords() {
+        return uncontrolledMaterialKeywords;
+    }
+
+    public void setUncontrolledMaterialKeywords(List<String> uncontrolledMaterialKeywords) {
+        this.uncontrolledMaterialKeywords = uncontrolledMaterialKeywords;
     }
 
 }

@@ -44,6 +44,7 @@
         $frmPerson = $('#frmPerson');
         TDAR.autocomplete.applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
         TDAR.common.initEditPage($('#frmPerson')[0]);
+        TDAR.common.validateProfileImage();
         //tack on the confirm-password rules
     });
 </script>

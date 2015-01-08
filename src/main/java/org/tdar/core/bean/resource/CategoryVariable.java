@@ -28,6 +28,11 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * A top-level domain variable (faunal variable, etc.) belonging to the system's master ontology.
@@ -50,6 +55,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String label;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -58,6 +64,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private CategoryType type;
 
     @ManyToOne
@@ -109,6 +116,15 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.parent = parent;
     }
 
+    @JsonView(JsonLookupFilter.class)
+    @JsonInclude(Include.NON_NULL)
+    public String getParentCategoryName() {
+        if (parent != null) {
+            return parent.getName();
+        }
+        return null;
+    }
+    
     @Override
     public String toString() {
         return name;

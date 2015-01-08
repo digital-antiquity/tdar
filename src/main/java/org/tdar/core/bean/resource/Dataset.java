@@ -31,6 +31,10 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.json.JsonIntegrationFilter;
+import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.
@@ -66,6 +70,16 @@ public class Dataset extends InformationResource {
             return MessageHelper.formatLocalizableKey(this);
         }
 
+        public Boolean getBooleanValue() {
+            switch (this) {
+                case NO:
+                    return Boolean.FALSE;
+
+                default:
+                    return Boolean.TRUE;
+            }
+        }
+
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
@@ -95,7 +109,8 @@ public class Dataset extends InformationResource {
     }
 
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Transient
+//    @Transient
+    @JsonView({JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class})
     public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {

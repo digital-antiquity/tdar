@@ -1620,6 +1620,16 @@ div.orgChart div.node.level1.special {
     margin-bottom:0;
 }
 
+.form-condensed fieldset legend {
+    margin-bottom: 10px;
+    font-size: 14pt;
+    line-height: normal;
+}
+
+.form-condensed fieldset {
+    margin-bottom: 1em;
+}
+
 .cartpane .form-actions, .authpane .form-actions {
     border: none;
 }
@@ -1710,4 +1720,15 @@ div.grippie {
     cursor: s-resize;
     height: 9px;
     overflow: hidden
+}
+
+/** hide angular templates until angular finishes initial render **/
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+/* Styling to distinguish the text of an 'empty' option in a select list */
+/* fixme: most browsers ignore option style. See if there's an alternate approach */
+option.emptyoption {
+    font-style: italic;
 }

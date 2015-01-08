@@ -8,13 +8,13 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Created by JAMES on 6/14/2014.
@@ -34,16 +34,16 @@ public class CartBillingAccountController extends AbstractCartController {
     private long id = -1L;
 
     // account chosen from the dropdown list
-    private Account selectedAccount = null;
+    private BillingAccount selectedAccount = null;
 
     // Or a user can specify a new account name
-    private Account account = new Account();
+    private BillingAccount account = new BillingAccount();
 
     @Autowired
     private transient InvoiceService invoiceService;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Override
     public void prepare() {
@@ -68,7 +68,7 @@ public class CartBillingAccountController extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (selectedAccount == null && Persistable.Base.isNotNullOrTransient(id)) {
+        if (selectedAccount == null && PersistableUtils.isNotNullOrTransient(id)) {
             addActionError(getText("cartController.invalid_account"));
         }
 
@@ -108,11 +108,11 @@ public class CartBillingAccountController extends AbstractCartController {
         return SUCCESS;
     }
 
-    public Account getSelectedAccount() {
+    public BillingAccount getSelectedAccount() {
         return selectedAccount;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 

@@ -44,7 +44,7 @@ public class Project extends Resource implements Sortable {
 
         @Override
         public String getDescription() {
-            return "No description";
+            return "";
         }
 
         @Override
@@ -54,7 +54,7 @@ public class Project extends Resource implements Sortable {
 
         @Override
         public String getTitle() {
-            return "No Associated Project";
+            return "";
         }
 
         @Override
@@ -68,8 +68,11 @@ public class Project extends Resource implements Sortable {
         }
     };
 
-    @Deprecated
-    // used only by hibernate to instantiate a sparsely managed Project Title&Id for freemarker
+    /**
+     * Instantiate a transient project instance with the specified ID and Title.
+     * @param id
+     * @param title
+     */
     public Project(Long id, String title) {
         setId(id);
         setTitle(title);

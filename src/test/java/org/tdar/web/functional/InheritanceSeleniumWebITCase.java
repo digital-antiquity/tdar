@@ -91,9 +91,9 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         driver.findElement(By.id("metadataForm_investigationTypeIds1")).click();
         driver.findElement(By.id("metadataForm_investigationTypeIds9")).click();
         driver.findElement(By.id("metadataForm_investigationTypeIds20")).click();
-        driver.findElement(By.id("metadataForm_materialKeywordIds1")).click();
-        driver.findElement(By.id("metadataForm_materialKeywordIds8")).click();
-        driver.findElement(By.id("metadataForm_materialKeywordIds15")).click();
+        driver.findElement(By.id("metadataForm_approvedMaterialKeywordIds1")).click();
+        driver.findElement(By.id("metadataForm_approvedMaterialKeywordIds8")).click();
+        driver.findElement(By.id("metadataForm_approvedMaterialKeywordIds15")).click();
         driver.findElement(By.id("approvedCultureKeywordIds-1")).click();
         driver.findElement(By.id("approvedCultureKeywordIds-16")).click();
         driver.findElement(By.id("approvedCultureKeywordIds-22")).click();
@@ -226,7 +226,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     @Override
     public void login() {
         setScreenshotsAllowed(false);
-        reindexOnce();
+//        reindexOnce();
         loginAdmin();
         setIgnoreModals(false);
         setScreenshotsAllowed(true);

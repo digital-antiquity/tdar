@@ -92,7 +92,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.XmlLoggable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -125,8 +125,12 @@ import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIdNameFilter;
+import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
@@ -166,7 +170,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(name = "resource", propOrder={})
+@XmlType(name = "resource", propOrder = {})
 @XmlTransient
 public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
@@ -251,14 +255,14 @@ public class Resource implements Persistable,
     @JsonView(JsonLookupFilter.class)
     private Long id = -1L;
 
-    @BulkImportField(key="TITLE", required = true, order = -100)
+    @BulkImportField(key = "TITLE", required = true, order = -100)
     @NotNull
     @Column(length = 512)
-    @JsonView(JsonLookupFilter.class)
+    @JsonView(JsonIdNameFilter.class)
     @Length(max = 512)
     private String title;
 
-    @BulkImportField(required = true, order = -50, key="DESCRIPTION")
+    @BulkImportField(required = true, order = -50, key = "DESCRIPTION")
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @JsonView(JsonLookupFilter.class)
@@ -268,7 +272,7 @@ public class Resource implements Persistable,
     @NotNull
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
-    @JsonView(JsonLookupFilter.class)
+    @JsonView({JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class})
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
@@ -439,10 +443,11 @@ public class Resource implements Persistable,
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
-  private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
+    @IndexedEmbedded
+    private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
 
-    private transient Account account;
+    private transient BillingAccount account;
 
     // used by the import service to determine whether a record has been
     // "created" or updated
@@ -507,7 +512,7 @@ public class Resource implements Persistable,
             writable.addAll(collection.getUsersWhoCan(GeneralPermissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
-            if (Persistable.Base.isNullOrTransient(p)) {
+            if (PersistableUtils.isNullOrTransient(p)) {
                 continue;
             }
             users.add(p.getId());
@@ -536,7 +541,7 @@ public class Resource implements Persistable,
                     GeneralPermissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
-            if (Persistable.Base.isNullOrTransient(p)) {
+            if (PersistableUtils.isNullOrTransient(p)) {
                 continue;
             }
             users.add(p.getId());
@@ -583,8 +588,18 @@ public class Resource implements Persistable,
     }
 
     @JsonView(JsonProjectLookupFilter.class)
+    public Set<MaterialKeyword> getUncontrolledMaterialKeywords() {
+        return getUncontrolledSuggestedKeyword(getMaterialKeywords());
+    }
+
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getApprovedCultureKeywords() {
         return getApprovedSuggestedKeyword(getCultureKeywords());
+    }
+
+    @JsonView(JsonProjectLookupFilter.class)
+    public Set<MaterialKeyword> getApprovedMaterialKeywords() {
+        return getApprovedSuggestedKeyword(getMaterialKeywords());
     }
 
     public void setCultureKeywords(Set<CultureKeyword> cultureKeywords) {
@@ -1073,7 +1088,7 @@ public class Resource implements Persistable,
 
     @Transient
     public boolean isTransient() {
-        return Persistable.Base.isTransient(this);
+        return PersistableUtils.isTransient(this);
     }
 
     /**
@@ -1204,7 +1219,6 @@ public class Resource implements Persistable,
         return authors;
     }
 
-    
     public Collection<ResourceCreator> getPrimaryCreators() {
         List<ResourceCreator> authors = new ArrayList<ResourceCreator>();
 
@@ -1273,12 +1287,12 @@ public class Resource implements Persistable,
 
     @Override
     public boolean equals(Object candidate) {
-        return Persistable.Base.isEqual(this, (Persistable) candidate);
+        return PersistableUtils.isEqual(this, (Persistable) candidate);
     }
 
     @Override
     public int hashCode() {
-        return Persistable.Base.toHashCode(this);
+        return PersistableUtils.toHashCode(this);
     }
 
     public void setCoverageDates(Set<CoverageDate> coverageDates) {
@@ -1822,11 +1836,11 @@ public class Resource implements Persistable,
     }
 
     @XmlTransient
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(BillingAccount account) {
         this.account = account;
     }
 
@@ -1891,7 +1905,7 @@ public class Resource implements Persistable,
 
     @XmlTransient
     public Long getSpaceUsedInMb() {
-        return Persistable.Base.divideByRoundUp(spaceInBytesUsed, ONE_MB);
+        return MathUtils.divideByRoundUp(spaceInBytesUsed, MathUtils.ONE_MB);
     }
 
     @XmlTransient
@@ -1968,7 +1982,7 @@ public class Resource implements Persistable,
     }
 
     public String getDetailUrl() {
-        return String.format("/%s/%s/%s", getUrlNamespace(), getId(),getSlug());
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
 
     @Override

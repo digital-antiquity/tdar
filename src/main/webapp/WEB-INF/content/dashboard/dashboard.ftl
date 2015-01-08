@@ -192,7 +192,7 @@
                        <@common.cartouche res true>
                            <span class="recent-nav">
 	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
-	                    <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+	                    <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
 	                </span>
 	                        <a href="<@s.url value='/${res.urlNamespace}/${res.id?c}' />"><@common.truncate res.title 60 /></a>
                             <small>(ID: ${res.id?c})</small>
@@ -225,7 +225,7 @@
                                    title="add a resource to this project">add resource</a> |
                                 <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a>
                                 |
-                                <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+			                    <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
                             </div>
                         </li>
                     </#list>

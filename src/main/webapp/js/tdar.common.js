@@ -193,6 +193,19 @@ TDAR.common = function (TDAR, fileupload) {
         //FIXME:  implement this and migrate to tdar.fileupload
     }
 
+    
+    var _validateProfileImage = function() {
+        var $profileElement = $(".profileImage");
+        if ($profileElement.length > 0) {
+            $profileElement.rules("add", {
+                extension: "jpg,tiff,jpeg,png",
+                messages: {
+                    extension: "please upload a JPG, TIFF, or PNG file for a profile image"
+                }
+            });
+        }
+    }
+    
     /**
      * Update display of copyright licenses section when the radio button selection changes
      * @private
@@ -512,6 +525,7 @@ TDAR.common = function (TDAR, fileupload) {
         TDAR.autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
         TDAR.autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
         TDAR.autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+        TDAR.autocomplete.delegateKeyword("#uncontrolledMaterialKeywordsRepeatable", "material", "MaterialKeyword");
         TDAR.autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
         TDAR.autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
         TDAR.autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
@@ -541,7 +555,7 @@ TDAR.common = function (TDAR, fileupload) {
             var $scrollspy = $(this);
 
             $(document).bind("repeatrowadded repeatrowdeleted heightchange", function () {
-                console.log("resizing scrollspy");
+                //console.trace("resizing scrollspy");
                 $scrollspy.scrollspy("refresh");
             });
         });
@@ -1153,7 +1167,7 @@ TDAR.common = function (TDAR, fileupload) {
      * @private
      */
     var _collectionTreeview = function () {
-        $(".collection-treeview").find(".hidden").removeClass("hidden").end().treeview();
+        $(".collection-treeview").find(".hidden").removeClass("hidden").end().treeview({collapsed:true});
     }
 
     /**
@@ -1244,7 +1258,7 @@ TDAR.common = function (TDAR, fileupload) {
 
         //I don't like how  Javascript Templates from "(tmpl.min.js)" puts "tmpl" in global scope, so I'm aliasing it here.
         "tmpl": tmpl,
-
+        "validateProfileImage" : _validateProfileImage,
         "collectionTreeview": _collectionTreeview,
         "humanFileSize": _humanFileSize,
         "initImageGallery": _initImageGalleryForView,

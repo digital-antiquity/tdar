@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingItem;
@@ -23,7 +23,7 @@ import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption;
 import org.tdar.core.service.resource.ResourceService;
@@ -49,7 +49,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Autowired
     private transient InvoiceService invoiceService;
@@ -175,7 +175,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
             genericDao.saveOrUpdate(invoice);
             genericDao.saveOrUpdate(invoice.getItems());
             logger.info("final: {}f {}mb {}", invoice.getTotalNumberOfFiles(), invoice.getTotalSpaceInMb(), person.getId());
-            Account account = new Account(String.format("%s's Account", properName));
+            BillingAccount account = new BillingAccount(String.format("%s's Account", properName));
             account.setDescription("auto-generated account created by tDAR to cover past contributions");
             account.setOwner(person);
             account.markUpdated(person);

@@ -5,13 +5,14 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static org.tdar.web.functional.WebMatchers.emptySelection;
-import static org.tdar.web.functional.WebMatchers.visible;
+import static org.tdar.web.functional.util.WebMatchers.emptySelection;
+import static org.tdar.web.functional.util.WebMatchers.visible;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.Keys;
+import org.tdar.web.functional.util.WebElementSelection;
 
 /**
  * Created by jimdevos on 3/12/14.
@@ -26,7 +27,11 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     @Before
     public void setupContextSearch() {
         force1024x768();
-        reindexOnce();
+    }
+
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
     }
 
     @After

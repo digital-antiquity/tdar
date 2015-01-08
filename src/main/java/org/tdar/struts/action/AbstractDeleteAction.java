@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.DeleteIssue;
@@ -26,7 +27,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/")
-public abstract class AbstractDeleteAction<P extends Persistable> extends AuthenticationAware.Base implements Preparable {
+public abstract class AbstractDeleteAction<P extends Persistable&Addressable> extends AuthenticationAware.Base implements Preparable {
 
     public final static String msg = "%s is %s %s (%s): %s";
     private String delete;

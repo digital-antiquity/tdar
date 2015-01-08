@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
@@ -21,6 +23,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -34,8 +37,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationContext;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -58,7 +59,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private TextProvider provider;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private ResultSet resultSet;
-    private Map<List<OntologyNode>, HashMap<String, IntContainer>> pivot;
+    private Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot;
     private ModernIntegrationDataResult result;
 
     public ModernDataIntegrationWorkbook(TextProvider provider, ExcelService excelService, ModernIntegrationDataResult result) {
@@ -83,9 +84,36 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         // FIXME: in poi 3.7 turning this on causes a warning notice in Excel that the file is corrupted, disabling
         // sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, columnIndex - 1));
 
-        createSummarySheet();
+        createPivotSheet();
         createDescriptionSheet();
+        createOntologySheets();
 
+    }
+
+    private void createOntologySheets() {
+        Set<Ontology> seenOntologies = new HashSet<>();
+        for (IntegrationColumn col : context.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                Ontology ontology = col.getSharedOntology();
+                if (seenOntologies.contains(ontology) || ontology == null) {
+                    continue;
+                }
+                int rowIndex = 0;
+                seenOntologies.add(ontology);
+                Sheet ontologySheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.ontology_worksheet", Arrays.asList(ontology.getTitle())));
+                excelService.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
+                rowIndex++;
+                String termText = provider.getText("dataIntegrationWorkbook.ontology_term");
+                String orderText = provider.getText("dataIntegrationWorkbook.ontology_order");
+                excelService.addHeaderRow(ontologySheet, rowIndex, 0, Arrays.asList(orderText, termText  ));
+                rowIndex++;
+                for (OntologyNode node : ontology.getSortedOntologyNodesByImportOrder()) {
+                    String order = Long.toString(node.getImportOrder());
+                    excelService.addDataRow(ontologySheet, rowIndex, 0, Arrays.asList(order, node.getDisplayName()));
+                    rowIndex++;
+                }
+            }
+        }
     }
 
     /**
@@ -124,6 +152,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
             if (integrationColumn.isIntegrationColumn()) {
                 headerLabels.add(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(integrationColumn.getName())));
+                headerLabels.add(provider.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(integrationColumn.getName())));
             }
         }
 
@@ -174,7 +203,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         int max = 2 + increment * count;
         for (DataTable table : context.getDataTables()) {
             max = 2 + increment * count;
-            dataTableNameheader[max] = table.getName();
+            dataTableNameheader[max] = formatTableName(table);
             datasetNameheader[max] = provider.getText("dataIntegrationWorkbook.name_paren_id",
                     Arrays.asList(table.getDataset().getName(), table.getDataset().getId()));
             count++;
@@ -202,18 +231,20 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     row[size + 2] = dtc.getColumnDataType().getLabel();
                     Ontology defaultOntology = dtc.getDefaultOntology();
                     if (defaultOntology != null) {
-                        row[size + 3] = provider.getText("dataIntegrationWorkbook.name_paren_id", Arrays.asList(defaultOntology.getName(), defaultOntology.getId()));
+                        row[size + 3] = provider.getText("dataIntegrationWorkbook.name_paren_id",
+                                Arrays.asList(defaultOntology.getName(), defaultOntology.getId()));
                     }
                     CodingSheet defaultCodingSheet = dtc.getDefaultCodingSheet();
                     if (defaultCodingSheet != null) {
-                        row[size + 4] = provider.getText("dataIntegrationWorkbook.name_paren_id", Arrays.asList(defaultCodingSheet.getName(), defaultCodingSheet.getId()));
+                        row[size + 4] = provider.getText("dataIntegrationWorkbook.name_paren_id",
+                                Arrays.asList(defaultCodingSheet.getName(), defaultCodingSheet.getId()));
                     }
                     size = size + 5;
                 }
             }
             excelService.addDataRow(summarySheet, currentRow, 0, Arrays.asList(row));
             // if real integration column, show the mapping info
-            
+
             if (col.isIntegrationColumn()) {
                 List<String> row2 = new ArrayList<>(Arrays.asList(row));
                 row2.set(0, provider.getText("dataIntegrationWorkbook.col_mapped", Arrays.asList(row[0])));
@@ -240,13 +271,16 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      * @param columnNames
      * @param pivot
      */
-    private void createSummarySheet() {
+    private void createPivotSheet() {
         int rowIndex;
         Sheet pivotSheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.summary_worksheet"));
+        logger.debug("{} - {}", provider, person);
         String title = provider.getText("dataIntegrationWorkbook.title",
                 Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
         excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
+        addMergedRegion(0, 0, 0, 8, pivotSheet);
         excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
+        addMergedRegion(1, 1, 0, 8, pivotSheet);
 
         rowIndex = 4;
         List<String> rowHeaders = new ArrayList<>();
@@ -256,7 +290,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
         }
         for (DataTable table : context.getDataTables()) {
-            rowHeaders.add(table.getName());
+            rowHeaders.add(formatTableName(table));
         }
 
         excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW + 3, ExcelService.FIRST_COLUMN, rowHeaders);
@@ -271,9 +305,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                 }
             }
             // Map<List<OntologyNode>, HashMap<String, IntContainer>>
-            Map<String, IntContainer> vals = pivot.get(key);
+            Map<Long, IntContainer> vals = pivot.get(key);
             for (DataTable table : context.getDataTables()) {
-                IntContainer integer = vals.get(table.getName());
+                IntContainer integer = vals.get(table.getId());
                 if (integer == null) {
                     rowData.add("0");
                 } else {
@@ -282,6 +316,21 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
             excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
         }
+        excelService.addDataRow(pivotSheet, rowIndex + 2, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_note")));
+        addMergedRegion(rowIndex + 2, rowIndex + 3, 0, 8, pivotSheet);
+    }
+
+    private void addMergedRegion(int startRow, int endRow, int startCol, int endCol, Sheet pivotSheet) {
+        pivotSheet.addMergedRegion(new CellRangeAddress(
+                startRow, // first row (0-based)
+                endRow, // last row (0-based)
+                startCol, // first column (0-based)
+                endCol // last column (0-based)
+                ));
+    }
+
+    public static String formatTableName(DataTable table) {
+        return String.format("%s - %s", table.getDataset().getTitle(), table.getName());
     }
 
     public ExcelService getExcelService() {

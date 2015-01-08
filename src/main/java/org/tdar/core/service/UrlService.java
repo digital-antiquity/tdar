@@ -86,7 +86,7 @@ public class UrlService {
      * @return
      */
     public static String downloadUrl(InformationResourceFileVersion version) {
-        return String.format("%s/filestore/%d/get", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
+        return String.format("%s/filestore/get/%d/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getInformationResourceFile().getInformationResource().getId() ,version.getId());
     }
 
     /**

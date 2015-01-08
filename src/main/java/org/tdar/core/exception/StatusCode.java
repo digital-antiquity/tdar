@@ -58,4 +58,15 @@ public enum StatusCode {
                 return true;
         }
     }
+
+    public boolean isCritical() {
+        switch (this) {
+            case CREATED:
+            case OK:
+            case UPDATED:
+                return false;
+            default:
+                return true;
+        }
+    }
 }

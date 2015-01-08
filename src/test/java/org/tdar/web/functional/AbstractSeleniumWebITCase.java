@@ -87,6 +87,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.functional.util.WebElementSelection;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -145,9 +146,6 @@ public abstract class AbstractSeleniumWebITCase {
      *            text of the label associated with the element.
      * @return By locator instance
      */
-    protected static By withLabel(String labelText) {
-        return new ByLabelText(labelText);
-    }
 
     public AbstractSeleniumWebITCase() {
     }
@@ -420,7 +418,6 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @After
     public final void shutdownSelenium() {
-        takeScreenshot();
         try {
             driver.quit();
         } catch (UnhandledAlertException uae) {
@@ -888,6 +885,14 @@ public abstract class AbstractSeleniumWebITCase {
         AbstractSeleniumWebITCase.reindexed = val;
     }
 
+    public static void setRequiresIndexing(boolean val) {
+        AbstractSeleniumWebITCase.reindexed = !val;
+    }
+
+    public boolean testRequiresLucene() {
+        return false;
+    }
+    
     public void reindex() {
         logout();
         loginAdmin();
@@ -944,6 +949,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void waitForPageload() {
         waitForPageload(60);
+        clearPageCache();
     }
 
     public List<String> getJavascriptErrors() {

@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,8 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
+import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
@@ -82,12 +85,11 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         return getDao().findDataTablesUsingResource(resource);
     }
 
-    // public void setDataTableColumnDao(DataTableColumnDao dataTableColumnDao) {
-    // this.dataTableColumnDao = dataTableColumnDao;
-    // }
 
-    // public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
-    // this.tdarDataImportDatabase = tdarDataImportDatabase;
-    // }
+    @Transactional(readOnly = true)
+    public IntegrationDataTableSearchResult findDataTables(DatasetSearchFilter searchFilter) throws IOException {
+        return getDao().findDataTables(searchFilter);
+
+    }
 
 }

@@ -11,9 +11,9 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -37,7 +37,7 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DatasetService;
@@ -50,6 +50,7 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -70,11 +71,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private static final long serialVersionUID = -200666002871956655L;
 
+    private static Project NO_ASSOCIATED_PROJECT = new Project(-1L, "No Associated Project");
+
     @Autowired
     private transient AuthorizationService authorizationService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient FileProxyService fileProxyService;
@@ -102,7 +105,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private List<CategoryVariable> allDomainCategories;
 
-    private Project project = Project.NULL;
+    private Project project = NO_ASSOCIATED_PROJECT;
     private List<Resource> potentialParents;
     // incoming data
     private List<File> uploadedFiles;
@@ -163,7 +166,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     public void setTransientViewableStatus(InformationResource ir, TdarUser p) {
         authorizationService.applyTransientViewableFlag(ir, p);
-        if (Persistable.Base.isNotNullOrTransient(p)) {
+        if (PersistableUtils.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 informationResourceFileService.updateTransientDownloadCount(irf);
                 if (irf.isDeleted()) {
@@ -289,7 +292,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // load resource provider institution and publishers
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
         setPublisherName(getResource().getPublisherName());
-        if (isCopyrightMandatory() && Persistable.Base.isNotNullOrTransient(getResource().getCopyrightHolder())) {
+        if (isCopyrightMandatory() && PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
             copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
         }
     }
@@ -386,7 +389,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     private void loadFilesJson() {
-        if (Persistable.Base.isNullOrTransient(getResource())) {
+        if (PersistableUtils.isNullOrTransient(getResource())) {
             return;
         }
 
@@ -399,7 +402,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         try {
-            filesJson = xmlService.convertToJson(fileProxies);
+            filesJson = serializationService.convertToJson(fileProxies);
             getLogger().debug(filesJson);
         } catch (IOException e) {
             getLogger().error("could not convert file list to json", e);
@@ -476,8 +479,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     protected void resolveProject() {
-        project = Project.NULL;
-        if (Persistable.Base.isNotNullOrTransient(projectId)) {
+        project =   NO_ASSOCIATED_PROJECT;
+        if (PersistableUtils.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         }
         json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), null);
@@ -519,12 +522,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             potentialParents = new LinkedList<>();
             boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             potentialParents.addAll(projectService.findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
-            if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
+            if (!getProject().equals(NO_ASSOCIATED_PROJECT) && !potentialParents.contains(getProject())) {
                 potentialParents.add(getProject());
             }
-            // tack the null project at the top of the sorted list
-            // Collections.sort(potentialParents);
-            potentialParents.add(0, Project.NULL);
+            // Prepend null project so that dropdowns will see "No associated project" at the top of the list.
+            potentialParents.add(0, NO_ASSOCIATED_PROJECT);
         }
         getLogger().trace("Returning all editable projects: {}", potentialParents);
         return potentialParents;
@@ -546,7 +548,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             setUncontrolledSiteTypeKeywords(null);
         }
         if (getResource().isInheritingMaterialInformation()) {
-            setMaterialKeywordIds(null);
+            setApprovedMaterialKeywordIds(null);
+            setUncontrolledCultureKeywords(null);
         }
         if (getResource().isInheritingCulturalInformation()) {
             setApprovedCultureKeywordIds(null);
@@ -765,6 +768,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             if (isHasFileProxyChanges()) {
                 return toReturn;
             }
+
+            if (getPersistable() == null || CollectionUtils.isEmpty(getPersistable().getFilesWithFatalProcessingErrors())) {
+                return toReturn;
+            }
+
             for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
                 if (file.isDeleted()) {
                     continue;
@@ -778,6 +786,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
                 toReturn.add(pair);
             }
+        } catch (LazyInitializationException lae) {
+            getLogger().trace("lazy initializatione exception -- ignore in this case, likely session has been actively closed by SessionSecurityInterceptor");
         } catch (Exception e) {
             getLogger().error("got an exception while evaluating whether we should show one, should we?", e);
         }

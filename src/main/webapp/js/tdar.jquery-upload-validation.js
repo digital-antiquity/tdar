@@ -251,7 +251,7 @@
          */
         init: function (formId, settings) {
             var self = this;
-            console.log("init");
+            console.trace("init");
             var errs = [];
             this.fileupload = $("#" + formId)[0];
 
@@ -442,7 +442,7 @@
          * @returns {{methodName: *, method: *, settings: (*|{}), message: *, suggestion: boolean}}
          */
         addRule: function (methodName, settings, customMessage) {
-            console.log("add rule: %s", methodName);
+            console.trace("add rule: %s", methodName);
             var message = this.messages[methodName];
             if (customMessage) {
                 message = $.validator.format(customMessage);

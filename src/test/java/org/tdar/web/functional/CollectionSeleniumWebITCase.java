@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +16,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.functional.util.WebElementSelection;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
@@ -28,10 +29,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Before
-    public void setup() {
-        reindexOnce();
-    }
 
     @Test
     public void testCollectionPermissionsAndVisible() {
@@ -136,6 +133,23 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         gotoPage(url);
         Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+    }
+
+
+    @Test
+    public void testCollectionInGeneralSearch() {
+        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
+        String url = setupCollectionForTest(titles, false);
+        logout();
+        gotoPage(url);
+        Assert.assertTrue(getText().contains(TITLE));
+        gotoPage("/");
+        find(".searchbox").val("test").sendKeys(Keys.RETURN);
+        waitForPageload();
+        clearPageCache();
+        logger.debug(getText());
+        Assert.assertTrue(getText().contains(TITLE));
+        
     }
 
     @Test
@@ -275,5 +289,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
             }
         }
         Assert.assertTrue("should have found at least one remove button with matching title: " + title, found);
+    }
+
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
     }
 }

@@ -13,6 +13,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.web.SessionDataAware;
 
 /**
@@ -54,7 +55,7 @@ public interface AuthenticationAware extends SessionDataAware {
                 return null;
             }
             Long tdarUserId = getSessionData().getTdarUserId();
-            if (Persistable.Base.isNotNullOrTransient(tdarUserId)) {
+            if (PersistableUtils.isNotNullOrTransient(tdarUserId)) {
                 return getGenericService().find(TdarUser.class, tdarUserId);
             } else {
                 return null;
@@ -73,7 +74,7 @@ public interface AuthenticationAware extends SessionDataAware {
             // first check the session
             Persistable persistable = action.getPersistable();
 
-            if (Persistable.Base.isNullOrTransient(persistable) || Persistable.Base.isNullOrTransient(action.getId())) {
+            if (PersistableUtils.isNullOrTransient(persistable) || PersistableUtils.isNullOrTransient(action.getId())) {
                 // deal with the case that we have a new or not found resource
                 getLogger().debug("Dealing with transient persistable {}", persistable);
                     return true;
@@ -81,7 +82,7 @@ public interface AuthenticationAware extends SessionDataAware {
             if (persistable == null) {
                 // persistable is null, so the lookup failed (aka not found)
                 abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
-            } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
+            } else if (PersistableUtils.isNullOrTransient(persistable.getId())) {
                 // id not specified or not a number, so this is an invalid request
                 abort(StatusCode.BAD_REQUEST,
                         getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));

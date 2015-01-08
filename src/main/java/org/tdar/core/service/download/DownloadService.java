@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
@@ -29,6 +28,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.utils.PersistableUtils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -92,7 +92,7 @@ public class DownloadService {
     private void addStatistics(DownloadTransferObject dto, InformationResourceFile irFile) {
         // don't count download stats if you're downloading your own stuff
         TdarUser user = dto.getAuthenticatedUser();
-        if (!Persistable.Base.isEqual(irFile.getInformationResource().getSubmitter(), user) && !authorizationService.isEditor(user)) {
+        if (!PersistableUtils.isEqual(irFile.getInformationResource().getSubmitter(), user) && !authorizationService.isEditor(user)) {
             FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
             dto.getStatistics().add(stat);
         }
@@ -151,7 +151,7 @@ public class DownloadService {
     }
 
     private boolean isUnauthenticatedOrThumbnail(TdarUser authenticatedUser, InformationResourceFileVersion[] irFileVersions) {
-        return Persistable.Base.isNullOrTransient(authenticatedUser) || CollectionUtils.size(irFileVersions) == 1 && irFileVersions[0].isThumbnail();
+        return PersistableUtils.isNullOrTransient(authenticatedUser) || CollectionUtils.size(irFileVersions) == 1 && irFileVersions[0].isThumbnail();
     }
 
     private String addFileToDownload(InformationResourceFileVersion irFileVersion, DownloadTransferObject dto) {
@@ -177,14 +177,14 @@ public class DownloadService {
 
     @Transactional(readOnly = false)
     public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
-            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
+            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization, boolean countDownload) {
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
-        if (Persistable.Base.isNotNullOrTransient(versionToDownload)) {
+        if (PersistableUtils.isNotNullOrTransient(versionToDownload)) {
             versionsToDownload.add(versionToDownload);
         }
 
         DownloadResult issue = DownloadResult.SUCCESS;
-        if (Persistable.Base.isNotNullOrTransient(resourceToDownload)) {
+        if (PersistableUtils.isNotNullOrTransient(resourceToDownload)) {
             for (InformationResourceFile irf : resourceToDownload.getInformationResourceFiles()) {
                 if (irf.isDeleted()) {
                     continue;
@@ -249,7 +249,9 @@ public class DownloadService {
         dto.setVersionsToDownload(versionsToDownload);
         try {
             constructDownloadTransferObject(dto);
-            registerDownload(dto.getStatistics());
+            if (countDownload) {
+                registerDownload(dto.getStatistics());
+            }
         } catch (TdarRecoverableRuntimeException tre) {
             logger.error("ERROR IN Download: {}", tre);
             dto.setResult(DownloadResult.ERROR);

@@ -4,9 +4,9 @@
 
     <div>
     <ul class="nav nav-tabs">
-        <li class="<#if granularity == 'DAY'>active</#if>"><a href="<@s.url value="stats"/>?id=${id?c}&granularity=DAY">Last Week</a></li>
-        <li class="<#if granularity == 'MONTH'>active</#if>"><a href="<@s.url value="stats"/>?id=${id?c}&granularity=MONTH">Last Year</a></li>
-        <li class="<#if granularity == 'YEAR'>active</#if>"><a href="<@s.url value="stats"/>?id=${id?c}&granularity=YEAR">Overall</a></li>
+        <li class="<#if granularity == 'DAY'>active</#if>"><a href="<@s.url value="usage"/>?id=${id?c}&granularity=DAY">Last Week</a></li>
+        <li class="<#if granularity == 'MONTH'>active</#if>"><a href="<@s.url value="usage"/>?id=${id?c}&granularity=MONTH">Last Year</a></li>
+        <li class="<#if granularity == 'YEAR'>active</#if>"><a href="<@s.url value="usage"/>?id=${id?c}&granularity=YEAR">Overall</a></li>
     </ul>
     </div>
     <h3>Results: <@s.text name="${granularity.localeKey}"/></h3>

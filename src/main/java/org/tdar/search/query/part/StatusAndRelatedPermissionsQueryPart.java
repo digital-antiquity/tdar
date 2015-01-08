@@ -8,12 +8,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -32,7 +32,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
     public String generateQueryString() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
-        if (Persistable.Base.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
+        if (PersistableUtils.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
             draftSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
             QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
             draftSubgroup.setOperator(Operator.AND);

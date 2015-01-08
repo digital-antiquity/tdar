@@ -80,6 +80,9 @@ public class IndexController extends AuthenticationAware.Base {
                     params = { "status", "404" }) }),
             @Action(value = "gone", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/resource-deleted.ftl",
                     params = { "status", "410" }) }),
+                    // used by the AuthenticationInterceptor which seems to not be able to work with the FreemarkerHttpResult properly
+            @Action(value = TdarActionSupport.UNAUTHORIZED, results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/unauthorized.ftl",
+                    params = { "status", "401" }) }),
             @Action(value = "access-denied", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/access-denied.ftl",
                     params = { "status", "403" }) }),
             @Action(value = "invalid-token", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/double-submit.ftl",

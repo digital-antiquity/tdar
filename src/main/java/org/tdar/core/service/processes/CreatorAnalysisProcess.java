@@ -30,7 +30,6 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Project;
@@ -40,11 +39,12 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -73,7 +73,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     private transient ProjectDao projectDao;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 
@@ -142,7 +142,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          */
         List<Creator> results = genericDao.findAll(getPersistentClass());
         if (CollectionUtils.isNotEmpty(results)) {
-            return Persistable.Base.extractIds(results);
+            return PersistableUtils.extractIds(results);
         }
         return null;
     }
@@ -225,8 +225,8 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Collections.sort(log.getKeywordLogPart(), new LogPartComparator());
 
             try {
-                xmlService.generateFOAF(creator, log);
-                xmlService.generateCreatorLog(creator, log);
+                serializationService.generateFOAF(creator, log);
+                serializationService.generateCreatorLog(creator, log);
             } catch (Exception e) {
                 getLogger().error("exception: ", e);
             }

@@ -25,6 +25,7 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -177,7 +178,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     }
 
     protected boolean isPersistableIdSet() {
-        return Persistable.Base.isNotNullOrTransient(getPersistable());
+        return PersistableUtils.isNotNullOrTransient(getPersistable());
     }
 
     @Override

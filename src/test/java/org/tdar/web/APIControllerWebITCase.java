@@ -35,7 +35,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.APIControllerITCase;
 import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
@@ -47,7 +47,7 @@ import com.sun.media.rtsp.protocol.StatusCode;
 public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Autowired
-    XmlService xmlService;
+    SerializationService serializationService;
 
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
@@ -104,9 +104,9 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         doc.getInformationResourceFiles().clear();
         doc.setMappedDataKeyColumn(null);
         APIControllerITCase.removeInvalidFields(doc);
-        String docXml = xmlService.convertToXML(doc);
+        String docXml = serializationService.convertToXML(doc);
         logger.info(docXml);
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/upload");
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody("record", docXml);
         post.setEntity(builder.build());
@@ -121,7 +121,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     public void testConfidential() throws Exception {
         JaxbResultContainer login = setupValidLogin();
         
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/upload");
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl()  + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
         builder.addTextBody("record", text);
@@ -156,7 +156,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         HttpEntity entity = response.getEntity();
         String result = IOUtils.toString(entity.getContent());
         logger.debug(result);
-        return Pair.create(response.getStatusLine().getStatusCode(), (JaxbResultContainer) xmlService.parseXml(new StringReader(result)));
+        return Pair.create(response.getStatusLine().getStatusCode(), (JaxbResultContainer) serializationService.parseXml(new StringReader(result)));
     }
 
     public void apiLogout() throws ClientProtocolException, IOException {

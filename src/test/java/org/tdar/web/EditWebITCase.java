@@ -44,7 +44,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DOCUMENT_TYPE = "BOOK_SECTION";
     public static String AUTHOR_NAME_FIRST = "Jim";
     public static String AUTHOR_NAME_LAST = "deVos";
-    public static String AUTHOR_EMAIL = "jim.devos@asu.edu";
+    public static String AUTHOR_EMAIL = "jim.devos@dsu.edu";
     public static String AUTHOR_INSTITUTION = "A wholly new institution name";
     public static String AUTHOR_ROLE = "CONTRIBUTOR";
     public static String DESCRIPTION = "A resource description";

@@ -12,6 +12,10 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.utils.MessageHelper;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
+@JsonAutoDetect(getterVisibility=Visibility.PUBLIC_ONLY)
 public class PricingOption implements Serializable {
 
     public enum PricingType implements HasLabel, Localizable {

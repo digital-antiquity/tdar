@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.notification.UserNotificationType;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UserNotificationService;
-import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -60,7 +60,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     private transient UserNotificationService userNotificationService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     @Override
     public void prepare() {
@@ -78,8 +78,8 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     })
     public String execute() {
         allNotifications = userNotificationService.findAll(this);
-        notificationsJson = xmlService.convertFilteredJsonForStream(allNotifications, null, null);
-        allMessageTypesJson = xmlService.convertFilteredJsonForStream(UserNotificationType.values(), null, null);
+        notificationsJson = serializationService.convertFilteredJsonForStream(allNotifications, null, null);
+        allMessageTypesJson = serializationService.convertFilteredJsonForStream(UserNotificationType.values(), null, null);
         return SUCCESS;
     }
 
@@ -92,7 +92,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
         String messageKey = notification.getMessageKey();
         Map<String, Object> jsonMap = new HashMap<>();
         jsonMap.put("message", getText(messageKey));
-        String json = xmlService.convertFilteredJsonForStream(jsonMap, null, null);
+        String json = serializationService.convertFilteredJsonForStream(jsonMap, null, null);
         this.resultJson = new ByteArrayInputStream(json.getBytes());
         return SUCCESS;
     }
@@ -109,7 +109,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
         getLogger().debug("updating notification {} with id {}", notification, notification.getId());
         getGenericService().saveOrUpdate(notification);
         notification.setMessage(this);
-        this.resultJson = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(notification, null, null).getBytes());
+        this.resultJson = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(notification, null, null).getBytes());
         return SUCCESS;
     }
 
@@ -124,7 +124,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     public String delete() {
         getLogger().debug("deleting notification {}", notification);
         getGenericService().delete(notification);
-        this.resultJson = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(notification, null, null).getBytes());
+        this.resultJson = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(notification, null, null).getBytes());
         return SUCCESS;
     }
 
@@ -141,7 +141,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
             context.put("token", token);
         }
         jsonMap.put("token", token);
-        String json = xmlService.convertFilteredJsonForStream(jsonMap, null, null);
+        String json = serializationService.convertFilteredJsonForStream(jsonMap, null, null);
         this.resultJson = new ByteArrayInputStream(json.getBytes());
         return SUCCESS;
     }

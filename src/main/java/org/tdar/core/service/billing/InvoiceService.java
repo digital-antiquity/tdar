@@ -19,9 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Persistable.Base;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingItem;
@@ -35,18 +33,20 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.AccountDao;
+import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UserNotificationService;
-import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 @Service
 @Transactional
@@ -59,7 +59,7 @@ public class InvoiceService {
     private transient GenericDao genericDao;
 
     @Autowired
-    private transient AccountDao accountDao;
+    private transient BillingAccountDao accountDao;
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -68,7 +68,7 @@ public class InvoiceService {
     private transient EmailService emailService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     @Autowired
     private transient UserNotificationService notificationService;
@@ -142,7 +142,7 @@ public class InvoiceService {
      */
     @Transactional
     public Collection<BillingItem> lookupExtraBillingActivities(List<Long> extraItemIds, List<Integer> extraItemQuantities) {
-        Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getActiveBillingActivities());
+        Map<Long, BillingActivity> actIdMap = PersistableUtils.createIdMap(getActiveBillingActivities());
         Set<BillingItem> items = new HashSet<>();
         for (int i = 0; i < extraItemIds.size(); i++) {
             BillingActivity act = actIdMap.get(extraItemIds.get(i));
@@ -186,7 +186,7 @@ public class InvoiceService {
     public void calculateSpaceActivity(PricingOption option, BillingActivity spaceActivity, Long spaceNeeded) {
         BillingItem extraSpace;
         if ((spaceNeeded > 0) && (spaceActivity != null)) {
-            int qty = (int) Base.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
+            int qty = (int) MathUtils.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
             extraSpace = new BillingItem(spaceActivity, qty);
             option.getItems().add(extraSpace);
         }
@@ -312,7 +312,7 @@ public class InvoiceService {
             }
 
             if (activity.supportsFileLimit()) {
-                Long total = Base.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
+                Long total = MathUtils.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
                 Long minAllowedNumberOfFiles = activity.getMinAllowedNumberOfFiles();
                 if (minAllowedNumberOfFiles == null) {
                     minAllowedNumberOfFiles = 0L;
@@ -366,7 +366,7 @@ public class InvoiceService {
             throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
         }
 
-        if (Persistable.Base.isNotNullOrTransient(authenticatedUser) && Persistable.Base.isTransient(invoice.getOwner())) {
+        if (PersistableUtils.isNotNullOrTransient(authenticatedUser) && PersistableUtils.isTransient(invoice.getOwner())) {
             invoice.setOwner(authenticatedUser);
             invoice.setTransactedBy(authenticatedUser);
         }
@@ -402,13 +402,13 @@ public class InvoiceService {
         invoice.markUpdated(authenticatedUser);
 
         // if invoice is persisted it will be read-only, so make it writable
-        if (Persistable.Base.isNotNullOrTransient(invoice)) {
+        if (PersistableUtils.isNotNullOrTransient(invoice)) {
             genericDao.markUpdatable(invoice);
             genericDao.markUpdatable(invoice.getItems());
         }
         genericDao.saveOrUpdate(invoice);
-        if (Persistable.Base.isNotNullOrTransient(accountId)) {
-            Account account = genericDao.find(Account.class, accountId);
+        if (PersistableUtils.isNotNullOrTransient(accountId)) {
+            BillingAccount account = genericDao.find(BillingAccount.class, accountId);
             account.getInvoices().add(invoice);
         }
 
@@ -433,8 +433,8 @@ public class InvoiceService {
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException("invoiceService.cannot_redeem_coupon");
         }
-        if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
-            if (Persistable.Base.isEqual(coupon, invoice.getCoupon())) {
+        if (PersistableUtils.isNotNullOrTransient(invoice.getCoupon())) {
+            if (PersistableUtils.isEqual(coupon, invoice.getCoupon())) {
                 return;
             } else {
                 throw new TdarRecoverableRuntimeException("invoiceService.coupon_already_applied");
@@ -475,7 +475,7 @@ public class InvoiceService {
     private void updateInvoiceOwner(Invoice invoice, TdarUser authenticatedUser, boolean billingManager) {
         TdarUser owner = invoice.getOwner();
         // if we have an owner
-        if (billingManager && Persistable.Base.isNotNullOrTransient(owner)) {
+        if (billingManager && PersistableUtils.isNotNullOrTransient(owner)) {
             invoice.setOwner(genericDao.find(TdarUser.class, owner.getId()));
         } else {
             // if we're logged in
@@ -505,7 +505,7 @@ public class InvoiceService {
     public Invoice finalizePayment(Invoice invoice_, PaymentMethod paymentMethod) {
 
         Address address = genericDao.loadFromSparseEntity(invoice_.getAddress(), Address.class);
-        if (Persistable.Base.isNotNullOrTransient(address)) {
+        if (PersistableUtils.isNotNullOrTransient(address)) {
             invoice_.setAddress(address);
         }
 
@@ -520,7 +520,7 @@ public class InvoiceService {
 
         // if the discount brings the total cost down to 0, then skip the credit card process
         if ((invoice.getTotal() <= 0) && CollectionUtils.isNotEmpty(invoice.getItems())) {
-            if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
+            if (PersistableUtils.isNotNullOrTransient(invoice.getCoupon())) {
                 // accountService.redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
                 checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
             }
@@ -574,7 +574,7 @@ public class InvoiceService {
             genericDao.markWritable();
             Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
 
-            BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
+            BillingTransactionLog billingResponse = new BillingTransactionLog(serializationService.convertToJson(response), response.getTransactionId());
             billingResponse = genericDao.markWritableOnExistingSession(billingResponse);
             genericDao.saveOrUpdate(billingResponse);
             if (invoice != null && !response.isRefund()) {
@@ -701,7 +701,7 @@ public class InvoiceService {
     public void completeInvoice(Invoice invoice) {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.getOwner().setContributor(true);
-        Account account = accountDao.getAccountForInvoice(invoice);
+        BillingAccount account = accountDao.getAccountForInvoice(invoice);
         genericDao.saveOrUpdate(invoice);
         try {
             if (account != null) {

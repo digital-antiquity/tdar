@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
@@ -39,6 +38,7 @@ import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
@@ -122,7 +122,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         ResourceCollection parent = resourceCollectionService.find(parentId);
-        if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent)
+        if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parent)
                 && (parent.getParentIds().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
             return INPUT;
@@ -195,7 +195,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         prepareDataTableSection();
         setParentId(getPersistable().getParentId());
-        if (Persistable.Base.isNotNullOrTransient(getParentId())) {
+        if (PersistableUtils.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
         }
         return SUCCESS;
@@ -203,7 +203,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public String loadAddMetadata() {
-        if (Persistable.Base.isNotNullOrTransient(parentId)) {
+        if (PersistableUtils.isNotNullOrTransient(parentId)) {
             ResourceCollection parent = resourceCollectionService.find(parentId);
             if (parent != null) {
                 parentCollectionName = parent.getName();
@@ -254,7 +254,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
 
         // always place current resource collection as the first option
-        if (Persistable.Base.isNotTransient(getResourceCollection())) {
+        if (PersistableUtils.isNotTransient(getResourceCollection())) {
             getAllResourceCollections().remove(getResourceCollection());
             getAllResourceCollections().add(0, getResourceCollection());
         }

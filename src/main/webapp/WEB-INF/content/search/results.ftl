@@ -3,9 +3,7 @@
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search />
 <head>
     <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
-    <#if lookupSource == 'RESOURCE'>
-        <@search.headerLinks includeRss=(actionName=="results") />
-    </#if>
+    <@search.headerLinks includeRss=(actionName=="results") />
 </head>
 <body>
 
@@ -50,25 +48,19 @@
                     </#if>
                 </#if>
 
-                <#if lookupSource == 'RESOURCE'>
-                    <li class="media"><i class="search-download-icon-red"></i> <span>Download these results &raquo;
-                        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-                            <@search.searchLink "download" "to Excel" />
-                            <#if (totalRecords > maxDownloadRecords)>
-                                Limited to the first ${maxDownloadRecords} results.
-                            </#if>
+                <li class="media"><i class="search-download-icon-red"></i> <span>Download these results &raquo;
+                    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
+	                    <@search.searchLink "download" "to Excel" />
+	                    <#if (totalRecords > maxDownloadRecords)>
+	                        Limited to the first ${maxDownloadRecords} results.
+	                    </#if>
 
-                        <#else>
-                            Login
-                        </#if></span>
-                    </li>
-                </#if>
-                <!--        <li>Subscribe via &raquo;
-	            <a class="subscribe"  href="${rssUrl}">RSS</a>
-	        </li> -->
+	                <#else>
+	                    Login
+	                </#if></span>
+		            </li>
             </ul>
 
-            <#if lookupSource == 'RESOURCE'>
                 <h3>View Options</h3>
                 <ul class="tools media-list">
                     <li class="media"><a href="<@s.url includeParams="all">
@@ -84,7 +76,6 @@
 	                    <@s.param name="orientation">MAP</@s.param>
 	                </@s.url>"><i class="search-map-icon-red"></i> <@s.text name="DisplayOrientation.MAP"/></a></li>
                 </ul>
-            </#if>
             <form>
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
         <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
@@ -92,11 +83,11 @@
         <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
 
             </form>
-        </div>
-        <div class="visible-phone">
-            <a href="<@search.refineUrl />">Refine your search &raquo;</a>
-        </div>
-        </#if>
+    </div>
+    <div class="visible-phone">
+        <a href="<@search.refineUrl />">Refine your search &raquo;</a>
+    </div>
+    </#if>
 
         <#if (referrer?? && referrer == 'TAG')>
         <div class="notice">
@@ -135,7 +126,7 @@
     </div>
 
     <div class="tdarresults">
-        <#if showCollectionResults>
+        <#if (showCollectionResults && (collectionResults![])?size > 0)>
         <#--split the collection list into, at most, two sublists -->
         <#assign _lastIndex = (collectionResults?size -1)>
         <#if (_lastIndex > 9)><#assign _lastIndex = 9></#if>
@@ -165,28 +156,8 @@
         </div>
         </#if>
 
-        <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
         <#--fixme: replace explicit map sizes with css names -->
-            <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
-        <#else>
-            <#assign indx = 0/>
-            <#list results as result>
-                <#if result?has_content>
-                    <#if indx != 0>
-                        <hr/></#if>
-                    <#assign indx = indx + 1/>
-                    <div class="listItemPart">
-                        <h3 class="search-result-title-${result.status}">
-                            <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
-                        </h3>
-                        <#if result.institution?has_content><p>${result.institution.name}</p></#if>
-                        <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
-                        <blockquote class="luceneScore">
-                        <b>score:</b>${result.score!""}<br> </blockquote>
-                    </div>
-                </#if>
-            </#list>
-        </#if>
+        <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
     </div>
         <@search.pagination ""/>
 

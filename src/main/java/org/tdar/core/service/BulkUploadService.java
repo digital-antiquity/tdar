@@ -32,9 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -46,7 +45,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.bulk.BulkFileProxy;
 import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
@@ -56,6 +55,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 
 import com.google.common.cache.Cache;
@@ -92,7 +92,7 @@ public class BulkUploadService {
     private ResourceService resourceService;
 
     @Autowired
-    private AccountService accountService;
+    private BillingAccountService accountService;
 
     @Autowired
     private SearchIndexService searchIndexService;
@@ -152,7 +152,7 @@ public class BulkUploadService {
                 logger.debug("exception happened when reading excel file", e);
                 manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
                 manifestProxy.getAsyncUpdateReceiver().addError(e);
-                if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+                if (PersistableUtils.isNotNullOrTransient(ticketId)) {
                     asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
                 }
             } finally {
@@ -280,7 +280,7 @@ public class BulkUploadService {
 
     private void reindexProject(Long projectId, AsyncUpdateReceiver updateReciever) {
         try {
-            if (Persistable.Base.isNotNullOrTransient(projectId)) {
+            if (PersistableUtils.isNotNullOrTransient(projectId)) {
                 boolean exceptions = searchIndexService.indexProject(projectId);
                 if (exceptions) {
                     throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
@@ -351,7 +351,7 @@ public class BulkUploadService {
         try {
             logger.info("bulk: finishing quota work");
             if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-                Account account = genericDao.find(Account.class, accountId);
+                BillingAccount account = genericDao.find(BillingAccount.class, accountId);
                 accountService.updateQuota(account, resources);
             }
         } catch (Throwable t) {
@@ -465,7 +465,7 @@ public class BulkUploadService {
         Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
         BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, excelService, bulkUploadTemplateService, entityService,
                 reflectionService);
-        if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+        if (PersistableUtils.isNotNullOrTransient(ticketId)) {
             asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
         }
         proxy.setSubmitter(submitter);

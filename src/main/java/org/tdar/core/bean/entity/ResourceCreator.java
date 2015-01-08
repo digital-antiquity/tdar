@@ -33,6 +33,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -167,7 +168,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
             if (creatorRole != null) {
                 role = creatorRole.name();
             }
-            if (isNullOrTransient(creatorToFormat)) {
+            if (PersistableUtils.isNullOrTransient(creatorToFormat)) {
                 throw new TdarRecoverableRuntimeException("resourceCreator.undefined_creator_id");
             }
             toReturn = String.format("%s_%s_%s", code, creatorToFormat.getId(), role).toLowerCase();

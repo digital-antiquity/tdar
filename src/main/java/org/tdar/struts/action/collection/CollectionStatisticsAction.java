@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.struts.action.billing.AbstractStatisticsAction;
+import org.tdar.struts.action.AbstractStatisticsAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;

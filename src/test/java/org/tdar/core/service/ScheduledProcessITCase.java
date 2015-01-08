@@ -14,18 +14,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.MockMailSender;
@@ -145,17 +148,43 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testEmbargo() throws InstantiationException, IllegalAccessException {
         // queue the embargo task
+        Document doc = generateDocumentWithFileAndUser();
+        long id =doc.getId();
+
+        InformationResourceFile irf = doc.getFirstInformationResourceFile();
+        irf.setRestriction(FileAccessRestriction.EMBARGOED_SIX_MONTHS);
+        irf.setDateMadePublic(DateTime.now().minusDays(1).toDate());
+        genericService.saveOrUpdate(irf);
+        irf = null;
+        doc = null;
         scheduledProcessService.queueTask(EmbargoedFilesUpdateProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         // queue the email task
+        doc = genericService.find(Document.class, id);
+        assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.PUBLIC);
+
+        //FIXME: add tests for checking email
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
+
+        
+        doc.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.EMBARGOED_FIVE_YEARS);
+        doc.getFirstInformationResourceFile().setDateMadePublic(DateTime.now().toDate());
+        genericService.saveOrUpdate(doc.getFirstInformationResourceFile());
+        scheduledProcessService.queueTask(EmbargoedFilesUpdateProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        // queue the email task
+        doc = genericService.find(Document.class, id);
+        assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.EMBARGOED_FIVE_YEARS);
+        scheduledProcessService.queueTask(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        
     }
 
     @Test
     @Rollback
     public void testAccountEmail() {
-        Account account = setupAccountForPerson(getBasicUser());
+        BillingAccount account = setupAccountForPerson(getBasicUser());
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         genericService.saveOrUpdate(account);
         oau.execute();

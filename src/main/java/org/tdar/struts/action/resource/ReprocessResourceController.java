@@ -11,7 +11,6 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.DatasetService;
@@ -55,6 +54,9 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
         try {
             ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(resource);
             processErrorObject(errors);
+            if (resource instanceof Dataset) {
+                datasetService.remapAllColumnsAsync(resource.getId(), resource.getProject().getId());
+            }
         } catch (Exception e) {
             // consider removing the "sorry we were unable to ... just showing error message"
             // addActionErrorWithException(null, e);
@@ -73,6 +75,8 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
             Dataset dataset = (Dataset) resource;
             // note this ignores the quota changes -- it's on us
             datasetService.reprocess(dataset);
+            datasetService.retranslate(dataset);
+            datasetService.remapAllColumnsAsync(dataset.getId(), resource.getProject().getId());
         } else {
             addActionError(getText("reprocessResourceController.dataset_required"));
             return ERROR;
@@ -89,10 +93,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
 //        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (resource instanceof Dataset) {
             Dataset dataset = (Dataset) resource;
-            // note this ignores the quota changes -- it's on us
-            for (DataTable table : dataset.getDataTables()) {
-                datasetService.retranslate(table.getDataTableColumns());
-            }
+            datasetService.retranslate(dataset);
             datasetService.createTranslatedFile(dataset);
         } else {
             addActionError(getText("reprocessResourceController.dataset_required"));

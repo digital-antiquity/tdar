@@ -11,13 +11,13 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
@@ -51,7 +51,7 @@ public class SimpleKeywordSaveAction extends AbstractKeywordController {
             addActionError(getText("simpleKeywordSaveAction.label_missing"));
         }
         Keyword byLabel = genericKeywordService.findByLabel(getKeywordType().getKeywordClass(), label);
-        if (Persistable.Base.isNotNullOrTransient(byLabel) && !Objects.equals(getKeyword(), byLabel)) {
+        if (PersistableUtils.isNotNullOrTransient(byLabel) && !Objects.equals(getKeyword(), byLabel)) {
             addActionError(getText("simpleKeywordAction.label_duplicate"));
         }
     }

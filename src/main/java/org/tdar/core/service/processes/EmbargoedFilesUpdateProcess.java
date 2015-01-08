@@ -56,9 +56,14 @@ public class EmbargoedFilesUpdateProcess extends ScheduledBatchProcess<Informati
         if (CollectionUtils.isEmpty(expired) && CollectionUtils.isEmpty(toExpire)) {
             return;
         }
+        logger.debug("expired: {} toExpire: {}", CollectionUtils.size(expired), CollectionUtils.size(toExpire));
+        if (CollectionUtils.isNotEmpty(toExpire)) {
+            sendExpirationNotices(toExpire);
+        }
 
-        sendExpirationNotices(toExpire);
-        expire(expired);
+        if (CollectionUtils.isNotEmpty(expired)) {
+            expire(expired);
+        }
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("expired", expired);
@@ -66,7 +71,9 @@ public class EmbargoedFilesUpdateProcess extends ScheduledBatchProcess<Informati
         Email email = new Email();
         email.setSubject(SUBJECT);
         email.setUserGenerated(false);
-        emailService.queueWithFreemarkerTemplate("embargo/expiration-admin.ftl", map, email);
+        if (CollectionUtils.isNotEmpty(expired) || CollectionUtils.isNotEmpty(toExpire)) {
+            emailService.queueWithFreemarkerTemplate("embargo/expiration-admin.ftl", map, email);
+        }
     }
 
     private void expire(List<InformationResourceFile> expired) {
@@ -88,7 +95,7 @@ public class EmbargoedFilesUpdateProcess extends ScheduledBatchProcess<Informati
         map.put("resource", file.getInformationResource());
         map.put("resourceUrl", file.getInformationResource().getAbsoluteUrl());
         email.setTo(submitter.getEmail());
-        
+
         email.setUserGenerated(false);
         if (isExpiration) {
             email.setSubject(SUBJECT_EXPIRED);

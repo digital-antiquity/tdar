@@ -22,7 +22,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -61,8 +61,8 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.XmlService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
@@ -77,6 +77,7 @@ import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -103,7 +104,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private String submitterProperName = "";
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
@@ -124,7 +125,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private AccountService accountService;
+    private BillingAccountService accountService;
 
     @Autowired
     private InformationResourceService informationResourceService;
@@ -143,14 +144,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // containers for submitted data.
     private List<String> siteNameKeywords;
 
-    private List<Long> materialKeywordIds;
     private List<Long> investigationTypeIds;
 
+    private List<Long> approvedMaterialKeywordIds;
     private List<Long> approvedSiteTypeKeywordIds;
     private List<Long> approvedCultureKeywordIds;
 
     private List<String> uncontrolledSiteTypeKeywords;
     private List<String> uncontrolledCultureKeywords;
+    private List<String> uncontrolledMaterialKeywords;
 
     private List<String> otherKeywords;
 
@@ -165,7 +167,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // private List<String> relatedCitations;
     private List<RelatedComparativeCollection> relatedComparativeCollections;
     private Long accountId;
-    private List<Account> activeAccounts;
+    private List<BillingAccount> activeAccounts;
 
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -214,7 +216,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
         StringWriter sw = new StringWriter();
         for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
-            xmlService.convertToXMLFragment(MetaTag.class, tag, sw);
+            serializationService.convertToXMLFragment(MetaTag.class, tag, sw);
             sw.append("\n");
         }
         return sw.toString();
@@ -222,7 +224,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public String loadAddMetadata() {
-        if (Persistable.Base.isNotNullOrTransient(getResource())) {
+        if (PersistableUtils.isNotNullOrTransient(getResource())) {
             setSubmitter(getResource().getSubmitter());
         } else {
             setSubmitter(getAuthenticatedUser());
@@ -231,10 +233,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateTransientAccountInfo(getResource());
             setActiveAccounts(new ArrayList<>(determineActiveAccounts()));
-            if (Persistable.Base.isNotNullOrTransient(getResource()) && Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
+            if (PersistableUtils.isNotNullOrTransient(getResource()) && PersistableUtils.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
-            for (Account account : getActiveAccounts()) {
+            for (BillingAccount account : getActiveAccounts()) {
                 getLogger().trace(" - active accounts to {} files: {} mb: {}", account, account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb());
             }
         }
@@ -244,10 +246,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
-    protected List<Account> determineActiveAccounts() {
-        List<Account> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
+    protected List<BillingAccount> determineActiveAccounts() {
+        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
         if (getResource() != null) {
-            Account resourceAccount = getResource().getAccount();
+            BillingAccount resourceAccount = getResource().getAccount();
             if ((resourceAccount != null) && !accounts.contains(resourceAccount)) {
                 accounts.add(0, resourceAccount);
             }
@@ -316,7 +318,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     private void setupSubmitterField() {
-        if (Persistable.Base.isNotNullOrTransient(getSubmitter()) && StringUtils.isNotBlank(getSubmitter().getProperName())) {
+        if (PersistableUtils.isNotNullOrTransient(getSubmitter()) && StringUtils.isNotBlank(getSubmitter().getProperName())) {
             if (getSubmitter().getFirstName() != null && getSubmitter().getLastName() != null)
                 setSubmitterProperName(getSubmitter().getProperName());
         } else {
@@ -342,7 +344,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 if (getResource().getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                     getResource().setStatus(getResource().getPreviousStatus());
                 }
-                updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
+                updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), getResource());
             }
         } else {
             loadAddMetadata();
@@ -357,7 +359,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void setupAccountForSaving() {
         accountService.updateTransientAccountInfo(getResource());
-        List<Account> accounts = determineActiveAccounts();
+        List<BillingAccount> accounts = determineActiveAccounts();
         if (accounts.size() == 1) {
             setAccountId(accounts.get(0).getId());
         }
@@ -416,30 +418,33 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void saveKeywords() {
         getLogger().debug("siteNameKeywords=" + siteNameKeywords);
-        getLogger().debug("materialKeywords=" + materialKeywordIds);
+        getLogger().debug("materialKeywords=" + approvedMaterialKeywordIds);
         getLogger().debug("otherKeywords=" + otherKeywords);
         getLogger().debug("investigationTypes=" + investigationTypeIds);
         Resource res = getPersistable();
-        GenericKeywordService gks = genericKeywordService;
 
         cleanupKeywords(uncontrolledCultureKeywords);
+        cleanupKeywords(uncontrolledMaterialKeywords);
         cleanupKeywords(uncontrolledSiteTypeKeywords);
         cleanupKeywords(siteNameKeywords);
         cleanupKeywords(otherKeywords);
         cleanupKeywords(temporalKeywords);
-        Set<CultureKeyword> culKeys = gks.findOrCreateByLabels(CultureKeyword.class, uncontrolledCultureKeywords);
+        
+        Set<CultureKeyword> culKeys = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, uncontrolledCultureKeywords);
         culKeys.addAll(genericKeywordService.findAll(CultureKeyword.class, approvedCultureKeywordIds));
+        Set<MaterialKeyword> matKeys = genericKeywordService.findOrCreateByLabels(MaterialKeyword.class, uncontrolledMaterialKeywords);
+        matKeys.addAll(genericKeywordService.findAll(MaterialKeyword.class, approvedMaterialKeywordIds));
 
         Set<SiteTypeKeyword> siteTypeKeys = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, uncontrolledSiteTypeKeywords);
         siteTypeKeys.addAll(genericKeywordService.findAll(SiteTypeKeyword.class, approvedSiteTypeKeywordIds));
 
-        Persistable.Base.reconcileSet(res.getSiteNameKeywords(), gks.findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
-        Persistable.Base.reconcileSet(res.getOtherKeywords(), gks.findOrCreateByLabels(OtherKeyword.class, otherKeywords));
-        Persistable.Base.reconcileSet(res.getMaterialKeywords(), gks.findAll(MaterialKeyword.class, materialKeywordIds));
-        Persistable.Base.reconcileSet(res.getInvestigationTypes(), gks.findAll(InvestigationType.class, investigationTypeIds));
+        PersistableUtils.reconcileSet(res.getSiteNameKeywords(), genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
+        PersistableUtils.reconcileSet(res.getOtherKeywords(), genericKeywordService.findOrCreateByLabels(OtherKeyword.class, otherKeywords));
+        PersistableUtils.reconcileSet(res.getInvestigationTypes(), genericKeywordService.findAll(InvestigationType.class, investigationTypeIds));
 
-        Persistable.Base.reconcileSet(res.getCultureKeywords(), culKeys);
-        Persistable.Base.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
+        PersistableUtils.reconcileSet(res.getCultureKeywords(), culKeys);
+        PersistableUtils.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
+        PersistableUtils.reconcileSet(res.getMaterialKeywords(), matKeys);
     }
 
     private void cleanupKeywords(List<String> kwds) {
@@ -473,7 +478,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // calendar and radiocarbon dates are null for Ontologies
         resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, coverageDates,
                 getResource().getCoverageDates(), CoverageDate.class);
-        Persistable.Base.reconcileSet(getPersistable().getTemporalKeywords(),
+        PersistableUtils.reconcileSet(getPersistable().getTemporalKeywords(),
                 genericKeywordService.findOrCreateByLabels(TemporalKeyword.class, temporalKeywords));
     }
 
@@ -487,7 +492,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 && !(this instanceof AbstractSupportingInformationResourceController)) {
             addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(getResource().getResourceType().getLabel())));
         }
-        Persistable.Base.reconcileSet(getPersistable().getGeographicKeywords(),
+        PersistableUtils.reconcileSet(getPersistable().getGeographicKeywords(),
                 genericKeywordService.findOrCreateByLabels(GeographicKeyword.class, geographicKeywords));
 
         resourceService.processManagedKeywords(getPersistable(), getPersistable().getLatitudeLongitudeBoxes());
@@ -511,7 +516,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             resourceService.saveOrUpdate(getPersistable());
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getSubmitter())) {
+        if (PersistableUtils.isNotNullOrTransient(getSubmitter())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
             // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
@@ -583,10 +588,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void loadBasicMetadata() {
         // load all keywords
 
-        setMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
+        setApprovedMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
         setInvestigationTypeIds(toIdList(getResource().getInvestigationTypes()));
 
         setUncontrolledCultureKeywords(toSortedStringList(getResource().getUncontrolledCultureKeywords()));
+        setUncontrolledMaterialKeywords(toSortedStringList(getResource().getUncontrolledMaterialKeywords()));
         setApprovedCultureKeywordIds(toIdList(getResource().getApprovedCultureKeywords()));
 
         setUncontrolledSiteTypeKeywords(toSortedStringList(getResource().getUncontrolledSiteTypeKeywords()));
@@ -671,11 +677,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.latitudeLongitudeBoxes = longitudeLatitudeBox;
     }
 
-    public List<Long> getMaterialKeywordIds() {
-        if (CollectionUtils.isEmpty(materialKeywordIds)) {
-            materialKeywordIds = new ArrayList<>();
+    public List<Long> getApprovedMaterialKeywordIds() {
+        if (CollectionUtils.isEmpty(approvedMaterialKeywordIds)) {
+            approvedMaterialKeywordIds = new ArrayList<>();
         }
-        return materialKeywordIds;
+        return approvedMaterialKeywordIds;
     }
 
     public R getResource() {
@@ -689,7 +695,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<MaterialKeyword> getAllMaterialKeywords() {
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = genericKeywordService.findAllWithCache(MaterialKeyword.class);
+            allMaterialKeywords = genericKeywordService.findAllApprovedWithCache(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;
@@ -781,6 +787,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return uncontrolledCultureKeywords;
     }
 
+    public List<String> getUncontrolledMaterialKeywords() {
+        if (CollectionUtils.isEmpty(uncontrolledMaterialKeywords)) {
+            uncontrolledMaterialKeywords = createListWithSingleNull();
+        }
+        return uncontrolledMaterialKeywords;
+    }
+
     public List<CreatorType> getCreatorTypes() {
         // FIXME: move impl to service layer
         return Arrays.asList(CreatorType.values());
@@ -843,6 +856,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.uncontrolledCultureKeywords = uncontrolledCultureKeywords;
     }
 
+    public void setUncontrolledMaterialKeywords(List<String> uncontrolledMaterialKeywords) {
+        this.uncontrolledMaterialKeywords = uncontrolledMaterialKeywords;
+    }
+
     public void setOtherKeywords(List<String> otherKeywords) {
         this.otherKeywords = otherKeywords;
     }
@@ -855,8 +872,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.geographicKeywords = geographicKeywords;
     }
 
-    public void setMaterialKeywordIds(List<Long> materialKeywordIds) {
-        this.materialKeywordIds = materialKeywordIds;
+    public void setApprovedMaterialKeywordIds(List<Long> materialKeywordIds) {
+        this.approvedMaterialKeywordIds = materialKeywordIds;
     }
 
     public void setInvestigationTypeIds(List<Long> investigationTypeIds) {
@@ -1009,14 +1026,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.accountId = accountId;
     }
 
-    public List<Account> getActiveAccounts() {
+    public List<BillingAccount> getActiveAccounts() {
         if (activeAccounts == null) {
             activeAccounts = new ArrayList<>(determineActiveAccounts());
         }
         return activeAccounts;
     }
 
-    public void setActiveAccounts(List<Account> activeAccounts) {
+    public void setActiveAccounts(List<BillingAccount> activeAccounts) {
         this.activeAccounts = activeAccounts;
     }
 
@@ -1055,7 +1072,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return isEditor();
     }
 
-    public void updateQuota(Account account, Resource resource) {
+    public void updateQuota(BillingAccount account, Resource resource) {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateQuota(account, resource);
         }
@@ -1088,12 +1105,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
-        return Persistable.Base.extractIds(persistables);
-    }
-
-    protected void loadCustomViewMetadata() throws TdarActionException {
-        // TODO Auto-generated method stub
-
+        return PersistableUtils.extractIds(persistables);
     }
 
     public List<EmailMessageType> getEmailTypes() {

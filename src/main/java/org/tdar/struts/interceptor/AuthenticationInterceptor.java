@@ -139,7 +139,10 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             }
             logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user,
                     group));
-            return TdarActionSupport.UNAUTHORIZED;
+            // NOTE, for whatever reason, Struts is not allowing us to swap out the body of the message when we change the http status code
+            // thus we need to use the redirect here to get a tDAR error message.  This seems to be an issue specific to the FreemarkerHttpResult and this interceptor
+            // probably because the action has not been invoked, so we redirect
+            return TdarActionSupport.UNAUTHORIZED_REDIRECT;
         }
 
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpForbiddenErrorResponseOnly.class)) {

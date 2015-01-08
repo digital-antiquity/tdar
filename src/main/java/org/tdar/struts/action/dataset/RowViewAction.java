@@ -14,7 +14,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -24,6 +23,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -63,7 +63,7 @@ public class RowViewAction extends AuthenticationAware.Base implements Preparabl
             return ERROR;
         }
         setTransientViewableStatus(getResource(), getAuthenticatedUser());
-        if (Persistable.Base.isNullOrTransient(dataTableId) || Persistable.Base.isNullOrTransient(rowId)) {
+        if (PersistableUtils.isNullOrTransient(dataTableId) || PersistableUtils.isNullOrTransient(rowId)) {
             return ERROR;
         }
         if (dataTable != null) {

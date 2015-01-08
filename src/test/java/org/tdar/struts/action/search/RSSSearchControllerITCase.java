@@ -19,11 +19,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.web.SessionData;
@@ -33,7 +35,7 @@ import org.xml.sax.SAXException;
 public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Autowired
-    private AdvancedSearchController controller;
+    private RSSSearchAction controller;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -87,10 +89,39 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
-        doSearch("");
+//        doSearch("");
         controller.viewRss();
         // the record we created should be the absolute first record
         assertEquals(document, controller.getResults().get(0));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testGeoRSS() throws InstantiationException, IllegalAccessException, TdarActionException, IOException {
+        InformationResource document = generateDocumentWithUser();
+        document.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(84.37156598282918, 57.89149735271034, -131.484375, 27.0703125));
+        genericService.saveOrUpdate(document);
+        searchIndexService.index(document);
+        String xml = setupGeoRssCall(document, GeoRssMode.POINT);
+        logger.debug(xml);
+        assertTrue(xml.contains("<georss:point>42.480904926355166 -23.55640450858541</georss:point>"));
+        xml = setupGeoRssCall(document, GeoRssMode.NONE);
+        logger.debug(xml);
+        assertTrue(!xml.contains("<georss"));
+        xml = setupGeoRssCall(document, GeoRssMode.ENVELOPE);
+        logger.debug(xml);
+        assertTrue(xml.contains("<georss:box>57.89149735271034 84.37156598282918 27.0703125 -131.484375</georss:box>"));
+    }
+
+    private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
+        controller = generateNewInitializedController(RSSSearchAction.class);
+        controller.setSessionData(new SessionData()); // create unauthenticated session
+        controller.setGeoMode(mode);
+        controller.viewRss();
+        // the record we created should be the absolute first record
+        assertEquals(document, controller.getResults().get(0));
+        String xml = IOUtils.toString(controller.getInputStream());
+        return xml;
     }
 
     @Test
@@ -101,7 +132,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
-        doSearch("");
+//        doSearch("");
         String viewRss = controller.viewRss();
         logger.debug(viewRss);
         logger.debug("{}", controller.getActionErrors());
@@ -123,15 +154,26 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
         assertFalse(controller.isReindexing());
-        doSearch("");
         controller.viewRss();
         String rssFeed = IOUtils.toString(controller.getInputStream());
 
-        assertTrue(resultsContainId(3074l));
+        assertTrue(resultsContainId(3074l, controller));
         logger.info(rssFeed);
         assertTrue("feed should contain id " + r.getId() + ": " + rssFeed, rssFeed.contains(r.getId().toString()));
         assertTrue(rssFeed.contains("Durrington Walls Humerus Dataset"));
         assertXpathEvaluatesTo("Durrington Walls Humerus Dataset", "/atom:feed/atom:entry/atom:title", rssFeed);
+    }
+
+    protected boolean resultsContainId(Long id, RSSSearchAction controller_) {
+        boolean found = false;
+        for (Resource r : controller_.getResults()) {
+            logger.trace(r.getId() + " " + r.getResourceType());
+            if (id.equals(r.getId())) {
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 
 }

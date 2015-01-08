@@ -74,8 +74,8 @@
 </div>
 </#escape>
 <#-- FIXME: how to place these in the footer? -->
-<script src='//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js'></script>
-<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js'></script>
 <script src='/includes/knockout.mapping.js'></script>
 <script>
 ko.bindingHandlers.showModal = {
