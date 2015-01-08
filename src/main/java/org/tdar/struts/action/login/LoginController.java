@@ -144,7 +144,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
         getLogger().info("url {} ", url_);
         if (url_.contains("filestore/")) {
             getLogger().info("download redirect");
-            if (url_.contains("/get?") || url_.endsWith("/get")) {
+            if (url_.contains("/get?") || url_.contains("/get/") || url_.endsWith("/get")) {
                 url_ = url_.replace("/get", "/confirm");
             } else if (url_.matches("^(.+)filestore/(\\d+)$")) {
                 url_ = url_ + "/confirm";

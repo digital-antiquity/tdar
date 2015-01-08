@@ -28,7 +28,7 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
     private UserNotificationService userNotificationService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     private List<UserNotification> initialNotifications;
 

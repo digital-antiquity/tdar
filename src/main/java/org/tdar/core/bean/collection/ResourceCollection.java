@@ -90,6 +90,7 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -486,7 +487,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         writable.add(getOwner());
         writable.addAll(getUsersWhoCan(permission, true));
         for (TdarUser p : writable) {
-            if (Persistable.Base.isNullOrTransient(p)) {
+            if (PersistableUtils.isNullOrTransient(p)) {
                 continue;
             }
             users.add(p.getId());

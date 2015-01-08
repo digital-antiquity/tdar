@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.Resource;
 
@@ -17,18 +17,18 @@ public class AccountEvaluationHelper {
     private Long allocatedNumberOfFiles;
     private Long filesUsed;
     private Long spaceUsedInBytes;
-    private Account account;
+    private BillingAccount account;
     private List<Resource> newItems = new ArrayList<Resource>();
     private List<Resource> existingItems = new ArrayList<Resource>();
     private Set<Resource> flagged = new HashSet<Resource>();
     private Set<Resource> unflagged = new HashSet<Resource>();
 
-    public AccountEvaluationHelper(Account account, BillingActivityModel model) {
+    public AccountEvaluationHelper(BillingAccount account, BillingActivityModel model) {
         this.model = model;
         updateFromAccount(account);
     }
 
-    public void updateFromAccount(Account account) {
+    public void updateFromAccount(BillingAccount account) {
         this.id = account.getId();
         this.allocatedSpaceInBytes = account.getTotalSpaceInBytes();
         this.allocatedNumberOfFiles = account.getTotalNumberOfFiles();
@@ -77,11 +77,11 @@ public class AccountEvaluationHelper {
         this.spaceUsedInBytes = spaceUsedInBytes;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(BillingAccount account) {
         this.account = account;
     }
 

@@ -338,15 +338,15 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT,
-                query = "select grp from AccountGroup grp inner join grp.accounts as account where account.id =:accountId"
+                query = "select grp from BillingAccountGroup grp inner join grp.accounts as account where account.id =:accountId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
-                query = "from Account act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
+                query = "from BillingAccount act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON,
-                query = "from AccountGroup act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
+                query = "from BillingAccountGroup act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LOGS_FOR_RESOURCE,
@@ -412,7 +412,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE,
-                query = "select account from Account account join account.invoices as invoice where invoice.id = :id"),
+                query = "select account from BillingAccount account join account.invoices as invoice where invoice.id = :id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER,
                 query = "select rescol from ResourceCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
@@ -470,10 +470,33 @@
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
                 query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
+                query = "select distinct dt, ds.title " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX + " order by ds.title, dt.displayName"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE_COUNT,
+                query = "select count(distinct dt.id) " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,
+                query = "select distinct ont from Ontology ont left join ont.resourceCollections as rc"
+                        + " left join rc.parentIds parentId  "
+                        + "where ont.status='ACTIVE' and (:projectId=-1L or ont.project.id=:projectId) and "
+                        + " ont.title like :titleLookup and "
+                        + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
+                        + "(:categoryVariableId=-1L or ont.categoryVariable.id=:categoryVariableId) and "
+                        + "(:hasDatasets=false or ont.id in "
+                        + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
+                        + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
                 query = "from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
-                @org.hibernate.annotations.NamedQuery(
-                        name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
-                        query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true")})
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
+                query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.WORKFLOWS_BY_USER,
+                query = "from DataIntegrationWorkflow where submitter.id=:userId")
+})
 package org.tdar.core.dao;
 

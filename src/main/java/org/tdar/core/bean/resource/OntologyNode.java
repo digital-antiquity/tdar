@@ -1,8 +1,10 @@
 package org.tdar.core.bean.resource;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -26,7 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIdNameFilter;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -63,11 +70,9 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @ManyToOne(optional = false)
     private Ontology ontology;
 
-    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_start")
     private Integer intervalStart;
 
-    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_end")
     private Integer intervalEnd;
 
@@ -97,7 +102,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     // true if this ontology node or its children doesn't have any mapped data
     private transient boolean mappedDataValues;
     private transient boolean parent;
-    private transient boolean[] columnHasValueArray;
+    private transient Map<DataTableColumn,Boolean> columnHasValueMap = new HashMap<>();
+
     private transient OntologyNode parentNode;
     private transient Set<OntologyNode> synonymNodes = new HashSet<>();
 
@@ -139,6 +145,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.intervalEnd = end;
     }
 
+    @JsonView({JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class})
     public String getIri() {
         return iri;
     }
@@ -155,6 +162,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.uri = uri;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getIndex() {
         return index;
     }
@@ -192,6 +200,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return builder.toString();
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public String getDisplayName() {
         return displayName;
     }
@@ -297,14 +306,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.parent = parent;
     }
 
-    public boolean[] getColumnHasValueArray() {
-        return columnHasValueArray;
-    }
-
-    public void setColumnHasValueArray(boolean[] columnsWithValue) {
-        this.columnHasValueArray = columnsWithValue;
-    }
-
     @XmlTransient
     public boolean isSynonym() {
         return synonym;
@@ -331,12 +332,20 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @Transient
-    public boolean hasMappedDataValues() {
+    public boolean isMappedDataValues() {
         return mappedDataValues;
     }
 
     public void setMappedDataValues(boolean mappedDataValues) {
         this.mappedDataValues = mappedDataValues;
+    }
+
+    public Map<DataTableColumn,Boolean> getColumnHasValueMap() {
+        return columnHasValueMap;
+    }
+
+    public void setColumnHasValueMap(Map<DataTableColumn,Boolean> columnHasValueMap) {
+        this.columnHasValueMap = columnHasValueMap;
     }
 
 }

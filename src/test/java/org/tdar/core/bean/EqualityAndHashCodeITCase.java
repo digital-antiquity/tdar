@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.search.index.LookupSource;
+import org.tdar.utils.PersistableUtils;
 
 public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
 
@@ -139,7 +140,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             assertNotEquals(persistedPerson, person);
 
             // the person record is 'transient'.
-            assertTrue(Persistable.Base.isTransient(person));
+            assertTrue(PersistableUtils.isTransient(person));
             // if we simulate a save by giving it an ID, they are unequal
             person.setId(persistedPerson.getId() + 15L);
             assertNotEquals("these should still be equal even after save", persistedPerson, person);

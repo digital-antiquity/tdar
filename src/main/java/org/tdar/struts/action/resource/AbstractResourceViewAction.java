@@ -17,10 +17,9 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -31,6 +30,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotation;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -38,8 +39,8 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.XmlService;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileService;
@@ -53,6 +54,7 @@ import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -93,7 +95,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     private boolean hasDeletedFiles = false;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
@@ -111,7 +113,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private AccountService accountService;
+    private BillingAccountService accountService;
 
     @Autowired
     private InformationResourceService informationResourceService;
@@ -166,11 +168,15 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     }
 
     public String getGoogleScholarTags() throws Exception {
-        ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
         StringWriter sw = new StringWriter();
-        for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
-            xmlService.convertToXMLFragment(MetaTag.class, tag, sw);
-            sw.append("\n");
+        try {
+            ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
+            for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
+                serializationService.convertToXMLFragment(MetaTag.class, tag, sw);
+                sw.append("\n");
+            }
+        } catch (Exception e) {
+            getLogger().error("error converting scholar tag for resource:", getId(), e);
         }
         return sw.toString();
     }
@@ -178,10 +184,10 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
-    protected List<Account> determineActiveAccounts() {
-        List<Account> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
+    protected List<BillingAccount> determineActiveAccounts() {
+        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
         if (getResource() != null) {
-            Account resourceAccount = getResource().getAccount();
+            BillingAccount resourceAccount = getResource().getAccount();
             if ((resourceAccount != null) && !accounts.contains(resourceAccount)) {
                 accounts.add(0, resourceAccount);
             }
@@ -198,7 +204,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         loadCustomViewMetadata();
         resourceService.updateTransientAccessCount(getResource());
         // don't count if we're an admin
-        if (!Persistable.Base.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
+        if (!PersistableUtils.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
             resourceService.incrementAccessCounter(getPersistable());
         }
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
@@ -271,6 +277,17 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {
         return ResourceCreatorRole.getAll();
     }
+    
+    public Set<ResourceAnnotationKey> getAllResourceAnnotationKeys() {
+        Set<ResourceAnnotationKey> keys = new HashSet<>();
+        if ((getPersistable() != null) && CollectionUtils.isNotEmpty(getPersistable().getActiveResourceAnnotations())) {
+            for (ResourceAnnotation ra : getPersistable().getActiveResourceAnnotations()) {
+                keys.add(ra.getResourceAnnotationKey());
+            }
+        }
+        return keys;
+    }
+    
 
     public List<ResourceCreatorProxy> getAuthorshipProxies() {
         if (CollectionUtils.isEmpty(authorshipProxies)) {
@@ -316,7 +333,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public List<ResourceCreatorRole> getPersonCreditRoles() {
         return ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, getResource().getResourceType());
     }
-
 
     /**
      * @param resourceCollections
@@ -400,6 +416,12 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     }
 
     public List<EmailMessageType> getEmailTypes() {
+        if (getResource() instanceof InformationResource) {
+            InformationResource informationResource = (InformationResource) getResource();
+            if (informationResource.hasConfidentialFiles()) {
+                emailTypes = Arrays.asList(EmailMessageType.values());
+            }
+        }
         return emailTypes;
     }
 
@@ -417,7 +439,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
      */
     public void setTransientViewableStatus(InformationResource ir, TdarUser p) {
         authorizationService.applyTransientViewableFlag(ir, p);
-        if (Persistable.Base.isNotNullOrTransient(p)) {
+        if (PersistableUtils.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 informationResourceFileService.updateTransientDownloadCount(irf);
                 if (irf.isDeleted()) {

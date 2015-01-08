@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -41,6 +40,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -246,7 +246,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, TdarUser actor,
             ResourceCollection resourceCollection, HasSubmitter source) {
         TdarUser transientUser = incomingUser.getUser();
-        if (Persistable.Base.isNotNullOrTransient(transientUser)) {
+        if (PersistableUtils.isNotNullOrTransient(transientUser)) {
             TdarUser user = null;
             try {
                 user = getDao().find(TdarUser.class, transientUser.getId());
@@ -411,7 +411,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.trace("{}", collectionToAdd);
 
         if (collectionToAdd != null && collectionToAdd.isValid()) {
-            if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
                     && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(collectionToAdd.getTitle()));
@@ -612,7 +612,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional(readOnly = true)
     public Long getCollectionViewCount(ResourceCollection persistable) {
-        if (Persistable.Base.isNullOrTransient(persistable))
+        if (PersistableUtils.isNullOrTransient(persistable))
             return 0L;
         return getDao().getCollectionViewCount(persistable);
     }
@@ -630,7 +630,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         persistable.setParent(parent);
         List<Long> parentIds = new ArrayList<>();
-        if (Persistable.Base.isNotNullOrTransient(parent)) {
+        if (PersistableUtils.isNotNullOrTransient(parent)) {
             if (CollectionUtils.isNotEmpty(parent.getParentIds())) {
                 parentIds.addAll(parent.getParentIds());
             }

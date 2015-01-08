@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
@@ -96,18 +96,18 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
@@ -122,6 +122,7 @@ import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
@@ -183,7 +184,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected AuthenticationService authenticationService;
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
     @Autowired
@@ -510,7 +511,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (controller != null) {
             TdarUser user_ = null;
             controller.setSessionData(getSessionData());
-            if ((user != null) && Persistable.Base.isTransient(user)) {
+            if ((user != null) && PersistableUtils.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
                 user_ = genericService.find(TdarUser.class, user.getId());
@@ -593,7 +594,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected TdarUser getUser(Long id) {
         TdarUser p = genericService.find(TdarUser.class, id);
-        if (Persistable.Base.isNullOrTransient(p)) {
+        if (PersistableUtils.isNullOrTransient(p)) {
             fail("failed to load user:" + id);
         }
         genericService.refresh(p);
@@ -823,7 +824,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                     "schemaCache/oai-identifier.xsd"));
 
             try {
-                addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", xmlService.generateSchema());
+                addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", serializationService.generateSchema());
             } catch (Exception e) {
                 logger.error("an error occured creating the schema", e);
                 assertTrue(false);
@@ -886,23 +887,23 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
         initAccount(account, activity, getUser());
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -910,8 +911,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -919,8 +920,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -928,8 +929,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
-        Account account = new Account();
+    public BillingAccount setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
+        BillingAccount account = new BillingAccount();
         initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -937,7 +938,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    private Invoice initAccount(Account account, BillingActivity activity, TdarUser user) {
+    private Invoice initAccount(BillingAccount account, BillingActivity activity, TdarUser user) {
         account.markUpdated(user);
         Invoice invoice = setupInvoice(activity, user);
         account.getInvoices().add(invoice);
@@ -959,8 +960,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return invoice;
     }
 
-    public Account setupAccountForPerson(TdarUser p) {
-        Account account = new Account("my account");
+    public BillingAccount setupAccountForPerson(TdarUser p) {
+        BillingAccount account = new BillingAccount("my account");
         account.setOwner(p);
         account.setStatus(Status.ACTIVE);
         account.markUpdated(getUser());

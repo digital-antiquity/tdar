@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
@@ -42,7 +42,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
     private int statusCode = StatusCode.OK.getHttpStatusCode();
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     public JsonDocumentResult() {
         super();
@@ -99,7 +99,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
                 }
             }
 
-            String jsonForStream = xmlService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
+            String jsonForStream = serializationService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
         }
 

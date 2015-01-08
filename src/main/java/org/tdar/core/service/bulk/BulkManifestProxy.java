@@ -63,7 +63,7 @@ public class BulkManifestProxy implements Serializable {
     private List<String> filenames = new ArrayList<>();
     private List<String> filenamesInsensitive = new ArrayList<>();
     private boolean caseSensitive = false;
-    private Map<Row, List<String>> rowFilenameMap = new HashMap<>();
+    private Map<Integer, List<String>> rowFilenameMap = new HashMap<>();
     private Map<String, CellMetadata> cellLookupMap = new HashMap<>();
     private List<String> columnNames = new ArrayList<>();
     private LinkedHashSet<CellMetadata> allValidFields = new LinkedHashSet<>();
@@ -406,10 +406,10 @@ public class BulkManifestProxy implements Serializable {
             }
 
             addFilename(filename);
-            List<String> list = getRowFilenameMap().get(row);
+            List<String> list = rowFilenameMap.get(row.getRowNum());
             if (list == null) {
                 list = new ArrayList<String>();
-                getRowFilenameMap().put(row, list);
+                rowFilenameMap.put(row.getRowNum(), list);
             }
             if (caseTest.containsKey(filename)) {
                 String testFile = caseTest.get(filename);
@@ -432,14 +432,6 @@ public class BulkManifestProxy implements Serializable {
 
     public void setFilenames(List<String> filenames) {
         this.filenames = filenames;
-    }
-
-    public Map<Row, List<String>> getRowFilenameMap() {
-        return rowFilenameMap;
-    }
-
-    public void setRowFilenameMap(Map<Row, List<String>> rowFilenameMap) {
-        this.rowFilenameMap = rowFilenameMap;
     }
 
     public Map<String, CellMetadata> getCellLookupMap() {

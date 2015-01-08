@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.service.external.UserRegistration;
+import org.tdar.web.functional.util.WebElementSelection;
 
 /**
  * Created by adam on 7/21/14.

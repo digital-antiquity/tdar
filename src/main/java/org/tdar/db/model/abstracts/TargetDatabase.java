@@ -9,8 +9,8 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
-import org.tdar.struts.data.IntegrationContext;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -53,6 +53,9 @@ public interface TargetDatabase extends Database {
 
     @Deprecated
     <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+
+    @Deprecated
+    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String ... orderBy);
 
     <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 

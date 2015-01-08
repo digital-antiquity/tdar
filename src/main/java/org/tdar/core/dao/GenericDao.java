@@ -38,6 +38,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -188,7 +189,7 @@ public class GenericDao {
     }
 
     public <P extends Persistable> List<P> loadFromSparseEntities(Collection<P> incoming, Class<P> cls) {
-        return findAll(cls, Persistable.Base.extractIds(incoming));
+        return findAll(cls, PersistableUtils.extractIds(incoming));
     }
 
     @SuppressWarnings("unchecked")
@@ -597,7 +598,7 @@ public class GenericDao {
     public <T> T markWritable(T obj) {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
-            if ((obj instanceof Persistable) && Persistable.Base.isNotTransient((Persistable) obj)) {
+            if ((obj instanceof Persistable) && PersistableUtils.isNotTransient((Persistable) obj)) {
                 getCurrentSession().setReadOnly(obj, false);
                 getCurrentSession().evict(obj);
                 return merge(obj);

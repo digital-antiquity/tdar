@@ -14,7 +14,6 @@
 
 </head>
 <body>
-    <#compress>
 
     <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
         <div class="">
@@ -80,6 +79,15 @@
                 <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.adminDescription'
                 cssClass='resizable input-xxlarge' title="Please enter the description " />
             </#if>
+
+        <#if editor>
+            <div class="control-group">
+                <label class="control-label">Associate an Image/Logo with this Collection</label>
+                <div class="controls">
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' />
+                </div>
+            </div>
+        </#if>
 
         </div>
 
@@ -161,12 +169,12 @@
             <h2>Modifications</h2>
 
             <div id="divToAdd">
-                <h3>The following resources will be added to the collection</h3>
+                <h4>The following resources will be added to the collection</h4>
                 <table id="tblToAdd" class="table table-condensed"></table>
             </div>
 
             <div id="divToRemove">
-                <h3>The following resources will be removed from the collection</h3>
+                <h4>The following resources will be removed from the collection</h4>
                 <table id="tblToRemove" class="table table-condensed"></table>
             </div>
         </div>
@@ -198,11 +206,11 @@
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
+                TDAR.common.validateProfileImage();
         });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />
-    </#compress>
-<div style="display:none"
+<div style="display:none"></div>
 </body>
 </#escape>

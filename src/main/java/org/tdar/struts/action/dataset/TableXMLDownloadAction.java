@@ -14,15 +14,15 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -39,7 +39,7 @@ public class TableXMLDownloadAction extends AuthenticationAware.Base implements 
     @Autowired
     private transient DataTableService dataTableService;
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -80,7 +80,7 @@ public class TableXMLDownloadAction extends AuthenticationAware.Base implements 
         if (!getTdarConfiguration().isXmlExportEnabled()) {
             return ERROR;
         }
-        if (Persistable.Base.isNullOrTransient(dataTableId)) {
+        if (PersistableUtils.isNullOrTransient(dataTableId)) {
             return ERROR;
         }
         DataTable dataTable = dataTableService.find(dataTableId);

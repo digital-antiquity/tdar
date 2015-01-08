@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -44,15 +43,18 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.data.IntegrationColumn;
+import org.tdar.struts.action.workspace.IntegrationDownloadAction;
+import org.tdar.struts.action.workspace.LegacyWorkspaceController;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
@@ -173,8 +175,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     }
 
-    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
-        CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
+    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws Exception {
+        CodingSheetMappingController controller = generateNewInitializedController(CodingSheetMappingController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
         controller.setId(column.getDefaultCodingSheet().getId());
         controller.prepare();
@@ -201,7 +203,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         controller.setCodingRules(toSave);
         controller.saveValueOntologyNodeMapping();
 
-        Set<Long> idSet = Base.createIdMap(toSave).keySet();
+        Set<Long> idSet = PersistableUtils.createIdMap(toSave).keySet();
         for (Long toCheck : idSet) {
             CodingRule find = genericService.find(CodingRule.class, toCheck);
             assertNotNull(find.getOntologyNode());
@@ -227,8 +229,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     public Object performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
-            HashMap<Ontology, String[]> nodeSelectionMap) throws IOException {
-        WorkspaceController controller = generateNewInitializedController(WorkspaceController.class);
+            HashMap<Ontology, String[]> nodeSelectionMap) throws Exception {
+        LegacyWorkspaceController controller = generateNewInitializedController(LegacyWorkspaceController.class);
         performIntegrationFiltering(integrationColumns, nodeSelectionMap);
         controller.setTableIds(tableIds);
         controller.setIntegrationColumns(integrationColumns);
@@ -241,10 +243,11 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         Long ticketId = controller.getTicketId();
         assertNotNull(ticketId);
         ModernIntegrationDataResult result = controller.getResult();
-        controller = generateNewInitializedController(WorkspaceController.class);
-        controller.setTicketId(ticketId);
-        controller.downloadIntegrationDataResults();
-        InputStream integrationDataResultsInputStream = controller.getIntegrationDataResultsInputStream();
+        IntegrationDownloadAction dc = generateNewInitializedController(IntegrationDownloadAction.class);
+        dc.setTicketId(ticketId);
+        dc.prepare();
+        dc.downloadIntegrationDataResults();
+        InputStream integrationDataResultsInputStream = dc.getIntegrationDataResultsInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(integrationDataResultsInputStream));
         Assert.assertFalse(StringUtils.isEmpty(reader.readLine()));
         return result;
@@ -256,18 +259,20 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
             if (!integrationColumn.isIntegrationColumn()) {
                 continue;
             }
-            if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
+            String[] nodeSelections = nodeSelectionMap.get(integrationColumn.getSharedOntology());
+            if (nodeSelections != null) {
                 int foundNodeCount = 0;
-                for (OntologyNode nodeData : integrationColumn.getFlattenedOntologyNodeList()) {
-                    if (ArrayUtils.contains(nodeSelectionMap.get(integrationColumn.getSharedOntology()), nodeData.getDisplayName())) {
-                        logger.trace("comparing " + nodeData.getDisplayName() + " <-> "
-                                + StringUtils.join(nodeSelectionMap.get(integrationColumn.getSharedOntology()), "|"));
+                for (OntologyNode nodeData : dataIntegrationService.getFilteredOntologyNodes(integrationColumn)) {
+                    String name = nodeData.getDisplayName();
+                    logger.debug("comparing {} <-> {}", name, StringUtils.join(nodeSelections, "|"));
+                    if (ArrayUtils.contains(nodeSelections, name)) {
                         foundNodeCount++;
                         integrationColumn.getFilteredOntologyNodes().add(new OntologyNode(nodeData.getId()));
 
                     }
                 }
-                assertEquals(foundNodeCount, nodeSelectionMap.get(integrationColumn.getSharedOntology()).length);
+                logger.debug("nodeSelections: {}", Arrays.asList(nodeSelections));
+                assertEquals(foundNodeCount, nodeSelections.length);
             } else {
                 assertTrue("found unexpected ontology", false);
             }

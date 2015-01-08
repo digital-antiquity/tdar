@@ -7,7 +7,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -33,7 +33,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
     private Invoice invoice;
     // list of billing accounts that the user may choose from when assigning the invoice
-    private List<Account> accounts = new ArrayList<>();
+    private List<BillingAccount> accounts = new ArrayList<>();
 
     protected String inputResultName = INPUT;
 
@@ -136,11 +136,11 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         return h;
     }
 
-    public List<Account> getAccounts() {
+    public List<BillingAccount> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
 }

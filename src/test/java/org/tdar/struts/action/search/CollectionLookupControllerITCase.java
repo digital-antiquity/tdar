@@ -22,14 +22,15 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.lookup.CollectionLookupAction;
 
 public class CollectionLookupControllerITCase extends AbstractIntegrationTestCase {
 
-    private LookupController controller;
+    private CollectionLookupAction controller;
 
     @Before
     public void initController() {
-        controller = generateNewInitializedController(LookupController.class);
+        controller = generateNewInitializedController(CollectionLookupAction.class);
         controller.setRecordsPerPage(99);
     }
 
@@ -72,7 +73,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationTestCas
     @Rollback(true)
     public void testCollectionLookupUnauthenticated() {
         setupCollections();
-        controller = generateNewController(LookupController.class);
+        controller = generateNewController(CollectionLookupAction.class);
         initAnonymousUser(controller);
         controller.setTerm("Kintigh - C");
         controller.lookupResourceCollection();

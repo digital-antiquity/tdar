@@ -26,6 +26,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -33,6 +34,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -46,6 +48,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.search.ReservedSearchParameters;
+import org.tdar.utils.PersistableUtils;
 
 /*
  * This service is designed to hide the complexity of users and permissions from the rest of tDAR.  It handles a number different functions including:
@@ -309,7 +312,7 @@ public class AuthorizationService implements Accessible {
         } else if (item instanceof ResourceCollection) {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof Institution) {
-          return canEditInstitution(authenticatedUser, (Institution)item);  
+            return canEditInstitution(authenticatedUser, (Institution) item);
         } else {
             return can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser);
         }
@@ -411,7 +414,7 @@ public class AuthorizationService implements Accessible {
         }
 
         // ab added:12/11/12
-        if (Persistable.Base.isTransient(resource) && (resource.getSubmitter() == null)) {
+        if (PersistableUtils.isTransient(resource) && (resource.getSubmitter() == null)) {
             logger.trace("resource is transient");
             return true;
         }
@@ -437,7 +440,7 @@ public class AuthorizationService implements Accessible {
         if (irFile == null) {
             return false;
         }
-        if (irFile.isDeleted() && Persistable.Base.isNullOrTransient(person)) {
+        if (irFile.isDeleted() && PersistableUtils.isNullOrTransient(person)) {
             return false;
         }
         if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
@@ -550,6 +553,9 @@ public class AuthorizationService implements Accessible {
     }
 
     public <R extends Resource> boolean isResourceViewable(TdarUser authenticatedUser, R resource) {
+        if (resource == null) {
+            return false;
+        }
         if (resource.isActive()
                 || can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser) || canView(authenticatedUser, resource)
                 || canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA)) {
@@ -577,10 +583,20 @@ public class AuthorizationService implements Accessible {
         }
     }
 
-    @Transactional(readOnly=true)
+    /**
+     * Takes the request, and compares the referrer to the known list of referrers in the DB. If one matches, then we're okay
+     * 
+     * @param informationResourceFileVersion
+     * @param apiKey
+     * @param request
+     * @return
+     * @throws MalformedURLException
+     */
+    @Transactional(readOnly = true)
     public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
             HttpServletRequest request) throws MalformedURLException {
         String referrer = request.getHeader("referer");
+        // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
         if (StringUtils.isBlank(referrer)) {
             throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
         }
@@ -592,5 +608,28 @@ public class AuthorizationService implements Accessible {
         } else {
             return false;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
+        if (PersistableUtils.isNullOrTransient(workflow) ||
+                PersistableUtils.isNotNullOrTransient(workflow) && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canEditAccount(BillingAccount account, TdarUser authenticatedUser) {
+        if (can(InternalTdarRights.EDIT_BILLING_INFO, authenticatedUser)) {
+            return true;
+        }
+
+        if (authenticatedUser.equals(account.getOwner()) || account.getAuthorizedMembers().contains(authenticatedUser)) {
+            return true;
+        }
+        return false;
+
     }
 }

@@ -34,6 +34,7 @@ public enum SearchFieldType implements HasLabel, Localizable {
     FFK_SITE("siteNames", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names", SiteNameKeyword.class),
     FFK_SITE_TYPE("uncontrolledSiteTypes", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Type"),
     FFK_CULTURAL("uncontrolledCultureKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Culture Keywords"),
+    FFK_MATERIAL("uncontrolledMaterialKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Material Keywords"),
     FFK_TEMPORAL("temporalKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Temporal Keywords", TemporalKeyword.class),
     FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords", OtherKeyword.class),
 

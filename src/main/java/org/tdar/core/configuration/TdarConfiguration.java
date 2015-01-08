@@ -819,4 +819,8 @@ public class TdarConfiguration {
         }
         return names;
     }
+
+    public static Integer getIntegrationPreviewSizePerDataTable() {
+        return 10;
+    }
 }

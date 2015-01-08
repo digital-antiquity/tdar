@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
@@ -49,6 +48,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
@@ -65,10 +65,12 @@ import com.opensymphony.xwork2.ActionSupport;
  * @version $Revision$
  */
 @Scope("prototype")
-@Controller
+//@Controller
 public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
 
     private static final long serialVersionUID = 7084489869489013998L;
+
+    public static final String UNAUTHORIZED_REDIRECT = "unauthorized_redirect";
 
     // result name constants
     private boolean hideExceptionArea = false;
@@ -727,11 +729,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         // get the ID
         Long id = pc.getId();
         // if we're not null or transient, somehow we've been initialized wrongly
-        if (Persistable.Base.isNotNullOrTransient(pc.getPersistable())) {
+        if (PersistableUtils.isNotNullOrTransient(pc.getPersistable())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);
         }
         // if the ID is not set, don't try and load/set it
-        else if (Persistable.Base.isNotNullOrTransient(id)) {
+        else if (PersistableUtils.isNotNullOrTransient(id)) {
             p = genericService.find(persistableClass, id);
             pc.setPersistable(p);
         }
@@ -760,7 +762,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
         Persistable persistable = pc.getPersistable();
         // if the persistable is NULL and the ID is not null, then we have a "load" issue; if the ID is not numeric, thwn we wouldn't have even gotten here
-        if (Persistable.Base.isNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(pc.getId())) {
+        if (PersistableUtils.isNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(pc.getId())) {
             // deal with the case that we have a new or not found resource
             getLogger().debug("Dealing with transient persistable {}", persistable);
             // ID specified
@@ -769,7 +771,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
             }
             // ID is NULL or -1 too, so bad request
-            else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
+            else if (PersistableUtils.isNullOrTransient(persistable.getId())) {
                 // id not specified or not a number, so this is an invalid request
                 abort(StatusCode.BAD_REQUEST,
                         getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
@@ -789,7 +791,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         // default is to be an error
         String errorMessage = getText("abstractPersistableController.no_permissions");
         addActionError(errorMessage);
-        abort(StatusCode.FORBIDDEN, UNAUTHORIZED, errorMessage);
+        abort(StatusCode.FORBIDDEN, FORBIDDEN, errorMessage);
     }
 
     /**

@@ -19,6 +19,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.browse.BrowseCreatorController;
 
 import com.opensymphony.xwork2.Action;
 

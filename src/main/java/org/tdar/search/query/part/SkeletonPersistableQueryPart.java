@@ -9,6 +9,7 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
+import org.tdar.utils.PersistableUtils;
 
 public class SkeletonPersistableQueryPart<P extends Persistable> extends AbstractHydrateableQueryPart<P> {
 
@@ -40,7 +41,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
         List<Integer> trans = new ArrayList<Integer>();
         // iterate through all of the values; if any of them are transient, put those positions off to the side
         for (int i = 0; i < getFieldValues().size(); i++) {
-            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
+            if (PersistableUtils.isNotNullOrTransient(getFieldValues().get(i))) {
                 appendPhrase(sb, i);
             } else {
                 trans.add(i);
@@ -79,7 +80,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
     @Override
     protected String formatValueAsStringForQuery(int index) {
         P p = getFieldValues().get(index);
-        if (Persistable.Base.isNullOrTransient(p)) {
+        if (PersistableUtils.isNullOrTransient(p)) {
             return null;
         }
 
@@ -96,7 +97,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
 
     @Override
     public void update() {
-        Map<Long, P> idMap = Persistable.Base.createIdMap(getFieldValues());
+        Map<Long, P> idMap = PersistableUtils.createIdMap(getFieldValues());
         logger.trace("reference: {} ", reference);
         logger.trace("idMap: {} ", idMap);
         if (CollectionUtils.isNotEmpty(reference)) {

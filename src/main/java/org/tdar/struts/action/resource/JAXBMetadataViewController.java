@@ -8,7 +8,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
@@ -22,6 +21,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.ViewableAction;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -95,7 +95,7 @@ public class JAXBMetadataViewController extends AuthenticationAware.Base impleme
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.VIEW);
-        if (Persistable.Base.isNullOrTransient(resource)) {
+        if (PersistableUtils.isNullOrTransient(resource)) {
             addActionError(getText("jaxbMetadataViewController.resource_does_not_exist"));
         }
     }

@@ -13,12 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Assert;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
@@ -31,9 +34,10 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
+import org.tdar.struts.action.cart.CartApiController;
 import org.tdar.struts.action.cart.CartApiPollingAction;
 import org.tdar.struts.action.cart.CartBillingAccountController;
 import org.tdar.struts.action.cart.CartController;
@@ -49,7 +53,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     NelNetPaymentDao dao;
 
     @Autowired
-    AccountService accountService;
+    BillingAccountService accountService;
 
     @Autowired
     private SendEmailProcess sendEmailProcess;
@@ -82,6 +86,20 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         createAndTestInvoiceQuantity(controller, 10L, null);
     }
 
+    @Test
+    @Rollback
+    public void testApi() throws IOException {
+        CartApiController cac = generateNewInitializedController(CartApiController.class);
+        cac.setLookupFileCount(10L);
+        cac.prepare();
+        cac.api();
+        String result = IOUtils.toString(cac.getResultJson());
+        logger.debug(result);
+        Assert.assertFalse(result.contains("error"));
+        Assert.assertFalse(result.contains("serializer"));
+        logger.debug(result);
+    }
+        
     @Test
     @Rollback
     public void testCartCouponExact() throws TdarActionException {
@@ -126,7 +144,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private Invoice setupAccountWithCouponForFiles(long numFilesForCoupon, long numberOfFilesForInvoice) throws TdarActionException {
-        Account account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
+        BillingAccount account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
         Invoice invoice_ = account.getInvoices().iterator().next();
         String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_);
         InvoiceController controller = generateNewInitializedController(InvoiceController.class);
@@ -314,7 +332,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         invoice.setInvoiceNumber(invoiceNumber);
         invoice.setPaymentMethod(PaymentMethod.INVOICE);
         invoice.setOtherReason("this is my reasoning");
-        Account account = createAccount(getBasicUser());
+        BillingAccount account = createAccount(getBasicUser());
         CartBillingAccountController billingAccountController = generateNewInitializedController(CartBillingAccountController.class);
         billingAccountController.setId(account.getId());
         billingAccountController.prepare();

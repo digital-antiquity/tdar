@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.utils.PersistableUtils;
 
 @ParentPackage("secured")
 @Component
@@ -43,7 +43,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private transient DatasetService datasetService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     @Action(value = "browse",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
@@ -52,7 +52,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
             })
     @HttpForbiddenErrorResponseOnly
     public String getDataResults() {
-        if (Persistable.Base.isNullOrTransient(id)) {
+        if (PersistableUtils.isNullOrTransient(id)) {
             return ERROR;
         }
         DataTable dataTable = getGenericService().find(DataTable.class, getId());

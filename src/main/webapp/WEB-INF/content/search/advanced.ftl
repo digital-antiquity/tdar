@@ -23,16 +23,10 @@
 <h1>Search ${siteAcronym}</h1>
 
 <div class="usual">
-
-    <ul class="nav nav-tabs" id="myTab">
-        <li class="${activeWhen('basic,advanced,results')}"><a href="advanced">Resource</a></li>
-        <li class="${activeWhen('collection')}"><a href="/search/collection">Collection</a></li>
-        <li class="${activeWhen('institution')}"><a href="/search/institution">Institution</a></li>
-        <li class="${activeWhen('person')}"><a href="/search/person">Person</a></li>
-    </ul>
+	<@search.toolbar />
 
     <div class="tab-content">
-        <div id="resource" class="tab-pane ${activeWhen('basic,advanced,results')}">
+        <div id="resource" class="tab-pane active">
             <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
                 <input type="hidden" name="_tdar.searchType" value="advanced">
 
@@ -62,39 +56,7 @@
 
             </@s.form>
         </div>
-
-        <div id="collection" class="tab-pane ${activeWhen('collection')}">
-            <div class="glide">
-                <h3>Search For Collections By Name</h3>
-                <@s.form action="collections" method="GET" id='searchForm2'>
-                    <@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false />
-                </@s.form>
-            </div>
-            <div id="collection-spacer" style="height:850px"></div>
-        </div>
-
-        <div id="institution" class="tab-pane ${activeWhen('institution')}">
-            <div class="glide">
-                <h3>Search For Institutions By Name</h3>
-                <@s.form action="institutions" method="GET" id='searchForm3'>
-                    <@search.queryField freeTextLabel="Institution Name" showLimits=false showAdvancedLink=false />
-                </@s.form>
-            </div>
-            <div id="collection-spacer" style="height:850px"></div>
-        </div>
-
-        <div id="person" class="tab-pane ${activeWhen('person')}">
-            <div class="glide">
-                <h3>Search For Person By Name</h3>
-                <@s.form action="people" method="GET" id='searchForm4'>
-                    <@search.queryField freeTextLabel="Person Name" showLimits=false showAdvancedLink=false />
-                </@s.form>
-            </div>
-            <div id="collection-spacer" style="height:850px"></div>
-        </div>
-
     </div>
-
 </div>
 
 <script>

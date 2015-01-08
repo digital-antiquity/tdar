@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.service.external.UserRegistration;
 import org.tdar.utils.Pair;
+import org.tdar.web.functional.util.ByLabelText;
+import org.tdar.web.functional.util.WebElementSelection;
 
 import com.opensymphony.xwork2.interceptor.annotations.After;
 
@@ -194,7 +196,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#divlarge button").click();
 
         //try to log in with a blank username (javascript whould catch this,  but we want to make sure we handle server-side too
-        find(withLabel("Username")).val("");
+        find(ByLabelText.byPartialLabelText("Username")).val("");
 
         //bypass jquery validation by calling form.submit() vs. clicking the submit button
         executeJavascript("document.loginForm.submit()");
@@ -224,21 +226,5 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith("/cart/process-registration"));
     }
 
-
-    // @Test
-    // public void testManualInvoice() {
-    //     loginAdmin();
-    //     gotoPage(CART_ADD);
-
-    //     //admins get ability to select extra paymeent options
-    //     assertThat( find(withLabel(MANUAL.getLabel()), hasSize(1));
-    //     assertThat( find(withLabel(INVOICE.getLabel())), hasSize(1));
-
-    //     //fill out the form and select manual invoice
-    //     find( withLabel("Number of Files")).val("100");
-    //     find( withLabel(MANUAL.getLabel())).click();
-
-    //     submitForm();
-    // }
 
 }

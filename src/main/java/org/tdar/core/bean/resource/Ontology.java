@@ -27,6 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+import org.tdar.utils.json.JsonIntegrationFilter;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -56,7 +61,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     private transient Map<String, OntologyNode> iriMap = new WeakHashMap<>();
     private transient Map<String, OntologyNode> nameMap = new WeakHashMap<>();
 
-    private final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
+    public final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
         @Override
         public int compare(OntologyNode o1, OntologyNode o2) {
             int comparison = o1.getImportOrder().compareTo(o2.getImportOrder());
@@ -73,6 +78,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     @Override
+    @JsonView(JsonIntegrationFilter.class)
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -156,6 +162,8 @@ public class Ontology extends InformationResource implements SupportsResource {
         return getSortedOntologyNodes(null);
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    @JsonProperty(value="nodes")
     public List<OntologyNode> getSortedOntologyNodesByImportOrder() {
         return getSortedOntologyNodes(IMPORT_ORDER_COMPARATOR);
     }

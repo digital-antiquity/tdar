@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
@@ -33,16 +33,16 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
     private long id = -1L;
 
     // account chosen from the dropdown list
-    private Account selectedAccount = null;
+    private BillingAccount selectedAccount = null;
 
     // Or a user can specify a new account name
-    private Account account = new Account();
+    private BillingAccount account = new BillingAccount();
 
     @Autowired
     private transient InvoiceService invoiceService;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Override
     public void prepare() {
@@ -71,14 +71,14 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
                 id = selectedAccount.getId();
             }
         } else {
-            selectedAccount = getGenericService().find(Account.class, id);
+            selectedAccount = getGenericService().find(BillingAccount.class, id);
         }
 
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
         // FIXME: seems weird to be here, how about adding this as an option in the FTL select instead?
         if (CollectionUtils.isNotEmpty(getAccounts())) {
-            getAccounts().add(new Account("Add an account"));
+            getAccounts().add(new BillingAccount("Add an account"));
         }
     }
 
@@ -104,11 +104,11 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
         return SUCCESS;
     }
 
-    public Account getSelectedAccount() {
+    public BillingAccount getSelectedAccount() {
         return selectedAccount;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 

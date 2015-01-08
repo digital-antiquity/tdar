@@ -9,7 +9,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
@@ -18,6 +17,7 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractCreatorController<T extends Creator> extends AbstractPersistableController<T> {
 
@@ -105,7 +105,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     }
 
     public Address getAddress() {
-        if (Persistable.Base.isNotNullOrTransient(getAddressId())) {
+        if (PersistableUtils.isNotNullOrTransient(getAddressId())) {
             setAddress(getGenericService().find(Address.class, getAddressId()));
         } else if (address == null) {
             setAddress(new Address());

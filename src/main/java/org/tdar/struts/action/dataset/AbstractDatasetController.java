@@ -3,7 +3,6 @@ package org.tdar.struts.action.dataset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +10,6 @@ import java.util.SortedMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
@@ -22,13 +20,13 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractDatasetController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
@@ -47,14 +45,13 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private transient OntologyService ontologyService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     // column metadata incoming data
     // Each list contains some specific piece of metadata for the given data table, where
     // the index of the list maps to the ordering of the column names
     private DataTable dataTable;
     private List<DataTableColumn> dataTableColumns;
-    private String dataTableColumnJson;
 
     private List<List<CategoryVariable>> subcategories = new ArrayList<List<CategoryVariable>>();
     // ontology mapped columns
@@ -78,30 +75,11 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Long dataTableId;
 
     public void resolvePostSaveAction(Dataset persistable) {
+        setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
-                setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
-                setSaveSuccessSuffix("/columns");
+                setSaveSuccessPath(getPersistable().getUrlNamespace() + "/columns");
             }
-        }
-    }
-
-    @Override
-    protected void loadCustomViewMetadata() throws TdarActionException {
-        super.loadCustomMetadata();
-        List<Map<String, Object>> result = new ArrayList<>();
-        if (Persistable.Base.isNotNullOrTransient(getDataTable())) {
-            for (DataTableColumn dtc : getDataTable().getDataTableColumns()) {
-                Map<String, Object> col = new HashMap<>();
-                col.put("simpleName", dtc.getJsSimpleName());
-                col.put("displayName", dtc.getDisplayName());
-                result.add(col);
-            }
-        }
-        try {
-            setDataTableColumnJson(xmlService.convertToJson(result));
-        } catch (Exception e) {
-            getLogger().error("cannot convert to JSON: {}", e);
         }
     }
 
@@ -136,7 +114,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     public void setDataTableId(Long dataTableId) {
-        if (Persistable.Base.isNullOrTransient(dataTableId)) {
+        if (PersistableUtils.isNullOrTransient(dataTableId)) {
             getLogger().error("Trying to set data table id to null or -1: " + dataTableId);
             return;
         }
@@ -162,7 +140,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     public void setColumnId(Long columnId) {
-        if (Persistable.Base.isNullOrTransient(columnId)) {
+        if (PersistableUtils.isNullOrTransient(columnId)) {
             getLogger().warn("Trying to set data table column id to null or -1: " + columnId);
             return;
         }
@@ -259,12 +237,16 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         return getAnalyzer().getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
     }
 
-    public String getDataTableColumnJson() {
-        return dataTableColumnJson;
-    }
-
-    public void setDataTableColumnJson(String dataTableColumnJson) {
-        this.dataTableColumnJson = dataTableColumnJson;
+    @Override
+    protected void postSaveCallback(String actionMessage) {
+        super.postSaveCallback(actionMessage);
+        if (isHasFileProxyChanges()) {
+            if (isAsync()) {
+                datasetService.remapAllColumnsAsync(getId(), getProject().getId());
+            } else {
+                datasetService.remapAllColumns(getId(), getProject().getId());
+            }
+        }
     }
 
 }

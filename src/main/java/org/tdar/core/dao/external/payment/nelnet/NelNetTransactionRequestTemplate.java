@@ -15,9 +15,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.PersistableUtils;
 
 public class NelNetTransactionRequestTemplate implements Serializable {
 
@@ -209,7 +209,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                 case STREET_ONE:
                 case STREET_TWO:
                 case ZIP:
-                    if (Persistable.Base.isNullOrTransient(invoice.getAddress())) {
+                    if (PersistableUtils.isNullOrTransient(invoice.getAddress())) {
                         break;
                     }
                     switch (item) {

@@ -63,7 +63,7 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
     protected void createTestScenario() {
 
         // Set a user to define entity ownership.
-        TdarUser knownPerson = (TdarUser) entityService.findByEmail("kintigh@asu.edu");
+        TdarUser knownPerson = (TdarUser) entityService.findByEmail("kintigh@dsu.edu");
         getTestingServer().setPerson(knownPerson);
         // Database setup
 

@@ -14,7 +14,6 @@
 	</changeSet>
 
 	<changeSet id="munsell-02" author='jtdevos'>
-		<dropColumn tableName="institution" columnName="email" />
 		<addColumn tableName="institution">
 			<column name="email" type="varchar(255)" />
 		</addColumn>
@@ -23,40 +22,6 @@
 			disabled="false" initiallyDeferred="false" tableName="institution" />
 	</changeSet>
 
-	<changeSet id="munsell-03" author="abrin">
-
-		<addColumn tableName="resource_access_day_agg">
-			<column name="month" type="INT4" />
-		</addColumn>
-		<addColumn tableName="file_download_day_agg">
-			<column name="month" type="INT4" />
-		</addColumn>
-		<createIndex indexName="agg_res_month" tableName="resource_access_day_agg"
-			unique="false">
-			<column name="month" />
-		</createIndex>
-		<createIndex indexName="agg_dwnld_month" tableName="file_download_day_agg"
-			unique="false">
-			<column name="month" />
-		</createIndex>
-		<createIndex indexName="agg_res_month_year" tableName="resource_access_day_agg"
-			unique="false">
-			<column name="year" />
-			<column name="month" />
-		</createIndex>
-		<createIndex indexName="agg_dwnld_month_year" tableName="file_download_day_agg"
-			unique="false">
-			<column name="year" />
-			<column name="month" />
-		</createIndex>
-
-		<update tableName="resource_access_day_agg">
-			<column name="month" valueNumeric="date_part('month',date_accessed)" />
-		</update>
-		<update tableName="file_download_day_agg">
-			<column name="month" valueNumeric="date_part('month',date_accessed)" />
-		</update>
-	</changeSet>
 	<changeSet id="munsell-04" author="abrin">
 		<comment>Changing database to match hibernate validation requirements</comment>
 		<modifyDataType tableName="coding_sheet" columnName="category_variable_id"
@@ -91,12 +56,6 @@
 			columnName="sequence_number" newDataType="int4" />
 		<!-- <modifyDataType tableName="sensory_data_scan" columnName="resolution" 
 			newDataType="float8" /> -->
-	</changeSet>
-	<changeSet id="munsell-05" author="abrin">
-		<addColumn tableName="creator">
-			<column name="browse_occurrence" defaultValue="0" type="int8"></column>
-			<column name="hidden" defaultValue="false" type="boolean"></column>
-		</addColumn>
 	</changeSet>
 
 
@@ -163,7 +122,7 @@
 			<column name="hostname" type="varchar(255)" />
 		</createTable>
 	</changeSet>
-	
+
 	<changeSet id="munsell-11" author="abrin">
 		<comment>adding authorization table for users to manage institutions</comment>
 		<createTable tableName="institution_authorization">
@@ -180,6 +139,48 @@
 			<column name="reason" type="text" />
 		</createTable>
 
+	</changeSet>
+
+	<changeSet id="munsell-004766b0e703-feature-integration-ko" author="jdevos">
+		<comment>adding top-level table for persisted workflow integrations</comment>
+		<createTable tableName="data_integration_workflow">
+			<column name="id" type="bigserial" />
+			<column name="user_id" type="bigint" >
+			<!-- TODO: proposal: put fk names in form of fk_sourcetable__sourcecolumn__destinationtable instead of fk_sourcetable__destinationtable__destinationcolumn -->
+			<constraints nullable="false" references="tdar_user"
+						 foreignKeyName="fk_data_integration_workflow__tdar_user_id" />
+			</column>
+			<column name="title" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(2047)" defaultValue="" />
+			<column name="json_data" type="clob" />
+		</createTable>
+	</changeSet>
+	
+	<changeSet id="munsell-12-feature-integration-ko" author="alee">
+		<comment>adding fields to data integration workflow entity</comment>
+		<addColumn tableName="data_integration_workflow">
+            <column name='date_created' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='last_updated' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='version' type='int4'>
+                <constraints nullable='false' />
+            </column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="munsell-12" author="abrin">
+		<comment>adding material keyword</comment>
+		<addColumn tableName="material_keyword">
+			<column name="approved" defaultValueBoolean="false" type="boolean" />
+		</addColumn>
+		<update tableName="material_keyword">
+			<column name="approved" valueBoolean="TRUE" />
+		</update>
 	</changeSet>
 
 </databaseChangeLog>

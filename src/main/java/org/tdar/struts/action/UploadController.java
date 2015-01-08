@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
@@ -45,7 +45,7 @@ public class UploadController extends AuthenticationAware.Base {
     private transient PersonalFilestoreService filestoreService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
@@ -140,7 +140,7 @@ public class UploadController extends AuthenticationAware.Base {
                 file.put("delete_type", "DELETE");
             }
             result.put("ticket", ticket);
-            setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
+            setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
 
             return SUCCESS;
         } else {
@@ -153,7 +153,7 @@ public class UploadController extends AuthenticationAware.Base {
     })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())
                 .getBytes()));
 
         return SUCCESS;
@@ -165,7 +165,7 @@ public class UploadController extends AuthenticationAware.Base {
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, getCallback()).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, getCallback()).getBytes()));
     }
 
     public List<File> getUploadFile() {

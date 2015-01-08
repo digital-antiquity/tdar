@@ -16,6 +16,7 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -36,11 +37,8 @@ public class DownloadRegistrationController extends AbstractDownloadController i
             // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
-                    @Result(
-                            name = SUCCESS,
-                            type = TdarActionSupport.REDIRECT,
-                            location = "/filestore/confirm?informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}")
-            })
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
+                    @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING)            })
     @HttpsOnly
     @PostOnly
     @WriteableSession
@@ -56,6 +54,9 @@ public class DownloadRegistrationController extends AbstractDownloadController i
             if (result.getType().isValid()) {
                 getDownloadRegistration().setPerson(result.getPerson());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
+                if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersionId())) {
+                    return SUCCESS_DOWNLOAD_ALL;
+                }   
                 return TdarActionSupport.SUCCESS;
             }
         } catch (Throwable e) {

@@ -271,4 +271,100 @@
             </#if>
         </#if>
     </#macro>
+
+
+<#macro personInstitutionSearch>
+
+    <#if (totalRecords > 0)>
+        <#if !hideFacetsAndSort>
+        <div id="sidebar-left" parse="true" class="options hidden-phone">
+
+            <h2 class="totalRecords">Search Options</h2>
+            <ul class="tools media-list">
+                <li class="media"><a href="<@refineUrl/>" rel="noindex"><i class="search-magnify-icon-red"></i> Refine your search &raquo;</a></li>
+
+                <#if (contextualSearch!false)>
+                    <#if projectId??>
+                        <li class="media"><@s.a href="/project/${projectId?c}"><i class="icon-project icon-red"></i> Return to project page &raquo;</@s.a></li>
+                    <#else>
+                        <li class="media"><@s.a href="/collection/${collectionId?c}"><i class="icon-collection icon-red"></i> Return To collection
+                            page &raquo;</@s.a></li>
+                    </#if>
+                </#if>
+
+                <!--        <li>Subscribe via &raquo;
+	            <a class="subscribe"  href="${rssUrl}">RSS</a>
+	        </li> -->
+            </ul>
+
+        </div>
+        <div class="visible-phone">
+            <a href="<@refineUrl />">Refine your search &raquo;</a>
+        </div>
+        </#if>
+
+    <div id="divResultsSortControl">
+        <div class="row">
+            <div class="span3">
+                <@totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
+            </div>
+            <div class="span6 form-inline">
+                <div class="pull-right">
+                    <div class="control-group"></div>
+                    <label>Records Per Page
+                        <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
+                        list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
+                    </label>
+                    <#if !hideFacetsAndSort>
+                        <@sortFields />
+                    </#if>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tdarresults">
+        <#assign indx = 0/>
+        <#list results as result>
+            <#if result?has_content>
+                <#if indx != 0>
+                    <hr/></#if>
+                <#assign indx = indx + 1/>
+                <div class="listItemPart">
+                    <h3 class="search-result-title-${result.status}">
+                        <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
+                    </h3>
+                    <#if result.institution?has_content><p>${result.institution.name}</p></#if>
+                    <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
+                    <blockquote class="luceneScore">
+                    <b>score:</b>${result.score!""}<br> </blockquote>
+                </div>
+            </#if>
+        </#list>
+    </div>
+        <@pagination ""/>
+
+    <#else>
+    <h2>No records match the query.</h2>
+    </#if>
+
+</#macro>
+
+<#function activeWhen _actionNames>
+    <#local _active = false>
+    <#list _actionNames?split(",") as _actionName>
+        <#local _active = _active || (_actionName?trim == actionName)>
+    </#list>
+    <#return _active?string("active", "") />
+</#function>
+
+<#macro toolbar>
+    <ul class="nav nav-tabs" id="myTab">
+        <li class="${activeWhen('basic,advanced,results')}"><a href="advanced">Resource</a></li>
+        <li class="${activeWhen('collection,collections')}"><a href="/search/collection">Collection</a></li>
+        <li class="${activeWhen('institution,institutions')}"><a href="/search/institution">Institution</a></li>
+        <li class="${activeWhen('person,people')}"><a href="/search/person">Person</a></li>
+    </ul>
+</#macro>
+
 </#escape>

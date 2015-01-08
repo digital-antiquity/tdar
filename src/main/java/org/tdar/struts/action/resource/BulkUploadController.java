@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Image;
@@ -39,7 +38,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -47,6 +46,7 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -82,7 +82,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private transient BulkUploadTemplateService bulkUploadTemplateService;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     private InputStream resultJson;
     private String bulkFileName;
@@ -106,7 +106,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         getGenericService().markReadOnly(getPersistable());
         getLogger().info("saving batches...");
         getPersistable().setStatus(oldStatus);
-        if (Persistable.Base.isNullOrTransient(getTicketId())) {
+        if (PersistableUtils.isNullOrTransient(getTicketId())) {
             addActionError(getText("bulkUploadController.no_files"));
             return INPUT;
         }
@@ -244,7 +244,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         result.put("percentDone", percentDone);
         result.put("phase", phase);
         result.put("errors", asyncErrors);
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, null).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, null).getBytes()));
         return SUCCESS;
     }
 
@@ -420,6 +420,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
      */
     public boolean isTemplateValidated() {
         // TODO: probably better off having validate action simply render the edit form instead of redirecting to /batch/add?obnoxiousQueryString
-        return Persistable.Base.isNotNullOrTransient(getTicketId()) && StringUtils.isNotBlank(templateFilename);
+        return PersistableUtils.isNotNullOrTransient(getTicketId()) && StringUtils.isNotBlank(templateFilename);
     }
 }

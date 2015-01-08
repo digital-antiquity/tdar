@@ -53,7 +53,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     GenericKeywordService genericKeywordService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Test
     public void testCreatorPersonReferrers() {
@@ -315,7 +315,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         result.add(d, Document.class.getDeclaredField("edition"), firstDupe);
         logger.debug("result: {}", result);
         try {
-            String xml = xmlService.convertToXML(result);
+            String xml = serializationService.convertToXML(result);
             logger.debug(xml);
         } catch (Exception e) {
             logger.debug("grr: {} ", e);

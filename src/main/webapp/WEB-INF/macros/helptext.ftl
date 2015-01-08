@@ -2,7 +2,7 @@
 
     <#macro asyncUpload divId="" validFileExtensions=[] multipleFileUploadEnabled=true maxUploadFilesPerRecord=50 canReplace=false siteAcronym="tDAR">
     <div id="${divId}Help" style="display:none">
-        <div class="">
+        <div>
             <h3>Adding Files</h3>
             <ul>
                 <li>To attach files to this resource, click the button labeled "Add Files..."</li>
@@ -49,8 +49,6 @@
                     Additional information specific to this file.
                 </dd>
             </dl>
-
-            </span>
         </div>
     </div>
     </#macro>

@@ -15,6 +15,7 @@ public class ViewStatisticsWebITCase extends AbstractAuthenticatedWebTestCase {
         createDocumentAndUploadFile(TEST_TITLE);
         String pageCode = getPageCode();
         URL url = internalPage.getUrl();
+        logger.debug(getPageCode());
         String docUrl = pageCode.substring(pageCode.indexOf("/filestore/"));
         docUrl = docUrl.substring(0, docUrl.indexOf("\""));
         logout();

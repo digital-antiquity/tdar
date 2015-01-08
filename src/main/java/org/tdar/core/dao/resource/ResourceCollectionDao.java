@@ -19,7 +19,6 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -30,6 +29,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * @author Adam Brin
@@ -119,7 +119,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     @SuppressWarnings("unchecked")
     public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
-        if (Persistable.Base.isTransient(user)) {
+        if (PersistableUtils.isTransient(user)) {
             return Collections.EMPTY_LIST;
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
@@ -157,7 +157,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     @SuppressWarnings("unchecked")
     public List<Resource> findCollectionSparseResources(Long collectionId) {
-        if (Persistable.Base.isNullOrTransient(collectionId)) {
+        if (PersistableUtils.isNullOrTransient(collectionId)) {
             return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES);
@@ -174,7 +174,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     @SuppressWarnings("unchecked")
     public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
-        if (Persistable.Base.isNullOrTransient(persistable)) {
+        if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN);
@@ -183,6 +183,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Return download authorizations that have a host name that matches the referrer and the APIKey that matches the one in the DB.
+     * Does Hierarchical Collection Query 
+     * 
+     * @param informationResourceFileVersion
+     * @param apiKey
+     * @param referrer
+     * @return
+     */
     public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
         List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
         if (CollectionUtils.isEmpty(sharedCollectionIds )) {

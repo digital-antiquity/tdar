@@ -28,14 +28,12 @@
         <thead>
         <tr>
             <#list integrationColumns as column>
-                <th>
                     <#if column.integrationColumn>
-        ${column.name}
-    </#if>
-                </th>
+                		<th>${column.name}</th>
+    				</#if>
             </#list>
             <#list selectedDataTables as table>
-                <th>${table.displayName}</th>
+                <th>${table.dataset.title} - ${table.displayName}</th>
             </#list>
             <th>Total</th>
         </tr>
@@ -51,10 +49,12 @@
                 </#list>
                 <#assign totals = 0/>
                 <#list selectedDataTables as table>
+
+
                     <td> 
-					 <#if pivot.get(key)?? && pivot.get(key).get(table.name)??>
-                    ${pivot.get(key).get(table.name)}
-                        <#assign totals = totals + pivot.get(key).get(table.name)?number />
+					 <#if pivot.get(key)?? && pivot.get(key).get(table.id)??>
+                    ${pivot.get(key).get(table.id)}
+                        <#assign totals = totals + pivot.get(key).get(table.id)?number />
                     <#else>0</#if></td>
                 </#list>
                 <td>${totals}</td>
@@ -70,8 +70,9 @@
         <th>Table</th>
     <#list result.integrationContext.integrationColumns as integrationColumn>
         <th>${integrationColumn.name}</th>
-        <#if !integrationColumn.displayColumn>
-            <th>Mapped ontology value for ${integrationColumn.name}</th>
+        <#if integrationColumn.integrationColumn>
+            <th>${integrationColumn.name} (Mapped)</th>
+            <th>${integrationColumn.name} (Sort)</th>
         </#if>
     </#list>
 </tr></thead>

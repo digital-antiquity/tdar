@@ -229,7 +229,7 @@
             var plot = $.jqplot(graphId, [ data ], _defaults);
             var context = "";
 
-            if (props.context != undefined && props.context == false) {
+            if (props.context != undefined && props.context == 'true') {
                 context = "&useSubmitterContext=true";
             }
             $graph.bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, data) {
@@ -303,6 +303,10 @@
             var context = "";
             if (props.context != undefined) {
                 context = "&useSubmitterContext=true";
+            }
+            
+            if (props.baseUrl == undefined) {
+                props.baseUrl="";
             }
             $graph.bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, data) {
                 $('#info1').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data + ', pageX: ' + ev.pageX + ', pageY: ' + ev.pageY);

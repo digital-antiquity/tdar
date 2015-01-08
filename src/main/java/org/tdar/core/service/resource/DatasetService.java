@@ -34,8 +34,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
@@ -59,10 +57,10 @@ import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
@@ -71,6 +69,7 @@ import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -106,7 +105,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private ExcelService excelService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private DataTableDao dataTableDao;
@@ -132,6 +131,13 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // FIXME: if we eventually offer on-the-fly coding sheet translation we cannot modify the actual dataset in place
         tdarDataImportDatabase.translateInPlace(column, codingSheet);
         return true;
+    }
+
+    @Transactional(readOnly = false)
+    public void retranslate(Dataset dataset) {
+        for (DataTable table : dataset.getDataTables()) {
+            retranslate(table.getDataTableColumns());
+        }
     }
 
     /*
@@ -237,6 +243,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
 
             getAnalyzer().processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
+
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);
         }
@@ -490,7 +497,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public void logDataTableColumns(DataTable dataTable, String message, TdarUser authenticatedUser) {
         try {
             StringWriter writer = new StringWriter();
-            xmlService.convertToXML(dataTable, writer);
+            serializationService.convertToXML(dataTable, writer);
             resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString());
             getLogger().trace("{} - xml {}", message, writer);
         } catch (Exception e) {
@@ -670,7 +677,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         if (project == Project.NULL) {
             throw new TdarRecoverableRuntimeException("datasetService.no_project_specified");
         }
-        getDao().unmapAllColumnsInProject(project.getId(), Persistable.Base.extractIds(columns));
+        getDao().unmapAllColumnsInProject(project.getId(), PersistableUtils.extractIds(columns));
         for (DataTableColumn column : columns) {
             getLogger().info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
@@ -709,10 +716,18 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
      * to be mapped, and is associated with the filename associated with @InformationResourceFileVersion of any @link Resource in that @link Project.
      */
-    @Transactional
     public void remapColumns(List<DataTableColumn> columns, Project project) {
+        remapColumnsWithoutIndexing(columns, project);
+        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL) {
+            searchIndexService.indexProject(project);
+        }
+    }
+
+    @Transactional
+    public void remapColumnsWithoutIndexing(List<DataTableColumn> columns, Project project) {
         getLogger().info("remapping columns: {} in {} ", columns, project);
         if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
+            getDao().resetColumnMappings(project);
             // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
             getDao().refresh(project);
             // have to reindex...
@@ -725,9 +740,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             for (DataTableColumn column : columns) {
                 getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
             }
-        }
-        if (project != null) {
-            searchIndexService.indexProject(project);
         }
     }
 
@@ -757,7 +769,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             CodingSheet incomingCodingSheet = incomingColumn.getDefaultCodingSheet();
             CodingSheet existingCodingSheet = existingColumn.getDefaultCodingSheet();
             Ontology defaultOntology = null;
-            if (!Base.isNullOrTransient(incomingCodingSheet)) {
+            if (!PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 // load the full hibernate entity and set it back on the incoming column
                 incomingCodingSheet = getDao().find(CodingSheet.class, incomingCodingSheet.getId());
                 incomingColumn.setDefaultCodingSheet(incomingCodingSheet);
@@ -774,7 +786,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getLogger().debug("default ontology: {}", defaultOntology);
             getLogger().debug("incoming coding sheet: {}", incomingCodingSheet);
             incomingColumn.setDefaultOntology(defaultOntology);
-            if ((defaultOntology != null) && Base.isNullOrTransient(incomingCodingSheet)) {
+            if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
                         defaultOntology);
@@ -785,7 +797,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // incoming ontology or coding sheet from the web was not null but the column encoding type was set to something that
             // doesn't support either, we set it to null
             // incoming ontology or coding sheet is explicitly set to null
-            if (!Base.isNullOrTransient(defaultOntology)) {
+            if (!PersistableUtils.isNullOrTransient(defaultOntology)) {
                 if (incomingColumn.getColumnEncodingType().isSupportsOntology()) {
                     hasOntologies = true;
                 }
@@ -895,6 +907,33 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
+    }
+
+    @Transactional(readOnly = false)
+    @Async
+    public void remapAllColumnsAsync(final Long datasetId, final Long projectId) {
+        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
+    }
+
+    @Transactional(readOnly = false)
+    public void remapAllColumns(final Long datasetId, final Long projectId)  {
+        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
+    }
+
+    private void remapAllColumns(Dataset dataset, Project project) {
+        List<DataTableColumn> columns = new ArrayList<>();
+        if (dataset != null && project != null && CollectionUtils.isNotEmpty(dataset.getDataTables())) {
+            for (DataTable datatable : dataset.getDataTables()) {
+                if (CollectionUtils.isNotEmpty(datatable.getDataTableColumns())) {
+                    for (DataTableColumn col : datatable.getDataTableColumns()) {
+                        if (col.isMappingColumn()) {
+                            columns.add(col);
+                        }
+                    }
+                }
+            }
+        }
+        remapColumns(columns, project);
     }
 
 }

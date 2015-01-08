@@ -9,8 +9,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -19,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.utils.MathUtils;
 
 /*
  * This class is designed to help figure out what resources (files, resources, space) that a tDAR Resource is taking up.
@@ -68,7 +68,7 @@ public class ResourceEvaluator implements Serializable {
      * Checks that a the account has enough for one resource based on the account balance and the type of resource based on the settings of the
      * ResourceEvaluator, and the ResourceType.
      */
-    public boolean accountHasMinimumForNewResource(Account account, ResourceType resourceType) {
+    public boolean accountHasMinimumForNewResource(BillingAccount account, ResourceType resourceType) {
         logger.trace("f: {} s: {} r: {}",
                 new Object[] { account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources() });
         if (evaluatesNumberOfResources()) {
@@ -210,7 +210,7 @@ public class ResourceEvaluator implements Serializable {
     }
 
     public long getSpaceUsedInMb() {
-        return (long) Math.ceil((double) spaceUsedInBytes / (double) Persistable.ONE_MB);
+        return (long) Math.ceil((double) spaceUsedInBytes / (double) MathUtils.ONE_MB);
     }
 
     public void setSpaceUsed(long spaceUsed) {

@@ -1,8 +1,14 @@
 package org.tdar.web;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -25,8 +31,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletResponse;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -46,7 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -59,6 +62,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.CSSParseException;
@@ -167,6 +171,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     };
 
     private HtmlElement documentElement;
+    protected boolean skipHtmlValidation = false;
 
     // disregard an encoding error if it's in the exclusions set;
 
@@ -233,12 +238,22 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      */
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertFalse("An error ocurred @ " + path + " ==> " + internalPage.getWebResponse().getContentAsString(),
-                statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         assertNoAccessibilityErrors();
         return statusCode;
+    }
+
+    /**
+     * Request a page similar to gotoPage(), sans html validaton
+     * @param path
+     * @return
+     */
+    public String gotoJson(String path) {
+        int statusCode = gotoPageWithoutErrorCheck(path);
+        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
+        return internalPage.getWebResponse().getContentAsString();
     }
 
     private void assertNoAccessibilityErrors() {
@@ -290,6 +305,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertPageValidHtml() {
+        if(skipHtmlValidation) return;
         if (internalPage.getWebResponse().getContentType().contains("json")) {
             try {
                 JSONObject.fromObject(getPageCode());
@@ -669,7 +685,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public int submitForm(String buttonText) {
         submitFormWithoutErrorCheck(buttonText);
         int statusCode = internalPage.getWebResponse().getStatusCode();
-        assertFalse(statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertFalse(statusCode == SC_INTERNAL_SERVER_ERROR);
         assertNoErrorTextPresent();
         assertNoEscapeIssues();
         assertPageValidHtml();
@@ -1318,7 +1334,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
         }
         List<TdarUser> users = entityService.findAllRegisteredUsers(3);
-        List<Long> userIds = Persistable.Base.extractIds(users);
+        List<Long> userIds = PersistableUtils.extractIds(users);
         for (int i = 0; i < userIds.size(); i++) {
             setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
         }

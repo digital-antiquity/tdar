@@ -11,18 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
-import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Responsible for processing payments and viewing finalized invoices.
@@ -39,7 +39,7 @@ public class CartController extends AbstractCartController {
     public static final String SIMPLE = "simple";
     public static final String POLLING = "polling";
     private String redirectUrl;
-    private Account account;
+    private BillingAccount account;
 
     private PaymentMethod paymentMethod;
 
@@ -49,7 +49,7 @@ public class CartController extends AbstractCartController {
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient BillingAccountService accountService;
 
     @Autowired
     private transient InvoiceService invoiceService;
@@ -84,7 +84,7 @@ public class CartController extends AbstractCartController {
     })
     @HttpsOnly
     public String processPaymentRequest() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(getInvoice())) {
+        if (PersistableUtils.isNullOrTransient(getInvoice())) {
             return ADD;
         }
 
@@ -143,7 +143,7 @@ public class CartController extends AbstractCartController {
         this.redirectUrl = redirectUrl;
     }
 
-    public Account getAccount() {
+    public BillingAccount getAccount() {
         return account;
     }
 

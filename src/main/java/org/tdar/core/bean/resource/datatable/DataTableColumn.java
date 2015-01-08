@@ -38,7 +38,15 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIdNameFilter;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+import org.tdar.utils.json.JsonIntegrationFilter;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Metadata for a column in a data table.
@@ -54,6 +62,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "data_table_column_default_coding_sheet_id_idx", columnList = "default_coding_sheet_id")
 })
 @XmlRootElement
+@JsonInclude(Include.NON_NULL)
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
 
     private static final long serialVersionUID = 430090539610139732L;
@@ -169,6 +178,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.dataTable = dataTable;
     }
 
+    @JsonView({JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class})
     public String getName() {
         return name;
     }
@@ -185,6 +195,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.columnDataType = type;
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public DataTableColumnEncodingType getColumnEncodingType() {
         return columnEncodingType;
     }
@@ -195,6 +206,12 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
+    }
+
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    public Long getCategoryVariableId() {
+        if(PersistableUtils.isTransient(categoryVariable)) return null;
+        return categoryVariable.getId();
     }
 
     public void setCategoryVariable(CategoryVariable categoryVariable) {
@@ -266,6 +283,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return String.format("%s - %s %s", name, columnDataType, getId());
     }
 
+    @JsonView(value={JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class})
     public String getDisplayName() {
         return displayName;
     }
@@ -407,9 +425,12 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return values;
     }
 
-    @Transient
+    /**
+     * Return true if this column has a mapped ontology and has a mapped coding sheet that is not invalid.
+     * @return
+     */
     public boolean isActuallyMapped() {
-        if (Persistable.Base.isNullOrTransient(getDefaultOntology())) {
+        if (PersistableUtils.isNullOrTransient(getDefaultOntology())) {
             return false;
         }
 
@@ -421,7 +442,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return false;
     }
 
-    @Transient
     public Ontology getMappedOntology() {
         if (getDefaultOntology() != null) {
             return getDefaultOntology();
@@ -430,6 +450,12 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
             return getDefaultCodingSheet().getDefaultOntology();
         }
         return null;
+    }
+
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    public Long getMappedOntologyId(){
+        if(getDefaultOntology() == null) return null;
+        return getDefaultOntology().getId();
     }
 
 }

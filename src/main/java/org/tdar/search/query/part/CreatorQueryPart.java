@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -16,6 +15,7 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -45,7 +45,7 @@ public class CreatorQueryPart<C extends Creator> extends
                     }
                     creators.add(rc.getCreator());
                     for (Creator creator_ : creators) {
-                        if (Persistable.Base.isTransient(creator_)) {
+                        if (PersistableUtils.isTransient(creator_)) {
                             // user entered a complete-ish creator record but
                             // autocomplete callback did fire successfully
                             throw new TdarRecoverableRuntimeException(
@@ -70,7 +70,7 @@ public class CreatorQueryPart<C extends Creator> extends
         // iterate through all of the values; if any of them are transient, put
         // those positions off to the side
         for (int i = 0; i < getFieldValues().size(); i++) {
-            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
+            if (PersistableUtils.isNotNullOrTransient(getFieldValues().get(i))) {
                 terms.add(formatValueAsStringForQuery(i));
             } else {
                 trans.add(i);

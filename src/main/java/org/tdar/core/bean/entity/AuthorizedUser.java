@@ -27,6 +27,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -176,7 +177,7 @@ public class AuthorizedUser extends Base implements Persistable {
      * @return
      */
     public boolean isEnabled() {
-        if (Persistable.Base.isNullOrTransient(this) && Persistable.Base.isNullOrTransient(user)) {
+        if (PersistableUtils.isNullOrTransient(this) && PersistableUtils.isNullOrTransient(user)) {
             return true;
         }
         return enabled;

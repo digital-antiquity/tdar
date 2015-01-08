@@ -17,7 +17,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -28,6 +27,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.entity.UserPermissionCacheKey.CacheResult;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -108,7 +108,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
     }
 
     public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> ids) {
-        if (CollectionUtils.isEmpty(ids) || Persistable.Base.isNullOrTransient(person)) {
+        if (CollectionUtils.isEmpty(ids) || PersistableUtils.isNullOrTransient(person)) {
             return false;
         }
 
@@ -224,7 +224,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             collectionIds = new ArrayList<>();
             collectionIds.add(null);
         }
-        if (Persistable.Base.isNullOrTransient(person)) {
+        if (PersistableUtils.isNullOrTransient(person)) {
             return Collections.emptyList();
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);

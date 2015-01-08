@@ -437,8 +437,8 @@ public class CommandLineAPITool {
         boolean callSuccessful = true;
         String path = record.getPath();
         try {
-            HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "="
-                    + URLEncoder.encode(path, UTF_8));
+            String uri = String.format("%s%s/api/ingest/upload?%s=%s", httpProtocol, getHostname(), API_UPLOADED_ITEM, URLEncoder.encode(path, UTF_8));
+            HttpPost apicall = new HttpPost(uri);
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             if (seen.contains(path)) {
                 logger.warn("skipping: " + path);
