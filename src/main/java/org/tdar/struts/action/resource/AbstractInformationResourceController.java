@@ -71,6 +71,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private static final long serialVersionUID = -200666002871956655L;
 
+    private static Project NO_ASSOCIATED_PROJECT = new Project(-1L, "No Associated Project");
+
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -103,7 +105,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private List<CategoryVariable> allDomainCategories;
 
-    private Project project = Project.NULL;
+    private Project project = NO_ASSOCIATED_PROJECT;
     private List<Resource> potentialParents;
     // incoming data
     private List<File> uploadedFiles;
@@ -477,7 +479,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     protected void resolveProject() {
-        project = Project.NULL;
+        project =   NO_ASSOCIATED_PROJECT;
         if (PersistableUtils.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         }
@@ -520,12 +522,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             potentialParents = new LinkedList<>();
             boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             potentialParents.addAll(projectService.findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
-            if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
+            if (!getProject().equals(NO_ASSOCIATED_PROJECT) && !potentialParents.contains(getProject())) {
                 potentialParents.add(getProject());
             }
-            // tack the null project at the top of the sorted list
-            // Collections.sort(potentialParents);
-            potentialParents.add(0, Project.NULL);
+            // Prepend null project so that dropdowns will see "No associated project" at the top of the list.
+            potentialParents.add(0, NO_ASSOCIATED_PROJECT);
         }
         getLogger().trace("Returning all editable projects: {}", potentialParents);
         return potentialParents;
