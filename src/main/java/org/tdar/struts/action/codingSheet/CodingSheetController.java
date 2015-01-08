@@ -35,9 +35,6 @@ import org.tdar.utils.PersistableUtils;
 @Namespace("/coding-sheet")
 public class CodingSheetController extends AbstractSupportingInformationResourceController<CodingSheet> {
 
-    public static final String SAVE_MAPPING = "save-mapping";
-    public static final String MAPPING = "mapping";
-
     private static final long serialVersionUID = 377533801938016848L;
 
     @Autowired
