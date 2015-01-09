@@ -15,8 +15,8 @@
 
 <#list workflows as workflow>
 <ul>
-	<li><a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""} 
-		[<a href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>]</li>
+    <li><a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""}
+        [<a href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>]</li>
 </ul>
 </#list>
 
