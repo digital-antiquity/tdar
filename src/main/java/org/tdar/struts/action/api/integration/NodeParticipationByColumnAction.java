@@ -2,7 +2,9 @@ package org.tdar.struts.action.api.integration;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -10,6 +12,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.utils.json.JsonIdNameFilter;
@@ -29,7 +32,9 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
 
     private static final long serialVersionUID = 499550761252167428L;
     private List<Long> dataTableColumnIds = new ArrayList<>();
-    private List<IntegrationColumnPartProxy> nodesByColumn;
+    private List<IntegrationColumnPartProxy> integrationColumnPartProxies;
+    private Map<Long, List<Long>> nodeIdsByColumnId = new HashMap<>();
+    private boolean verbose = false;
 
     @Autowired
     DataIntegrationService integrationService;
@@ -42,17 +47,39 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
         this.dataTableColumnIds = dataTableColumnIds;
     }
 
-    public List<IntegrationColumnPartProxy> getNodesByColumn() {
-        return nodesByColumn;
+    public List<IntegrationColumnPartProxy> getIntegrationColumnPartProxies() {
+        return integrationColumnPartProxies;
+    }
+    public boolean isVerbose() {
+        return verbose;
+    }
+    public void setVerbose(boolean debug) {
+        this.verbose = debug;
     }
 
     public void prepare() {
-        nodesByColumn = integrationService.getNodeParticipationByColumn(dataTableColumnIds);
+        integrationColumnPartProxies = integrationService.getNodeParticipationByColumn(dataTableColumnIds);
+
+        for(Long dataTableColumnId : dataTableColumnIds) {
+            nodeIdsByColumnId.put(dataTableColumnId, new ArrayList<Long>());
+        }
+
+        for(IntegrationColumnPartProxy columnPart : integrationColumnPartProxies) {
+            for(OntologyNode ontologyNode : columnPart.getFlattenedNodes()) {
+                nodeIdsByColumnId.get(columnPart.getDataTableColumn().getId()).add(ontologyNode.getId());
+            }
+        }
     }
 
     @Action("node-participation")
     public String execute() throws IOException {
-        setJsonObject(nodesByColumn, JsonIdNameFilter.class);
+        if(verbose) {
+            setJsonObject(integrationColumnPartProxies, JsonIdNameFilter.class);
+        } else {
+            setJsonObject(nodeIdsByColumnId);
+        }
+
         return SUCCESS;
     }
+
 }
