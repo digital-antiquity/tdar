@@ -718,7 +718,7 @@ with that datapoint -->
         <ul>
             <#list accountList as account>
                 <li>
-                    <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+                    <a href="<@s.url value="/billing/${account.id?c} " scheme="https" />">${account.name!"unamed"}</a>
                 </li>
             </#list>
 <#--
