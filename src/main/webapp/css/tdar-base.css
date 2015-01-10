@@ -1128,7 +1128,7 @@ footer a:hover {
 #ajaxIndicator {
     position: fixed;
     width: 25%;
-    z-index: 999;
+    z-index: 10001;
     right: 5px;
     bottom: 5px;
     opacity: .9;
