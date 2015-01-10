@@ -67,7 +67,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#macro>
     <#macro _keywordRow keywordField keyword_index=0 showDelete=true>
     <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
-        <div class="span9">
+        <div class="span7">
         <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]'  maxlength=255 cssClass='input-xlarge keywordAutocomplete' placeholder="enter keyword"/>
         <#if showDelete>
         <@nav.clearDeleteButton id="${keywordField}Row" />
