@@ -43,6 +43,7 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
 
     @Autowired
     private transient BillingAccountService accountService;
+    private boolean showContributorAgreement;
 
     @Override
     public void prepare() {
@@ -80,6 +81,9 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             getAccounts().add(new BillingAccount("Add an account"));
         }
+
+        //if user is currently not contributor, show them the ToS agreement
+        showContributorAgreement = !getAuthenticatedUser().isContributor();
     }
 
     @Override
@@ -122,5 +126,9 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
 
     public TdarUser getBlankPerson() {
         return new TdarUser();
+    }
+
+    public boolean isShowContributorAgreement() {
+        return showContributorAgreement;
     }
 }

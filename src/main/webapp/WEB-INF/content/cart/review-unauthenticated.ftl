@@ -40,7 +40,6 @@
                 <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed"
                         enctype='multipart/form-data' action="process-registration">
                     <@s.token name='struts.csrf.token' />
-                    <fieldset>
                         <legend>Register</legend>
                         <div class="authpane">
                             <div class="authfields">
@@ -51,18 +50,15 @@
                             </div>
                         </div>
 
-                    </fieldset>
                 </@s.form>
         </div>
 
         <div class="span3" id="divLoginSection">
             <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate form-condensed"
                     enctype='multipart/form-data' action="/cart/process-cart-login">
-                <fieldset>
                     <legend>
                         Log In
                     </legend>
-                </fieldset>
                 <div class="authpane">
                     <div class="authfields">
                         <@auth.login showLegend=false>
