@@ -778,12 +778,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
         }
 
-        // if ID is null && persisitable is null
-        if (persistable == null) {
-            // persistable is null, so the lookup failed (aka not found)
-            abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
-        }
-
         // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
         if (authorizationService.can(pc.getAdminRights(), pc.getAuthenticatedUser())) {
             return;
