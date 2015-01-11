@@ -21,6 +21,7 @@ Maven Profiles:
  - liquibase-setup-production-instance -- sets up an empty, production instance of tDAR
  - liquibase -- upgrades a local instance (tdarmetadata) of the database with any outstanding changelogs
  - liquibase-export -- exports a copy of the tdarmetadata database to a xml dump
+ - changelogSync -- clears the liquibase changesets and resets to "ok"
  
  NOTE: maven uses the hibernate.properties to read the database connection info.
  
