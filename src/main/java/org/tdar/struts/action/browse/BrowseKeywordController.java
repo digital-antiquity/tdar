@@ -102,12 +102,12 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (getKeywordType() == null) {
             addActionError(getText("simpleKeywordAction.type_required"));
         }
-        getLogger().debug("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
+        getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
         if (PersistableUtils.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
-        getLogger().debug("id:{}  slug:{}", getId(), getSlug());
+        getLogger().trace("id:{}  slug:{}", getId(), getSlug());
         if (!handleSlugRedirect(keyword, this)) {
             redirectBadSlug = true;
         } else {

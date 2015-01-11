@@ -165,7 +165,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitForPageload();
         
         find(By.id("tabtab1")).click();
-        waitFor(2);
+        waitFor(4);
         logger.debug(getText());
         takeScreenshot();
         assertEquals(find(By.name("integration.title")).val(),TEST_INTEGRATION);

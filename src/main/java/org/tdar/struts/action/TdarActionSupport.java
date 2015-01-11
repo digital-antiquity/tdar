@@ -701,7 +701,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             Slugable s = (Slugable) p;
             SlugViewAction a = (SlugViewAction) action;
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
-                getLogger().debug("slug mismatch - watnted:{}   got:{}", s.getSlug(), a.getSlug());
+                getLogger().trace("slug mismatch - wanted:{}   got:{}", s.getSlug(), a.getSlug());
                 if (action instanceof SearchResultHandler<?>) {
                     SearchResultHandler<?> r = (SearchResultHandler<?>) action;
                     if (r.getStartRecord() != SearchResultHandler.DEFAULT_START || r.getRecordsPerPage() != r.getDefaultRecordsPerPage()) {
@@ -747,6 +747,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
             name = pc.getAuthenticatedUser().getUsername();
         }
+        if (StringUtils.isBlank(name)) {
+            name = "anonymous";
+        }
         getLogger().info(String.format("%s is %s %s (%s): %s", name, type.getLabel(), persistableClass.getSimpleName(), id, status));
         checkValidRequest(pc);
     }
@@ -776,12 +779,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 abort(StatusCode.BAD_REQUEST,
                         getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
             }
-        }
-
-        // if ID is null && persisitable is null
-        if (persistable == null) {
-            // persistable is null, so the lookup failed (aka not found)
-            abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
         }
 
         // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
