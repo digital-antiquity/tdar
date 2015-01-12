@@ -701,7 +701,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             Slugable s = (Slugable) p;
             SlugViewAction a = (SlugViewAction) action;
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
-                getLogger().debug("slug mismatch - watnted:{}   got:{}", s.getSlug(), a.getSlug());
+                getLogger().trace("slug mismatch - watnted:{}   got:{}", s.getSlug(), a.getSlug());
                 if (action instanceof SearchResultHandler<?>) {
                     SearchResultHandler<?> r = (SearchResultHandler<?>) action;
                     if (r.getStartRecord() != SearchResultHandler.DEFAULT_START || r.getRecordsPerPage() != r.getDefaultRecordsPerPage()) {
