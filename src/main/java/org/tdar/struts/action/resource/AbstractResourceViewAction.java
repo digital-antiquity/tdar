@@ -224,6 +224,9 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public boolean authorize() throws TdarActionException {
         boolean result = authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
         if (result == false) {
+            if (getResource() == null) {
+                abort(StatusCode.UNKNOWN_ERROR, getText("abstractPersistableController.not_found"));
+            }
             if (getResource().isDeleted()) {
                 getLogger().debug("resource not viewable because it is deleted: {}", getResource());
                 throw new TdarActionException(StatusCode.GONE, getText("abstractResourceController.resource_deleted"));

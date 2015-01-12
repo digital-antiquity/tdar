@@ -102,12 +102,12 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (getKeywordType() == null) {
             addActionError(getText("simpleKeywordAction.type_required"));
         }
-        getLogger().debug("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
+        getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
         if (PersistableUtils.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
-        getLogger().debug("id:{}  slug:{}", getId(), getSlug());
+        getLogger().trace("id:{}  slug:{}", getId(), getSlug());
         if (!handleSlugRedirect(keyword, this)) {
             redirectBadSlug = true;
         } else {
@@ -155,9 +155,9 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             searchService.handleSearch(rqb, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, spe);
+           abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());
         } catch (Exception e) {
-            addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+            addActionErrorWithException(getText("browseKeywordController.error_searching_contents"), e);
         }
     }
 

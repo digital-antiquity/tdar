@@ -701,7 +701,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             Slugable s = (Slugable) p;
             SlugViewAction a = (SlugViewAction) action;
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
-                getLogger().trace("slug mismatch - watnted:{}   got:{}", s.getSlug(), a.getSlug());
+                getLogger().trace("slug mismatch - wanted:{}   got:{}", s.getSlug(), a.getSlug());
                 if (action instanceof SearchResultHandler<?>) {
                     SearchResultHandler<?> r = (SearchResultHandler<?>) action;
                     if (r.getStartRecord() != SearchResultHandler.DEFAULT_START || r.getRecordsPerPage() != r.getDefaultRecordsPerPage()) {
@@ -746,6 +746,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 status = ((HasStatus) p).getStatus().toString();
             }
             name = pc.getAuthenticatedUser().getUsername();
+        }
+        if (StringUtils.isBlank(name)) {
+            name = "anonymous";
         }
         getLogger().info(String.format("%s is %s %s (%s): %s", name, type.getLabel(), persistableClass.getSimpleName(), id, status));
         checkValidRequest(pc);

@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -849,11 +850,15 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 sb.append(proxy.getTempTableName());
                 sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
                 String order = node.getImportOrder().toString();
-                if (node.getImportOrder() == 0 || StringUtils.isBlank(order)) {
-                    order = node.getIndex();
-                }
-
-                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=").append(order);
+//                if (node.getImportOrder() == 0 || StringUtils.isBlank(order)) {
+//                    order = node.getIndex();
+//                }
+                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=");
+//                if (NumberUtils.isNumber(order)) {
+                    sb.append(order);
+//                } else {
+//                    sb.append(quote(order));
+//                }
                 sb.append(" WHERE ");
                 sb.append(whereCond.toSql());
                 executeUpdateOrDelete(sb.toString());

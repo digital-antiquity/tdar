@@ -117,9 +117,9 @@ public class DataIntegrationService {
             logger.debug("aborting, no coding rules or coding sheet {}", codingSheet);
             return;
         }
-        logger.info("selecting distinct values from column");
+        logger.trace("selecting distinct values from column");
         List<String> values = tdarDataImportDatabase.selectDistinctValues(column);
-        logger.info("values: {} ", values);
+        logger.trace("values: {} ", values);
         logger.info("matching coding rule terms to column values");
         for (CodingRule rule : codingSheet.getCodingRules()) {
             if (values.contains(rule.getTerm())) {
