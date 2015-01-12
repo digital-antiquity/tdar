@@ -155,9 +155,9 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             searchService.handleSearch(rqb, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, spe);
+           abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());
         } catch (Exception e) {
-            addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+            addActionErrorWithException(getText("browseKeywordController.error_searching_contents"), e);
         }
     }
 
