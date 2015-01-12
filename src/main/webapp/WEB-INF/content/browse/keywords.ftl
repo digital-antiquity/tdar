@@ -17,7 +17,7 @@
 <div class="glide">
     <h1>${keyword.label} <span class="xsmall red">(<@s.text name="${keywordType.localeKey}"/>)</span></h1>
     <#if keyword.synonyms?has_content>
-    <p><#list keyword.synonyms![] as synonym> <#if synonym_index !=0>,</#if>${synonym.label} </#list></p>
+    <p><#list keyword.synonyms![] as synonym><#if synonym_index !=0>, </#if>${synonym.label} </#list></p>
     </#if>
     <#if keyword.parent?has_content>
     <p><b>Parent:</b><@common.searchFor keyword.parent false /></p>
