@@ -31,7 +31,7 @@
             <#if administrator >
                 <li><a href="<@s.url value="/admin/system/activity"/>">System Activity</a></li>
                 <li><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
-                <li><a href="<@s.url value="/admin/notifications/"/>">Notifications</a></li>
+                <li><a href="<@s.url value="/admin/notifications/index"/>">Notifications</a></li>
                 <li><a href="<@s.url value="/admin/email"/>">Email</a></li>
             </#if>
         </ul>

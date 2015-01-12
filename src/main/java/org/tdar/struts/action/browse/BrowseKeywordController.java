@@ -101,6 +101,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
         if (getKeywordType() == null) {
             addActionError(getText("simpleKeywordAction.type_required"));
+            return;
         }
         getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
@@ -113,8 +114,10 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         } else {
             try {
                 prepareLuceneQuery();
+            } catch (TdarActionException tdae) {
+                throw tdae;
             } catch (Exception e) {
-                addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+                addActionErrorWithException(getText("browseKeywordController.error_searching_contents"), e);
             }
         }
     }
@@ -126,8 +129,8 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public String view() {
         if (redirectBadSlug) {
             return BAD_SLUG;
-		}
-        if (PersistableUtils.isNotNullOrTransient(keyword)  && keyword.isDuplicate()) {
+        }
+        if (PersistableUtils.isNotNullOrTransient(keyword) && keyword.isDuplicate()) {
             setKeyword(genericKeywordService.findAuthority(keyword));
             return BAD_SLUG;
         }
@@ -137,7 +140,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
             // setOrientation(DisplayOrientation.MAP);
-		}
+        }
         return SUCCESS;
     }
 
@@ -148,14 +151,14 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
         rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
-//            setOrientation(DisplayOrientation.MAP);
+            // setOrientation(DisplayOrientation.MAP);
         }
         try {
             setSortField(SortOption.TITLE);
             searchService.handleSearch(rqb, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
-           abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());
+            abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());
         } catch (Exception e) {
             addActionErrorWithException(getText("browseKeywordController.error_searching_contents"), e);
         }
