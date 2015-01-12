@@ -33,7 +33,9 @@
         <div class="span6">
             <img src="/images/r4/data_integration.png" class="responsive-image" alt="integrate" title="Integrate" />
         </div>
-
+    </div>
+    <div class="row">
+        <p><a href="/workspace/select-tables">Legacy Integration tool</a></p>
     </div>
 </body>
 

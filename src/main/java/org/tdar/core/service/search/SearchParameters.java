@@ -455,7 +455,7 @@ public class SearchParameters {
                 } else {
                     keyword.setLabel(value.toString());
                 }
-                logger.debug("kwd: {}", keyword);
+                logger.trace("kwd: {}", keyword);
                 kwdValues.add(keyword);
             } catch (Exception e) {
                 throw new TdarRecoverableRuntimeException(e);
