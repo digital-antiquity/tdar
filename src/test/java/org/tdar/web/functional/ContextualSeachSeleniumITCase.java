@@ -17,7 +17,7 @@ import org.tdar.web.functional.util.WebElementSelection;
 /**
  * Created by jimdevos on 3/12/14.
  */
-public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
+public class ContextualSeachSeleniumITCase extends AbstractEditorSeleniumWebITCase {
 
     public static final String PROJECT_ID = "3805";
     public static final String COLLECTION_ID = "1575";
@@ -41,12 +41,12 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
 
     @Test
     public void testProjectResults2() {
-        basicTest(format("/project/%s", PROJECT_ID), PROJECT_QUERY);
+        basicTest(format("/project/%s/new-philadelphia-archaeology-project", PROJECT_ID), PROJECT_QUERY);
     }
 
     @Test
     public void testCollectionResults() {
-        basicTest(format("/collection/%s", COLLECTION_ID), COLLECTION_QUERY);
+        basicTest(format("/collection/%s/sample-collection", COLLECTION_ID), COLLECTION_QUERY);
     }
 
     private void basicTest(String path, String query) {

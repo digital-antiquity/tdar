@@ -225,7 +225,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         boolean result = authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
         if (result == false) {
             if (getResource() == null) {
-                abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
+                abort(StatusCode.UNKNOWN_ERROR, getText("abstractPersistableController.not_found"));
             }
             if (getResource().isDeleted()) {
                 getLogger().debug("resource not viewable because it is deleted: {}", getResource());
