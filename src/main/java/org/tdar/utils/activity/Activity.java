@@ -48,8 +48,8 @@ public class Activity implements Serializable {
     }
 
     public static String formatRequest(HttpServletRequest request) {
-        return String.format("%s:%s?%s", request.getMethod(), request.getServletPath(),
-                request.getQueryString() == null ? "" : StringUtils.left(request.getQueryString(), 10));
+        return String.format("%s:%s%s", request.getMethod(), request.getServletPath(),
+                request.getQueryString() == null ? "" : "?" + StringUtils.left(request.getQueryString(), 10));
     }
 
     public Activity(HttpServletRequest httpServletRequest, TdarUser user) {
