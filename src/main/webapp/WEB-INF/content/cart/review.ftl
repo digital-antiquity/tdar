@@ -83,21 +83,21 @@
             they choose.
         </p>
 
-        <#--<#if showContributorAgreement>-->
-        <#--<div class="alert alert-info">-->
-            <#--<strong>Contributer Features Required</strong>-->
-            <#--<p>Contributor-specific features are currently disabled in your user profile.  Please review and accept the-->
-                <#--<@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>-->
-                <#--to enable these features and continue.-->
-            <#--</p>-->
-            <#--<label class="checkbox">-->
-                <#--<@s.checkbox theme="simple" name="acceptContributorAgreement" id="tou-id"  />-->
-                <#--I have read and accept the ${siteAcronym}-->
-                <#--<@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>-->
-            <#--</label>-->
+        <#if showContributorAgreement>
+        <div class="alert alert-info">
+            <strong>Contributer Features Required</strong>
+            <p>Contributor-specific features are currently disabled in your user profile.  Please review and accept the
+                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                to enable these features and continue.
+            </p>
+            <label class="checkbox">
+                <@s.checkbox theme="simple" name="acceptContributorAgreement" id="tou-id"  />
+                I have read and accept the ${siteAcronym}
+                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+            </label>
 
-        <#--</div>-->
-        <#--</#if>-->
+        </div>
+        </#if>
 
         <div class="form-actions">
             <#if invoice.modifiable>

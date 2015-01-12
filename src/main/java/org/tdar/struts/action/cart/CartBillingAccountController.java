@@ -39,6 +39,8 @@ public class CartBillingAccountController extends AbstractCartController {
     // Or a user can specify a new account name
     private BillingAccount account = new BillingAccount();
 
+    private boolean acceptContributorAgreement = false;
+
     @Autowired
     private transient InvoiceService invoiceService;
 
@@ -77,6 +79,10 @@ public class CartBillingAccountController extends AbstractCartController {
             addActionError(getText("cartController.valid_payment_method_is_required"));
         }
 
+        if(!getAuthenticatedUser().isContributor() && !acceptContributorAgreement) {
+            addActionError(getText("cartController.please_accept_contributor_agreement"));
+        }
+
     }
 
     /**
@@ -85,7 +91,7 @@ public class CartBillingAccountController extends AbstractCartController {
      * @return
      */
     @Action(value = "process-billing-account-choice", results = {
-            @Result(name = INPUT, location = "review.ftl"),
+            @Result(name = INPUT, location = "review", type="redirect"),
             @Result(name = SUCCESS, location = "process-payment-request", type = "redirect") })
     @PostOnly
     @WriteableSession
@@ -126,5 +132,13 @@ public class CartBillingAccountController extends AbstractCartController {
 
     public TdarUser getBlankPerson() {
         return new TdarUser();
+    }
+
+    public boolean isAcceptContributorAgreement() {
+        return acceptContributorAgreement;
+    }
+
+    public void setAcceptContributorAgreement(boolean acceptContributorAgreement) {
+        this.acceptContributorAgreement = acceptContributorAgreement;
     }
 }
