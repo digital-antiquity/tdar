@@ -172,7 +172,9 @@
 
     // Register both types of error handlers: event based, and onerror-based. Once we detect that browser supports
     // the error event we disable window.onerror (so we don't double-up on error messages.
-    window.addEventListener("error", _errorListener, true);
+    if(window.addEventListener) {
+        window.addEventListener("error", _errorListener, true);
+    }
     window.onerror = _onerror;
 
 })();

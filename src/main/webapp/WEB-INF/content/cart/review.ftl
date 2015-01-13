@@ -21,13 +21,11 @@
     <#if accounts?has_content>
     <div class="span7" >
         <h3>Invoice Information</h3>
-        <div>
-            <div class="" >
-                <h3>Invoice Details</h3>
-                <@invoicecommon.printInvoice />
-                <h3>Invoice Summary</h3>
-                <@invoicecommon.printSubtotal invoice/>
-            </div>
+        <div class="cartpane" style="min-height:370px">
+            <h3>Invoice Details</h3>
+            <@invoicecommon.printInvoice />
+            <h3>Invoice Summary</h3>
+            <@invoicecommon.printSubtotal invoice/>
         </div>
     </div>
     <div class="span5">
@@ -58,7 +56,7 @@
         <#else>
             <div class="span12" >
                 <h3>Invoice Information</h3>
-                <div class="" style="min-height: 350px">
+                <div class="cartpane" style="min-height: 350px">
                     <div class="" >
                         <h3>Invoice Details</h3>
                         <@invoicecommon.printInvoice />
@@ -85,6 +83,21 @@
             they choose.
         </p>
 
+        <#if showContributorAgreement>
+        <div class="alert alert-info">
+            <strong>Contributer Features Required</strong>
+            <p>Contributor-specific features are currently disabled in your user profile.  Please review and accept the
+                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                to enable these features and continue.
+            </p>
+            <label class="checkbox">
+                <@s.checkbox theme="simple" name="acceptContributorAgreement" id="tou-id"  />
+                I have read and accept the ${siteAcronym}
+                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+            </label>
+
+        </div>
+        </#if>
 
         <div class="form-actions">
             <#if invoice.modifiable>

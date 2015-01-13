@@ -655,8 +655,8 @@ TDAR.common = function (TDAR, fileupload) {
             }
         }).change();
 
-        //display generic wait message with ajax events
-        _registerAjaxEvents();
+        //Display status messages during ajax requests.
+        _registerAjaxStatusContainer();
 
         // I must be "last"
         $(form).not('.disableFormNavigate').FormNavigate({
@@ -751,23 +751,75 @@ TDAR.common = function (TDAR, fileupload) {
         });
     }
 
+
+    /**
+     * Custom  ajax filter (enable by calling $.ajaxPrefilter(_customAjaxPrefilter). JQuery executes this prefilter
+     * prior to any ajax call.
+     *
+     * @param options  options for the current request (including jquery defaults)
+     * @param originalOptions options passed to $.ajax()  by the caller, without defaults.
+     * @param $xhr  jquery xmlHttpRequest object
+     * @private
+     */
+    var _statusContainerAjaxPrefilter = function(options, originalOptions, $xhr) {
+        var hdlTimeout = 0;
+        var $container, $message, $label;
+        var defaults = {
+            enabled: true,                      // Show status messages for this request
+            selector:       '#ajaxIndicator',
+            fadeInDelay:    'fast',
+            fadeOutDelay:   1 * 1000,
+            timeout:        20 * 1000,          // Hide message after specified timeout -  does not cancel the ajax request (0 for no timeout)
+            label:          "Loading",
+            waitMessage:    "...",
+            doneMessage:    "...complete",
+            failMessage:    "...failed",
+            timeoutMessage: "request timed out"
+        };
+
+        var settings = $.extend({}, options.statusContainer, defaults);
+        if(settings.enabled) {
+            $container = $(settings.selector);
+            $label = $container.find("strong");
+            $message = $container.find("span");
+            $label.text(settings.label);
+
+            //Initial message
+            $message.text(settings.waitMessage);
+            $container.fadeIn(settings.fadeInDelay);
+
+            //success message
+            $xhr.done(function(){
+                $message.text(settings.doneMessage);
+            });
+
+            //error message
+            $xhr.fail(function() {
+                $message.text(settings.failMessage);
+            });
+
+            //Fade out after success/failure
+            $xhr.always(function(){
+                $container.fadeOut(settings.fadeOutDelay);
+                clearTimeout(hdlTimeout);
+            });
+
+            //Fade out after timeout, if specified.
+            if(settings.timeout) {
+                hdlTimeout = setTimeout(function () {
+                    $container.fadeOut(settings.fadeOutDelay);
+                }, settings.timeout);
+            }
+        }
+    };
+
     /**
      * Register event listener that displays generic wait message for ajax requests. If the ajaxOptions property
      * of the event contain a "waitmessage" property, display that messages, otherwise the function displays "Loading"
      * while the request is in flight, and "Done" after the request is complete.
      */
-    var _registerAjaxEvents = function () {
-        $('body').bind('ajaxSend', function (e, jqXHR, ajaxOptions) {
-            if (typeof ajaxOptions.waitMessage === "undefined") {
-                ajaxOptions.waitMessage = "Loading";
-            }
-            $('#ajaxIndicator').html("<strong>Waiting</strong>: " + ajaxOptions.waitMessage + "...").fadeIn('fast');
-            //TODO: include a timeout to dismiss loading or display warning mesage
-        });
-        $('body').bind('ajaxComplete', function (e, jqXHR, ajaxOptions) {
-            $('#ajaxIndicator').html("<strong>Complete</strong>: " + ajaxOptions.waitMessage + "...").fadeOut(1000);
-        });
-
+    var _registerAjaxStatusContainer = function () {
+        $.ajaxPrefilter(_statusContainerAjaxPrefilter);
     };
 
     /**
@@ -1262,9 +1314,8 @@ TDAR.common = function (TDAR, fileupload) {
         "collectionTreeview": _collectionTreeview,
         "humanFileSize": _humanFileSize,
         "initImageGallery": _initImageGalleryForView,
-        "formatNumber": _formatNumber
-
-
+        "formatNumber": _formatNumber,
+        "_registerAjaxStatusContainer": _registerAjaxStatusContainer
     });
 
     return self;
@@ -1282,12 +1333,6 @@ function checkWindowSize() {
 $(document).ready(function () {
     checkWindowSize();
     $(window).resize(checkWindowSize);
-    if ($.cookie("hide_jira_button")) {
-        setTimeout(function () {
-            $('#atlwdg-trigger').hide()
-        }, 700);
-    }
-
     TDAR.common.sessionTimeoutWarning();
     $(document).delegate(".bookmark-link", "click", TDAR.common.applyBookmarks);
 

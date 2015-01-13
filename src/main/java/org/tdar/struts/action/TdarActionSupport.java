@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
@@ -65,7 +66,7 @@ import com.opensymphony.xwork2.ActionSupport;
  * @version $Revision$
  */
 @Scope("prototype")
-//@Controller
+// @Controller
 public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
 
     private static final long serialVersionUID = 7084489869489013998L;
@@ -701,7 +702,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             Slugable s = (Slugable) p;
             SlugViewAction a = (SlugViewAction) action;
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
-                getLogger().debug("slug mismatch - watnted:{}   got:{}", s.getSlug(), a.getSlug());
+                getLogger().trace("slug mismatch - wanted:{}   got:{}", s.getSlug(), a.getSlug());
                 if (action instanceof SearchResultHandler<?>) {
                     SearchResultHandler<?> r = (SearchResultHandler<?>) action;
                     if (r.getStartRecord() != SearchResultHandler.DEFAULT_START || r.getRecordsPerPage() != r.getDefaultRecordsPerPage()) {
@@ -740,14 +741,22 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
         String status = "";
         String name = "";
+        if (p instanceof HasStatus) {
+            status = ((HasStatus) p).getStatus().toString();
+        }
+
         if (!(pc.getAuthenticatedUser() == null)) {
             // don't log anonymous users
-            if (p instanceof HasStatus) {
-                status = ((HasStatus) p).getStatus().toString();
-            }
             name = pc.getAuthenticatedUser().getUsername();
         }
-        getLogger().info(String.format("%s is %s %s (%s): %s", name, type.getLabel(), persistableClass.getSimpleName(), id, status));
+        if (StringUtils.isBlank(name)) {
+            name = "anonymous";
+        }
+        String title = "";
+        if (p != null && p instanceof HasName) {
+            title = ((HasName) pc.getPersistable()).getName();
+        }
+        getLogger().info(String.format("%s is %s %s (%s): %s - %s", name, type.getLabel(), persistableClass.getSimpleName(), id, status, title));
         checkValidRequest(pc);
     }
 

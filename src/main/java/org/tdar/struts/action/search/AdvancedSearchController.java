@@ -101,7 +101,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         // not_found
         try {
             result = performResourceSearch();
-            getLogger().debug(result);
+            getLogger().trace(result);
             if (SUCCESS.equals(result)) {
                 searchCollectionsToo();
             }

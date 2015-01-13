@@ -25,6 +25,11 @@ import org.tdar.tag.SearchResults.Meta;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.dom.Element;
 
+/**
+ * NOTE THIS TEST NEEDS TO BE RUN VIA MAVEN and NOT THE JUNIT PLUGIN WITHIN ECLIPSE
+ * @author abrin
+ *
+ */
 public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
 
     private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "services/TagGatewayService?wsdl";

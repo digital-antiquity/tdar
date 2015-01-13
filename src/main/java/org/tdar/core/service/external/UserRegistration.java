@@ -103,7 +103,7 @@ public class UserRegistration extends UserAuthData {
             errors.addFieldError(getPrefix() + "confirmEmail", "userAccountController.error_confirm_email");
 
             // email + confirmation email must match
-        } else if (!StringUtils.equals(getPerson().getEmail(), getConfirmEmail())) {
+        } else if (!StringUtils.equalsIgnoreCase(getPerson().getEmail(), getConfirmEmail())) {
             errors.getActionErrors().add("userAccountController.error_emails_dont_match");
         }
         // validate password + password-confirmation

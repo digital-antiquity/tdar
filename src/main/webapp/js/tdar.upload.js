@@ -381,7 +381,7 @@ TDAR.fileupload = (function (TDAR, $) {
     var _replaceFile = function ($originalRow, $targetRow) {
         var targetFilename = $targetRow.find("input.fileReplaceName").val();
         var originalFilename = $originalRow.find("input.fileReplaceName").val();
-        $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + " upon clicking 'Save'");
+        $originalRow.find('.replacement-text').text("Will be replaced by " + targetFilename + " upon clicking 'Save'");
         $originalRow.find('.fileReplaceName').val(targetFilename);
         $originalRow.find('.fileReplaceName').data("original-filename", originalFilename);
 

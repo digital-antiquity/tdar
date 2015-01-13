@@ -338,19 +338,17 @@
         };
 
         /**
-         * Gather any dataTableColumns that have missing participation information and tell dataService to fetch it. FIXME: Move into data service
+         * Gather any dataTableColumns that have missing participation information and tell dataService to fetch it.
          * 
          */
         this.loadUpdatedParticipationInformation = function(integration) {
             var futureData = $q.defer();
 
             // find dataTableColumns that are missing transientNodeParticipation, request it from dataService
-            var unprocessedDataTableColumns = integration.getMappedDataTableColumns().filter(function(col) {
-                return !col.transientNodeParticipation;
-            });
-            var unprocessedIds = unprocessedDataTableColumns.map(function(col) {
-                return col.id
-            });
+            var unprocessedIds = integration.getMappedDataTableColumns()
+                    .filter(function(col) {return !col.transientNodeParticipation})
+                    .map(function(col){return col.id})
+
             if (unprocessedIds.length === 0) {
                 futureData.resolve(true);
             } else {
@@ -392,11 +390,15 @@
                             dataTableColumnCache.put(dtc.id, dtc);
                         });
                     });
-                    data.mappedOntologies.forEach(function(ontology) {
-                        ontologyCache.put(ontology.id, ontology);
-                        ontology.nodes.forEach(function(ontologyNode) {
-                            ontologyNodeCache.put(ontologyNode.id, ontologyNode);
-                        });
+
+                    //cache the mapped ontologies that aren't already cached
+                    data.mappedOntologies
+                            .filter(function(ontology){return !ontologyCache.get(ontology.id)})
+                            .forEach(function(ontology) {
+                                ontologyCache.put(ontology.id, ontology);
+                                ontology.nodes.forEach(function(ontologyNode) {
+                                    ontologyNodeCache.put(ontologyNode.id, ontologyNode);
+                                });
                     });
 
                     // now that we have everything in the cache, return the requested dataTables back to the caller
@@ -601,16 +603,12 @@
             }, true);
             var httpPromise = $http.get(url);
             var futureWork = $q.defer();
-            var dataTableColumns = new Array(); 
-            httpPromise.success(function(nodesByColumn) {
-                nodesByColumn.forEach(function(container) {
-                    var dataTableColumn = dataTableColumnCache.get(container.dataTableColumn.id);
-                    var nodes = [];
-                    container.flattenedNodes.forEach(function(nodeRef) {
-                        nodes.push(nodeRef.id);
-                    });
+            var dataTableColumns = [];
+            httpPromise.success(function(nodeIdsByColumnId) {
+                Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId) {
+                    var dataTableColumn = dataTableColumnCache.get(dataTableColumnId);
+                    var nodes = nodeIdsByColumnId[dataTableColumnId].map(function(ontologyNodeId){return ontologyNodeCache.get(ontologyNodeId)});
                     dataTableColumn.transientNodeParticipation = nodes;
-                    dataTableColumns.push(dataTableColumn);
                 });
                 // Note that we mutate the data directly, so there is not anything to "return". We're just notifying the caller that we are done.
                 futureWork.resolve(dataTableColumns);
@@ -618,20 +616,6 @@
             return futureWork.promise;
         };
 
-    }
-
-    // build parms for single request to integration-column-details endpoint
-    function _integrationColumnRequestConfig(ontologyId, dataTableColumnIds) {
-        var params = {
-            "integrationColumn.columnType" : "INTEGRATION",
-            "integrationColumn.sharedOntology.id" : ontologyId
-        };
-        dataTableColumnIds.forEach(function(dataTableColumnId, i) {
-            params["integrationColumn.columns[" + i + "].id"] = dataTableColumnId
-        });
-        return {
-            "params" : params
-        };
     }
 
     app.service("DataService", [ '$http', '$cacheFactory', '$q', DataService ]);

@@ -83,7 +83,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document d = db.parse(TagGateway.class.getResourceAsStream("/tagPortal.xsl"));
+            Document d = db.parse(TagGateway.class.getResourceAsStream("/wsdl/tagPortal.xsl"));
             XSLT = d.getDocumentElement();
         } catch (Exception e) {
             String msg = "Could not initialize the TagGateway service. " +

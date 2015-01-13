@@ -28,7 +28,7 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                	<!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
+                    <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
                     <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
@@ -66,9 +66,9 @@
                     </div>
         </div>
 
-	<div>
-	{{statusMessage}} {{$scope.statusMessage}}
-	</div>
+    <div>
+    {{statusMessage}} {{$scope.statusMessage}}
+    </div>
 
         <div id="divSelectedItemsSection">
             <div class="row">
@@ -128,7 +128,7 @@
                                                 <div class="alert" ng-hide="outputColumn.isValidMapping">
                                                     <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to a shared ontology.
                                                 </div>
-                                                <table class="table table-bordered table-condensed">
+                                                <table class="table table-bordered table-condensed table-hover">
                                                     <thead>
                                                     <tr>
                                                         <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
@@ -148,18 +148,18 @@
                                                     </tr>
                                                     <tr>
                                                         <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" >
-                                                        	<!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                        	<div ng-switch on="cc.compatCols.length">
-                                                        	<div ng-switch-when="1">
-                                                        		{{cc.compatCols[0].displayName}}
-                                                        		<!-- FIXME: this is "hidden", but is it even needed? -->
-                                                        		<!-- FIXME: shouldn't this be the dataset name? -->
-	                                                            <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
-														    </div>
-														    <div ng-switch-default>
-	                                                            <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
-														    </div>
-                                                        	</div>
+                                                            <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
+                                                            <div ng-switch on="cc.compatCols.length">
+                                                            <div ng-switch-when="1">
+                                                                {{cc.compatCols[0].displayName}}
+                                                                <!-- FIXME: this is "hidden", but is it even needed? -->
+                                                                <!-- FIXME: shouldn't this be the dataset name? -->
+                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+                                                            </div>
+                                                            <div ng-switch-default>
+                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                            </div>
+                                                            </div>
                                                         </th>
                                                     </tr>
                                                     </thead>
@@ -173,7 +173,7 @@
                                                         </td>
                                                         <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" id="cbx-{{dataTableColumn.id}}-{{nodeSelection.node.id}}" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node.id)"></i>
+                                                                <i class="icon-ok" id="cbx-{{dataTableColumn.id}}-{{nodeSelection.node.id}}" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -186,11 +186,11 @@
                                                 <h3>Select Columns</h3>
                                                 <br/>
                                                 <table>
-                                                	<thead>
-                                                		<tr>
-                                                			<th>Table</th> <th>Column</th>
-                                                		</tr>
-                                                	</thead>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Table</th> <th>Column</th>
+                                                        </tr>
+                                                    </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
                                                         <th>{{dataTable.displayName}}</th>
@@ -210,11 +210,11 @@
                                                 <h3>Select Columns</h3>
                                                 <br/>
                                                 <table>
-                                                	<thead>
-                                                		<tr>
-                                                			<th>Table</th> <th>Column</th>
-                                                		</tr>
-                                                	</thead>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Table</th> <th>Column</th>
+                                                        </tr>
+                                                    </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
                                                         <th>{{dataTable.displayName}}</th>
@@ -361,7 +361,7 @@
                                     <td><label for="cbResult{{result.id}}">{{result.title}}</label></td>
                                     <td nowrap>{{result.date_created | date }}</td>
                                     <td>
-                                    	<span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
+                                        <span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -372,9 +372,9 @@
             </div>
         </div>
         <div class="modal-footer">
-        	<div class="row">
-        	Total Results: {{modalTotalResults}}
-        	</div>
+            <div class="row">
+            Total Results: {{modalTotalResults}}
+            </div>
             <div class="pull-left" ng-show="false">
                 <button type="button" class="btn" ng-click="updateFilter()">Update Search</button>
                 <small class="muted"><em>Temporary button</em></small>

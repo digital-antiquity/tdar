@@ -13,7 +13,11 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * Lists the name of the site in the resource
@@ -43,6 +47,11 @@ public class SiteNameKeyword extends UncontrolledKeyword.Base<SiteNameKeyword> {
 
     public void setSynonyms(Set<SiteNameKeyword> synonyms) {
         this.synonyms = synonyms;
+    }
+
+    @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class))
+    public String getSiteCode() {
+        return getLabel();
     }
 
     public String getSynonymFormattedName() {

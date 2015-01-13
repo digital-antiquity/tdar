@@ -119,7 +119,7 @@
                                              <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if>
                                              data-table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}
                                             . </span>
-								<span class="name">${column.displayName}</span>
+                                <span class="name">${column.displayName}</span>
                                             <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
                                             <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id" value="${column.id?c}"/></span>
                                             <#assign count = count+1 />

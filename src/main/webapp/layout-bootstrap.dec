@@ -338,7 +338,10 @@
         TDAR.common.currentTime = 1;
         </#if>
 </script>
-<div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
+<div id="ajaxIndicator" class="alert alert-info" style="display:none">
+    <strong class="statusLabel"></strong>
+    <span class="statusMessage"></span>
+</div>
     <#if qunit>
     <script src="/includes/qunit-1.11.0.js"></script>
     </#if>

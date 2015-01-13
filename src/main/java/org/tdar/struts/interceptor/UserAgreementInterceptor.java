@@ -9,6 +9,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UserAgreementController;
+import org.tdar.struts.action.cart.AbstractCartController;
 import org.tdar.struts.action.cart.CartApiPollingAction;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.web.SessionData;
@@ -70,6 +71,7 @@ public class UserAgreementInterceptor implements SessionDataAware, Interceptor {
 
         if (authenticationService.userHasPendingRequirements(user)
                 // avoid infinite redirect
+                && !(action instanceof AbstractCartController)
                 && !(action instanceof UserAgreementController)
                 && !(action instanceof CartApiPollingAction)) {
             logger.info("user: {} has pending agreements", user);

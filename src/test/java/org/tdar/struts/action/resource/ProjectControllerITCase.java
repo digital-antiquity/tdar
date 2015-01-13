@@ -208,7 +208,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         logger.info("potential parents: {}", potentialParents);
         assertTrue("potential parents should always at least have one item (the null project)", potentialParents.size() >= 1);
         // first element should always be the null project
-        assertEquals(Project.NULL, potentialParents.get(0));
+        assertTrue( -1L == potentialParents.get(0).getId());
+        assertEquals(getText("project.no_associated_project"), potentialParents.get(0).getTitle());
 
         int originalParentCount = potentialParents.size();
         createAndSaveNewProject("potential parent project one");
@@ -225,7 +226,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         potentialParents = controller.getPotentialParents();
         logger.info("{}", potentialParents);
         assertTrue(potentialParents.size() > 2);
-        assertEquals(Project.NULL, potentialParents.get(0));
+        assertTrue( -1L == potentialParents.get(0).getId());
+        assertEquals(getText("project.no_associated_project"), potentialParents.get(0).getTitle());
     }
 
     @Test

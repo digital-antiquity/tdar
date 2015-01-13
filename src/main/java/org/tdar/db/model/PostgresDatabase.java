@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -460,13 +461,15 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         while (iterator.hasNext()) {
             DataTableColumn column = iterator.next();
-            if (columnNames.contains(column.getName())) {
-                column.setName(column.getName() + i);
+            String name = column.getName();
+            if (columnNames.contains(name)) {
+                name = name + i;
+                column.setName(name);
                 column.setDisplayName(column.getDisplayName() + i);
             }
-            columnNames.add(column.getName());
+            columnNames.add(name);
             i++;
-            tableColumnBuilder.append(String.format(COL_DEF, column.getName(),
+            tableColumnBuilder.append(String.format(COL_DEF, name,
                     this.toImplementedTypeDeclaration(column.getColumnDataType(), column.getLength())));
             if (iterator.hasNext()) {
                 tableColumnBuilder.append(", ");
@@ -847,11 +850,15 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 sb.append(proxy.getTempTableName());
                 sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
                 String order = node.getImportOrder().toString();
-                if (node.getImportOrder() == 0 || StringUtils.isBlank(order)) {
-                    order = node.getIndex();
-                }
-
-                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=").append(order);
+//                if (node.getImportOrder() == 0 || StringUtils.isBlank(order)) {
+//                    order = node.getIndex();
+//                }
+                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=");
+//                if (NumberUtils.isNumber(order)) {
+                    sb.append(order);
+//                } else {
+//                    sb.append(quote(order));
+//                }
                 sb.append(" WHERE ");
                 sb.append(whereCond.toSql());
                 executeUpdateOrDelete(sb.toString());

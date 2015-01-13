@@ -109,12 +109,12 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         action.getDataTableColumnIds().addAll(dtcIds);
         action.prepare();
         action.execute();
-        logger.debug("results:{}", action.getNodesByColumn());
+        logger.debug("results:{}", action.getIntegrationColumnPartProxies());
 
         //we expect to have at least one node value present
         int nodesPresent = 0;
         int proxiesPresent = 0;
-        for(IntegrationColumnPartProxy proxy: action.getNodesByColumn()) {
+        for(IntegrationColumnPartProxy proxy: action.getIntegrationColumnPartProxies()) {
             nodesPresent += proxy.getFlattenedNodes().size();
             proxiesPresent++;
         }

@@ -15,8 +15,8 @@
 
 <#list workflows as workflow>
 <ul>
-	<li><a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""} 
-		[<a href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>]</li>
+    <li><a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""}
+        [<a href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>]</li>
 </ul>
 </#list>
 
@@ -33,7 +33,9 @@
         <div class="span6">
             <img src="/images/r4/data_integration.png" class="responsive-image" alt="integrate" title="Integrate" />
         </div>
-
+    </div>
+    <div class="row">
+        <p><a href="/workspace/select-tables">Legacy Integration tool</a></p>
     </div>
 </body>
 

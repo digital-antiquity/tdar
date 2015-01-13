@@ -14,12 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.data.FacetGroup;
@@ -66,6 +70,18 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
             getLogger().debug("returning ... too short?" + getTerm());
             return SUCCESS;
         }
+        
+        
+        QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
+        if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
+            if (StringUtils.isNotBlank(getTerm()) && SiteCodeTokenizingAnalyzer.pattern.matcher(getTerm()).matches()) {
+                FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, getTerm());
+                siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+                siteCodePart.setDisplayName(getText("searchParameters.site_code"));
+                subgroup.append(siteCodePart.setBoost(5f));
+            }
+
+        }
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
         QueryPartGroup group = new QueryPartGroup();
@@ -76,8 +92,8 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
         // refine search to the correct keyword type
         group.append(new FieldQueryPart<String>("keywordType", getKeywordType()));
         setMode("keywordLookup");
-
-        q.append(group);
+        subgroup.append(group);
+        q.append(subgroup);
         q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
         try {
             handleSearch(q);
