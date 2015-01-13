@@ -1222,7 +1222,7 @@
                     <includes>**\/*.java</includes>
                     <enableRulesSummary>true</enableRulesSummary>
                     <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-                    <configLocation>src/main/resources/check_style.xml</configLocation>
+                    <configLocation>src/main/resources/validation_tools/check_style.xml</configLocation>
                 </configuration>
             </plugin>
 -->
@@ -1232,7 +1232,7 @@
                 <version>2.5.4</version>
                 <configuration>
                     <includeTests>false</includeTests>
-                    <excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
+                    <excludeFilterFile>src/main/resources/validation_tools/findbugs-exclude.xml</excludeFilterFile>
                     <classFilesDirectory></classFilesDirectory>
                 </configuration>
             </plugin>
@@ -1744,7 +1744,7 @@
                     <findbugsXmlOutput>false</findbugsXmlOutput>
                     <onlyAnalyze>org.tdar.*</onlyAnalyze>
                     <includeTests>false</includeTests>
-                    <excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
+                    <excludeFilterFile>src/main/resources/validation_tools/findbugs-exclude.xml</excludeFilterFile>
                 </configuration>
             </plugin>
             <plugin>
@@ -1787,7 +1787,7 @@
                     <enableRSS>false</enableRSS>
                     <includes>**\/*.java</includes>
                     <enableRulesSummary>true</enableRulesSummary>
-                    <configLocation>src/main/resources/check_style.xml</configLocation>
+                    <configLocation>src/main/resources/validation_tools/check_style.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                 </configuration>
             </plugin>
@@ -2342,7 +2342,7 @@
                         </executions>
                         <configuration>
                             <version>2.4.1</version>
-                            <configFile>src/main/resources/jshint.conf.json</configFile>
+                            <configFile>src/main/resources/validation_tools/jshint/jshint.conf.json</configFile>
                             <directories>
                                 <directory>src/main/webapp/js</directory>
                             </directories>
