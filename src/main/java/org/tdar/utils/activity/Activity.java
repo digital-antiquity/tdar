@@ -15,6 +15,8 @@ import org.tdar.web.SessionData;
 
 public class Activity implements Serializable {
 
+    private static final String USER_AGENT = "User-Agent";
+
     private static final long serialVersionUID = 1078566853797118113L;
 
     @SuppressWarnings("unused")
@@ -48,18 +50,24 @@ public class Activity implements Serializable {
     }
 
     public static String formatRequest(HttpServletRequest request) {
-        return String.format("%s:%s%s", request.getMethod(), request.getServletPath(),
-                StringUtils.isBlank(request.getQueryString()) ? "" : "?" + StringUtils.left(request.getQueryString(), 10));
+        return String.format("%s:%s%s", request.getMethod(), request.getServletPath(), StringUtils.left(getQueryString(request), 10));
+    }
+
+    private static String getQueryString(HttpServletRequest request) {
+        String qs = "";
+        if (StringUtils.isNotBlank(request.getQueryString())) {
+            qs += "?" + request.getQueryString();
+        }
+        return qs;
     }
 
     public Activity(HttpServletRequest httpServletRequest, TdarUser user) {
         this();
         HttpServletRequest request = ServletActionContext.getRequest();
-        this.setShortName(String.format("%s:%s?%s", request.getMethod(), request.getServletPath(),
-                request.getQueryString() == null ? "" : request.getQueryString()));
-        this.name = String.format("%s [%s]", getShortName(), request.getHeader("User-Agent"));
+        this.setShortName(String.format("%s:%s%s", request.getMethod(), request.getServletPath(), getQueryString(request)));
+        this.name = String.format("%s [%s]", getShortName(), request.getHeader(USER_AGENT));
 
-        this.setBrowser(request.getHeader("User-Agent"));
+        this.setBrowser(request.getHeader(USER_AGENT));
         this.setHost(request.getRemoteHost());
         SessionData sessionData = (SessionData) request.getSession().getAttribute("scopedTarget.sessionData");
         if (sessionData != null) {
