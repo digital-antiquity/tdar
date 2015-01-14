@@ -684,7 +684,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#list resources as resource>
             <tr id='dtr_${resource.id?c}'>
                 <td>${resource.id?c}
-                <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="_b">${(resource.title)!""}</a>
+                <td><a href="<@s.url value="${resource.detailUrl}"/>" target="_b">${(resource.title)!""}</a>
             <td>
                 <button class="btn btn-mini" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
             </#list>
@@ -718,7 +718,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
 <#--emit the citation section of a view page (including map depicting bounding box, if bounding box defined) -->
     <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
     <div class="item <#if count==0>active</#if>">
-        <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
+        <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${resource.detailUrl}"/></#local>
         <#if resource.firstActiveLatitudeLongitudeBox?has_content>
             <img title="map" alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
         <#else>
