@@ -368,14 +368,7 @@
     </div>
     </#if>
 
-<div id="messages" style="margin:2px" class="hidden lte-ie8">
-    <div id="message-ie-obsolete" class="message-error">
-        <@common.localText "dashboard.ie_warning", siteAcronym />
-        <a href="http://www.microsoft.com/ie" target="_blank">
-            <@common.localText "dashboard.ie_warning_link_text" />
-        </a>.
-    </div>
-</div>
+    <@common.ie8Warning />
 </#macro>
 
 </#escape>

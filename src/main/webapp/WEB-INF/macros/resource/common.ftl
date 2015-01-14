@@ -880,5 +880,18 @@ true for our registration page or our profile page).-->
         <#if asList></li></#if>
     </#macro>
 
+    <#--html that only gets rendered by ie8 and lower -->
+    <#macro ie8Warning>
+    <div id="messages" style="margin:2px;display:none" class="hidden">
+        <div id="message-ie-obsolete" class="message-error">
+            <@localText "dashboard.ie_warning", siteAcronym />
+            <a href="http://www.microsoft.com/ie" target="_blank">
+                <@localText "dashboard.ie_warning_link_text" />
+            </a>.
+        </div>
+    </div>
+    </#macro>
+
+
 </#escape>
 

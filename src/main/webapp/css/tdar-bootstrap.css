@@ -61,7 +61,7 @@ div.barlabel {
     z-index: 10000;
 }
 
-#messages.lt-ie8 {
+.lt-ie9 #messages{
     display: block !important;
     visibility: visible !important;
 }
