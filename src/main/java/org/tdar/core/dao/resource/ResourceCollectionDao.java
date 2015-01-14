@@ -86,11 +86,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
     }
 
-    public ResourceCollection findCollectionWithName(Person user, ResourceCollection collection, GeneralPermissions permission) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);// QUERY_PROJECT_EDITABLE
+    public ResourceCollection findCollectionWithName(Person user, ResourceCollection collection) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
-        // FIXME: move all this 'permission-1' hoo-ha from the caller to the query
         query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
         @SuppressWarnings("unchecked")
         List<ResourceCollection> list = query.list();
@@ -194,7 +193,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      */
     public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
         List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
-        if (CollectionUtils.isEmpty(sharedCollectionIds )) {
+        if (CollectionUtils.isEmpty(sharedCollectionIds)) {
             return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION);
