@@ -739,16 +739,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             pc.setPersistable(p);
         }
 
+        logRequest(pc, type, p);
+        checkValidRequest(pc);
+    }
+
+    private <P extends Persistable> void logRequest(PersistableLoadingAction<P> pc, RequestType type, P p) {
         String status = "";
         String name = "";
         if (p instanceof HasStatus) {
             status = ((HasStatus) p).getStatus().toString();
         }
 
-        if (!(pc.getAuthenticatedUser() == null)) {
+        if (pc.getAuthenticatedUser() != null) {
             // don't log anonymous users
             name = pc.getAuthenticatedUser().getUsername();
+        } else {
+            return;
         }
+        
         if (StringUtils.isBlank(name)) {
             name = "anonymous";
         }
@@ -756,8 +764,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         if (p != null && p instanceof HasName) {
             title = ((HasName) pc.getPersistable()).getName();
         }
-        getLogger().info(String.format("%s is %s %s (%s): %s - %s", name, type.getLabel(), persistableClass.getSimpleName(), id, status, title));
-        checkValidRequest(pc);
+        getLogger().info(String.format("%s is %s %s (%s): %s - %s", name, type.getLabel(), pc.getClass().getSimpleName(), pc.getId(), status, title));
     }
 
     /**
