@@ -90,11 +90,12 @@
         <from>^/(.+)/$</from>
         <to>/$1</to>
     </rule>
+    -->
+
     <rule>
         <from>^/search/search(.*)</from>
         <to>/search/results$1</to>
     </rule>
-    -->
 
     <!-- when run at the root context; the struts2 freemarker setup does 
         not seem to properly route requests through the servlet; hence requests from 
