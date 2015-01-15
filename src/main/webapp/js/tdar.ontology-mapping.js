@@ -1,5 +1,36 @@
-(function (TDAR, $, ctx) {
+(function (TDAR, $, ctx, flattedOntologyNodes) {
     'use strict';
+
+    var rePrefix = /^[-| ]*/;
+    var reSynonyms = /\((.*?)\)/;
+
+    //derive original name, synonyms from formatted input string
+    //fixme: hack: we should get the opposite via embedded json, and construct the formatted string dynamically
+    function processNode(node) {
+        console.log("processing: %s", node);
+        console.log(node);
+        var processedName = node.name.replace(rePrefix, '').toLowerCase();
+        var synonyms = [];
+        var matches = processedName.match(reSynonyms);
+        var strSynonyms = "";
+        if(matches) {
+            strSynonyms = matches[1];
+        }
+        if(strSynonyms.length) {
+            processedName  = $.trim(processedName.replace(reSynonyms, ''));
+            synonyms = $.map(strSynonyms.split(','), function(item, idx){
+                return $.trim(item);
+            });
+        }
+        return {
+            id: node.id,
+            name: node.name,
+            allNames: [processedName].concat(synonyms)
+        }
+    }
+
+    //decorate each node with "allNames" property which is an array of the original name and all synonyms
+    flattedOntologyNodes = $.map(ontology, processNode);
 
     var _initMapping = function () {
         $("#autosuggest").click(_autosuggest);
@@ -87,9 +118,10 @@
                 var matcher = new RegExp("^([\\|\\-\\s]|&nbsp;)*" + $.ui.autocomplete.escapeRegex(input.value) + "$", "i");
                 var valid = false;
 
+                var inputValue = input.value.toLowerCase();
                 //troll through onto ontologies until we find one that matches the value of the input element
-                $.each(ontology, function (k, v) {
-                    if (v.name.match(matcher)) {
+                $.each(flattedOntologyNodes, function (k, v) {
+                    if ($.inArray(inputValue, v.allNames) >= 0) {
                         valid = true;
                         var $idElement = $($input.attr("autocompleteIdElement"));
                         $idElement.val(v.id);
@@ -138,4 +170,4 @@
         "autoSuggest": _autosuggest
     };
 
-})(TDAR, jQuery, window);
+})(TDAR, jQuery, window, ontology);
