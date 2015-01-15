@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.service.excel.SheetEvaluator;
+import org.tdar.utils.MathUtils;
 
 public class ExcelParserTestCase {
     
@@ -30,6 +32,15 @@ public class ExcelParserTestCase {
         assertEquals(3, evaluator.getDataColumnEndIndex());
         verifyGeneratedColumnNames(evaluator, false);
         fis.close();
+    }
+    
+
+    @Test
+    public void testFormat() {
+        String st = "-1.0";
+        logger.debug("{}",NumberUtils.isNumber(st));
+        double d = NumberUtils.toDouble(st);
+        logger.debug("{}", d);
     }
     
     @Test

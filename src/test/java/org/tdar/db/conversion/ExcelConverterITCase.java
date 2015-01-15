@@ -1,8 +1,6 @@
 package org.tdar.db.conversion;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +13,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
@@ -316,5 +315,31 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         DataTable data = converter.getDataTableByName("e_509_pfraa_ifti_data");
         assertEquals(17, data.getColumnNames().size());
     }
+    
+    @Test
+    public void testFormat() {
+        String st = "1F";
+        double d = NumberUtils.toDouble(st);
+        logger.debug("{}", d);
+    }
+    
+    @Test
+    @Rollback
+    public void testMalformedFloatParse() throws IOException {
+        InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(),
+                "test_malformed_parse_float.xlsx"), 511);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, datasetWithHiddenFields);
+        assertTrue("text file exists", storedFile.exists());
+        DatasetConverter converter = DatasetConversionFactory.getConverter(datasetWithHiddenFields, tdarDataImportDatabase);
+        boolean exception = false;
+        try {
+            converter.execute();
+        } catch (TdarRecoverableRuntimeException ex) {
+            logger.debug("caught exception", ex);
+            exception = true;
+        }
+        assertFalse(exception);
+    }
+
 
 }
