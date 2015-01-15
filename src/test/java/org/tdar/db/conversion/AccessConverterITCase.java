@@ -33,6 +33,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.utils.MessageHelper;
 
 public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -96,7 +97,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
         DataTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
-        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), dataTable.getColumnByName("basic_int"),
+        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), MessageHelper.getInstance(), dataTable.getColumnByName("basic_int"),
                 dataTable.getColumnByName("basic_int_exp"), null);
         Map<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
         for (CodingRule rule : codingSheet.getCodingRules()) {

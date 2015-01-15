@@ -509,11 +509,13 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Takes a Coding Table within a larger data set and converts it to a tDAR CodingSheet
      */
     @Transactional
-    public CodingSheet convertTableToCodingSheet(TdarUser user, final DataTableColumn keyColumn, final DataTableColumn valueColumn,
+    public CodingSheet convertTableToCodingSheet(TdarUser user, final TextProvider provider, final DataTableColumn keyColumn, final DataTableColumn valueColumn,
             final DataTableColumn descriptionColumn) {
         final CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
         // codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
+        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(keyColumn.getDisplayName(), keyColumn.getDataTable().getDataset())));
+
         codingSheet.setTitle("Generated Coding Rule from " + keyColumn.getDataTable().getName());
         codingSheet.setDescription(codingSheet.getTitle());
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
