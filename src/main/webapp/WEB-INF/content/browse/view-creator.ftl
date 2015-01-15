@@ -9,7 +9,7 @@
 <#-- @search.initResultPagination/ -->
     <@search.headerLinks includeRss=false />
 
-	<#if creator.creatorType.person > 
+	<#if creator.creatorType.person >
     	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
 	<#else>
     	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.institution.id=${creator.id?c}&groups[0].creatorOwner.institution.name=${creator.name}">
@@ -84,7 +84,7 @@
     <h1>
     <#if logoAvailable>
 		<img class="pull-right" itemprop="image"  src="/files/creator/sm/${creator.id}/logo"
-		alt="logo" title="logo" /> 
+		alt="logo" title="logo" />
     </#if>
         <#if creator.properName??>${creator.properName}</#if></h1>
 
@@ -112,7 +112,7 @@
         </#if>
         <br/>
         <table class='tableFormat table'>
-        
+
         <#if creator.creatorType.person>
             <#if creator.url?has_content || creator.orcidId?has_content>
                     <tr>

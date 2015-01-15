@@ -80,7 +80,10 @@
         <from>^/services//(.*)</from>
         <to>/services/$1</to>
     </rule>
-    
+
+    <!-- fixme (TDAR-4419): I think this rule is meant to match anything besides "/services", but instead matches any url that doesn't start with (, ), s, e, r, v, i,  and c  -->
+    <!-- I tried replacing with (?!services), but this ends up breaking "/", "/search", and probably others. -->
+    <!--
     <rule>
         <condition type="request-uri" operator="equal">^/[^(services)].*$
         </condition>
@@ -91,6 +94,7 @@
         <from>^/search/search(.*)</from>
         <to>/search/results$1</to>
     </rule>
+    -->
 
     <!-- when run at the root context; the struts2 freemarker setup does 
         not seem to properly route requests through the servlet; hence requests from 
