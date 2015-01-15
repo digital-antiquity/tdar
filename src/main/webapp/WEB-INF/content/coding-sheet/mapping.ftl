@@ -11,6 +11,15 @@
 
 <h2>Map Codes to Ontology Values</h2>
 
+<h3>Basic Info</h3>
+<dl>
+    <dt>Coding Sheet</dt>
+    <dd>${resource.title}</dd>
+    <dt>Mapped Ontology</dt>
+    <dd>${resource.defaultOntology.title}</dd>
+</dl>
+
+<h3>Mapped Values</h3>
 <div id='display' class="">
     <@s.form method='post' id="mapontologyform" action='save-mapping'>
         <@s.token name='struts.csrf.token' />
@@ -25,7 +34,7 @@
         </div>
 
         <div class="control-group">
-            <label class="control-label">Mappings</label><span>Coding Rule Term (Code)
+            <label class="control-label">Mappings</label>
             <#list codingRules as rule>
                 <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}">
                     <@s.hidden name='codingRules[${rule_index?c}].id' />
