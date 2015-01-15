@@ -135,4 +135,17 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
         logger.debug(writer.toString());
     }
+    
+    private String testDupJson = "src/test/resources/data_integration_tests/test-integration-duplicate-display.json";
+
+    @Test
+    public void testIntegrationActionDupColumns() throws IOException, IntegrationDeserializationException {
+        IntegrationAction action = generateNewInitializedController(IntegrationAction.class, getAdminUser());
+        String integration = FileUtils.readFileToString(new File(testDupJson));
+        action.setIntegration(integration);
+        action.integrate();
+        StringWriter writer = new StringWriter();
+        IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
+        logger.debug(writer.toString());
+    }
 }
