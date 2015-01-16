@@ -277,6 +277,10 @@
 </fieldset>
 </form>
 
+<tdar-modal ng-controller="ModalDialogController">
+
+</tdar-modal>
+
 <span>
 <!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">

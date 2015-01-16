@@ -41,13 +41,18 @@
     }
 
     // Controller that drives the add-integration-column controller
-    app.controller('ModalDialogController', [ '$scope', 'DataService', 'close', 'options', function($scope, dataService, close, options) {
-        var url = options.url, closeWait = 500;
+    app.controller('ModalDialogController', [ '$scope', 'DataService', function($scope, dataService) {
+        var url = null, closeWait = 500;
 
         // get map of embedded data stored in the DOM
         var documentData = dataService.getDocumentData();
 
-        console.debug("ModalDialogController:: url:%s", url);
+        var options = {
+            title: "add datasets",
+            categoryFilter: false,
+            searchType: 'dataset'
+        }
+
         $scope.title = options.title;
         $scope.filter = new SearchFilter();
         $scope.selectedItems = [];
@@ -96,8 +101,6 @@
             return $scope.selectedItems.indexOf(item) > -1;
         }
 
-        // TODO: this could be pulled out into a commmon function, e.g. TDAR.common.toggleArrayValue(arr, value)
-
         // called when user selects/deslects one of the items in the select
         $scope.toggleSelection = function(itemId, obj) {
             console.debug("toggleSelected::");
@@ -117,7 +120,33 @@
             $scope.search();
         }, true);
 
+        $scope.$on("openTdarModal", function() {
+            $scope.openTdarModal();
+        });
+
+
+        $scope.reset = function() {
+            console.log("reset called");
+        }
+
     } ]);
+
+    app.directive("tdarModal", function() {
+        return {
+            restrict: 'E',
+            link: function(scope, element, attr){
+                var modalRoot = element.children();
+                scope.openTdarModal = function() {
+                    modalRoot.modal();
+                    scope.reset();
+                };
+
+            },
+            templateUrl: "workspace/modal-dialog.html"
+        }
+    });
+
+
 
     /* global angular */
 })(angular);

@@ -6,7 +6,7 @@
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$scope', 'ModalService',  'IntegrationService', 'DataService', function($scope, ModalService, integration, dataService){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService',  function($rootScope, $scope, integration, dataService){
         var self = this,
             _openModal,
             _processAddedIntegrationColumns;
@@ -17,32 +17,7 @@
         self.sharedOntologies = [];
         
         _openModal = function(options) {
-            ModalService.showModal({
-                // Note: there is no file w/ this name. Angular first looks for partials in DOM elements w/ id specified by templateUrl.
-                templateUrl: "workspace/modal-dialog.html",
-                controller: "ModalDialogController",
-                inputs: {
-                    options: $.extend({categoryFilter: false}, options)
-                }
-            }).then(function(modal){
-                // model.element is a jqSelection containing the top-level element for this control (e.g. $("#modalContainer")
-                modal.element.modal();
-
-                // model.close is a promise that is resolved when the modal closes
-                modal.close.then(function(result){
-                    // modal.element.modal('hide');
-                    console.log("modal destroyed  result:%s", result);
-                    $scope.message = result ? "result was yes" : "result was no";
-
-                    if(options.close) {
-                        options.close(result);
-                    }
-                });
-
-                // if the service cannot create the modal or catches an exception, the promise calls an error callback
-            }).catch(function(error) {
-                console.error("ModalService error: %s", error);
-            });
+            $rootScope.$broadcast("openTdarModal", options);
         };
 
         // controller public methods
