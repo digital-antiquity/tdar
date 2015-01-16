@@ -26,7 +26,33 @@ TDAR.inheritance = (function () {
         });
     }
 
-// convert a serialized project into the json format needed by the form.
+    //FIXME: HACK:  workaround chrome-specific rendering issue that occurs when updating inherited sections (TDAR-4358)
+    /**
+     * Alter opacity for 1 tick to force a repaint in Chrome .  This (appears to) remove 'ghost' elements that appear
+     * even after we these elements from the DOM (via jQuery.remove).  When chrome repaints the affected region the ghosts disappear, so we tweak the opacity
+     * to force a repaint of the affected region.
+     *
+     * @param $parentElement jquery selection containing the div to repaint.
+     * @private
+     */
+    function _forceChromeRepaint($parentElement) {
+        //if client supports opacity, change it
+        var oldOpacity = $parentElement.css("opacity");
+        if(!oldOpacity) return;
+        $parentElement.css({opacity:0.5});
+        //set timeout is required: new opacity must be applied in a different tick or chrome wont repaint
+        setTimeout(function(){
+            $parentElement.css({opacity: oldOpacity});
+        }, 10);
+
+    }
+
+    /**
+     * convert a serialized project into the json format needed by the form.
+     * @param rawJson
+     * @returns *
+     * @private
+     */
     function _convertToFormJson(rawJson) {
         // create a skeleton of what we need
         var obj = {
@@ -70,8 +96,7 @@ TDAR.inheritance = (function () {
                 geographicKeywords: $.map(rawJson.activeGeographicKeywords, function (v) {
                     return v.label;
                 }),
-                'p_maxy': null, // FIXME: I don't think these p_**** fields are
-                // used/needed
+                'p_maxy': null,
                 'p_minx': null,
                 'p_maxx': null,
                 'p_miny': null
@@ -99,9 +124,6 @@ TDAR.inheritance = (function () {
             creditProxies: $.map(rawJson.activeIndividualAndInstitutionalCredit, _convertCreator)
         };
 
-        // FIXME: update the parent latlong box (i.e. the red box not the brown
-        // box)..p_miny, pmaxy, etc. etc.
-        // console.warn(rawJson.firstLatitudeLongitudeBox)
         if (rawJson.firstActiveLatitudeLongitudeBox) {
             obj.spatialInformation['minx'] = rawJson.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude;
             obj.spatialInformation['maxx'] = rawJson.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude;
@@ -113,7 +135,12 @@ TDAR.inheritance = (function () {
         return obj;
     }
 
-//convert creator from untranslated json to object that can then be passed to from populate plugin
+    /**
+     * convert creator from untranslated json to object that can then be passed to from populate plugin
+     * @param raw
+     * @returns {{id: *, role: *, type: string, person: {}, institution: {}}}
+     * @private
+     */
     function _convertCreator(raw) {
         var bPerson = raw.creator.hasOwnProperty("lastName");
         var obj = {
@@ -146,8 +173,11 @@ TDAR.inheritance = (function () {
         return obj;
     }
 
-// disable a section: disable inputs, but also make section look disabled by
-// graying labels and removing edit controls
+    /**
+     * disable a section: disable inputs, but also make section look disabled by graying labels and removing edit controls
+     * @param idSelector
+     * @private
+     */
     function _disableSection(idSelector) {
 
         $(':input', idSelector).not(".alwaysEnabled").prop('disabled', true);
@@ -159,18 +189,23 @@ TDAR.inheritance = (function () {
     }
 
     function _enableSection(idSelector) {
-        $(':input', idSelector).prop('disabled', false);
+        $(':input', idSelector).prop('disabled', false); // here's call that spawns ghost elements (TDAR-4358)
         $('label', idSelector).removeClass('disabled');
         $('.addAnother, .minus', idSelector).show();
 
         //if sibling is an add-another button,  enable that too.
         $(idSelector).next(".add-another-control").find("button").prop('disabled', false);
+
+        //force a repaint to dispel any ghost elements.
+        _forceChromeRepaint($(idSelector));
     }
 
-// modify id/name attribute in element and children if they follow 'indexed'
-// pattern
-// e.g. <input name='my_input_field[12]'> becomes <input
-// name='my_input_field[0]'>
+    /**
+     * Rename id/name attribute in element and children if they follow struts 'indexed' such that the 'index' portion  of the name is set to zero (e.g.
+     * if an ID attribute has a value of 'my_input_field[12]' the function will rename it to 'my_input_field[0]'
+     * @param elem
+     * @private
+     */
     function _resetIndexedAttributes(elem) {
         var rex = /^(.+[_|\[])([0-9]+)([_|\]].*$)/; // string containing _num_ or [num]
         var replacement = "$10$3"; // replace foo_bar[5] with foo_bar[0]
@@ -179,19 +214,20 @@ TDAR.inheritance = (function () {
             var name = $(v).attr("name");
             if (id) {
                 var newid = id.replace(rex, replacement);
-//            console.log(id + " is now " + newid);
                 $(v).attr("id", newid);
             }
             if (name) {
                 var newname = name.replace(rex, replacement);
-//            console.log(name + " is now " + newname);
                 $(v).attr("name", newname);
             }
         });
     }
 
-// TODO: make this a jquery plugin?
-// clears (not resets) the selected elements
+    /**
+     * Clears (but does not reset) the selected elements.
+     * @param selector
+     * @private
+     */
     function _clearFormSection(selector) {
         // Use a whitelist of fields to minimize unintended side effects.
         $(selector).find('input:text, input:password, input:file, textarea').val('');
@@ -199,9 +235,13 @@ TDAR.inheritance = (function () {
         $(':input', selector).prop('checked', false).prop('selected', false);
     }
 
-// return true if the repeatrows contained in the selector match the list of
-// strings
-// FIXME: these are terrible function names
+    /**
+     * return true if the repeatrows contained in the selector match the list of strings
+     * @param rootElementSelector
+     * @param values
+     * @returns {boolean}
+     * @private
+     */
     function _inheritingRepeatRowsIsSafe(rootElementSelector, values) {
         var repeatRowValues = $.map($('input[type=text]', rootElementSelector), function (v, i) {
             if ($(v).val()) {
@@ -211,10 +251,14 @@ TDAR.inheritance = (function () {
         return repeatRowValues.length === 0 || $.compareArray(repeatRowValues, values);
     }
 
-// FIXME: these are terrible function names
-// return true if this section can 'safely' inherit specified values. 'safe'
-// means that the target values are empty or the same
-// as the incoming values.
+    /**
+     * return true if this section can 'safely' inherit specified values. 'safe' means that the target values are empty or the
+     * same as the incoming values.
+     * @param rootElementSelector
+     * @param values
+     * @returns {boolean}
+     * @private
+     */
     function _inheritingCheckboxesIsSafe(rootElementSelector, values) {
         var checkedValues = $.map($(':checkbox:checked', rootElementSelector), function (v, i) {
             return $(v).val();
@@ -223,8 +267,7 @@ TDAR.inheritance = (function () {
         return isSafe;
     }
 
-    function _inheritingMapIsSafe(rootElementSelector, spatialInformation) {
-        // FIXME: pretty sure that rootElementSelector isn't needed. either ditch it
+    function _inheritingMapIsSafe(spatialInformation) {
         // or make the fields retrievable by name instead of id
         var si = spatialInformation;
         // compare parent coords to this form's current coords. seems like overkill
@@ -241,10 +284,15 @@ TDAR.inheritance = (function () {
         return  !formVals.length || $.compareArray(jsonVals, formVals, false);
     }
 
-// return whether it's "safe" to populate the temporal information section with
-// the supplied temporalInformation
-// we define "safe" to mean that section is either currently blank or that the
-// supplied temporalInformation is the same as what is already on the form.
+    /**
+     * return whether it's "safe" to populate the temporal information section with the supplied temporalInformation we define "safe" to mean that section is
+     * either currently blank or that the supplied temporalInformation is the same as what is already on the form.
+
+     * @param rootElementSelector
+     * @param temporalInformation
+     * @returns {boolean}
+     * @private
+     */
     function _inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
         // are all the fields in this section blank?
         var $coverageTextFields = $('input:text', '#coverageDateRepeatable');
@@ -465,8 +513,6 @@ TDAR.inheritance = (function () {
         // prime the "im-busy-dont-bother-me" flag on select-all checkbox.
         $cbSelectAllInheritance.data('isUpdatingSections', false);
 
-        // FIXME: forward-references to function statements are not advised. replace
-        // with forward-reference to function expression/variable?
         $cbSelectAllInheritance.click(_selectAllInheritanceClicked);
 
         _projectChangedCallback(TDAR.inheritance.project);
@@ -528,7 +574,7 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#siteInfoSectionLabel",
                 cbSelector: '#cbInheritingSiteInformation',
                 divSelector: '#siteSection',
-                mappedData: "siteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "siteInformation", // curently not used 
                 isSafeCallback: function () {
                     var allKeywords = TDAR.inheritance.json.siteInformation.siteNameKeywords.concat(TDAR.inheritance.json.siteInformation.uncontrolledSiteTypeKeywords);
                     return _inheritingCheckboxesIsSafe('#divSiteInformation', TDAR.inheritance.json.siteInformation.approvedSiteTypeKeywordIds) && _inheritingRepeatRowsIsSafe('#divSiteInformation', allKeywords);
@@ -542,7 +588,7 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#temporalInfoSectionLabel",
                 cbSelector: '#cbInheritingTemporalInformation',
                 divSelector: '#temporalSection',
-                mappedData: "temporalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "temporalInformation", // curently not used 
                 isSafeCallback: function () {
                     return _inheritingRepeatRowsIsSafe('#temporalKeywordsRepeatable', TDAR.inheritance.json.temporalInformation.temporalKeywords) && _inheritingDatesIsSafe('#divTemporalInformation', TDAR.inheritance.json.temporalInformation);
                 },
@@ -561,20 +607,20 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#materialInfoSectionLabel",
                 cbSelector: '#cbInheritingMaterialInformation',
                 divSelector: '#allMaterialInformation',
-                mappedData: "materialInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "materialInformation", // curently not used 
                 isSafeCallback: function () {
                     return _inheritingCheckboxesIsSafe('#allMaterialInformation', TDAR.inheritance.json.materialInformation.approvedMaterialKeywordIds) &&
                             _inheritingRepeatRowsIsSafe('#allMaterialInformation', TDAR.inheritance.json.materialInformation.uncontrolledMaterialKeywords);
                 },
                 inheritSectionCallback: function () {
-                    _inheritMaterialInformation('#divMaterialInformation', TDAR.inheritance.json);
+                    _inheritMaterialInformation('#allMaterialInformation', TDAR.inheritance.json);
                 }
             },
             {
                 sectionNameSelector: "#culturalInfoSectionLabel",
                 cbSelector: '#cbInheritingCulturalInformation',
                 divSelector: '#divCulturalInformation',
-                mappedData: "culturalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "culturalInformation", // curently not used 
                 isSafeCallback: function () {
                     return _inheritingCheckboxesIsSafe('#divCulturalInformation', TDAR.inheritance.json.culturalInformation.approvedCultureKeywordIds) && 
                     _inheritingRepeatRowsIsSafe('#divCulturalInformation', TDAR.inheritance.json.culturalInformation.uncontrolledCultureKeywords);
@@ -587,7 +633,7 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#generalInfoSectionLabel",
                 cbSelector: '#cbInheritingOtherInformation',
                 divSelector: '#divOtherInformation',
-                mappedData: "otherInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "otherInformation", // curently not used 
                 isSafeCallback: function () {
                     return _inheritingRepeatRowsIsSafe('#divOtherInformation', TDAR.inheritance.json.otherInformation.otherKeywords);
                 },
@@ -599,7 +645,7 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#investigationInfoSectionLabel",
                 cbSelector: '#cbInheritingInvestigationInformation',
                 divSelector: '#divInvestigationInformation',
-                mappedData: "investigationInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "investigationInformation", // curently not used 
                 isSafeCallback: function () {
                     return _inheritingCheckboxesIsSafe('#divInvestigationInformation', TDAR.inheritance.json.investigationInformation.investigationTypeIds);
                 },
@@ -611,7 +657,7 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#notesInfoSectionLabel",
                 cbSelector: '#cbInheritingNoteInformation',
                 divSelector: '#resourceNoteSection',
-                mappedData: "noteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "noteInformation", // curently not used 
                 isSafeCallback: function () {
                     var $resourceNoteSection = $('#resourceNoteSection');
                     var projectNotes = TDAR.inheritance.json.noteInformation.resourceNotes;
@@ -639,7 +685,6 @@ TDAR.inheritance = (function () {
                         formVals.push($.trim($(this).val()));
                     });
 
-                    //FIXME: ignoreOrder should be false, but I'm pretty sure server doesn't preserve order. turn this on once fixed.
                     return $.compareArray(projectVals, formVals, true);
 
                 },
@@ -651,7 +696,7 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#relatedCollectionInfoSectionLabel",
                 cbSelector: '#cbInheritingCollectionInformation',
                 divSelector: '#relatedCollectionsSection',
-                mappedData: "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "collectionInformation", // curently not used 
                 isSafeCallback: function () {
                     var $textareas = $('#relatedCollectionsSection').find("textarea");
                     //overwriting empty section is always safe
@@ -671,7 +716,6 @@ TDAR.inheritance = (function () {
                         return obj.text;
                     }));
 
-                    //FIXME: array comparison shouldn't ignore order if server side maintains sequence order... does it?
                     return $.compareArray(formVals, projectVals, true);
                 },
                 inheritSectionCallback: function () {
@@ -682,7 +726,7 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#identifierInfoSectionLabel",
                 cbSelector: '#cbInheritingIdentifierInformation',
                 divSelector: '#divIdentifiers',
-                mappedData: "resourceAnnotations", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "resourceAnnotations", // curently not used 
                 isSafeCallback: function () {
                     // flatten json to array of values [key, val, key, val, ...], and
                     // compare to field values.
@@ -702,9 +746,9 @@ TDAR.inheritance = (function () {
                 sectionNameSelector: "#spatialInfoSectionLabel",
                 cbSelector: '#cbInheritingSpatialInformation',
                 divSelector: '#divSpatialInformation',
-                mappedData: "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+                mappedData: "collectionInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingMapIsSafe('#divSpatialInformation', TDAR.inheritance.json.spatialInformation) && _inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', TDAR.inheritance.json.spatialInformation.geographicKeywords);
+                    return _inheritingMapIsSafe(TDAR.inheritance.json.spatialInformation) && _inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', TDAR.inheritance.json.spatialInformation.geographicKeywords);
                 },
                 inheritSectionCallback: function () {
                     _inheritSpatialInformation("#divSpatialInformation", TDAR.inheritance.json);
@@ -725,7 +769,6 @@ TDAR.inheritance = (function () {
                     _inheritCreditInformation('#creditTable', TDAR.inheritance.json.creditProxies);
 
                 }
-
             }
 
         ];
@@ -734,8 +777,8 @@ TDAR.inheritance = (function () {
             TDAR.inheritance.registerInheritSection(options);
         });
 
-        //We don't want to have an editable map when resource inherits spatialInformation, however, the map won't be available immediately after pageload. So
-        //we wait till the map is loaded and ready
+        /* We want to disable the map when a user inherits spatialInformation, however, the map isn't available immediately after pageload. So we wait for the
+        browser to load the map gmap api and initialize the map. */
         $('#editmapv3').one('mapready', function (e) {
             if ($('#cbInheritingSpatialInformation').prop('checked')) {
                 _disableMap();
@@ -841,12 +884,7 @@ TDAR.inheritance = (function () {
             var $sectionCheckboxes = $('.divInheritSection input[type=checkbox]');
 
             // make all of the section checkboxes just like this checkbox.
-            if (checked) {
-                // check all of the unchecked sections
-
-//            $sectionCheckboxes.not(':checked').each(function() {
-//                $(this).click();
-//            });
+            if(checked) {
                 _attemptMultipleInheritance($sectionCheckboxes.not(':checked'));
             } else {
                 // uncheck all of the checked sections
@@ -854,16 +892,19 @@ TDAR.inheritance = (function () {
                     $(this).click();
                 });
             }
-
         } finally {
             //never leave this checkbox in indeterminate state
             $elem.data('isUpdatingSections', false);
         }
     }
 
-//display modal dialog w/ list of affected sections.
-//TODO: Alert box might be better because user could inspect sections prior to decision, but managing state would be way harder 
-//(e.g. user changes additional values before they finally click 'okay' or 'cancel').
+    /**
+     * Display the overwrite warning prompt w/ a list of affected sections
+     * @param optionsList
+     * @param okaySelected callback called  if user select okay
+     * @param cancelSelected callback called if user selects cancel
+     * @private
+     */
     function _displayOverwritePrompt(optionsList, okaySelected, cancelSelected) {
         var $modalDiv = $('#inheritOverwriteAlert');
 
@@ -873,8 +914,6 @@ TDAR.inheritance = (function () {
             $ul.append("<li>" + $(options.sectionNameSelector).text() + "</li>");
         });
         $modalDiv.find('.list-container').empty().append($ul);
-
-        //modal is animated,  so we shouldn't do this dom-intensive stuff until animation is complete
 
         //by default, treat 'hidden' event as a 'cancel'
         $modalDiv.one("hidden", cancelSelected);
@@ -945,7 +984,6 @@ TDAR.inheritance = (function () {
         }
     }
 
-//FIXME: kill this function.
     function _populateLatLongTextFields() {
         $("#d_minx").val(Geo.toLon($("#minx").val()));
         $("#d_miny").val(Geo.toLat($("#miny").val()));
@@ -953,7 +991,6 @@ TDAR.inheritance = (function () {
         $("#d_maxy").val(Geo.toLat($("#maxy").val()));
     }
 
-//FIXME: kill this function.
     function _disableMap() {
         var $mapdiv = $('#editmapv3');
         $mapdiv.addClass('opaque');
@@ -962,7 +999,6 @@ TDAR.inheritance = (function () {
         }
     }
 
-//FIXME: kill this function.
     function _enableMap() {
         var $mapdiv = $('#editmapv3');
         $mapdiv.removeClass('opaque');
@@ -1039,15 +1075,15 @@ TDAR.inheritance = (function () {
             isSafeCallback: function () {
                 return true;
             },
-            //fixme: getObjValue(json, options.mappedData) instead?
             inheritSectionCallback: function () {
                 _inheritInformation(formId, TDAR.inheritance.json[_options.mappedData]);
             },
-            enableSectionCallback: _enableSection //fixme: move to namespace
+            enableSectionCallback: _enableSection 
         };
         $.extend(_options, options);
+        //_wrapInheritCallback(_options);
         $form.data("inheritOptionsList").push(_options);
-        $checkbox.data("inheritOptions", _options);
+        $checkbox.data("inheritOptions", _options)
 
         //update contents/state of section when checkbox for that section is toggled
         $(_options.cbSelector).change(function (e) {

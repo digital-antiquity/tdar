@@ -462,7 +462,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.validate();
         assertTrue("expecting matching passwords",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
-        assertEquals(2, controller.getActionErrors().size());
+        assertEquals(1, controller.getActionErrors().size());
     }
 
     @Override

@@ -100,7 +100,6 @@ public class InvoiceController extends AbstractCartController {
                     @Result(name = INPUT, location = "add.ftl"),
                     @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
                     @Result(name = SUCCESS_UNAUTHENTICATED, type = REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
-            // @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
             })
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly
@@ -251,7 +250,9 @@ public class InvoiceController extends AbstractCartController {
         }
 
         if (isPostRequest() && mb == 0L && files == 0L) {
-            addActionError(getText("cartController.specify_mb_or_files"));
+            if(StringUtils.isBlank(getCode())) {
+                addActionError(getText("cartController.specify_mb_or_files"));
+            }
         }
 
         // rule: invoice must not be finalized

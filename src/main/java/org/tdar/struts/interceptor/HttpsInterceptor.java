@@ -64,11 +64,11 @@ public class HttpsInterceptor implements Interceptor {
         if (request.getServletPath().equals("/about")) {
             baseUrl = baseUrl.replace("/about", "/");
         }
-        try {
-            baseUrl = UrlService.reformatViewUrl(baseUrl);
-        } catch (Exception e) {
-            logger.error("error in reformatting view URL", e);
-        }
+//        try {
+//            baseUrl = UrlService.reformatViewUrl(baseUrl);
+//        } catch (Exception e) {
+//            logger.error("error in reformatting view URL", e);
+//        }
 
         return baseUrl;
     }

@@ -86,7 +86,6 @@ View freemarker macros
         <a href="<@s.url value='${path}'/>"
             class="download-link download-file"
            onClick="TDAR.common.registerDownload('${path}', '${id?c}')"
-           <#if resource.resourceType.image> target='_blank' </#if>
            title="click to download: ${version.filename}">
             <@common.truncate version.filename 65 />
         </a><#if newline><br/></#if>
@@ -107,7 +106,7 @@ View freemarker macros
         <#if resource.hasConfidentialFiles() >
             Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
         <#else>
-        <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" target="_blank"
+        <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" 
            onclick="TDAR.common.registerDownload('/filestore/download?informationResourceId=${resource.id?c}', '${id?c}')"
            title="download all as zip">Download All</a>
         </#if>
@@ -365,7 +364,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
 
-        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a><#else>${c.properName}</#if>
+        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
     </#compress>
     </#macro>
 
@@ -423,12 +422,12 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 <dt>
                 <p><strong>Created by</strong></p></dt>
                 <dd><p><a
-                        href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
+                        href="<@s.url value="${resource.submitter.detailUrl}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
                     on ${resource.dateCreated}</#if></p></dd>
                 <#if resource.submitter.id != resource.uploader.id>
                     <dt>
                     <p><strong>Uploaded by</strong></p></dt>
-                    <dd><p><a href="<@s.url value="/browse/creators/${resource.uploader.id?c}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
+                    <dd><p><a href="<@s.url value="${resource.uploader.detailurl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
                     </p></dd>
                 </#if>
                 <#if resource.account?has_content && (administrator || editable) >
@@ -445,7 +444,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 </#if>
                 <dt>
                 <p><strong>Last Updated by</strong></p></dt>
-                <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a>
+                <dd><p><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
                     on ${resource.dateUpdated?date!""}</p></dd>
                 <dt>
                 <p><strong>Viewed</strong></p></dt>
@@ -685,7 +684,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#list resources as resource>
             <tr id='dtr_${resource.id?c}'>
                 <td>${resource.id?c}
-                <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="_b">${(resource.title)!""}</a>
+                <td><a href="<@s.url value="${resource.detailUrl}"/>" target="_b">${(resource.title)!""}</a>
             <td>
                 <button class="btn btn-mini" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
             </#list>
@@ -719,7 +718,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
 <#--emit the citation section of a view page (including map depicting bounding box, if bounding box defined) -->
     <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
     <div class="item <#if count==0>active</#if>">
-        <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
+        <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${resource.detailUrl}"/></#local>
         <#if resource.firstActiveLatitudeLongitudeBox?has_content>
             <img title="map" alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
         <#else>

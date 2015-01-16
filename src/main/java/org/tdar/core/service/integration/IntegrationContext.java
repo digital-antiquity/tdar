@@ -30,7 +30,7 @@ public class IntegrationContext implements Serializable {
     private static final long serialVersionUID = 6206089620213511145L;
     private TdarUser creator;
     private Date dateCreated = new Date();
-    private List<IntegrationColumn> integrationColumns;
+    private List<IntegrationColumn> integrationColumns = new ArrayList<>();
     private List<DataTable> dataTables;
     
     private List<String> errorMessages = new ArrayList<>();

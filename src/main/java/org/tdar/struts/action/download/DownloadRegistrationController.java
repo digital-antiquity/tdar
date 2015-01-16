@@ -44,7 +44,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     @WriteableSession
     @DoNotObfuscate(reason = "getPerson() may have not been set on the session before sent to obfuscator, so don't want to wipe email")
     public String create() {
-        if (getDownloadRegistration() == null || getDownloadRegistration().getPerson() == null || !isPostRequest()) {
+        if (getDownloadRegistration() == null || getDownloadRegistration().getPerson() == null) {
             return INPUT;
         }
         AuthenticationResult result = null;

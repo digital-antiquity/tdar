@@ -50,6 +50,7 @@ import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.download.DownloadController;
 import org.tdar.utils.ExcelUnit;
@@ -649,7 +650,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         }
         assertNotNull(myColumn);
         // 3. update coding sheet mappings to point to ontology
-        CodingSheetController csc = generateNewInitializedController(CodingSheetController.class);
+        CodingSheetMappingController csc = generateNewInitializedController(CodingSheetMappingController.class);
         csc.setId(myColumn.getDefaultCodingSheet().getId());
         csc.prepare();
         csc.loadOntologyMappedColumns();

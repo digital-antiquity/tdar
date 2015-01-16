@@ -30,6 +30,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -117,9 +118,9 @@ public class DataIntegrationService {
             logger.debug("aborting, no coding rules or coding sheet {}", codingSheet);
             return;
         }
-        logger.info("selecting distinct values from column");
+        logger.trace("selecting distinct values from column");
         List<String> values = tdarDataImportDatabase.selectDistinctValues(column);
-        logger.info("values: {} ", values);
+        logger.trace("values: {} ", values);
         logger.info("matching coding rule terms to column values");
         for (CodingRule rule : codingSheet.getCodingRules()) {
             if (values.contains(rule.getTerm())) {
@@ -137,6 +138,7 @@ public class DataIntegrationService {
         if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
             filteredOntologyNodes.removeAll(Collections.singletonList(null));
         }
+        integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
 
         logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
         filteredOntologyNodes = genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class);
@@ -204,19 +206,9 @@ public class DataIntegrationService {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
-        CodingSheet codingSheet = new CodingSheet();
-        codingSheet.setGenerated(true);
-        codingSheet.setAccount(column.getDataTable().getDataset().getAccount());
-        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName())));
-        codingSheet.markUpdated(submitter);
-        codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
-        codingSheet.setDefaultOntology(ontology);
-        codingSheet.setCategoryVariable(ontology.getCategoryVariable());
-        codingSheet.setDescription(provider.getText(
-                "dataIntegrationService.generated_coding_sheet_description",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(),
-                        column.getDataTable().getDataset().getId(), codingSheet.getDateCreated())));
-        genericDao.save(codingSheet);
+        
+        Dataset dataset = column.getDataTable().getDataset();
+        CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
         Set<CodingRule> rules = new HashSet<>();
@@ -441,19 +433,10 @@ public class DataIntegrationService {
                 }
             }
 
+            //NOTE: this can be removed once the legacy filter page is removed
             // check if any of the children of this node matches
             if (CollectionUtils.isNotEmpty(children)) {
                 ontologyNode.setParent(true);
-                // should we set the children list directly on this OntologyNode?
-                if (!ontologyNode.isMappedDataValues()) {
-                    // this parent node has no direct mapped data values, check if any children do
-                    for (OntologyNode child : children) {
-                        if (child.isMappedDataValues()) {
-                            markAdded(col, icp, ontologyNode);
-                            break;
-                        }
-                    }
-                }
             }
         }
     }
@@ -519,6 +502,7 @@ public class DataIntegrationService {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
         IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao);
+        integrationContext.setCreator(authenticatedUser);
         ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)",null, authenticatedUser);
         log.setTimestamp(new Date());
         log.setPayload(integration);

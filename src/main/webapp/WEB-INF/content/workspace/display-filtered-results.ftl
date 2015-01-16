@@ -29,8 +29,8 @@
         <tr>
             <#list integrationColumns as column>
                     <#if column.integrationColumn>
-                		<th>${column.name}</th>
-    				</#if>
+                        <th>${column.name}</th>
+                    </#if>
             </#list>
             <#list selectedDataTables as table>
                 <th>${table.dataset.title} - ${table.displayName}</th>
@@ -39,7 +39,7 @@
         </tr>
         </thead>
         <tbody>
-			<#assign pivot = result.pivotData />
+            <#assign pivot = result.pivotData />
             <#assign keys = pivot?keys >
             <#list keys?sort as key >
             <tr>
@@ -49,10 +49,12 @@
                 </#list>
                 <#assign totals = 0/>
                 <#list selectedDataTables as table>
+
+
                     <td> 
-					 <#if pivot.get(key)?? && pivot.get(key).get(table.name)??>
-                    ${pivot.get(key).get(table.name)}
-                        <#assign totals = totals + pivot.get(key).get(table.name)?number />
+                     <#if pivot.get(key)?? && pivot.get(key).get(table.id)??>
+                    ${pivot.get(key).get(table.id)}
+                        <#assign totals = totals + pivot.get(key).get(table.id)?number />
                     <#else>0</#if></td>
                 </#list>
                 <td>${totals}</td>
@@ -68,8 +70,9 @@
         <th>Table</th>
     <#list result.integrationContext.integrationColumns as integrationColumn>
         <th>${integrationColumn.name}</th>
-        <#if !integrationColumn.displayColumn>
+        <#if integrationColumn.integrationColumn>
             <th>${integrationColumn.name} (Mapped)</th>
+            <th>${integrationColumn.name} (Sort)</th>
         </#if>
     </#list>
 </tr></thead>

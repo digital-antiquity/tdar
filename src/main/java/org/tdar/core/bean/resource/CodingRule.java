@@ -117,13 +117,8 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         if (StringUtils.isEmpty(string)) {
             return null;
         }
-        try {
-            Integer integer = Integer.parseInt(string);
-            string = String.valueOf(integer);
-        } catch (NumberFormatException exception) {
-            if (string != null) {
-                string = string.trim();
-            }
+        if (string != null) {
+            string = string.trim();
         }
         return string;
     }
@@ -207,6 +202,10 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @XmlTransient
     public String getFormattedTerm() {
+        if (StringUtils.equalsIgnoreCase(getCode(), getTerm())) {
+            return getTerm();
+        }
+            
         return String.format("%s (%s)", getTerm(), getCode());
     }
 }

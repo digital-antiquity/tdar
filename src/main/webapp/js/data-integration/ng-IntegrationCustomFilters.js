@@ -17,14 +17,7 @@
     // prettify dataTables
     app.filter('dtDisplayName', function() {
         return function(dataTable) {
-            var name = (dataTable.displayName
-            // ditch the ugly prefix
-            .replace(/[de]_\d+_/, '')
-            // strip filename from table name
-            .replace(/^.*?_(mdb)_/, '')
-            // deslug
-            .replace(/_/g, ' '));
-            return dataTable.datasetTitle + ' :: ' + name;
+            return dataTable.datasetTitle + ' :: ' + dataTable.displayName;
         }
     });
 

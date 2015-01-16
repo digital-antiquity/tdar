@@ -1,6 +1,5 @@
 package org.tdar.db.model.abstracts;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;

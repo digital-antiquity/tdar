@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.SerializationService;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
@@ -63,18 +64,23 @@ public class XMLDocumentResult implements Result {
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
         resp.setContentType(CONTENT_TYPE);
-        if (object_ instanceof Map) {
-            JaxbResultContainer container = new JaxbResultContainer();
-            container.convert((Map<String, Object>) object_, invocation);
-            object_ = container;
-        }
-
+        JaxbResultContainer container = new JaxbResultContainer();
         if (object_ instanceof JaxbResultContainer) {
-            JaxbResultContainer result = (JaxbResultContainer) object_;
-            if (result.getStatusCode() != StatusCode.OK.getHttpStatusCode()) {
-                setStatusCode(result.getStatusCode());
+            container  = (JaxbResultContainer) object_;
+            if (container.getStatusCode() != StatusCode.OK.getHttpStatusCode()) {
+                setStatusCode(container.getStatusCode());
             }
         }
+        
+        if (object_ instanceof Map) {
+            container.convert((Map<String, Object>) object_, invocation);
+            object_ = container;
+            if (TdarActionSupport.INPUT.equals(invocation.getResultCode())) {
+                setStatusCode(StatusCode.BAD_REQUEST.getHttpStatusCode());
+                container.setStatusCode(getStatusCode());
+            }
+        }
+
         logger.debug("StatusCode: {}",getStatusCode());
         resp.setStatus(getStatusCode());
         serializationService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));

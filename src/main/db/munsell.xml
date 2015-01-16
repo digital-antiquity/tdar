@@ -14,7 +14,6 @@
 	</changeSet>
 
 	<changeSet id="munsell-02" author='jtdevos'>
-		<dropColumn tableName="institution" columnName="email" />
 		<addColumn tableName="institution">
 			<column name="email" type="varchar(255)" />
 		</addColumn>
@@ -23,40 +22,6 @@
 			disabled="false" initiallyDeferred="false" tableName="institution" />
 	</changeSet>
 
-	<changeSet id="munsell-03" author="abrin">
-
-		<addColumn tableName="resource_access_day_agg">
-			<column name="month" type="INT4" />
-		</addColumn>
-		<addColumn tableName="file_download_day_agg">
-			<column name="month" type="INT4" />
-		</addColumn>
-		<createIndex indexName="agg_res_month" tableName="resource_access_day_agg"
-			unique="false">
-			<column name="month" />
-		</createIndex>
-		<createIndex indexName="agg_dwnld_month" tableName="file_download_day_agg"
-			unique="false">
-			<column name="month" />
-		</createIndex>
-		<createIndex indexName="agg_res_month_year" tableName="resource_access_day_agg"
-			unique="false">
-			<column name="year" />
-			<column name="month" />
-		</createIndex>
-		<createIndex indexName="agg_dwnld_month_year" tableName="file_download_day_agg"
-			unique="false">
-			<column name="year" />
-			<column name="month" />
-		</createIndex>
-
-		<update tableName="resource_access_day_agg">
-			<column name="month" valueNumeric="date_part('month',date_accessed)" />
-		</update>
-		<update tableName="file_download_day_agg">
-			<column name="month" valueNumeric="date_part('month',date_accessed)" />
-		</update>
-	</changeSet>
 	<changeSet id="munsell-04" author="abrin">
 		<comment>Changing database to match hibernate validation requirements</comment>
 		<modifyDataType tableName="coding_sheet" columnName="category_variable_id"
@@ -91,12 +56,6 @@
 			columnName="sequence_number" newDataType="int4" />
 		<!-- <modifyDataType tableName="sensory_data_scan" columnName="resolution" 
 			newDataType="float8" /> -->
-	</changeSet>
-	<changeSet id="munsell-05" author="abrin">
-		<addColumn tableName="creator">
-			<column name="browse_occurrence" defaultValue="0" type="int8"></column>
-			<column name="hidden" defaultValue="false" type="boolean"></column>
-		</addColumn>
 	</changeSet>
 
 

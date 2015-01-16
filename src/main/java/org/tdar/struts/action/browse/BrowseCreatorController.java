@@ -81,7 +81,7 @@ import freemarker.ext.dom.NodeModel;
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-@Results(value = { @Result(location = "../creators.ftl"),
+@Results(value = { @Result(location = "../view-creator.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })

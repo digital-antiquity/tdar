@@ -1,18 +1,19 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.struts.action.api.integration.IntegrationPersistanceAction;
-
-import org.apache.commons.lang.StringUtils;
 
 public class DataIntegrationSaveITCase extends AbstractAdminControllerITCase {
 

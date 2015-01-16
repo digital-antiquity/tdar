@@ -201,7 +201,7 @@ TDAR.fileupload = (function (TDAR, $) {
         //pre-populate the files table with any previously-uploaded files
         if (TDAR.filesJson) {
             var files = _translateIrFiles(TDAR.filesJson);
-            console.log("files.length: %s", files.length);
+            console.trace("files.length: %s", files.length);
             // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
             if (files.length) {
                 $("#fileProxyUploadBody").empty();
@@ -325,9 +325,8 @@ TDAR.fileupload = (function (TDAR, $) {
      * @private
      */
     var _updateReminder = function (e, data) {
-        console.log("_updateReminder")
         var $filesTable = $(data.context).closest("tbody.files");
-        console.log($filesTable.length);
+        console.trace("$filesTable.length: %s", $filesTable.length);
         if ($filesTable.length > 0) {
             $("#reminder").hide();
         } else {
@@ -382,7 +381,7 @@ TDAR.fileupload = (function (TDAR, $) {
     var _replaceFile = function ($originalRow, $targetRow) {
         var targetFilename = $targetRow.find("input.fileReplaceName").val();
         var originalFilename = $originalRow.find("input.fileReplaceName").val();
-        $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + " upon clicking 'Save'");
+        $originalRow.find('.replacement-text').text("Will be replaced by " + targetFilename + " upon clicking 'Save'");
         $originalRow.find('.fileReplaceName').val(targetFilename);
         $originalRow.find('.fileReplaceName').data("original-filename", originalFilename);
 
@@ -427,11 +426,11 @@ TDAR.fileupload = (function (TDAR, $) {
      */
     var _registerReplaceButton = function (fileuploadSelector) {
 
-        console.log("registering replace button")
+        console.trace("registering replace button")
 
         //invoke the fileupload widget's "send" method
         $(fileuploadSelector).on("change", ".replace-file", function (e) {
-            console.log("triggering file upload");
+            console.trace("triggering file upload");
             var $elem = $(this);
 
             //tell filupload-ui to hide this upload from files table

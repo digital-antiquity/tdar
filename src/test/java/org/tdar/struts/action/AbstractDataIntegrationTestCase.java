@@ -43,7 +43,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.conversion.DatasetConversionFactory;
@@ -51,7 +50,7 @@ import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.workspace.IntegrationDownloadAction;
 import org.tdar.struts.action.workspace.LegacyWorkspaceController;
@@ -176,8 +175,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     }
 
-    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
-        CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
+    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws Exception {
+        CodingSheetMappingController controller = generateNewInitializedController(CodingSheetMappingController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
         controller.setId(column.getDefaultCodingSheet().getId());
         controller.prepare();

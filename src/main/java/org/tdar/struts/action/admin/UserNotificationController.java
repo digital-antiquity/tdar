@@ -73,8 +73,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     }
 
     @Actions({
-            @Action("index"),
-            @Action("/admin/notifications")
+            @Action("index")
     })
     public String execute() {
         allNotifications = userNotificationService.findAll(this);

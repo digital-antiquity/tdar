@@ -144,7 +144,7 @@
 
         <#macro paginationLink startRecord path linkText>
         <span class="paginationLink">
-    	<a href="<@s.url value="?startRecord=${startRecord?c}&amp;recordsPerPage=${recordsPerPage}"/><#if dataTableId?has_content>&amp;dataTableId=${dataTableId}</#if>">${linkText}</a>
+    	<a href="<@s.url value="?startRecord=${startRecord?c}&amp;recordsPerPage=${recordsPerPage}"/><#if dataTableId?has_content>&amp;dataTableId=${dataTableId?c}</#if>">${linkText}</a>
     </span>
         </#macro>
 

@@ -40,6 +40,7 @@ public enum FileAction {
     public boolean updatesMetadata() {
         switch (this) {
             case ADD:
+            case REPLACE:
             case MODIFY_METADATA:
                 return true;
             default:

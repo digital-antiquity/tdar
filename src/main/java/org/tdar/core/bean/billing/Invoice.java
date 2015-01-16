@@ -31,6 +31,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.utils.MathUtils;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -216,7 +217,7 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Long getTotalSpaceInBytes() {
-        return getTotalSpaceInMb() * ONE_MB;
+        return getTotalSpaceInMb() * MathUtils.ONE_MB;
     }
 
     public Long getTotalNumberOfFiles() {

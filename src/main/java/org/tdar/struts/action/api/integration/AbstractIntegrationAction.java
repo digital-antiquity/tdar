@@ -39,7 +39,7 @@ public class AbstractIntegrationAction extends AuthenticationAware.Base {
      */
     protected final void setJsonObject(Object obj, Class<?> jsonFilter) throws IOException {
         String message = serializationService.convertToFilteredJson(obj, jsonFilter);
-        getLogger().debug(message);
+        getLogger().trace(message);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
 

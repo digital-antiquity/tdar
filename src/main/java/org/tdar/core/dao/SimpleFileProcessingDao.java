@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasImage;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
@@ -23,6 +24,11 @@ public class SimpleFileProcessingDao {
 
     private static final String LOGO = "logo.";
 
+    /**
+     * Imports a file through our upload process and creates the various image sizes. 
+     * @param persistable
+     * @param fileProxy
+     */
     public void processFileProxyForCreatorOrCollection(HasImage persistable, FileProxy fileProxy) {
         if (fileProxy == null) {
             return;
@@ -37,6 +43,12 @@ public class SimpleFileProcessingDao {
         context.getOriginalFiles().add(version);
         context.setOkToStoreInFilestore(false);
         context.setResourceType(ResourceType.IMAGE);
+        
+        ObjectType type = ObjectType.CREATOR;
+        if (persistable instanceof ResourceCollection) {
+            type = ObjectType.COLLECTION;
+        }
+        
         ImageThumbnailTask thumbnailTask = new ImageThumbnailTask();
         thumbnailTask.setWorkflowContext(context);
         try {
@@ -47,10 +59,10 @@ public class SimpleFileProcessingDao {
             thumbnailTask.run();
             Filestore filestore = TdarConfiguration.getInstance().getFilestore();
             version.setInformationResourceId(persistable.getId());
-            filestore.store(ObjectType.CREATOR, version.getTransientFile(), version);
+            filestore.store(type, version.getTransientFile(), version);
             for (InformationResourceFileVersion v : context.getVersions()) {
                 v.setInformationResourceId(persistable.getId());
-                filestore.store(ObjectType.CREATOR, v.getTransientFile(), v);
+                filestore.store(type, v.getTransientFile(), v);
             }
             
         } catch (Exception e) {

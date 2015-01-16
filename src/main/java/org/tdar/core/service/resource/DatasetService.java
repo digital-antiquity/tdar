@@ -53,6 +53,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -100,6 +101,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private InformationResourceFileDao informationResourceFileDao;
+
+    @Autowired
+    private DataTableColumnDao dataTableColumnDao;
 
     @Autowired
     private ExcelService excelService;
@@ -509,15 +513,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Takes a Coding Table within a larger data set and converts it to a tDAR CodingSheet
      */
     @Transactional
-    public CodingSheet convertTableToCodingSheet(TdarUser user, final DataTableColumn keyColumn, final DataTableColumn valueColumn,
+    public CodingSheet convertTableToCodingSheet(TdarUser user, final TextProvider provider, final DataTableColumn keyColumn, final DataTableColumn valueColumn,
             final DataTableColumn descriptionColumn) {
-        final CodingSheet codingSheet = new CodingSheet();
-        codingSheet.markUpdated(user);
-        // codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
-        codingSheet.setTitle("Generated Coding Rule from " + keyColumn.getDataTable().getName());
-        codingSheet.setDescription(codingSheet.getTitle());
-        codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
-        getDao().save(codingSheet);
+                // codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
+        Dataset dataset = keyColumn.getDataTable().getDataset();
+        final CodingSheet codingSheet =  dataTableColumnDao.setupGeneratedCodingSheet(keyColumn, dataset, user, provider, null);
         ResultSetExtractor<Set<CodingRule>> resultSetExtractor = new ResultSetExtractor<Set<CodingRule>>() {
             @Override
             public Set<CodingRule> extractData(ResultSet resultSet)

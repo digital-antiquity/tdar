@@ -1,10 +1,14 @@
 package org.tdar.struts.action;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,8 +23,10 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
+import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.api.integration.IntegrationColumnDetailsAction;
 import org.tdar.struts.action.api.integration.NodeParticipationByColumnAction;
 import org.tdar.struts.action.api.integration.TableDetailsAction;
@@ -103,20 +109,43 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         action.getDataTableColumnIds().addAll(dtcIds);
         action.prepare();
         action.execute();
-        logger.debug("results:{}", action.getNodesByColumn());
+        logger.debug("results:{}", action.getIntegrationColumnPartProxies());
 
         //we expect to have at least one node value present
         int nodesPresent = 0;
         int proxiesPresent = 0;
-        for(IntegrationColumnPartProxy proxy: action.getNodesByColumn()) {
+        for(IntegrationColumnPartProxy proxy: action.getIntegrationColumnPartProxies()) {
             nodesPresent += proxy.getFlattenedNodes().size();
             proxiesPresent++;
         }
         logger.debug("nodesPresent:{}", nodesPresent);
         // NOTE: this was 184 prior to the change to the filter node logic (reversion to older logic) in r6881. 
-        Assert.assertEquals(227, nodesPresent);
+        Assert.assertEquals(184, nodesPresent);
         Assert.assertEquals(4, proxiesPresent);
 
     }
 
+    @Test
+    public void testIntegrationAction() throws IOException, IntegrationDeserializationException {
+        IntegrationAction action = generateNewInitializedController(IntegrationAction.class, getAdminUser());
+        String integration = FileUtils.readFileToString(new File("src/test/resources/data_integration_tests/sample-valid-integration.json"));
+        action.setIntegration(integration);
+        action.integrate();
+        StringWriter writer = new StringWriter();
+        IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
+        logger.debug(writer.toString());
+    }
+    
+    private String testDupJson = "src/test/resources/data_integration_tests/test-integration-duplicate-display.json";
+
+    @Test
+    public void testIntegrationActionDupColumns() throws IOException, IntegrationDeserializationException {
+        IntegrationAction action = generateNewInitializedController(IntegrationAction.class, getAdminUser());
+        String integration = FileUtils.readFileToString(new File(testDupJson));
+        action.setIntegration(integration);
+        action.integrate();
+        StringWriter writer = new StringWriter();
+        IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
+        logger.debug(writer.toString());
+    }
 }

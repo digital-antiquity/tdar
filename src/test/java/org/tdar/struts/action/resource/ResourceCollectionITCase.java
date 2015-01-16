@@ -42,6 +42,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -71,10 +72,54 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
+
     CollectionController controller;
 
     static int indexCount = 0;
 
+    /**
+     * Make sure that case in-sensitive queries return the same thing
+     */
+    @Test
+    @Rollback
+    public void testUniqueFind() {
+        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
+        test.setName("test");
+        test.markUpdated(getAdminUser());
+        test.setSortBy(SortOption.COLLECTION_TITLE);
+        genericService.saveOrUpdate(test);
+        
+        ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
+        c1.setName(" TEST ");
+        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), c1);
+        assertEquals(withName, test);
+    }
+    
+
+    @Test
+    @Rollback
+    public void testFindWithRights() {
+        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
+        test.setName("test");
+        test.markUpdated(getAdminUser());
+        test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_GROUP));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        test.setSortBy(SortOption.COLLECTION_TITLE);
+        genericService.saveOrUpdate(test);
+        
+        ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
+        c1.setName(" TEST ");
+        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), c1);
+        assertEquals(withName, test);
+
+        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), c1);
+        assertNotEquals(withName, test);
+}
+    
+
+    
     @Before
     public void setup()
     {

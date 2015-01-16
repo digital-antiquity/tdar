@@ -32,7 +32,7 @@
         <h3>This Ontology is used by the following Coding Sheets</h3>
         <ul>
             <#list codingSheetsWithMappings as cs>
-                <li><a href="<@s.url value="/coding-sheet/${cs.id?c}"/>">${cs.title}</a></li>
+                <li><a href="<@s.url value="/${cs.detailUrl}"/>">${cs.title}</a></li>
             </#list>
         </ul>
         </#if>

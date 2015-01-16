@@ -123,7 +123,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 return TdarActionSupport.FORBIDDEN; // "notallowed"
             default:
                 // UNKNOWN_ERROR
-                return "unknownerror";
+                return TdarActionSupport.UNKNOWN_ERROR;
         }
     }
 

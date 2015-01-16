@@ -15,6 +15,7 @@ import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -59,6 +60,7 @@ public class IntegrationAction extends AbstractIntegrationAction {
             getLogger().debug("result:{}", getResult());
             setResult(getResult());
             setTicketId(result.getTicket().getId());
+            setJsonObject(getResult(), JsonIntegrationFilter.class);
         } catch (Throwable e) {
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;

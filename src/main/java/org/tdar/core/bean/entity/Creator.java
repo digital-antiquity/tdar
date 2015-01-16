@@ -564,4 +564,5 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     public void setMaxSize(VersionType maxSize) {
         this.maxSize = maxSize;
     }
+    
 }

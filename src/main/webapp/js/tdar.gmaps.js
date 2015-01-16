@@ -89,7 +89,7 @@ TDAR.maps = function ($, TDAR) {
      * @private
      */
     var _setupMapInner = function (mapDiv, inputContainer) {
-        console.log("running  setupmap");
+        console.trace("_setMapInner::");
         var mapOptions = $.extend({}, _defaults.mapOptions, {
             zoom: _defaults.zoomLevel,
             center: new google.maps.LatLng(_defaults.center.lat, _defaults.center.lng),
@@ -127,7 +127,7 @@ TDAR.maps = function ($, TDAR) {
 
         //indicate the map is ready and dom elements loaded (we wrap this because the google.maps api may not be available to the listener at time of call)
         google.maps.event.addListenerOnce(map, 'idle', function () {
-            console.log("map ready");
+            console.trace("triggering mapready event");
             $(mapDiv).trigger("mapready", [map, $mapDiv.data("resourceRect")]);
             _deferredMap.resolveWith($mapDiv[0], [map, $mapDiv.data("resourceRect")]);
         });

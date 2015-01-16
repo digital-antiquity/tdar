@@ -1,5 +1,6 @@
 package org.tdar.struts.action.ontology;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,10 +14,12 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
@@ -37,7 +40,10 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
     private transient OntologyNodeService ontologyNodeService;
     @Autowired
     private transient OntologyService ontologyService;
+    @Autowired
+    private transient CodingSheetService codingSheetService;
 
+    private List<CodingSheet> codingSheetsWithMappings = new ArrayList<CodingSheet>();
     private OntologyNode node;
     private OntologyNode parentNode;
     private List<OntologyNode> children;
@@ -52,6 +58,8 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
                     @Result(name = SUCCESS, location = "view-node.ftl")
             })
     public String node() throws TdarActionException {
+        getCodingSheetsWithMappings().addAll(codingSheetService.findAllUsingOntology(getOntology()));
+
         setNode(getOntology().getNodeByIri(getIri()));
         if (node == null) {
             throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
@@ -145,5 +153,13 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
         } else {
             super.handleSlug();
         }
+    }
+
+    public List<CodingSheet> getCodingSheetsWithMappings() {
+        return codingSheetsWithMappings;
+    }
+
+    public void setCodingSheetsWithMappings(List<CodingSheet> codingSheetsWithMappings) {
+        this.codingSheetsWithMappings = codingSheetsWithMappings;
     }
 }

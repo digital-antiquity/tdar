@@ -37,14 +37,14 @@ TDAR.loadScript = function (url) {
     var head = document.getElementsByTagName("head")[0];
     var script = document.createElement("script");
     var deferred, promise;
-    console.log("loading url: %s", _url);
+    console.debug("loading url: %s", _url);
     if (typeof jQuery === "function") {
         deferred = $.Deferred()
         promise = deferred.promise();
 
         script.onload = function () {
             deferred.resolve();
-            console.log("successfully loaded:%s", _url);
+            console.debug("successfully loaded:%s", _url);
         };
 
         script.onerror = function (err) {
@@ -82,11 +82,15 @@ if (!window.console) {
     console = {};
 }
 
-console.log = console.log || function () {};
-console.trace = console.trace || console.log;
-console.info = console.info || console.log;
-console.error = console.error || console.log;
-console.warn = console.warn || console.log;
-console.debug = console.debug || console.log;
-console.table = console.table || console.log;
+(function(console) {
+    var _noop = function(){};
+    console.log = console.log || _noop;
+    //fixme: temporarily squelching trace
+    console.trace = _noop; //console.trace || console.log;
+    console.info = console.info || console.log;
+    console.error = console.error || console.log;
+    console.warn = console.warn || console.log;
+    console.debug = console.debug || console.log;
+    console.table = console.table || console.log;
+})(console);
 

@@ -28,7 +28,7 @@
             </div>
             <div class="span3">
                 <div class="btn-group">
-                	<!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
+                    <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
                     <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
                 </div>
@@ -66,9 +66,9 @@
                     </div>
         </div>
 
-	<div>
-	{{statusMessage}} {{$scope.statusMessage}}
-	</div>
+    <div>
+    {{statusMessage}} {{$scope.statusMessage}}
+    </div>
 
         <div id="divSelectedItemsSection">
             <div class="row">
@@ -113,7 +113,8 @@
                                 <ul class="nav nav-tabs">
                                     <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
                                         <a href="#tab{{$index}}" id="tabtab{{$index}}">
-                                            <input type="text" name="column.name{{$index}}" ng-model="column.name" />
+                                        {{column.name}}
+                                            <input type="hidden" name="column.name{{$index}}" ng-model="column.name" />
                                             <button class="close" ng-click="ctrl.closeTab($index)">x</button>
                                         </a>
                                     </li>
@@ -127,7 +128,7 @@
                                                 <div class="alert" ng-hide="outputColumn.isValidMapping">
                                                     <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to a shared ontology.
                                                 </div>
-                                                <table class="table table-bordered table-condensed">
+                                                <table class="table table-bordered table-condensed table-hover">
                                                     <thead>
                                                     <tr>
                                                         <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
@@ -147,18 +148,18 @@
                                                     </tr>
                                                     <tr>
                                                         <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" >
-                                                        	<!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                        	<div ng-switch on="cc.compatCols.length">
-                                                        	<div ng-switch-when="1">
-                                                        		{{cc.compatCols[0].displayName}}
-                                                        		<!-- FIXME: this is "hidden", but is it even needed? -->
-                                                        		<!-- FIXME: shouldn't this be the dataset name? -->
-	                                                            <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
-														    </div>
-														    <div ng-switch-default>
-	                                                            <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
-														    </div>
-                                                        	</div>
+                                                            <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
+                                                            <div ng-switch on="cc.compatCols.length">
+                                                            <div ng-switch-when="1">
+                                                                {{cc.compatCols[0].displayName}}
+                                                                <!-- FIXME: this is "hidden", but is it even needed? -->
+                                                                <!-- FIXME: shouldn't this be the dataset name? -->
+                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+                                                            </div>
+                                                            <div ng-switch-default>
+                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                            </div>
+                                                            </div>
                                                         </th>
                                                     </tr>
                                                     </thead>
@@ -172,7 +173,7 @@
                                                         </td>
                                                         <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" id="cbx-{{dataTableColumn.id}}-{{nodeSelection.node.id}}" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -185,11 +186,11 @@
                                                 <h3>Select Columns</h3>
                                                 <br/>
                                                 <table>
-                                                	<thead>
-                                                		<tr>
-                                                			<th>Table</th> <th>Column</th>
-                                                		</tr>
-                                                	</thead>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Table</th> <th>Column</th>
+                                                        </tr>
+                                                    </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
                                                         <th>{{dataTable.displayName}}</th>
@@ -209,11 +210,11 @@
                                                 <h3>Select Columns</h3>
                                                 <br/>
                                                 <table>
-                                                	<thead>
-                                                		<tr>
-                                                			<th>Table</th> <th>Column</th>
-                                                		</tr>
-                                                	</thead>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Table</th> <th>Column</th>
+                                                        </tr>
+                                                    </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
                                                         <th>{{dataTable.displayName}}</th>
@@ -255,6 +256,8 @@
             <span ng-switch-when="integration">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
                        value="{{dtc.id}}"  ng-repeat="dtc in col.selectedDataTableColumns">
+                <input type="hidden" name="integrationColumns[{{columnIndex}}].sharedOntology.id"
+                       value="{{col.ontologyId}}">
                 <input type="hidden" name="integrationColumns[{{columnIndex}}].filteredOntologyNodes.id"
                        value="{{nodeSelection.node.id}}" ng-repeat="nodeSelection in col.nodeSelections | filter: {selected:true}">
             </span>
@@ -285,7 +288,7 @@
         <div class="modal-body">
             <div class="row">
                 <div class="span10">
-                    <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur':0} }">
+                    <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur':0, 'click':0} }">
                         <fieldset>
                             <legend>Filters</legend>
                             <div class="control-group">
@@ -358,7 +361,7 @@
                                     <td><label for="cbResult{{result.id}}">{{result.title}}</label></td>
                                     <td nowrap>{{result.date_created | date }}</td>
                                     <td>
-                                    	<span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
+                                        <span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -369,6 +372,9 @@
             </div>
         </div>
         <div class="modal-footer">
+            <div class="row">
+            Total Results: {{modalTotalResults}}
+            </div>
             <div class="pull-left" ng-show="false">
                 <button type="button" class="btn" ng-click="updateFilter()">Update Search</button>
                 <small class="muted"><em>Temporary button</em></small>
@@ -384,11 +390,6 @@
 ${workflowJson!"{}"}
 </script>
 
-<script type="application/json" id="jsondataId">
-{ "id" : ${(integrationId!-1)?c} }
-</script>
-
-
 <!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
 <!-- FIXME: too much crap - we just need ID and title and submitterId -->
 <script type="application/json" id="allProjects">
@@ -402,6 +403,7 @@ ${allResourceCollectionsJson}
 <script type="application/json" id="allCategories">
 ${categoriesJson}
 </script>
+<script src="/includes/js-emca-5.1-polyfill.js""></script>
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <!-- fixme: cycle.js modifies global JSON object(which makse me nervous). think of a better way to incorporate this -->
 <script src="/js/data-integration/app.js"></script>

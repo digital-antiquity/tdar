@@ -54,6 +54,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         //fill out required user registration fields and submit form
         assertThat(getCurrentUrl(), containsString("download"));
         UserRegistration reg = createUserRegistration("bob");
+        reg.setConfirmEmail(reg.getConfirmEmail().toUpperCase());
         fillOutRegistration(reg);
         // wait for spam check
         Thread.sleep(3000);

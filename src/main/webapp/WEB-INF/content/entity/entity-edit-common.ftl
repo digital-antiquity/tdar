@@ -2,7 +2,14 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
 
     <#macro uploadForm>
-        <@s.file theme="simple" name='file' cssClass="input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+        <#if editor>
+            <div class="control-group">
+                <label class="control-label">Add an Photo / Logo</label>
+                <div class="controls">
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+                </div>
+            </div>
+        </#if>
     </#macro>
 
     <#macro basicInformation>

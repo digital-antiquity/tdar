@@ -219,10 +219,8 @@ navigation freemarker macros
 
 <#-- emit "delete" button for use with repeatable form field rows -->
     <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
-    <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i
-            class="icon-trash"></i></button>
+    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
     </#macro>
-
 </#escape>
 
 <#-- Return the URL associated with the current form. The URL always includes the scheme & host,  if the application uses a nonstandard

@@ -242,6 +242,7 @@
         "Resource submitters always have full access rights. This entry is unnecessary."
     )
 
+    
     /**
      * Only allow confidential file uploads if the user has added at least one  "contact" person/institution.
      */

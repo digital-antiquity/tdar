@@ -46,7 +46,13 @@
     </#if>
 
     <@view.pageStatusCallout />
-<h1>${resourceCollection.name!"untitled collection"}</h1>
+<h1>
+    <#if logoAvailable>
+        <img class="pull-right" itemprop="image"  src="/files/collection/sm/${id?c}/logo"
+        alt="logo" title="logo" /> 
+    </#if>
+
+${resourceCollection.name!"untitled collection"}</h1>
 
     <#if visible>
 

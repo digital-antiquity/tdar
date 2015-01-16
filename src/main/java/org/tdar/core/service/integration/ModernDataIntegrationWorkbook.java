@@ -10,18 +10,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -57,7 +59,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private TextProvider provider;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private ResultSet resultSet;
-    private Map<List<OntologyNode>, HashMap<String, IntContainer>> pivot;
+    private Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot;
     private ModernIntegrationDataResult result;
 
     public ModernDataIntegrationWorkbook(TextProvider provider, ExcelService excelService, ModernIntegrationDataResult result) {
@@ -84,7 +86,34 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
         createPivotSheet();
         createDescriptionSheet();
+        createOntologySheets();
 
+    }
+
+    private void createOntologySheets() {
+        Set<Ontology> seenOntologies = new HashSet<>();
+        for (IntegrationColumn col : context.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                Ontology ontology = col.getSharedOntology();
+                if (seenOntologies.contains(ontology) || ontology == null) {
+                    continue;
+                }
+                int rowIndex = 0;
+                seenOntologies.add(ontology);
+                Sheet ontologySheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.ontology_worksheet", Arrays.asList(ontology.getTitle())));
+                excelService.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
+                rowIndex++;
+                String termText = provider.getText("dataIntegrationWorkbook.ontology_term");
+                String orderText = provider.getText("dataIntegrationWorkbook.ontology_order");
+                excelService.addHeaderRow(ontologySheet, rowIndex, 0, Arrays.asList(orderText, termText  ));
+                rowIndex++;
+                for (OntologyNode node : ontology.getSortedOntologyNodesByImportOrder()) {
+                    String order = Long.toString(node.getImportOrder());
+                    excelService.addDataRow(ontologySheet, rowIndex, 0, Arrays.asList(order, node.getDisplayName()));
+                    rowIndex++;
+                }
+            }
+        }
     }
 
     /**
@@ -123,6 +152,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
             if (integrationColumn.isIntegrationColumn()) {
                 headerLabels.add(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(integrationColumn.getName())));
+                headerLabels.add(provider.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(integrationColumn.getName())));
             }
         }
 
@@ -191,7 +221,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             currentRow++;
             String[] row = new String[header.size()];
             row[0] = col.getName();
-            row[1] = col.getColumnType().name();
+            row[1] = "";
+            if (col.getColumnType() != null) {
+                row[1] = col.getColumnType().name();
+            }
+            
             int size = 2;
             for (DataTable table : context.getDataTables()) {
                 DataTableColumn dtc = col.getColumnForTable(table);
@@ -244,10 +278,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private void createPivotSheet() {
         int rowIndex;
         Sheet pivotSheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.summary_worksheet"));
+        logger.debug("{} - {}", provider, person);
         String title = provider.getText("dataIntegrationWorkbook.title",
                 Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
         excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
-        addMergedRegion(0, 0 , 0, 8, pivotSheet);
+        addMergedRegion(0, 0, 0, 8, pivotSheet);
         excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
         addMergedRegion(1, 1, 0, 8, pivotSheet);
 
@@ -274,9 +309,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                 }
             }
             // Map<List<OntologyNode>, HashMap<String, IntContainer>>
-            Map<String, IntContainer> vals = pivot.get(key);
+            Map<Long, IntContainer> vals = pivot.get(key);
             for (DataTable table : context.getDataTables()) {
-                IntContainer integer = vals.get(formatTableName(table));
+                IntContainer integer = vals.get(table.getId());
                 if (integer == null) {
                     rowData.add("0");
                 } else {
@@ -286,7 +321,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
         }
         excelService.addDataRow(pivotSheet, rowIndex + 2, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_note")));
-        addMergedRegion(rowIndex +2, rowIndex+3, 0, 8, pivotSheet);
+        addMergedRegion(rowIndex + 2, rowIndex + 3, 0, 8, pivotSheet);
     }
 
     private void addMergedRegion(int startRow, int endRow, int startCol, int endCol, Sheet pivotSheet) {

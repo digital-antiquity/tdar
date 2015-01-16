@@ -269,7 +269,7 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
 
     public Long getTotalSpaceInMb() {
         initTotals();
-        return MathUtils.divideByRoundUp(totalSpaceInBytes, Persistable.ONE_MB);
+        return MathUtils.divideByRoundUp(totalSpaceInBytes, MathUtils.ONE_MB);
     }
 
     public Long getTotalSpaceInBytes() {
@@ -289,7 +289,7 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     }
 
     public Long getAvailableSpaceInMb() {
-        return MathUtils.divideByRoundDown(getAvailableSpaceInBytes(), (double) Persistable.ONE_MB);
+        return MathUtils.divideByRoundDown(getAvailableSpaceInBytes(), (double) MathUtils.ONE_MB);
     }
 
     public Long getAvailableResources() {
@@ -383,7 +383,7 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     }
 
     public Long getSpaceUsedInMb() {
-        return MathUtils.divideByRoundUp(spaceUsedInBytes, Persistable.ONE_MB);
+        return MathUtils.divideByRoundUp(spaceUsedInBytes, MathUtils.ONE_MB);
     }
 
     public void setSpaceUsedInBytes(Long spaceUsed) {
@@ -450,5 +450,10 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     @Override
     public String toString() {
         return String.format("%s (%s)", getName(), getId());
+    }
+    
+    @Override
+    public String getDetailUrl() {
+        return String.format("/%s/%s", getUrlNamespace(), getId());
     }
 }

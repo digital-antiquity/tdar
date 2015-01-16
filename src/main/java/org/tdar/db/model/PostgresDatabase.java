@@ -228,7 +228,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
 
-
     private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         if (!includeGeneratedValues) {
@@ -461,13 +460,15 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         while (iterator.hasNext()) {
             DataTableColumn column = iterator.next();
-            if (columnNames.contains(column.getName())) {
-                column.setName(column.getName() + i);
+            String name = column.getName();
+            if (columnNames.contains(name)) {
+                name = name + i;
+                column.setName(name);
                 column.setDisplayName(column.getDisplayName() + i);
             }
-            columnNames.add(column.getName());
+            columnNames.add(name);
             i++;
-            tableColumnBuilder.append(String.format(COL_DEF, column.getName(),
+            tableColumnBuilder.append(String.format(COL_DEF, name,
                     this.toImplementedTypeDeclaration(column.getColumnDataType(), column.getLength())));
             if (iterator.hasNext()) {
                 tableColumnBuilder.append(", ");
@@ -660,9 +661,10 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         PreparedStatementCallback<Object> translateColumnCallback = new PreparedStatementCallback<Object>() {
             @Override
             public Object doInPreparedStatement(PreparedStatement preparedStatement) throws SQLException, DataAccessException {
-                for (CodingRule codingRule : codingSheet.getCodingRules()) {
-                    String code = codingRule.getCode();
-                    String term = codingRule.getTerm();
+                Map<String, String> codeMap = createSanitizedKeyMap(codingSheet);
+
+                for (String code : codeMap.keySet()) {
+                    String term = codeMap.get(code);
                     // 1st parameter is the translated term that we want to set
                     preparedStatement.setString(1, term);
                     logger.trace("code:" + code + " term:" + term + " " + columnDataType + " [" + updateColumnSql + "]");
@@ -694,8 +696,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                             break;
                     }
                     if (okToExecute) {
-                        logger.trace("Prepared statement is: "
-                                + preparedStatement.toString());
+                        logger.trace("Prepared statement is: " + preparedStatement.toString());
                         preparedStatement.addBatch();
                     } else {
                         logger.debug("code:" + code + " was not a valid type for " + columnDataType);
@@ -714,6 +715,33 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         // getLogger().debug("updating untranslated rows: " +
         // updateUntranslatedRows);
         jdbcTemplate.execute(updateUntranslatedRows);
+    }
+
+    /**
+     * Takes a Coding Rule and tries to deal with appropriate permutations of padded integers
+     * 
+     * @param codingSheet
+     * @return
+     */
+    private Map<String, String> createSanitizedKeyMap(final CodingSheet codingSheet) {
+        Map<String, String> codeMap = new HashMap<>();
+        for (CodingRule codingRule : codingSheet.getCodingRules()) {
+            codeMap.put(codingRule.getCode(), codingRule.getTerm());
+        }
+        ;
+
+        // handling issues of 01 vs. 1
+        for (String code : new ArrayList<String>(codeMap.keySet())) {
+            try {
+                Integer integer = Integer.parseInt(code);
+                String newCode = String.valueOf(integer);
+                if (!codeMap.containsKey(newCode)) {
+                    codeMap.put(newCode, codeMap.get(code));
+                }
+            } catch (NumberFormatException exception) {
+            }
+        }
+        return codeMap;
     }
 
     @Override
@@ -758,6 +786,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     /**
      * Runs the "final" select for the integration result that allows us to sort and extract records from the temporary table
+     * 
      * @param result
      */
     private void extractIntegationResults(final ModernIntegrationDataResult result) {
@@ -819,7 +848,16 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 StringBuilder sb = new StringBuilder("UPDATE ");
                 sb.append(proxy.getTempTableName());
                 sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
-                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=").append(node.getImportOrder());
+                String order = node.getImportOrder().toString();
+//                if (node.getImportOrder() == 0 || StringUtils.isBlank(order)) {
+//                    order = node.getIndex();
+//                }
+                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=");
+//                if (NumberUtils.isNumber(order)) {
+                    sb.append(order);
+//                } else {
+//                    sb.append(quote(order));
+//                }
                 sb.append(" WHERE ");
                 sb.append(whereCond.toSql());
                 executeUpdateOrDelete(sb.toString());
@@ -854,26 +892,36 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), tableColumn.getName()));
         tempTable.getDataTableColumns().add(tableColumn);
         proxy.setTempTable(tempTable);
+        Set<String> seen = new HashSet<>();
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
             logger.debug("column: {}", column);
-            if (!StringUtils.isBlank(column.getName())) {
+            if (StringUtils.isNotBlank(column.getName())) {
                 DataTableColumn dtc = new DataTableColumn();
                 dtc.setDisplayName(column.getName());
-                dtc.setName(normalizeTableOrColumnNames(column.getName()));
-                String name = dtc.getName();
+                int i= 0;
+                String name = column.getName();
+                String name_ = column.getName();
+                while (seen.contains(name_)) {
+                    i++;
+                    name_ = name + Integer.toString(i);
+                }
+                seen.add(name);
+                name = name_;
+                dtc.setName(normalizeTableOrColumnNames(name));
+                name = dtc.getName();
                 tempTable.getDataTableColumns().add(dtc);
                 column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
                     // integrated name
                     DataTableColumn integrationColumn = new DataTableColumn();
-                    integrationColumn.setDisplayName(name);
+                    integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
 
                     DataTableColumn sortColumn = new DataTableColumn();
-                    sortColumn.setDisplayName(name);
+                    integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     sortColumn.setName(name + SORT_SUFFIX);
                     tempTable.getDataTableColumns().add(sortColumn);
                     executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));
@@ -896,7 +944,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateOntologyEnhancedSelect(table, proxy);
 
         // This may be outdated logic, disabling... old logic required that you must have "one" item selected or checked in the filter dialogs
-        
+
         // if (!selectSql.toLowerCase().contains(" where ")) {
         // throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
         // }
@@ -915,13 +963,13 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private String generateOntologyEnhancedSelect(DataTable table, IntegrationContext proxy) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
-        builder.setStringSelectValue(table.getName());
+        builder.setStringSelectValue(table.getId().toString());
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
             logger.info("table:" + table + " column: " + integrationColumn);
             DataTableColumn column = integrationColumn.getColumnForTable(table);
             if (column != null) {
                 builder.getColumns().add(column.getName());
-                // pull the column name twice if an integration column so we have mapped and unmapped values
+                // pull the column name thrice if an integration column so we have mapped and unmapped values, and sort
                 if (integrationColumn.isIntegrationColumn()) {
                     builder.getColumns().add(column.getName());
                     builder.getColumns().add(null);

@@ -430,7 +430,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
      * @return
      */
     public boolean isActuallyMapped() {
-        if (PersistableUtils.isNullOrTransient(getDefaultOntology())) {
+        if (PersistableUtils.isNullOrTransient(getDefaultOntology()) && PersistableUtils.isNullOrTransient(getDefaultCodingSheet())) {
             return false;
         }
 

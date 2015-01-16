@@ -42,7 +42,7 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.dataset.TableXMLDownloadAction;
 
@@ -97,7 +97,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         elementColumn.setName(BELEMENT_COL);
         DataTable dataTable = dataset.getDataTables().iterator().next();
         mapColumnsToDataset(dataset, dataTable, elementColumn);
-        CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
+        CodingSheetMappingController codingSheetController = generateNewInitializedController(CodingSheetMappingController.class);
         DataTableColumn column = dataTable.getColumnByName(BELEMENT_COL);
         assertNotNull(column.getDefaultCodingSheet());
         assertTrue(column.getDefaultCodingSheet().isGenerated());

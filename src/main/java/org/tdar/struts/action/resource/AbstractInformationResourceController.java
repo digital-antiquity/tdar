@@ -523,9 +523,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
                 potentialParents.add(getProject());
             }
-            // tack the null project at the top of the sorted list
-            // Collections.sort(potentialParents);
-            potentialParents.add(0, Project.NULL);
+            // Prepend null project so that dropdowns will see "No associated project" at the top of the list.
+            Project noAssociatedProject = new Project(-1L, getText("project.no_associated_project"));
+            getGenericService().markReadOnly(project);
+            potentialParents.add(0, noAssociatedProject);
         }
         getLogger().trace("Returning all editable projects: {}", potentialParents);
         return potentialParents;

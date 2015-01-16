@@ -390,7 +390,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         ResourceCollection collectionToAdd = null;
         logger.trace("{}", collection);
         if (collection.isTransient() && !collection.isInternal()) {
-            ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, collection, GeneralPermissions.ADMINISTER_GROUP);
+            ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, collection);
             if (potential != null) {
                 collectionToAdd = potential;
             } else {
