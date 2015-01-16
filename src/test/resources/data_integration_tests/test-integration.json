@@ -1,0 +1,98 @@
+{  
+   "title":"adam's test integration",
+   "description":"this is a test",
+   "columns":[  
+      {  
+         "type":"INTEGRATION",
+         "dataTableColumns":[  
+            {  
+               "id":31710,
+               "name":"species_common_name"
+            },
+            {  
+               "id":32450,
+               "name":"taxon"
+            }
+         ],
+         "ontology":{  
+            "id":42940,
+            "title":"Fauna Taxon Ontology "
+         },
+         "nodeSelection":[  
+            {  
+               "id":56930
+            },
+            {  
+               "id":62840
+            }
+         ]
+      },
+      {  
+         "type":"DISPLAY",
+         "dataTableColumns":[  
+            {  
+               "id":31800,
+               "name":"age"
+            },
+            {  
+               "id":32590,
+               "name":"bfuncgrp"
+            }
+         ]
+      },
+      {  
+         "type":"INTEGRATION",
+         "dataTableColumns":[  
+            {  
+               "id":31730,
+               "name":"bone_common_name"
+            },
+            {  
+               "id":32460,
+               "name":"belement"
+            }
+         ],
+         "ontology":{  
+            "id":42950,
+            "title":"Fauna Element Ontology"
+         },
+         "nodeSelection":[  
+            {  
+               "id":68780
+            },
+            {  
+               "id":69020
+            },
+            {  
+               "id":67010
+            },
+            {  
+               "id":68840
+            }
+         ]
+      }
+   ],
+   "datasets":[  
+
+   ],
+   "dataTables":[  
+      {  
+         "id":3091,
+         "displayName":"Main table"
+      },
+      {  
+         "id":3104,
+         "displayName":"qryBone"
+      }
+   ],
+   "ontologies":[  
+      {  
+         "id":42940,
+         "title":"Fauna Taxon Ontology "
+      },
+      {  
+         "id":42950,
+         "title":"Fauna Element Ontology"
+      }
+   ]
+}
