@@ -73,7 +73,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
 
             logger.info("({}) resources in sitemap", resources.size());
             for (Resource resource : resources) {
-                String url = urlService.absoluteUrl(resource);
+                String url = UrlService.absoluteUrl(resource);
                 addUrl(wsg, url);
             }
 

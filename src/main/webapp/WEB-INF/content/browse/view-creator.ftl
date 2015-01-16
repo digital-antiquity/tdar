@@ -101,7 +101,7 @@
 
         <#if creator.institution??>
 
-            <a itemprop="affiliation" href="<@s.url value="/browse/creators/${creator.institution.id?c}"/>">${creator.institution}</a>
+            <a itemprop="affiliation" href="<@s.url value="${creator.detailUrl}"/>">${creator.institution}</a>
         </#if>
 
         <@common.description creator.description />
