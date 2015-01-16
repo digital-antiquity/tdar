@@ -296,9 +296,6 @@
                                 <div class="controls">
                                     <input type="text" ng-model="filter.title" class="input-block-level" name="searchFilter.title"></input>
                                 </div>
-                                <div class="controls">
-                                    <input type="text" name="searchFilter.title2"></input>
-                                </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Project / Collection</label>
