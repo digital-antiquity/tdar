@@ -206,22 +206,9 @@ public class DataIntegrationService {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
-        CodingSheet codingSheet = new CodingSheet();
-        codingSheet.setGenerated(true);
+        
         Dataset dataset = column.getDataTable().getDataset();
-        codingSheet.setAccount(dataset.getAccount());
-        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset)));
-        codingSheet.markUpdated(submitter);
-        codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
-        codingSheet.setDefaultOntology(ontology);
-        codingSheet.setProject(dataset.getProject());
-        codingSheet.getResourceCollections().addAll(dataset.getResourceCollections());
-        codingSheet.setCategoryVariable(ontology.getCategoryVariable());
-        codingSheet.setDescription(provider.getText(
-                "dataIntegrationService.generated_coding_sheet_description",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, dataset.getTitle(),
-                        dataset.getId(), codingSheet.getDateCreated())));
-        genericDao.save(codingSheet);
+        CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
         Set<CodingRule> rules = new HashSet<>();
