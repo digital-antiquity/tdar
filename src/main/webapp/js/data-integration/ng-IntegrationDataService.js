@@ -499,7 +499,8 @@
         function _doSearch(url, searchFilter, transformer, prefix) {
             var futureData = $q.defer();
             var config = {
-                params : searchFilter.toStrutsParams()
+                params : searchFilter.toStrutsParams(),
+                cache: false
             };
             $http.get(url, config).success(function(rawData_) {
                 var rawData = rawData_;
