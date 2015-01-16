@@ -27,6 +27,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -47,6 +48,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Namespace("/coding-sheet")
+@HttpsOnly
 public class CodingSheetMappingController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<CodingSheet> {
 
     private static final long serialVersionUID = 5661394303022737505L;
