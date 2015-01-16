@@ -514,11 +514,14 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         final CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
         // codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
-        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(keyColumn.getDisplayName(), keyColumn.getDataTable().getDataset())));
+        Dataset dataset = keyColumn.getDataTable().getDataset();
+        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(keyColumn.getDisplayName(), dataset)));
 
         codingSheet.setTitle("Generated Coding Rule from " + keyColumn.getDataTable().getName());
         codingSheet.setDescription(codingSheet.getTitle());
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
+        codingSheet.setProject(dataset.getProject());
+        codingSheet.getResourceCollections().addAll(dataset.getResourceCollections());
         getDao().save(codingSheet);
         ResultSetExtractor<Set<CodingRule>> resultSetExtractor = new ResultSetExtractor<Set<CodingRule>>() {
             @Override
