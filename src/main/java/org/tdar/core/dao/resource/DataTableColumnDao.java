@@ -75,6 +75,7 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
         codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset.getTitle())));
         if (ontology != null) {
             codingSheet.setCategoryVariable(ontology.getCategoryVariable());
+            codingSheet.setDefaultOntology(ontology);
         }
         codingSheet.setDescription(provider.getText(
                 "dataIntegrationService.generated_coding_sheet_description",
