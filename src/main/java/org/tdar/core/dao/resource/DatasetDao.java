@@ -49,6 +49,7 @@ import org.tdar.search.query.SearchResultHandler;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl.ImageTag;
+import com.sun.tools.javac.jvm.Gen;
 
 /**
  * $Id$
@@ -312,8 +313,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
             ResourceType resourceType = ResourceType.valueOf((String) row[3]);
             String fileDescription = (String) row[4];
             Number imageId = (Number) row[5];
-
-            String resourceUrl = UrlService.absoluteUrl(resourceType.getUrlNamespace(), id.longValue());
+            Resource res = new Resource(id.longValue(), title, resourceType);
+            markReadOnly(res);
+            String resourceUrl = UrlService.absoluteUrl(res);
             String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
             if (StringUtils.isNotBlank(fileDescription)) {
                 description = fileDescription;

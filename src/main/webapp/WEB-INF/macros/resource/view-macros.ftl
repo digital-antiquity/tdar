@@ -364,7 +364,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
 
-        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a><#else>${c.properName}</#if>
+        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
     </#compress>
     </#macro>
 
@@ -422,12 +422,12 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 <dt>
                 <p><strong>Created by</strong></p></dt>
                 <dd><p><a
-                        href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
+                        href="<@s.url value="${resource.submitter.detailUrl}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
                     on ${resource.dateCreated}</#if></p></dd>
                 <#if resource.submitter.id != resource.uploader.id>
                     <dt>
                     <p><strong>Uploaded by</strong></p></dt>
-                    <dd><p><a href="<@s.url value="/browse/creators/${resource.uploader.id?c}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
+                    <dd><p><a href="<@s.url value="${resource.uploader.detailurl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
                     </p></dd>
                 </#if>
                 <#if resource.account?has_content && (administrator || editable) >
@@ -444,7 +444,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 </#if>
                 <dt>
                 <p><strong>Last Updated by</strong></p></dt>
-                <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a>
+                <dd><p><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
                     on ${resource.dateUpdated?date!""}</p></dd>
                 <dt>
                 <p><strong>Viewed</strong></p></dt>

@@ -288,7 +288,7 @@
         <div class="modal-body">
             <div class="row">
                 <div class="span10">
-                    <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur':0} }">
+                    <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur':0, 'click':0} }">
                         <fieldset>
                             <legend>Filters</legend>
                             <div class="control-group">

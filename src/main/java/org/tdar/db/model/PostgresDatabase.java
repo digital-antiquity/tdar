@@ -28,7 +28,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -893,26 +892,36 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), tableColumn.getName()));
         tempTable.getDataTableColumns().add(tableColumn);
         proxy.setTempTable(tempTable);
+        Set<String> seen = new HashSet<>();
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
             logger.debug("column: {}", column);
-            if (!StringUtils.isBlank(column.getName())) {
+            if (StringUtils.isNotBlank(column.getName())) {
                 DataTableColumn dtc = new DataTableColumn();
                 dtc.setDisplayName(column.getName());
-                dtc.setName(normalizeTableOrColumnNames(column.getName()));
-                String name = dtc.getName();
+                int i= 0;
+                String name = column.getName();
+                String name_ = column.getName();
+                while (seen.contains(name_)) {
+                    i++;
+                    name_ = name + Integer.toString(i);
+                }
+                seen.add(name);
+                name = name_;
+                dtc.setName(normalizeTableOrColumnNames(name));
+                name = dtc.getName();
                 tempTable.getDataTableColumns().add(dtc);
                 column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
                     // integrated name
                     DataTableColumn integrationColumn = new DataTableColumn();
-                    integrationColumn.setDisplayName(name);
+                    integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
 
                     DataTableColumn sortColumn = new DataTableColumn();
-                    sortColumn.setDisplayName(name);
+                    integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     sortColumn.setName(name + SORT_SUFFIX);
                     tempTable.getDataTableColumns().add(sortColumn);
                     executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));

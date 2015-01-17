@@ -30,6 +30,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -205,19 +206,9 @@ public class DataIntegrationService {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
-        CodingSheet codingSheet = new CodingSheet();
-        codingSheet.setGenerated(true);
-        codingSheet.setAccount(column.getDataTable().getDataset().getAccount());
-        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName())));
-        codingSheet.markUpdated(submitter);
-        codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
-        codingSheet.setDefaultOntology(ontology);
-        codingSheet.setCategoryVariable(ontology.getCategoryVariable());
-        codingSheet.setDescription(provider.getText(
-                "dataIntegrationService.generated_coding_sheet_description",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(),
-                        column.getDataTable().getDataset().getId(), codingSheet.getDateCreated())));
-        genericDao.save(codingSheet);
+        
+        Dataset dataset = column.getDataTable().getDataset();
+        CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
         Set<CodingRule> rules = new HashSet<>();

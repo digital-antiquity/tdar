@@ -26,13 +26,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.utils.MessageHelper;
 
 public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -96,13 +102,29 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
         DataTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
-        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), dataTable.getColumnByName("basic_int"),
+        Dataset ds = new Dataset();
+        ds.setId(999L);
+        ds.setTitle("test dataset");
+        ds.setDescription("test");
+        ds.markUpdated(getAdminUser());
+        ds.setProject(genericService.find(Project.class, TestConstants.PROJECT_ID));
+        ResourceCollection col = new ResourceCollection(CollectionType.SHARED);
+        col.markUpdated(getAdminUser());
+        col.setSortBy(SortOption.RELEVANCE);
+        col.setName("test");
+        col.setDescription("test");
+        genericService.saveOrUpdate(col);
+        ds.getResourceCollections().add(col);
+        genericService.saveOrUpdate(ds);
+        dataTable.setDataset(ds);
+        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), MessageHelper.getInstance(), dataTable.getColumnByName("basic_int"),
                 dataTable.getColumnByName("basic_int_exp"), null);
         Map<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
         for (CodingRule rule : codingSheet.getCodingRules()) {
             ruleMap.put(rule.getCode(), rule);
         }
-
+        logger.debug(codingSheet.getTitle());
+        logger.debug(codingSheet.getDescription());
         assertEquals("FLOOR", ruleMap.get("FL").getTerm());
         assertEquals("NATURAL ALLUVIAL OVERBANK", ruleMap.get("NO").getTerm());
         assertEquals("MECHANICAL FIXTURES+FITTINGS, MACHINERY, WIRING, GAS PIPING", ruleMap.get("ME").getTerm());
