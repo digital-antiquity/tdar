@@ -169,7 +169,7 @@ Common macros used in multiple contexts
                         <tr>
                             <td>
                                 <#if !collection_.internal>
-                                    <a href="<@s.url value="/collection/${collection_.id?c}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
+                                    <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                                 <#else>
                                     Local Resource
                                 </#if>
@@ -756,7 +756,7 @@ with that datapoint -->
             <#if (depth < 1)><#local clsHidden = "hidden"></#if>
             <#if ((depth < 1) && (collection.transientChildren?size > 0))><#local clsClosed = "closed"></#if>
         <li class="${clsClosed}">
-            <@s.a href="/collection/${collection.id?c}">${(collection.name)!"No Title"}</@s.a>
+            <@s.a href="${collection.detailUrl}">${(collection.name)!"No Title"}</@s.a>
             <#if collection.transientChildren?has_content>
                 <ul class="${clsHidden}">
                     <#list collection.transientChildren as child>
@@ -874,7 +874,7 @@ true for our registration page or our profile page).-->
 <#-- Create a search-link for a keyword -->
     <#macro searchFor keyword=keyword asList=true showOccurrence=false>
         <#if asList><li class="bullet"></#if>
-            <a href="<@s.url value="/${keyword.urlNamespace}/${keyword.id?c}/${(keyword.slug)}" />">${keyword.label}
+            <a href="<@s.url value="${keyword.detailUrl}" />">${keyword.label}
             <#if showOccurrence && keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
             </a>
         <#if asList></li></#if>
