@@ -66,7 +66,7 @@
         <h2>Most Popular in the Past Week</h2>
         <ul>
             <#list featuredResources as resource>
-                <li><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+                <li><a href="<@s.url value="/${resource.detailUrl}"/>">${resource.title}</a></li>
             </#list>
         </ul>
     </div>
@@ -75,7 +75,7 @@
         <ul>
             <#list recentResources as resource>
                 <#if resource??>
-                    <li><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+                    <li><a href="<@s.url value="/${resource.detailUrl}"/>">${resource.title}</a></li>
                 </#if>
             </#list>
         </ul>
