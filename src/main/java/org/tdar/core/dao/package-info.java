@@ -471,11 +471,11 @@
                 query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
-                query = "select distinct dt, ds.title " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX + " order by ds.title, dt.displayName"
+                query = "select dt, ds.title " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX + " order by ds.title, dt.displayName"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE_COUNT,
-                query = "select count(distinct dt.id) " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
+                query = "select count(distinct dt.id) " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_COUNT_SUFFIX
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,

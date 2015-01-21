@@ -20,6 +20,9 @@ public class AbstractIntegrationSearchFilter implements Serializable {
     private boolean bookmarked = false;
     private String title;
 
+    //if true, include the total result count in the search results (increases execution time)
+    private boolean includeResultCount = true;
+
     /*
      * + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
      * + "(:bookmarked=false or ds.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
@@ -112,5 +115,13 @@ public class AbstractIntegrationSearchFilter implements Serializable {
             return "%";
         }
         return "%" + title.toLowerCase() + "%";
+    }
+
+    public boolean isIncludeResultCount() {
+        return includeResultCount;
+    }
+
+    public void setIncludeResultCount(boolean includeResultCount) {
+        this.includeResultCount = includeResultCount;
     }
 }
