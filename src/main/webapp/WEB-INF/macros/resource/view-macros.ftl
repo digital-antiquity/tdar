@@ -427,7 +427,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 <#if resource.submitter.id != resource.uploader.id>
                     <dt>
                     <p><strong>Uploaded by</strong></p></dt>
-                    <dd><p><a href="<@s.url value="${resource.uploader.detailurl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
+                    <dd><p><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
                     </p></dd>
                 </#if>
                 <#if resource.account?has_content && (administrator || editable) >
