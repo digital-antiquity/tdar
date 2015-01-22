@@ -170,6 +170,10 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         HttpServletRequest request = ServletActionContext.getRequest();
         ActionProxy proxy = invocation.getProxy();
         String returnUrl = String.format("%s/%s", proxy.getNamespace(), proxy.getActionName());
+        if (StringUtils.isBlank(proxy.getNamespace() )) {
+            returnUrl = proxy.getActionName();
+        }
+        logger.trace(returnUrl);
         if (!request.getMethod().equalsIgnoreCase("get") || returnUrl.matches(SKIP_REDIRECT)) {
             logger.warn("Not setting return url for anything other than a get {}", request.getMethod());
             return;
