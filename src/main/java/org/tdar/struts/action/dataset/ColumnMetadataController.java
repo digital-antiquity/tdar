@@ -180,7 +180,6 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
         }
         setDataTableColumns(columns);
 
-        getLogger().debug("passing off to Freemarker");
         return SUCCESS;
     }
 
