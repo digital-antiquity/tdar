@@ -341,7 +341,7 @@
         <ul>
             <#list resourcesWithErrors as resource>
                 <li>
-                    <a href="<@s.url value="/${resource.detailUrl}" />">${resource.title}:
+                    <a href="<@s.url value="${resource.detailUrl}" />">${resource.title}:
                         <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.filename!"unknown"}</#list>
                     </a>
                 </li>
