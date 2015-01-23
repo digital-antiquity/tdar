@@ -47,6 +47,7 @@ public class HttpsInterceptor implements Interceptor {
         if (request.isSecure() && (invocation.getAction() instanceof AuthenticationAware) && !((AuthenticationAware) invocation.getAction()).isAuthenticated()) {
             String baseUrl = changeUrlProtocol("http", request);
             response.sendRedirect(baseUrl);
+            return null;
         }
         return invocation.invoke();
     }
@@ -83,6 +84,7 @@ public class HttpsInterceptor implements Interceptor {
 
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             response.sendRedirect(changeUrlProtocol("https", request));
+            return null;
         } else if (invocation.getAction() instanceof TdarActionSupport) {
             logger.warn("ERROR_HTTPS_ONLY");
             ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpsInterceptor.error_https_only", invocation
