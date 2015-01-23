@@ -3,6 +3,7 @@ package org.tdar.struts.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +46,12 @@ public class SlugRedirectInterceptor implements Interceptor {
             if (sva.isRedirectBadSlug()) {
                 HttpServletRequest request = ServletActionContext.getRequest();
                 HttpServletResponse response = ServletActionContext.getResponse();
-                logger.trace("sending redirect from: {} to: {}", request.getRequestURI(), sva.getPersistable().getDetailUrl());
-                response.sendRedirect(sva.getPersistable().getDetailUrl());
+                String url = sva.getPersistable().getDetailUrl();
+                if (StringUtils.isNotBlank(request.getQueryString())) {
+                    url = String.format("%s?%s", url, request.getQueryString());
+                }
+                logger.trace("sending redirect from: {} to: {}", request.getRequestURI(), url);
+                response.sendRedirect(url);
                 return null;
             }
         }

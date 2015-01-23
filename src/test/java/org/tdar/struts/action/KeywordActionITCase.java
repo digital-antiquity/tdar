@@ -1,6 +1,6 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -95,8 +95,8 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         genericService.saveOrUpdate(it);
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, false);
         bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, "1234", false);
-        String result = bkc.view();
-        assertEquals(BrowseKeywordController.BAD_SLUG, result);
+        assertTrue(bkc.isRedirectBadSlug());
+
     }
 
     private InvestigationType setupTestInvestigationType() {
