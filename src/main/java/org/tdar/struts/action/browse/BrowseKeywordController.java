@@ -41,7 +41,9 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("default")
 @Namespace("/browse")
 @Results(value = {
-        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.FREEMARKER, location = "keywords.ftl")
+        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.FREEMARKER, location = "keywords.ftl"),
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+                location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${slugSuffix}", params = { "ignoreParams", "id,keywordPath,slug" })
 })
 public class BrowseKeywordController extends AbstractLookupController<Resource> implements Preparable, SlugViewAction {
 
@@ -126,7 +128,9 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             @Action(value = "{keywordPath}/{id}/{slug}")
     })
     public String view() {
-
+        if (redirectBadSlug) {
+            return BAD_SLUG;
+        }
         if (PersistableUtils.isNotNullOrTransient(keyword) && keyword.isDuplicate()) {
             setKeyword(genericKeywordService.findAuthority(keyword));
             return BAD_SLUG;
