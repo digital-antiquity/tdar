@@ -30,13 +30,14 @@
     }
 
 
-    var _initMapping = function () {
+    var _initMapping = function (formSelector) {
+        var $form = $(formSelector);
         //decorate each node with "allNames" property which is an array of the original name and all synonyms
         flattedOntologyNodes = $.map(flattedOntologyNodes, processNode);
 
         $("#autosuggest").click(_autosuggest);
         $("#clearAll").click(_clearall);
-        $("#mapontologyform").FormNavigate({message: "Leaving the page will cause any unsaved data to be lost!"});
+        $form.FormNavigate({message: "Leaving the page will cause any unsaved data to be lost!"});
         $("#selectColumn").unbind("change");
         $('button.ui-button').hover(function () {
             $(this).addClass("ui-state-hover");
