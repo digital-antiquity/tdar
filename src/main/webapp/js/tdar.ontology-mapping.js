@@ -7,8 +7,8 @@
     //derive original name, synonyms from formatted input string
     //fixme: hack: we should get the opposite via embedded json, and construct the formatted string dynamically
     function processNode(node) {
-        console.log("processing: %s", node);
-        console.log(node);
+        //console.debug("processing: %s", node);
+        //console.debug(node);
         var processedName = node.name.replace(rePrefix, '').toLowerCase();
         var synonyms = [];
         var matches = processedName.match(reSynonyms);
