@@ -148,7 +148,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         List<String> headerLabels = new ArrayList<String>();
         headerLabels.add(provider.getText("dataIntegrationWorkbook.data_table"));
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
-            headerLabels.add(integrationColumn.getName());
+            headerLabels.add(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(integrationColumn.getName())));
 
             if (integrationColumn.isIntegrationColumn()) {
                 headerLabels.add(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(integrationColumn.getName())));

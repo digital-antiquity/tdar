@@ -783,13 +783,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 // check if the incoming column had an ontology set
                 defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getDefaultOntology(), Ontology.class);
             }
-            getLogger().debug("default ontology: {}", defaultOntology);
-            getLogger().debug("incoming coding sheet: {}", incomingCodingSheet);
+            getLogger().debug("incoming coding sheet: {} | default ontology: {}", incomingCodingSheet, defaultOntology);
             incomingColumn.setDefaultOntology(defaultOntology);
             if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
-                        defaultOntology);
+                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser, defaultOntology);
                 incomingColumn.setDefaultCodingSheet(generatedCodingSheet);
                 getLogger().debug("generated coding sheet {} for {}", generatedCodingSheet, incomingColumn);
             }
