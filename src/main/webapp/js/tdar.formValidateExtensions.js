@@ -201,7 +201,7 @@
         var $selectedElement = $section.find('input[type=radio]:checked').first();
 
         //if we came here by way of a form 're-validate', we need to make sure that validation logic in registerCheckboxInfo happens first.
-        /* FIXME: this is the wrong way to do this.  Instead of calling out to an external validation routine,  the logic of registerCheckboxInfo needs to be a $.validation method,  and the code that is responsible for coloring the column "status" should be a listener to validation events. */
+        /* FIXME: (TDAR-4470)this is the wrong way to do this.  Instead of calling out to an external validation routine,  the logic of registerCheckboxInfo needs to be a $.validation method,  and the code that is responsible for coloring the column "status" should be a listener to validation events.  */
         TDAR.datasetMetadata.registerCheckboxInfo.call(element, "tdar.formValidateExtensions.js");
 
         if ($selectedElement.is(':disabled')) {

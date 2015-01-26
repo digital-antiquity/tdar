@@ -398,6 +398,8 @@
 
     $(function () {
         TDAR.datasetMetadata.init("#edit-metadata-form");
+
+        $("#edit-metadata-form").FormNavigate("clean");
     });
 
 </script>
