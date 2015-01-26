@@ -39,6 +39,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.MessageHelper;
@@ -51,6 +52,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/dataset")
+@HttpsOnly
 public class ColumnMetadataController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Dataset> {
 
     private static final long serialVersionUID = 657544410406621681L;
