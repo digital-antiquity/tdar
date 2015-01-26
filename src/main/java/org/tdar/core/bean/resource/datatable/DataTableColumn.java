@@ -333,11 +333,13 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
             setColumnEncodingType(column.getColumnEncodingType());
         }
         setMeasurementUnit(column.getMeasurementUnit());
+    }
+
+    public void copyMappingMetadataFrom(DataTableColumn column) {
         setMappingColumn(column.isMappingColumn());
         setDelimiterValue(column.getDelimiterValue());
         setIgnoreFileExtension(column.isIgnoreFileExtension());
     }
-
     public CategoryVariable getTempSubCategoryVariable() {
         return tempSubCategoryVariable;
     }

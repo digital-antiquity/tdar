@@ -44,7 +44,6 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
-import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -87,11 +86,9 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     }
 
     private Long id;
-    private List<DataTableColumn> columnsToRemap;
     private DataTable dataTable;
     private List<DataTableColumn> dataTableColumns;
     private PaginationHelper paginationHelper;
-    private boolean async = false;
     private Long dataTableId;
     // stores the next data table column's ontology mappings to visit within this dataset when mapping data column values to ontology nodes.
     // i.e., a cursor into ontologyMappedColumns
@@ -148,7 +145,8 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     }
 
     @SkipValidation
-    @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl") })
+    @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl"),
+            })
     public String editColumnMetadata() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
@@ -204,20 +202,17 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
      * @throws TdarActionException
      */
     public String saveColumnMetadata() throws TdarActionException {
-        // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        Pair<Boolean, List<DataTableColumn>> updateResults = new Pair<Boolean, List<DataTableColumn>>(false, new ArrayList<DataTableColumn>());
+        boolean hasOntologies = false;
         initializePaginationHelper();
 
         try {
-            updateResults = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            hasOntologies  = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
-        this.setColumnsToRemap(updateResults.getSecond());
-        postSaveColumnMetadataCleanup();
-        return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
+        return getPostSaveAction().getResultName(!hasOntologies , getDataResource());
     }
 
     public Dataset getPersistable() {
@@ -249,14 +244,6 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
 
     public void setStartRecord(Integer startRecord) {
         this.startRecord = startRecord;
-    }
-
-    public List<DataTableColumn> getColumnsToRemap() {
-        return columnsToRemap;
-    }
-
-    public void setColumnsToRemap(List<DataTableColumn> columnsToRemap) {
-        this.columnsToRemap = columnsToRemap;
     }
 
     public void setDataTable(DataTable dataTable) {
@@ -297,24 +284,6 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
 
     public void setPaginationHelper(PaginationHelper paginationHelper) {
         this.paginationHelper = paginationHelper;
-    }
-
-    protected void postSaveColumnMetadataCleanup() {
-        if (CollectionUtils.isNotEmpty(columnsToRemap)) {
-            if (isAsync()) {
-                datasetService.remapColumnsAsync(columnsToRemap, getDataResource().getProject());
-            } else {
-                datasetService.remapColumns(columnsToRemap, getDataResource().getProject());
-            }
-        }
-    }
-
-    public boolean isAsync() {
-        return async;
-    }
-
-    public void setAsync(boolean async) {
-        this.async = async;
     }
 
     @Override
