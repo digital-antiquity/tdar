@@ -106,6 +106,11 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
+        
+        if (PersistableUtils.isNotNullOrTransient(keyword) && getKeyword().isDuplicate()) {
+            keyword = genericKeywordService.findAuthority(keyword);
+            setRedirectBadSlug(true);
+        }
         if (PersistableUtils.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
@@ -129,10 +134,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     })
     public String view() {
         if (redirectBadSlug) {
-            return BAD_SLUG;
-        }
-        if (PersistableUtils.isNotNullOrTransient(keyword) && keyword.isDuplicate()) {
-            setKeyword(genericKeywordService.findAuthority(keyword));
             return BAD_SLUG;
         }
 
