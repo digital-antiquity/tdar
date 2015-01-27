@@ -823,4 +823,11 @@ public class TdarConfiguration {
     public static Integer getIntegrationPreviewSizePerDataTable() {
         return 10;
     }
+
+    public boolean isTest() {
+        if (isProductionEnvironment()) {
+            return false;
+        }
+        return assistant.getBooleanProperty("is.test", false);
+    }
 }

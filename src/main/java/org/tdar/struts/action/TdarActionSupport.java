@@ -841,4 +841,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
 
+    public boolean isTest() {
+        return getTdarConfiguration().isTest();
+    }
 }

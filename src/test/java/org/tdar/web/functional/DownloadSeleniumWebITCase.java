@@ -87,4 +87,9 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         waitFor(titleContains("Download: "));
         assertThat(getCurrentUrl(), containsString(CONFIRM));
     }
+
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
+    }
 }
