@@ -396,4 +396,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));
     }
 
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
+    }
 }

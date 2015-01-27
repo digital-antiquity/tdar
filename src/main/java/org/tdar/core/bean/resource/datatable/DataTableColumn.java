@@ -333,11 +333,13 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
             setColumnEncodingType(column.getColumnEncodingType());
         }
         setMeasurementUnit(column.getMeasurementUnit());
+    }
+
+    public void copyMappingMetadataFrom(DataTableColumn column) {
         setMappingColumn(column.isMappingColumn());
         setDelimiterValue(column.getDelimiterValue());
         setIgnoreFileExtension(column.isIgnoreFileExtension());
     }
-
     public CategoryVariable getTempSubCategoryVariable() {
         return tempSubCategoryVariable;
     }
@@ -402,11 +404,19 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     public boolean hasDifferentMappingMetadata(DataTableColumn column) {
-        logger.trace("delim: '{}' - '{}'", getDelimiterValue(), column.getDelimiterValue());
-        logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
-        logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
-        return !(StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
-                Objects.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && Objects.equals(isMappingColumn(), column.isMappingColumn()));
+        logger.debug("delim: '{}' - '{}'", getDelimiterValue(), column.getDelimiterValue());
+        if (!StringUtils.equals(getDelimiterValue(), column.getDelimiterValue())) {
+            return true;
+        }
+        logger.debug("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
+        if (!Objects.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension())) {
+            return true;
+        }
+        logger.debug("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
+        if (!Objects.equals(isMappingColumn(), column.isMappingColumn())) {
+            return true;
+        }
+        return false;
     }
 
     @Transient

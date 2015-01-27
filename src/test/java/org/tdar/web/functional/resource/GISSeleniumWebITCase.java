@@ -177,4 +177,8 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     }
 
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
+    }
 }

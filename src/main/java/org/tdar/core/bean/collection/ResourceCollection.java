@@ -775,6 +775,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.changesNeedToBeLogged = changesNeedToBeLogged;
     }
 
+    @JsonView(JsonLookupFilter.class)
     public String getDetailUrl() {
         return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }

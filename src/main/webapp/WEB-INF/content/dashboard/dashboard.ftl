@@ -194,7 +194,7 @@
 	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
 	                    <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
 	                </span>
-	                        <a href="<@s.url value='/${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
+	                        <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
                             <small>(ID: ${res.id?c})</small>
                        </@common.cartouche>
                    </span>
@@ -341,7 +341,7 @@
         <ul>
             <#list resourcesWithErrors as resource>
                 <li>
-                    <a href="<@s.url value="/${resource.detailUrl}" />">${resource.title}:
+                    <a href="<@s.url value="${resource.detailUrl}" />">${resource.title}:
                         <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.filename!"unknown"}</#list>
                     </a>
                 </li>

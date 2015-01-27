@@ -1981,6 +1981,7 @@ public class Resource implements Persistable,
         this.bookmarked = bookmarked;
     }
 
+    @JsonView(JsonLookupFilter.class)
     public String getDetailUrl() {
         return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }

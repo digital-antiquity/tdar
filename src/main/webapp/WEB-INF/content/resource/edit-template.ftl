@@ -420,6 +420,18 @@
             <@local_.localJavascript />
         </#if>
 
+        <#if test>
+            var $up = $("#fileAsyncUpload");
+            $up.css("position", "static");
+            $up.css("top", "auto");
+            $up.css("right", "auto");
+            $up.css("margin", 0);
+            $up.css("opacity", 1);
+            $up.css("transform", "none");
+            $up.css("direction", "ltr");
+            $up.css("cursor", "auto");
+        </#if>
+
         });
         </#noescape>
 </script>

@@ -63,7 +63,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         // the list off ontology nodes, in order becomes the "key" for the pivot table
         List<OntologyNode> ontologyNodes = new ArrayList<>();
         // first column is the table name
-        Long tableId = Long.parseLong((String)row[0]);
+        Long tableId = (Long)row[0];
         String tableName = "";
         for (DataTable dt : context.getDataTables()) {
             if (tableId.equals(dt.getId())) {

@@ -108,7 +108,6 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         // find(By.partialLinkText("EDIT")).click();
 
         WebElementSelection sel = find(".replace-file");
-        showAsyncFileInput(sel.first());
         File replaceFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "tab_mapping_dataset.tab");
         sel.sendKeys(replaceFile.getAbsolutePath());
         waitFor(".undo-replace-button");
@@ -126,5 +125,10 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         // assertFalse("no errors present", getText().toLowerCase().contains("error"));
         // doesn't work because -- Error setting expression 'submitAction' may occur
 
+    }
+
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
     }
 }

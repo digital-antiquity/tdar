@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.SearchPaginationException;
@@ -105,12 +106,17 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
+        
+        if (PersistableUtils.isNotNullOrTransient(keyword) && getKeyword().isDuplicate()) {
+            keyword = genericKeywordService.findAuthority(keyword);
+            setRedirectBadSlug(true);
+        }
         if (PersistableUtils.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
         getLogger().trace("id:{}  slug:{}", getId(), getSlug());
         if (!handleSlugRedirect(keyword, this)) {
-            redirectBadSlug = true;
+            setRedirectBadSlug(true);
         } else {
             try {
                 prepareLuceneQuery();
@@ -128,10 +134,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     })
     public String view() {
         if (redirectBadSlug) {
-            return BAD_SLUG;
-        }
-        if (PersistableUtils.isNotNullOrTransient(keyword) && keyword.isDuplicate()) {
-            setKeyword(genericKeywordService.findAuthority(keyword));
             return BAD_SLUG;
         }
 
@@ -208,5 +210,19 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     @Override
     public int getDefaultRecordsPerPage() {
         return DEFAULT_RESULT_SIZE;
+    }
+    
+    @Override
+    public Addressable getPersistable() {
+        return keyword;
+    }
+
+    @Override
+    public boolean isRedirectBadSlug() {
+        return redirectBadSlug;
+    }
+
+    public void setRedirectBadSlug(boolean redirectBadSlug) {
+        this.redirectBadSlug = redirectBadSlug;
     }
 }
