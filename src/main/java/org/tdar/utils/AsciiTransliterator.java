@@ -33,7 +33,8 @@ public class AsciiTransliterator {
         {
             try
             {
-                keywordTokenizer.reset();//(new StringReader(line));
+                keywordTokenizer.setReader(new StringReader(line));
+                keywordTokenizer.reset();
                 if (asciiFoldingFilter.incrementToken())
                 {
                     return new String(termAttribute.buffer());

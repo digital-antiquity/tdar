@@ -164,7 +164,6 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @DocumentId
     @JsonView(JsonLookupFilter.class)
 //    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     private Long id = -1L;
@@ -254,6 +253,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @Override
     @XmlAttribute
+    @DocumentId
     public Long getId() {
         return id;
     }
