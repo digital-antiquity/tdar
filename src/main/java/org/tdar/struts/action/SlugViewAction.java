@@ -1,5 +1,7 @@
 package org.tdar.struts.action;
 
+import org.tdar.core.bean.resource.Addressable;
+
 public interface SlugViewAction {
 
     void setSlugSuffix(String slugSuffix);
@@ -7,5 +9,9 @@ public interface SlugViewAction {
     String getSlugSuffix();
 
     String getSlug();
+
+    boolean isRedirectBadSlug();
+    
+    Addressable getPersistable();
 
 }

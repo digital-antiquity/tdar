@@ -437,6 +437,21 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
     /**
+     * Suppress the browser's default behavior of submitting the current form when user presses RETURN while a text-input has focus.  User can still submit
+     * via keypress when focussed on a submit button.
+     *
+     * @param $form jQuery selection containing the form that will suppress keypress submissions.
+     */
+    var _suppressKeypressFormSubmissions = function($form) {
+        $form.find('input,select').keypress(function (event) {
+            if(event.keyCode === $.ui.keyCode.ENTER) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    };
+
+    /**
      * Perform initialization and setup for a typical elements and functionality of a tdar "edit page".  This does not
      * include initialization tasks for specific edit pages with unique functionality.
      *
@@ -536,9 +551,7 @@ TDAR.common = function (TDAR, fileupload) {
                 });
 
         // prevent "enter" from submitting
-        $('input,select').keypress(function (event) {
-            return event.keyCode != 13;
-        });
+        _suppressKeypressFormSubmissions($form);
 
         //init sortables
         //FIXME: sortables currently broken 
@@ -698,14 +711,17 @@ TDAR.common = function (TDAR, fileupload) {
         if (props.dataTableEnabled) {
             TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
         }
-        
-        $("#fileUploadField").change(function () {
-            if ($("#fileUploadField").val().length > 0) {
-                $("#reminder").hide();
-            }
-        }).change();
 
-
+        $("#fileUploadField").each(function(){
+            var $fileUploadField = $(this);
+            var _updateReminderVisibility = function() {
+                if ($fileUploadField.val().length) {
+                    $("#reminder").hide();
+                }
+            };
+            $fileUploadField.change(_updateReminderVisibility);
+            _updateReminderVisibility();
+        });
     };
 
     /**
@@ -1315,7 +1331,8 @@ TDAR.common = function (TDAR, fileupload) {
         "humanFileSize": _humanFileSize,
         "initImageGallery": _initImageGalleryForView,
         "formatNumber": _formatNumber,
-        "_registerAjaxStatusContainer": _registerAjaxStatusContainer
+        "registerAjaxStatusContainer": _registerAjaxStatusContainer,
+        "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions
     });
 
     return self;

@@ -77,7 +77,7 @@
         </#noescape>
 
     $(document).ready(function () {
-        TDAR.ontologyMapping.initMapping();
+        TDAR.ontologyMapping.initMapping("#mapontologyform");
     });
 
         <#macro repeat num=0 value="  |"><#t/>

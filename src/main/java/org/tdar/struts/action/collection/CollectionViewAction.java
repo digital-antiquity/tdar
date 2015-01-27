@@ -399,7 +399,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        buildLuceneSearch();
+        if (!isRedirectBadSlug()) {
+            buildLuceneSearch();
+        }
     }
 
     @Override

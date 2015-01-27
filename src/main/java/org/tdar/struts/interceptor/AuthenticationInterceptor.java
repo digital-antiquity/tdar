@@ -137,8 +137,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
                 // user is authenticated and authorized to perform requested action
                 return invocation.invoke();
             }
-            logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user,
-                    group));
+            logger.debug("unauthorized access to {}/{} from {} with required group {}", action.getClass().getSimpleName(), methodName, user, group);
             // NOTE, for whatever reason, Struts is not allowing us to swap out the body of the message when we change the http status code
             // thus we need to use the redirect here to get a tDAR error message.  This seems to be an issue specific to the FreemarkerHttpResult and this interceptor
             // probably because the action has not been invoked, so we redirect
@@ -171,6 +170,10 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         HttpServletRequest request = ServletActionContext.getRequest();
         ActionProxy proxy = invocation.getProxy();
         String returnUrl = String.format("%s/%s", proxy.getNamespace(), proxy.getActionName());
+        if (StringUtils.isBlank(proxy.getNamespace() )) {
+            returnUrl = proxy.getActionName();
+        }
+        logger.trace(returnUrl);
         if (!request.getMethod().equalsIgnoreCase("get") || returnUrl.matches(SKIP_REDIRECT)) {
             logger.warn("Not setting return url for anything other than a get {}", request.getMethod());
             return;

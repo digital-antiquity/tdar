@@ -10,7 +10,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -482,6 +481,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         incomingColumn.setCategoryVariable(existingColumn.getCategoryVariable());
 
         incomingColumn.copyUserMetadataFrom(existingColumn);
+        incomingColumn.copyMappingMetadataFrom(existingColumn);
         existingNameToColumnMap.remove(normalizedColumnName);
     }
 
@@ -749,14 +749,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * necessary.
      */
     @Transactional
-    public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
+    public Boolean updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
             List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser) {
-        boolean hasOntologies = false;
-        Pair<Boolean, List<DataTableColumn>> toReturn = new Pair<Boolean, List<DataTableColumn>>(hasOntologies, new ArrayList<DataTableColumn>());
+        Boolean hasOntologies = false;
         List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();
-        List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
         for (DataTableColumn incomingColumn : dataTableColumns) {
-            boolean needToRemap = false;
             getLogger().debug("incoming data table column: {}", incomingColumn);
             DataTableColumn existingColumn = dataTable.getColumnById(incomingColumn.getId());
             if (existingColumn == null) {
@@ -783,16 +780,15 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 // check if the incoming column had an ontology set
                 defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getDefaultOntology(), Ontology.class);
             }
-            getLogger().debug("default ontology: {}", defaultOntology);
-            getLogger().debug("incoming coding sheet: {}", incomingCodingSheet);
+            getLogger().debug("incoming coding sheet: {} | default ontology: {}", incomingCodingSheet, defaultOntology);
             incomingColumn.setDefaultOntology(defaultOntology);
             if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
-                        defaultOntology);
+                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser, defaultOntology);
                 incomingColumn.setDefaultCodingSheet(generatedCodingSheet);
                 getLogger().debug("generated coding sheet {} for {}", generatedCodingSheet, incomingColumn);
             }
+
             // FIXME: can we simplify this logic? Perhaps push into DataTableColumn?
             // incoming ontology or coding sheet from the web was not null but the column encoding type was set to something that
             // doesn't support either, we set it to null
@@ -816,25 +812,14 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             existingColumn.setDefaultOntology(incomingColumn.getDefaultOntology());
             existingColumn.setDefaultCodingSheet(incomingColumn.getDefaultCodingSheet());
 
-            existingColumn.setCategoryVariable(getDao().loadFromSparseEntity(incomingColumn.getCategoryVariable(), CategoryVariable.class));
-            CategoryVariable subcategoryVariable = getDao().loadFromSparseEntity(incomingColumn.getTempSubCategoryVariable(),
-                    CategoryVariable.class);
-
-            if (subcategoryVariable != null) {
-                existingColumn.setCategoryVariable(subcategoryVariable);
-            }
+            copyCategoryVariableInfo(incomingColumn, existingColumn);
             // check if values have changed
-            needToRemap = existingColumn.hasDifferentMappingMetadata(incomingColumn);
             // copy off all of the values that can be directly copied from the bean
             existingColumn.copyUserMetadataFrom(incomingColumn);
             if (!existingColumn.isValid()) {
                 throw new TdarRecoverableRuntimeException("datasetService.invalid_column", Arrays.asList(existingColumn));
             }
 
-            if (needToRemap) {
-                getLogger().debug("remapping {}", existingColumn);
-                columnsToMap.add(existingColumn);
-            }
             // if there is a change in coding sheet a column may need to be retranslated or untranslated.
             if (isRetranslationNeeded(incomingCodingSheet, existingCodingSheet)) {
                 getLogger().debug("retranslating {} for incoming coding sheet {}", existingColumn, incomingCodingSheet);
@@ -844,7 +829,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getDao().update(existingColumn);
         }
         dataset.markUpdated(authenticatedUser);
-        toReturn.getSecond().addAll(prepareAndFindMappings(dataset.getProject(), columnsToMap));
         save(dataset);
         if (!columnsToTranslate.isEmpty()) {
             // create the translation file for this dataset.
@@ -853,7 +837,55 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             createTranslatedFile(dataset);
         }
         logDataTableColumns(dataTable, "data column metadata registration", authenticatedUser);
-        getLogger().info("hasOntology: {} , mappingColumns: {} ", toReturn.getFirst(), toReturn.getSecond());
+        getLogger().info("hasOntology: {} ", hasOntologies);
+        return hasOntologies;
+    }
+
+    private void copyCategoryVariableInfo(DataTableColumn incomingColumn, DataTableColumn existingColumn) {
+        existingColumn.setCategoryVariable(getDao().loadFromSparseEntity(incomingColumn.getCategoryVariable(), CategoryVariable.class));
+        CategoryVariable subcategoryVariable = getDao().loadFromSparseEntity(incomingColumn.getTempSubCategoryVariable(),
+                CategoryVariable.class);
+
+        if (subcategoryVariable != null) {
+            existingColumn.setCategoryVariable(subcategoryVariable);
+        }
+    }
+
+
+    /*
+     * Takes an existing @link Dataset and @link DataTable, and an incoming list of @link DataTableColumn entries, from the edit-column-metadata function in
+     * tDAR, iterate through each incoming DataTableColumn and update the real entries in the database. Once updated, re-translate, map, and other changes as
+     * necessary.
+     */
+    @Transactional
+    public List<DataTableColumn> updateColumnResourceMappingMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
+            List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser) {
+        List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
+        for (DataTableColumn incomingColumn : dataTableColumns) {
+            getLogger().debug("incoming data table column: {}", incomingColumn);
+            DataTableColumn existingColumn = dataTable.getColumnById(incomingColumn.getId());
+            if (existingColumn == null) {
+                existingColumn = dataTable.getColumnByName(incomingColumn.getName());
+                if (existingColumn == null) {
+                    throw new TdarRecoverableRuntimeException("datasetService.could_not_find_column", Arrays.asList(incomingColumn.getName(),
+                            incomingColumn.getId()));
+                }
+            }
+            // copy off all of the values that can be directly copied from the bean
+            existingColumn.copyMappingMetadataFrom(incomingColumn);
+
+            if (existingColumn.hasDifferentMappingMetadata(incomingColumn)) {
+                getLogger().debug("remapping {}", existingColumn);
+                columnsToMap.add(existingColumn);
+            }
+            getLogger().trace("{}", existingColumn);
+            getDao().update(existingColumn);
+        }
+        dataset.markUpdated(authenticatedUser);
+        List<DataTableColumn> toReturn = prepareAndFindMappings(dataset.getProject(), columnsToMap);
+        save(dataset);
+        logDataTableColumns(dataTable, "column metadata mapping", authenticatedUser);
+        getLogger().info("mappingColumns: {} ", toReturn);
         return toReturn;
     }
 

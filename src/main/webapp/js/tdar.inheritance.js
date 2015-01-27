@@ -28,21 +28,17 @@ TDAR.inheritance = (function () {
 
     //FIXME: HACK:  workaround chrome-specific rendering issue that occurs when updating inherited sections (TDAR-4358)
     /**
-     * Alter opacity for 1 tick to force a repaint in Chrome .  This (appears to) remove 'ghost' elements that appear
-     * even after we these elements from the DOM (via jQuery.remove).  When chrome repaints the affected region the ghosts disappear, so we tweak the opacity
-     * to force a repaint of the affected region.
+     * Force repaint in chrome blanking out the entire page for 10ms.  This is not ideal AT ALL, but the only thing i've found so far that appears to work
+     * around the ghost element issue in chrome 100% of the time.
+     *
      *
      * @param $parentElement jquery selection containing the div to repaint.
      * @private
      */
     function _forceChromeRepaint($parentElement) {
-        //if client supports opacity, change it
-        var oldOpacity = $parentElement.css("opacity");
-        if(!oldOpacity) return;
-        $parentElement.css({opacity:0.5});
-        //set timeout is required: new opacity must be applied in a different tick or chrome wont repaint
+        $(document.body).css("visibility", "hidden");
         setTimeout(function(){
-            $parentElement.css({opacity: oldOpacity});
+            $(document.body).css("visibility", "visible");
         }, 10);
 
     }

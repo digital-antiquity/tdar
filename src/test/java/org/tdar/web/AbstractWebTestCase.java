@@ -120,7 +120,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
-            "problems with this submission");
+            "problems with this submission","TDAR:500","TDAR:404");
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";

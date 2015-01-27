@@ -113,7 +113,7 @@ public class ResourceController extends AuthenticationAware.Base {
      */
     @Action(value = "{id}",
             results = {
-                    @Result(name = "SUCCESS", type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resourceId}")
+                    @Result(name = "SUCCESS", type = TYPE_REDIRECT, location = "${resource.detailUrl}")
             })
     public String view() {
         resource = getGenericService().find(Resource.class, resourceId);
