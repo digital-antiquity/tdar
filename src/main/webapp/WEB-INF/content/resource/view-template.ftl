@@ -32,6 +32,9 @@
             <#assign disabled = resource.dataTables?size==0 />
             <@nav.makeLink "dataset" "columns" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
             <@nav.makeLink "dataset" "columns" "metadata" "columns" current true disabled "hidden-desktop"/>
+            <#if administrator && resource.project?? && resource.project.id != -1 >
+            <@nav.makeLink "dataset" "mapping" "mapping" "columns" current true disabled ""/>
+            </#if>
         </#if>
 
         <#if local_.toolbarAdditions?? && local_.toolbarAdditions?is_macro>
