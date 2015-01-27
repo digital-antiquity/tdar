@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Validatable;
@@ -16,6 +16,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.core.service.search.Operator;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -171,6 +172,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
         if (item instanceof Enum) {
             return ((Enum<?>) item).name();
+// attempting to create a NumericRangeQuery
+//        } else if (item instanceof Number) {
+//            return String.format("[%s TO %s]", item.toString(),item.toString());
         } else {
             return item.toString();
         }

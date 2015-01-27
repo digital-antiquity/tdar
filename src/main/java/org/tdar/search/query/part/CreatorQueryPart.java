@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
@@ -14,6 +13,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;

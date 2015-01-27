@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 public class InstitutionQueryPart extends FieldQueryPart<Institution> {

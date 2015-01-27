@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;

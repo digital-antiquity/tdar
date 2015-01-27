@@ -7,12 +7,12 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;

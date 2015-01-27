@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;

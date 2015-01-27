@@ -20,11 +20,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
@@ -35,7 +35,7 @@ import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
-import org.hibernate.search.ProjectionConstants;
+import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.Search;
 import org.hibernate.search.query.facet.Facet;
 import org.hibernate.search.query.facet.FacetSortOrder;
@@ -124,7 +124,7 @@ public class SearchService {
     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
 
-    private transient ConcurrentMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> parserCacheMap = new ConcurrentHashMap<>();
+    private transient ConcurrentMap<Class<?>, Pair<String[], org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper>> parserCacheMap = new ConcurrentHashMap<>();
 
     public static final int MAX_FTQ_RESULTS = 50_000;
 
@@ -512,14 +512,13 @@ public class SearchService {
         if (pair == null) {
             List<String> fields = new ArrayList<>();
             Set<DynamicQueryComponent> cmpnts = new HashSet<>();
-            PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new LowercaseWhiteSpaceStandardAnalyzer());
 
             // add all DynamicQueryComponents for specified classes
             for (Class<?> cls : qb.getClasses()) {
                 cmpnts.addAll(DynamicQueryComponentHelper.createFields(cls, ""));
             }
 
-            applyAnalyzers(qb, fields, cmpnts, analyzer);
+            PerFieldAnalyzerWrapper analyzer = applyAnalyzers(qb, fields, cmpnts);
             // XXX: do not cache the actual MultiFieldQueryParser, it's not thread-safe
             // MultiFieldQueryParser qp = new MultiFieldQueryParser(Version.LUCENE_31, fields.toArray(new String[0]), analyzer);
             Pair<String[], PerFieldAnalyzerWrapper> newPair = new Pair<>(fields.toArray(new String[fields.size()]), analyzer);
@@ -528,7 +527,7 @@ public class SearchService {
                 pair = newPair;
             }
         }
-        QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_36, pair.getFirst(), pair.getSecond());
+        QueryParser parser = new MultiFieldQueryParser(pair.getFirst(), pair.getSecond());
         qb.setQueryParser(parser);
     }
 
@@ -539,9 +538,10 @@ public class SearchService {
      * @param fields
      * @param cmpnts
      * @param analyzer
+     * @return 
      */
     @SuppressWarnings("deprecation")
-    private void applyAnalyzers(QueryBuilder qb, List<String> fields, Set<DynamicQueryComponent> cmpnts, PerFieldAnalyzerWrapper analyzer) {
+    private PerFieldAnalyzerWrapper applyAnalyzers(QueryBuilder qb, List<String> fields, Set<DynamicQueryComponent> cmpnts) {
         List<DynamicQueryComponent> toRemove = new ArrayList<>();
         // add all overrides and replace existing settings
         if (qb.getOverrides() != null) {
@@ -555,6 +555,8 @@ public class SearchService {
             cmpnts.removeAll(toRemove);
             cmpnts.addAll(qb.getOverrides());
         }
+
+        Map<String,Analyzer> defaults = new HashMap<>();
         for (DynamicQueryComponent cmp : cmpnts) {
             String partialLabel = qb.stringContainedInLabel(cmp.getLabel());
             if (partialLabel != null) {
@@ -569,13 +571,14 @@ public class SearchService {
             fields.add(cmp.getLabel());
             if (cmp.getAnalyzer() != null) {
                 try {
-                    analyzer.addAnalyzer(cmp.getLabel(), (org.apache.lucene.analysis.Analyzer) cmp.getAnalyzer().newInstance());
+                    defaults.put(cmp.getLabel(), (org.apache.lucene.analysis.Analyzer) cmp.getAnalyzer().newInstance());
                 } catch (Exception e) {
                     logger.debug("cannot add analyzer:", e);
                 }
                 logger.trace(cmp.getLabel() + " : " + cmp.getAnalyzer().getCanonicalName());
             }
         }
+        return new PerFieldAnalyzerWrapper(new LowercaseWhiteSpaceStandardAnalyzer(), defaults);
     }
 
     /**

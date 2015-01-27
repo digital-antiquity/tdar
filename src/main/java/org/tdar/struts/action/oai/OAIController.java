@@ -17,7 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;

@@ -32,7 +32,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -167,7 +166,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     @JsonView(JsonLookupFilter.class)
-    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+//    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     private Long id = -1L;
     /*
      * @Boost(.5f)

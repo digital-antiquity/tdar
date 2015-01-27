@@ -1,25 +1,22 @@
 package org.tdar.search.index.analyzer;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.PorterStemFilter;
-import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.util.Version;
-import org.apache.solr.analysis.PatternTokenizer;
-import org.apache.solr.analysis.TrimFilter;
-import org.apache.solr.analysis.WordDelimiterFilterFactory;
+import org.apache.lucene.analysis.core.LowerCaseFilter;
+import org.apache.lucene.analysis.core.StopFilter;
+import org.apache.lucene.analysis.en.PorterStemFilter;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.miscellaneous.TrimFilter;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
+import org.apache.lucene.analysis.pattern.PatternTokenizer;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-
+import org.apache.lucene.util.Version;
 public final class LowercaseWhiteSpaceStandardAnalyzer extends Analyzer {
 
     /*
@@ -29,7 +26,7 @@ public final class LowercaseWhiteSpaceStandardAnalyzer extends Analyzer {
      * @see org.apache.lucene.analysis.Analyzer#tokenStream(java.lang.String, java.io.Reader)
      */
     @Override
-    public TokenStream tokenStream(String fieldName, Reader reader) {
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
         try {
             // TOKENIZING ON (punctuation?)(space +) (punctuation?)
             Tokenizer st = new PatternTokenizer(reader, Pattern.compile("((^|\\W|\\_)?(\\s+)(\\W|\\_|$)?)"), -1);
@@ -47,22 +44,22 @@ public final class LowercaseWhiteSpaceStandardAnalyzer extends Analyzer {
             params.put("splitOnNumerics", "0");
             params.put("stemEnglishPossessive", "1");
             params.put("splitOnCaseChange", "0");
+            params.put(WordDelimiterFilterFactory.LUCENE_MATCH_VERSION_PARAM, Version.LATEST.toString());
             // params.put("types", "wdfftypes.txt"); "% => ALPHA" or "\u002C => DIGIT". Allowable types are: LOWER, UPPER, ALPHA, DIGIT, ALPHANUM,
             // SUBWORD_DELIM.
             // [Solr3.1]
-            WordDelimiterFilterFactory wordFilter = new WordDelimiterFilterFactory();
-            wordFilter.init(params);
-            LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_36, wordFilter.create(st));
-            TrimFilter trimFilter = new TrimFilter(stream, true);
+            WordDelimiterFilterFactory wordFilter = new WordDelimiterFilterFactory(params);
+            
+            LowerCaseFilter stream = new LowerCaseFilter(wordFilter.create(st));
+            TrimFilter trimFilter = new TrimFilter(stream);
 
-            StopFilter stopFilter = new StopFilter(Version.LUCENE_36, trimFilter, TdarConfiguration.getInstance().getStopWords());
+            StopFilter stopFilter = new StopFilter(trimFilter, TdarConfiguration.getInstance().getStopWords());
             PorterStemFilter porterStemFilter = new PorterStemFilter(stopFilter);
             ASCIIFoldingFilter filter = new ASCIIFoldingFilter(porterStemFilter);
-            return filter;
-        } catch (IOException e) {
-            throw new TdarRecoverableRuntimeException("lowercaseWhitespaceTokenizer.cannot_tokenize");
+            return new TokenStreamComponents(st, filter);
+        } catch (Exception e) {
+            throw new TdarRecoverableRuntimeException("lowercaseWhitespaceTokenizer.cannot_tokenize", e);
         }
-
     }
 
 }

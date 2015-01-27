@@ -1,12 +1,12 @@
 package org.tdar.search.query.part;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 

@@ -8,10 +8,10 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.query.QueryFieldNames;

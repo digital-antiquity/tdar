@@ -1,6 +1,6 @@
 package org.tdar.search.query.builder;
 
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.LookupSource;
 
 /**

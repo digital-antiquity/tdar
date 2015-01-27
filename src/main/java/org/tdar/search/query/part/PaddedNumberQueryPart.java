@@ -3,7 +3,7 @@ package org.tdar.search.query.part;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 
 public class PaddedNumberQueryPart<C> extends FieldQueryPart<C> {

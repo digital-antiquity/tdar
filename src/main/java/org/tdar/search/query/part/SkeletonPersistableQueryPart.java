@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.service.search.Operator;
 import org.tdar.utils.PersistableUtils;
 
 public class SkeletonPersistableQueryPart<P extends Persistable> extends AbstractHydrateableQueryPart<P> {

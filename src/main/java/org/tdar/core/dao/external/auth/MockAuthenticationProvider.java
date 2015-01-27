@@ -122,7 +122,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             if (ArrayUtils.isEmpty(groups)) {
                 groups = AuthenticationProvider.DEFAULT_GROUPS;
             }
-            logger.debug("adding: {} [{}]", person.getUsername().toLowerCase(), groups);
+            logger.trace("adding: {} [{}]", person.getUsername().toLowerCase(), groups);
             MockAuthenticationInfo info = new MockAuthenticationInfo();
             info.setPassword(password);
             info.setUsername(person.getUsername().toLowerCase());

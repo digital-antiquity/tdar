@@ -8,13 +8,13 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
 

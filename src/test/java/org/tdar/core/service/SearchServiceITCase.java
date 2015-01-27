@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.hibernate.search.FullTextQuery;
 import org.junit.Before;
 import org.junit.BeforeClass;

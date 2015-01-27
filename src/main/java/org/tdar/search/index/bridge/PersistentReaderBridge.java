@@ -6,9 +6,15 @@
  */
 package org.tdar.search.index.bridge;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.SequenceInputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -64,9 +70,28 @@ public class PersistentReaderBridge implements FieldBridge {
                     }
                 }
             }
-            LazyReaderField field = new LazyReaderField(name, input, luceneOptions.getStore(), luceneOptions.getIndex(), luceneOptions.getBoost());
+            LazyReaderField field = new LazyReaderField(name, input, readerValue(name, input), luceneOptions.getBoost());
             document.add(field);
         }
 
     }
+    
+
+    public Reader readerValue(String name, List<URI> paths) {
+        logger.trace("getting reader for: {}", name);
+
+        List<InputStream> streams = new ArrayList<InputStream>();
+        for (URI uri : paths) {
+            try {
+                streams.add(uri.toURL().openStream());
+            } catch (Exception e) {
+                logger.debug("cannot read url:", e);
+            }
+        }
+        SequenceInputStream stream = new SequenceInputStream(Collections.enumeration(streams));
+        logger.trace("returning stream reader {}", streams);
+
+        return new BufferedReader(new InputStreamReader(stream));
+    }
+
 }

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -17,6 +16,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;

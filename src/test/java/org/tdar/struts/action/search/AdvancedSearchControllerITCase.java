@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -63,6 +62,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.search.Operator;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.LookupSource;

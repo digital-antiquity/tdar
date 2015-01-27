@@ -2,12 +2,10 @@ package org.tdar.search.index.analyzer;
 
 import java.io.Reader;
 
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordTokenizer;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.analysis.core.KeywordTokenizer;
+import org.apache.lucene.analysis.core.LowerCaseFilter;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 
 /**
  * 
@@ -18,11 +16,12 @@ import org.apache.lucene.util.Version;
  * 
  */
 public class NonTokenizingAutocompleteAnalyzer extends Analyzer {
+
     @Override
-    public TokenStream tokenStream(String fieldName, Reader reader) {
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
         KeywordTokenizer et = new KeywordTokenizer(reader);
-        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_36, et);
+        LowerCaseFilter stream = new LowerCaseFilter(et);
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stream);
-        return filter;
+        return new TokenStreamComponents(et, filter);
     }
 }

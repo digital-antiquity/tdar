@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
+import org.tdar.core.service.search.Operator;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;

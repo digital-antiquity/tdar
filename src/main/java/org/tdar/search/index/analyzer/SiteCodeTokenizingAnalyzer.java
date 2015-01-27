@@ -1,15 +1,13 @@
 package org.tdar.search.index.analyzer;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.regex.Pattern;
 
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.solr.analysis.PatternReplaceFilter;
-import org.apache.solr.analysis.PatternTokenizer;
-import org.apache.solr.analysis.TrimFilter;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.miscellaneous.TrimFilter;
+import org.apache.lucene.analysis.pattern.PatternReplaceFilter;
+import org.apache.lucene.analysis.pattern.PatternTokenizer;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public final class SiteCodeTokenizingAnalyzer extends Analyzer {
@@ -32,15 +30,15 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
     public static final Pattern sep_pattern = Pattern.compile(SEP);
 
     @Override
-    public TokenStream tokenStream(String fieldName, Reader reader) {
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
         try {
             PatternTokenizer tokenizer = new PatternTokenizer(reader, pattern, 0);
             ASCIIFoldingFilter filter = new ASCIIFoldingFilter(tokenizer);
-            TrimFilter trimFilter = new TrimFilter(filter, true);
+            TrimFilter trimFilter = new TrimFilter(filter);
             // normalizing where possible so that RI-0000 matches RI0000
             PatternReplaceFilter replaceFilter = new PatternReplaceFilter(trimFilter, sep_pattern, "", true);
-            return replaceFilter;
-        } catch (IOException e) {
+            return new TokenStreamComponents(tokenizer, replaceFilter);
+        } catch (Exception e) {
             throw new TdarRecoverableRuntimeException();
         }
     }
