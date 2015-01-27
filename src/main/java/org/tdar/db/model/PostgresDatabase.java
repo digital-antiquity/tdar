@@ -28,7 +28,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -86,6 +85,7 @@ import com.opensymphony.xwork2.TextProvider;
 @Component
 public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
 
+    private static final String INTEGRATION_TABLE_NAME_COL = "tableName";
     private static final String INTEGRATION_SUFFIX = "_int";
     private static final String SORT_SUFFIX = "_sort";
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
@@ -668,7 +668,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     String term = codeMap.get(code);
                     // 1st parameter is the translated term that we want to set
                     preparedStatement.setString(1, term);
-                    logger.trace("code:" + code + " term:" + term + " " + columnDataType + " [" + updateColumnSql + "]");
+                    logger.trace("code: {} term: {} {}[{}]", code , term , columnDataType ,  updateColumnSql );
                     // 2nd parameter is the where condition, the code that we want to translate.
                     boolean okToExecute = false;
                     switch (columnDataType) {
@@ -677,7 +677,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                                 preparedStatement.setLong(2, Long.valueOf(code));
                                 okToExecute = true;
                             } catch (Exception e) {
-                                logger.debug("problem casting code " + code + " to a Column's Long Mapping (ignoring)");
+                                logger.debug("problem casting code {} to a Column's Long Mapping (ignoring)", code);
                             }
                             break;
                         case DOUBLE:
@@ -685,7 +685,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                                 preparedStatement.setDouble(2, Double.valueOf(code));
                                 okToExecute = true;
                             } catch (Exception e) {
-                                logger.debug("problem casting " + code + " to a Double");
+                                logger.debug("problem casting {} to a Double", code);
                             }
                             break;
                         case VARCHAR:
@@ -700,7 +700,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                         logger.trace("Prepared statement is: " + preparedStatement.toString());
                         preparedStatement.addBatch();
                     } else {
-                        logger.debug("code:" + code + " was not a valid type for " + columnDataType);
+                        logger.debug("code: {} was not a valid type for {}", code,  columnDataType);
                     }
                 }
                 return preparedStatement.executeBatch();
@@ -830,9 +830,11 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
 
                 WhereCondition whereCond = new WhereCondition(column.getName());
-                Set<String> nodeSet = new HashSet<>();
+//                Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
                 // do these need to be per-table-updates?
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
+                    Set<String> nodeSet = new HashSet<>();
+//                    tableNodeSetMap.put(actualColumn.getDataTable(), nodeSet);
                     nodeSet.addAll(actualColumn.getMappedDataValues(node));
                     // check parent mapping logic to make sure that we don't apply to the grantparent if multiple nodes in tree are selected
                     for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
@@ -840,28 +842,27 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                             nodeSet.addAll(actualColumn.getMappedDataValues(node_));
                         }
                     }
-                }
-                if (CollectionUtils.isEmpty(nodeSet)) {
-                    continue;
-                }
-                whereCond.getInValues().addAll(nodeSet);
-                whereCond.setIncludeNulls(false);
-                StringBuilder sb = new StringBuilder("UPDATE ");
-                sb.append(proxy.getTempTableName());
-                sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
-                String order = node.getImportOrder().toString();
-//                if (node.getImportOrder() == 0 || StringUtils.isBlank(order)) {
-//                    order = node.getIndex();
-//                }
-                sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=");
-//                if (NumberUtils.isNumber(order)) {
+                    
+                    if (CollectionUtils.isEmpty(nodeSet)) {
+                        continue;
+                    }
+                    WhereCondition tableCond = new WhereCondition(INTEGRATION_TABLE_NAME_COL);
+                    tableCond.setValue(actualColumn.getDataTable().getId());
+
+                    whereCond.getInValues().addAll(nodeSet);
+                    whereCond.setIncludeNulls(false);
+                    StringBuilder sb = new StringBuilder("UPDATE ");
+                    sb.append(proxy.getTempTableName());
+                    sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
+                    String order = node.getImportOrder().toString();
+                    sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=");
                     sb.append(order);
-//                } else {
-//                    sb.append(quote(order));
-//                }
-                sb.append(" WHERE ");
-                sb.append(whereCond.toSql());
-                executeUpdateOrDelete(sb.toString());
+                    sb.append(" WHERE ");
+                    sb.append(tableCond.toSql());
+                    sb.append(" AND ");
+                    sb.append(whereCond.toSql());
+                    executeUpdateOrDelete(sb.toString());
+                }
             }
         }
     }
@@ -889,30 +890,40 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         createTable(String.format("CREATE TEMPORARY TABLE %1$s (" + DataTableColumn.TDAR_ID_COLUMN + " bigserial)", tempTable.getName()));
         DataTableColumn tableColumn = new DataTableColumn();
-        tableColumn.setName("tableName");
-        executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), tableColumn.getName()));
+        tableColumn.setName(INTEGRATION_TABLE_NAME_COL);
+        executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), tableColumn.getName()));
         tempTable.getDataTableColumns().add(tableColumn);
         proxy.setTempTable(tempTable);
+        Set<String> seen = new HashSet<>();
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
             logger.debug("column: {}", column);
-            if (!StringUtils.isBlank(column.getName())) {
+            if (StringUtils.isNotBlank(column.getName())) {
                 DataTableColumn dtc = new DataTableColumn();
                 dtc.setDisplayName(column.getName());
-                dtc.setName(normalizeTableOrColumnNames(column.getName()));
-                String name = dtc.getName();
+                int i= 0;
+                String name = column.getName();
+                String name_ = column.getName();
+                while (seen.contains(name_)) {
+                    i++;
+                    name_ = name + Integer.toString(i);
+                }
+                seen.add(name);
+                name = name_;
+                dtc.setName(normalizeTableOrColumnNames(name));
+                name = dtc.getName();
                 tempTable.getDataTableColumns().add(dtc);
                 column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
                     // integrated name
                     DataTableColumn integrationColumn = new DataTableColumn();
-                    integrationColumn.setDisplayName(name);
+                    integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
 
                     DataTableColumn sortColumn = new DataTableColumn();
-                    sortColumn.setDisplayName(name);
+                    integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     sortColumn.setName(name + SORT_SUFFIX);
                     tempTable.getDataTableColumns().add(sortColumn);
                     executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));
@@ -933,12 +944,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         StringBuilder sb = new StringBuilder();
         joinListWithCommas(sb, proxy.getTempTable().getColumnNames(), true);
         String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateOntologyEnhancedSelect(table, proxy);
-
-        // This may be outdated logic, disabling... old logic required that you must have "one" item selected or checked in the filter dialogs
-
-        // if (!selectSql.toLowerCase().contains(" where ")) {
-        // throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
-        // }
 
         executeUpdateOrDelete(selectSql);
     }

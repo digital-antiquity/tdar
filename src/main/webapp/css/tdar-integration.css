@@ -23,11 +23,6 @@ These style definitions will likely go away when I'm certain that they don't scr
     top: 5%;
 }
 
-/* jtd: temporary - the bootstrap transitions bug me */
-.modal.modal-big.fade.in, .modal.modal-big.fade {
-    transition: none;
-}
-
 .modal.modal-big .modal-header {
     padding: 4px 8px;
 }

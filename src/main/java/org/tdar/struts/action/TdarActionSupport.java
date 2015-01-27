@@ -71,7 +71,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     private static final long serialVersionUID = 7084489869489013998L;
 
-    public static final String UNAUTHORIZED_REDIRECT = "unauthorized_redirect";
 
     // result name constants
     private boolean hideExceptionArea = false;
@@ -93,14 +92,21 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String SM = "sm";
     public static final String MD = "md";
     public static final String LG = "lg";
-
-    public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
-    public static final String NOT_FOUND = "not_found";
+
+    /**
+     * The action could not execute because the request has invalid or insufficient information
+     */
+    public static final String UNKNOWN_ERROR = "exception"; // 500
+    public static final String BAD_REQUEST = "badrequest";  // 400
+
+    public static final String FORBIDDEN = "forbidden"; // 403
+    public static final String NOT_FOUND = "not_found"; // 404
     /**
      * The action could not execute because the action requires an authenticated user.
      */
-    public static final String UNAUTHORIZED = "unauthorized";
+    public static final String UNAUTHORIZED = "unauthorized"; // 401
+    public static final String UNAUTHORIZED_REDIRECT = "unauthorized_redirect";
 
     public static final String AUTHENTICATED = "authenticated";
 
@@ -110,10 +116,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public static final String GONE = "gone";
 
-    /**
-     * The action could not execute because the request has invalid or insufficient information
-     */
-    public static final String BAD_REQUEST = "badrequest";
     public static final String SAVE = "save";
     public static final String ADD = "add";
     public static final String VIEW = "view";
@@ -133,6 +135,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public static final String USER_AGREEMENT = "user_agreement";
     public static final String RESULT_REDIRECT_START = "redirect-start";
+
 
     private String javascriptErrorLog;
 
@@ -739,16 +742,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             pc.setPersistable(p);
         }
 
+        logRequest(pc, type, p);
+        checkValidRequest(pc);
+    }
+
+    private <P extends Persistable> void logRequest(PersistableLoadingAction<P> pc, RequestType type, P p) {
         String status = "";
         String name = "";
         if (p instanceof HasStatus) {
             status = ((HasStatus) p).getStatus().toString();
         }
 
-        if (!(pc.getAuthenticatedUser() == null)) {
+        if (pc.getAuthenticatedUser() != null) {
             // don't log anonymous users
             name = pc.getAuthenticatedUser().getUsername();
+        } else {
+            return;
         }
+        
         if (StringUtils.isBlank(name)) {
             name = "anonymous";
         }
@@ -756,8 +767,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         if (p != null && p instanceof HasName) {
             title = ((HasName) pc.getPersistable()).getName();
         }
-        getLogger().info(String.format("%s is %s %s (%s): %s - %s", name, type.getLabel(), persistableClass.getSimpleName(), id, status, title));
-        checkValidRequest(pc);
+        getLogger().info(String.format("%s is %s %s (%s): %s - %s", name, type.getLabel(), pc.getClass().getSimpleName(), pc.getId(), status, title));
     }
 
     /**

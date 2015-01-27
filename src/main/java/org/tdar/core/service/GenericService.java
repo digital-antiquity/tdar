@@ -327,6 +327,11 @@ public class GenericService {
     }
 
     @Transactional(readOnly = true)
+    public <E> ScrollableResults findAllActiveScrollable(Class<E> persistentClass) {
+        return genericDao.findAllActiveScrollable(persistentClass);
+    }
+
+    @Transactional(readOnly = true)
     public <E> ScrollableResults findAllScrollable(Class<E> persistentClass, int batchSize) {
         return genericDao.findAllScrollable(persistentClass, batchSize);
     }

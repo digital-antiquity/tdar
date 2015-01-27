@@ -32,6 +32,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -47,6 +48,7 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/workspace")
 @Component
 @Scope("prototype")
+@HttpsOnly
 public class AngularIntegrationAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
 
     private static final long serialVersionUID = -2356381511354062946L;

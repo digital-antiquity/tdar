@@ -24,11 +24,11 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
@@ -81,7 +81,7 @@ import freemarker.ext.dom.NodeModel;
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-@Results(value = { @Result(location = "../creators.ftl"),
+@Results(value = { @Result(location = "../view-creator.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
@@ -98,7 +98,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public static final String EXPLORE = "explore";
 
     private Creator creator;
-    private Persistable persistable;
     private Long viewCount = 0L;
     private List<String> groups = new ArrayList<String>();
 
@@ -206,7 +205,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
         if (!handleSlugRedirect(creator, this)) {
-            redirectBadSlug = true;
+            setRedirectBadSlug(true);
         } else {
             prepareLuceneQuery();
         }
@@ -217,7 +216,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             @Action(value = "{id}/{slug}")
     })
     public String browseCreators() throws ParseException, TdarActionException {
-        if (redirectBadSlug) {
+        if (isRedirectBadSlug()) {
             return BAD_SLUG;
         }
 
@@ -269,10 +268,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
     private void prepareLuceneQuery() throws TdarActionException {
         QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
-        setPersistable(creator);
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);
         if (PersistableUtils.isNotNullOrTransient(creator)) {
@@ -310,12 +307,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return null;
     }
 
-    public Persistable getPersistable() {
-        return persistable;
-    }
-
-    public void setPersistable(Persistable persistable) {
-        this.persistable = persistable;
+    public Addressable getPersistable() {
+        return creator;
     }
 
     public List<String> getGroups() {
@@ -497,5 +490,14 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     public boolean isLogoAvailable() {
         return checkLogoAvailable(ObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
+    }
+
+    @Override
+    public boolean isRedirectBadSlug() {
+        return redirectBadSlug;
+    }
+
+    public void setRedirectBadSlug(boolean redirectBadSlug) {
+        this.redirectBadSlug = redirectBadSlug;
     }
 }

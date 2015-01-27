@@ -487,6 +487,8 @@
             return futureData.promise;
         };
 
+        var  _futureCancel = null;
+
         /**
          * send $http.get to specified url, return promise<transformedData> if transformer specified, otherwise return promise<data>;
          * 
@@ -498,10 +500,19 @@
         // fixme: move SearchFilter class to DataService.js
         function _doSearch(url, searchFilter, transformer, prefix) {
             var futureData = $q.defer();
+            if(_futureCancel) {
+                _futureCancel.resolve();
+            }
+            _futureCancel = $q.defer();
+
             var config = {
-                params : searchFilter.toStrutsParams()
+                params : searchFilter.toStrutsParams(),
+                cache: false,
+                timeout: _futureCancel.promise
             };
+
             $http.get(url, config).success(function(rawData_) {
+                _futureCancel = null;
                 var rawData = rawData_;
                 if (prefix !== undefined) {
                     rawData = rawData_[prefix];

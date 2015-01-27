@@ -1,10 +1,43 @@
-(function (TDAR, $, ctx) {
+(function (TDAR, $, ctx, flattedOntologyNodes) {
     'use strict';
 
-    var _initMapping = function () {
+    var rePrefix = /^[-| ]*/;
+    var reSynonyms = /\((.*?)\)/;
+
+    //derive original name, synonyms from formatted input string
+    //fixme: hack: we should get the opposite via embedded json, and construct the formatted string dynamically
+    function processNode(node) {
+        //console.debug("processing: %s", node);
+        //console.debug(node);
+        var processedName = node.name.replace(rePrefix, '').toLowerCase();
+        var synonyms = [];
+        var matches = processedName.match(reSynonyms);
+        var strSynonyms = "";
+        if(matches) {
+            strSynonyms = matches[1];
+        }
+        if(strSynonyms.length) {
+            processedName  = $.trim(processedName.replace(reSynonyms, ''));
+            synonyms = $.map(strSynonyms.split(','), function(item, idx){
+                return $.trim(item);
+            });
+        }
+        return {
+            id: node.id,
+            name: node.name,
+            allNames: [processedName].concat(synonyms)
+        }
+    }
+
+
+    var _initMapping = function (formSelector) {
+        var $form = $(formSelector);
+        //decorate each node with "allNames" property which is an array of the original name and all synonyms
+        flattedOntologyNodes = $.map(flattedOntologyNodes, processNode);
+
         $("#autosuggest").click(_autosuggest);
         $("#clearAll").click(_clearall);
-        $("#mapontologyform").FormNavigate({message: "Leaving the page will cause any unsaved data to be lost!"});
+        $form.FormNavigate({message: "Leaving the page will cause any unsaved data to be lost!"});
         $("#selectColumn").unbind("change");
         $('button.ui-button').hover(function () {
             $(this).addClass("ui-state-hover");
@@ -83,13 +116,12 @@
 
             //don't allow invalid selection
             if (true) {
-                //did they type in an exact match to an elment?
-                var matcher = new RegExp("^([\\|\\-\\s]|&nbsp;)*" + $.ui.autocomplete.escapeRegex(input.value) + "$", "i");
                 var valid = false;
 
-                //troll through onto ontologies until we find one that matches the value of the input element
-                $.each(ontology, function (k, v) {
-                    if (v.name.match(matcher)) {
+                var inputValue = input.value.toLowerCase();
+                //troll through onto ontologies (and their synonyms) until we find one that matches the value of the input element
+                $.each(flattedOntologyNodes, function (k, v) {
+                    if ($.inArray(inputValue, v.allNames) >= 0) {
                         valid = true;
                         var $idElement = $($input.attr("autocompleteIdElement"));
                         $idElement.val(v.id);
@@ -138,4 +170,4 @@
         "autoSuggest": _autosuggest
     };
 
-})(TDAR, jQuery, window);
+})(TDAR, jQuery, window, window.ontology);

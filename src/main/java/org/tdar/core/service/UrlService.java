@@ -34,7 +34,7 @@ public class UrlService {
      * @param resource
      * @return
      */
-    public String absoluteUrl(Addressable resource) {
+    public static String absoluteUrl(Addressable resource) {
         return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
     }
 
@@ -64,8 +64,8 @@ public class UrlService {
      * @param resource
      * @return
      */
-    public String relativeUrl(Addressable resource) {
-        return String.format("/%s/%s", resource.getUrlNamespace(), resource.getId());
+    public static String relativeUrl(Addressable resource) {
+        return resource.getDetailUrl();
     }
 
     /**

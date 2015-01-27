@@ -332,7 +332,7 @@
                 <#assign indx = indx + 1/>
                 <div class="listItemPart">
                     <h3 class="search-result-title-${result.status}">
-                        <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
+                        <a class="resourceLink" href="${result.detailUrl}">${result.properName}</a>
                     </h3>
                     <#if result.institution?has_content><p>${result.institution.name}</p></#if>
                     <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>

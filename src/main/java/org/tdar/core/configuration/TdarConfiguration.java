@@ -37,8 +37,8 @@ public class TdarConfiguration {
     private static final String DESCRIPTION = "tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.";
     private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
     public static final String COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT = "Couldn't create temporary directory at : ";
-    public static final int DEFAULT_SCHEDULED_PROCESS_START_ID = 0;
-    public static final int DEFAULT_SCHEDULED_PROCESS_END_ID = 400000;
+    public static final Long DEFAULT_SCHEDULED_PROCESS_START_ID = 0L;
+    public static final Long DEFAULT_SCHEDULED_PROCESS_END_ID = 400000L;
 
     public static final String DEFAULT_HOSTNAME = "core.tdar.org";
     public static final int DEFAULT_PORT = 80; // we use this in test
@@ -474,16 +474,16 @@ public class TdarConfiguration {
         return assistant.getStringProperty("oai.repository.description", DESCRIPTION);
     }
 
-    public int getScheduledProcessStartId() {
-        return assistant.getIntProperty("scheduled.startId", DEFAULT_SCHEDULED_PROCESS_START_ID);
+    public Long getScheduledProcessStartId() {
+        return assistant.getLongProperty("scheduled.startId", DEFAULT_SCHEDULED_PROCESS_START_ID);
     }
 
     public int getScheduledProcessBatchSize() {
         return assistant.getIntProperty("scheduled.batchSize", 100);
     }
 
-    public Integer getScheduledProcessEndId() {
-        return assistant.getIntProperty("scheduled.endId", DEFAULT_SCHEDULED_PROCESS_END_ID);
+    public Long getScheduledProcessEndId() {
+        return assistant.getLongProperty("scheduled.endId", DEFAULT_SCHEDULED_PROCESS_END_ID);
     }
 
     public String getGoogleAnalyticsId() {
@@ -694,7 +694,7 @@ public class TdarConfiguration {
      * @return true if tdar.properties has the property "switchable.map.obfuscation" set to true, false in all other cases.
      */
     public boolean isSwitchableMapObfuscation() {
-        return assistant.getBooleanProperty("switchable.map.obfuscation");
+        return assistant.getBooleanProperty("switchable.map.obfuscation", true);
     }
 
     public boolean obfuscationInterceptorDisabled() {

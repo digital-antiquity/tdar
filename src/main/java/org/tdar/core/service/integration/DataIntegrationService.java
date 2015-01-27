@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +18,7 @@ import java.util.SortedMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -46,6 +47,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.InformationResourceService;
@@ -90,6 +92,9 @@ public class DataIntegrationService {
 
     @Autowired
     private InformationResourceService informationResourceService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     @Autowired
     private OntologyNodeDao ontologyNodeDao;
@@ -205,19 +210,9 @@ public class DataIntegrationService {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
-        CodingSheet codingSheet = new CodingSheet();
-        codingSheet.setGenerated(true);
-        codingSheet.setAccount(column.getDataTable().getDataset().getAccount());
-        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName())));
-        codingSheet.markUpdated(submitter);
-        codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
-        codingSheet.setDefaultOntology(ontology);
-        codingSheet.setCategoryVariable(ontology.getCategoryVariable());
-        codingSheet.setDescription(provider.getText(
-                "dataIntegrationService.generated_coding_sheet_description",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(),
-                        column.getDataTable().getDataset().getId(), codingSheet.getDateCreated())));
-        genericDao.save(codingSheet);
+        
+        Dataset dataset = column.getDataTable().getDataset();
+        CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
         Set<CodingRule> rules = new HashSet<>();
@@ -519,6 +514,16 @@ public class DataIntegrationService {
         logger.trace(integration);
         // ADD ERROR CHECKING LOGIC
 
+        List<String> unauthorizedDatasets = new ArrayList<>();
+        for (DataTable dt : integrationContext.getDataTables()) {
+            if (!authorizationService.canEdit(integrationContext.getCreator(), dt.getDataset())) {
+                unauthorizedDatasets.add(dt.getDataset().getTitle());
+            }
+        }
+        
+        if (CollectionUtils.isNotEmpty(unauthorizedDatasets)) {
+            throw new TdarRecoverableRuntimeException("dataIntegrationService.cannot_integrate_permissions",Arrays.asList(StringUtils.join(unauthorizedDatasets,", ")));
+        }
         // // ok, at this point we have the integration columns that we're interested in + the ontology
         // // nodes that we want to use to filter values of interest and for aggregation.
         // // getLogger().debug("table columns are: " + tableToIntegrationColumns);

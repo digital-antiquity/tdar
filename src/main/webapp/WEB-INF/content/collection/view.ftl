@@ -67,7 +67,7 @@ ${resourceCollection.name!"untitled collection"}</h1>
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
         <div class="glide">
             <#if resourceCollection.parent??><p><b>Part of:</b> <a
-                    href="/collection/${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+                    href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
             <@common.description resourceCollection.description />
 
             <#if resourceCollection.adminDescription??>
@@ -162,12 +162,12 @@ ${resourceCollection.name!"untitled collection"}</h1>
         <div class="row">
             <div class="span4">
                 <@view.kvp key="Created By" nested=true><a
-                        href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner.properName}</a>
+                        href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
                     on ${resourceCollection.dateCreated?datetime}</@view.kvp>
             </div>
             <div class="span4">
                 <@view.kvp key="Updated By" nested=true><a
-                        href="<@s.url value="/browse/creators/${resourceCollection.updater.id?c}"/>">${resourceCollection.updater.properName}</a>
+                        href="<@s.url value="${resourceCollection.updater.detailUrl}"/>">${resourceCollection.updater.properName}</a>
                     on ${resourceCollection.dateUpdated?datetime}</@view.kvp>
             </div>
         </div>

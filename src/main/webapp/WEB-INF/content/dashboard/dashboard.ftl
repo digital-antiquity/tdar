@@ -194,7 +194,7 @@
 	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
 	                    <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
 	                </span>
-	                        <a href="<@s.url value='/${res.urlNamespace}/${res.id?c}' />"><@common.truncate res.title 60 /></a>
+	                        <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
                             <small>(ID: ${res.id?c})</small>
                        </@common.cartouche>
                    </span>
@@ -215,7 +215,7 @@
                 <ol id="emptyProjects">
                     <#list emptyProjects as res>
                         <li id="li-recent-resource-${res.id?c}">
-                            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
+                            <a href="<@s.url value="${res.detailUrl}"/>">
                                 <@common.truncate res.title 60 />
                             </a>
                             <small>(ID: ${res.id?c})</small>
@@ -341,7 +341,7 @@
         <ul>
             <#list resourcesWithErrors as resource>
                 <li>
-                    <a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}" />">${resource.title}:
+                    <a href="<@s.url value="${resource.detailUrl}" />">${resource.title}:
                         <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.filename!"unknown"}</#list>
                     </a>
                 </li>
@@ -368,14 +368,7 @@
     </div>
     </#if>
 
-<div id="messages" style="margin:2px" class="hidden lte-ie8">
-    <div id="message-ie-obsolete" class="message-error">
-        <@common.localText "dashboard.ie_warning", siteAcronym />
-        <a href="http://www.microsoft.com/ie" target="_blank">
-            <@common.localText "dashboard.ie_warning_link_text" />
-        </a>.
-    </div>
-</div>
+    <@common.ie8Warning />
 </#macro>
 
 </#escape>

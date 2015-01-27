@@ -451,7 +451,7 @@
     <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
     <ol style='list-style-position:inside'>
         <#list relatedResources as related >
-            <li><a href="<@s.url value="/${related.urlNamespace}/${related.id?c}"/>">${related.id?c} - ${related.title} </a></li>
+            <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${rtelated.title} </a></li>
         </#list>
     </ol>
     </#if>
@@ -461,7 +461,7 @@
     <h3>This Resource is Part of the Following Collections</h3>
     <p>
         <#list viewableResourceCollections as collection>
-            <a href="<@s.url value="/collection/${collection.id?c}"/>">${collection.name}</a> <br/>
+            <a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a> <br/>
         </#list></p>
     <hr/>
     </#if>
