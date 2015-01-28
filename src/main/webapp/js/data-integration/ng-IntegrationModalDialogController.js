@@ -47,7 +47,7 @@
         // get map of embedded data stored in the DOM
         var documentData = dataService.getDocumentData();
 
-        $scope.title = options.title;
+        $scope.title = "";
         $scope.filter = new SearchFilter();
         $scope.selectedItems = [];
         $scope.results = [];
@@ -114,15 +114,20 @@
             $scope.search();
         }, true);
 
-        $scope.$on("openTdarModal", function(options) {
+        $scope.$on("openTdarModal", function(e, modalOptions) {
+            console.log("openTdarModal:: ");
+            console.log(modalOptions);
+            console.log(arguments);
+            options = modalOptions;
             $scope.openTdarModal(options);
         });
 
-
         $scope.reset = function() {
             console.log("reset called");
+            $scope.title = options.title;
+            $scope.categoryFilter = options.categoryFilter;
+            //$scope.selectedItems = [];
         }
-
     } ]);
 
     app.directive("tdarModal", function() {
@@ -134,7 +139,6 @@
                 scope.openTdarModal = function(options) {
                     modalRoot.modal();
                     scope.reset();
-                    scope.options = options;
                     closedCallback = options.close;
                 };
 
