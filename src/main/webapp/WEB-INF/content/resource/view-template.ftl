@@ -33,7 +33,7 @@
             <@nav.makeLink "dataset" "columns" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
             <@nav.makeLink "dataset" "columns" "metadata" "columns" current true disabled "hidden-desktop"/>
             <#if administrator && resource.project?? && resource.project.id != -1 >
-            <@nav.makeLink "dataset" "mapping" "mapping" "columns" current true disabled ""/>
+            <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
             </#if>
         </#if>
 
