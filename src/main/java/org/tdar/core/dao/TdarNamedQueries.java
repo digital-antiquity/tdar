@@ -205,7 +205,7 @@ public interface TdarNamedQueries {
             + ")"
             + ")  ";
     
-    String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
+    String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
     + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
     + " lower(ds.title) like :titleLookup and "
     + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "

@@ -77,8 +77,8 @@
                 <td>${column.name}</td>
                 <td>${column.columnDataType}</td>
                 <td>
-                    <#if column.defaultOntology??>
-                    ${column.defaultOntology.title}
+                    <#if column.mappedOntology??>
+                    ${column.mappedOntology.title}
                     <#else>
                         None
                     </#if>

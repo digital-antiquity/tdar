@@ -101,7 +101,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         List<DataTableColumn> dataTableColumns = new ArrayList<>(genericService.findAll(DataTableColumn.class));
         List<Long> dtcIds = new ArrayList<>();
         for(DataTableColumn dtc : dataTableColumns) {
-            if(dtc.getDefaultOntology() != null) {
+            if(dtc.getMappedOntology() != null) {
                 dtcIds.add(dtc.getId());
             }
         }

@@ -140,7 +140,7 @@
 
         // bugfix: deferred registration didn't properly register expando button. If this is too slow, but delegate inside of _applyComboboxAutocomplete
         TDAR.autocomplete.applyComboboxAutocomplete($('input.codingsheetfield', $form), "CODING_SHEET");
-        TDAR.autocomplete.applyComboboxAutocomplete($('input.on tologyfield', $form), "ONTOLOGY");
+        TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
 
         console.debug('intitializing columns');
         // determine when to show coding-sheet, ontology selection based on column encoding value

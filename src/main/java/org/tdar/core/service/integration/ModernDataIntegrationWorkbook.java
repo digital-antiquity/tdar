@@ -233,7 +233,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     row[size] = dtc.getName();
                     row[size + 1] = dtc.getDescription();
                     row[size + 2] = dtc.getColumnDataType().getLabel();
-                    Ontology defaultOntology = dtc.getDefaultOntology();
+                    Ontology defaultOntology = dtc.getMappedOntology();
                     if (defaultOntology != null) {
                         row[size + 3] = provider.getText("dataIntegrationWorkbook.name_paren_id",
                                 Arrays.asList(defaultOntology.getName(), defaultOntology.getId()));

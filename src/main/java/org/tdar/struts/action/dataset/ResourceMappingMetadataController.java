@@ -81,7 +81,7 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
 
 
     @SkipValidation
-    @Action(value = "mapping", results = { @Result(name = SUCCESS, location = "../dataset/column-resource-mapping.ftl") })
+    @Action(value = "resource-mapping", results = { @Result(name = SUCCESS, location = "../dataset/column-resource-mapping.ftl") })
     public String editColumnMetadata() throws TdarActionException {
 
         if (getDataResource().getLatestVersions().isEmpty()) {

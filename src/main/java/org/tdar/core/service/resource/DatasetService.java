@@ -476,7 +476,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         incomingColumn.setDataTable(incomingTable);
         incomingColumn.setId(existingColumn.getId());
         incomingColumn.setDefaultCodingSheet(existingColumn.getDefaultCodingSheet());
-        incomingColumn.setDefaultOntology(existingColumn.getDefaultOntology());
 
         incomingColumn.setCategoryVariable(existingColumn.getCategoryVariable());
 
@@ -773,10 +772,10 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
             if (defaultOntology == null) {
                 // check if the incoming column had an ontology set
-                defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getDefaultOntology(), Ontology.class);
+                defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getTransientOntology(), Ontology.class);
             }
             getLogger().debug("incoming coding sheet: {} | default ontology: {}", incomingCodingSheet, defaultOntology);
-            incomingColumn.setDefaultOntology(defaultOntology);
+            incomingColumn.setTransientOntology(defaultOntology);
             if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
@@ -794,7 +793,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     hasOntologies = true;
                 }
                 else {
-                    incomingColumn.setDefaultOntology(null);
+                    incomingColumn.setTransientOntology(null);
                     getLogger().debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
                 }
             }
@@ -805,7 +804,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                         incomingColumn, incomingColumn.getColumnEncodingType());
             }
 
-            existingColumn.setDefaultOntology(incomingColumn.getDefaultOntology());
+            existingColumn.setTransientOntology(incomingColumn.getTransientOntology());
             existingColumn.setDefaultCodingSheet(incomingColumn.getDefaultCodingSheet());
 
             copyCategoryVariableInfo(incomingColumn, existingColumn);

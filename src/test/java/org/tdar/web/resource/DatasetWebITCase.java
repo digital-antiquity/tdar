@@ -166,7 +166,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("dataTableColumns[1].tempSubCategoryVariable.id", "27", false); // MATERIAL
         setInput("dataTableColumns[1].description", "column description for city", false);
         setInput("dataTableColumns[1].defaultCodingSheet.id", Long.toString(codingSheetId), false);
-        setInput("dataTableColumns[1].defaultOntology.id", Long.toString(ontologyId), false);
+        setInput("dataTableColumns[1].transientOntology.id", Long.toString(ontologyId), false);
         // setInput("postSaveAction", "SAVE_MAP_NEXT");
         logger.debug("coding sheet id: {} ", codingSheetId);
         logger.debug("ontology id: {} ", ontologyId);

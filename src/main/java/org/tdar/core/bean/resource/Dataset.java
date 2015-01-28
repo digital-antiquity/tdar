@@ -114,7 +114,7 @@ public class Dataset extends InformationResource {
     public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
-                if (dtc.getDefaultOntology() != null) {
+                if (dtc.getMappedOntology() != null) {
                     return IntegratableOptions.YES;
                 }
             }
