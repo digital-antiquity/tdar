@@ -37,17 +37,17 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
                     controller.setResourceType(type);
                     controller.setResourceId(createAndSaveNewInformationResource.getId());
                     String selectResult = controller.edit();
-                    assertEquals(type.name(), selectResult);
-                    // FIXME: learn to test the locations
+                    assertEquals(TdarActionSupport.SUCCESS, selectResult);
                 } else {
                     resource.markUpdated(getUser());
                     resource.setTitle("test");
+                    resource.setDescription("test");
                     genericService.save(resource);
                     ResourceController controller = generateNewInitializedController(ResourceController.class);
                     controller.setResourceType(type);
                     controller.setResourceId(resource.getId());
                     String selectResult = controller.edit();
-                    assertEquals("input", selectResult);
+                    assertEquals(TdarActionSupport.INPUT, selectResult);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -55,9 +55,5 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
         }
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
 }

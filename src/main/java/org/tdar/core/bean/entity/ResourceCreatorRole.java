@@ -54,11 +54,6 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
     UPDATER("Updater", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
     RESOURCE_PROVIDER("Resource Provider", ResourceCreatorRoleType.OTHER, CreatorType.INSTITUTION),
     PUBLISHER("Publisher", ResourceCreatorRoleType.OTHER);
-    /*
-     * SUGGESTIONS FOR:
-     * Crew Chief
-     * Sensory Data Collector
-     */
 
     private final String label;
     private final CreatorType relevantCreatorType;
@@ -90,6 +85,24 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
         map.put(ResourceType.DOCUMENT, Arrays.asList(AUTHOR));
         map.put(ResourceType.PROJECT, Arrays.asList(PRINCIPAL_INVESTIGATOR, PROJECT_DIRECTOR, SPONSOR));
         return new HashSet<>(map.get(resourceType));
+    }
+
+    public static Set<ResourceCreatorRole> getResourceCreatorRolesForProfilePage(CreatorType creatorType) {
+        HashSet<ResourceCreatorRole> roles = new HashSet<ResourceCreatorRole>();
+        roles.add(CREATOR);
+        roles.add(EDITOR);
+        roles.add(PRINCIPAL_INVESTIGATOR);
+        roles.add(PROJECT_DIRECTOR);
+        roles.add(PUBLISHER);
+        roles.add(AUTHOR);
+        if (creatorType == CreatorType.INSTITUTION) {
+            roles.add(PREPARER);
+            roles.add(SUBMITTED_TO);
+            roles.add(SPONSOR);
+            roles.add(REPOSITORY);
+            roles.add(RESOURCE_PROVIDER);
+        }
+        return roles;
     }
 
     private ResourceCreatorRole(String label, ResourceCreatorRoleType type) {
@@ -215,7 +228,7 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
         return type;
     }
 
-    public void setType(ResourceCreatorRoleType type) {
+    private void setType(ResourceCreatorRoleType type) {
         this.type = type;
     }
 

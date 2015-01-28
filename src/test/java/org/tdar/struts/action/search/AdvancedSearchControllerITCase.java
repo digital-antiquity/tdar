@@ -1,7 +1,9 @@
 package org.tdar.struts.action.search;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -10,14 +12,17 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -35,6 +41,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
@@ -53,18 +60,23 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchIndexService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.search.SearchIndexService;
+import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.data.DateRange;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
+
+    private static final String USAF_LOWER_CASE = "us air force archaeology and cultural resources archive";
+
+    private static final String USAF_TITLE_CASE = "US Air Force Archaeology and Cultural Resources Archive";
 
     private static final String CONSTANTINOPLE = "Constantinople";
 
@@ -83,7 +95,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     EntityService entityService;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private AuthorizationService authenticationAndAuthorizationService;
 
     private AdvancedSearchController controller;
 
@@ -124,6 +136,97 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Resource resource : controller.getResults()) {
             assertTrue("expecting site name for resource", resource.getSiteNameKeywords().contains(snk));
         }
+    }
+
+    @Test
+    public void testResourceCaseSensitivity() {
+        Document doc = createAndSaveNewResource(Document.class);
+        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        titleCase.markUpdated(getAdminUser());
+        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        lowerCase.markUpdated(getAdminUser());
+        ResourceCollection upperCase = new ResourceCollection("USAF", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        upperCase.markUpdated(getAdminUser());
+        ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        usafLowerCase.markUpdated(getAdminUser());
+        doc.setTitle("USAF");
+        updateAndIndex(doc);
+        updateAndIndex(titleCase);
+        updateAndIndex(lowerCase);
+        updateAndIndex(upperCase);
+        updateAndIndex(usafLowerCase);
+        
+        // search lowercase one word
+        controller.setQuery("usaf");
+        doSearch();
+        assertTrue(controller.getResults().contains(doc));
+        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        assertTrue(controller.getCollectionResults().contains(upperCase));
+        doc.setTitle("usaf");
+        resetController();
+        updateAndIndex(doc);
+        
+        // search uppercase one word
+        controller.setQuery("USAF");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        assertTrue(controller.getCollectionResults().contains(upperCase));
+        assertTrue(controller.getResults().contains(doc));
+
+        resetController();
+        // search lowercase phrase
+        controller.setQuery("us air");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        resetController();
+        // search titlecase phrase
+        controller.setQuery("US Air");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        resetController();
+        // search uppercase phrase
+        controller.setQuery("US AIR");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+    
+        // search lowercase middle word
+        controller.setQuery("force");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+
+        // search uppercase middle word
+        controller.setQuery("FORCE");
+        doSearch();
+        assertTrue(controller.getCollectionResults().contains(titleCase));
+        assertTrue(controller.getCollectionResults().contains(lowerCase));
+}
+
+    @Test
+    public void testTitleCaseSensitivity() {
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.setTitle("usaf");
+        updateAndIndex(doc);
+        firstGroup().setTitles(Arrays.asList("USAF"));
+        doSearch();
+        assertTrue(controller.getResults().contains(doc));
+        doc.setTitle("USAF");
+        updateAndIndex(doc);
+        resetController();
+        firstGroup().setTitles(Arrays.asList("usaf"));
+        doSearch();
+        assertTrue(controller.getResults().contains(doc));
+    }
+
+    private void updateAndIndex(Indexable doc) {
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
     }
 
     @Test
@@ -240,6 +343,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     }
 
+    
     @Test
     @Rollback
     public void testApprovedSiteTypeKeywords() {
@@ -406,6 +510,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue("search should have at least 1 result", resourceCount > 0);
     }
 
+    @SuppressWarnings("deprecation")
     private Project sparseProject(Long id) {
         Project project = new Project(id, "sparse");
         return project;
@@ -459,8 +564,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         // testing as a user who did not create their own stuff
         setIgnoreActionErrors(true);
-        Person p = new Person("a", "test", "anoter@test.user.com");
-        p.setRegistered(true);
+        TdarUser p = new TdarUser("a", "test", "anoter@test.user.com");
+        p.setContributor(true);
         genericService.saveOrUpdate(p);
         testResourceCounts(p);
     }
@@ -472,6 +577,49 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         evictCache();
         setIgnoreActionErrors(true);
         testResourceCounts(getBasicUser());
+    }
+
+    @Test
+    @Rollback(true)
+    public void testTitleSiteCodeMatching() {
+        List<String> titles = Arrays
+                .asList("Pueblo Grande (AZ U:9:1(ASM)): Unit 12, Gateway and 44th Streets: SSI Kitchell Testing, Photography Log (PHOTO) Data (1997)",
+                        "Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
+                        "Phase 2 Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, the Former Maricopa County Sheriff’s Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
+                        "Final Data Recovery And Burial Removal At Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa Counry Sheriff's Substation, Washington And 48th Streets, Phoenix, Arizona (2008)",
+                        "Pueblo Grande (AZ U:9:1(ASM)): Unit 15, Washington and 48th Streets: Soil Systems, Inc. Kitchell Development Testing and Data Recovery (The Former Maricopa County Sheriff's Substation) ",
+                        "Archaeological Testing of Unit 13 at Pueblo Grande, AZ U:9:1(ASM), Arizona Federal Credit Union Property, 44th and Van Buren Streets, Phoenix, Maricopa County, Arizona (1998)",
+                        "Archaeological Testing And Burial Removal Of Unit 11 At Pueblo Grande, AZ U:9:1(ASM), DMB Property, 44th And Van Buren Streets, Phoenix, Maricopa County, Arizona -- DRAFT REPORT (1998)",
+                        "Pueblo Grande (AZ U:9:1(ASM)): Unit 13, Northeast Corner of Van Buren and 44th Streets: Soil Systems, Inc. AZ Federal Credit Union Testing and Data Recovery Project ",
+                        "POLLEN AND MACROFLORAL ANAYSIS AT THE WATER USERS SITE, AZ U:6:23(ASM), ARIZONA (1990)",
+                        "Partial Data Recovery and Burial Removal at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (2002)",
+                        "MACROFLORAL AND PROTEIN RESIDUE ANALYSIS AT SITE AZ U:15:18(ASM), CENTRAL ARIZONA (1996)",
+                        "Pueblo Grande (AZ U:9:1(ASM)) Soil Systems, Inc. Master Provenience Table: Projects, Unit Numbers, and Feature Numbers (2008)");
+
+        List<Document> docs = new ArrayList<>();
+        List<Document> badMatches = new ArrayList<>();
+        for (String title : titles) {
+            Document doc = new Document();
+            doc.setTitle(title);
+            doc.setDescription(title);
+            doc.markUpdated(getBasicUser());
+            genericService.saveOrUpdate(doc);
+            if (title.contains("MACROFLORAL")) {
+                badMatches.add(doc);
+            }
+        }
+        genericService.synchronize();
+        searchIndexService.indexCollection(docs);
+        searchIndexService.flushToIndexes();
+        controller.setQuery("AZ U:9:1(ASM)");
+        controller.setRecordsPerPage(1000);
+        doSearch();
+        List<Resource> results = controller.getResults();
+        logger.debug("results: {}", results);
+        assertTrue("controller should not contain titles with MACROFLORAL", CollectionUtils.containsAny(results, badMatches));
+        assertTrue("controller should not contain titles with MACROFLORAL",
+                CollectionUtils.containsAll(results.subList(results.size() - 3, results.size()), badMatches));
+
     }
 
     @Test
@@ -521,7 +669,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(seen);
     }
 
-    private void testResourceCounts(Person user) {
+    private void testResourceCounts(TdarUser user) {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
@@ -537,7 +685,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     // compare the counts returned from searchController against the counts we get from the database
-    private void assertResultCount(ResourceType resourceType, Status status, Person user) {
+    private void assertResultCount(ResourceType resourceType, Status status, TdarUser user) {
         String stat = String.format("testing %s , %s for %s", resourceType, status, user);
         logger.info(stat);
         long expectedCount = resourceService.getResourceCount(resourceType, status);
@@ -687,6 +835,76 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
+    public void testResourceUpdated() throws java.text.ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Document document = new Document();
+        document.setTitle("just before");
+        document.setDescription("just before");
+        document.markUpdated(getAdminUser());
+        document.setDateUpdated(format.parse("2010-03-04"));
+        genericService.saveOrUpdate(document);
+        Document documentAfter = new Document();
+        documentAfter.setTitle("just after");
+        documentAfter.setDescription("just after");
+        documentAfter.markUpdated(getAdminUser());
+        documentAfter.setDateUpdated(format.parse("2010-07-23"));
+        genericService.saveOrUpdate(documentAfter);
+        genericService.synchronize();
+        searchIndexService.flushToIndexes();
+        controller.setSortField(SortOption.DATE_UPDATED);
+        SearchParameters params = new SearchParameters();
+        params.getUpdatedDates().add(new DateRange(format.parse("2010-03-05"), format.parse("2010-07-22")));
+        controller.getG().add(params);
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
+        for (Resource r : controller.getResults()) {
+            logger.debug("{} - {} - {}", r.getId(), r.getDateUpdated(), r.getTitle());
+        }
+        assertFalse(controller.getResults().contains(documentAfter));
+        assertFalse(controller.getResults().contains(document));
+    }
+
+    /**
+     * lucene translates dates to utc prior to indexing. When performing a search the system must similarly transform the begin/end
+     * dates in a daterange
+     */
+    @Test
+    @Rollback
+    public void testTimezoneEdgeCase() {
+        Resource doc = createAndSaveNewInformationResource(Document.class);
+        DateTime createDateTime = new DateTime(2005, 3, 26, 23, 0, 0, 0);
+        DateTime searchDateTime = new DateTime(2005, 3, 26, 0, 0, 0, 0);
+        doc.setDateCreated(createDateTime.toDate());
+        doc.setDateUpdated(createDateTime.toDate());
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+
+        // converstion from MST to UTC date advances registration date by one day.
+        searchIndexService.flushToIndexes();
+        DateRange dateRange = new DateRange();
+        dateRange.setStart(searchDateTime.toDate());
+        dateRange.setEnd(searchDateTime.plusDays(1).toDate());
+
+        firstGroup().getRegisteredDates().add(dateRange);
+        doSearch();
+        assertThat(controller.getResults(), contains(doc));
+
+        // if we advance the search begin/end by one day, we should not see it in search results
+        dateRange.setStart(searchDateTime.plusDays(1).toDate());
+        dateRange.setEnd(searchDateTime.plusDays(2).toDate());
+        resetController();
+        firstGroup().getRegisteredDates().add(dateRange);
+        assertThat(controller.getResults(), not(contains(doc)));
+
+        // if we decrement the search begin/end by one day, we should not see it in search results
+        dateRange.setStart(searchDateTime.minusDays(1).toDate());
+        dateRange.setEnd(searchDateTime.toDate());
+        resetController();
+        firstGroup().getRegisteredDates().add(dateRange);
+        assertThat(controller.getResults(), not(contains(doc)));
+    }
+
+    @Test
+    @Rollback
     public void testOtherKeywords() throws InstantiationException, IllegalAccessException, ParseException {
         // Create a document w/ some other keywords, then try to find that document in a search
         OtherKeyword ok = new OtherKeyword();
@@ -764,10 +982,10 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     private Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
-        Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
+        TdarUser submitter = new TdarUser("E", "deVos", "ecd@tdar.net");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
-        ResourceCreator rc = new ResourceCreator(new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
+        ResourceCreator rc = new ResourceCreator(new Person("K", "deVos", "kellyd@tdar.net"), ResourceCreatorRole.AUTHOR);
         genericService.save(rc.getCreator());
         // genericService.save(rc);
         doc.getResourceCreators().add(rc);
@@ -1030,6 +1248,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         // assertEquals(coll.getId(), firstGroup().getCollections().get(1).getId());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
@@ -1127,11 +1346,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         return null;
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
     protected boolean resultsContainId(Long id) {
         boolean found = false;
         for (Resource r_ : controller.getResults()) {
@@ -1165,7 +1379,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         return setupImage(getUser());
     }
 
-    protected Long setupImage(Person user) {
+    protected Long setupImage(TdarUser user) {
         Image img = new Image();
         img.setTitle("precambrian Test");
         img.setDescription("image description");

@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,17 +22,19 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.JSONTransient;
+import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
- * $Id$
  * <p>
  * Represents a categorized set of CodingRules and may be bound to a specific ontology. DataTableColumns associated with a CodingSheet are automatically
  * translated.
@@ -41,10 +42,8 @@ import org.tdar.core.configuration.JSONTransient;
  * CodingRules themselves can be mapped to a specific node in this CodingSheet's bound ontology.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
- * @version $Revision: 543$
  */
 @Entity
-// @Indexed(interceptor=DontIndexWhenGeneratedInterceptor.class)
 @Indexed
 @Table(name = "coding_sheet", indexes = {
         @Index(name = "coding_catvar_id", columnList = "category_variable_id"),
@@ -54,7 +53,6 @@ import org.tdar.core.configuration.JSONTransient;
 public class CodingSheet extends InformationResource implements SupportsResource {
 
     private static final long serialVersionUID = 7782805674943954511L;
-    public static final String[] JSON_PROPERTIES = { "defaultOntology" };
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
@@ -63,17 +61,20 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codingSheet")
     @IndexedEmbedded
-    private Set<CodingRule> codingRules = new LinkedHashSet<CodingRule>();
+    private Set<CodingRule> codingRules = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "defaultCodingSheet")
-    private Set<DataTableColumn> associatedDataTableColumns = new HashSet<DataTableColumn>();
+    private Set<DataTableColumn> associatedDataTableColumns = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
+    @JsonView(JsonLookupFilter.class)
     private Ontology defaultOntology;
 
     @Field
-    private boolean generated = false;
+    private boolean generated;
+
+    private transient Map<Long, CodingRule> idMap = new HashMap<>();
 
     public CodingSheet() {
         setResourceType(ResourceType.CODING_SHEET);
@@ -104,14 +105,14 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @Transient
     public SortedSet<CodingRule> getSortedCodingRules(Comparator<CodingRule> comparator) {
-        TreeSet<CodingRule> sortedCodingRules = new TreeSet<CodingRule>(comparator);
+        TreeSet<CodingRule> sortedCodingRules = new TreeSet<>(comparator);
         sortedCodingRules.addAll(getCodingRules());
         return sortedCodingRules;
     }
 
     @Transient
     public Map<String, CodingRule> getCodeToRuleMap() {
-        HashMap<String, CodingRule> map = new HashMap<String, CodingRule>();
+        HashMap<String, CodingRule> map = new HashMap<>();
         for (CodingRule codingRule : getCodingRules()) {
             map.put(codingRule.getCode(), codingRule);
         }
@@ -120,12 +121,12 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @Transient
     public Map<String, List<CodingRule>> getTermToCodingRuleMap() {
-        Map<String, List<CodingRule>> map = new HashMap<String, List<CodingRule>>();
+        Map<String, List<CodingRule>> map = new HashMap<>();
         for (CodingRule codingRule : codingRules) {
             String term = codingRule.getTerm();
             List<CodingRule> rules = map.get(term);
             if (rules == null) {
-                rules = new ArrayList<CodingRule>();
+                rules = new ArrayList<>();
                 map.put(term, rules);
             }
             rules.add(codingRule);
@@ -135,7 +136,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @Transient
     public Map<String, OntologyNode> getTermToOntologyNodeMap() {
-        HashMap<String, OntologyNode> map = new HashMap<String, OntologyNode>();
+        HashMap<String, OntologyNode> map = new HashMap<>();
         for (CodingRule codingRule : getCodingRules()) {
             map.put(codingRule.getTerm(), codingRule.getOntologyNode());
         }
@@ -143,13 +144,12 @@ public class CodingSheet extends InformationResource implements SupportsResource
     }
 
     public List<CodingRule> getCodingRuleByTerm(String term) {
-        List<CodingRule> rules = new ArrayList<CodingRule>();
-        if (StringUtils.isEmpty(term)) {
-            return null;
-        }
-        for (CodingRule rule : getCodingRules()) {
-            if (StringUtils.equals(term, rule.getTerm())) {
-                rules.add(rule);
+        List<CodingRule> rules = new ArrayList<>();
+        if (StringUtils.isNotEmpty(term)) {
+            for (CodingRule rule : getCodingRules()) {
+                if (StringUtils.equals(term, rule.getTerm())) {
+                    rules.add(rule);
+                }
             }
         }
         return rules;
@@ -168,15 +168,17 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @Transient
     public Map<String, List<Long>> getTermToOntologyNodeIdMap() {
-        HashMap<String, List<Long>> map = new HashMap<String, List<Long>>();
+        HashMap<String, List<Long>> map = new HashMap<>();
         for (CodingRule codingRule : codingRules) {
             OntologyNode node = codingRule.getOntologyNode();
             if (node != null) {
                 String term = codingRule.getTerm();
-                if (!map.containsKey(term)) {
-                    map.put(term, new ArrayList<Long>());
+                List<Long> ids = map.get(term);
+                if (ids == null) {
+                    ids = new ArrayList<>();
+                    map.put(term, ids);
                 }
-                map.get(term).add(node.getId());
+                ids.add(node.getId());
             }
         }
         return map;
@@ -205,8 +207,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
         this.defaultOntology = defaultOntology;
     }
 
-    private transient Map<Long, CodingRule> idMap = new HashMap<Long, CodingRule>();
-
     public CodingRule getCodingRuleById(Long id) {
         if (idMap.isEmpty()) {
             for (CodingRule node : getCodingRules()) {
@@ -217,16 +217,15 @@ public class CodingSheet extends InformationResource implements SupportsResource
     }
 
     @Transient
-    @JSONTransient
     @XmlTransient
     public Map<OntologyNode, List<CodingRule>> getNodeToDataValueMap() {
-        HashMap<OntologyNode, List<CodingRule>> map = new HashMap<OntologyNode, List<CodingRule>>();
+        HashMap<OntologyNode, List<CodingRule>> map = new HashMap<>();
         for (CodingRule rule : getCodingRules()) {
             OntologyNode node = rule.getOntologyNode();
             if (node != null) {
                 List<CodingRule> list = map.get(node);
                 if (list == null) {
-                    list = new ArrayList<CodingRule>();
+                    list = new ArrayList<>();
                     map.put(node, list);
                 }
                 list.add(rule);
@@ -236,37 +235,51 @@ public class CodingSheet extends InformationResource implements SupportsResource
     }
 
     public List<CodingRule> getMappedValues() {
-        List<CodingRule> toReturn = new ArrayList<CodingRule>();
+        List<CodingRule> mappedValues = new ArrayList<>();
         for (CodingRule rule : getCodingRules()) {
             if (rule.getOntologyNode() != null) {
-                toReturn.add(rule);
+                mappedValues.add(rule);
             }
         }
-        return toReturn;
+        return mappedValues;
     }
 
-    public List<CodingRule> findRuleMappedToOntologyNode(OntologyNode node) {
+    public List<CodingRule> findRulesMappedToOntologyNode(OntologyNode node) {
         if ((node == null) || CollectionUtils.isEmpty(getCodingRules())) {
-            return new ArrayList<CodingRule>();
+            return new ArrayList<>();
         }
         Map<OntologyNode, List<CodingRule>> nodeToDataValueMap = getNodeToDataValueMap();
         return nodeToDataValueMap.get(node);
-        // for (CodingRule rule : getCodingRules()) {
-        // if (rule == null || rule.getOntologyNode() == null)
-        // continue;
-        // // logger.trace("comparing: {} to {} ", rule.getTerm(), node.getIri());
-        // if (rule.getOntologyNode().equals(node)) {
-        // return rule;
-        // }
-        // }
-        // return null;
+    }
+
+    @Transient
+    public boolean isMappedImproperly() {
+        if (PersistableUtils.isNullOrTransient(getDefaultOntology()) || CollectionUtils.isEmpty(codingRules)) {
+            return false;
+        }
+
+        int count = 0;
+        for (CodingRule rule : getCodingRules()) {
+            if (rule != null && rule.getOntologyNode() != null) {
+                count++;
+            }
+        }
+        
+        if (count == 0) {
+            return true;
+        }
+        int size = CollectionUtils.size(getCodingRules());
+        //if less than 25% then warn
+        if (count < size / 4) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
      * Returns true if this coding sheet was system generated as a result of associating an ontology but no coding sheet
      * with a data table column.
-     * 
-     * @return true if this coding sheet is a system generated coding sheet, false otherwise
      */
     public boolean isGenerated() {
         return generated;
@@ -280,19 +293,12 @@ public class CodingSheet extends InformationResource implements SupportsResource
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
         if (getCategoryVariable() != null) {
-            sb.append(getCategoryVariable().getLabel()).append(" ");
+            sb.append(getCategoryVariable().getLabel()).append(' ');
             if (getCategoryVariable().getParent() != null) {
                 sb.append(getCategoryVariable().getParent().getLabel());
             }
         }
         return sb.toString();
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        ArrayList<String> allProperties = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
-        allProperties.addAll(Arrays.asList(JSON_PROPERTIES));
-        return allProperties.toArray(new String[allProperties.size()]);
     }
 
 }

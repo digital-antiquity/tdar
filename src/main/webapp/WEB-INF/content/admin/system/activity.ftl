@@ -42,6 +42,8 @@
         <th>date</th>
         <th>user</th>
         <th>total time (ms)</th>
+        <th>action (ms)</th>
+        <th>result (ms)</th>
         <th>request</th>
     </tr>
     </thead>
@@ -59,6 +61,8 @@
             <td>${activity.startDate?datetime}</td>
             <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
             <td>${(activity.totalTime?c)!default("-")}</td>
+            <td>${(activity.actionTime!0?c)!default("-")}</td>
+            <td>${(activity.resultTime!0?c)!default("-")}</td>
             <#noescape>
                 <td width=550>${(activity.name!"")?html?replace("&", "<br>&")}</td>
             </#noescape>
@@ -99,9 +103,18 @@
 </table>
 
 <h3>Hibernate Statistics</h3>
-<pre>
-${sessionStatistics}
-</pre>
+<table class="tableFormat table" id="tblQueryStats">
+    <#assign txt = sessionStatistics?string>
+    <#assign txt = txt?substring(1+txt?index_of("["), txt?last_index_of("]")) >
+    <#list txt?split(",") as row_>
+        <#assign row = row_?split("=") />
+        <tr>
+            <th>${row[0]}</th>
+            <td>${(row[1]!"")?string}</td>
+        </tr>
+    </#list>
+</table>
+
     <#assign threshold =99/>
 <p>Threshold for slow queries is: <strong>${threshold} ms</strong></p>
 <table class="tableFormat table" id="tblQueryStats">
@@ -137,12 +150,6 @@ ${sessionStatistics}
         </#list>
     </tbody>
 </table>
-<script>
-    $(function () {
-        TDAR.datatable.extendSorting();
-        $("#tblRecentActivity, #tblQueryStats").dataTable({"bFilter": false, "bInfo": false, "bPaginate": false});
-    });
-</script>
 </body>
 
 

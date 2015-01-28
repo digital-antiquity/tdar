@@ -1,6 +1,9 @@
 package org.tdar.web;
 
-import static org.junit.Assert.assertEquals;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
@@ -11,23 +14,29 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.BillingActivity;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.CartController;
+import org.tdar.utils.Pair;
+import org.tdar.utils.SimpleHttpUtils;
+import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
+public class CreditCartWebITCase extends AbstractWebTestCase {
 
+    private static final String NEXT_STEP_PAYMENT = "Next Step: Payment";
+    private static final String CART_PROCESS_PAYMENT_REQUEST = "/cart/process-payment-request";
+    private static final String CART_REVIEW2 = "/cart/review";
+    private static final TestConfiguration CFG = TestConfiguration.getInstance();
     @Autowired
-    AccountService accountService;
+    private InvoiceService invoiceService;
 
     public Long getItemId(String name) {
-        for (BillingActivity activity : accountService.getActiveBillingActivities()) {
+        for (BillingActivity activity : invoiceService.getActiveBillingActivities()) {
             if (activity.getName().equalsIgnoreCase(name)) {
                 logger.info("{} {} ", activity.getName(), activity.getId());
                 return activity.getId();
@@ -38,43 +47,54 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testCartIncomplete() throws MalformedURLException {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "0");
         setInput("invoice.numberOfFiles", "0");
-        submitForm();
-        assertCurrentUrlContains("save.action");
+        submitFormWithoutErrorCheck();
+        assertCurrentUrlContains("process-choice");
         assertTextPresentInCode("55 USD");
-        assertTextPresentInCode(CartController.SPECIFY_SOMETHING);
+        assertTextPresentInCode(getText("cartController.specify_mb_or_files"));
     }
 
     @Test
     public void testCartFilesNoMB() throws MalformedURLException {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "0");
         setInput("invoice.numberOfFiles", "100");
         submitForm();
         assertTextPresent("50-500:100:$31:$3,100");
         assertTextPresent("total:$3,100");
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        loginAndSpecifyCC();
+        selectAnyAccount();
         testAccountPollingResponse("310000", TransactionStatus.TRANSACTION_SUCCESSFUL);
 
     }
 
+    private void loginAndSpecifyCC() {
+        if (getPageText().contains("Log In")) {
+            clickLinkOnPage("Log In");
+            logger.debug(getCurrentUrlPath());
+            completeLoginForm(CFG.getUsername(), CFG.getPassword(), false);
+            gotoPage(CART_REVIEW2);
+        }
+    }
+
     @Test
     public void testCartMBNoFiles() throws MalformedURLException {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "100");
         setInput("invoice.numberOfFiles", "0");
         submitForm();
         assertTextPresent("100 mb:1:$50:$50");
         assertTextPresent("total:$50");
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        loginAndSpecifyCC();
+        selectAnyAccount();
         testAccountPollingResponse("5000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
 
     @Test
     public void testCartSuccess() throws MalformedURLException {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
@@ -82,42 +102,65 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,350");
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        loginAndSpecifyCC();
+        selectAnyAccount();
         testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
 
     @Test
     public void testCartWithAccount() throws MalformedURLException {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
-
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        loginAndSpecifyCC();
+        selectAnyAccount();
+        String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         String accountId = addInvoiceToNewAccount(invoiceId, null, null);
         assertTrue(accountId != "-1");
     }
 
+    /**
+     * Create two invoices and assign them to the same billing account.  Verify that the billing account page contains line-items associated with the invoices
+     * that we create in this test.
+     * @throws MalformedURLException
+     */
     @Test
     public void testAddCartToSameAccount() throws MalformedURLException {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
+        assertCurrentUrlContains(CART_REVIEW2);
+        loginAndSpecifyCC();
 
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, null);
+        //expecting to be on the choose billing account page
+        assertCurrentUrlContains(CART_REVIEW2);
+//        submitForm("Next Step: Payment");
+//        assertCurrentUrlContains("/cart/choose-billing-account");
+        selectAnyAccount();
+        submitForm(NEXT_STEP_PAYMENT);
+
+        //remember the account we chose/created;  we will assign our next invoice to this account
+        String accountId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         assertTrue(accountId != "-1");
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String account = addInvoiceToNewAccount(invoiceId2, accountId, null);
-        assertEquals(account, accountId);
+
+        //we should be on the 'review' page, just click through to the billing account page
+        assertCurrentUrlContains(CART_REVIEW2);
+
+        //we should now be on the "choose billing account" page.  Specify the same account that we used for the previous invoice.
+        setInput("id", accountId);
+        submitForm(NEXT_STEP_PAYMENT);
+
+        //now we should be on the process-payment page... i think?
+        assertCurrentUrlContains(CART_PROCESS_PAYMENT_REQUEST);
+        String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
+        gotoPage("/billing/"+ accountId);
+
         assertTextPresent("10,020");
         assertTextPresent("2,000");
         assertTextPresent("10");
@@ -130,22 +173,27 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testAddPaymentsToMultipleAccount() throws MalformedURLException {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
-
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        loginAndSpecifyCC();
+        selectAnyAccount();
+        submitForm(NEXT_STEP_PAYMENT);
+//        assertCurrentUrlContains("/cart/choose-billing-account");
+        String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         String accountName = "test account 1";
         String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
         assertTrue(accountId != "-1");
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        assertCurrentUrlContains(CART_REVIEW2);
+//        clickLinkWithText("Next Step: Choose Billing Account");
+        setInput("id", accountId);
+        submitForm(NEXT_STEP_PAYMENT);
+        String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         String accountName2 = "test account 2";
         String account = addInvoiceToNewAccount(invoiceId2, null, accountName2);
         assertTextPresent(accountName2);
@@ -160,23 +208,24 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testCartError() throws MalformedURLException {
-        gotoPage("/cart/add");
+        login(CFG.getAdminUsername(), CFG.getAdminPassword());
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         setExtraItem("error", "1");
 
         submitForm();
-
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.21");
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        selectAnyAccount();
         testAccountPollingResponse("140521", TransactionStatus.TRANSACTION_FAILED);
     }
 
     @Test
     public void testCartUnknown() throws MalformedURLException {
-        gotoPage("/cart/add");
+        login(CFG.getAdminUsername(), CFG.getAdminPassword());
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         setExtraItem("unknown", "1");
@@ -186,9 +235,10 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.31");
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        selectAnyAccount();
         testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
     }
+
 
     private void setExtraItem(String name, String val) {
         for (int i = 0; i < 100; i++) {
@@ -212,7 +262,8 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testCartDecline() throws MalformedURLException {
-        gotoPage("/cart/add");
+        login(CFG.getAdminUsername(), CFG.getAdminPassword());
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
 
@@ -223,8 +274,18 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.11");
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
         testAccountPollingResponse("140511", TransactionStatus.TRANSACTION_FAILED);
     }
 
+    /**
+     * give the nelnet event notification endpoint totally bogus data.  We should get back non-200 status code and "failure" as the response body.
+     */
+    @Test
+    public void testCompletelyBogusEndpointRequest() {
+        String url = String.format("https://%s:%s/cart/process-external-payment-response", TestConfiguration.getInstance().getHostName(), TestConfiguration
+                .getInstance().getHttpsPort());
+        Pair<Integer, String> responsePair = SimpleHttpUtils.parseResponse(SimpleHttpUtils.post(url, asList(SimpleHttpUtils.nameValuePair("foo", "bar"), SimpleHttpUtils.nameValuePair("ping", "pong"))));
+        assertThat(responsePair.getFirst(), is(not(200)));
+        assertThat(responsePair.getSecond(), is("failure"));
+    }
 }

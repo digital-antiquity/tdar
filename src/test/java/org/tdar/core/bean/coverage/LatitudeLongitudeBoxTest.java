@@ -3,6 +3,7 @@ package org.tdar.core.bean.coverage;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +152,11 @@ public class LatitudeLongitudeBoxTest {
         assertFalse(llb.isObfuscatedObjectDifferent());
         llb.obfuscate();
         // and should be no change.
-        assertFalse(llb.isObfuscatedObjectDifferent());
+        assertTrue(llb.isObfuscatedObjectDifferent());
+        Assert.assertEquals(llb.getMaximumLatitude(), llb.getMaxObfuscatedLatitude());
+        Assert.assertEquals(llb.getMaximumLatitude(), new Double(0.0));
+        Assert.assertEquals(llb.getMaximumLongitude(), llb.getMaxObfuscatedLongitude());
+        Assert.assertEquals(llb.getMaximumLongitude(), new Double(0.0));
 
     }
 

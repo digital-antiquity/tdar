@@ -21,12 +21,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.web.SessionData;
 
@@ -44,7 +44,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Autowired
     ExcelService excelService;
 
-    private Person currentUser = null;
+    private TdarUser currentUser = null;
 
     @Test
     @Rollback(true)
@@ -52,7 +52,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         // currentUser = getBasicUser();
-        controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(Person.class, getBasicUserId()));
+        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class, genericService.find(TdarUser.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
@@ -74,11 +74,13 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Rollback(true)
     public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             TdarActionException {
+        setIgnoreActionErrors(true);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
+        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class, genericService.find(TdarUser.class, getBasicUserId()));
         controller.setSessionData(new SessionData()); // create unauthenticated session
         getServletRequest().setAttribute("RequestURI", "http://www.test.com");
-        controller = generateNewInitializedController(AdvancedSearchController.class);
+//        controller = generateNewInitializedController(AdvancedSearchController.class);
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
@@ -90,11 +92,10 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         }
         assertNotNull(except);
         assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), except.getStatusCode());
-        setIgnoreActionErrors(true);
     }
 
     @Override
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         return currentUser;
     }
 

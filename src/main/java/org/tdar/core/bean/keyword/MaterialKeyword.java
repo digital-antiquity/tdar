@@ -3,12 +3,17 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAttribute;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 
 /**
@@ -20,15 +25,19 @@ import org.hibernate.search.annotations.Indexed;
 @Entity
 @Table(name = "material_keyword")
 @Indexed(index = "Keyword")
-public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements ControlledKeyword {
+@Check(constraints = "label <> ''")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.MaterialKeyword")
+@Cacheable
+public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements ControlledKeyword, SuggestedKeyword  {
 
     private static final long serialVersionUID = -8439705822874264175L;
 
-    public static final String INHERITANCE_TOGGLE = "inheriting_material_information";
-
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<MaterialKeyword> synonyms = new HashSet<MaterialKeyword>();
+
+    private boolean approved;
 
     @Override
     public Set<MaterialKeyword> getSynonyms() {
@@ -41,6 +50,21 @@ public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements Co
 
     public String getSynonymFormattedName() {
         return getLabel();
+    }
+
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.MATERIAL_TYPE.getUrlNamespace();
+    }
+
+    @XmlAttribute
+    @Override
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
     }
 
 }

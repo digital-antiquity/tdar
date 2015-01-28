@@ -6,11 +6,8 @@
     <#if !persistable.status?? || persistable.status != 'DELETED'>
 
 
-        <#if deleteIssues?? && !deleteIssues.isEmpty()>
+        <#if deleteIssue?has_content>
             <#assign deleteable= false />
-            <#list deleteIssues as issue>
-                <#if issue.deleted?? && !issue.deleted> <#assign deleteable = false> </#if>
-            </#list>
 
         </#if>
         <#if persistable.resourceType??>
@@ -29,17 +26,17 @@
 
         <#if !deleteable>
         <h4>This ${whatamideleting} cannot be deleted because it is still referenced by the following: </h4>
-        <ul>
-            <#if deleteIssues??>
-                <#list deleteIssues as rsc>
-                    <#if !rsc.deleted?? || !rsc.deleted>
+            <#if deleteIssue?has_content>
+				<p><b>${deleteIssue.issue}</b></p>
+		        <ul>
+                <#list deleteIssue.relatedItems as rsc>
                         <li>${rsc.id?c} - ${rsc.name?html} </li>
-                    </#if>
                 </#list>
+				</ul>
             </#if>
-
         <#else>
             <@s.form name='deleteForm' id='deleteForm'  method='post' action='delete'>
+                <@s.token name='struts.csrf.token' />
                 <h4>Please explain why you are deleting this record</h4>
                 <textarea name="deletionReason" cols='60' rows='3' class="input-xxlarge" maxlength='255'></textarea>
 

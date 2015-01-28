@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
+    private boolean useProximity = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public GeneralSearchQueryPart() {
@@ -61,13 +62,19 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         if (cleanedQueryString.contains(" ")) {
             // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
+            titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE_PHRASE, cleanedQueryString);
+            descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION_PHRASE, cleanedQueryString);
             FieldQueryPart<String> phrase = new FieldQueryPart<String>(QueryFieldNames.ALL_PHRASE, cleanedQueryString);
             // FIXME: magic words
-            phrase.setProximity(4);
+            if (useProximity) {
+                phrase.setProximity(4);
+            }
             phrase.setBoost(PHRASE_BOOST);
             primary.append(phrase);
-            titlePart.setProximity(3);
-            descriptionPart.setProximity(4);
+            if (useProximity) {
+                titlePart.setProximity(3);
+                descriptionPart.setProximity(4);
+            }
         }
 
         primary.append(titlePart.setBoost(TITLE_BOOST));
@@ -77,15 +84,6 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         primary.setOperator(Operator.OR);
         return primary;
-    }
-
-    public String getCleanedQueryString(String value) {
-        String cleanedQueryString = value.trim();
-        // if we have a leading and trailng quote, strip them
-        if (cleanedQueryString.startsWith("\"") && cleanedQueryString.endsWith("\"")) {
-            cleanedQueryString = cleanedQueryString.substring(1, cleanedQueryString.length() - 1);
-        }
-        return PhraseFormatter.ESCAPE_QUOTED.format(cleanedQueryString);
     }
 
     @Override
@@ -109,6 +107,14 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     @Override
     public String getDescriptionHtml(TextProvider provider) {
         return StringEscapeUtils.escapeHtml4(getDescription(provider));
+    }
+
+    public boolean isUseProximity() {
+        return useProximity;
+    }
+
+    public void setUseProximity(boolean useProximity) {
+        this.useProximity = useProximity;
     }
 
 }

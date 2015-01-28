@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,9 +20,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hibernate.ScrollMode;
@@ -29,22 +30,21 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -73,7 +73,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     private transient ProjectDao projectDao;
 
     @Autowired
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
 
     private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 
@@ -120,11 +120,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             }
             getLogger().trace(" - adding {} creators", resource.getRelatedCreators().size());
             for (Creator creator : resource.getRelatedCreators()) {
-
                 if (creator == null) {
                     continue;
                 }
-
                 if (creator.isDuplicate()) {
                     creator = entityService.findAuthorityFromDuplicate(creator);
                 }
@@ -132,7 +130,6 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                     continue;
                 }
                 ids.add(creator.getId());
-
             }
         }
         return new ArrayList<>(ids);
@@ -145,7 +142,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          */
         List<Creator> results = genericDao.findAll(getPersistentClass());
         if (CollectionUtils.isNotEmpty(results)) {
-            return Persistable.Base.extractIds(results);
+            return PersistableUtils.extractIds(results);
         }
         return null;
     }
@@ -156,9 +153,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
         boolean seen = false;
         for (Creator creator : creators) {
-            getLogger().trace("~~~~~ " + creator + " ~~~~~~");
+            getLogger().trace("~~~~~ {} ~~~~~~", creator);
             if (!seen) {
-                getLogger().debug("~~~~~ " + creator + " ~~~~~~");
+                getLogger().debug("~~~~~ {} ~~~~~~", creator);
                 seen = true;
             }
             if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
@@ -172,7 +169,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             }
             QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
             try {
-                FullTextQuery search = searchService.search(query, null);
+                FullTextQuery search = searchService.search(query);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
                 total = search.getResultSize();
                 if (total == 0) {
@@ -184,7 +181,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                     incrementCreators(creator, collaborators, resource, userIdsToIgnoreInLargeTasks);
                 }
             } catch (Exception e) {
-                getLogger().warn("Exception {}", e);
+                getLogger().warn("Exception", e);
             }
 
             CreatorInfoLog log = new CreatorInfoLog();
@@ -228,11 +225,10 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Collections.sort(log.getKeywordLogPart(), new LogPartComparator());
 
             try {
-                xmlService.generateFOAF(creator, log);
-                xmlService.generateCreatorLog(creator, log);
+                serializationService.generateFOAF(creator, log);
+                serializationService.generateCreatorLog(creator, log);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                getLogger().error("exception: {} ", e);
+                getLogger().error("exception: ", e);
             }
         }
     }
@@ -396,7 +392,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (creator.isDuplicate()) {
                 creator = entityService.findAuthorityFromDuplicate(creator);
             }
-            if (ObjectUtils.equals(creator.getId(), current.getId()) || !creator.isActive()) {
+            if (Objects.equals(creator.getId(), current.getId()) || !creator.isActive()) {
                 continue;
             }
 

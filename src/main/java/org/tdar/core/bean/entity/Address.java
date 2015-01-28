@@ -8,14 +8,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 
 /**
@@ -127,14 +126,12 @@ public class Address extends Base implements Persistable, Validatable {
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValidForController() {
         return isValid();
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {

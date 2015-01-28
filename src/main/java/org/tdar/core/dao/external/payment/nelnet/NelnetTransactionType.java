@@ -60,15 +60,11 @@ public enum NelnetTransactionType implements HasLabel, Localizable {
         return null;
     }
 
-    public static PaymentMethod fromOrdinalToPaymentMethod(int intValue) {
-        NelnetTransactionType type = fromOrdinal(intValue);
-        switch (type) {
-            case CHECK:
-                return PaymentMethod.CHECK;
-            case CREDIT_CARD:
-            case CREDIT_CARD_REFUND:
-                return PaymentMethod.CREDIT_CARD;
-        }
-        return null;
+    /**
+     * @return payment method that corresponds to this transaction type
+     */
+    public PaymentMethod getPaymentMethod() {
+        //note: we currently only ahve two payment methods. Go back to using switch-statement if we add more.
+        return this == CHECK ? PaymentMethod.CHECK : PaymentMethod.CREDIT_CARD;
     }
 }

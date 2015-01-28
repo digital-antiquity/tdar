@@ -3,10 +3,9 @@ package org.tdar.core.service.processes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.search.SearchIndexService;
 
 @Component
 public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
@@ -22,22 +21,13 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
     @Autowired
     private transient EntityService entityService;
 
-    private int batchCount = 0;
     private boolean run = false;
 
     @Override
     public void execute() {
         run = true;
-
         genericKeywordService.updateOccurranceValues();
         entityService.updatePersonOcurrances();
-        // Person person = new Person();
-        // person.setFirstName("system");
-        // person.setLastName("user");
-        // genericKeywordService.detachFromSession(person);
-        // searchIndexService.indexAll(person, LookupSource.KEYWORD.getClasses());
-        // searchIndexService.indexAll(person, LookupSource.PERSON.getClasses());
-        // searchIndexService.indexAll(person, LookupSource.INSTITUTION.getClasses());
     }
 
     @Override

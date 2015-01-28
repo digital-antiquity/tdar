@@ -1,67 +1,9 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-<head>
-    <style type="text/css">
 
-        .drg {
-        / / z-index : 50000 !important;
-        }
-
-        .showhide {
-            display: inline;
-            font-size: 80%;
-            right: 0px;
-        }
-
-        .collapse {
-            overflow: visible !important;
-        }
-
-        .fixed {
-            position: fixed;
-            top: 0;
-            z-index: 1000;
-            border: 1px solid #AAA;
-            background-color: #DEDEDE;
-            padding: 4px;
-            margin: 0px;
-            opacity: .95;
-        }
-
-        .buttontable .integrationTableNumber {
-            display: none;
-            visibility: hidden;
-        }
-
-        .integrationColumn div[table] .ontology {
-            display: none !important;
-        }
-
-        .status {
-            color: #660033;
-            font-weight: bold;
-        }
-
-        #drplist {
-            border: 1px solid #ccc;
-        }
-
-
-        .addAnother {
-            margin-left: 1em !important;
-            font-weight: bold;
-        }
-
-        .addAnother img {
-            bottom: 2px !important;
-            position: relative !important;
-        }
-    </style>
-
-</head>
-
-<body>
+<body class="select-columns">
     <@s.form name='selectDTColForm' method='post' action='filter' id="selectDTColForm">
+        <@s.token name='struts.csrf.token' />
 
     <h3>Data Integration</h3>
 
@@ -87,14 +29,13 @@
             </td>
 
         </#macro>
-
         <div id='fixedList' class="affix-top no-indent span12 row navbar-static" data-offset-top="250" data-offset-bottom="250" data-spy="affix">
             <h4>Each Column Below will be a Column In Excel</h4>
             <div class="btn-group pull-right">
                 <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add Column</span>
-                <span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
+                <span class="btn <#if (sharedOntologies?size < 1)>disabled</#if>" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
                 <div class="btn-group">
-                      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                      <a class="btn dropdown-toggle <#if (sharedOntologies?size < 1)>disabled</#if>" data-toggle="dropdown" href="#">
                         Add Integration Column
                         <span class="caret"></span>
                       </a>
@@ -172,14 +113,14 @@
                                     <#if count % numCols == 0>
                                     <tr></#if>
                                     <td width="${(100 / numCols)?floor }%">
-                                        <div class="drg ui-corner-all" <#if column.defaultOntology??>data-ontology="${column.defaultOntology.id?c}"</#if>
+                                        <div class="drg ui-corner-all" <#if column.actuallyMapped>data-ontology="${column.mappedOntology.id?c}"</#if>
                                              <#if column.measurementUnit??>data-measurement="${column.measurementUnit}"</#if>
                                              title="${description?html}"
                                              <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if>
                                              data-table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}
                                             . </span>
-								<span class="name">${column.displayName}</span>
-                                            <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+                                <span class="name">${column.displayName}</span>
+                                            <#if column.mappedOntology??> <span class="ontology">- ${column.mappedOntology.title}</span></#if>
                                             <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id" value="${column.id?c}"/></span>
                                             <#assign count = count+1 />
                                         </div>

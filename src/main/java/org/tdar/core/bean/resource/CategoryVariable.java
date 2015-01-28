@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -27,28 +28,24 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
- * $Id$
+ * A top-level domain variable (faunal variable, etc.) belonging to the system's master ontology.
  * 
- * A domain variable (faunal variable, etc.) belonging to the system's master ontology.
+ * Ideally these should be represented as OntologyNodes in an actual tDAR Ontology.
  * 
- * 
- * FIXME: does each individual domain context variable really represent a
- * Resource? If so, should extend Resource instead. However, it seems the
- * entire master ontology should be a Resource, not each individual element in
- * the master ontology, which is what each instance of this class represents.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
- * @version $Revision$
  */
 @Entity
 @Table(name = "category_variable")
 public class CategoryVariable extends Persistable.Base implements Comparable<CategoryVariable> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -7579426625034598257L;
 
     @Column(nullable = false)
@@ -58,6 +55,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String label;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -66,6 +64,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private CategoryType type;
 
     @ManyToOne
@@ -73,7 +72,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     private CategoryVariable parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private Set<CategoryVariable> children;
+    private Set<CategoryVariable> children = new LinkedHashSet<>();
 
     public String getName() {
         return name;
@@ -93,12 +92,12 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
 
     @Transient
     public SortedSet<String> getSortedSynonyms() {
-        return new TreeSet<String>(getSynonyms());
+        return new TreeSet<>(getSynonyms());
     }
 
     @Transient
     public SortedSet<String> getSortedSynonyms(Comparator<String> comparator) {
-        TreeSet<String> sortedSet = new TreeSet<String>(comparator);
+        TreeSet<String> sortedSet = new TreeSet<>(comparator);
         sortedSet.addAll(synonyms);
         return sortedSet;
     }
@@ -117,6 +116,15 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.parent = parent;
     }
 
+    @JsonView(JsonLookupFilter.class)
+    @JsonInclude(Include.NON_NULL)
+    public String getParentCategoryName() {
+        if (parent != null) {
+            return parent.getName();
+        }
+        return null;
+    }
+    
     @Override
     public String toString() {
         return name;
@@ -163,9 +171,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
 
     @Transient
     public SortedSet<CategoryVariable> getSortedChildren() {
-        TreeSet<CategoryVariable> sortedChildren = new TreeSet<CategoryVariable>();
-        sortedChildren.addAll(this.getChildren());
-        return sortedChildren;
+        return new TreeSet<>(getChildren());
     }
 
     public String getLabel() {

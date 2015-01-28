@@ -1,11 +1,14 @@
 package org.tdar.core.bean.resource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Types;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class DataTableColumnTest {
@@ -49,6 +52,22 @@ public class DataTableColumnTest {
         }
     }
 
+    @Test
+    public void integrationHidden() {
+        DataTableColumn dtc = new DataTableColumn();
+        CodingSheet cs = new CodingSheet();
+        CodingRule rule = new CodingRule();
+        cs.getCodingRules().add(rule);
+        dtc.setDefaultCodingSheet(cs);
+        Ontology ontology = new Ontology();
+        ontology.setId(100l);
+//        dtc.setDefaultOntology(ontology);
+        assertFalse(dtc.isActuallyMapped());
+        cs.setDefaultOntology(ontology);
+        rule.setOntologyNode(new OntologyNode());
+        assertTrue(dtc.isActuallyMapped());
+    }
+    
     @Test
     public void testStringParsing() {
 

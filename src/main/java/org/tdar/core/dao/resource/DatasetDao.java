@@ -10,17 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
-import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +38,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.RssService;
@@ -52,6 +49,7 @@ import org.tdar.search.query.SearchResultHandler;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl.ImageTag;
+import com.sun.tools.javac.jvm.Gen;
 
 /**
  * $Id$
@@ -149,8 +147,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
         query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
-        query.setCacheMode(CacheMode.IGNORE);
         return query.list();
+    }
+
+    public void resetColumnMappings(Project project) {
+        String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s" , project.getId());
+        getCurrentSession().createSQLQuery(sql).executeUpdate();
     }
 
     /*
@@ -160,10 +162,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
      * 
      * Using a raw SQL update statement to try and simplify the execution here to use as few loops as possible...
      */
-    public List<String> mapColumnToResource(DataTableColumn column, List<String> distinctValues) {
+    public void mapColumnToResource(DataTableColumn column, List<String> distinctValues) {
         Project project = column.getDataTable().getDataset().getProject();
         // for each distinct column value
-        List<String> updatedValues = new ArrayList<String>();
+
+        long timestamp = System.currentTimeMillis();
+        String sql = String.format("CREATE TEMPORARY TABLE MATCH%s (id bigserial, primary key(id), key varchar(255),actual varchar(255))", timestamp);
+        SQLQuery create = getCurrentSession().createSQLQuery(sql);
+        logger.debug(sql);
+        create.executeUpdate();
+        int count =0;
         for (String columnValue : distinctValues) {
             List<String> valuesToMatch = new ArrayList<String>();
 
@@ -180,18 +188,35 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     valuesToMatch.set(i, FilenameUtils.getBaseName(valuesToMatch.get(i).toLowerCase()) + ".");
                 }
             }
-            String rawsql = NamedNativeQueries.updateDatasetMappings(project, column, columnValue, valuesToMatch,
-                    Arrays.asList(VersionType.UPLOADED,
-                            VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
-            logger.trace(rawsql);
-            Query query = getCurrentSession().createSQLQuery(rawsql);
-            int executeUpdate = query.executeUpdate();
-            if (executeUpdate > 0) {
-                updatedValues.add(columnValue);
+            for (String match : valuesToMatch) {
+                if (StringUtils.isBlank(match)) {
+                    continue;
+                }
+                String format = String.format("insert into MATCH%s (key,actual) values('%s','%s')", timestamp,
+                        org.apache.commons.lang.StringEscapeUtils.escapeSql(match.toLowerCase()), org.apache.commons.lang.StringEscapeUtils.escapeSql(columnValue.toLowerCase()));
+                SQLQuery insert = getCurrentSession().createSQLQuery(format);
+                insert.executeUpdate();
+                if (count % 250 == 0) {
+                    logger.debug(format);
+                }
+                count++;
             }
-            logger.debug("values to match {}  -- {} ", valuesToMatch, executeUpdate);
         }
-        return updatedValues;
+        List<VersionType> types = Arrays.asList(VersionType.UPLOADED, VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL);
+        String filenameCheck = "lower(irfv.filename)";
+        if (column.isIgnoreFileExtension()) {
+            filenameCheck = "substring(lower(irfv.filename), 0, length(irfv.filename) - length(irfv.extension) + 1)";
+        }
+        String format = String.format(
+                "update information_resource ir_ set mappeddatakeycolumn_id=%s, mappedDataKeyValue=actual from MATCH%s, information_resource ir inner join "
+                        + "information_resource_file irf on ir.id=irf.information_resource_id " +
+                        "inner join information_resource_file_version irfv on irf.id=irfv.information_resource_file_id " +
+                        "WHERE ir.project_id=%s and lower(key)=%s and irfv.internal_type in ('%s') and ir.id=ir_.id and ir.mappedDataKeyValue is null",
+                column.getId(), timestamp, project.getId(), filenameCheck, StringUtils.join(types, "','"));
+        SQLQuery matching = getCurrentSession().createSQLQuery(format);
+        logger.debug(format);
+        int executeUpdate = matching.executeUpdate();
+        logger.debug("{} rows updated", executeUpdate);
     }
 
     public void unmapAllColumnsInProject(Long projectId, List<Long> columns) {
@@ -206,9 +231,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public Number getAccessCount(Resource resource) {
-        Criteria createCriteria = getCriteria(ResourceAccessStatistic.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("reference", resource));
-        return (Number) createCriteria.list().get(0);
+        String sql = String.format(TdarNamedQueries.RESOURCE_ACCESS_COUNT_SQL, resource.getId(), new Date());
+        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -223,7 +247,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public List<Resource> findSkeletonsForSearch(Long... ids) {
+    @SuppressWarnings("unchecked")
+    public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
         Session session = getCurrentSession();
         // distinct prevents duplicates
         // left join res.informationResourceFiles
@@ -233,6 +258,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (ids.length > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
+        if (!trustCache) {
+            query.setCacheable(false);
+            query.setCacheMode(CacheMode.REFRESH);
+        }
         query.setParameterList("ids", Arrays.asList(ids));
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
@@ -241,7 +270,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         time = System.currentTimeMillis();
         List<Resource> toReturn = new ArrayList<>();
         Map<Long, Resource> resultMap = new HashMap<>();
-        logger.debug("convert proxy to resource");
+        logger.trace("convert proxy to resource");
         for (ResourceProxy prox : results) {
             try {
                 resultMap.put(prox.getId(), prox.generateResource());
@@ -249,17 +278,18 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 logger.error("{}", e);
             }
         }
-        logger.debug("resorting results");
+        logger.trace("resorting results");
         for (Long id : ids) {
             toReturn.add(resultMap.get(id));
         }
         if (logger.isDebugEnabled()) {
             time = System.currentTimeMillis() - time;
-            logger.info("Query: {} ; generation: {} {}->{}", queryTime, time, results.size(), toReturn.size());
+            logger.debug("Query: {} ; generation: {} ", queryTime, time);
         }
         return toReturn;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findOld(Long[] ids) {
         Session session = getCurrentSession();
         long time = System.currentTimeMillis();
@@ -270,6 +300,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return results;
     }
 
+    @SuppressWarnings("unchecked")
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
         int count = 0;
@@ -282,8 +313,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
             ResourceType resourceType = ResourceType.valueOf((String) row[3]);
             String fileDescription = (String) row[4];
             Number imageId = (Number) row[5];
-
-            String resourceUrl = UrlService.absoluteUrl(resourceType.getUrlNamespace(), id.longValue());
+            Resource res = new Resource(id.longValue(), title, resourceType);
+            markReadOnly(res);
+            String resourceUrl = UrlService.absoluteUrl(res);
             String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
             if (StringUtils.isNotBlank(fileDescription)) {
                 description = fileDescription;
@@ -304,10 +336,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (StringUtils.isEmpty(text)) {
             return text;
         }
-        return StringEscapeUtils.escapeXml(RssService.stripInvalidXMLCharacters(text));
+        return StringEscapeUtils.escapeXml11(RssService.stripInvalidXMLCharacters(text));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Resource> findByTdarYear(SearchResultHandler handler, int year) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
         if (handler.getRecordsPerPage() < 0) {
@@ -327,8 +359,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query2.setParameter("year_end", dt.plusYears(1).toDate());
         Number max = (Number) query2.uniqueResult();
         handler.setTotalRecords(max.intValue());
-        
+
         return query.list();
     }
+
 
 }

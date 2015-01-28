@@ -20,7 +20,8 @@ import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapOperations;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 
 /**
@@ -90,15 +91,15 @@ public class SpringLdapDaoTest {
     }
 
     @SuppressWarnings("static-method")
-    private Person getNewPerson() {
-        Person person = new Person("first", "last", "first@last.com");
+    private TdarUser getNewPerson() {
+        TdarUser person = new TdarUser("first", "last", "first@last.com");
         person.setUsername("firstAndLast");
         return person;
     }
 
     @Test
     public void willDealWithExistingUserOnAddUser() {
-        final Person person = getNewPerson();
+        final TdarUser person = getNewPerson();
         final String password = "password";
         context.checking(new Expectations() {
             {
@@ -112,7 +113,7 @@ public class SpringLdapDaoTest {
 
     @Test
     public void willAddNewUserOnAddUser() {
-        final Person person = getNewPerson();
+        final TdarUser person = getNewPerson();
         final String password = "password";
         context.checking(new Expectations() {
             {
@@ -130,7 +131,7 @@ public class SpringLdapDaoTest {
 
     @Test
     public void willDeleteUser() {
-        final Person person = getNewPerson();
+        final TdarUser person = getNewPerson();
         context.checking(new Expectations() {
             {
                 oneOf(template).unbind(with(any(Name.class)));
@@ -142,7 +143,7 @@ public class SpringLdapDaoTest {
 
     @Test
     public void willUpdateUserPassword() {
-        final Person person = getNewPerson();
+        final TdarUser person = getNewPerson();
         final String password = "password";
         context.checking(new Expectations() {
             {
@@ -156,7 +157,7 @@ public class SpringLdapDaoTest {
 
     @Test
     public void willFindGroupMemberships() {
-        final Person person = getNewPerson();
+        final TdarUser person = getNewPerson();
         final String[] groups = { "agroup", "bgroup" };
         context.checking(new Expectations() {
             {

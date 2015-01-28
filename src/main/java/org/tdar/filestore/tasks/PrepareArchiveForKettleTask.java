@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -64,7 +64,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * @param kettleInputPath
      *            the control file output directory: allows us to override the one read from the property file.
      */
-    protected void setKettleInputPath(String kettleInputPath) {
+    protected void setKettleInputPathOverride(String kettleInputPath) {
         this.kettleInputPath = kettleInputPath;
     }
 
@@ -147,7 +147,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
         controlFileOuputDir = new File(kettleInputPath);
         if (!isDirectoryWritable(controlFileOuputDir)) {
-            recordErrorAndExit("Can not write to kettle input directory: " + controlFileOuputDir);
+            recordErrorAndExit("Can not write to kettle input directory: " + controlFileOuputDir.getCanonicalPath());
         }
 
         // do we have a directory to write our copies to?
@@ -179,9 +179,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     private void writeKettleControlFileToDisk(Archive archive, File copy) throws IOException, TemplateException {
         Template template = loadFreemarkerTemplate();
         Map<String, Object> values = new HashMap<>();
-        values.put(FILE_NAME, StringEscapeUtils.escapeXml(copy.getAbsolutePath()));
+        values.put(FILE_NAME, StringEscapeUtils.escapeXml11(copy.getAbsolutePath()));
         values.put(PROJECT_ID, archive.getProjectId());
-        values.put(UPDATED_BY_EMAIL, StringEscapeUtils.escapeXml(getEmailToNotify(archive)));
+        values.put(UPDATED_BY_EMAIL, StringEscapeUtils.escapeXml11(getEmailToNotify(archive)));
         try (Writer output = new FileWriter(getNewRunControlFile())) {
             template.process(values, output);
         }
@@ -194,26 +194,26 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      */
     protected String getEmailToNotify(Archive archive) {
         String result = null;
-        
+
         // First try the person who submitted the archive
         if (archive.getSubmitter() != null) {
             result = archive.getSubmitter().getEmail();
         }
-        
+
         // Then the person who updated it
         if (StringUtils.isEmpty(result)) {
             if (archive.getUpdatedBy() != null) {
                 result = archive.getUpdatedBy().getEmail();
             }
         }
-        
+
         // Then the person who uploaded it
         if (StringUtils.isEmpty(result)) {
             if (archive.getUploader() != null) {
                 result = archive.getUploader().getEmail();
             }
         }
-        
+
         // Finally the administrator.
         if (StringUtils.isEmpty(result)) {
             // this should never be null, hopefully...

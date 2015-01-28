@@ -2,6 +2,7 @@ package org.tdar.core.bean;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -11,17 +12,21 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.billing.InvoiceService;
 
 public class InvoiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    AccountService accountService;
+    InvoiceService invoiceService;
 
     @Autowired
     GenericService genericService;
+
+    @Autowired
+    SerializationService serializationService;
 
     @Test
     @Rollback
@@ -82,10 +87,10 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testJsonStatus() {
+    public void testJsonStatus() throws IOException {
         Invoice invoice = new Invoice();
         invoice.setTransactionStatus(TransactionStatus.PREPARED);
-        String json = invoice.toJSON().toString();
+        String json = serializationService.convertToJson(invoice);
         assertTrue("status in json", json.indexOf(TransactionStatus.PREPARED.name()) > -1);
 
     }
@@ -93,7 +98,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     private List<BillingItem> setupBillingItem(Invoice invoice, long numberOfFiles, long numberOfMb) {
         invoice.setNumberOfFiles(numberOfFiles);
         invoice.setNumberOfMb(numberOfMb);
-        List<BillingItem> billingItems = accountService.calculateCheapestActivities(invoice).getItems();
+        List<BillingItem> billingItems = invoiceService.calculateCheapestActivities(invoice).getItems();
         logger.info("{} ", billingItems);
         return billingItems;
     }

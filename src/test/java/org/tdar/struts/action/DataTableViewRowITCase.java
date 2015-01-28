@@ -9,29 +9,28 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.struts.action.resource.DatasetController;
+import org.tdar.struts.action.dataset.RowViewAction;
 
 import com.opensymphony.xwork2.Action;
 
 public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     private static final String TEST_DATASET = "src/test/resources/data_integration_tests/england_woods.xlsx";
-    private DatasetController controller;
+    private RowViewAction controller;
     private Dataset dataset;
 
     @Before
     public void setUpController() {
-        controller = generateNewInitializedController(DatasetController.class);
+        controller = generateNewInitializedController(RowViewAction.class);
     }
 
-    private void prepareValidData() {
+    private void prepareValidData() throws TdarActionException {
         dataset = setupAndLoadResource(TEST_DATASET, Dataset.class);
         assertNotNull(dataset);
         DataTable dataTable = dataset.getDataTables().iterator().next();
@@ -42,7 +41,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void getDataResultsRowReturnsRow() {
+    public void getDataResultsRowReturnsRow() throws Exception {
         prepareValidData();
         controller.setRowId(1L);
         controller.prepare();
@@ -52,7 +51,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void getDataResultsDoesntReturnInvalidRowInTDAR() {
+    public void getDataResultsDoesntReturnInvalidRowInTDAR() throws Exception {
         prepareValidData();
         controller.setRowId(100000000L);
         controller.prepare();
@@ -61,7 +60,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void outOfRangeRowReturnsEmptySet() {
+    public void outOfRangeRowReturnsEmptySet() throws Exception {
         prepareValidData();
         controller.setRowId(0L);
         controller.prepare();
@@ -70,7 +69,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    public void nonExistentTableIdReturnsError() {
+    public void nonExistentTableIdReturnsError() throws Exception {
         controller.setDataTableId(0L);
         controller.setRowId(1L);
         controller.prepare();
@@ -79,7 +78,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void userCanViewOwnRestrictedRow() {
+    public void userCanViewOwnRestrictedRow() throws Exception {
         prepareValidData();
         // following forces call to getAuthenticationAndAuthorizationService().canViewConfidentialInformation...
         for (InformationResourceFile file : dataset.getInformationResourceFiles()) {
@@ -93,14 +92,14 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void userCannotViewRestrictedRow() {
+    public void userCannotViewRestrictedRow() throws Exception {
         prepareValidData();
 
         for (InformationResourceFile file : dataset.getInformationResourceFiles()) {
             file.setRestriction(FileAccessRestriction.CONFIDENTIAL);
         }
         genericService.save(dataset);
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         init(controller, user);
         controller.setRowId(1L);
         controller.prepare();
@@ -109,14 +108,14 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void firstColumnIsRowIndex() {
+    public void firstColumnIsRowIndex() throws Exception {
         prepareValidData();
         controller.setRowId(1L);
         controller.prepare();
         assertEquals(Action.SUCCESS, controller.getDataResultsRow());
         final Iterator<DataTableColumn> iterator = controller.getDataTableRowAsMap().keySet().iterator();
         final String name = iterator.next().getName();
-        assertTrue("The row id column is expected to be first in the map, but found " + name, name.equals(TargetDatabase.TDAR_ID_COLUMN));
+        assertTrue("The row id column is expected to be first in the map, but found " + name, name.equals(DataTableColumn.TDAR_ID_COLUMN));
     }
 
 }

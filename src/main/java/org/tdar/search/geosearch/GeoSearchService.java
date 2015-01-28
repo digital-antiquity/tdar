@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +52,7 @@ public class GeoSearchService {
     public Set<GeographicKeyword> extractAllGeographicInfo(LatitudeLongitudeBox latLong) {
         Set<GeographicKeyword> geoSet = new HashSet<GeographicKeyword>();
         if (!geoSearchDao.isEnabled()) {
+            logger.debug("postgis not enabled");
             return geoSet;
         }
         geoSet.addAll(extractContientInfo(latLong));

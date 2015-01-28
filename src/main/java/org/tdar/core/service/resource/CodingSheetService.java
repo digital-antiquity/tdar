@@ -10,15 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -36,6 +35,7 @@ import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.
@@ -197,7 +197,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         }
 
         if (ObjectUtils.notEqual(ontology, codingSheet.getDefaultOntology())) {
-            if (Persistable.Base.isNullOrTransient(ontology)) {
+            if (PersistableUtils.isNullOrTransient(ontology)) {
                 // clamp the ontology to null
                 ontology = null;
             }
@@ -225,9 +225,6 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             codingSheet.setDefaultOntology(ontology);
             // If we've not hit "save" yet, there's no point in actually calling this, also this stops transient refernece
             // exceptions that were dying
-            if (Persistable.Base.isNotTransient(codingSheet)) {
-                getDao().updateDataTableColumnOntologies(codingSheet, ontology);
-            }
         }
     }
 

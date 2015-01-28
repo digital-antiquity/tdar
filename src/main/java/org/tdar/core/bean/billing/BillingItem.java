@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 
 /**
@@ -24,6 +23,7 @@ import org.tdar.core.exception.TdarValidationException;
 public class BillingItem extends Base implements Validatable {
 
     private static final long serialVersionUID = -2775737509085985555L;
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
@@ -61,7 +61,6 @@ public class BillingItem extends Base implements Validatable {
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValidForController() {
         if (getActivity() == null) {
@@ -74,7 +73,6 @@ public class BillingItem extends Base implements Validatable {
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValid() {
         return isValidForController();

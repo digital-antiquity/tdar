@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
@@ -24,6 +24,8 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
+import org.tdar.core.dao.integration.search.OntologySearchFilter;
 import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
@@ -268,4 +270,8 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
     }
 
+    @Transactional(readOnly=true)
+    public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
+        return getDao().findOntologies(searchFilter);
+    }
 }

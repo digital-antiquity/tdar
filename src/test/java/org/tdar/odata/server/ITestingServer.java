@@ -1,6 +1,6 @@
 package org.tdar.odata.server;
 
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 public interface ITestingServer {
 
@@ -10,6 +10,6 @@ public interface ITestingServer {
 
     void stopServer() throws Exception;
 
-    void setPerson(Person person);
+    void setPerson(TdarUser person);
 
 }

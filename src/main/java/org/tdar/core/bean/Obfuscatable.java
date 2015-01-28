@@ -1,6 +1,6 @@
 package org.tdar.core.bean;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * allows for abstraction of all resources that can be obfuscated
@@ -20,7 +20,7 @@ public interface Obfuscatable {
     /**
      * obfuscates the current object and returns a list of potential objects for further obfuscation
      */
-    List<Obfuscatable> obfuscate();
+    Set<Obfuscatable> obfuscate();
 
     /**
      * mark the object as obfuscated, ideally should be transient.

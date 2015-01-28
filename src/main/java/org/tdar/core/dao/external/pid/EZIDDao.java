@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -35,7 +35,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -50,7 +49,6 @@ import edu.asu.lib.dc.DublinCoreDocument;
  * @author Adam Brin
  * 
  */
-@Service
 public class EZIDDao implements ExternalIDProvider {
 
     // DOCUMENTATION: http://n2t.net/ezid/doc/apidoc.html#operation-get-identifier-metadata
@@ -113,7 +111,7 @@ public class EZIDDao implements ExternalIDProvider {
                 StringUtils.isNotBlank(getDOIProviderUsername()) && StringUtils.isNotBlank(getDOIProviderPassword())) {
             return true;
         }
-        logger.debug("a required parameter for the EzidDao was not provided. " + configIssue);
+        logger.warn("a required parameter for the EzidDao was not provided. " + configIssue);
         return false;
     }
 

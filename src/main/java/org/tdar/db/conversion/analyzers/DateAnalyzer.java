@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.antlr.runtime.tree.Tree;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -82,8 +82,8 @@ public class DateAnalyzer implements ColumnAnalyzer {
             if (!StringUtils.equals(candidate.getText(), value)) {
                 result = null;
             }
-            
-            if (value.matches("(\\d+)\\-(\\d+)")) {
+
+            if (value.matches("(\\d+)(\\-|/)(\\d+)")) {
                 return null;
             }
             logger.trace("== result: {} ", result);

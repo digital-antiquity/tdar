@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -94,12 +94,14 @@ public interface Task extends Serializable {
             InformationResourceFileVersion version = new InformationResourceFileVersion(type, f.getName(), originalVersion.getVersion(),
                     ctx.getInformationResourceId(), originalVersion.getInformationResourceFileId());
 
-            try {
-                ctx.getFilestore().store(ObjectType.RESOURCE, f, version);
-                version.setTransientFile(f);
-            } catch (IOException e) {
-                getLogger().warn("cannot store version", e);
+            if (ctx.isOkToStoreInFilestore()) {
+                try {
+                    ctx.getFilestore().store(ObjectType.RESOURCE, f, version);
+                } catch (IOException e) {
+                    getLogger().warn("cannot store version", e);
+                }
             }
+            version.setTransientFile(f);
             return version;
         }
 
@@ -127,15 +129,6 @@ public interface Task extends Serializable {
             getWorkflowContext().setErrorFatal(true); // anything that stops us running should be reported as an error, IMHO.
             getLogger().error(message);
             throw new TdarRecoverableRuntimeException(message);
-        }
-
-        void mkParentDirs(File outputFile) {
-            File outputFileDirectory = getParentDirectory(outputFile);
-            try {
-                outputFileDirectory.mkdirs();
-            } catch (Exception e) {
-                getLogger().warn("cannot make parent directories", e);
-            }
         }
 
         File getParentDirectory(File outputFile) {

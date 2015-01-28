@@ -2,8 +2,8 @@
  * TDAR  authority-management library.  Used by the Authority-management (aka record-deduper) pages.
  * @type {{}}
  */
-TDAR.auth = {};
-TDAR.auth = function () {
+TDAR.authority = {};
+TDAR.authority = function () {
     "use strict";
     var self = {};
 

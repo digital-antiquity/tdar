@@ -26,10 +26,10 @@
     <h4>Limit by geographic region:</h4>
     <div id="latlongoptions">
         <div id='large-google-map'></div>
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat latLongInput" />
     </div>
 
     <h2>Sorting Options and Submit</h2>
@@ -66,25 +66,11 @@
     </div>
     </#macro>
 
-    <#macro sortFields javascriptOn=false label="Sort By">
+    <#macro sortFields label="Sort By">
     <label>${label}
         <@s.select value="sortField" name='sortField' cssClass="input-large" theme="simple"
         emptyOption='false' listValue='label' list='%{sortOptions}'/>
     <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->
-        <#if javascriptOn>
-            <script type='text/javascript'>
-                $("#sortField").change(function () {
-                    var url = window.location.search.replace(/([?&]+)sortField=([^&]+)/g, "");
-                    //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                    var prefix = "";
-                    if (url.indexOf("?") != 0) {
-                        prefix = "?";
-                    }
-                    url = prefix + url + "&sortField=" + $('#sortField').val();
-                    window.location = url;
-                });
-            </script>
-        </#if>
     </label>
     </#macro>
 
@@ -114,7 +100,7 @@
     <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
     </#macro>
 
-    <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
+    <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>
 
     <#macro refineUrl actionName=actionName>
         <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution"}><#t>
@@ -285,4 +271,100 @@
             </#if>
         </#if>
     </#macro>
+
+
+<#macro personInstitutionSearch>
+
+    <#if (totalRecords > 0)>
+        <#if !hideFacetsAndSort>
+        <div id="sidebar-left" parse="true" class="options hidden-phone">
+
+            <h2 class="totalRecords">Search Options</h2>
+            <ul class="tools media-list">
+                <li class="media"><a href="<@refineUrl/>" rel="noindex"><i class="search-magnify-icon-red"></i> Refine your search &raquo;</a></li>
+
+                <#if (contextualSearch!false)>
+                    <#if projectId??>
+                        <li class="media"><@s.a href="/project/${projectId?c}"><i class="icon-project icon-red"></i> Return to project page &raquo;</@s.a></li>
+                    <#else>
+                        <li class="media"><@s.a href="/collection/${collectionId?c}"><i class="icon-collection icon-red"></i> Return To collection
+                            page &raquo;</@s.a></li>
+                    </#if>
+                </#if>
+
+                <!--        <li>Subscribe via &raquo;
+	            <a class="subscribe"  href="${rssUrl}">RSS</a>
+	        </li> -->
+            </ul>
+
+        </div>
+        <div class="visible-phone">
+            <a href="<@refineUrl />">Refine your search &raquo;</a>
+        </div>
+        </#if>
+
+    <div id="divResultsSortControl">
+        <div class="row">
+            <div class="span3">
+                <@totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
+            </div>
+            <div class="span6 form-inline">
+                <div class="pull-right">
+                    <div class="control-group"></div>
+                    <label>Records Per Page
+                        <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
+                        list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
+                    </label>
+                    <#if !hideFacetsAndSort>
+                        <@sortFields />
+                    </#if>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tdarresults">
+        <#assign indx = 0/>
+        <#list results as result>
+            <#if result?has_content>
+                <#if indx != 0>
+                    <hr/></#if>
+                <#assign indx = indx + 1/>
+                <div class="listItemPart">
+                    <h3 class="search-result-title-${result.status}">
+                        <a class="resourceLink" href="${result.detailUrl}">${result.properName}</a>
+                    </h3>
+                    <#if result.institution?has_content><p>${result.institution.name}</p></#if>
+                    <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
+                    <blockquote class="luceneScore">
+                    <b>score:</b>${result.score!""}<br> </blockquote>
+                </div>
+            </#if>
+        </#list>
+    </div>
+        <@pagination ""/>
+
+    <#else>
+    <h2>No records match the query.</h2>
+    </#if>
+
+</#macro>
+
+<#function activeWhen _actionNames>
+    <#local _active = false>
+    <#list _actionNames?split(",") as _actionName>
+        <#local _active = _active || (_actionName?trim == actionName)>
+    </#list>
+    <#return _active?string("active", "") />
+</#function>
+
+<#macro toolbar>
+    <ul class="nav nav-tabs" id="myTab">
+        <li class="${activeWhen('basic,advanced,results')}"><a href="advanced">Resource</a></li>
+        <li class="${activeWhen('collection,collections')}"><a href="/search/collection">Collection</a></li>
+        <li class="${activeWhen('institution,institutions')}"><a href="/search/institution">Institution</a></li>
+        <li class="${activeWhen('person,people')}"><a href="/search/person">Person</a></li>
+    </ul>
+</#macro>
+
 </#escape>

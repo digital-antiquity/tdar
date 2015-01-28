@@ -5,52 +5,48 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static org.tdar.web.functional.WebMatchers.emptySelection;
-import static org.tdar.web.functional.WebMatchers.visible;
+import static org.tdar.web.functional.util.WebMatchers.emptySelection;
+import static org.tdar.web.functional.util.WebMatchers.visible;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
+import org.tdar.web.functional.util.WebElementSelection;
 
 /**
  * Created by jimdevos on 3/12/14.
  */
-public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
+public class ContextualSeachSeleniumITCase extends AbstractEditorSeleniumWebITCase {
 
     public static final String PROJECT_ID = "3805";
     public static final String COLLECTION_ID = "1575";
     public static final String COLLECTION_QUERY = "sample video";
     public static final String PROJECT_QUERY = "Archaeology";
-    private Dimension originalSize;
-    private Dimension testSize = new Dimension(1024, 768);
 
     @Before
     public void setupContextSearch() {
-        Dimension size2 = driver.manage().window().getSize();
-        if (size2 != testSize) {
-            originalSize = size2;
-        }
-        driver.manage().window().setSize(testSize);
-        reindexOnce();
+        force1024x768();
+    }
+
+    @Override
+    public boolean testRequiresLucene() {
+        return true;
     }
 
     @After
-    public void resetSize() {
-        if (originalSize != null) {
-            driver.manage().window().setSize(originalSize);
-        }
+    public void cleanup() {
+        resetSize();
     }
 
     @Test
     public void testProjectResults2() {
-        basicTest(format("/project/%s", PROJECT_ID), PROJECT_QUERY);
+        basicTest(format("/project/%s/new-philadelphia-archaeology-project", PROJECT_ID), PROJECT_QUERY);
     }
 
     @Test
     public void testCollectionResults() {
-        basicTest(format("/collection/%s", COLLECTION_ID), COLLECTION_QUERY);
+        basicTest(format("/collection/%s/sample-collection", COLLECTION_ID), COLLECTION_QUERY);
     }
 
     private void basicTest(String path, String query) {

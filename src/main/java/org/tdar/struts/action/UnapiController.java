@@ -1,13 +1,18 @@
 package org.tdar.struts.action;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.UrlService;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 /**
  * Implementation of <a href="http://unapi.info/specs/">Unapi</a> for tDAR
@@ -24,58 +29,55 @@ import org.tdar.core.bean.resource.Resource;
  * @version $Rev$
  * 
  */
-@Namespace("/")
+@Namespace("/unapi")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
+@HttpForbiddenErrorResponseOnly
 public class UnapiController extends TdarActionSupport {
 
+    private static final String FORMATS = "formats";
+    private static final String ASFORMAT = "asformat";
+    private static final String NOFORMAT = "noformat";
+
     private static final long serialVersionUID = -5455659179508107902L;
+
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient UrlService urlService;
 
     private String formatUrl;
     private Long id;
     private String format;
 
     @Override
-    @Action(
+    @Actions(value = { @Action(
             value = "unapi",
             results = {
-                    @Result(name = "formats",
+                    @Result(name = FORMATS,
                             location = "unapi-formatlist.ftl",
-                            type = "freemarker",
+                            type = FREEMARKER,
                             params = { "contentType", "application/xml", "status", "300" }),
-                    @Result(name = "asformat", location = "${formatUrl}", type = "redirect"),
-                    @Result(name = "noformat", type = "httpheader", params = { "status", "406" })
+                    @Result(name = ASFORMAT, location = "${formatUrl}", type = "redirect"),
+                    @Result(name = NOFORMAT, type = HTTPHEADER, params = { "status", "406" })
             }
             )
-            public String execute() {
+    })
+    public String execute() {
         if (StringUtils.isNotBlank(format) && (id != null)) {
-            Resource r = getResourceService().find(id);
+            Resource r = resourceService.find(id);
             if (r == null) {
                 return TdarActionSupport.NOT_FOUND;
             }
-            formatUrl = constructFormatUrl(r);
+            formatUrl = UrlService.constructUnAPIFormatUrl(r, format);
             if (StringUtils.isBlank(formatUrl)) {
-                return "noformat";
+                return NOFORMAT;
             }
-            return "asformat";
+            return ASFORMAT;
         }
-        return "formats";
-    }
-
-    private String constructFormatUrl(Resource r) {
-        String resUrl = getUrlService().relativeUrl(r);
-        String formUrl = null;
-
-        // abrin: adding for personal readability, this forwards to eg:
-        // /document/{id}/dc
-        if (format.equalsIgnoreCase("oai_dc")) {
-            formUrl = resUrl + "/dc";
-        }
-        if (format.equalsIgnoreCase("mods")) {
-            formUrl = resUrl + "/mods";
-        }
-        return formUrl;
+        return FORMATS;
     }
 
     public String getFormatUrl() {

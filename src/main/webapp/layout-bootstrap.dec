@@ -3,13 +3,13 @@
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" lang="en"> <!--<![endif]-->
+<html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 
 <#global jquery_version="1.10.2">
 <#global jquery_ui_version="1.8.23">
 <#global jquery_ui_css_version="1.9.2">
 
-<!-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error. 
+<#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error. 
 	 This is a less-than ideal solution, but seems to be the best that we have. -->
 <#if !(protocol?has_content)>
     <#include "500.html" />
@@ -34,7 +34,7 @@
 <head>
     <title>${title!siteName}</title>
     <#if authenticatedUser??>
-        <!-- logged-in-as: ${sessionData.person.email} -->
+        <!-- logged-in-as: ${authenticatedUser.email} -->
     </#if>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -42,10 +42,17 @@
     <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}">
 
     <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
-    <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+    <#if useCDN>
+        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
+    <#else>
+        <link href="/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link rel="stylesheet" type="text/css" href='/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
+    </#if>
 
-    <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
     <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
     <#if qunit><link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css"></#if>
@@ -55,8 +62,13 @@
 
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
-    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+    <#if useCDN>
+        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+    <#else>
+        <script src="/includes/jquery-${jquery_version}.js"></script>
+        <script src="/includes/jquery-ui-${jquery_ui_version}/ui/minified/jquery-ui.min.js"></script>
+    </#if>
     <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
     <#include "${themeDir}/head.dec" />
     ${head}
@@ -64,7 +76,7 @@
     <@common.globalJavascript />
 
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>" <#if ngApplicationName?has_content>ng-cloak</#if>>
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
@@ -94,7 +106,7 @@
                     </ul>
 
                     <ul>
-                        <li><a href="<@s.url value='/entity/person/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
+                        <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
                         <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
                         <li><a href="<@s.url value="/logout"/>"><@s.text name="menu.logout"/></a></li>
                     </ul>
@@ -131,7 +143,7 @@
             </nav>
         </header>
     </div>
-    <#if bodyid == 'home'>
+    <#if bodyid == 'home'>  
         <div class="row">
             <div class="hero">
                 <#include "${themeDir}/homepage-banner.dec" />
@@ -152,13 +164,13 @@
                     <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>
                     <#if sessionData?? && sessionData.authenticated>
                         <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
-                        <li><a href="<@s.url value="/workspace/select-tables"/>"><@s.text name="menu.integrate"/></a></li>
+                        <li><a href="<@s.url value="/workspace/list"/>"><@s.text name="menu.integrate"/></a></li>
                         <#if editor>
                             <li><a href="<@s.url value="/admin"/>"><@s.text name="menu.admin"/></a></li>
                         </#if>
                     </#if>
                 </ul>
-                <#if actionName!='login' && actionName!='register'>
+                <#if actionName!='login' && actionName!='register' && actionName!='download' && actionName!='review-unauthenticated'>
                     <@common.loginMenu true />
                 </#if>
             </div>
@@ -270,7 +282,7 @@
                     <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
                     <#if authenticatedUser??>
                         - <@s.text name="footer.logged_in_as"/>: <a
-                            href="<@s.url value="/browse/creators/${sessionData.person.id?c}"/>">${sessionData.person.email}</a>
+                            href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.email}</a>
                     </#if>
                 </small>
             </p>
@@ -278,14 +290,15 @@
     </div>
 
 </footer>
-    <#if production>
-    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
-    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script>
-    <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+    <#if useCDN>
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script>
+        <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <#else>
-    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
-    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>
-    <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.js"></script>
+        <script src="/includes/jquery.validate-1.11.1/jquery.validate.js"></script>
+        <script src="/includes/jquery.validate-1.11.1/additional-methods.js"></script>
+        <script src="/includes/bootstrap-2.32/js/bootstrap.js"></script>
     </#if>
 
 
@@ -325,7 +338,10 @@
         TDAR.common.currentTime = 1;
         </#if>
 </script>
-<div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
+<div id="ajaxIndicator" class="alert alert-info" style="display:none">
+    <strong class="statusLabel"></strong>
+    <span class="statusMessage"></span>
+</div>
     <#if qunit>
     <script src="/includes/qunit-1.11.0.js"></script>
     </#if>

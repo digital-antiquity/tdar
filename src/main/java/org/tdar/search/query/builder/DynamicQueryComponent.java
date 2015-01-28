@@ -3,7 +3,7 @@
  */
 package org.tdar.search.query.builder;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
 /**
@@ -25,6 +25,7 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
     private String label;
     private Class<?> analyzer;
     private String parent;
+    @SuppressWarnings("unused")
     private Logger logger = Logger.getLogger(DynamicQueryComponent.class);
 
     /**

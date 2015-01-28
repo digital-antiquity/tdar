@@ -2,10 +2,11 @@ package org.tdar.core.service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /*
@@ -14,9 +15,6 @@ import org.tdar.core.configuration.TdarConfiguration;
  */
 @Service
 public class UrlService {
-
-    public static final String TDAR_NAMESPACE_URL = "http://www.tdar.org/namespace";
-    public static final String TDAR_NAMESPACE_PREFIX = "tdar";
 
     private static String baseUrl;
 
@@ -36,7 +34,7 @@ public class UrlService {
      * @param resource
      * @return
      */
-    public String absoluteUrl(Addressable resource) {
+    public static String absoluteUrl(Addressable resource) {
         return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
     }
 
@@ -66,8 +64,8 @@ public class UrlService {
      * @param resource
      * @return
      */
-    public String relativeUrl(Addressable resource) {
-        return String.format("/%s/%s", resource.getUrlNamespace(), resource.getId());
+    public static String relativeUrl(Addressable resource) {
+        return resource.getDetailUrl();
     }
 
     /**
@@ -87,8 +85,8 @@ public class UrlService {
      * @param version
      * @return
      */
-    public String downloadUrl(InformationResourceFileVersion version) {
-        return String.format("%s/filestore/%d/get", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
+    public static String downloadUrl(InformationResourceFileVersion version) {
+        return String.format("%s/filestore/get/%d/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getInformationResourceFile().getInformationResource().getId() ,version.getId());
     }
 
     /**
@@ -114,7 +112,7 @@ public class UrlService {
      * 
      * @return
      */
-    public String getPairedSchemaUrl() {
+    public static String getPairedSchemaUrl() {
         return String.format("%s/schema/current schema.xsd", getBaseUrl());
     }
 
@@ -153,6 +151,18 @@ public class UrlService {
     private static String getAttribute(HttpServletRequest servletRequest, String attribute) {
         Object attr = servletRequest.getAttribute(attribute);
         return (String) attr;
+    }
+
+    public static String constructUnAPIFormatUrl(Resource r, String format) {
+        String type = null;
+        if (format.equalsIgnoreCase("oai_dc") || format.equalsIgnoreCase("dc")) {
+            type = "dc";
+        } else if (format.equalsIgnoreCase("mods")) {
+            type = "mods";
+        } else {
+            return null;
+        }
+        return String.format("/unapi/%s/%s", type, r.getId());
     }
 
 }

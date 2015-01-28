@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.ResourceCreatorRoleType;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -44,7 +44,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DOCUMENT_TYPE = "BOOK_SECTION";
     public static String AUTHOR_NAME_FIRST = "Jim";
     public static String AUTHOR_NAME_LAST = "deVos";
-    public static String AUTHOR_EMAIL = "jim.devos@asu.edu";
+    public static String AUTHOR_EMAIL = "jim.devos@dsu.edu";
     public static String AUTHOR_INSTITUTION = "A wholly new institution name";
     public static String AUTHOR_ROLE = "CONTRIBUTOR";
     public static String DESCRIPTION = "A resource description";

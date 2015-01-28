@@ -8,16 +8,16 @@ import java.util.ListIterator;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.HashQueue;
 
 /**
@@ -89,6 +89,7 @@ public class FileProxyService {
             if (proxy == null) {
                 logger.warn(MISSING_FILE_PROXY_WARNING, file.getName());
                 proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
+                proxy.setCreatedByServer(true);
                 finalProxyList.add(proxy);
             }
             proxy.setFile(file);

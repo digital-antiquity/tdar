@@ -66,7 +66,7 @@
         <h2>Most Popular in the Past Week</h2>
         <ul>
             <#list featuredResources as resource>
-                <li><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+                <li><a href="<@s.url value="${resource.detailUrl}"/>">${resource.title}</a></li>
             </#list>
         </ul>
     </div>
@@ -75,7 +75,7 @@
         <ul>
             <#list recentResources as resource>
                 <#if resource??>
-                    <li><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+                    <li><a href="<@s.url value="${resource.detailUrl}"/>">${resource.title}</a></li>
                 </#if>
             </#list>
         </ul>
@@ -85,22 +85,22 @@
 
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">
-    <#list investigationTypes?sort as investigationType>
-         <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "li" investigationType.occurrence />
+    <#list investigationTypes?sort as keyword>
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
 <ul class="inline">
     <#list siteTypeKeywords?sort as keyword>
-         <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
 <h2>Browse by ${culturalTermsLabel!"Culture"}</h2>
 <ul class="inline">
     <#list cultureKeywords?sort as keyword>
-         <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
@@ -108,10 +108,9 @@
 <h2>Browse by Material Type</h2>
 <ul class="inline">
     <#list materialTypes?sort as keyword>
-         <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
-
 
     <#macro searchFor queryParam term displayTerm wrappingTag="span" occurrence=0>
         <#local term_ = term />

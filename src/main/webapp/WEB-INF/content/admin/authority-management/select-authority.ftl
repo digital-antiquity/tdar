@@ -71,11 +71,9 @@
 </table>
 </#macro>
 
-
-
-
 <div class="glide">
-<@s.form action="merge-duplicates">
+<@s.form action="merge-duplicates" method="post">
+    <@s.token name='struts.csrf.token' />
     <@s.hidden name="entityType" />
 <#--Include all of the selected dupe ids,  we will need to send them along in the next request also-->
     <h3>Step 2 - Select an Authority Record</h3>

@@ -3,7 +3,7 @@ package org.tdar.core.exception;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.utils.MessageHelper;
@@ -11,6 +11,7 @@ import org.tdar.utils.MessageHelper;
 public class I18nRuntimeException extends RuntimeException implements LocalizableException {
 
     private static final long serialVersionUID = 6115182705667575524L;
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Locale locale;

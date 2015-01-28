@@ -28,7 +28,7 @@
         </div>
         <div class="span4 center" style="margin-top: 10px;">
             <#if payPerIngestEnabled >
-                <a href="http://www.tdar.org/about/pricing/" class="button">tDAR Pricing Information</a>
+                <a href="/cart/add" class="button">tDAR Pricing Information</a>
             </#if>
         </div>
         <div class="span1 center">
@@ -82,7 +82,7 @@
                         </li>
                     </#list>
                 </ul>
-                <p class="pull-right"><a href="${newsUrl}">Older News &raquo;</a></p>
+                <p class="pull-right"><a href="${newsUrl}">Read More &raquo;</a></p>
             </#if>
         </div>
     </div>

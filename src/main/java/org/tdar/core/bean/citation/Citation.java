@@ -8,9 +8,10 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
@@ -18,6 +19,9 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -32,6 +36,7 @@ import org.tdar.core.bean.resource.Resource;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlRootElement
 @XmlType(name = "citation")
+@XmlTransient
 public abstract class Citation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 4174558394278154078L;
@@ -42,6 +47,7 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @Length(max = FieldLength.FIELD_LENGTH_1024)
+    @JsonView(JsonLookupFilter.class)
     private String text;
 
     @Override
@@ -76,8 +82,4 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
         return true;
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return super.getIncludedJsonProperties();
-    }
 }

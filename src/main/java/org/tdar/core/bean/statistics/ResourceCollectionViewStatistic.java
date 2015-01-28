@@ -3,6 +3,7 @@ package org.tdar.core.bean.statistics;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -23,8 +24,9 @@ public class ResourceCollectionViewStatistic extends AbstractResourceStatistic<R
     private static final long serialVersionUID = -2287260111716354232L;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-    @JoinColumn(name = "resource_collection_id")
+    @JoinColumn(name = "resource_collection_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     @NotFound(action = NotFoundAction.IGNORE)
+    // should be able to be removed with Hibernate 5
     @ForeignKey(name = "none")
     private ResourceCollection reference;
 

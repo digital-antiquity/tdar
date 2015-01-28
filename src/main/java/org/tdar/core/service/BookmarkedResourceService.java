@@ -1,17 +1,16 @@
 package org.tdar.core.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
 
 /**
@@ -24,10 +23,17 @@ import org.tdar.core.dao.resource.BookmarkedResourceDao;
 @Service
 public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao> {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Transactional(readOnly = true)
+    public <R extends Resource> void applyTransientBookmarked(Collection<R> resources, TdarUser person) {
+        for (Resource resource : resources) {
+            if (isAlreadyBookmarked(resource, person)) {
+                resource.setBookmarked(true);
+            }
+        }
+    }
 
     @Transactional(readOnly = true)
-    public boolean isAlreadyBookmarked(Resource resource, Person person) {
+    public boolean isAlreadyBookmarked(Resource resource, TdarUser person) {
         return getDao().isAlreadyBookmarked(resource, person);
     }
 
@@ -38,22 +44,25 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @param person
      * @return
      */
-    public boolean bookmarkResource(Resource resource, Person person) {
-        if (isAlreadyBookmarked(resource, person)) {
-            logger.trace(String.format("person %s already bookmarked resource %s", person, resource.getId()));
+    @Transactional(readOnly = false)
+    public boolean bookmarkResource(Resource resource, TdarUser person) {
+        getDao().markWritableOnExistingSession(person);
+        if (getDao().isAlreadyBookmarked(resource, person)) {
+            getLogger().trace("person {} already bookmarked resource {}s", person, resource.getId());
             return false;
         }
-        logger.trace("Creating bookmark for :" + person + " of " + resource.getId() + "[" + resource.getResourceType() + "]");
+        getLogger().trace("{} creating bookmark for {}", person, resource);
         BookmarkedResource bookmark = new BookmarkedResource();
         bookmark.setResource(resource);
-        // FIXME: names should be editable by the user, and have a better default.
-        // not sure why names are constructed this way, was in previous bookmarking code.
-        bookmark.setName("Bookmark for " + TdarConfiguration.getInstance().getSiteAcronym() + " resource:" + resource.getId());
         bookmark.setTimestamp(new Date());
         bookmark.setPerson(person);
-        resource.getBookmarks().add(bookmark);
-        getDao().save(bookmark);
-        return true;
+        try {
+            getDao().save(bookmark);
+            return true;
+        } catch (ConstraintViolationException exception) {
+            getLogger().error("Didn't save duplicate bookmark {}", bookmark, exception);
+            return false;
+        }
     }
 
     /**
@@ -63,16 +72,17 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @param person
      * @return
      */
-    public boolean removeBookmark(Resource resource, Person person) {
+    @Transactional(readOnly = false)
+    public boolean removeBookmark(Resource resource, TdarUser person) {
         BookmarkedResource bookmark = getDao().findBookmark(resource, person);
+        getDao().markWritableOnExistingSession(bookmark);
+        getDao().markWritableOnExistingSession(person);
         if (bookmark == null) {
             return false;
         }
-        resource = getDao().merge(resource);
-        boolean removed = resource.getBookmarks().remove(bookmark);
-        logger.debug("was bookmark removed? " + removed);
-        getDao().saveOrUpdate(resource);
+        resource.getBookmarkedResources().remove(bookmark);
         getDao().delete(bookmark);
+        getDao().saveOrUpdate(person);
         return true;
     }
 
@@ -84,7 +94,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Resource> findBookmarkedResourcesByPerson(Person person, List<Status> statuses) {
+    public List<Resource> findBookmarkedResourcesByPerson(TdarUser person, List<Status> statuses) {
         return getDao().findBookmarkedResourcesByPerson(person, statuses);
     }
 }

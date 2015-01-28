@@ -1,5 +1,6 @@
 package org.tdar.db.conversion.analyzers;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
@@ -27,6 +28,10 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
         try {
             Double.parseDouble(value);
         } catch (NumberFormatException nfx) {
+            return false;
+        }
+        if (!NumberUtils.isNumber(value)) {
+            // handles cases like "1F" which Double.parseDouble handles but cannot be casted to double in postgres
             return false;
         }
         return true;

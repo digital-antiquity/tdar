@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +20,9 @@ import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.ScheduledProcess;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.AggregateViewStatistic;
 
 /**
  * $Id$
@@ -101,7 +100,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
             Set<Long> seen = new HashSet<>();
             for (AggregateViewStatistic avs : aggregateUsageStats) {
-                Long resourceId = avs.getResourceId();
+                Long resourceId = avs.getResource().getId();
                 // handling unique resource ids across the timeperiod
                 if (seen.contains(resourceId)) {
                     continue;

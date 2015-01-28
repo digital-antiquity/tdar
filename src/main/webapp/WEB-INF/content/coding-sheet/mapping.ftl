@@ -3,57 +3,26 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
     <title>Match column values to ontology nodes</title>
-
-    <style type='text/css'>
-        .ui-autocomplete {
-            max-height: 144pt;
-            overflow-y: auto;
-            overflow-x: hidden;
-            line-height: 1em;
-        }
-
-        .ui-menu-item {
-            font-family: courier !Important;
-            white-space: pre !important;
-        }
-
-        .ui-widget {
-            font-family: courier;
-        }
-
-        /* IE 6 doesn't support max-height
-         * we use height instead, but this forces the menu to always be this tall
-         */
-        * html .ui-autocomplete {
-            height: 144pt;
-            overflow-x: hidden;
-        }
-
-        .ui-menu .ui-menu-item {
-            border: 0px;
-            margin: 0px !important;
-            padding: 0px !important;
-        }
-
-        .ui-menu-item a {
-            border: 1px solid transparent;
-            min-height: 1em;
-            margin: 0px !important;
-            padding: 0px !important;
-        }
-
-    </style>
-
 </head>
-<body>
+<body class="ontology-mapping">
 
     <@nav.toolbar "coding-sheet" "mapping" />
 
 
 <h2>Map Codes to Ontology Values</h2>
 
+<h3>Basic Info</h3>
+<dl>
+    <dt>Coding Sheet</dt>
+    <dd>${resource.title}</dd>
+    <dt>Mapped Ontology</dt>
+    <dd>${resource.defaultOntology.title}</dd>
+</dl>
+
+<h3>Mapped Values</h3>
 <div id='display' class="">
     <@s.form method='post' id="mapontologyform" action='save-mapping'>
+        <@s.token name='struts.csrf.token' />
         <@s.hidden name='id' value='${resource.id?c}'/>
         <#assign isLast = false/>
         <#assign count = 0/>
@@ -69,7 +38,7 @@
             <#list codingRules as rule>
                 <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}">
                     <@s.hidden name='codingRules[${rule_index?c}].id' />
-                    <@s.textfield theme="simple" name='codingRules[${rule_index?c}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
+                    <@s.textfield theme="simple" name='codingRules[${rule_index?c}].formattedTerm' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
 
                     <div class="span1">
                         <img src="<@s.url value='/images/arrow_right.png' />" alt="right arrow"/>
@@ -108,7 +77,7 @@
         </#noescape>
 
     $(document).ready(function () {
-        TDAR.ontologyMapping.initMapping();
+        TDAR.ontologyMapping.initMapping("#mapontologyform");
     });
 
         <#macro repeat num=0 value="  |"><#t/>

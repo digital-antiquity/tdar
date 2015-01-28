@@ -14,64 +14,36 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.struts.action.lookup.InstitutionLookupAction;
 
 import com.opensymphony.xwork2.Action;
 
 public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    private LookupController controller;
+    private InstitutionLookupAction controller;
 
     @Before
     public void initController() {
-        controller = generateNewInitializedController(LookupController.class);
+        controller = generateNewInitializedController(InstitutionLookupAction.class);
         controller.setRecordsPerPage(99);
     }
 
     @Test
     @Rollback(true)
-    public void testInstitutionAlone() {
-        Person person = new Person("a test", "person", "");
-        Institution inst = new Institution("TQF");
-        genericService.saveOrUpdate(person);
-        person.setInstitution(inst);
+    public void testInstitutionWithAcronym() {
+        Institution inst = new Institution("Arizona State University (ASU)");
         genericService.saveOrUpdate(inst);
-        searchIndexService.indexAll(getAdminUser(), Person.class);
-        controller.setInstitution("TQF");
-        String result = controller.lookupPerson();
+        genericService.saveOrUpdate(inst);
+        searchIndexService.indexAll(getAdminUser(), Institution.class);
+        controller.setInstitution("ASU");
+        String result = controller.lookupInstitution();
         assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
-        assertTrue("person list should have exactly one item", people.contains(person));
+        List<Institution> institutions = controller.getResults();
+        logger.debug("institutions: {} ", institutions);
+        assertTrue("inst list should contain acronym item", institutions.contains(inst));
     }
 
-    @Test
-    @Rollback(true)
-    public void testValidInstitutionWithSpace() {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
-        controller.setInstitution("University of");
-        String result = controller.lookupPerson();
-        assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
-        logger.info("{}", people);
-        assertTrue("person list should have at least two items", people.size() >= 2);
-        for (Indexable p : controller.getResults()) {
-            Person pers = (Person) p;
-            assertTrue(pers.getInstitution().getName().contains(" "));
-        }
-    }
-
-    @Test
-    @Rollback(true)
-    public void testInstitutionEmpty() {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
-        // FIXME: should not need to be quoted
-        controller.setInstitution("University ABCD");
-        String result = controller.lookupPerson();
-        assertEquals("result should be success", Action.SUCCESS, result);
-        List<Indexable> people = controller.getResults();
-        assertEquals("person list should have 0 item(s)", 0, people.size());
-    }
 
     @Test
     @Rollback(true)
@@ -79,7 +51,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("fdaksfddfde");
         controller.lookupInstitution();
-        List<Indexable> institutions = controller.getResults();
+        List<Institution> institutions = controller.getResults();
         assertEquals("person list should be empty", institutions.size(), 0);
     }
 
@@ -88,7 +60,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("tfqa");
         controller.lookupInstitution();
-        List<Indexable> institutions = controller.getResults();
+        List<Institution> institutions = controller.getResults();
         assertTrue("only one result expected", institutions.size() == 1);
     }
 
@@ -98,7 +70,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("University");
         controller.lookupInstitution();
-        List<Indexable> institutions = controller.getResults();
+        List<Institution> institutions = controller.getResults();
         assertTrue("more than one result expected", institutions.size() > 1);
     }
 
@@ -110,12 +82,12 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         String blanks = "    ";
         controller.setInstitution(blanks);
         controller.lookupInstitution();
-        List<Indexable> results = controller.getResults();
+        List<Institution> results = controller.getResults();
         Assert.assertEquals("expecting zero results", 0, results.size());
     }
 
     public void initControllerFields() {
-        controller = generateNewController(LookupController.class);
+        controller = generateNewController(InstitutionLookupAction.class);
         init(controller);
     }
 
@@ -128,7 +100,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         List<Institution> insts = setupInstitutionsForLookup();
         controller.setInstitution(term);
         controller.lookupInstitution();
-        List<Indexable> results = controller.getResults();
+        List<Institution> results = controller.getResults();
         logger.debug("results:{}", results);
         assertTrue(results.contains(insts.get(0)));
         assertTrue(results.contains(insts.get(insts.size() - 1)));
@@ -142,7 +114,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         initControllerFields();
         controller.setInstitution(lookingFor);
         controller.lookupInstitution();
-        List<Indexable> results = controller.getResults();
+        List<Institution> results = controller.getResults();
         logger.debug("results:{}", results);
         for (Indexable indx : results) {
             Institution inst = (Institution) indx;
@@ -158,7 +130,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         initControllerFields();
         controller.setInstitution("u.s.");
         controller.lookupInstitution();
-        List<Indexable> results = controller.getResults();
+        List<Institution> results = controller.getResults();
         logger.debug("results:{}", results);
         for (Indexable indx : results) {
             Institution inst = (Institution) indx;
@@ -173,7 +145,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         initControllerFields();
         controller.setInstitution("US");
         controller.lookupInstitution();
-        List<Indexable> results = controller.getResults();
+        List<Institution> results = controller.getResults();
         logger.debug("results:{}", results);
         for (Indexable indx : results) {
             Institution inst = (Institution) indx;

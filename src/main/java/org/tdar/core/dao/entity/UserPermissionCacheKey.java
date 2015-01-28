@@ -3,7 +3,7 @@ package org.tdar.core.dao.entity;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 

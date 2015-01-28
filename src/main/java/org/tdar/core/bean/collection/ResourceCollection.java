@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -32,6 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -41,20 +44,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
-import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
@@ -62,26 +65,36 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin
@@ -107,24 +120,19 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
         @Index(name = "collection_updater_id_idx", columnList = "updater_id")
 })
-@FetchProfiles(value = {
-        @FetchProfile(name = "simple", fetchOverrides = {
-                @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "authorizedUsers", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "user", mode = FetchMode.JOIN, entity = AuthorizedUser.class),
-                @FetchOverride(association = "owner", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "updater", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "parent", mode = FetchMode.JOIN, entity = ResourceCollection.class)
-        })
-})
 @XmlRootElement(name = "ResourceCollection")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private transient boolean changesNeedToBeLogged = false;
     private transient boolean viewable;
+    private transient Integer maxHeight;
+    private transient Integer maxWidth;
+    private transient VersionType maxSize;
 
     // private transient boolean readyToIndex = true;
     public enum CollectionType {
@@ -149,10 +157,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Explanation explanation;
 
     @Column
+    @JsonView(JsonLookupFilter.class)
     @Fields({
-            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-            , @Field(name = QueryFieldNames.COLLECTION_NAME) })
-    // @Boost(1.5f)
+            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
+            @Field(name = QueryFieldNames.COLLECTION_NAME),
+            @Field(name = QueryFieldNames.COLLECTION_NAME_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+    })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -166,10 +177,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private String adminDescription;
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY,
-            mappedBy = "resourceCollections", targetEntity = Resource.class)
-    // cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE },
-    // @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "collection_id") })
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
@@ -193,21 +202,26 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @IndexedEmbedded
     @JoinColumn(name = "owner_id", nullable = false)
-    private Person owner;
+    private TdarUser owner;
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id", nullable = true)
-    private Person updater;
+    private TdarUser updater;
 
     @Column(nullable = false, name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
+    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Column(nullable = true, name = "date_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;
 
     @ManyToOne
@@ -221,8 +235,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
-    @Column(nullable = false)
-    private boolean visible = true;
+    @Field
+    @Column(name = "hidden", nullable = false)
+    private boolean hidden = false;
 
     public ResourceCollection() {
         setDateCreated(new Date());
@@ -233,12 +248,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setId(id);
     }
 
-    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, Person creator) {
+    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, TdarUser creator) {
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
         setType(type);
-        setVisible(visible);
+        setHidden(visible);
         setOwner(creator);
     }
 
@@ -247,13 +262,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setDateCreated(new Date());
     }
 
-    public ResourceCollection(Resource resource, Person owner) {
+    public ResourceCollection(Resource resource, TdarUser owner) {
         this(CollectionType.SHARED);
         this.owner = owner;
         getResources().add(resource);
     }
 
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getName() {
         return name;
     }
@@ -262,9 +278,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.name = name;
     }
 
-    // @Boost(1.2f)
-    @Field
+    @Fields({
+            @Field,
+            @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
+                    impl = TdarCaseSensitiveStandardAnalyzer.class))
+    })
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getDescription() {
         return description;
     }
@@ -305,11 +325,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlAttribute(name = "ownerIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person owner) {
+    public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
 
@@ -323,30 +343,29 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.parent = parent;
     }
 
-    @Field
     @XmlAttribute
-    public boolean isVisible() {
-        return visible;
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Field
     @XmlTransient
     public boolean isTopLevel() {
-        if ((getParent() == null) || (getParent().isVisible() == false)) {
+        if ((getParent() == null) || (getParent().isHidden() == true)) {
             return true;
         }
         return false;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setHidden(boolean visible) {
+        this.hidden = visible;
     }
 
     /*
      * Convenience Method that provides a list of users that match the permission
      */
-    public Set<Person> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
-        Set<Person> people = new HashSet<Person>();
+    public Set<TdarUser> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
+        Set<TdarUser> people = new HashSet<>();
         for (AuthorizedUser user : authorizedUsers) {
             if (user.getEffectiveGeneralPermission() >= permission.getEffectivePermissions()) {
                 people.add(user.getUser());
@@ -364,7 +383,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * @see org.tdar.core.bean.Updatable#markUpdated(org.tdar.core.bean.entity.Person)
      */
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         if ((getDateCreated() == null) || (getOwner() == null)) {
             setDateCreated(new Date());
             setOwner(p);
@@ -451,17 +470,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getParent().getId();
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return new String[] { "id", "name" };
-    }
-
     /*
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
      */
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanModify() {
@@ -469,12 +482,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     private List<Long> toUserList(GeneralPermissions permission) {
-        ArrayList<Long> users = new ArrayList<Long>();
-        HashSet<Person> writable = new HashSet<Person>();
+        ArrayList<Long> users = new ArrayList<>();
+        HashSet<TdarUser> writable = new HashSet<>();
         writable.add(getOwner());
         writable.addAll(getUsersWhoCan(permission, true));
-        for (Person p : writable) {
-            if (Persistable.Base.isNullOrTransient(p)) {
+        for (TdarUser p : writable) {
+            if (PersistableUtils.isNullOrTransient(p)) {
                 continue;
             }
             users.add(p.getId());
@@ -484,7 +497,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanAdminister() {
@@ -493,7 +505,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanView() {
@@ -544,7 +555,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
         while (iterator.hasNext()) {
             ResourceCollection collection = iterator.next();
-            if (!collection.isShared() || !collection.isVisible()) {
+            if (!collection.isShared() || !collection.isHidden()) {
                 iterator.remove();
             }
         }
@@ -590,7 +601,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
-    @Field
+    @Fields({
+            @Field,
+            @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    })
     // @Boost(1.5f)
     @Override
     public String getTitle() {
@@ -619,7 +634,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Override
     @Transient
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return owner;
     }
 
@@ -631,10 +646,21 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.orientation = orientation;
     }
 
+    private transient boolean readyToStore = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToStore() {
+        return readyToStore;
+    }
+
+    public void setReadyToStore(boolean readyToStore) {
+        this.readyToStore = readyToStore;
+    }
+
     @Override
     @XmlTransient
     @Transient
-    @JSONTransient
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;
@@ -657,11 +683,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlAttribute(name = "updaterIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getUpdater() {
+    public TdarUser getUpdater() {
         return updater;
     }
 
-    public void setUpdater(Person updater) {
+    public void setUpdater(TdarUser updater) {
         this.updater = updater;
     }
 
@@ -699,7 +725,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @Transient
-    @JSONTransient
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
@@ -732,7 +757,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      */
     @Transient
     @Field(name = QueryFieldNames.COLLECTION_TREE)
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public Set<Long> getParentIds() {
@@ -749,5 +773,54 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setChangesNeedToBeLogged(boolean changesNeedToBeLogged) {
         this.changesNeedToBeLogged = changesNeedToBeLogged;
+    }
+
+    @JsonView(JsonLookupFilter.class)
+    public String getDetailUrl() {
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
+    }
+
+    @Fields({
+            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+            @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    public String getAllFieldSearch() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
+        return sb.toString();
+    }
+
+    @Override
+    public Integer getMaxHeight() {
+        return maxHeight;
+    }
+
+    @Override
+    public void setMaxHeight(Integer maxHeight) {
+        this.maxHeight = maxHeight;
+    }
+
+    @Override
+    public Integer getMaxWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    public void setMaxWidth(Integer maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    @Override
+    public VersionType getMaxSize() {
+        return maxSize;
+    }
+
+    @Override
+    public void setMaxSize(VersionType maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    @Override
+    public String getSlug() {
+        return UrlUtils.slugify(getName());
     }
 }

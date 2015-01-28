@@ -1,6 +1,7 @@
 package org.tdar.core.dao.external.auth;
 
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 
 public class AuthenticationResult {
     public enum AuthenticationResultType {
@@ -26,17 +27,25 @@ public class AuthenticationResult {
         }
     }
 
-    private Person person;
+    private TdarUser person;
     private Throwable throwable;
     private AuthenticationResultType type;
+    private AuthenticationStatus status;
+    private String token;
+    private String tokenUsername;
 
-    public AuthenticationResult(AuthenticationResultType type, Person person) {
+    public AuthenticationResult(AuthenticationResultType type, TdarUser person) {
         this.setType(type);
         this.person = person;
     }
 
     public AuthenticationResult(AuthenticationResultType type) {
         this.setType(type);
+    }
+
+    public AuthenticationResult(AuthenticationResultType type, String token) {
+        this.setType(type);
+        this.setToken(token);
     }
 
     public AuthenticationResult(AuthenticationResultType type, Throwable t) {
@@ -57,11 +66,11 @@ public class AuthenticationResult {
         return getType().getMessage() + " Exception: " + throwable.getLocalizedMessage();
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 
@@ -71,6 +80,30 @@ public class AuthenticationResult {
 
     public void setType(AuthenticationResultType type) {
         this.type = type;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getTokenUsername() {
+        return tokenUsername;
+    }
+
+    public void setTokenUsername(String tokenUsername) {
+        this.tokenUsername = tokenUsername;
+    }
+
+    public AuthenticationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AuthenticationStatus status) {
+        this.status = status;
     }
 
 }

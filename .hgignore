@@ -10,6 +10,7 @@ bin
 src/main/resources/*.properties
 src/main/resources/*-local-settings.xml
 src/main/webapp/wro*
+src/main/webapp/bower_components
 googlemaps-api-key.js
 logs
 *.jpage
@@ -42,3 +43,10 @@ syntax: regexp
 ^src/main/resources/jetty-ssl\.keystore$
 syntax: regexp
 ^src/test/resources/jetty-ssl\.keystore$
+syntax: regexp
+^src/main/resources/jetty/jetty-ssl\.keystore$
+syntax: regexp
+^src/test/resources/jetty/jetty-ssl\.keystore$
+
+syntax: regexp
+^src/main/resources/hibernate-ehcache\.xml$

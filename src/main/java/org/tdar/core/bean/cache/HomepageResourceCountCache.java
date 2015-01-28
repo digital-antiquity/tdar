@@ -1,12 +1,15 @@
 package org.tdar.core.bean.cache;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.ResourceType;
 
@@ -18,9 +21,11 @@ import org.tdar.core.bean.resource.ResourceType;
  */
 @Entity
 @Table(name = "homepage_cache_resource_type")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.HomepageResourceCountCache")
 public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType> {
 
-    private static final long serialVersionUID = 4401314235170180736L;
+    private static final long serialVersionUID = 1808499288414868010L;
 
     @Column(name = "resource_count")
     private Long count;

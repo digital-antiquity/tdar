@@ -7,7 +7,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
@@ -40,9 +40,9 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         task = new PrepareArchiveForKettleTask();
         archive = new Archive();
         archive.setDoImportContent(true);
-        task.setKettleInputPath(System.getProperty("java.io.tmpdir"));
+        File file = new File(TdarConfiguration.getInstance().getKettleInputPath());
+        file.mkdirs();
         WorkflowContext contextForArchive = getContextForArchive(archive);
-        contextForArchive.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
         task.setWorkflowContext(contextForArchive);
     }
 
@@ -93,7 +93,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @Test
     public void mustHaveValidControlFileDir() {
         archive.setProject(new Project(1L, "test"));
-        task.setKettleInputPath("");
+        task.setKettleInputPathOverride("");
         try {
             task.run();
             assertTrue("Should not be here", false);
@@ -105,21 +105,8 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void mustHaveValidCopyFileDir() {
-        archive.setProject(new Project(1L, "test"));
-        task.getWorkflowContext().setWorkingDirectory(new File(""));
-        try {
-            task.run();
-            assertTrue("Should not be here", false);
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("Can not write to directory for file output:"));
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
     public void mustHaveAFileToWorkWith() {
+        
         archive.setProject(new Project(1L, "test"));
         try {
             task.run();
@@ -137,7 +124,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
 
     @Test
     public void willSelectUploaderEmailIfSet() {
-        Person updater = new Person();
+        TdarUser updater = new TdarUser();
         updater.setEmail(BOB_AT_CAT_COM);
         archive.setUpdatedBy(updater);
         assertTrue(task.getEmailToNotify(archive).equals(BOB_AT_CAT_COM));

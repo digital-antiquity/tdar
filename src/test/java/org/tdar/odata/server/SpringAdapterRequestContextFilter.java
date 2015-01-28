@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
+@SuppressWarnings("restriction")
 public class SpringAdapterRequestContextFilter extends Filter
 {
     private final Logger logger = Logger.getLogger(getClass());

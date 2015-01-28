@@ -3,6 +3,7 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +16,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -30,19 +34,30 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "cltkwd_appr", columnList = "approved, id")
 })
 @Indexed(index = "Keyword")
+@Check(constraints = "label <> ''")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.CultureKeyword")
+@Cacheable
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = -7196238088495993840L;
 
-    public static final String INHERITANCE_TOGGLE = "inheriting_cultural_information";
     private boolean approved;
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CultureKeyword> synonyms = new HashSet<CultureKeyword>();
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private CultureKeyword parent;
+
+    public CultureKeyword() {
+    }
+
+    public CultureKeyword(String string) {
+        setLabel(string);
+    }
 
     @XmlAttribute
     @Override
@@ -86,4 +101,8 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
         return getLabel();
     }
 
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.CULTURE_KEYWORD.getUrlNamespace();
+    }
 }

@@ -1,7 +1,6 @@
 package org.tdar.core.exception;
 
 import org.apache.http.HttpStatus;
-import org.tdar.struts.action.TdarActionSupport;
 
 /**
  * $Id$
@@ -16,29 +15,22 @@ import org.tdar.struts.action.TdarActionSupport;
  */
 public enum StatusCode {
 
-    OK(HttpStatus.SC_OK, "SUCCESS", TdarActionSupport.SUCCESS),
-    CREATED(HttpStatus.SC_CREATED, "CREATED", "created"),
-    GONE(HttpStatus.SC_GONE, "GONE", TdarActionSupport.GONE),
-    UPDATED(HttpStatus.SC_ACCEPTED, "UPDATED", "updated"),
-    NOT_FOUND(HttpStatus.SC_NOT_FOUND, "NOT FOUND", TdarActionSupport.NOT_FOUND),
-    UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "UNAUTHORIZED", TdarActionSupport.UNAUTHORIZED),
-    BAD_REQUEST(HttpStatus.SC_BAD_REQUEST, "BAD REQUEST", "badrequest"),
-    UNKNOWN_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "UNKNOWN ERROR", "unknownerror"),
-    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "NOT ALLOWED", "notallowed");
+    OK(HttpStatus.SC_OK, "SUCCESS"),
+    CREATED(HttpStatus.SC_CREATED, "CREATED"),
+    GONE(HttpStatus.SC_GONE, "GONE"),
+    UPDATED(HttpStatus.SC_ACCEPTED, "UPDATED"),
+    NOT_FOUND(HttpStatus.SC_NOT_FOUND, "NOT FOUND"),
+    UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "UNAUTHORIZED"),
+    BAD_REQUEST(HttpStatus.SC_BAD_REQUEST, "BAD REQUEST"),
+    UNKNOWN_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "UNKNOWN ERROR"),
+    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "NOT ALLOWED");
 
     private final int httpStatusCode;
     private final String errorMessage;
-    private final ThreadLocal<String> resultNameThreadLocal;
 
-    StatusCode(int httpStatusCode, String errorMessage, final String resultName) {
+    StatusCode(int httpStatusCode, String errorMessage) {
         this.httpStatusCode = httpStatusCode;
         this.errorMessage = errorMessage;
-        this.resultNameThreadLocal = new ThreadLocal<String>() {
-            @Override
-            protected String initialValue() {
-                return resultName;
-            }
-        };
     }
 
     public int getHttpStatusCode() {
@@ -49,18 +41,9 @@ public enum StatusCode {
         return errorMessage;
     }
 
-    public String getResultName() {
-        return resultNameThreadLocal.get();
-    }
-
-    public StatusCode withResultName(String resultName) {
-        resultNameThreadLocal.set(resultName);
-        return this;
-    }
-
     @Override
     public String toString() {
-        return String.format("HTTP %d %s (%s)", httpStatusCode, errorMessage, getResultName());
+        return String.format("HTTP %d %s", httpStatusCode, errorMessage);
     }
 
     public static boolean shouldShowException(int statusCode) {
@@ -68,6 +51,18 @@ public enum StatusCode {
             case HttpStatus.SC_FORBIDDEN:
             case HttpStatus.SC_GONE:
             case HttpStatus.SC_OK:
+            case HttpStatus.SC_NOT_FOUND:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    public boolean isCritical() {
+        switch (this) {
+            case CREATED:
+            case OK:
+            case UPDATED:
                 return false;
             default:
                 return true;

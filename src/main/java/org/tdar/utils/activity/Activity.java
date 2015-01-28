@@ -5,20 +5,25 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.web.SessionData;
 
 public class Activity implements Serializable {
 
+    private static final String USER_AGENT = "User-Agent";
+
     private static final long serialVersionUID = 1078566853797118113L;
 
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private static final String MOZILLA = "Mozilla/5.0 (compatible;";
     private Date startDate;
+    private Date freemarkerHandoffDate;
     private Date endDate;
     private Long totalTime = -1L;
     private String name;
@@ -36,26 +41,37 @@ public class Activity implements Serializable {
 
     private boolean indexingActivity = false;
 
+    private Float percentDone;
+
+    private Object shortName;
+
     public Activity() {
         start();
     }
 
     public static String formatRequest(HttpServletRequest request) {
-        return String.format("%s:%s?%s", request.getMethod(), request.getServletPath(),
-                request.getQueryString() == null ? "" : StringUtils.left(request.getQueryString(), 10));
+        return String.format("%s:%s%s", request.getMethod(), request.getServletPath(), StringUtils.left(getQueryString(request), 10));
     }
 
-    public Activity(HttpServletRequest httpServletRequest) {
+    private static String getQueryString(HttpServletRequest request) {
+        String qs = "";
+        if (StringUtils.isNotBlank(request.getQueryString())) {
+            qs += "?" + request.getQueryString();
+        }
+        return qs;
+    }
+
+    public Activity(HttpServletRequest httpServletRequest, TdarUser user) {
         this();
         HttpServletRequest request = ServletActionContext.getRequest();
-        this.name = String.format("%s:%s?%s [%s]", request.getMethod(), request.getServletPath(),
-                request.getQueryString() == null ? "" : request.getQueryString(), request.getHeader("User-Agent"));
+        this.setShortName(String.format("%s:%s%s", request.getMethod(), request.getServletPath(), getQueryString(request)));
+        this.name = String.format("%s [%s]", getShortName(), request.getHeader(USER_AGENT));
 
-        this.setBrowser(request.getHeader("User-Agent"));
+        this.setBrowser(request.getHeader(USER_AGENT));
         this.setHost(request.getRemoteHost());
         SessionData sessionData = (SessionData) request.getSession().getAttribute("scopedTarget.sessionData");
         if (sessionData != null) {
-            setUser(sessionData.getPerson());
+            setUser(user);
         }
     }
 
@@ -132,9 +148,38 @@ public class Activity implements Serializable {
         this.message = message;
     }
 
+    public String getEndString() {
+        return String.format(">> activity end: %s (%s ms%s)", getShortName(), getTotalTime(), getFreemarkerFormattedTime());
+    }
+
+    public String getStartString() {
+        return String.format("<< activity begin: %s ", getName());
+    }
+
     @Override
     public String toString() {
         return String.format("%s %s - (%s ms)", getName(), getStartDate(), getTotalTime());
+    }
+
+    private String getFreemarkerFormattedTime() {
+        if (freemarkerHandoffDate != null && endDate != null) {
+            return String.format(" | action: %s ms; result:%s ms", getActionTime(), getResultTime());
+        }
+        return "";
+    }
+
+    public long getResultTime() {
+        if (getFreemarkerHandoffDate() != null && getEndDate() != null) {
+            return getEndDate().getTime() - getFreemarkerHandoffDate().getTime();
+        }
+        return -1l;
+    }
+
+    public long getActionTime() {
+        if (getFreemarkerHandoffDate() != null && getStartDate() != null) {
+            return getFreemarkerHandoffDate().getTime() - getStartDate().getTime();
+        }
+        return -1l;
     }
 
     public Long getTotalTime() {
@@ -191,5 +236,33 @@ public class Activity implements Serializable {
 
     public boolean isIndexingActivity() {
         return indexingActivity;
+    }
+
+    public Float getPercentComplete() {
+        return getPercentDone();
+    }
+
+    public Float getPercentDone() {
+        return percentDone;
+    }
+
+    public void setPercentDone(Float percentDone) {
+        this.percentDone = percentDone;
+    }
+
+    public Date getFreemarkerHandoffDate() {
+        return freemarkerHandoffDate;
+    }
+
+    public void setFreemarkerHandoffDate(Date freemarkerHandoffDate) {
+        this.freemarkerHandoffDate = freemarkerHandoffDate;
+    }
+
+    public Object getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(Object shortName) {
+        this.shortName = shortName;
     }
 }

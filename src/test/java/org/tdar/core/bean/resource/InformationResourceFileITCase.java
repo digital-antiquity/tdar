@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,15 +23,15 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
-import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.workflow.ActionMessageErrorListener;
+import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
@@ -37,26 +39,27 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     InformationResourceFileService informationResourceFileService;
 
     @Autowired
+    InformationResourceFileVersionDao informationResourceFileVersionDao;
+
+    @Autowired
     InformationResourceService informationResourceService;
 
     @Autowired
     ResourceService resourceService;
 
-    @Autowired
-    XmlService xmlService;
-
     @Test
-    public void testXMLSave() {
+    public void testXMLSave() throws ClassNotFoundException {
+        XMLFilestoreLogger xmlFilestoreLogger = new XMLFilestoreLogger();
         for (Document resource : resourceService.findAll(Document.class)) {
-            xmlService.logRecordXmlToFilestore(resource);
+            xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
 
         for (ResourceCollection resource : resourceService.findAll(ResourceCollection.class)) {
-            xmlService.logRecordXmlToFilestore(resource);
+            xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
 
         for (Creator resource : resourceService.findAll(Creator.class)) {
-            xmlService.logRecordXmlToFilestore(resource);
+            xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
     }
 
@@ -78,7 +81,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
         InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
 
@@ -132,7 +134,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testReprocessInformationResourceFile() throws Exception {
         InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
 
@@ -166,8 +167,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.TEST_DOCUMENT_NAME);
 
         evictCache();
-        ActionMessageErrorListener listener = new ActionMessageErrorListener();
-        informationResourceService.reprocessInformationResourceFiles(ir, listener);
+        ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
 
         map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
@@ -225,8 +225,41 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
             assertTrue(file.isProcessed());
             genericService.save(file);
             flush();
+            genericService.synchronize();
 
         }
+    }
+
+    
+    @Rollback(true)
+    @Test
+    public void testVersionDeletion() throws InstantiationException, IllegalAccessException, FileNotFoundException {
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
+        InformationResourceFileVersion version = getVersion(irFile, VersionType.WEB_LARGE);
+        File file = version.getTransientFile();
+        informationResourceFileVersionDao.delete(version, false);
+        assertTrue(file.exists());
+        version = getVersion(irFile, VersionType.WEB_MEDIUM);
+        file = version.getTransientFile();
+        informationResourceFileVersionDao.delete(version, true);
+        assertFalse(file.exists());
+
+        version = getVersion(irFile, VersionType.WEB_SMALL);
+        file = version.getTransientFile();
+        informationResourceFileVersionDao.delete(version);
+        assertTrue(file.exists());
+
+        
+    }
+
+    private InformationResourceFileVersion getVersion(InformationResourceFile irFile, VersionType type) throws FileNotFoundException {
+        InformationResourceFileVersion version = irFile.getCurrentVersion(type);
+        assertNotNull(version);
+        Filestore filestore = TdarConfiguration.getInstance().getFilestore();
+        File file = filestore.retrieveFile(ObjectType.RESOURCE, version);
+        version.setTransientFile(file);
+        return version;
     }
 
 }

@@ -4,14 +4,14 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.Set;
 
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.client.ContentExchange;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.EntityService;
@@ -44,16 +44,14 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
 
     @Test
     public void testMetaDataUrl() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
-        exchange.waitForDone();
+        HttpMethodBase exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
-        exchange.waitForDone();
-        String inXMLString = exchange.getResponseContent();
+        HttpMethodBase exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
+        String inXMLString = exchange.getResponseBodyAsString();
 
         // See: odata_metadata_response.xml
 
@@ -65,7 +63,7 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
     protected void createTestScenario() {
 
         // Set a user to define entity ownership.
-        Person knownPerson = entityService.findByEmail("kintigh@asu.edu");
+        TdarUser knownPerson = (TdarUser) entityService.findByEmail("kintigh@dsu.edu");
         getTestingServer().setPerson(knownPerson);
         // Database setup
 

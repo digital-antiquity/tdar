@@ -19,7 +19,7 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testAbstractLogin() {
-        assertTextPresentInPage("Welcome back,");
+        assertTextPresentInPage("Welcome");
     }
 
     @Test
@@ -30,7 +30,7 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("acceptedAuthNotices", "TOS_AGREEMENT");
         setInput("acceptedAuthNotices", "CONTRIBUTOR_AGREEMENT");
         clickElementWithId("accept");
-        assertTextPresentInPage("Welcome back,");
+        assertTextPresentInPage("Welcome");
     }
 
     @Test
@@ -45,7 +45,7 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     public void testSecondLogin() {
         gotoPage("/login");
-        assertTextPresentInPage("Featured Content");
+        assertTextPresentInPage("test user's Dashboard");
     }
 
     @Test

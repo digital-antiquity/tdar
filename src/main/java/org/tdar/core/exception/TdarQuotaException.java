@@ -1,6 +1,6 @@
 package org.tdar.core.exception;
 
-import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
+import org.tdar.core.dao.AccountAdditionStatus;
 
 /**
  * $Id$

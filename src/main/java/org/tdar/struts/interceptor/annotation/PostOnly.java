@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
  * Marks an Action method to only execute if the associated requests http method is POST
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(value = { ElementType.METHOD, ElementType.TYPE })
 public @interface PostOnly {
 }

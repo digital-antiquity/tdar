@@ -32,7 +32,7 @@
 </div>
 
     <#if editable>
-        <@nav.toolbar "collection" "view">
+        <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
             namespace="collection"
             action="add?parentId=${id?c}"
@@ -42,15 +42,20 @@
             includeResourceId=false
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
-        </@nav.toolbar>
-    <#else>
-        <@nav.toolbar "collection" "view" />
+        </@nav.collectionToolbar>
     </#if>
 
     <@view.pageStatusCallout />
-<h1>${resourceCollection.name!"untitled collection"}</h1>
+<h1>
+    <#if logoAvailable>
+        <img class="pull-right" itemprop="image"  src="/files/collection/sm/${id?c}/logo"
+        alt="logo" title="logo" /> 
+    </#if>
 
-    <#if (resourceCollection.visible || viewable)>
+${resourceCollection.name!"untitled collection"}</h1>
+
+    <#if visible>
+
         <#if !collections.empty>
         <!-- Don't show header if header doesn't exist -->
         <div id="sidebar-right" parse="true">
@@ -62,7 +67,7 @@
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
         <div class="glide">
             <#if resourceCollection.parent??><p><b>Part of:</b> <a
-                    href="/collection/${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+                    href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
             <@common.description resourceCollection.description />
 
             <#if resourceCollection.adminDescription??>
@@ -75,8 +80,8 @@
 
         </div>
         </#if>
-
         <#if  results?has_content && results?size !=0 >
+        <br/>
 
         <div id="divResultsSortControl">
             <div class="row">
@@ -142,7 +147,7 @@
                 <@view.kvp key="Collection Type" val=resourceCollection.type.label />
             </div>
             <div class="span4">
-                <@view.kvp key="Visible" val=resourceCollection.visible?string />
+                <@view.kvp key="Hidden" val=resourceCollection.hidden?string />
             </div>
         </div>
         <div class="row">
@@ -157,13 +162,13 @@
         <div class="row">
             <div class="span4">
                 <@view.kvp key="Created By" nested=true><a
-                        href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner.properName}</a>
-                    on ${resourceCollection.dateCreated}</@view.kvp>
+                        href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
+                    on ${resourceCollection.dateCreated?datetime}</@view.kvp>
             </div>
             <div class="span4">
                 <@view.kvp key="Updated By" nested=true><a
-                        href="<@s.url value="/browse/creators/${resourceCollection.updater.id?c}"/>">${resourceCollection.updater.properName}</a>
-                    on ${resourceCollection.dateUpdated}</@view.kvp>
+                        href="<@s.url value="${resourceCollection.updater.detailUrl}"/>">${resourceCollection.updater.properName}</a>
+                    on ${resourceCollection.dateUpdated?datetime}</@view.kvp>
             </div>
         </div>
 

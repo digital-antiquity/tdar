@@ -10,12 +10,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * <p>
@@ -31,16 +35,18 @@ import org.tdar.core.bean.entity.Person;
  */
 
 @Entity
-@Table(name = "bookmarked_resource", indexes = {
-        @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
-        @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")
-})
+@Table(name = "bookmarked_resource",
+        uniqueConstraints = @UniqueConstraint(columnNames = { "person_id", "resource_id" }),
+        indexes = {
+                @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
+                @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")
+        })
 public class BookmarkedResource extends Persistable.Base {
 
     private static final long serialVersionUID = -5112227003063546552L;
 
     @ManyToOne(optional = false)
-    private Person person;
+    private TdarUser person;
 
     @ManyToOne(optional = false)
     private Resource resource;
@@ -52,14 +58,16 @@ public class BookmarkedResource extends Persistable.Base {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 
+    @XmlAttribute(name = "resourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Resource getResource() {
         return resource;
     }

@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -28,7 +29,7 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 public class CsvCodingSheetParser implements CodingSheetParser {
 
-    private final static Logger logger = Logger.getLogger(CsvCodingSheetParser.class);
+    private final static Logger logger = LoggerFactory.getLogger(CsvCodingSheetParser.class);
 
     public CSVReader getReader(InputStream stream) {
         return new CSVReader(new BufferedReader(new InputStreamReader(stream)));
@@ -56,7 +57,6 @@ public class CsvCodingSheetParser implements CodingSheetParser {
                 if (StringUtils.isBlank(code) || StringUtils.isBlank(term)) {
                     throw new TdarRecoverableRuntimeException("csvCodingSheetParser.null_code_or_term", Arrays.asList(code, term));
                 }
-
                 CodingRule codingRule = new CodingRule();
                 codingRule.setCode(code);
                 codingRule.setTerm(term);
@@ -67,7 +67,7 @@ public class CsvCodingSheetParser implements CodingSheetParser {
                 codingRules.add(codingRule);
             }
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("exception parsing coding sheet", e);
             throw new CodingSheetParserException(e);
         } catch (ArrayIndexOutOfBoundsException e) {
             logger.error("Invalid CSV format for coding sheets.", e);

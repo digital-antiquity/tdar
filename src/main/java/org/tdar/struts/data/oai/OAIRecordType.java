@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
+import org.tdar.core.exception.OaiErrorCode;
 import org.tdar.utils.MessageHelper;
 
 /**

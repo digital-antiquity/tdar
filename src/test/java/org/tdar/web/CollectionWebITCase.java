@@ -3,6 +3,7 @@ package org.tdar.web;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +12,11 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -23,7 +27,10 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertNotNull(genericService);
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
-        List<? extends Resource> someResources = getSomeResources();
+        List<Document> someResources = new ArrayList<>();
+        someResources.add(createDocument());
+        someResources.add(createDocument());
+        someResources.add(createDocument());
         createTestCollection(name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
@@ -36,7 +43,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         // now go back to the edit page, add some users and remove some of the resources
-        List<Person> registeredUsers = getSomeUsers();
+        List<TdarUser> registeredUsers = getSomeUsers();
         clickLinkWithText("edit");
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
@@ -52,7 +59,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
         List<Resource> removedResources = new ArrayList<Resource>();
         for (i = 0; i < removeCount; i++) {
-            htmlPage.getElementById("hrid" + someResources.get(i).getId()).remove();
+            createInput("hidden","toRemove[" + i + "]", someResources.get(i).getId());
+//            htmlPage.getElementById("hrid" + someResources.get(i).getId()).remove();
             removedResources.add(someResources.remove(i));
         }
 
@@ -86,6 +94,15 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage(currentUrlPath);
         assertTextNotPresent("collection is not accessible");
+    }
+
+    private Document createDocument() {
+        String title1 = "ctec" + System.currentTimeMillis();
+        Long id1 = createResourceFromType(ResourceType.DOCUMENT, title1);
+        Document doc1 = new Document();
+        doc1.setId(id1);
+        doc1.setTitle(title1);
+        return doc1;
     }
 
     @Test
@@ -165,7 +182,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             createInput("hidden", "resources.id", fieldValue);
         }
 
-        Person user = new Person("joe", "blow", "testAssignNonUserToCollection@mailinator.com");
+        Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
 
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, 1), ""); // leave the id blank
         createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, 1), user.getLastName());
@@ -173,7 +190,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         createInput("text", String.format(FMT_AUTHUSERS_EMAIL, 1), user.getEmail());
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, 1), GeneralPermissions.VIEW_ALL.toString());
 
-        submitForm();
+        submitFormWithoutErrorCheck();
 
         // assertTrue("we should  be on the INPUT page. current page: " + getCurrentUrlPath(), getCurrentUrlPath().contains("/collection/save.action"));
 
@@ -225,18 +242,11 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             i++;
         }
 
-        submitForm();
+        submitFormWithoutErrorCheck();
 
-        assertFalse("expecting to be on the view page", getCurrentUrlPath().contains("/collection/add"));
-        assertFalse("expecting to be on the view page", getCurrentUrlPath().contains("/collection/save.action"));
+        assertTrue(getPageText().contains("User does not exist"));
+        assertTrue(getCurrentUrlPath().contains("/collection/save"));
 
         assertTextPresent("my fancy collection");
-        for (Person person : nonUsers) {
-            if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
-                continue;
-            }
-            assertTextNotPresent(person.getLastName());
-        }
-
     }
 }

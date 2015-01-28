@@ -82,12 +82,12 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public void assertViewPage() {
         String url = internalPage.getUrl().toString();
-        assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
+        assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+\\/(.+)$"));
     }
 
     public void assertEditPageForInputResult() {
         String url = internalPage.getUrl().toString();
-        assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.action.*"));
+        assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.*"));
     }
 
     public void fillOutRequiredfields(ResourceType resourceType) {
@@ -163,5 +163,12 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         } else {
             assertTextPresentInCode("TDAR.maps.defaults.isGeoLocationToBeUsed = false;");
         }
+    }
+
+    
+    @Test
+    public void testUnauthorized() {
+        gotoPage("/admin");
+        assertTextPresent("Sorry, you do not have the rights to access this page");
     }
 }

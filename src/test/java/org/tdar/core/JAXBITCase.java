@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +24,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
@@ -30,16 +32,21 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
 
 public class JAXBITCase extends AbstractSearchControllerITCase {
 
+    private static final String BEDOUIN = "bedouin";
+
+    private static final String NABATAEAN = "Nabataean";
+
     @Autowired
-    XmlService xmlService;
+    SerializationService serializationService;
 
     @Autowired
     ReflectionService reflectionService;
@@ -56,7 +63,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     @Test
     public void testJAXBDocumentConversion() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
-        String xml = xmlService.convertToXML(document);
+        String xml = serializationService.convertToXML(document);
         logger.info(xml);
     }
 
@@ -64,18 +71,27 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
         StringWriter sw = new StringWriter();
-        xmlService.convertToJson(document, sw);
+        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
+        document.setInheritingCulturalInformation(true);
+        serializationService.convertToJson(document, sw, null);
         logger.info(sw.toString());
+        assertTrue(sw.toString().contains(NABATAEAN));
         Project project = genericService.find(Project.class, 3805l);
-
-        String json = xmlService.convertToJson(project);
-        logger.info(json);
+        project.getCultureKeywords().add(new CultureKeyword(BEDOUIN));
+//        logger.error("{}", project.getActiveInvestigationTypes());
+//        logger.error("{}", project.getActiveMaterialKeywords().add(new MaterialKeyword()));
+//        project.getActiveOtherKeywords().add(new OtherKeyword(BEDOUIN));
+        sw = new StringWriter();
+        serializationService.convertToJson(project, sw, JsonProjectLookupFilter.class);
+        logger.info(sw.toString());
+        assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
+        assertTrue(sw.toString().contains(BEDOUIN));
     }
 
     @Test
     public void testJAXBProjectConversion() throws Exception {
         Project project = genericService.find(Project.class, 2420l);
-        String xml = xmlService.convertToXML(project);
+        String xml = serializationService.convertToXML(project);
         logger.info(xml);
     }
 
@@ -84,7 +100,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
 
-        final String xml = xmlService.convertToXML(project);
+        final String xml = serializationService.convertToXML(project);
         logger.info(xml);
         genericService.detachFromSession(project);
 
@@ -94,9 +110,9 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
             public Project doInTransaction(TransactionStatus arg0) {
                 boolean exception = false;
                 try {
-                    Project newProject = (Project) xmlService.parseXml(new StringReader(xml));
+                    Project newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
-                    newProject = importService.bringObjectOntoSession(newProject, getAdminUser());
+                    newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);
@@ -112,11 +128,11 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     @Ignore("Fixture for testing")
     public void testLoad() throws FileNotFoundException, Exception {
         Project p = new Project();
-        String convertToXML = xmlService.convertToXML(p);
+        String convertToXML = serializationService.convertToXML(p);
         // logger.debug(convertToXML);
         try {
-            xmlService.parseXml(new StringReader(convertToXML));
-            xmlService.parseXml(new FileReader(new File("c:/Users/abrin/Documents/1979.020.xml"))); // confirm goodxml loads fine
+            serializationService.parseXml(new StringReader(convertToXML));
+            serializationService.parseXml(new FileReader(new File("c:/Users/abrin/Documents/1979.020.xml"))); // confirm goodxml loads fine
         } catch (Exception e) {
             logger.error("{}", e);
         }
@@ -132,16 +148,16 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         final Language VALID_LANGUAGE = Language.DUTCH;
         final String BAD_LANGUAGE = "Dagnabit!"; // har har
         document.setResourceLanguage(VALID_LANGUAGE);
-        String goodXml = xmlService.convertToXML(document);
+        String goodXml = serializationService.convertToXML(document);
         Exception parseException = null;
         String badXml = goodXml.replace(
                 "<tdar:resourceLanguage>" + VALID_LANGUAGE.name() + "</tdar:resourceLanguage>",
                 "<tdar:resourceLanguage>" + BAD_LANGUAGE + "</tdar:resourceLanguage>");
 
         Object obj = null;
-        xmlService.parseXml(new StringReader(goodXml)); // confirm goodxml loads fine
+        serializationService.parseXml(new StringReader(goodXml)); // confirm goodxml loads fine
         try {
-            obj = xmlService.parseXml(new StringReader(badXml));
+            obj = serializationService.parseXml(new StringReader(badXml));
         } catch (JaxbParsingException e) {
             parseException = e;
             logger.debug("parsing exception", e);
@@ -166,7 +182,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     public void testValidateSchema() throws ConfigurationException, SAXException, IOException {
         File schemaFile = new File("target/out.xsd");
         try {
-            File generateSchema = xmlService.generateSchema();
+            File generateSchema = serializationService.generateSchema();
             FileUtils.copyFile(generateSchema, schemaFile);
             testValidXMLSchemaResponse(FileUtils.readFileToString(generateSchema));
         } catch (Exception e) {

@@ -44,16 +44,6 @@ Common macros used in multiple contexts
 <#--define global getBaseURI(), getURI(path), TDAR.uri -->
     <#macro baseUriJavascript>
     if(typeof TDAR === "undefined") {var TDAR = {};}
-    //FIXME: replace occurances with TDAR.uri (TDAR-3830)
-    //Return the application base URL, including context path
-    function getBaseURI() {
-    return "<@s.url value='/' />";
-    }
-
-    //return absolute URL to for the specified relative path
-    function getURI(path) {
-    return getBaseURI() + path;
-    }
 
     //return absolute URL for the specified relative path,  including context path.
     //if no path specified, return the base URL.
@@ -134,114 +124,16 @@ Common macros used in multiple contexts
     If current page is home page, link has no querystring arguments.  Otherwise,  include the current url in the
     querystring (in parameter named 'url).
 -->
-    <#macro loginButton class="">
+    <#macro loginButton class="" returnUrl="">
+        <#noescape>
         <#local _current = (currentUrl!'/') >
+        <#if returnUrl != ''><#local _current = returnUrl /></#if>
         <#if _current == '/' || currentUrl?starts_with('/login')>
         <a class="${class}" href="/login" rel="nofollow">Log In</a>
         <#else>
         <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
         </#if>
-    </#macro>
-
-<#-- Emit the global navigation bar. Should only be called on authenticated pages -->
-    <#macro bootstrapNavbar>
-    <div class="navbar">
-        <div class="navbar-inner">
-            <div class="container">
-                <!-- display this toggle button when navbar exceeds available width and 'collapses' -->
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-
-                <!-- <a class="brand" href="#">Menu</a> -->
-                <!-- everything in the nav-collapse div will be hidden at 940px or less -->
-                <div class="nav-collapse">
-                    <ul class="nav">
-                        <li><a href="#">Home</a></li>
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Search<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="<@s.url value='/search'/>">Search ${siteAcronym!""}</a></li>
-                                <li><a href="<@s.url value='/browse/explore'/>">Explore</a></li>
-                                <li><a href="<@s.url value='/search/results'/>">Browse All Resources</a></li>
-                                <li><a href="<@s.url value='/search/collections'/>">Browse All Collections</a></li>
-                            </ul>
-                        </li>
-                        <#if authenticatedUser??>
-
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Workspace<b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="<@s.url value='/workspace/list'/>">Show Bookmarked Resources</a></li>
-                                    <li><a href="<@s.url value='/workspace/select-tables'/>">Integrate Bookmarked Data Tables</a></li>
-                                </ul>
-                            </li>
-
-                            <li><a href="<@s.url value='/dashboard'/>">Your Resources</a></li>
-                            <#if contributor!false>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">New<b class="caret"></b></a>
-                                <li><a href="<@s.url value='/project/add'/>">New...</a></li>
-                                <li><a href="<@s.url value='/project/add'/>">New Project</a></li>
-                                <li><a href="<@s.url value='/document/add'/>" class="item_line">New Document</a></li>
-                                <li><a href="<@s.url value='/image/add'/>">New Image</a></li>
-                                <#if administrator!false>
-                                    <li><a href="<@s.url value='/video/add'/>">New Video</a></li></#if>
-                                <li><a href="<@s.url value='/dataset/add'/>">New Dataset</a></li>
-                                <li><a href="<@s.url value='/coding-sheet/add'/>" class="item_line">New Coding Sheet</a></li>
-                                <li><a href="<@s.url value='/ontology/add'/>">New Ontology</a></li>
-                                <li><a href="<@s.url value='/sensory-data/add'/>">New Sensory Data</a></li>
-                                <li><a href="<@s.url value='/collection/add'/>">New Collection</a></li>
-                                <li style="border-top: 1px solid #AAA;"><a href="<@s.url value='/batch/add'/>">Batch Upload Tool</a></li>
-                                <ul class="dropdown-menu">
-
-
-                                </ul>
-                                </li>
-                            </#if>
-                            <li><a href="<@s.url value='http://www.tdar.org'/>">About</a></li>
-                            <#if editor!false>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="<@s.url value='/admin/internal'/>">Statistics</a></li>
-                                            <#if administrator!false>
-                                                <li><a href="<@s.url value='/admin/searchindex/build'/>">Build search index</a></li>
-                                                <li><a href="<@s.url value='/admin/system/activity'/>">System Activity</a></li>
-
-                                            </#if>
-                                            <li><a href="<@s.url value='/admin/authority-management/index'/>">Merge duplicates</a></li>
-                                        </ul>
-                                </li>
-                            </#if>
-                            <li><a href="<@s.url value='/logout'/>">Logout</a></li>
-                        <#else>
-                            <li><@loginButton /></li>
-                        </#if>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help
-                                <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="${documentationUrl}">User Documentation</a></li>
-                                <li><a href="${bugReportUrl}">Report a Bug</a></li>
-                                <li><a href="${commentUrl}">Comments</a></li>
-                                <#if authenticatedUser??>
-                                    <li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Update your profile</a></li>
-                                </#if>
-                            </ul>
-
-                        </li>
-
-                    </ul>
-                </div>
-                <!-- /.nav-collapse -->
-            </div>
-        </div>
-        <!-- /navbar-inner -->
-    </div>
+        </#noescape>
     </#macro>
 
 <#--Render the "Access Permissions" section of a resource view page.  Specifically, this section shows
@@ -277,7 +169,7 @@ Common macros used in multiple contexts
                         <tr>
                             <td>
                                 <#if !collection_.internal>
-                                    <a href="<@s.url value="/collection/${collection_.id?c}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
+                                    <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                                 <#else>
                                     Local Resource
                                 </#if>
@@ -348,72 +240,15 @@ with that datapoint -->
     <div id="graph${id}" style="width:${graphWidth}px;height:${graphHeight}px;"></div>
 
     <script>
+            var props = {
+            seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            title: "${graphLabel?js_string}",
+            searchKey:"${searchKey}",
+            context:"${context?string}"
+        };
+
         $(document).ready(function () {
-
-            var defaults_ = {
-                fontSize: 10,
-                seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-                title: "${graphLabel?js_string}",
-                seriesDefaults: {
-                    renderer: jQuery.jqplot.PieRenderer,
-                    rendererOptions: {
-                        fill: true,
-                        animate: !$.jqplot.use_excanvas,
-                        showDataLabels: true,
-                        // Add a margin to seperate the slices.
-                        sliceMargin: 4,
-                        // stroke the slices with a little thicker line.
-                        lineWidth: 5,
-                        padding: 5,
-                        dataLabels: 'value'
-                    }
-                },
-                grid: {
-                    background: 'rgba(0,0,0,0)',
-                    drawBorder: false,
-                    shadow: false,
-                    gridLineColor: 'none',
-                    borderWidth: 0,
-                    gridLineWidth: 0,
-                    drawGridlines: false
-                },
-                legend: {
-                    renderer: $.jqplot.EnhancedLegendRenderer,
-                    show: true,
-                    location: 'e',
-                    fontSize: 10,
-                    showSwatch: true
-                },
-                cursor: {
-                    style: "pointer",
-                    showTooltip: false,
-                    useAxesFormatters: false
-                },
-                highlighter: {
-                    show: true,
-                    formatString: '%s (%s)',
-                    tooltipLocation: 'ne',
-                    useAxesFormatters: false
-                }
-            };
-
-
-            <#if config?has_content>
-                $.extend(true, defaults_,${config});
-            </#if>
-
-            if (${data}.
-            length > 1
-            )
-            {
-                var plot${data} = jQuery.jqplot('graph${id}', [${data}], defaults_);
-                <@clickPlot id searchKey context />
-            }
-            else
-            {
-                $("#graph${data}").hide();
-                console.log("hiding ${data} graph");
-            }
+            TDAR.charts.pieChart(props, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
         });
 
     </script>
@@ -472,108 +307,9 @@ with that datapoint -->
             </#list>
     </script>
         <#if seen>
-            <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
-            var resourceConfig = {
-            axes: {
-            yaxis: {
-            renderer: $.jqplot.LogAxisRenderer
-            }
-            }
-            };
-            </@barGraph>
+            <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354 yaxis="log" context=false />
         </#if>
     </#macro>
-
-<#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
-<#-- Emit the container and script for a line graph -->
-<#-- @param data:string? name of the global object that contains the data for the chart (see #generatePieJson) -->
-<#-- @param graphWidth:number? width of chart container in pixels -->
-<#-- @param graphHeight:number? height of chart container in pixels -->
-<#-- @param graphLabel:string? title for this graph -->
-<#-- @param searchKey:string? name of the datapoint key querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-<#-- @param id:string? value of the ID attribute for the graph container DIV -->
-<#-- @param config:string  json containing specific parameters to use for the jqPlot initialization function -->
-<#-- @param context:boolean? value of the 'context'  querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-    <#macro lineChart data="data" graphWidth=360 graphHeight=800 graphLabel="" searchKey="resourceTypes" id="" config="" context=false>
-        <#noescape>
-            <#if id == "">
-                <#local id=data+"id" />
-            </#if>
-        <script>
-            $(document).ready(function () {
-                $.jqplot.config.enablePlugins = true;
-                var labels_ = [];
-                try {
-                    labels_ = eval('labels');
-                } catch (e) {
-                    labels_ = [];
-                }
-                var _defaults = {
-                    // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
-                    title: "${graphLabel?js_string}",
-                    animate: !$.jqplot.use_excanvas,
-                    seriesDefaults: {
-                        pointLabels: {
-                            show: true,
-                            location: 'n',
-                            edgeTolerance: -25
-                        },
-                        rendererOptions: {
-                            // Set varyBarColor to tru to use the custom colors on the bars.
-                            varyBarColor: true
-                        }
-                    },
-                    seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-                    grid: {
-                        background: 'rgba(0,0,0,0)',
-                        drawBorder: false,
-                        shadow: false,
-                        gridLineColor: 'none',
-                        borderWidth: 0,
-                        gridLineWidth: 0,
-                        drawGridlines: false
-                    },
-                    axes: {
-                        xaxis: {
-                            renderer: $.jqplot.DateAxisRenderer,
-                            tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-                            tickOptions: {
-                                fontFamily: 'Georgia',
-                                fontSize: '8pt',
-                                showGridline: false
-                            }
-                        },
-                        yaxis: {
-                            showTicks: false,
-                            show: false,
-                            showGridline: false
-                        }
-                    },
-                    highlighter: {
-                        show: true,
-                        sizeAdjust: 7.5
-                    },
-                    legend: {
-                        show: true,
-                        placement: 'outsideGrid',
-                        labels: labels_,
-                        location: 'ne',
-                        rowSpacing: '0px'
-                    }
-                };
-
-                <#if config?has_content>
-                    $.extend(true, _defaults,${config});
-                </#if>
-
-                var plot${id} = $.jqplot('graph${id}', ${data}, _defaults);
-
-            });
-        </script>
-        <div id="graph${id}" style="height:120px"></div>
-        </#noescape>
-    </#macro>
-
 
 <#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
 <#-- Emit the container and script for a line graph -->
@@ -591,106 +327,28 @@ with that datapoint -->
         <#if id == "">
             <#local id=data+"id" />
         </#if>
-    <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;"></div>
-
-    <script>
+    <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" data-title="${graphLabel?html}">
+       <script>
+            var props${id} = {
+            seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            xaxis: "${xaxis}",
+            yaxis: "${yaxis}",
+            rotate: "${rotate}",
+            title: "${graphLabel?js_string}",
+            searchKey: "${searchKey}",
+            context: "${context?string}",
+            baseUrl: "${baseUrl}"
+        };
         $(document).ready(function () {
-            $.jqplot.config.enablePlugins = true;
-
-            var _defaults = {
-                // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
-                title: "${graphLabel?js_string}",
-                animate: !$.jqplot.use_excanvas,
-                seriesDefaults: {
-                    renderer: $.jqplot.BarRenderer,
-                    pointLabels: {
-                        show: true,
-                        location: 'n',
-                        edgeTolerance: -35
-                    },
-                    rendererOptions: {
-                        // Set varyBarColor to tru to use the custom colors on the bars.
-                        varyBarColor: true
-                    }
-                },
-                seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-                grid: {
-                    background: 'rgba(0,0,0,0)',
-                    drawBorder: false,
-                    shadow: false,
-                    gridLineColor: 'none',
-                    borderWidth: 0,
-                    gridLineWidth: 0,
-                    drawGridlines: false
-                },
-                axes: {
-                    xaxis: {
-                        labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                        renderer: $.jqplot.CategoryAxisRenderer,
-                            <#if xaxis == "log">renderer: $.jqplot.LogAxisRenderer,</#if>
-                            <#if xaxis == "date">renderer: $.jqplot.DateAxisRenderer,</#if>
-
-                            <#if rotate !=0>tickRenderer: $.jqplot.CanvasAxisTickRenderer,</#if>
-                        tickOptions: {
-                            fontFamily: 'Georgia',
-                            fontSize: '8pt',
-                                <#if rotate != 0>angle:${rotate},</#if>
-                            showGridline: false
-                        }
-                    },
-                    yaxis: {
-                            <#if yaxis== "log">renderer: $.jqplot.LogAxisRenderer,</#if>
-                            <#if yaxis== "date">renderer: $.jqplot.DateAxisRenderer,</#if>
-
-                        showTicks: false,
-                        show: false,
-                        showGridline: false
-                    }
-                },
-                highlighter: { show: false },
-                cursor: {
-                    style: "pointer",
-                    showTooltip: false,
-                    useAxesFormatters: false
-                }
-
-            };
-            <#nested/>
-
-            <#if config?has_content>
-                $.extend(true, _defaults,${config});
-            </#if>
-
-
-            if (${data}.
-            length > 1
-            )
-            {
-                var plot${id} = $.jqplot('graph${id}', [${data}], _defaults);
-                <@clickPlot id searchKey context />
-            }
-            else
-            {
-                $("#graph${id}").hide();
-                console.log("hiding ${id} bar graph");
-            }
+            TDAR.charts.barGraph(props${id}, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
         });
-    </script>
+        <#nested />
+        
+        </script>        
+        </div>
+
     </#macro>
 
-<#-- Emit a partial javascript that registers a datapoint click handler.  The handler redirects the browser to a tdar
-search page associated with the datapoint -->
-<#-- @param id:string name of the graph that, when appended with "graph", forms the id of the graph container -->
-<#-- @param searchKey:string name of the datapoint querystring parameter key -->
-<#-- @param context:boolean if true, search results page will limit results to resources that extend modification rights to the currently-authenticated user -->
-    <#macro clickPlot id searchKey context>
-    $('#graph${id}').bind('jqplotDataClick',
-    function (ev, seriesIndex, pointIndex, data) {
-    $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
-    window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2] <#if context>+  "&amp;useSubmitterContext=true"</#if>;
-    }
-    );
-    </#macro>
 
 
 
@@ -703,52 +361,14 @@ search page associated with the datapoint -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false>
     <div class="mapcontainer" style="">
         <script type="text/javascript">
+
             $(function () {
-
-                $('.worldmap').maphilight({
-                    fade: true,
-                    groupBy: "alt",
-                    strokeColor: '#ffffff'
-                });
-
-                $(".worldmap").delegate('area', 'mouseover', function (e) {
-                    $('[iso=' + $(this).attr('iso') + ']').each(function (index, val) {
-                        hightlight(true, val);
-                    });
-                });
-
-                $(".worldmap").delegate('area', 'mouseout', function (e) {
-                    $('[iso=' + $(this).attr('iso') + ']').each(function (index, val) {
-                        hightlight(false, val);
-                    });
-                });
-
+                TDAR.charts.worldMap();
             });
-
-            function hightlight(on, element) {
-                var data = $(element).data('maphilight') || {};
-                if (on) {
-                    data.oldFillColor = data.fillColor;
-                    data.oldFillOpacity = data.fillOpacity;
-                    data.oldStrokeColor = data.strokeColor;
-                    data.oldStrokeWidth = data.strokeWidth;
-
-                    data.fillColor = '4B514D';
-                    data.fillOpacity = .5;
-                    data.strokeColor = '111111';
-                    data.strokeWidth = '.6';
-                } else {
-                    data.fillColor = data.oldFillColor;
-                    data.fillOpacity = data.oldFillOpacity;
-                    data.strokeColor = data.oldStrokeColor;
-                    data.strokeWidth = data.oldStrokeWidth;
-                }
-                $(element).data('maphilight', data).trigger('alwaysOn.maphilight');
-            }
         </script>
 
         <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
-        <img class="worldmap" alt="world map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480
+        <img class="worldmap" alt="World Map" title="World Map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480
              height=304 usemap="#world">
 
         <div id="map_legend">
@@ -896,9 +516,9 @@ search page associated with the datapoint -->
                 <#if entry.keywordId?has_content>
                     <#local color = settings.mapColors[entry.colorGroup]!"#ffffff" />
 
-                    <#local term>geographicKeywords=${entry.keywordId?c}</#local>
+                    <#local path>/browse/geographic-keyword/${entry.keywordId?c}/${entry.slug}</#local>
                 <area coords="${coords}" shape="poly" title="${title} (${entry.count?c})" alt="${title} (${entry.count?c})" target="_top"
-                      href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/search/results?${term}"/>' iso="${code}"
+                      href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${path}"/>' iso="${code}"
                       class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}">
                 </#if>
             </#if>
@@ -1094,16 +714,17 @@ search page associated with the datapoint -->
 <#-- @param accountList:List<Account> list of accounts to render -->
     <#macro billingAccountList accountList>
         <#if (payPerIngestEnabled!false)>
-        <h2>Billing Accounts</h2>
+        <h2 id="billingSection">Billing Accounts</h2>
         <ul>
             <#list accountList as account>
                 <li>
-                    <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+                    <a href="<@s.url value="/billing/${account.id?c} " scheme="https" />">${account.name!"unamed"}</a>
                 </li>
             </#list>
+<#--
             <#if billingManager>
                 <li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
-            </#if>
+            </#if> -->
             <li><a href="/cart/add">Create a new account or add more to an existing one</a></li>
         </ul>
         </#if>
@@ -1130,12 +751,12 @@ search page associated with the datapoint -->
 
 <#-- emit html for single collection list item -->
     <#macro collectionListItem depth=0 collection=collection showOnlyVisible=false >
-        <#if collection.visible || collection.viewable || showOnlyVisible==false >
+        <#if !collection.hidden || collection.viewable || showOnlyVisible==false >
             <#local clsHidden = "", clsClosed="" >
             <#if (depth < 1)><#local clsHidden = "hidden"></#if>
             <#if ((depth < 1) && (collection.transientChildren?size > 0))><#local clsClosed = "closed"></#if>
         <li class="${clsClosed}">
-            <@s.a href="/collection/${collection.id?c}">${(collection.name)!"No Title"}</@s.a>
+            <@s.a href="${collection.detailUrl}">${(collection.name)!"No Title"}</@s.a>
             <#if collection.transientChildren?has_content>
                 <ul class="${clsHidden}">
                     <#list collection.transientChildren as child>
@@ -1174,5 +795,103 @@ search page associated with the datapoint -->
         <@s.text name="${name}"><#list parms as parm><@s.param>${parm}</@s.param></#list></@s.text>
     </#macro>
 
+<#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
+    <#macro codingRules>
+        <#if resource.id != -1>
+            <#nested>
+        <h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
+            <#if resource.codingRules.isEmpty() >
+            <div>
+                No coding rules have been entered for this coding sheet yet.
+            </div>
+            <#else>
+            <div id='codingRulesDiv'>
+                <table width="60%" class="table table-striped tableFormat">
+                    <thead class='highlight'>
+                    <tr>
+                        <th>Code</th>
+                        <th>Term</th>
+                        <th>Description</th>
+                        <th>Mapped Ontology Node</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <#list resource.sortedCodingRules as codeRule>
+                        <tr>
+                            <td>${codeRule.code}</td>
+                            <td>${codeRule.term}</td>
+                            <td>${codeRule.description!""}</td>
+                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName}</#if></td>
+                        </tr>
+                        </#list>
+                    </tbody>
+                </table>
+            </div>
+            </#if>
+        </#if>
+    </#macro>
+
+<#--FIXME:  there has to be a better way here -->
+    <#macro antiSpam>
+        <#if h.recaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="h.timeCheck"/>
+        <textarea name="h.comment" class="tdarCommentDescription"></textarea>
+
+        <#if h.reCaptchaText?has_content>
+            ${h.reCaptchaText}
+        </#if>
+    </#macro>
+
+    <#macro embeddedAntiSpam  bean="downloadRegistration">
+        <#local actual = bean?eval />
+        <#if actual.srecaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${actual.h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="${bean}.h.timeCheck"/>
+        <textarea name="${bean}.h.comment" class="tdarCommentDescription"></textarea>
+
+        <#if actual.h.reCaptchaText?has_content>
+            ${actual.h.reCaptchaText}
+        </#if>
+    </#macro>
+
+
+<#-- remove chrome autofill hack when no longer necessary TDAR-4043 -->
+<#--starting w/ Chrome 34, chrome ignores the autocomplete=off directive in password fields.  This in itself is not so bad (really), but it leads to
+tdar usability issues when combined with Chrome's "login form detection".  Specifically, chrome always autofills the first password input it encounters (regardless
+if there are multiple password inputs, e.g. a confirm-password-change form),  and then assumes that the preceeding text field is a username field (which is not
+true for our registration page or our profile page).-->
+<#macro chromeAutofillWorkaround>
+<input type="text"  name="_cr42-1" value="" style="display:none">
+<input type="password" name="_cr42-2" value="" style="display:none">
+</#macro>
+
+
+<#-- Create a search-link for a keyword -->
+    <#macro searchFor keyword=keyword asList=true showOccurrence=false>
+        <#if asList><li class="bullet"></#if>
+            <a href="<@s.url value="${keyword.detailUrl}" />">${keyword.label}
+            <#if showOccurrence && keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
+            </a>
+        <#if asList></li></#if>
+    </#macro>
+
+    <#--html that only gets rendered by ie8 and lower -->
+    <#macro ie8Warning>
+    <div id="messages" style="margin:2px;display:none" class="hidden">
+        <div id="message-ie-obsolete" class="message-error">
+            <@localText "dashboard.ie_warning", siteAcronym />
+            <a href="http://www.microsoft.com/ie" target="_blank">
+                <@localText "dashboard.ie_warning_link_text" />
+            </a>.
+        </div>
+    </div>
+    </#macro>
+
 
 </#escape>
+

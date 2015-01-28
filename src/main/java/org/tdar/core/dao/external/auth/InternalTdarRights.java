@@ -3,6 +3,8 @@ package org.tdar.core.dao.external.auth;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.tdar.core.bean.TdarGroup;
+
 public enum InternalTdarRights {
     VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO(TdarGroup.TDAR_EDITOR),
     EDIT_PERSONAL_ENTITES(TdarGroup.TDAR_EDITOR),
@@ -10,7 +12,7 @@ public enum InternalTdarRights {
     EDIT_ANY_RESOURCE(TdarGroup.TDAR_EDITOR),
     EDIT_RESOURCE_COLLECTIONS(TdarGroup.TDAR_EDITOR),
     DELETE_RESOURCES(TdarGroup.TDAR_EDITOR),
-
+    DELETE_COLLECTIONS(TdarGroup.TDAR_EDITOR),
     SEARCH_FOR_DELETED_RECORDS(TdarGroup.TDAR_EDITOR),
     SEARCH_FOR_FLAGGED_RECORDS(TdarGroup.TDAR_EDITOR),
     SEARCH_FOR_DRAFT_RECORDS(TdarGroup.TDAR_EDITOR),
@@ -21,7 +23,8 @@ public enum InternalTdarRights {
     REPROCESS_DERIVATIVES(TdarGroup.TDAR_EDITOR),
     VIEW_ADMIN_INFO(TdarGroup.TDAR_EDITOR),
     VIEW_BILLING_INFO(TdarGroup.TDAR_EDITOR),
-    EDIT_BILLING_INFO(TdarGroup.TDAR_BILLING_MANAGER);
+    EDIT_BILLING_INFO(TdarGroup.TDAR_BILLING_MANAGER), 
+    DELETE_ANYTHING(TdarGroup.TDAR_EDITOR);
 
     private TdarGroup[] permittedGroups;
 

@@ -10,19 +10,11 @@
         var $target = $($(this).parents(".datatablecolumn").first());
         var val = $('.columnEncoding:checked', $target).val();
         var square = $target.find("span.columnSquare");
-        var mapping = $target.find("div.mappingInfo");
         var ontologyInfo = $target.find("div.ontologyInfo");
         var codingInfo = $target.find("div.codingInfo");
         var measurementInfo = $target.find("div.measurementInfo");
 
-        //show the relevant fields in this section based off the choice of column type
-        if (val == 'CODED_VALUE' || val == 'UNCODED_VALUE') {
-            mapping.show();
-        } else {
-            mapping.hide();
-        }
-
-        if (val == 'COUNT' || val == 'MEASUREMENT' || val == 'MAPPED_VALUE') {
+        if (val == 'COUNT' || val == 'MEASUREMENT') {
             ontologyInfo.hide();
         } else {
             ontologyInfo.show();
@@ -56,9 +48,6 @@
         var codig = $target.find("input.codingsheetfield:visible").first();
         var codingSheetId = $('.codingsheetidfield', $target).val();
         var unit = $target.find("select.measurementUnit:visible").first();
-        var map = $target.find(':input.mappingValue:visible:checked').first();
-        var mapDetail = $target.find('.mappingDetail').first();
-        mapDetail.hide();
 
         if (dataType == undefined || dataType.indexOf('INT') == -1 && dataType.indexOf('DOUBLE') == -1) {
             $(".columnEncoding[value='MEASUREMENT']", $target).prop('disabled', true);
@@ -89,11 +78,6 @@
 
         if (ontolog != undefined && ontolog != '') {
             square.addClass("integration");
-        }
-
-        if (map != undefined && map.val() == "true") {
-            square.addClass("mapped");
-            mapDetail.show();
         }
 
         if (!valid) {
@@ -129,6 +113,8 @@
     function _init(formId) {
 
         var $form = $(formId);
+        $form.FormNavigate();
+        TDAR.common.suppressKeypressFormSubmissions($form);
 
         //Use a plugin if browser doesn't support resizeable textareas
         if (!Modernizr.cssresize) {
@@ -143,7 +129,7 @@
         TDAR.common.applyWatermarks(document);
 
         $('#table_select').change(function () {
-            window.location = '?dataTableId=' + $(this).val();
+            window.location = '?dataTableId=' + $(this).val() + "&id="+$("#resource_id").val();
         });
 
         $form.delegate(":input", "blur change", TDAR.datasetMetadata.registerCheckboxInfo);
@@ -181,6 +167,20 @@
         TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
     }
 
+    function _pagination(idPrefix) {
+        var $id = $("#recordsPerPage" + idPrefix); 
+        $id.change(function () {
+            var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
+            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
+            var prefix = "";
+            if (url.indexOf("?") != 0) {
+                prefix = "?";
+            }
+            url = prefix + url + "&recordsPerPage=" + $id.val();
+            window.location = url;
+        });
+    }
+    
     /**
      * Updates the SummaryTable based on column validation
      */
@@ -191,7 +191,6 @@
         $(".uncoded_label", $summary).html($("div.datatablecolumn .columnSquare.uncoded").length);
         $(".error_label", $summary).html($("div.datatablecolumn .columnSquare.invalid").length);
         $(".count_label", $summary).html($("div.datatablecolumn .columnSquare.count").length);
-        $(".mapped_label", $summary).html($("div.datatablecolumn .columnSquare.mapped").length);
         $(".measurement_label", $summary).html($("div.datatablecolumn .columnSquare.measurement").length);
     }
 
@@ -200,7 +199,8 @@
         "init": _init,
         "gotoColumn": _gotoColumn,
         "updateSummaryTable": _updateSummaryTable,
-        "registerCheckboxInfo": _registerCheckboxInfo
+        "registerCheckboxInfo": _registerCheckboxInfo,
+        "initPagination": _pagination
     };
 
 })(TDAR, jQuery);

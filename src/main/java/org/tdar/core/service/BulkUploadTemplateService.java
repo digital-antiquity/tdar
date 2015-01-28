@@ -10,19 +10,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
+import org.tdar.utils.MessageHelper;
 
 /**
  * The BulkUploadService support the bulk loading of resources into tDAR through
@@ -60,7 +61,6 @@ public class BulkUploadTemplateService {
         return toReturn;
     }
 
-
     /**
      * For the set of @link ResourceType entries, get all of the valid @link
      * BulkImportField fields that should be used.
@@ -84,19 +84,18 @@ public class BulkUploadTemplateService {
         Iterator<CellMetadata> fields = nameSet.iterator();
         while (fields.hasNext()) {
             CellMetadata field = fields.next();
-            logger.trace(field.getName() + " " + field.getDisplayName());
+            String displayName = field.getDisplayName();
+            String key = field.getKey();
+            logger.trace(field.getKey() + "-" + field.getName() + " " + displayName);
             if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
-                if (StringUtils.isNotBlank(field.getDisplayName())
-                        && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) ||
-                        field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
+                if ((key.equals(InformationResource.LICENSE_TEXT) || key.equals(InformationResource.LICENSE_TYPE))) {
                     fields.remove();
                 }
             }
             if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
-                if (field.getName().contains("copyrightHolder")
-                        || (StringUtils.isNotBlank(field.getDisplayName())
-                        && (field.getDisplayName()
-                                .contains(BulkImportField.COPYRIGHT_HOLDER)))) {
+                if ((key.equals(InformationResource.COPYRIGHT_HOLDER))
+                        || displayName.contains(
+                                CellMetadata.getDisplayLabel(MessageHelper.getInstance(), InformationResource.COPYRIGHT_HOLDER))) {
                     fields.remove();
                 }
             }
@@ -141,7 +140,6 @@ public class BulkUploadTemplateService {
         logger.trace("{}", map);
         return map;
     }
-    
 
     /**
      * Create the Excel BulkUploadTemplate

@@ -14,7 +14,6 @@
 
 </head>
 <body>
-    <#compress>
 
     <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
         <div class="">
@@ -27,7 +26,7 @@
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>
         </div>
@@ -43,7 +42,8 @@
 
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-            <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
+        <@common.jsErrorLog />
         <h2>Basic Information</h2>
 
         <div class="" id="basicInformationSection" data-tiplabel="Basic Information"
@@ -80,6 +80,15 @@
                 cssClass='resizable input-xxlarge' title="Please enter the description " />
             </#if>
 
+        <#if editor>
+            <div class="control-group">
+                <label class="control-label">Associate an Image/Logo with this Collection</label>
+                <div class="controls">
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' />
+                </div>
+            </div>
+        </#if>
+
         </div>
 
         <div id="divBrowseOptionsTips" style="display:none">
@@ -94,13 +103,13 @@
             <h2>Browse and Display Options</h2>
 
             <div class="control-group">
-                <label class="control-label">Make this collection public?</label>
+                <label class="control-label">Hide this collection?</label>
 
                 <div class="controls">
-                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible"
-                                                                            value="true" <@common.checkedif resourceCollection.visible true /> />Yes</label>
-                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible"
-                                                                             value="false" <@common.checkedif resourceCollection.visible false /> />No</label>
+                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
+                                                                            value="true" <@common.checkedif resourceCollection.hidden true /> />Yes</label>
+                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
+                                                                             value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
                 </div>
             </div>
 
@@ -135,7 +144,15 @@
                     of results.">
             <h2>Add/Remove Resources</h2>
 
-            <@edit.resourceDataTable false true />
+            <@edit.resourceDataTable false true>
+            <#--
+        <div class="btn-group">
+            <button class="button btn" name="showAll" id="showAll" type="button">Show All Resources</button>
+            <button class="button btn" name="limitToCollection" id="limitToCollection" type="button">Show Only resources in this collection</button>
+        </div>
+        <br><br>
+        -->
+            </@edit.resourceDataTable>
 
 
 
@@ -146,45 +163,54 @@
                 </div>
             </div>
 
-            <div id="divSelectedResources">
-                <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hrid${resource.id?c}"></#list>
-            </div>
         </div>
 
-        <div class="glide">
-            <h2>Selected Resources</h2>
-            <@view.resourceCollectionTable tbid="tblCollectionResources"/>
+        <div id="divAddRemove">
+            <h2>Modifications</h2>
+
+            <div id="divToAdd">
+                <h4>The following resources will be added to the collection</h4>
+                <table id="tblToAdd" class="table table-condensed"></table>
+            </div>
+
+            <div id="divToRemove">
+                <h4>The following resources will be removed from the collection</h4>
+                <table id="tblToRemove" class="table table-condensed"></table>
+            </div>
         </div>
 
 
             <@edit.submit fileReminder=false />
         </@s.form>
 
-        <@edit.resourceDataTableJavascript false true />
         <#noescape>
         <script type='text/javascript'>
+            //selectResourcesFromCollectionid
+
+            $(function () {
+                TDAR.datatable.setupDashboardDataTable({
+                    isAdministrator: ${(editor!false)?string},
+                    isSelectable: true,
+                    showDescription: false,
+                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
+                });
+            });
+
+
+
             $(function () {
                 'use strict';
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
-
-                //remind users that adding a project does not also add the project's contents
-                $("#resource_datatable").on("change", ".datatable-checkbox.project", function () {
-                    if ($("#divNoticeContainer").is(":visible")) {
-                        return;
-                    }
-                    if ($(this).is(":checked")) {
-                        $("#divNoticeContainer").show();
-                    }
-                });
-
-            });
+                TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
+                        //remind users that adding a project does not also add the project's contents
+                TDAR.common.validateProfileImage();
+        });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />
-    </#compress>
-<div style="display:none"
+<div style="display:none"></div>
 </body>
 </#escape>

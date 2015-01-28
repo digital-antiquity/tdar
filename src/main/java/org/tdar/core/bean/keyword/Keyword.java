@@ -24,13 +24,19 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.entity.Dedupable;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Interface and Abstract Class for all keywords. Unique entities managed outside of resources, and linked to them.
@@ -41,13 +47,15 @@ import org.tdar.search.query.QueryFieldNames;
  * @version $Rev$
  */
 @SuppressWarnings("rawtypes")
-public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
+public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Addressable {
 
     @Transient
     public static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "approved", "selectable", "level", "occurrence" }; // fixme: should ID be here too?
 
     @Override
     public String getLabel();
+
+    String getSlug();
 
     public void setLabel(String label);
 
@@ -59,12 +67,10 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
     @MappedSuperclass
     @XmlType(name = "kwdbase")
-    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T> {
+    @XmlTransient
+    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T>, Slugable {
 
         private static final long serialVersionUID = -7516574981065004043L;
-
-        @Transient
-        private final static String[] JSON_PROPERTIES = { "id", "label" };
 
         @Column(nullable = false, unique = true)
         @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
@@ -72,6 +78,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
                 @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         @Length(max = FieldLength.FIELD_LENGTH_255)
+        @JsonView(JsonLookupFilter.class)
         private String label;
 
         @Lob
@@ -94,6 +101,11 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         private Long occurrence = 0L;
 
+        @Override
+        public String getSlug() {
+            return UrlUtils.slugify(getLabel());
+        }
+        
         private transient Float score = -1f;
         private transient Explanation explanation;
         private transient boolean readyToIndex = true;
@@ -143,11 +155,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         @Override
         public String toString() {
             return getLabel();
-        }
-
-        @Override
-        public String[] getIncludedJsonProperties() {
-            return JSON_PROPERTIES;
         }
 
         @Transient
@@ -223,5 +230,9 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
             this.occurrence = occurrence;
         }
 
+        @JsonView(JsonLookupFilter.class)
+        public String getDetailUrl() {
+            return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
+        }
     }
 }

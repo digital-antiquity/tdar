@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -53,18 +53,20 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         return sessionFactory.getCurrentSession();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetProjects() {
         Assert.assertNotNull(sessionFactory);
         @SuppressWarnings({ "unchecked", "rawtypes" })
         Query query = getCurrentSession().createQuery("from Resource where id = :id");
         query.setLong("id", 1L);
-        List list = query.list();
+        List<Resource> list = query.list();
         assertNotNull(query);
         assertNotNull(list);
         assertTrue(list.size() > 0);
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testManyToOne() {
         String queryFormat = "from Resource where %s = :val";
@@ -163,6 +165,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testManyToOneParm() {
         String hql = String.format(TdarNamedQueries.QUERY_HQL_MANY_TO_ONE_REFERENCES, Resource.class.getSimpleName(), "submitter");
@@ -186,6 +189,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         assertTrue(list2.containsAll(list1));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetReferenceCountManyToMany() {
         Set<Field> set = reflectionService.findFieldsReferencingClass(Resource.class, CultureKeyword.class);
@@ -198,6 +202,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testGetReferenceCountManyToOne() {
         String hql = String.format(TdarNamedQueries.QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES_MAP, Resource.class.getSimpleName(), "submitter");
@@ -208,6 +213,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testGetKeywordCounts() {
         String hql = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED;

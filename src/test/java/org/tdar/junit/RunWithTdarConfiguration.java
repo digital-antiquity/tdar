@@ -14,6 +14,7 @@ public @interface RunWithTdarConfiguration {
     public String FAIMS = "src/test/resources/tdar.faims.properties";
     public String CREDIT_CARD = "src/test/resources/tdar.cc.properties";
     public String TOS_CHANGE = "src/test/resources/tdar.tos.properties";
+    String BROKEN_KETTLE = "src/test/resources/tdar.broken.kettle.properties";
 
     public String[] runWith() default {};
 

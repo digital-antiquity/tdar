@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class TdarRuntimeException extends I18nRuntimeException {
 
-    private static final long serialVersionUID = 6246686753761896569L;
+    private static final long serialVersionUID = 7832449675831711882L;
 
     public TdarRuntimeException() {
         super();

@@ -17,20 +17,13 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchIndexService;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.core.service.search.SearchIndexService;
 
 public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchControllerITCase {
 
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
-
-    @Autowired
-    @Override
-    public TdarActionSupport getController() {
-        return controller;
-    }
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -81,9 +74,9 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
+        setIgnoreActionErrors(true);
         doSearch("precambrian", true);
         assertFalse(resultsContainId(datasetId));
-        setIgnoreActionErrors(true);
         assertEquals(1, controller.getActionErrors().size());
     }
 

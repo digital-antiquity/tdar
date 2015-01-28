@@ -80,7 +80,7 @@ public interface QueryFieldNames {
     String RESOURCE_PROVIDER_ID = "resourceProviderInstitution.id";
     String CATEGORY_ID = "categoryVariable.id";
     String CATEGORY_LABEL = "categoryVariable.label";
-    String COLLECTION_VISIBLE = "visible";
+    String COLLECTION_HIDDEN = "hidden";
     String TOP_LEVEL = "topLevel";
     String RESOURCE_TYPE_SORT = "resourceTypeSort";
     String RESOURCE_OWNER = "resourceOwner";
@@ -91,5 +91,12 @@ public interface QueryFieldNames {
     String DATA_VALUE_PAIR = "dataValuePair";
     String COLLECTION_TREE = "collection.parentTree";
     String SITE_CODE = "siteCode";
+    String TITLE_PHRASE = "title.phrase";
+    String DESCRIPTION_PHRASE = "description.phrase";
+    String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
+    String NAME_PHRASE = "name_phrase";
+    String NAME_TOKEN = "name_token";
+    String USERNAME = "username";
+    String PROPER_AUTO = "proper_name_auto";
 
 }

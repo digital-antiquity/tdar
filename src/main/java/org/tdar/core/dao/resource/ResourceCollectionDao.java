@@ -13,21 +13,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * @author Adam Brin
@@ -84,11 +86,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
     }
 
-    public ResourceCollection findCollectionWithName(Person user, ResourceCollection collection, GeneralPermissions permission) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);// QUERY_PROJECT_EDITABLE
+    public ResourceCollection findCollectionWithName(Person user, ResourceCollection collection) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
-        // FIXME: move all this 'permission-1' hoo-ha from the caller to the query
         query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
         @SuppressWarnings("unchecked")
         List<ResourceCollection> list = query.list();
@@ -117,7 +118,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     @SuppressWarnings("unchecked")
     public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
-        if (Persistable.Base.isTransient(user)) {
+        if (PersistableUtils.isTransient(user)) {
             return Collections.EMPTY_LIST;
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
@@ -153,8 +154,9 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return allChildren;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findCollectionSparseResources(Long collectionId) {
-        if (Persistable.Base.isNullOrTransient(collectionId)) {
+        if (PersistableUtils.isNullOrTransient(collectionId)) {
             return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES);
@@ -169,12 +171,35 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return result.longValue();
     }
 
+    @SuppressWarnings("unchecked")
     public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
-        if (Persistable.Base.isNullOrTransient(persistable)) {
+        if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN);
         query.setLong("id", persistable.getId());
+        return query.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    /**
+     * Return download authorizations that have a host name that matches the referrer and the APIKey that matches the one in the DB.
+     * Does Hierarchical Collection Query 
+     * 
+     * @param informationResourceFileVersion
+     * @param apiKey
+     * @param referrer
+     * @return
+     */
+    public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+        List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
+        if (CollectionUtils.isEmpty(sharedCollectionIds)) {
+            return Collections.EMPTY_LIST;
+        }
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION);
+        query.setParameterList("collectionids", sharedCollectionIds);
+        query.setParameter("apiKey", apiKey);
+        query.setParameter("hostname", referrer.toLowerCase());
         return query.list();
     }
 

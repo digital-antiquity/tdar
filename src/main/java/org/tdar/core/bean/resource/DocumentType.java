@@ -3,7 +3,6 @@ package org.tdar.core.bean.resource;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -114,7 +113,6 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
     public String getPlural() {
         return MessageHelper.getMessage(getLocaleKey() + "_PLURAL");
     }
-
 
     public String getPublisherLocationName() {
         if (publisherLocationName == null) {

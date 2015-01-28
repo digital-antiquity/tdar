@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
@@ -26,6 +25,11 @@ import org.tdar.tag.SearchResults.Meta;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.dom.Element;
 
+/**
+ * NOTE THIS TEST NEEDS TO BE RUN VIA MAVEN and NOT THE JUNIT PLUGIN WITHIN ECLIPSE
+ * @author abrin
+ *
+ */
 public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
 
     private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "services/TagGatewayService?wsdl";
@@ -146,10 +150,6 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         return false;
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Test
     @Rollback(true)

@@ -1,12 +1,15 @@
 package org.tdar.core.bean.entity;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +18,16 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.service.GenericService;
 
 public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private GenericService genericService;
+
+    @Autowired
+    private PersonDao personDao;
 
     private static String NEW_NAME = "first name";
     private static String NEW_NAME2 = "first";
@@ -30,18 +37,39 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         Person p = genericService.find(Person.class, (Long) null);
         assertNull(p);
     }
+    
+    @Test
+    @Rollback
+    public void testFindByExample() {
+        //create a user that we will try to find
+        TdarUser user1 = createAndSaveNewPerson();
+        user1.setDescription("this sia tst");
+        user1.setUsername("1234");
+        genericService.update(user1);
 
-    public Person setupPerson() {
-        return createAndSaveNewPerson();
+        //now create a prototypical user object that we'll use to find the first user
+        TdarUser example = new TdarUser();
+        example.setId(null);
+        example.setEmail(user1.getEmail());
+
+        Set<Person> results = personDao.findByPerson(example);
+        assertThat("findByExample should find only one person", results, hasSize(1));
     }
 
     @Test
     @Rollback(true)
     public void testCreatePerson() {
-        Person person = setupPerson();
+        TdarUser person = createAndSaveNewPerson();
+        genericService.saveOrUpdate(person);
+        logger.debug("{}", person);
         assertNotNull(person);
-        assertNotNull(person.getId());
-        assertTrue(person.getId() > 0);
+        Long id = person.getId();
+        assertNotNull(id);
+        assertTrue(id > 0);
+        person = null;
+        TdarUser user = genericService.find(TdarUser.class, id);
+        logger.debug("user:{} ", user);
+        
     }
 
     @Test
@@ -50,6 +78,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         Person person = new Person();
         person.setFirstName("j");
         person.setLastName("");
+        person.setEmail("");
         Person findOrSaveCreator = entityService.findOrSaveCreator(person);
         logger.info("person: {} {}", findOrSaveCreator, findOrSaveCreator.getId());
         assertTrue(12540 < findOrSaveCreator.getId());
@@ -70,7 +99,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testModifyPerson() {
-        Person person = setupPerson();
+        Person person = createAndSaveNewPerson();
         Long id = person.getId();
         getLogger().info("testing findById / modify/update");
         person.setFirstName(NEW_NAME);
@@ -92,7 +121,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDeletePerson() {
-        Person person = setupPerson();
+        Person person = createAndSaveNewPerson();
         Long id = person.getId();
 
         getLogger().info("testing delete");
@@ -155,6 +184,27 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
         assertEquals("should have CreatorType.PERSON set on CreatorType", CreatorType.PERSON, person.getCreatorType());
         assertNotNull("should have a date created", person.getDateCreated());
+    }
+
+    @Test(expected=org.hibernate.NonUniqueObjectException.class)
+    @Rollback
+    public void testPersonBecomesWritable() {
+        Person person = createAndSaveNewPerson("robert.loblaw@mailinator.org", "");
+        Institution institution = new Institution();
+        institution.setName("Loblaw At Law");
+        genericService.save(institution);
+        person.setInstitution(institution);
+        genericService.saveOrUpdate(person);
+
+        //object wasn't read-only to begin with, but who cares
+
+        Institution inst = person.getInstitution();
+        //markWritable detaches person, but we re-assign it so we're cool.... OR ARE WE??
+        person = genericService.markWritable(person);
+        //... later in the code
+        institution.setName("Bob Loblaw and Associates");
+        //This call will fail. some jerk done detached our institution!
+        genericService.saveOrUpdate(institution);
     }
 
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -16,14 +17,14 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.DedupeableType;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -79,6 +80,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
      * @return
      */
     @Action(value = "select-authority", results = { @Result(name = SUCCESS, location = "select-authority.ftl"), @Result(name = INPUT, location = "index.ftl") })
+    @PostOnly
     public String selectAuthority() {
         if (hasActionErrors()) {
             return INPUT;
@@ -105,6 +107,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
     @Action(value = "merge-duplicates",
             results = { @Result(name = SUCCESS, location = "success.ftl"), @Result(name = INPUT, location = "select-authority.ftl") })
+    @PostOnly
     @WriteableSession
     public String mergeDuplicates() {
         if (authorityId == null) {

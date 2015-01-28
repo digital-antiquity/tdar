@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
@@ -42,7 +42,7 @@ public class WorkflowContextService {
     @Autowired
     private GenericDao genericDao;
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Autowired
     private DatasetService datasetService;
@@ -78,6 +78,7 @@ public class WorkflowContextService {
             switch (ctx.getResourceType()) {
                 case GEOSPATIAL:
                 case DATASET:
+                case SENSORY_DATA:
                     Dataset dataset = (Dataset) resource;
                     if (ctx.getTransientResource() == null) {
                         break;
@@ -85,7 +86,6 @@ public class WorkflowContextService {
                     // this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
                     // FIXME: look at removing
                     genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
-                    logger.info("resource: ", ctx.getTransientResource());
                     logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
                     datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
                     genericDao.saveOrUpdate(dataset);
@@ -169,8 +169,7 @@ public class WorkflowContextService {
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
-        ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
-        ctx.setXmlService(xmlService);
+        ctx.setSerializationService(serializationService);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {
             if (logger.isTraceEnabled()) {

@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.bean.TdarGroup;
 
 /**
  * $Id$

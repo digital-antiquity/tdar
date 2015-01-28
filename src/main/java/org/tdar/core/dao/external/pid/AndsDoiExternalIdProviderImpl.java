@@ -8,10 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
@@ -39,7 +38,6 @@ import au.csiro.doiclient.business.DoiDTO;
  *
  * @author Martin Paulo
  */
-@Service
 public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     protected static final String IS_PRODUCTION_SERVER_KEY = "is.production.server";

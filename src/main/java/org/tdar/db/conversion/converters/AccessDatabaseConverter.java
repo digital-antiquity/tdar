@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -234,7 +234,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         DataTableColumnRelationship columnRelationship = new DataTableColumnRelationship();
                         columnRelationship.setLocalColumn(fromDataTableColumn);
                         columnRelationship.setForeignColumn(toDataTableColumn);
-                        columnRelationship.setRelationship(relationshipToPersist);
+                        // columnRelationship.setRelationship(relationshipToPersist);
                         relationshipToPersist.getColumnRelationships().add(columnRelationship);
                     }
 

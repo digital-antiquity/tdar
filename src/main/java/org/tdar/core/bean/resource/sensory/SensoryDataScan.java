@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
@@ -56,7 +58,7 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     private String triangulationDetails;
 
     @Column
-    private Double resolution;
+    private String resolution;
 
     @Column(name = "tof_return")
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -75,6 +77,7 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     private String cameraExposureSettings;
 
     @Column(name = "scan_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date scanDate;
 
     @Column(name = "matrix_applied", nullable = false)
@@ -128,11 +131,11 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
         this.scannerTechnology = scannerTechnology;
     }
 
-    public Double getResolution() {
+    public String getResolution() {
         return resolution;
     }
 
-    public void setResolution(Double resolution) {
+    public void setResolution(String resolution) {
         this.resolution = resolution;
     }
 

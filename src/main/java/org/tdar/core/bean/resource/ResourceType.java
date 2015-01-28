@@ -3,7 +3,7 @@ package org.tdar.core.bean.resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
@@ -23,7 +23,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
     IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
     SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
-    GEOSPATIAL("Geospatial", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
+    GEOSPATIAL("GIS", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
     ONTOLOGY("Ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
     PROJECT("Project", 5, "ItemList", Project.class),
     VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
@@ -213,11 +213,10 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
 
-//    @Override
-//    public String getLuceneFieldName() {
-//        return QueryFieldNames.RESOURCE_TYPE;
-//    }
-
+    // @Override
+    // public String getLuceneFieldName() {
+    // return QueryFieldNames.RESOURCE_TYPE;
+    // }
 
     public boolean hasDemensions() {
         switch (this) {
@@ -276,7 +275,6 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
     }
-
 
     @Override
     public String getPluralLocaleKey() {

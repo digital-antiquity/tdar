@@ -3,16 +3,19 @@ package org.tdar.core.dao.resource;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
+import org.tdar.core.dao.integration.OntologyProxy;
+import org.tdar.core.dao.integration.search.OntologySearchFilter;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * 
@@ -36,7 +39,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
 
     public int getNumberOfMappedDataValues(DataTableColumn dataTableColumn) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN);
-        query.setParameter("ontology", dataTableColumn.getDefaultOntology());
+        query.setParameter("ontology", dataTableColumn.getMappedOntology());
         query.setParameter("codingSheet", dataTableColumn.getDefaultCodingSheet());
         return ((Long) query.uniqueResult()).intValue();
     }
@@ -44,7 +47,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
     public void removeReferencesToOntologyNodes(List<OntologyNode> incoming) {
         List<OntologyNode> toDelete = new ArrayList<OntologyNode>();
         for (OntologyNode node : incoming) {
-            if (Persistable.Base.isNullOrTransient(node)) {
+            if (PersistableUtils.isNullOrTransient(node)) {
                 continue;
             }
             toDelete.add(node);
@@ -58,5 +61,19 @@ public class OntologyDao extends ResourceDao<Ontology> {
         query.executeUpdate();
 
     }
+
+    @SuppressWarnings("unchecked")
+    public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
+        query.setProperties(searchFilter);
+        query.setFirstResult(searchFilter.getFirstResult());
+        query.setMaxResults(searchFilter.getMaxResults());
+        IntegrationOntologySearchResult result = new IntegrationOntologySearchResult();
+        for (Ontology ontology : (List<Ontology>)query.list()) {
+            result.getOntologies().add(new OntologyProxy(ontology));
+        }
+        return result;
+    }
+
 
 }

@@ -13,7 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.kml.KMLConfiguration;
 import org.geotools.xml.Configuration;

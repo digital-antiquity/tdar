@@ -6,7 +6,6 @@
     <#global hideKeywordsAndIdentifiersSection=true/>
 
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 
@@ -63,7 +62,7 @@
     <#macro localSection>
 
     <div class="">
-        <@view.codingRules />
+        <@common.codingRules />
     </div>
         <@edit.manualTextInput
         typeLabel="Coding Sheet"
@@ -127,7 +126,7 @@
 
     <#macro localJavascript>
     var $form = $("#metadataForm");
-    TDAR.common.setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
+    TDAR.common.setupSupportingResourceForm(${codingSheet.totalNumberOfFiles?c}, "coding sheet");
     TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
     </#macro>
 

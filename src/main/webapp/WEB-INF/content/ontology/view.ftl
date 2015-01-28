@@ -3,30 +3,26 @@
     <#import "/${themeDir}/settings.ftl" as settings />
     <#macro head>
     <style>
-        div.orgChart div.hasChildren {
-            background-color: #${settings.barColors[1]};
-        }
-
-        div.orgChart div.node {
-            background-color: #${settings.barColors[0]};
-        }
-
-        div.orgChart div.node.level1 {
-            background-color: ${settings.barColors[0]};
-        }
-
-        div.orgChart div.node.level1.special {
-            background-color: white;
-        }
-
-        div.orgChart div.node.level2 {
-            background-color: ${settings.barColors[3]};
-        }
-
-        div.orgChart div.node.level3 {
-            background-color: ${settings.barColors[4]};
-        }
-
+    div.orgChart div.hasChildren {
+        background-color: #${settings.barColors[1]};
+    }
+    
+    div.orgChart div.node {
+        background-color: #${settings.barColors[0]};
+    }
+    
+    div.orgChart div.node.level1 {
+        background-color: ${settings.barColors[0]};
+    }
+    
+    div.orgChart div.node.level2 {
+        background-color: ${settings.barColors[3]};
+    }
+    
+    div.orgChart div.node.level3 {
+        background-color: ${settings.barColors[4]};
+    }
+        
     </style>
     </#macro>
 
@@ -36,7 +32,7 @@
         <h3>This Ontology is used by the following Coding Sheets</h3>
         <ul>
             <#list codingSheetsWithMappings as cs>
-                <li><a href="<@s.url value="/coding-sheet/${cs.id?c}"/>">${cs.title}</a></li>
+                <li><a href="<@s.url value="${cs.detailUrl}"/>">${cs.title}</a></li>
             </#list>
         </ul>
         </#if>

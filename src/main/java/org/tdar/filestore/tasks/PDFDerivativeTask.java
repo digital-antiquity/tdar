@@ -13,7 +13,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
@@ -31,7 +30,6 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String orig = "SCIDD_Storage_Basin_Phase_2DR_redacted_pages.pdf";
         File origFile = new File(baseDir, orig);
         WorkflowContext ctx = new WorkflowContext();
-        ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         task.setWorkflowContext(ctx);
         InformationResourceFileVersion vers = new InformationResourceFileVersion(VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L);
         ctx.getOriginalFiles().add(vers);

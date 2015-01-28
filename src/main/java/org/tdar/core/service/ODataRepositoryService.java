@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -67,8 +67,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Dataset> findAllOwnedDatasets() {
         List<Dataset> ownedDatasets = new ArrayList<Dataset>();
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
+        TdarUser authenticatedUser = genericService.find(TdarUser.class, getSessionData().getTdarUserId());
+        TdarUser knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             List<ResourceType> types = new ArrayList<>();
             types.add(ResourceType.DATASET);
@@ -133,8 +133,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     public List<AbstractDataRecord> findAllDataRecordsForDataTable(DataTable dataTable) {
 
         List<AbstractDataRecord> dataRecords = new ArrayList<AbstractDataRecord>();
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
+        TdarUser authenticatedUser = genericService.find(TdarUser.class, getSessionData().getTdarUserId());
+        TdarUser knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             Dataset dataset = dataTable.getDataset();
             assert dataset != null;
@@ -154,8 +154,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateRecord(AbstractDataRecord dataRecord) {
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
+        TdarUser authenticatedUser = genericService.find(TdarUser.class, getSessionData().getTdarUserId());
+        TdarUser knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             DataTable dataTable = dataRecord.getDataTable();
             assert dataTable != null;

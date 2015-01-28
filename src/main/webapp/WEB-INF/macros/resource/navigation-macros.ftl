@@ -28,34 +28,73 @@ navigation freemarker macros
         <div class="span12 resource-nav  screen " id="toolbars" parse="true">
             <ul>
                 <#if persistable??>
+			        <@makeLink namespace "view" "view" "view" current />
+			        <#if editable>
+			            <@makeLink namespace "edit" "edit" "edit" current />
+			            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+			            <@makeLink "resource" "delete?id=${resource.id}" "delete" "delete" current true _deleteable />
+			        </#if>
+			        <@list.bookmark resource true true />
+			        <#if resource.resourceType.project >
+			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
+			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
+			        </#if>
+					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+			        <#if editable>
+						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
+					</#if>
+			    </#if>
+			    <#nested>
+			</ul>
+		</div>
+		</#if>
+    </#macro>
+
+
+    <#macro collectionToolbar namespace current="view">
+        <#if persistable??>
+        <#if (sessionData.authenticated)!false>
+        <div class="span12 resource-nav  screen " id="toolbars" parse="true">
+            <ul>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
-                </#if>
-        <#if editable>
-                    <#local _deleteable = persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted') >
-                    <@makeLink namespace "delete" "delete" "delete" current true _deleteable />
-                </#if>
-        <#if persistable.resourceType??>
-                    <@list.bookmark resource true true />
-                    <#if resource.resourceType == "PROJECT">
-                        <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
-                        <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
-                    </#if>
-                </#if>
-        <#nested>
-       <#elseif creator??>
-                    <@makeLink namespace "view" "view" "view" current />
-                    <#if ableToEditAnything>
-                        <@makeLink namespace "edit" "edit" "edit" current />
-                    </#if>
-                <#else>
-                    <@makeLink "workspace" "list" "bookmarked resources" "list" current false />
-                    <@makeLink "workspace" "select-tables" "integrate data tables in your workspace" "select-tables" current false />
-                </#if>
-            </ul>
-        </div>
+                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+                    <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+                    <@makeLink namespace "usage?id=${persistable.id?c}" "usage" "stats" current />
         </#if>
+        <#nested>
+			</ul>
+		</div>
+
+			</#if>
+		</#if>
+    </#macro>
+
+
+    <#macro billingToolbar namespace current="view">
+        <#if persistable??>
+        <#if (sessionData.authenticated)!false>
+        <div class="span12 resource-nav  screen " id="toolbars" parse="true">
+            <ul>
+	        	<@makeLink namespace "view" "view" "view" current />
+    		    <#if editable>
+                    <@makeLink namespace "edit" "edit" "edit" current />
+                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+                    <@makeLink "billing" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+		        </#if>
+	        	<@makeLink "cart" "add?accountId=${persistable.id?c}" "add invoice" "add" "" false false />
+    	    	<#if administrator>
+    		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
+		        </#if>
+    		    <#if editable || administrator>
+	                <@makeLink namespace "usage?id=${persistable.id?c}" "usage" "stats" current />
+		        </#if>
+			</ul>
+		</div>
+
+			</#if>
+		</#if>
     </#macro>
 
 <#-- emit toolbar for use on a "creator" page
@@ -66,19 +105,21 @@ navigation freemarker macros
  -->
     <#macro creatorToolbar current>
 
-        <#if editor || authenticatedUser?? && id == authenticatedUser.id>
-            <#if creator??>
-                <#local creatorType = creator.creatorType.toString().toLowerCase() />
+        <#if editable >
+            <#if (persistable.registered)!false>
+                <#local creatorType = "user" />
+            <#elseif creator??>
+                <#local creatorType = creator.creatorType?lower_case />
             <#else>
-                <#local creatorType = persistable.creatorType.toString().toLowerCase() />
+                <#local creatorType = persistable.creatorType?lower_case />
             </#if>
 
-            <#if sessionData?? && sessionData.authenticated>
+            <#if (sessionData.authenticated)!false>
             <div class="span12 resource-nav  screen" id="toolbars" parse="true">
                 <ul>
                     <@makeLink "browse" "creators" "view" "view" current true />
 
-    <#if "edit" != current>
+			    <#if "edit" != current>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
                 <#else>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
@@ -86,6 +127,31 @@ navigation freemarker macros
                 </ul>
             </div>
             </#if>
+        </#if>
+    </#macro>
+
+
+<#-- emit toolbar for use on a "keyword" page
+    @param current:string name of the current struts action (e.g. edit/view/save)
+    @requires keywordType:string
+    @requires sessionData:SessionData
+    @requires authenticatedUser:Person
+ -->
+
+    <#macro keywordToolbar current>
+
+        <#if editor>
+            <div class="span12 resource-nav  screen" id="toolbars" parse="true">
+                <ul>
+                    <@makeLink keyword.urlNamespace "" "view" "view" current true />
+
+            <#if "edit" != current>
+                    <@makeLink "entity/keyword" "edit?keywordType=${keywordType}" "edit" "edit" current true  />
+                <#else>
+                    <@makeLink "entity/keyword" "edit" "edit" "edit" current true />
+                </#if>
+                </ul>
+            </div>
         </#if>
     </#macro>
 
@@ -120,13 +186,26 @@ navigation freemarker macros
         <#if disabled>
         <span class="disabled">
         <#else>
-        <a href="<#compress><@s.url value="/${namespace}/${action}">
+        <#local localAction="/" + action />
+        <#if localAction == '/'>
+            <#local localAction="" />
+        </#if>
+        <#if persistable??>
+            <#local _id = persistable.id />
+        <#elseif creator?? >
+            <#local _id = creator.id />
+        <#elseif keyword?? >
+            <#local _id = keyword.id />
+        </#if>
+		<#if action == 'view' || action == "creators" || action == 'stats' || action=='usage'>
+			<#local includeResourceId = false/>
+			<#local localAction="/${_id?c}"/>
+            <#if action == "creators">
+                <#local localAction="/creators/${_id?c}"/>
+            </#if>
+		</#if>
+        <a href="<#compress><@s.url value="/${namespace}${localAction}">
 	        <#if includeResourceId>
-	            <#if persistable??>
-	                <#local _id = persistable.id />
-	            <#else>
-	                <#local _id = creator.id />
-	            </#if>
 	            <@s.param name="id" value="${_id?c}" />
 	        </#if>
 	        </@s.url></#compress>">
@@ -139,8 +218,7 @@ navigation freemarker macros
 
 <#-- emit "delete" button for use with repeatable form field rows -->
     <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
-    <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i
-            class="icon-trash"></i></button>
+    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
     </#macro>
 </#escape>
 

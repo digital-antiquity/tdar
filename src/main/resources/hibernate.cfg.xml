@@ -17,5 +17,6 @@
         <mapping package="org.tdar.core.bean.citation" />
         <mapping package="org.tdar.core.bean.collection" />
         <mapping package="org.tdar.core.bean.coverage" />
+        <mapping package="org.tdar.core.bean.billing" />
     </session-factory>
 </hibernate-configuration>

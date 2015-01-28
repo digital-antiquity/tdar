@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.search.geosearch.GeoSearchService;
 
 @Component
@@ -28,7 +28,7 @@ public class GeoLocationController extends TdarActionSupport {
     private GeoSearchService geoSearchService;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     private Double minX;
     private Double minY;
@@ -53,7 +53,7 @@ public class GeoLocationController extends TdarActionSupport {
         try {
             Set<GeographicKeyword> allGeographicInfo = geoSearchService.extractAllGeographicInfo(latLongBox);
             latLongBox.addGeographicKeywords(allGeographicInfo);
-            String xml = xmlService.convertToXML(latLongBox);
+            String xml = serializationService.convertToXML(latLongBox);
             setInputStream(new StringInputStream(xml));
             getLogger().info(xml);
             getLogger().debug("completed external latLong lookup");

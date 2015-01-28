@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -28,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.citation.Citation;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
@@ -36,9 +36,9 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
@@ -53,13 +53,13 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.TestConfiguration;
 
@@ -81,11 +81,11 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
-    XmlService xmlService;
+    SerializationService serializationService;
 
     @Test
     @Rollback
-    public void testExcelTemplate() throws FileNotFoundException, IOException {
+    public void testExcelTemplate() throws FileNotFoundException, IOException, TdarActionException {
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();
         File file = File.createTempFile("tempTemplate", ".xls");
@@ -124,7 +124,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
         List<Long> materialKeywordIds = genericService.findRandomIds(MaterialKeyword.class, 3);
         Collections.sort(materialKeywordIds);
-        bulkUploadController.setMaterialKeywordIds(materialKeywordIds);
+        bulkUploadController.setApprovedMaterialKeywordIds(materialKeywordIds);
         List<Long> siteTypeKeywordIds = genericService.findRandomIds(SiteTypeKeyword.class, 3);
         Collections.sort(siteTypeKeywordIds);
         bulkUploadController.getPersistable().setInheritingCulturalInformation(true);
@@ -159,7 +159,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             ids = genericService.extractIds(resource.getSiteTypeKeywords());
             Collections.sort(ids);
             assertEquals(siteTypeKeywordIds, ids);
-            logger.debug(xmlService.convertToXML(resource));
+            logger.debug(serializationService.convertToXML(resource));
             assertEquals(1, resource.getResourceNotes().size());
             ResourceNote resourceNote = resource.getResourceNotes().iterator().next();
             assertEquals(note.getType(), resourceNote.getType());
@@ -228,8 +228,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             }
         };
 
-        CollectionUtils.collect(resource.getRelatedComparativeCollections(), t, rccs);
-        CollectionUtils.collect(resource.getSourceCollections(), t, scs);
+        for (RelatedComparativeCollection rcc : resource.getRelatedComparativeCollections()) {
+            rccs.add(rcc.getText());
+        }
+        for (SourceCollection rcc : resource.getSourceCollections()) {
+            scs.add(rcc.getText());
+        }
 
         assertTrue(scs.contains("sc one"));
         assertTrue(scs.contains("sc two"));
@@ -373,7 +377,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse, List<File> uploadFiles) throws Exception {
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         BulkUploadController bulkUploadController = generateNewController(BulkUploadController.class);
         init(bulkUploadController, user);
         bulkUploadController.prepare();
@@ -656,11 +660,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             logger.info("INTERNAL COLLECTIONS: {} ", col);
         }
         return col.size();
-    }
-
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
     }
 
 }

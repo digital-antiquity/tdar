@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Document;
@@ -25,18 +25,16 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.search.SearchIndexService;
+import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.AdvancedSearchController;
-import org.tdar.struts.action.search.SearchParameters;
 
 public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 
     private static final String TEST_RELEVANCY_DIR = TestConstants.TEST_ROOT_DIR + "relevancy_tests/";
-    @Autowired
-    private AdvancedSearchController controller;
+
     @Autowired
     private GenericKeywordService genericKeywordService;
     @Autowired
@@ -56,15 +54,10 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         return super.getTestFilePath() + "/relevancy_tests";
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
     // fixme: generics pointless here?
     private <T extends InformationResource> T prepareResource(T iResource, String title, String description) {
         Project project = Project.NULL;
-        Person submitter = getUser();
+        TdarUser submitter = getUser();
 
         iResource.setTitle(title);
         iResource.setDescription(description);
@@ -81,11 +74,10 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 
     @Before
     // create the necessary information resources needed for our test
-    public void prepareInformationResources() {
+    public void prepareInformationResources() throws TdarActionException {
 
         // prep the search controller
         searchIndexService.purgeAll();
-        controller.setRecordsPerPage(50);
         // prep the doc that matches on title (most relevant)
         resourceWithTitleMatch = prepareResource(new Document(), SEMI_UNIQUE_NAME, "desc");
         logger.debug("resourceWithTitleMatch:" + resourceWithTitleMatch.getId());
@@ -117,6 +109,8 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     public void testLocationRelevancy() throws IOException, TdarActionException {
         prepareInformationResources();
         runIndex();
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
+        controller.setRecordsPerPage(50);
         controller.setServletRequest(getServletRequest());
 
         controller.setQuery(SEMI_UNIQUE_NAME);
@@ -157,6 +151,8 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
+        controller.setRecordsPerPage(50);
         Project p = new Project();
         p.setTitle("test project");
         p.markUpdated(getUser());
@@ -184,23 +180,4 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         assertTrue(controller.getResults().contains(document));
     }
 
-    // @Test
-    // public void testLuceneInternals() throws IOException, ParseException {
-    // DirectoryProvider clientProvider = hibernateSearchDao.getFullTextSession().getSearchFactory().getDirectoryProviders(Resource.class)[0];
-    // logger.info("hi");
-    // ReaderProvider readerProvider = hibernateSearchDao.getFullTextSession().getSearchFactory().getReaderProvider();
-    // IndexReader reader = readerProvider.openReader(clientProvider);
-    // IndexSearcher searcher = new IndexSearcher(reader);
-    // // Query query = QueryBuilder.;
-    // QueryParser parser = new QueryParser(Version.LUCENE_31, "projectId", new TdarStandardAnalyzer());
-    // Query query = parser.parse("projectId:3805");
-    // TopDocs hits = searcher.search(query, null, 1000);
-    // for (int i = 0; i < hits.scoreDocs.length; i++) {
-    // org.apache.lucene.document.Document hitDoc = searcher.doc(hits.scoreDocs[i].doc);
-    // logger.info(hitDoc.toString());
-    // for (Fieldable field : hitDoc.getFields()) {
-    // // field.
-    // }
-    // }
-    // }
 }

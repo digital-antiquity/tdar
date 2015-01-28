@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.queryParser.ParseException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
@@ -22,20 +23,24 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.junit.TdarAssert;
+import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.search.query.SortOption;
+import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.struts.data.DateRange;
 import org.tdar.utils.MessageHelper;
 
@@ -45,12 +50,6 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
-
-    @Override
-    @Autowired
-    public TdarActionSupport getController() {
-        return controller;
-    }
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -80,6 +79,64 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
     }
 
+    
+    @Test
+    @Rollback(true)
+    public void testCreatorOwnerQueryPart() throws ParseException {
+        QueryBuilder rqb = searchService.generateQueryForRelatedResources(getAdminUser(), null, controller);
+        Document authorDocument = new Document();
+        authorDocument.setTitle("author");
+        authorDocument.setDescription(REASON);
+        authorDocument.markUpdated(getBasicUser());
+        genericService.saveOrUpdate(authorDocument);
+        authorDocument.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.AUTHOR));
+        genericService.saveOrUpdate(authorDocument);
+        searchIndexService.index(authorDocument);
+
+        Document contribDocument = new Document();
+        contribDocument.setTitle("contrib");
+        contribDocument.setDescription(REASON);
+        contribDocument.markUpdated(getBasicUser());
+        genericService.saveOrUpdate(contribDocument);
+        contribDocument.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.CONTACT));
+        genericService.saveOrUpdate(contribDocument);
+        searchIndexService.index(contribDocument);
+
+        
+        Document ownerDocument = new Document();
+        ownerDocument.setTitle("owner");
+        ownerDocument.setDescription(REASON);
+        ownerDocument.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(ownerDocument);
+        searchIndexService.index(ownerDocument);
+
+        Document hiddenDocument = new Document();
+        hiddenDocument.setTitle("hidden");
+        hiddenDocument.setDescription(REASON);
+        hiddenDocument.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(hiddenDocument);
+        hiddenDocument.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
+        genericService.saveOrUpdate(authorDocument);
+        searchIndexService.index(hiddenDocument);
+
+        assertFalse(rqb.isEmpty());
+        SearchResult result = new SearchResult();
+        result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        result.setSortField(SortOption.RELEVANCE);
+        searchService.handleSearch(rqb, result, MessageHelper.getInstance());
+        for (Resource r : (List<Resource>)(List<?>)result.getResults()) {
+            List<Long> authorIds = new ArrayList<Long>();
+            for (ResourceCreator cr : r.getContentOwners()) {
+                authorIds.add(cr.getCreator().getId());
+            }
+            logger.debug("result: {} id:{} [s:{} | {}]", r.getTitle(), r.getId(), r.getSubmitter().getId(), authorIds);
+        }
+        assertFalse(result.getResults().contains(hiddenDocument));
+        assertFalse(result.getResults().contains(contribDocument));
+        assertTrue(result.getResults().contains(authorDocument));
+        assertTrue(result.getResults().contains(ownerDocument));
+    }
+    
     @Test
     @Rollback(true)
     public void testResourceTypeSearchPhrase() {
@@ -482,6 +539,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getInvestigationTypeIdLists().add(ids);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException {
@@ -495,11 +553,11 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         DateTimeZone dtz = DateTimeZone.forID("GMT");
 
         // first create two documents with two separate create dates
-        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@mailinator.com", ""));
+        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@tdar.net", ""));
         DateMidnight dm1 = new DateMidnight(2001, 2, 16, dtz);
         document1.setDateCreated(dm1.toDate());
 
-        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@mailinator.com", ""));
+        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@tdar.net", ""));
         DateMidnight dm2 = new DateMidnight(2002, 11, 1, dtz);
         document2.setDateCreated(dm2.toDate());
 

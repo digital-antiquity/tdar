@@ -22,7 +22,8 @@
     <tbody>
         <#list usageStats as stats>
         <tr>
-            <td><a href="<@s.url value="/${stats.resource.resourceType.urlNamespace}/${stats.resource.id?c}" />">${stats.resource.title}</a>
+            <td>
+            <a href="<@s.url value="/${stats.resource.resourceType.urlNamespace}/${stats.resource.id?c}" />">${stats.resource.title}</a>
                 (${stats.resource.id?c})
             </td>
             <td>${stats.count}</td>

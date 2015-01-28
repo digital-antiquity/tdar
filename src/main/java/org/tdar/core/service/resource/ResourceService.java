@@ -15,47 +15,59 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.dao.resource.stats.DateGranularity;
+import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.service.DeleteIssue;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.struts.data.AggregateDownloadStatistic;
-import org.tdar.struts.data.AggregateViewStatistic;
-import org.tdar.struts.data.DateGranularity;
-import org.tdar.struts.data.ResourceSpaceUsageStatistic;
+import org.tdar.utils.PersistableUtils;
 
+import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 
 @Service
@@ -70,17 +82,26 @@ public class ResourceService extends GenericService {
     }
 
     @Autowired
-    private XmlService xmlService;
+    private transient SerializationService serializationService;
+
+    @Autowired
+    private transient EntityService entityService;
 
     @Autowired
     private DatasetDao datasetDao;
+    @Autowired
+    private ProjectDao projectDao;
+    @Autowired
+    private DataTableDao dataTableDao;
 
+    @Autowired
+    private AuthorizationService authenticationAndAuthorizationService;
     @Autowired
     private GeoSearchService geoSearchService;
 
     @Transactional(readOnly = true)
-    public List<Resource> findSkeletonsForSearch(Long... ids) {
-        return datasetDao.findSkeletonsForSearch(ids);
+    public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
+        return datasetDao.findSkeletonsForSearch(trustCache, ids);
     }
 
     @Transactional(readOnly = true)
@@ -145,7 +166,7 @@ public class ResourceService extends GenericService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, Person person, String message) {
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message) {
         logResourceModification(modifiedResource, person, message, null);
     }
 
@@ -158,7 +179,7 @@ public class ResourceService extends GenericService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, Person person, String message, String payload) {
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload) {
         ResourceRevisionLog log = new ResourceRevisionLog();
         log.setLogMessage(message);
         log.setResource(modifiedResource);
@@ -256,7 +277,7 @@ public class ResourceService extends GenericService {
                     datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
                             FindOptions.FIND_FIRST_OR_CREATE));
         }
-        Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
+        PersistableUtils.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
     }
 
     @Transactional
@@ -292,9 +313,7 @@ public class ResourceService extends GenericService {
             current.clear();
         }
 
-        // incoming = getDao().merge(incoming);
-        // assume everything that's incoming is valid or deduped and tied back into
-        // tDAR entities/beans
+        // assume everything that's incoming is valid or deduped and tied back into tDAR entities/beans
         logger.debug("Current Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
 
         /*
@@ -303,12 +322,9 @@ public class ResourceService extends GenericService {
          * "retainAll" below keeps the older version
          */
 
-        // Collection<H> retainAll = CollectionUtils.retainAll(current, incoming);
-        // current.clear();
-        // current.addAll(retainAll);
         current.retainAll(incoming);
-        Map<Long, H> idMap = Persistable.Base.createIdMap(current);
-        if (!CollectionUtils.isEmpty(incoming)) {
+        Map<Long, H> idMap = PersistableUtils.createIdMap(current);
+        if (CollectionUtils.isNotEmpty(incoming)) {
             logger.debug("Incoming Collection of {}s ({})  : {} ", new Object[] { cls.getSimpleName(), incoming.size(), incoming });
             Iterator<H> incomingIterator = incoming.iterator();
             while (incomingIterator.hasNext()) {
@@ -323,7 +339,7 @@ public class ResourceService extends GenericService {
                      * If we're not transient, compare the two beans on all of their local properties (non-recursive) -- if there are differences
                      * copy. otherwise, move on. Question -- it may be more work to compare than to just "copy"... is it worth it?
                      */
-                    if (Persistable.Base.isNotNullOrTransient(existing) && !EqualsBuilder.reflectionEquals(existing, hasResource_)) {
+                    if (PersistableUtils.isNotNullOrTransient(existing) && !EqualsBuilder.reflectionEquals(existing, hasResource_)) {
                         try {
                             logger.trace("copying bean properties for entry in existing set");
                             BeanUtils.copyProperties(existing, hasResource_);
@@ -443,7 +459,7 @@ public class ResourceService extends GenericService {
                     logger.info("cloning collection: {}", collection);
                     ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
                     newInternal.setName(collection.getName());
-                    Person owner = collection.getOwner();
+                    TdarUser owner = collection.getOwner();
                     refresh(owner);
                     newInternal.markUpdated(owner);
                     if (save) {
@@ -479,7 +495,7 @@ public class ResourceService extends GenericService {
                 InformationResource informationResource = (InformationResource) resource;
                 informationResource.setDate(proxyInformationResource.getDate());
                 // force project into the session
-                if (Persistable.Base.isNotNullOrTransient(proxyInformationResource.getProject())) {
+                if (PersistableUtils.isNotNullOrTransient(proxyInformationResource.getProject())) {
                     Project project = proxyInformationResource.getProject();
                     // refresh(project);
                     informationResource.setProject(project);
@@ -628,7 +644,7 @@ public class ResourceService extends GenericService {
      */
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
-        if (Persistable.Base.isNullOrTransient(resource)) {
+        if (PersistableUtils.isNullOrTransient(resource)) {
             return Collections.emptyList();
         }
         return datasetDao.getLogEntriesForResource(resource);
@@ -672,7 +688,7 @@ public class ResourceService extends GenericService {
     public void setupWorldMap(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
         Long countryTotal = 0l;
         Double countryLogTotal = 0d;
-        for (HomepageGeographicKeywordCache item : findAll(HomepageGeographicKeywordCache.class)) {
+        for (HomepageGeographicKeywordCache item : findAllWithL2Cache(HomepageGeographicKeywordCache.class)) {
             Long count = item.getCount();
             Double logCount = item.getLogCount();
             if (logCount > countryLogTotal) {
@@ -689,8 +705,102 @@ public class ResourceService extends GenericService {
         }
     }
 
-    @Transactional(readOnly=true)
-    public List<Resource> findByTdarYear(SearchResultHandler resultHandler, int year) {
+    @Transactional(readOnly = true)
+    public List<Resource> findByTdarYear(SearchResultHandler<Resource> resultHandler, int year) {
         return datasetDao.findByTdarYear(resultHandler, year);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Resource> getWeeklyPopularResources(int count) {
+        List<Resource> featured = new ArrayList<>();
+        try {
+            int cacheCount = 0;
+            for (WeeklyPopularResourceCache cache : datasetDao.findAll(WeeklyPopularResourceCache.class)) {
+                Resource key = cache.getKey();
+                if (key instanceof Resource) {
+                    authenticationAndAuthorizationService.applyTransientViewableFlag(key, null);
+                }
+                if (key.isActive()) {
+                    if (cacheCount == count) {
+                        break;
+                    }
+                    cacheCount++;
+                    featured.add(key);
+                }
+            }
+        } catch (IndexOutOfBoundsException ioe) {
+            logger.debug("no featured resources found");
+        }
+        return featured;
+    }
+
+    @Transactional(readOnly = false)
+    public void saveResourceCreatorsFromProxies(Collection<ResourceCreatorProxy> allProxies, Resource resource, boolean shouldSaveResource) {
+        logger.info("ResourceCreators before DB lookup: {} ", allProxies);
+        int sequence = 0;
+        List<ResourceCreator> incomingResourceCreators = new ArrayList<>();
+        // convert the list of proxies to a list of resource creators
+        for (ResourceCreatorProxy proxy : allProxies) {
+            if ((proxy != null) && proxy.isValid()) {
+                ResourceCreator resourceCreator = proxy.getResourceCreator();
+                resourceCreator.setSequenceNumber(sequence++);
+                logger.trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
+
+                entityService.findOrSaveResourceCreator(resourceCreator);
+                incomingResourceCreators.add(resourceCreator);
+                logger.trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
+            } else {
+                logger.trace("can't create creator from proxy {} {}", proxy);
+            }
+        }
+
+        // FIXME: Should this throw errors?
+        saveHasResources(resource, shouldSaveResource, ErrorHandling.VALIDATE_SKIP_ERRORS, incomingResourceCreators,
+                resource.getResourceCreators(), ResourceCreator.class);
+
+    }
+
+    @Transactional(readOnly = true)
+    public DeleteIssue getDeletionIssues(TextProvider provider, Resource persistable) {
+        DeleteIssue issue = new DeleteIssue();
+        switch (persistable.getResourceType()) {
+            case PROJECT:
+                Set<InformationResource> inProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                if (CollectionUtils.isNotEmpty(inProject)) {
+                    issue.getRelatedItems().addAll(inProject);
+                    issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
+                    return issue;
+                }
+                return null;
+            case CODING_SHEET:
+            case ONTOLOGY:
+                List<DataTable> related = dataTableDao.findDataTablesUsingResource(persistable);
+                if (CollectionUtils.isNotEmpty(related)) {
+                    for (DataTable table : related) {
+                        if (!table.getDataset().isDeleted()) {
+                            issue.getRelatedItems().add(table.getDataset());
+                        }
+                    }
+                    issue.setIssue(provider.getText("abstractSupportingInformationResourceController.remove_mappings"));
+                    return issue;
+                }
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteForController(Resource resource, String reason, TdarUser authUser) {
+        if (StringUtils.isNotEmpty(reason)) {
+            ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, reason);
+            resource.getResourceNotes().add(note);
+            save(note);
+        } else {
+            reason = "reason not specified";
+        }
+        String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
+        logResourceModification(resource, authUser, logMessage);
+        delete(resource);
     }
 }

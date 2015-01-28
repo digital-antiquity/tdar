@@ -25,7 +25,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 /**
  * @author Adam Brin
@@ -71,13 +70,4 @@ public class CodingSheetServiceITCase extends AbstractControllerITCase {
         assertTrue(((CodingSheetParserException) e).getContributingFactors().contains("CODE2"));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 }

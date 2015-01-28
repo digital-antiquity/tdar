@@ -9,7 +9,8 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.sensoryData.SensoryDataController;
 
 public class SensoryDataControllerITCase extends AbstractResourceControllerITCase {
 
@@ -19,12 +20,8 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     private SensoryDataController controller;
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
-    public void initControllerFields() {
+    public void initControllerFields() throws TdarActionException {
         controller.prepare();
     }
 

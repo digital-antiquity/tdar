@@ -30,6 +30,13 @@ TDAR.maps = function ($, TDAR) {
                 strokeWeight: 2,
                 fillColor: "#FF0000",
                 fillOpacity: 0.15
+            },
+            MULTI_RESOURCE: {
+                strokeColor: '#68838B',
+                strokeOpacity: 0.8,
+                strokeWeight: 1,
+                fillColor: '#68838B',
+                fillOpacity: 0.35,
             }
         }
     };
@@ -82,7 +89,7 @@ TDAR.maps = function ($, TDAR) {
      * @private
      */
     var _setupMapInner = function (mapDiv, inputContainer) {
-        console.log("running  setupmap");
+        console.trace("_setMapInner::");
         var mapOptions = $.extend({}, _defaults.mapOptions, {
             zoom: _defaults.zoomLevel,
             center: new google.maps.LatLng(_defaults.center.lat, _defaults.center.lng),
@@ -120,7 +127,7 @@ TDAR.maps = function ($, TDAR) {
 
         //indicate the map is ready and dom elements loaded (we wrap this because the google.maps api may not be available to the listener at time of call)
         google.maps.event.addListenerOnce(map, 'idle', function () {
-            console.log("map ready");
+            console.trace("triggering mapready event");
             $(mapDiv).trigger("mapready", [map, $mapDiv.data("resourceRect")]);
             _deferredMap.resolveWith($mapDiv[0], [map, $mapDiv.data("resourceRect")]);
         });
@@ -177,7 +184,7 @@ TDAR.maps = function ($, TDAR) {
     };
 
     /**
-     * Add a bounding box overlay to a map.
+     * Add a bounding box overlay to a map div.
      *
      * @param mapDiv  map container element
      * @param rectStyleOptions options used when calling google.maps.Rectangle()
@@ -189,14 +196,30 @@ TDAR.maps = function ($, TDAR) {
      * @private
      */
     var _addBound = function (mapDiv, rectStyleOptions, lat1, lng1, lat2, lng2) {
+        var map = $(mapDiv).data("gmap");
+        return _addBoundDirectlytoMap(map, rectStyleOptions, lat1, lng1, lat2, lng2);
+    };
+
+    /**
+     * Add a bounding box overlay to a map.
+     *
+     * @param mapDiv  map container element
+     * @param rectStyleOptions options used when calling google.maps.Rectangle()
+     * @param lat1 southwest latitude
+     * @param lng1 southwest longitude
+     * @param lat2 northeast lattitude
+     * @param lng2 northeast longitude
+     * @returns {google.maps.Rectangle} new gmapv3 Rectangle instance
+     * @private
+     */
+    var _addBoundDirectlytoMap = function (mapObj, rectStyleOptions, lat1, lng1, lat2, lng2) {
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
         var bounds = new google.maps.LatLngBounds(p1, p2);
-        var map = $(mapDiv).data("gmap");
 
         var rectOptions = $.extend({
             bounds: bounds,
-            map: map
+            map: mapObj
         }, rectStyleOptions);
 
         var rect = new google.maps.Rectangle(rectOptions);
@@ -390,9 +413,9 @@ TDAR.maps = function ($, TDAR) {
             //if no bounds, user clicked 'clear' button -- clear all input textboxes
             if (!latLngBounds) {
                 $('input[type=text]', inputContainer).val("");
+                $('input.latLongInput', inputContainer).val("");
                 return;
             }
-            ;
 
             var sw = latLngBounds.getSouthWest();
             var ne = latLngBounds.getNorthEast();
@@ -552,22 +575,64 @@ TDAR.maps = function ($, TDAR) {
             var markers = new Array();
             var infowindows = new Array();
             var i = 0;
+            //http://gis.stackexchange.com/questions/7430/google-maps-zoom-level-ratio
+            // tDAR scales work inversely from Google Maps, 0 for us is very precise, vs. google where 19 is.  tDAR scales range from 0-6
+            var googleScale = myMap.zoom;
             $("ol.MAP li").each(function () {
                 i++;
                 var $this = $(this);
-                if ($this.attr("data-lat") && $this.attr('data-long')) {
-                    console.log($this.attr("data-lat") + " " + $this.attr('data-long'));
+                var scale = parseInt($this.attr("data-scale"));
+                var hide = false;
+                if (scale !== undefined) {
+                    switch (scale) {
+                        case 0:
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        case 4: 
+    //                        break;
+                        case 5: 
+    //                        break;
+                        case 6:
+                            if (googleScale > 4) {
+                                hide = true;
+                            }
+                            break;
+                    }
+                }
+                var lat = parseFloat($this.attr("data-lat"));
+                var long = parseFloat($this.attr("data-long"));
+                var scale = $this.attr("data-scale");
+                var latLen = parseFloat($this.attr("data-lat-length"));
+                var longLen = parseFloat($this.attr("data-long-length"));
+                var latMin = lat - latLen/2;
+                var latMax = lat + latLen/2;
+                var longMin = long - longLen/2;
+                var longMax = long + longLen/2;
+                if (lat && long && hide == false) {
+                    //console.log("scale: " + scale + ": " +lat + " " + long);
                     var infowindow = new google.maps.InfoWindow({
                         content: $this.html()
                     });
+                    //https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=11%7C7a1501%7CFFFFFF
                     var marker = new google.maps.Marker({
-                        position: new google.maps.LatLng($this.attr("data-lat"), $this.attr("data-long")),
+                        position: new google.maps.LatLng(lat, long),
                         map: myMap,
-                        icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|7a1501|FFFFFF',
+                        icon: 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + i + '|7a1501|FFFFFF',
                         title: $("a.resourceLink", $this).text()
                     });
-
-                    $(".icon-map-marker", $this).click(function () {
+                    var config = {
+                            visible:false
+                    };
+                    $.extend(config, _defaults.rectStyleOptions.MULTI_RESOURCE);
+                    
+                    var rectangle = _addBoundDirectlytoMap(myMap, config, latMin, longMin, latMax, longMax);
+                    var $marker = $(".icon-map-marker", $this);
+                    $marker.click(function () {
                         myMap.panTo(marker.getPosition());
                         $(infowindows).each(function () {
                             this.close(myMap);
@@ -575,12 +640,27 @@ TDAR.maps = function ($, TDAR) {
                         infowindow.open(myMap, marker);
                         return false;
                     });
+                    $marker.data("rec",rectangle);
+                    $marker.mouseover(function() {
+                        $marker.data("rec").setVisible(true);
+                    });
+                    $marker.mouseout(function() {
+                        $marker.data("rec").setVisible(false);
+                    });
 
                     google.maps.event.addListener(marker, 'click', function () {
                         $(infowindows).each(function () {
                             this.close(myMap);
                         });
                         infowindow.open(myMap, marker);
+                    });
+
+                    google.maps.event.addListener(marker, 'mouseover', function () {
+                        $marker.data("rec").setVisible(true);
+                    });
+
+                    google.maps.event.addListener(marker, 'mouseout', function () {
+                        $marker.data("rec").setVisible(false);
                     });
 
                     markers[markers.length] = marker;

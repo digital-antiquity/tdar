@@ -8,16 +8,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -28,6 +27,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.entity.UserPermissionCacheKey.CacheResult;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -69,10 +69,8 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             return false;
         }
         // if the user is the owner, don't go any further
-        if (ObjectUtils.equals(resource.getSubmitter(), person)) {
-            if (getLogger().isTraceEnabled()) {
-                getLogger().trace("allowed to ... is submitter: {}", resource.getId());
-            }
+        if (Objects.equals(resource.getSubmitter(), person)) {
+            getLogger().trace("allowed to ... is submitter: {}", resource.getId());
             return true;
         }
 
@@ -81,9 +79,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }
-        if (getLogger().isTraceEnabled()) {
-            getLogger().debug("allowed to rights collection ids: {}", ids);
-        }
+        getLogger().trace("allowed to rights collection ids: {}", ids);
         return isAllowedTo(person, permission, ids);
     }
 
@@ -91,7 +87,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         if (collection.isPublic()) {
             return false;
         }
-        if (ObjectUtils.equals(collection.getOwner(), person)) {
+        if (Objects.equals(collection.getOwner(), person)) {
             return true;
         }
         List<Long> ids = new ArrayList<>(collection.getParentIds());
@@ -112,7 +108,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
     }
 
     public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> ids) {
-        if (CollectionUtils.isEmpty(ids) || Persistable.Base.isNullOrTransient(person)) {
+        if (CollectionUtils.isEmpty(ids) || PersistableUtils.isNullOrTransient(person)) {
             return false;
         }
 
@@ -126,7 +122,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
             @SuppressWarnings("unchecked")
             List<Integer> result = query.list();
-            getLogger().debug("results: {}", result);
+            getLogger().trace("results: {}", result);
             if (result.isEmpty() || result.get(0) != 1) {
                 updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.FALSE);
                 return false;
@@ -136,7 +132,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         } else {
             cached = "CACHED";
         }
-        getLogger().debug("  [{} {}] checkUserPermissionCache: {}:{} [sesion: {}] {}", cacheResult, cached, person.getId(), permission,
+        getLogger().trace("  [{} {}] checkUserPermissionCache: {}:{} [sesion: {}] {}", cacheResult, cached, person.getId(), permission,
                 getCurrentSession().hashCode(), ids);
         return cacheResult.getBooleanEquivalent();
     }
@@ -221,14 +217,15 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted, List<Long> collectionIds) {
         // Hey guess what - you always get sorted results.
         if (CollectionUtils.isEmpty(collectionIds)) {
             collectionIds = new ArrayList<>();
             collectionIds.add(null);
         }
-        if (Persistable.Base.isNullOrTransient(person)) {
-            return Collections.EMPTY_LIST;
+        if (PersistableUtils.isNullOrTransient(person)) {
+            return Collections.emptyList();
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);
         query.setInteger("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
@@ -243,9 +240,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         query.setParameter("allStatuses", false);
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
         // query.setParameterList("rescolIds", collectionIds);
-        List results = query.list();
-
-        return results;
+        return query.list();
     }
 
     public Set<Resource> findSparseEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin) {

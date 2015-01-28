@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -34,6 +34,10 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+import org.tdar.utils.json.JsonIntegrationFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -87,6 +91,7 @@ public class DataTable extends Persistable.Base {
         this.dataset = dataset;
     }
 
+    @JsonView(JsonIntegrationFilter.class)
     public String getName() {
         return name;
     }
@@ -97,6 +102,7 @@ public class DataTable extends Persistable.Base {
 
     @XmlElementWrapper(name = "dataTableColumns")
     @XmlElement(name = "dataTableColumn")
+    @JsonView(JsonIntegrationDetailsFilter.class)
     public List<DataTableColumn> getDataTableColumns() {
         return dataTableColumns;
     }
@@ -110,6 +116,7 @@ public class DataTable extends Persistable.Base {
      * 
      * @return
      */
+    @XmlTransient
     public List<DataTableColumn> getSortedDataTableColumns() {
         return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
             @Override
@@ -119,6 +126,22 @@ public class DataTable extends Persistable.Base {
                     return a.getDisplayName().compareTo(b.getDisplayName());
                 }
                 return comparison;
+            }
+        });
+    }
+
+    /**
+     * Get the data table columns sorted in the ascending order of sequence_number which should be the import order if available
+     * 
+     * @return
+     */
+    @XmlTransient
+    @JsonView(JsonIntegrationFilter.class)
+    public List<DataTableColumn> getSortedDataTableColumnsByImportOrder() {
+        return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
+            @Override
+            public int compare(DataTableColumn a, DataTableColumn b) {
+                return ObjectUtils.compare(a.getSequenceNumber(), b.getSequenceNumber());
             }
         });
     }
@@ -189,7 +212,7 @@ public class DataTable extends Persistable.Base {
      */
     @XmlTransient
     @Transient
-    public  Set<DataTableRelationship> getRelationships() {
+    public Set<DataTableRelationship> getRelationships() {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (DataTableRelationship r : dataset.getRelationships()) {
             // return the relationship if this table is either the relationship's foreign or local table
@@ -275,8 +298,14 @@ public class DataTable extends Persistable.Base {
         this.displayName = displayName;
     }
 
+    @JsonView(value={JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class})
     public String getDisplayName() {
         return displayName;
+    }
+
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    public String getDatasetTitle() {
+        return getDataset().getTitle();
     }
 
     public String getInternalName() {
@@ -293,4 +322,5 @@ public class DataTable extends Persistable.Base {
         }
         return columns;
     }
+    
 }

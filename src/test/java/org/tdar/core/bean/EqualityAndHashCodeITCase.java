@@ -12,23 +12,39 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.search.index.LookupSource;
+import org.tdar.utils.PersistableUtils;
 
 public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
 
+    @Test
+    @Rollback
+    public void testCreatorEquality() {
+        Person person = new Person();
+        person.setId(10l);
+        assertNotEquals(person,null);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
+        assertNotEquals(person, llb);
+        assertEquals(person, (Creator)person);
+        Institution institution = new Institution();
+        institution.setId(10l);
+        assertNotEquals(person, institution);
+    }
+    
     @Test
     public void testSkeletonPersonRetentionInSet() {
         HashSet<Person> personSet = new HashSet<Person>();
@@ -40,22 +56,6 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         }
         logger.info("people: {}", personSet);
         assertEquals(2, personSet.size());
-    }
-
-    @Test
-    @Ignore
-    // This was setup to test what goes on when you call merge, with a detached and non-detached version of an entity that an error happens
-    public void testHib() throws Exception {
-        Document doc = new Document();
-        doc.setTitle("t");
-        doc.setDescription("d");
-        doc.setDocumentType(DocumentType.OTHER);
-        doc.markUpdated(getAdminUser());
-        genericService.save(doc);
-        genericService.detachFromSession(doc);
-        Person admin = genericService.find(Person.class, getAdminUserId());
-        doc.setUploader(admin);
-        doc = genericService.merge(doc);
     }
 
     @Test
@@ -130,16 +130,17 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             Person persistedPerson = personList.get(i);
 
             // person equality based on db identity. so the two person records should not be equal
-            Person person = new Person();
+            TdarUser person = new TdarUser();
             person.setEmail(persistedPerson.getEmail());
-            person.setRegistered(persistedPerson.isRegistered());
+//            person.setRegistered(persistedPerson.isRegistered());
+            person.setContributor(true);
             person.setLastName(persistedPerson.getLastName());
             person.setFirstName(persistedPerson.getFirstName());
             person.setPhone(persistedPerson.getPhone());
             assertNotEquals(persistedPerson, person);
 
             // the person record is 'transient'.
-            assertTrue(Persistable.Base.isTransient(person));
+            assertTrue(PersistableUtils.isTransient(person));
             // if we simulate a save by giving it an ID, they are unequal
             person.setId(persistedPerson.getId() + 15L);
             assertNotEquals("these should still be equal even after save", persistedPerson, person);

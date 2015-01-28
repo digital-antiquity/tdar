@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.db.model.abstracts.TargetDatabase;
 
 /*
  * A static utility class for the DatasetService
@@ -24,7 +23,7 @@ public class DatasetUtils {
         Map<DataTableColumn, String> results = new LinkedHashMap<>();
         if (returnRowId) {
             // we want this to be the very first entry in the linked hash map
-            results.put(table.getColumnByName(TargetDatabase.TDAR_ID_COLUMN), null);
+            results.put(table.getColumnByName(DataTableColumn.TDAR_ID_COLUMN), null);
         }
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
             DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));

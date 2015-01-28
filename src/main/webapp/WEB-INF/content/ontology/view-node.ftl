@@ -14,7 +14,7 @@
     <#if parentNode?has_content>
         <a href="<@s.url value="${parentNode.iri}"/>">${parentNode.displayName}</a></p>
     <#else>
-    <a href="<@s.url value="/ontology/${ontology.id?c}"/>">${ontology.title} (ontology root)</a></p>
+    <a href="<@s.url value="${ontology.detailUrl}"/>">${ontology.title} (ontology root)</a></p>
 
     </#if>
 
@@ -30,7 +30,7 @@
 <h2>Datasets that use ${node.displayName}</h2>
 <ul>
     <#list datasetsWithMappingsToNode as dataset>
-        <li><a href="<@s.url value="/${dataset.urlNamespace}/${dataset.id?c}"/>">${dataset.name}</a></li>
+        <li><a href="<@s.url value="${dataset.detailUrl}"/>">${dataset.name}</a></li>
     </#list>
     <#if !datasetsWithMappingsToNode?has_content>
         <li>None</li>

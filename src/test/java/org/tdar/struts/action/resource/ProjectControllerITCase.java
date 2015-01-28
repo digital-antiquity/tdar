@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -35,9 +38,11 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.SortOption;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.project.ProjectController;
+import org.tdar.struts.action.sensoryData.SensoryDataController;
 
 import com.opensymphony.xwork2.Action;
 
@@ -48,8 +53,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testProjectJSON() {
-        ProjectController controller = generateNewInitializedController(ProjectController.class);
+    public void testProjectJSON() throws IOException, TdarActionException {
+        ProjectController controller = generateNewInitializedController(ProjectController.class, getAdminUser());
         controller.setId(3805L);
         controller.prepare();
         RelatedComparativeCollection rcc = new RelatedComparativeCollection();
@@ -59,9 +64,10 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         ResourceAnnotationKey key = new ResourceAnnotationKey();
         key.setKey("key23123");
         controller.getProject().getResourceAnnotations().add(new ResourceAnnotation(key, "21234"));
-        String projectAsJson = controller.getProjectAsJson();
+        controller.json();
+        String projectAsJson = IOUtils.toString(controller.getJsonInputStream());
         logger.info(projectAsJson);
-        assertTrue(projectAsJson.contains("approved"));
+        assertTrue(projectAsJson.contains("activeCultureKeywords"));
         assertTrue(projectAsJson.contains("Domestic Structure or Architectural Complex"));
         assertTrue(projectAsJson.contains("New Philadelphia"));
         assertTrue(projectAsJson.contains("redacted"));
@@ -164,10 +170,10 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
         ResourceCollection testCollection = new ResourceCollection(CollectionType.SHARED);
-        Person testModify = createAndSaveNewPerson("a@b", "1234");
-        Person testOwner = createAndSaveNewPerson("a@b1", "12341");
-        Person testView = createAndSaveNewPerson("a@b2", "12341");
-        Person testAdmin = createAndSaveNewPerson("a@b3", "12341");
+        TdarUser testModify = createAndSaveNewPerson("a@b", "1234");
+        TdarUser testOwner = createAndSaveNewPerson("a@b1", "12341");
+        TdarUser testView = createAndSaveNewPerson("a@b2", "12341");
+        TdarUser testAdmin = createAndSaveNewPerson("a@b3", "12341");
         testCollection.markUpdated(testOwner);
         testCollection.setName("test name");
         genericService.save(testCollection);
@@ -180,7 +186,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         users2.addAll(Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
                 GeneralPermissions.VIEW_ALL),
                 new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_GROUP)));
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, testCollection.getOwner());
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, (TdarUser)testCollection.getOwner());
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
@@ -193,12 +199,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource, GeneralPermissions.MODIFY_METADATA));
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Test
     @Rollback
     public void testPotentialParents() {
@@ -208,7 +208,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         logger.info("potential parents: {}", potentialParents);
         assertTrue("potential parents should always at least have one item (the null project)", potentialParents.size() >= 1);
         // first element should always be the null project
-        assertEquals(Project.NULL, potentialParents.get(0));
+        assertTrue( -1L == potentialParents.get(0).getId());
+        assertEquals(getText("project.no_associated_project"), potentialParents.get(0).getTitle());
 
         int originalParentCount = potentialParents.size();
         createAndSaveNewProject("potential parent project one");
@@ -225,7 +226,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         potentialParents = controller.getPotentialParents();
         logger.info("{}", potentialParents);
         assertTrue(potentialParents.size() > 2);
-        assertEquals(Project.NULL, potentialParents.get(0));
+        assertTrue( -1L == potentialParents.get(0).getId());
+        assertEquals(getText("project.no_associated_project"), potentialParents.get(0).getTitle());
     }
 
     @Test
@@ -233,6 +235,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
         ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
+        setIgnoreActionErrors(true);
         evictCache();
         assertNotNull(rc);
 
@@ -259,10 +262,9 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
         evictCache();
-        setIgnoreActionErrors(true);
     }
 
-    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) {
+    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) throws TdarActionException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.setAsync(false);
@@ -277,7 +279,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         detachedCollection.setName(rc.getName());
         detachedCollection.setId(rc.getId());
         detachedCollection.setType(CollectionType.SHARED);
-        detachedCollection.setVisible(true);
+        detachedCollection.setHidden(false);
         detachedCollection.setSortBy(SortOption.RELEVANCE);
         detachedCollection.markUpdated(rc.getOwner());
         controller.getResourceCollections().add(detachedCollection);
@@ -339,7 +341,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     private ResourceCollection createNewEmptyCollection(String name) {
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
         Date date = new Date();
-        Person owner = new Person("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@mailinator.com");
+        TdarUser owner = new TdarUser("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@tdar.net");
         genericService.save(owner);
         rc.markUpdated(owner);
         rc.setName(name);

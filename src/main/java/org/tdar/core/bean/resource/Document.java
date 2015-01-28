@@ -9,8 +9,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -20,8 +20,6 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.configuration.JSONTransient;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
@@ -50,22 +48,22 @@ public class Document extends InformationResource {
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @BulkImportField(label = "Document Type")
+    @BulkImportField(key ="DOCUMENT_TYPE")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @BulkImportField(label = "Degree")
+    @BulkImportField(key="DEGREE")
     private DegreeType degree;
 
-    @BulkImportField(label = "Series Name")
+    @BulkImportField(key="SERIES_NAME")
     @Column(name = "series_name")
     @Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesName;
 
-    @BulkImportField(label = "Series Number")
+    @BulkImportField(key="SERIES_NUMBER")
     @Column(name = "series_number")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesNumber;
@@ -73,60 +71,54 @@ public class Document extends InformationResource {
     @Column(name = "number_of_pages")
     private Integer numberOfPages;
 
-    @BulkImportField(label = "Edition")
+    @BulkImportField(key = "EDITION")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String edition;
 
-    @BulkImportField(label = "ISBN")
+    @BulkImportField(key = "ISBN")
     @Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String isbn;
 
-    @BulkImportField(label = "Book Title")
+    @BulkImportField(key = "BOOK_TITLE")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "book_title")
     @Field
     // @Boost(1.5f)
     private String bookTitle;
 
-    @BulkImportField(label = "ISSN")
+    @BulkImportField(key = "ISSN")
     @Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
 
-    @BulkImportField(label = "DOI")
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
-    private String doi;
-
-    @BulkImportField(label = "Start Page", order = 10)
+    @BulkImportField(key = "START_PAGE", order = 10)
     @Column(name = "start_page")
     @Length(max = 10)
     private String startPage;
 
-    @BulkImportField(label = "End Page", order = 11)
+    @BulkImportField(key = "END_PAGE", order = 11)
     @Column(name = "end_page")
     @Length(max = 10)
     private String endPage;
 
-    @BulkImportField(label = "Journal Name")
+    @BulkImportField(key = "JOURNAL_NAME")
     @Column(name = "journal_name")
     @Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalName;
 
-    @BulkImportField(label = "Volume")
+    @BulkImportField(key = "VOLUME")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String volume;
 
-    @BulkImportField(label = "# of Volumes")
+    @BulkImportField(key = "NUM_VOLUMES")
     @Column(name = "number_of_volumes")
     private Integer numberOfVolumes;
 
-    @BulkImportField(label = "Journal Number")
+    @BulkImportField(key = "JOURNAL_NUMBER")
     @Column(name = "journal_number")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalNumber;
@@ -220,14 +212,6 @@ public class Document extends InformationResource {
         this.numberOfPages = numberOfPages;
     }
 
-    public String getDoi() {
-        return doi;
-    }
-
-    public void setDoi(String doi) {
-        this.doi = doi;
-    }
-
     public String getStartPage() {
         return startPage;
     }
@@ -276,7 +260,6 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    @JSONTransient
     @Override
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
@@ -286,7 +269,7 @@ public class Document extends InformationResource {
     }
 
     // FIXME: ADD IS?N
-    @JSONTransient
+
     @Override
     // TODO: refactor using MessageFormat or with a freemarker template
     public String getFormattedSourceInformation() {
@@ -338,7 +321,7 @@ public class Document extends InformationResource {
     @Override
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").append(getDoi()).
+        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").
                 append(" ").append(getIssn()).append(" ").append(getIsbn()).append(" ").append(getPublisher()).append(" ").
                 append(getSeriesName());
         return sb.toString();

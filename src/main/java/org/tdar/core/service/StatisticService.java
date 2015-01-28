@@ -2,20 +2,34 @@ package org.tdar.core.service;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
+import org.tdar.core.dao.AggregateStatisticsDao;
+import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.StatisticDao;
+import org.tdar.core.dao.StatsResultObject;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 import com.ibm.icu.util.GregorianCalendar;
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Helper class for running statistics and working with @link AggregatedStatistic objects
@@ -25,6 +39,15 @@ import com.ibm.icu.util.GregorianCalendar;
  */
 @Service
 public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateStatistic, StatisticDao> {
+
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
+
+    @Autowired
+    private BillingAccountDao accountDao;
+
+    @Autowired
+    private AggregateStatisticsDao aggregateStatisticsDao;
 
     private final Date startDate = new GregorianCalendar(2008, 1, 1).getTime();
 
@@ -125,4 +148,60 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
         return getDao().getFileStats(types);
     }
 
+    @Transactional
+    public void generateAggregateDailyResourceData(Date date) {
+        aggregateStatisticsDao.generateAggregateDailyResourceData(date);
+    }
+
+    @Transactional
+    public void generateAggregateDailyDownloadData(Date date) {
+        aggregateStatisticsDao.generateAggregateDailyDownloadData(date);
+    }
+
+    @Transactional
+    public Number countWeeklyEmails() {
+        return getDao().countWeeklyEmails();
+    }
+
+    @Transactional(readOnly = true)
+    public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
+        Set<Long> ids = new HashSet<>();
+        if (collection != null && CollectionUtils.isNotEmpty(collection.getResources())) {
+            ids.addAll(PersistableUtils.extractIds(collection.getResources()));
+            for (ResourceCollection child : resourceCollectionDao.getAllChildCollections(collection)) {
+                if (child != null && CollectionUtils.isNotEmpty(child.getResources())) {
+                    ids.addAll(PersistableUtils.extractIds(child.getResources()));
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(ids)) {
+            return getStats(ids, provider, granularity);
+        }
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    public StatsResultObject getStatsForAccount(BillingAccount account, TextProvider provider, DateGranularity granularity) {
+        Set<Long> ids = new HashSet<>();
+        if (account != null && CollectionUtils.isNotEmpty(account.getResources())) {
+            ids.addAll(PersistableUtils.extractIds(account.getResources()));
+        }
+        if (CollectionUtils.isNotEmpty(ids)) {
+            return getStats(ids, provider, granularity);
+        }
+        return null;
+    }
+
+    private StatsResultObject getStats(Collection<Long> ids, TextProvider provider, DateGranularity granularity) {
+        switch (granularity) {
+            case DAY:
+                return aggregateStatisticsDao.getDailyStats(ids, provider);
+            case MONTH:
+                return aggregateStatisticsDao.getMonthlyStats(ids, provider);
+            case YEAR:
+                return aggregateStatisticsDao.getAnnualStats(ids, provider);
+            default:
+                return null;
+        }
+    }
 }

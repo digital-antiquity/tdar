@@ -1,100 +1,148 @@
 package org.tdar.core.dao.external.auth;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.service.EntityService;
+
+//import org.tdar.utils.TestConfiguration;
 
 /*
  * This provider is designed specifically for testing where no valid connection to an external service
  * is available.  Great for testing* and bascially nothing else. DO NOT USE IN PRODUCTION**
  *
- * To authenticate: use a valid username, but for the password field, use the name of a tdar membership group name
- * (e.g.  'tdar-admins', 'tdar-editors', 'tdar-users').  The provider will authenticate the user and endow that user
- * with the permissions indicated by the groupname.
+ * To authenticate: follow the normal process, simply either register, or use our "test" usernames and "passwords"
  *
  * *As you might expect,  authentication-tests will probably fail
  * ** This class has failsafes to prevent use in production.  Don't rely on them.
  */
-@Service
 public class MockAuthenticationProvider extends BaseAuthenticationProvider {
+    // hardcoded for testing
+    public static final String ADMIN_USERNAME = "admin@tdar.org";
+    public static final String ADMIN_PASSWORD = "admin";
+
+    public static final String EDITOR_USERNAME = "editor@tdar.org";
+    public static final String EDITOR_PASSWORD = "editor";
+
+    public static final String BILLING_USERNAME = "admin@tdar.org";
+    public static final String BILLING_PASSWORD = "admin";
+
+    public static final String USERNAME = "test@tdar.org";
+    public static final String PASSWORD = "test";
+
+    // used for defining local passwords and rights for users
+    private Map<String,MockAuthenticationInfo> localValues = new HashMap<>();
+    
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<String, String> users = new ConcurrentHashMap<String, String>();
+    private Map<String, MockAuthenticationInfo> users = new ConcurrentHashMap<String, MockAuthenticationInfo>();
 
     public MockAuthenticationProvider() {
         logger.debug("is prod?: {}", TdarConfiguration.getInstance().isProductionEnvironment());
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals(TdarConfiguration.getInstance().getRequestTokenName())) {
+                cookie.setMaxAge(0);
+            }
+            response.addCookie(cookie);
+        }
     }
 
     @Override
     public boolean isConfigured() {
-        return Boolean.parseBoolean(System.getProperty("enableMockAuth", "false"));
+        return true;
     }
 
     @Override
-    public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name,
-            String password) {
-        if (!isEnabled() || !isConfigured()) {
-            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
-        }
+    public boolean isEnabled() {
+        return true;
+    };
+
+    @Override
+    public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name, String password) {
+
         if (TdarConfiguration.getInstance().isProductionEnvironment()) {
             logger.error("Mock Authentication is not allowed in production.");
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         }
 
-        AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.ACCOUNT_DOES_NOT_EXIST);
+        AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
 
-        logger.debug("trying to authenticate:: user: {}  groupname:{}", name, password);
-        if (users.containsKey(name)) {
-            TdarGroup group = TdarGroup.fromString(password);
-            logger.debug("user found:{}  group:{}", name, group);
-            users.put(name, group.getGroupName());
+        logger.debug("trying to authenticate:: user: {}  password:{}", name, password);
+        MockAuthenticationInfo user = users.get(name.toLowerCase());
+        if (user != null && Objects.equals(password, user.getPassword())) {
             result.setType(AuthenticationResultType.VALID);
-            if (group == TdarGroup.UNAUTHORIZED) {
-                result.setType(AuthenticationResultType.INVALID_PASSWORD);
-            }
+            String token = Long.toString(user.hashCode() + System.currentTimeMillis());
+            result.setToken(token);
+            result.setTokenUsername(name.toLowerCase());
+            user.setToken(token);
+            Cookie cookie = new Cookie(TdarConfiguration.getInstance().getRequestTokenName(), token);
+            cookie.setMaxAge(1024);
+            response.addCookie(cookie);
+        } else if (user != null) {
+            result.setType(AuthenticationResultType.INVALID_PASSWORD);
         } else {
-            logger.debug("user not found: {}", name);
+            result.setType(AuthenticationResultType.INVALID_PASSWORD);
+            // mirroring settings for crowd which are obfuscated for security
+            // result.setType(AuthenticationResultType.ACCOUNT_DOES_NOT_EXIST);
         }
         return result;
     }
 
     @Override
     public boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
-        if (users.containsKey(person.getEmail())) {
+    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
+        if (users.containsKey(person.getUsername().toLowerCase())) {
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         } else {
-            users.put(person.getEmail(), password);
+            if (ArrayUtils.isEmpty(groups)) {
+                groups = AuthenticationProvider.DEFAULT_GROUPS;
+            }
+            logger.debug("adding: {} [{}]", person.getUsername().toLowerCase(), groups);
+            MockAuthenticationInfo info = new MockAuthenticationInfo();
+            info.setPassword(password);
+            info.setUsername(person.getUsername().toLowerCase());
+            info.getMemberships().addAll(Arrays.asList(groups));
+            users.put(person.getUsername().toLowerCase(), info);
             return new AuthenticationResult(AuthenticationResultType.VALID);
         }
     }
 
     @Override
-    public boolean deleteUser(Person person) {
+    public boolean deleteUser(TdarUser person) {
         try {
-            users.remove(person.getEmail());
+            String key = person.getUsername().toLowerCase();
+            logger.debug("removing: {}", key);
+            if (users.containsKey(key)) {
+                users.remove(key);
+            }
+            if (users.containsKey(key)) {
+                logger.error("USERS still contains key: {}", key);
+            }
             return true;
         } catch (Exception e) {
             logger.debug("{}", e);
@@ -103,34 +151,29 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public void resetUserPassword(Person person) {
+    public void resetUserPassword(TdarUser person) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void updateUserPassword(Person person, String password) {
-        users.put(person.getEmail(), password);
+    public void updateUserPassword(TdarUser person, String password) {
+        users.get(person.getUsername().toLowerCase()).setPassword(password);
     }
 
     @Override
-    public String[] findGroupMemberships(Person person) {
-        TdarGroup group = TdarGroup.fromString(users.get(person.getUsername()));
-        logger.debug("group membership request: name:{}   groupname:{},    group:{}", new Object[] { person.getUsername(), users.get(person.getUsername()),
-                group });
+    public String[] findGroupMemberships(TdarUser person) {
         List<String> toReturn = new ArrayList<String>();
-        switch (group) {
-            case TDAR_ADMIN:
-                toReturn.add(TdarGroup.TDAR_ADMIN.getGroupName());
-            case TDAR_EDITOR:
-                toReturn.add(TdarGroup.TDAR_EDITOR.getGroupName());
-            case TDAR_USERS:
-                toReturn.add(TdarGroup.TDAR_USERS.getGroupName());
-                break;
+        MockAuthenticationInfo mockAuthenticationInfo = users.get(person.getUsername().toLowerCase());
+        if (mockAuthenticationInfo == null) {
+            return new String[0];
+        }
+        for (TdarGroup group : mockAuthenticationInfo.getMemberships()) {
+            toReturn.add(group.getGroupName());
         }
         String[] result = toReturn.toArray(new String[0]);
-        logger.debug("group membership request: name:{}   groupname:{},  group:{},  membership:[{}]",
-                new Object[] { person.getUsername(), users.get(person.getUsername()), group, result });
+        logger.debug("group membership request: name:{}   membership:[{}]",
+                new Object[] { person.getUsername(), mockAuthenticationInfo, result });
         return result;
     }
 
@@ -146,9 +189,59 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             logger.info("Mock Authentication is not allowed in production. System will not load mock user db");
             return;
         }
-        List<Person> registeredUsers = entityService.findAllRegisteredUsers();
-        for (Person user : registeredUsers) {
-            users.put(user.getUsername(), user.getUsername());
+        List<TdarUser> registeredUsers = entityService.findAllRegisteredUsers();
+        for (TdarUser user : registeredUsers) {
+            addUser(user, user.getUsername(), TdarGroup.TDAR_USERS, TdarGroup.JIRA_USERS, TdarGroup.CONFLUENCE_USERS);
+            MockAuthenticationInfo info = users.get(user.getUsername().toLowerCase());
+            if (user.getUsername().equals(ADMIN_USERNAME)) {
+                info.getMemberships().add(TdarGroup.TDAR_ADMIN);
+                info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
+                info.getMemberships().add(TdarGroup.TDAR_API_USER);
+                info.setPassword("admin");
+            }
+
+            if (user.getUsername().equals(EDITOR_USERNAME)) {
+                info.getMemberships().add(TdarGroup.TDAR_EDITOR);
+                info.setPassword(EDITOR_PASSWORD);
+            }
+
+            if (user.getUsername().equals(BILLING_USERNAME)) {
+                info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
+                info.setPassword(BILLING_PASSWORD);
+            }
+
+            if (user.getUsername().equals(USERNAME)) {
+                info.setPassword(PASSWORD);
+            }
+            
+            if (localValues.containsKey(user.getUsername())) {
+                MockAuthenticationInfo local = localValues.get(user.getUsername());
+                info.setPassword(local.getPassword());
+                info.getMemberships().addAll(local.getMemberships());
+            }
+            logger.trace("init: {}", user.getUsername().toLowerCase());
+            users.put(user.getUsername().toLowerCase(), info);
         }
+    }
+
+    @Override
+    public AuthenticationResult checkToken(String token, HttpServletRequest request) {
+        AuthenticationResult result  = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
+        for (MockAuthenticationInfo info : users.values()) {
+            if (Objects.equals(token, info.getToken())) {
+                result.setTokenUsername(info.getUsername());
+                result.setType(AuthenticationResultType.VALID);
+                result.setToken(token);
+            }
+        }
+        return result;
+    }
+
+    public Map<String,MockAuthenticationInfo> getLocalValues() {
+        return localValues;
+    }
+
+    public void setLocalValues(Map<String,MockAuthenticationInfo> localValues) {
+        this.localValues = localValues;
     }
 }

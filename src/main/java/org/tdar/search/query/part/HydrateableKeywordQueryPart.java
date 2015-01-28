@@ -3,11 +3,12 @@ package org.tdar.search.query.part;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.KeywordType;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -30,10 +31,11 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     private static final String INFORMATION_RESOURCES = "informationResources.";
     private boolean includeChildren = true;
 
-    public HydrateableKeywordQueryPart(String fieldName, Class<K> originalClass, List<K> fieldValues_) {
+    @SuppressWarnings("unchecked")
+    public HydrateableKeywordQueryPart(KeywordType type, List<K> fieldValues_) {
         setOperator(Operator.OR);
-        setActualClass(originalClass);
-        setFieldName(fieldName);
+        setActualClass((Class<K>) type.getKeywordClass());
+        setFieldName(type.getFieldName());
         setFieldValues(fieldValues_);
     }
 
@@ -45,7 +47,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             if (getFieldValues().get(i) == null) {
                 continue;
             }
-            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
+            if (PersistableUtils.isNotNullOrTransient(getFieldValues().get(i))) {
                 ids.add(getFieldValues().get(i).getId());
             } else if (StringUtils.isNotBlank(getFieldValues().get(i).getLabel())) {
                 labels.add(getFieldValues().get(i).getLabel());
@@ -74,13 +76,16 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     }
 
     public String getDescriptionLabel(TextProvider provider) {
-        return provider.getText("keywordQueryPart.label");
+        return provider.getText("searchParameters." + getFieldName());
     }
 
     @Override
     public String getDescription(TextProvider provider) {
         String strValues = StringUtils.join(getFieldValues(), getDescriptionOperator(provider));
-        return String.format("%s: \"%s\"", getDescriptionLabel(provider), strValues);
+        if (StringUtils.isNotBlank(strValues)) {
+            return String.format("%s: \"%s\"", getDescriptionLabel(provider), strValues);
+        }
+        return "";
     }
 
     @Override

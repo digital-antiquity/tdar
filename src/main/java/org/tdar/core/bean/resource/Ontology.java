@@ -22,17 +22,21 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.SupportsResource;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
+import org.tdar.utils.json.JsonIntegrationFilter;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
  * 
- * Represents an Ontology in tDAR. There are two ways to access an Ontology, via the URL (getUrl()) and
- * via the filesystem via getFilename()).
+ * OntologyS in tDAR are InformationResources with a collection of OntologyNodeS that can be categorized.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision $
@@ -51,13 +55,13 @@ public class Ontology extends InformationResource implements SupportsResource {
     private CategoryVariable categoryVariable;
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)
-    private List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
+    private List<OntologyNode> ontologyNodes = new ArrayList<>();
 
-    private transient Map<Long, OntologyNode> idMap = new WeakHashMap<Long, OntologyNode>();
-    private transient Map<String, OntologyNode> iriMap = new WeakHashMap<String, OntologyNode>();
-    private transient Map<String, OntologyNode> nameMap = new WeakHashMap<String, OntologyNode>();
+    private transient Map<Long, OntologyNode> idMap = new WeakHashMap<>();
+    private transient Map<String, OntologyNode> iriMap = new WeakHashMap<>();
+    private transient Map<String, OntologyNode> nameMap = new WeakHashMap<>();
 
-    private final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
+    public final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
         @Override
         public int compare(OntologyNode o1, OntologyNode o2) {
             int comparison = o1.getImportOrder().compareTo(o2.getImportOrder());
@@ -74,6 +78,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     @Override
+    @JsonView(JsonIntegrationFilter.class)
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -84,7 +89,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     public Map<Long, OntologyNode> getIdToNodeMap() {
-        HashMap<Long, OntologyNode> idToNodeMap = new HashMap<Long, OntologyNode>();
+        HashMap<Long, OntologyNode> idToNodeMap = new HashMap<>();
         for (OntologyNode node : ontologyNodes) {
             idToNodeMap.put(node.getId(), node);
         }
@@ -98,7 +103,7 @@ public class Ontology extends InformationResource implements SupportsResource {
      */
     public SortedMap<Integer, List<OntologyNode>> toOntologyNodeMap() {
         List<OntologyNode> sortedOntologyNodes = getSortedOntologyNodes();
-        TreeMap<Integer, List<OntologyNode>> map = new TreeMap<Integer, List<OntologyNode>>();
+        TreeMap<Integer, List<OntologyNode>> map = new TreeMap<>();
         for (OntologyNode node : sortedOntologyNodes) {
             Integer intervalStart = node.getIntervalStart();
             String index = node.getIndex();
@@ -110,7 +115,7 @@ public class Ontology extends InformationResource implements SupportsResource {
                 }
                 List<OntologyNode> children = map.get(parentId);
                 if (children == null) {
-                    children = new ArrayList<OntologyNode>();
+                    children = new ArrayList<>();
                     map.put(parentId, children);
                 }
                 children.add(node);
@@ -121,7 +126,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @Transient
     public OntologyNode getNodeByName(String name) {
-        if (CollectionUtils.isEmpty(nameMap)) {
+        if (MapUtils.isEmpty(nameMap)) {
             initializeNameAndIriMaps();
         }
         return nameMap.get(name);
@@ -129,7 +134,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @Transient
     public OntologyNode getNodeByIri(String iri) {
-        if (CollectionUtils.isEmpty(iriMap)) {
+        if (MapUtils.isEmpty(iriMap)) {
             initializeNameAndIriMaps();
         }
         return iriMap.get(iri);
@@ -157,12 +162,14 @@ public class Ontology extends InformationResource implements SupportsResource {
         return getSortedOntologyNodes(null);
     }
 
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    @JsonProperty(value="nodes")
     public List<OntologyNode> getSortedOntologyNodesByImportOrder() {
         return getSortedOntologyNodes(IMPORT_ORDER_COMPARATOR);
     }
 
     public List<OntologyNode> getSortedOntologyNodes(Comparator<OntologyNode> comparator) {
-        ArrayList<OntologyNode> sortedNodes = new ArrayList<OntologyNode>(getOntologyNodes());
+        ArrayList<OntologyNode> sortedNodes = new ArrayList<>(getOntologyNodes());
         Collections.sort(sortedNodes, comparator);
         return sortedNodes;
     }

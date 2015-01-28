@@ -4,20 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.struts.action.resource.AbstractResourceController;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.web.SessionDataAware;
 
 /**
@@ -30,80 +26,125 @@ import org.tdar.web.SessionDataAware;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-@Results({ @Result(name = AbstractResourceController.REDIRECT_HOME, type = "redirect", location = URLConstants.HOME),
-        @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD)
-})
 public interface AuthenticationAware extends SessionDataAware {
 
     final String TYPE_REDIRECT = "redirect";
 
-    AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
-
     @DoNotObfuscate(reason = "never obfuscate the session user")
-    Person getAuthenticatedUser();
+    TdarUser getAuthenticatedUser();
 
     boolean isAuthenticated();
 
     boolean isBillingManager();
 
+    /**
+     * FIXME: move to top level abstract class or partial interface.
+     *
+     */
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
         private static final long serialVersionUID = -7792905441259237588L;
 
         @Autowired
-        private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+        private transient AuthorizationService authorizationService;
 
         @Override
         @DoNotObfuscate(reason = "never obfuscate the session user")
-        public Person getAuthenticatedUser() {
+        public TdarUser getAuthenticatedUser() {
             if (getSessionData() == null) {
                 return null;
             }
-            if (Persistable.Base.isNotNullOrTransient(getSessionData().getPerson())) {
-                return getGenericService().find(Person.class, getSessionData().getPerson().getId());
+            Long tdarUserId = getSessionData().getTdarUserId();
+            if (PersistableUtils.isNotNullOrTransient(tdarUserId)) {
+                return getGenericService().find(TdarUser.class, tdarUserId);
             } else {
                 return null;
             }
         }
 
+        public <P extends Persistable> boolean authorize(PersistableLoadingAction<Persistable> action) throws TdarActionException {
+
+            String name = action.getPersistableClass().getSimpleName();
+            Object[] msg = { action.getAuthenticatedUser(), name, action.getPersistableClass().getSimpleName() };
+            if (!(action.getAuthenticatedUser() == null && "view".equalsIgnoreCase(name))) {
+                // don't log anonymous users
+                getLogger().info("user {} is TRYING to {} a {}", msg);
+            }
+
+            // first check the session
+            Persistable persistable = action.getPersistable();
+
+            if (PersistableUtils.isNullOrTransient(persistable) || PersistableUtils.isNullOrTransient(action.getId())) {
+                // deal with the case that we have a new or not found resource
+                getLogger().debug("Dealing with transient persistable {}", persistable);
+                    return true;
+            }
+            if (persistable == null) {
+                // persistable is null, so the lookup failed (aka not found)
+                abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
+            } else if (PersistableUtils.isNullOrTransient(persistable.getId())) {
+                // id not specified or not a number, so this is an invalid request
+                abort(StatusCode.BAD_REQUEST,
+                        getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
+            }
+
+            // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
+            if (authorizationService.can(action.getAdminRights(), action.getAuthenticatedUser())) {
+                return true;
+            }
+            String errorMessage = getText("abstractPersistableController.no_permissions");
+            addActionError(errorMessage);
+            abort(StatusCode.FORBIDDEN, UNAUTHORIZED, errorMessage);
+            return false;
+        }
+
+        protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
+            throw new TdarActionException(statusCode, errorMessage);
+        }
+
+        protected void abort(StatusCode statusCode, String response, String errorMessage) throws TdarActionException {
+            throw new TdarActionException(statusCode, response, errorMessage);
+        }
+
         public boolean isAdministrator() {
-            return isAuthenticated() && authenticationAndAuthorizationService.isAdministrator(getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.isAdministrator(getAuthenticatedUser());
         }
 
         public boolean isEditor() {
-            return isAuthenticated() && authenticationAndAuthorizationService.isEditor(getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.isEditor(getAuthenticatedUser());
         }
 
         public boolean isAbleToFindDraftResources() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
         }
 
         public boolean isAbleToFindDeletedResources() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
         }
 
         public boolean isAbleToEditAnything() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         }
 
         public boolean isAbleToFindFlaggedResources() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
         }
 
         public boolean isAbleToReprocessDerivatives() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.REPROCESS_DERIVATIVES, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.REPROCESS_DERIVATIVES, getAuthenticatedUser());
         }
 
         public boolean userCan(InternalTdarRights right) {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(right, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(right, getAuthenticatedUser());
         }
 
         public boolean userCannot(InternalTdarRights right) {
-            return isAuthenticated() && authenticationAndAuthorizationService.cannot(right, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.cannot(right, getAuthenticatedUser());
         }
 
         public boolean isContributor() {
-            return isAuthenticated() && getAuthenticatedUser().getContributor();
+            TdarUser authenticatedUser = getAuthenticatedUser();
+            return isAuthenticated() && authenticatedUser.isRegistered() && authenticatedUser.getContributor();
         }
 
         @Override
@@ -111,25 +152,10 @@ public interface AuthenticationAware extends SessionDataAware {
             return getSessionData().isAuthenticated();
         }
 
-        /**
-         * @param <T>
-         * @param modifiedResource
-         * @param message
-         * @param payload
-         */
-        protected <T extends Resource> void logResourceModification(T modifiedResource, String message, String payload) {
-            getResourceService().logResourceModification(modifiedResource, getAuthenticatedUser(), message, payload);
-        }
-
         protected <T> List<T> createListWithSingleNull() {
             ArrayList<T> list = new ArrayList<T>();
             list.add(null);
             return list;
-        }
-
-        @Override
-        public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
-            return authenticationAndAuthorizationService;
         }
 
         /**
@@ -149,12 +175,6 @@ public interface AuthenticationAware extends SessionDataAware {
             return validIds;
         }
 
-        public void updateQuota(Account account, Resource resource) {
-            if (getTdarConfiguration().isPayPerIngestEnabled()) {
-                getAccountService().updateQuota(account, resource);
-            }
-        }
-
         public int getSessionTimeout() {
             return getServletRequest().getSession().getMaxInactiveInterval();
         }
@@ -166,7 +186,11 @@ public interface AuthenticationAware extends SessionDataAware {
          */
         @Override
         public boolean isBillingManager() {
-            return getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser());
+            return authorizationService.isBillingManager(getAuthenticatedUser());
+        }
+
+        public AuthorizationService getAuthorizationService() {
+            return authorizationService;
         }
 
     }

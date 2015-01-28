@@ -4,24 +4,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
+import org.tdar.core.dao.resource.BookmarkedResourceDao;
+import org.tdar.utils.PersistableUtils;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$
@@ -37,11 +43,14 @@ import org.tdar.core.dao.entity.PersonDao;
 public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonDao> {
 
     @Autowired
-    private InstitutionDao institutionDao;
+    private transient InstitutionDao institutionDao;
     @Autowired
-    private AuthorizedUserDao authorizedUserDao;
+    private transient AuthorizedUserDao authorizedUserDao;
     @Autowired
-    private XmlService xmlService;
+    private transient SimpleFileProcessingDao simpleFileProcessingDao;
+
+    @Autowired
+    private transient BookmarkedResourceDao bookmarkedResourceDao;
 
     /**
      * Find a @link Person by ID
@@ -61,7 +70,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Person> findAllRegisteredUsers(int maxResults) {
+    public List<TdarUser> findAllRegisteredUsers(int maxResults) {
         return getDao().findAllRegisteredUsers(maxResults);
     }
 
@@ -71,7 +80,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Person> findAllRegisteredUsers() {
+    public List<TdarUser> findAllRegisteredUsers() {
         return getDao().findAllRegisteredUsers(null);
     }
 
@@ -135,6 +144,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findByEmail(email.trim());
     }
 
+    @Transactional(readOnly = true)
+    public TdarUser findUserByEmail(String email) {
+        if ((email == null) || email.isEmpty()) {
+            return null;
+        }
+        return getDao().findUserByEmail(email);
+    }
+
     /**
      * Find a @link Person by their Username
      * 
@@ -142,7 +159,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public Person findByUsername(String username) {
+    public TdarUser findByUsername(String username) {
         if (StringUtils.isBlank(username)) {
             return null;
         }
@@ -157,16 +174,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     public Set<Person> findByFullName(String fullName) {
         return getDao().findByFullName(fullName);
-    }
-
-    /**
-     * Find the @link AuthenticationToken by Id
-     * 
-     * @param id
-     * @return
-     */
-    public AuthenticationToken findAuthenticationToken(Long id) {
-        return getDao().find(AuthenticationToken.class, id);
     }
 
     /**
@@ -222,7 +229,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
                 getDao().saveOrUpdate(transientPerson.getInstitution());
             }
             blessedPerson = transientPerson;
-            xmlService.logRecordXmlToFilestore(transientPerson);
         }
         return blessedPerson;
     }
@@ -241,7 +247,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return null;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(transientPerson.getId())) {
+        if (PersistableUtils.isNotNullOrTransient(transientPerson.getId())) {
             if (getDao().sessionContains(transientPerson)) {
                 return transientPerson;
             }
@@ -288,7 +294,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return null;
         }
 
-        if (Persistable.Base.isNotNullOrTransient(transientInstitution.getId())) {
+        if (PersistableUtils.isNotNullOrTransient(transientInstitution.getId())) {
             return getDao().find(Institution.class, transientInstitution.getId());
         }
 
@@ -316,10 +322,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             }
             institutionDao.save(transientInstitution);
             blessedInstitution = transientInstitution;
-            xmlService.logRecordXmlToFilestore(transientInstitution);
         } else if (!blessedInstitution.isDeleted()) {
             blessedInstitution.setStatus(Status.ACTIVE);
-            xmlService.logRecordXmlToFilestore(blessedInstitution);
         }
         return blessedInstitution;
     }
@@ -351,7 +355,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Person> showRecentLogins() {
+    public List<TdarUser> showRecentLogins() {
         return getDao().findRecentLogins();
     }
 
@@ -361,7 +365,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param authenticatedUser
      */
     @Transactional(readOnly = false)
-    public void registerLogin(Person authenticatedUser) {
+    public void registerLogin(TdarUser authenticatedUser) {
         getDao().registerLogin(authenticatedUser);
     }
 
@@ -383,7 +387,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Creator findAuthorityFromDuplicate(Creator dup) {
-        if (Persistable.Base.isNullOrTransient(dup) || !dup.isDuplicate()) {
+        if (PersistableUtils.isNullOrTransient(dup) || !dup.isDuplicate()) {
             return null;
         }
         if (dup instanceof Person) {
@@ -420,7 +424,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Long getCreatorViewCount(Creator creator) {
-        if (Persistable.Base.isNullOrTransient(creator)) {
+        if (PersistableUtils.isNullOrTransient(creator)) {
             return 0L;
         }
         return getDao().getCreatorViewCount(creator);
@@ -441,5 +445,54 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (incomingCreator != null) {
             creator.setCreator(incomingCreator);
         }
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteForController(Creator collection, String deletionReason, TdarUser authenticatedUser) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Transactional(readOnly = true)
+    public DeleteIssue getDeletionIssues(TextProvider textProvider, Creator persistable) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Transactional(readOnly = false)
+    public void saveInstitutionForController(Institution persistable, String name, FileProxy fileProxy) {
+        // name has a unique key; so we need to be careful with it
+        persistable.setName(name);
+        getDao().saveOrUpdate(persistable);
+        if (fileProxy != null) {
+            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void savePersonforController(Person person, String email, String institutionName, FileProxy fileProxy) {
+        if (!StringUtils.equals(email, person.getEmail())) {
+            person.setEmail(email);
+        }
+        getLogger().debug("saving person: {} with institution {} ", person, institutionName);
+        if (StringUtils.isBlank(institutionName)) {
+            person.setInstitution(null);
+        }
+        else {
+            // if the user changed the person's institution, find or create it
+            Institution persistentInstitution = findOrSaveCreator(new Institution(institutionName));
+            getLogger().debug("setting institution to persistent: " + persistentInstitution);
+            person.setInstitution(persistentInstitution);
+        }
+
+        saveOrUpdate(person);
+        if (fileProxy != null) {
+            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(person, fileProxy);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookmarkedResource> getBookmarkedResourcesForUser(TdarUser user) {
+        return bookmarkedResourceDao.findBookmarksResourcesByPerson(user);
     }
 }

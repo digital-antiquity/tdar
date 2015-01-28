@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.Persistable;
 
@@ -52,7 +54,17 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_AUDIO_WITH_FILES("# of Audio  with Files"),
 
         NUM_COLLECTIONS("# of Collections"),
-        NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size");
+        NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size"),
+        NUM_EMAILS("# of Emails"), NUM_CULTURE("# of Culture Keywords (Controled)"),
+        NUM_UNCONTROLLED_CULTURE("# of Culture Keywords (Uncontroled)"),
+        NUM_GEOGRAPHIC("# of Geographic Keywords"),
+        NUM_INVESTIGATION("# of Investigation Types"),
+        NUM_MATERIAL("# of Material Types"),
+        NUM_OTHER("# of Other Keywords"),
+        NUM_TEMPORAL("# of Temporal Keywords"),
+        NUM_SITE_NAME("# of Site Name Keywords"),
+        NUM_SITE_TYPE("# of Site Type Keywords (Controled)"),
+        NUM_UNCONTROLLED_SITE_TYPE("# of Site Type Keywords (Uncontroled)");
 
         private String label;
 
@@ -81,6 +93,7 @@ public class AggregateStatistic extends Persistable.Base {
     private String comment;
 
     @Column(name = "recorded_date")
+    @Temporal(TemporalType.DATE)
     private Date recordedDate;
 
     @Override

@@ -4,7 +4,7 @@ tdar.database.host=localhost:5432
 
 javax.persistence.jdbc.url=jdbc:postgresql://${tdar.database.host}/tdarmetadata
 javax.persistence.jdbc.driver=org.postgresql.Driver
-hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+hibernate.dialect=org.hibernate.dialect.PostgreSQL9Dialect
 hibernate.search.analyzer=org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer
 hibernate.generate_statistics=true
 
@@ -26,3 +26,4 @@ tdardata.maxConnections=50
 tdargis.minConnections=10
 tdargis.maxConnections=20
 
+hibernate.hbm2ddl.auto=validate

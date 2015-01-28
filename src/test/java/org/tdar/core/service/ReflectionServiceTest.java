@@ -15,6 +15,7 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
@@ -61,7 +62,7 @@ public class ReflectionServiceTest {
 
     @Test
     public void testPersonReferences() {
-        Set<Field> set = reflectionService.findFieldsReferencingClass(Resource.class, Person.class);
+        Set<Field> set = reflectionService.findFieldsReferencingClass(Resource.class, TdarUser.class);
         Assert.assertEquals(3, set.size());
     }
 

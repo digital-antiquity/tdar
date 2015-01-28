@@ -43,8 +43,8 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
         final List<File> versions = new ArrayList<>();
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
-        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
-        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
+        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/5127663428_42ef7f4463_b.jpg"));
+        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/handbook_of_archaeology.jpg"));
 
         AsynchTester[] testers = new AsynchTester[versions.size()];
         final FileAnalyzer analyzer = fileAnalyzer;
@@ -71,7 +71,7 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
                                     throw new TdarRecoverableRuntimeException("should not see this, file processing error");
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                logger.error("exception in workflowITCase", e);
                                 throw new TdarRecoverableRuntimeException("something happened", e);
                             }
                             return null;

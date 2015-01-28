@@ -17,8 +17,7 @@ import org.tdar.core.bean.entity.Creator;
 })
 public class CreatorViewStatistic extends AbstractResourceStatistic<Creator> {
 
-    private static final long serialVersionUID = -2287260111716354232L;
-
+    private static final long serialVersionUID = 2438505951349936637L;
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "creator_id")
     private Creator reference;

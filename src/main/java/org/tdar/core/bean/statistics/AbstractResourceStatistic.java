@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable;
@@ -21,6 +23,7 @@ public abstract class AbstractResourceStatistic<S extends Persistable> extends P
 
     @NotNull
     @Column(name = "date_accessed")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     public abstract S getReference();

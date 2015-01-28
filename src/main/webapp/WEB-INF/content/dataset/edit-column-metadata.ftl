@@ -38,16 +38,11 @@
                         </select>
                     </form>
                     </span>
-                    <#--                    <ul class="dropdown-menu">
-                                            <#list dataTableColumns?sort_by("sequenceNumber") as column>
-                                            <li><a href="#" data-targetdiv="columnDiv_${column_index}">${column.displayName}</a></li>
-                                            </#list>
-                                        </ul> -->
                     </li>
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>
         </div>
@@ -58,7 +53,8 @@
 
     <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
         <@common.jsErrorLog />
-        <@s.hidden name='id' value='${resource.id?c}'/>
+        <@s.token name='struts.csrf.token' />
+        <@s.hidden name='id' id="resource_id" value='${resource.id?c}'/>
         <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
         <@s.hidden name="startRecord" value="${(startRecord!0)?c}" />
         <@s.hidden name="recordsPerPage" value="${(recordsPerPage!10)?c}" />
@@ -76,9 +72,7 @@
                 <#assign count=0>
                 <@s.iterator value='%{dataset.dataTables}' var='table' status="status1">
                     <#assign count=count+1 />
-                    <option value="${table.id?c}" <#if table?? && table.id == dataTable.id>selected
-                    </#if>
-                            >${count}. ${table.displayName}</option>
+                    <option value="${table.id?c}" <#if table?? && table.id == dataTable.id>selected</#if>>${count}. ${table.displayName}</option>
                 </@s.iterator>
             </select>
 
@@ -135,16 +129,9 @@
                                     list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
                                 </label>
                                 <script type='text/javascript'>
-                                    $("#recordsPerPage${prefix}").change(function () {
-                                        var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
-                                        //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                                        var prefix = "";
-                                        if (url.indexOf("?") != 0) {
-                                            prefix = "?";
-                                        }
-                                        url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage${prefix}').val();
-                                        window.location = url;
-                                    });
+                                $(function () {
+                                    TDAR.datasetMetadata.initPagination("${prefix}");
+                                });
                                 </script>
                             </td>
                         </tr>
@@ -157,7 +144,7 @@
 
         <#macro paginationLink startRecord path linkText>
         <span class="paginationLink">
-    	<a href="<@s.url value="?startRecord=${startRecord?c}&amp;recordsPerPage=${recordsPerPage}"/><#if dataTableId?has_content>&amp;dataTableId=${dataTableId}</#if>">${linkText}</a>
+    	<a href="<@s.url value="?startRecord=${startRecord?c}&amp;recordsPerPage=${recordsPerPage}&amp;id=${id?c}"/><#if dataTableId?has_content>&amp;dataTableId=${dataTableId?c}</#if>">${linkText}</a>
     </span>
         </#macro>
 
@@ -243,7 +230,7 @@
                                     </select>
                                 </#if>
                             </span>
-                            <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+                            <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
                         </div>
                     </div>
     <span data-tooltipcontent="#descriptionToolTip" data-tiplabel="Column Description">
@@ -270,56 +257,14 @@
             <#if column.defaultOntology??  && column.defaultOntology.id?? && column.columnEncodingType != "CODED_VALUE" >
                         <#assign ontologyId=column.defaultOntology.id?c />
                     </#if>
-            <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
-            <@common.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
+            <@s.hidden name="dataTableColumns[${column_index}].transientOntology.id" value="${ontologyId}" id="${column_index}_oid" />
+            <@common.combobox name="dataTableColumns[${column_index}].transientOntology.title" target="#columnDiv_${column_index}"
                     label="Map it to an Ontology:"
                     placeholder="Enter the name of an Ontology"
                     autocompleteParentElement="#divOntology-${column_index}"
                     autocompleteIdElement="#${column_index}_oid"
                     addNewLink="/ontology/add?returnToResourceMappingId=${resource.id?c}"
                     cssClass="input-xxlarge-combo ontologyfield" />
-                    </div>
-                    <br/>
-
-                    <div class="mappingInfo" data-tooltipcontent="#mappingToolTip" data-tiplabel="Mapping ${siteAcronym} Resources">
-                        <#if column.dataTable?? && column.dataTable.dataset.project?? && column.dataTable.dataset.project.id != -1 >
-
-                            <@s.checkbox name="dataTableColumns[${column_index}].mappingColumn"
-                            label="Use column values to map table rows to resources?"
-                            id="mapping_${column_index}" cssClass="mappingValue" />
-
-                            <div class="mappingDetail well">
-                                <p>${siteAcronym} can associate groups of documents and images with this dataset as long as they're all part of the same
-                                    project.
-                                    If this column has filenames in it, ${siteAcronym} will associate the filename with the filename of the image or document
-                                    and load the row
-                                    data as additional fields in the ${siteAcronym} record.
-                                </p>
-                                <@s.textfield name="dataTableColumns[${column_index}].delimiterValue" value="${column.delimiterValue!''}" placeholder="e.g. ; , |" label="Delimiter" labelposition="left" maxLength="1"/>
-                                <br/>
-                                <#assign ignoreExt = "false" />
-                                <#if column.ignoreFileExtension??>
-                                    <#assign ignoreExt = column.ignoreFileExtension /></#if>
-                                <@s.checkbox
-                                name="dataTableColumns[${column_index}].ignoreFileExtension"
-                                label="ignore file extension"
-                                id="dataTableColumns[${column_index}].ignoreFileExtension" />
-
-                                <br/>
-                            <#--
-                                    <#assign visible = "true" />
-                                    <#if column.visible??>
-                                        <#assign visible = column.visible /></#if>
-                                    <@common.boolfield
-                                      name="dataTableColumns[${column_index}].visible"
-                                      label="visible?"
-                                      id="dataTableColumns[${column_index}].visible"
-                                      value=visible
-                                      /> -->
-                            </div>
-                        <#else>
-                            <i>cannot map this dataset to a set of ${siteAcronym} resources because the dataset is not in a project</i>
-                        </#if>
                     </div>
                 </div>
             </#list>
@@ -330,7 +275,8 @@
         ontologies to faciliate research.
     </span>
     <span class="hidden" id="columnTypeToolTip">
-        Select the option that best describes the data in this column. The form will display fields relevant to your selection. 
+        Select the option that best describes the data in this column. The form will display fields relevant to your selection. <br/>
+        <b>Note:</b> measurement and count cannot be selected for fields that have any non-numerical data.
     </span>
     <span class="hidden" id="displayNameToolTip">
         If needed, edit the name displayed for the column to help users understand the column's contents.
@@ -347,9 +293,6 @@
     <span class="hidden" id="ontologyToolTip">
         If you would like to link this column to a ${siteAcronym} ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the ${siteAcronym}
         data integration tool.
-    </span>
-    <span class="hidden" id="mappingToolTip">
-        Use column values to map table rows to resources? - Select this check box if the data in the column links to a specific ${siteAcronym} resource, usually an image or document.
     </span>
             </div>
 
@@ -385,10 +328,6 @@
             <td><span class="columnSquare integration">&nbsp;</span><span class="integration_label"></span></td>
             <td>integration columns</td>
         </tr>
-        <tr>
-            <td><span class="columnSquare mapped">&nbsp;</span><span class="mapped_label"></span></td>
-            <td>mapping columns</td>
-        </tr>
     </table>
 
         <@pagination "2" />
@@ -410,6 +349,8 @@
 
     $(function () {
         TDAR.datasetMetadata.init("#edit-metadata-form");
+
+        $("#edit-metadata-form").FormNavigate("clean");
     });
 
 </script>

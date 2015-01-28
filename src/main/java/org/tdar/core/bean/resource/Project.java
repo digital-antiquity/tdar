@@ -1,9 +1,6 @@
 package org.tdar.core.bean.resource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -24,7 +21,6 @@ import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Sortable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 
@@ -43,44 +39,12 @@ public class Project extends Resource implements Sortable {
 
     private static final long serialVersionUID = -3339534452963234622L;
 
-    // FIXME: remove redundant fields, perhaps implement jsonmodel in these other classes (keywords, coveragedate, etc..)
-    private static final String[] JSON_PROPERTIES = {
-            // keyword properties
-            "label", "approved", "id", "note", "key", "type", "value", "text",
-
-            // resource properties
-            "title", "description",
-            "cultureKeywords", "materialKeywords", "geographicKeywords", "siteNameKeywords",
-            "siteTypeKeywords", "temporalKeywords", "coverageDates",
-            "firstLatitudeLongitudeBox", "otherKeywords", "investigationTypes", "resourceType",
-
-            // derived properties
-            "approvedCultureKeywords", "approvedSiteTypeKeywords",
-            "uncontrolledCultureKeywords", "uncontrolledSiteTypeKeywords",
-
-            // CoverageDate properties
-            "dateType", "startDate", "endDate",
-
-            // latlongbox properties
-            "minObfuscatedLongitude", "maxObfuscatedLongitude",
-            "minObfuscatedLatitude", "maxObfuscatedLatitude",
-            "okayToShowExactLocation",
-
-            "relatedComparativeCollections",
-            "sourceCollections",
-            "resourceNotes",
-            "resourceAnnotations",
-            "resourceAnnotationKey",
-            "individualAndInstitutionalCredit", "creator", "dateUpdated",
-            "role", "firstName", "lastName", "name", "institution", "email"
-    };
-
     public static final Project NULL = new Project() {
         private static final long serialVersionUID = -8849690416412685818L;
 
         @Override
         public String getDescription() {
-            return "No description";
+            return "";
         }
 
         @Override
@@ -90,7 +54,7 @@ public class Project extends Resource implements Sortable {
 
         @Override
         public String getTitle() {
-            return "No Associated Project";
+            return "";
         }
 
         @Override
@@ -104,15 +68,17 @@ public class Project extends Resource implements Sortable {
         }
     };
 
-    @Deprecated
-    // used only by hibernate to instantiate a sparsely managed Project Title&Id for freemarker
+    /**
+     * Instantiate a transient project instance with the specified ID and Title.
+     * @param id
+     * @param title
+     */
     public Project(Long id, String title) {
         setId(id);
         setTitle(title);
         setResourceType(ResourceType.PROJECT);
     }
 
-    @JSONTransient
     @Transient
     private transient Set<InformationResource> cachedInformationResources = new HashSet<InformationResource>();
 
@@ -131,13 +97,6 @@ public class Project extends Resource implements Sortable {
     @Enumerated(EnumType.STRING)
     @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        List<String> list = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
-        list.addAll(Arrays.asList(JSON_PROPERTIES));
-        return list.toArray(new String[list.size()]);
-    }
 
     @Transient
     @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)

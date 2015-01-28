@@ -17,6 +17,7 @@
         Note: you may have multiple accounts to simplify billing and allow different people to charge to different accounts within an organization.
     </div>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+        <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
         <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
         <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>

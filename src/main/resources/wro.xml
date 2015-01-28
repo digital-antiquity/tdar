@@ -4,7 +4,7 @@
     <group name='default'>
         <css>/css/tdar-bootstrap.css</css>
         <css>/css/famfamfam.css</css>
-        <css>/includes/ivaynberg-select2-817453b/select2.css</css>
+<!--         <css>/includes/ivaynberg-select2-817453b/select2.css</css> -->
         <css>/includes/blueimp-jquery-file-upload-5.31.6/css/jquery.fileupload-ui.css</css>
         <css>/includes/jquery-treeview/jquery.treeview.css</css>
         <css>/includes/jqplot-1.08/jquery.jqplot.min.css</css>
@@ -59,21 +59,29 @@
         <js>/includes/jqplot-1.08/plugins/jqplot.pointLabels.js</js>
         <js>/js/tdar.core.js</js>
         <js>/js/tdar.gmaps.js</js>
+        <js>/js/tdar.upload.js</js>
+        <js>/js/tdar.jquery-upload-validation.js</js>
         <js>/js/tdar.common.js</js>
         <js>/js/tdar.charts.js</js>
-        <js>/js/tdar.upload.js</js>
+        <js>/js/tdar.bulk.js</js>
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
         <js>/js/tdar.datatable.js</js>
         <js>/js/tdar.dataset-metadata.js</js>
         <js>/js/tdar.ontology-mapping.js</js>
         <js>/js/tdar.dataintegration.js</js>
+        <js>/js/tdar.sensorydata.js</js>
+        <js>/js/tdar.notifications.js</js>
         <js>/js/tdar.advanced-search.js</js>
         <js>/js/tdar.authority-management.js</js>
+        <js>/js/tdar.auth.js</js>
         <js>/js/tdar.inheritance.js</js>
+        <js>/js/tdar.internalemail.js</js>
+        <js>/js/tdar.download.js</js>
         <js>/js/tdar.pricing.js</js>
         <js>/js/tdar.heightevents.js</js>
-        <js>/js/tdar.contexthelp.js</js><js>/js/tdar.formValidateExtensions.js</js><js>/js/tdar.jquery-upload-validation.js</js>
+        <js>/js/tdar.contexthelp.js</js>
+        <js>/js/tdar.formValidateExtensions.js</js>
         <js>/includes/bindWithDelay.js</js>
         <!-- LICENSE: MIT -->
     </group>

@@ -12,7 +12,7 @@
         <tr>
         </thead>
         <#list datasetList as dataset>
-            <#if ! dataset.dataTables.isEmpty()>
+            <#if dataset.dataTables?has_content>
                 <tbody class="integrate_dataset" id="dataset_${dataset.id?c}">
                     <@listDataTables dataset />
                 </tbody>
@@ -23,7 +23,7 @@
 
     <#macro listDataTables dataset>
         <#if dataset?? && (!dataset.viewable?has_content || dataset.viewable)>
-            <#list dataset.getDataTables() as table>
+            <#list dataset.dataTables as table>
             <tr>
                 <td>
                     <@s.checkbox id="datatable_checkbox_${table.id?c}" name="tableIds" fieldValue="${table.id?c}" disabled="${((table.columnsWithOntologyMappings?size!0) == 0)?c }"/>
@@ -77,8 +77,8 @@
                 <td>${column.name}</td>
                 <td>${column.columnDataType}</td>
                 <td>
-                    <#if column.defaultOntology??>
-                    ${column.defaultOntology.title}
+                    <#if column.mappedOntology??>
+                    ${column.mappedOntology.title}
                     <#else>
                         None
                     </#if>
@@ -110,6 +110,7 @@
             <div class="span12">
                 <h3>Step 1: Select Datasets to Integrate or Display</h3>
                 <@s.form name='selectDTForm' method='post' action='select-columns'>
+                    <@s.token name='struts.csrf.token' />
                     <@listDatasets bookmarkedDatasets />
 
                     <div class="form-actions">
@@ -139,8 +140,8 @@
                 columns you want to appear in the final set. You can read more about data integration <a
                         href="https://dev.tdar.org/confluence/display/TDAR/Data+Integration">here</a>.
             <ul>
-                <li><a href="<@s.url value="/search/results.action?integratableOptions=YES&startRecord=0"/>">Find Data Sets</a></li>
-                <li><a href="https://dev.tdar.org/confluence/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">Bookmark Data Sets</a></li>
+                <li><a href="<@s.url value="/search/results?integratableOptions=YES&startRecord=0"/>">Find Data Sets</a></li>
+                <li><a href="https://dev.tdar.org/confluence/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">How to Bookmark Data Sets</a></li>
             </ul>
         </div>
         <div class="span6">

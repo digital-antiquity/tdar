@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,17 +14,18 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.annotations.Subselect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
-import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 
 /**
  * $Id$
@@ -36,10 +38,13 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
  */
 @Entity
 @Immutable
-@Subselect(value = "select * from information_resource_file")
+@Table(name = "information_resource_file")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
+@Cacheable
 public class InformationResourceFileProxy implements Serializable {
 
     private static final long serialVersionUID = -1321714940676599837L;
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Column(name = "sequence_number")
@@ -79,10 +84,11 @@ public class InformationResourceFileProxy implements Serializable {
 
     @Column(name = "deleted", columnDefinition = "boolean default false")
     private Boolean deleted = Boolean.FALSE;
-    
+
     @OneToMany()
     @SortNatural
     @JoinColumn(name = "information_resource_file_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile.informationResourceFileVersions")
     private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();
 
     @Enumerated(EnumType.STRING)
@@ -93,6 +99,7 @@ public class InformationResourceFileProxy implements Serializable {
     // This date may be extended by the publisher but will not extend past the publisher's death unless
     // special arrangements are made.
     @Column(name = "date_made_public")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateMadePublic = new Date();
 
     @Enumerated(EnumType.STRING)
@@ -180,7 +187,7 @@ public class InformationResourceFileProxy implements Serializable {
             InformationResourceFileVersion version = prox.generateInformationResourceFileVersion();
             file.getInformationResourceFileVersions().add(version);
             version.setInformationResourceFile(file);
-            
+
         }
         return file;
     }

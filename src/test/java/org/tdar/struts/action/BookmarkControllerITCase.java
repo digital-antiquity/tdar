@@ -6,14 +6,12 @@
  */
 package org.tdar.struts.action;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -23,53 +21,44 @@ import org.tdar.core.configuration.TdarConfiguration;
  */
 public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
-    @Override
-    protected TdarActionSupport getController() {
-        return new BookmarkResourceController();
+    @Test
+    @Rollback
+    public void testBookmarkedResource() throws Exception {
+        Document document = createNewDocument();
+        bookmarkResource(document,getUser());
+        bookmarkResource(document,getUser());
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(getUser()).size() == 1);
     }
 
     @Test
     @Rollback
-    public void testBookmarkedResource() {
+    public void testUnBookmarkedResource() throws Exception {
         Document document = createNewDocument();
-        bookmarkResource(document);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        bookmarkResource(document);
-        assertEquals("something wrong, cannot bookmark item twice", size, document.getBookmarks().size());
+        TdarUser user = genericService.find(TdarUser.class, getUserId());
+        bookmarkResource(document, user);
+        removeBookmark(document, user);
+        user = genericService.find(TdarUser.class, getUserId());
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(user).size() == 0);
     }
 
     @Test
     @Rollback
-    public void testUnBookmarkedResource() {
+    public void testAjaxBookmarkedResource() throws Exception {
         Document document = createNewDocument();
-        bookmarkResource(document);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        removeBookmark(document);
-        assertFalse("something wrong, cannot bookmark item twice", size == document.getBookmarks().size());
-    }
+        bookmarkResource(document, true, getUser());
+        bookmarkResource(document, getUser());
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(getUser()).size() == 1);
+   }
 
     @Test
     @Rollback
-    public void testAjaxBookmarkedResource() {
+    public void testAjaxRemoveBookmarkedResource() throws Exception {
         Document document = createNewDocument();
-        bookmarkResource(document, true);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        bookmarkResource(document);
-        assertEquals("something wrong, cannot bookmark item twice", size, document.getBookmarks().size());
-    }
-
-    @Test
-    @Rollback
-    public void testAjaxRemoveBookmarkedResource() {
-        Document document = createNewDocument();
-        bookmarkResource(document, true);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        removeBookmark(document);
-        assertFalse("something wrong, cannot bookmark item twice", size == document.getBookmarks().size());
+        TdarUser user = genericService.find(TdarUser.class, getUserId());
+        bookmarkResource(document, true, user);
+        removeBookmark(document, true, user);
+        user = genericService.find(TdarUser.class, getUserId());
+        assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(user).size() == 0);
     }
 
     public Document createNewDocument() {
@@ -78,7 +67,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         document.setTitle("test");
         document.setDescription("bacd");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            Creator copyrightHolder = genericService.find(Person.class, 1L);
+            Creator copyrightHolder = genericService.find(TdarUser.class, 1L);
             document.setCopyrightHolder(copyrightHolder);
         }
         genericService.save(document);

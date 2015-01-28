@@ -61,6 +61,8 @@
             dynamicAttributes={"data-submitterid":"${submitterId?c}"}
             >
         <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
+
 
 
     <#-- custom section ahead of the basic information -->
@@ -106,9 +108,9 @@
 
         <#else>
             <div data-tiplabel="Title"
-                 data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
+                 data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
-                title="A title is required for all ${resource.resourceType.label}s" name='${itemPrefix}.title'
+                title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
                 cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
             </div>
             <#if resource.resourceType != 'PROJECT'>
@@ -118,7 +120,7 @@
 	        <#if resource.date?? && resource.date != -1>
                     <#assign dateVal = resource.date?c />
                 </#if>
-	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
+	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini trim" required=true
                 maxlength=7 title="Please enter the year this ${resource.resourceType.label} was created" />
                 </div>
             </#if>
@@ -155,6 +157,9 @@
 
     <div id="citationInformation" class="well-alt">
         <h2>Additional Citation Information</h2>
+        <#if local_.citationInformationToggle?? && local_.citationInformationToggle?is_macro>
+            <@local_.citationInformationToggle />
+        </#if>
 
         <#if resource.resourceType.hasLanguage && !resource.resourceType.document >
             <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
@@ -171,7 +176,7 @@
             </span>
 	
 	        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
-                  conference_presentation="Location" thesis="Department" other="Publisher Loc.">
+                  conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
                 <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='input-xxlarge' />
             </span>
                 </div>
@@ -181,6 +186,12 @@
             <#if local_.citationInformation?? && local_.citationInformation?is_macro>
                 <@local_.citationInformation />
             </#if>
+
+            <#if !resource.resourceType.project>
+            <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
+                <@s.textfield labelposition='left' id='doi' label='DOI' name='${itemPrefix}.doi' cssClass="shortfield doi"  maxlength=255 />
+            </div>
+            </#if>        
 
             <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
                 <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
@@ -196,7 +207,7 @@
             <div id="t-abstract" class="clear"
                  data-tiplabel="Abstract / Description"
                  data-tooltipcontent="Short description of the <@edit.resourceTypeLabel />.">
-                <@s.textarea rows="4" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+                <@s.textarea rows="4" cols="80" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
             </div>
         </div>
         </#if>
@@ -237,7 +248,14 @@
 
     <#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
     <div class="" id="organizeSection">
-        <#if !resource.resourceType.project>
+			<#-- use 1 beacause we prepend with a blank for -1 -->
+		<#assign showProjects = (potentialParents?has_content && potentialParents?size > 1) />
+    	<#if !showProjects && !resource.resourceType.project >
+			<input type="hidden" name="projectId" value="-1"/>
+		</#if>
+
+        <#if !resource.resourceType.project && showProjects>
+
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <h4>Add to a Collection</h4>
             <@edit.resourceCollectionSection />
@@ -249,17 +267,19 @@
                 Select a project with which your <@edit.resourceTypeLabel /> will be associated. This is an important choice because it will allow metadata to
                 be inherited from the project further down this form
             </div>
+
             <h4>Choose a Project</h4>
 
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
+	                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
+	                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+	                truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
             </div>
 
-            <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+            <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="inheritOverwriteValidationErrorModalLabel" aria-hidden="true">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="validationErrorModalLabel">Overwrite Existing Values?</h3>
+                    <h3 id="inheritOverwriteValidationErrorModalLabel">Overwrite Existing Values?</h3>
                 </div>
                 <div class="modal-body">
                     <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections
@@ -274,6 +294,7 @@
             </div>
 
             <@helptext.inheritance />
+
             <div class="control-group" data-tiplabel="Inherit Metadata from Selected Project" data-tooltipcontent="#divSelectAllInheritanceTooltipContent"
                  id="divInheritFromProject">
                 <div class="controls">
@@ -286,6 +307,11 @@
         <#else>
             <h2>${siteAcronym} Collections</h2>
             <@edit.resourceCollectionSection />
+
+        <#if !resource.resourceType.project>
+            <h4>Create a Project</h4>
+			<p><a href="/project/add">Go here to create a Project</a>.  Projects in ${siteAcronym} are not required, be are useful for creating and managing metadaat for large groups of resources.</p>
+		</#if>
         </#if>
     </div>
 
@@ -361,85 +387,50 @@
 <script type='text/javascript'>
         <#noescape>
 
-        var formSelector = "#metadataForm";
-        var includeInheritance = ${inheritanceEnabled?string("true", "false")};
-        var acceptFileTypes = /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i;
+        
         /*
 
          * FIXME: move to common.js once we figure out how to control and set javascript based on freemarker values that have "Rights" implications.
          */
         $(function () {
             'use strict';
-            var form = $(formSelector)[0];
 
-            //information needed re: existing file uploads - needed by TDAR.upload library
-            TDAR.filesJson = ${filesJson!"false"};
-
+        TDAR.filesJson = ${filesJson!"false"};
+        TDAR.inheritance.project = ${projectAsJson!"{}"};
+        var props = {
+            formSelector: "#metadataForm",
+            includeInheritance : ${inheritanceEnabled?string},
+            acceptFileTypes : /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i,
             <#if multipleUpload??>
-                //init fileupload
-                var id = $('input[name=id]').val();
-                <#if ableToUploadFiles && multipleUpload>
-                    TDAR.fileupload.registerUpload({
-                        informationResourceId: id,
-                        acceptFileTypes: acceptFileTypes,
-                        formSelector: formSelector,
-                        inputSelector: '#fileAsyncUpload',
-                        fileuploadSelector: '#divFileUpload'
-                    });
+            multipleUpload : ${multipleUpload?string},
+        </#if>
+        <#if validFileExtensions??>
+            validExtensions : "<@edit.join sequence=validFileExtensions delimiter="|"/>",
+            validExtensionsWarning : "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)",
+        </#if>
+        <#if ableToUploadFiles??>
+            ableToUpload : ${ableToUploadFiles?string},
+        </#if>
+             dataTableEnabled : ${resource.resourceType.dataTableSupported?string}
+         };
+        var form = $(props.formSelector)[0];
+        TDAR.common.initEditPage(form, props);
+            
+        <#if local_.localJavascript?? && local_.localJavascript?is_macro>
+            <@local_.localJavascript />
+        </#if>
 
-                    var fileValidator = new FileuploadValidator("metadataForm");
-                    fileValidator.addRule("nodupes");
-                    TDAR.fileupload.validator = fileValidator;
-                </#if>
-            </#if>
-
-            //wire up jquery-ui datepicker to our date fields
-            $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker({dateFormat: "mm/dd/yy"});
-
-            TDAR.common.initEditPage(form);
-
-            //register maps, if any
-            if ($('#divSpatialInformation').length) {
-                $(function () {
-                    //fixme: implicitly init when necessary
-                    TDAR.maps.initMapApi();
-                    var mapdiv = $('#editmapv3')[0];
-                    var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
-                    TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
-                });
-            }
-
-            <#if inheritanceEnabled>
-                TDAR.inheritance.project = ${projectAsJson};
-                TDAR.inheritance.applyInheritance(formSelector);
-            </#if>
-
-
-            <#if validFileExtensions??>
-                var validate = $('.validateFileType');
-                if ($(validate).length > 0) {
-                    $(validate).rules("add", {
-                        extension: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
-                        messages: {
-                            extension: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
-                        }
-                    });
-                }
-            </#if>
-
-            <#if resource.resourceType.dataTableSupported>
-                TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
-            </#if>
-
-            <#if local_.localJavascript?? && local_.localJavascript?is_macro>
-                <@local_.localJavascript />
-            </#if>
-
-            $("#fileUploadField").change(function () {
-                if ($("#fileUploadField").val().length > 0) {
-                    $("#reminder").hide();
-                }
-            }).change();
+        <#if test>
+            var $up = $("#fileAsyncUpload");
+            $up.css("position", "static");
+            $up.css("top", "auto");
+            $up.css("right", "auto");
+            $up.css("margin", 0);
+            $up.css("opacity", 1);
+            $up.css("transform", "none");
+            $up.css("direction", "ltr");
+            $up.css("cursor", "auto");
+        </#if>
 
         });
         </#noescape>

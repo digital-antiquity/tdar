@@ -13,9 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.struts.action.TdarActionSupport;
 
 @Transactional
 public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITCase {
@@ -24,11 +23,6 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
-    @Autowired
-    @Override
-    public TdarActionSupport getController() {
-        return controller;
-    }
 
     @Autowired
     SearchIndexService searchIndexService;

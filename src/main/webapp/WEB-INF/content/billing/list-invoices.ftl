@@ -40,7 +40,7 @@
 <script type="text/javascript">
     $(function () {
         TDAR.datatable.extendSorting();
-        $("#tblAllInvoices").dataTable({"bFilter": false, "bInfo": false, "bPaginate": false})
+        $("#tblAllInvoices").dataTable({"bFilter": false, "bInfo": false, "bPaginate": false, aaSorting:[]})
     });
 </script>
 

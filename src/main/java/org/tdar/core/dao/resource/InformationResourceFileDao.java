@@ -3,35 +3,33 @@ package org.tdar.core.dao.resource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceProxy;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 public class InformationResourceFileDao extends HibernateBase<InformationResourceFile> {
@@ -76,9 +74,8 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public Number getDownloadCount(InformationResourceFile irFile) {
-        Criteria createCriteria = getCriteria(FileDownloadStatistic.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("reference", irFile));
-        return (Number) createCriteria.list().get(0);
+        String sql = String.format(TdarNamedQueries.DOWNLOAD_COUNT_SQL, irFile.getId(), new Date());
+        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {
@@ -101,7 +98,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public void deleteVersionImmediately(InformationResourceFileVersion version) {
-        if (Persistable.Base.isNullOrTransient(version)) {
+        if (PersistableUtils.isNullOrTransient(version)) {
             throw new TdarRecoverableRuntimeException("error.cannot_delete_transient");
         }
 
@@ -119,6 +116,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<InformationResource> findInformationResourcesWithFileStatus(
             Person authenticatedUser, List<Status> resourceStatus,
             List<FileStatus> fileStatus) {
@@ -142,5 +140,22 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     public ScrollableResults findScrollableVersionsForVerification() {
         Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION);
         return query.setReadOnly(true).setCacheable(false).scroll(ScrollMode.FORWARD_ONLY);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<InformationResourceFile> findAllExpiredEmbargoes() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGO_EXIPRED);
+        DateTime today = new DateTime().withTimeAtStartOfDay();
+        query.setParameter("dateStart", today.toDate());
+        return query.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW);
+        DateTime today = new DateTime().plusDays(1).withTimeAtStartOfDay();
+        query.setParameter("dateStart", today.toDate());
+        query.setParameter("dateEnd", today.plusDays(1).toDate());
+        return query.list();
     }
 }

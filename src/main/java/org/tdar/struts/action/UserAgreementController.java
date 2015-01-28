@@ -7,10 +7,13 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
@@ -27,22 +30,26 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     private List<AuthNotice> authNotices = new ArrayList<>();
     private List<AuthNotice> acceptedAuthNotices = new ArrayList<>();
     private String userResponse = "";
-    private Person user;
+    private TdarUser user;
+
+    @Autowired
+    private transient AuthenticationService authenticationService;
 
     @Override
     public void prepare() {
         getLogger().trace("acceptedAuthNotices: {}", acceptedAuthNotices);
         getLogger().trace("userResponse:{}", userResponse);
         user = getAuthenticatedUser();
-        authNotices.addAll(getAuthenticationAndAuthorizationService().getUserRequirements(user));
+        authNotices.addAll(authenticationService.getUserRequirements(user));
     }
 
     @WriteableSession
     @Action(value = "agreement-response", results = {
             @Result(name = TdarActionSupport.SUCCESS, type = "redirect", location = "/dashboard"),
-            @Result(name = TdarActionSupport.NONE, type = "redirectAction", params = { "actionName", "logout", "namespace", "/" }),
-            @Result(name = TdarActionSupport.INPUT, type = "redirectAction", params = { "actionName", "show-notices", "namespace", "/" })
+            @Result(name = TdarActionSupport.NONE, type = "redirect", location = "/logout"),
+            @Result(name = TdarActionSupport.INPUT, type = "redirect", location = "/show-notices")
     })
+    @PostOnly
     public String agreementResponse() {
         if (!isAuthenticated()) {
             return LOGIN;
@@ -73,8 +80,8 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     boolean processResponse() {
         getLogger().trace(" pending notices:{}", authNotices);
         getLogger().trace("accepted notices:{}", acceptedAuthNotices);
-        getAuthenticationAndAuthorizationService().satisfyUserPrerequisites(getSessionData(), acceptedAuthNotices);
-        boolean allRequirementsMet = !getAuthenticationAndAuthorizationService().userHasPendingRequirements(user);
+        authenticationService.satisfyUserPrerequisites(getSessionData(), acceptedAuthNotices);
+        boolean allRequirementsMet = !authenticationService.userHasPendingRequirements(user);
         return allRequirementsMet;
     }
 

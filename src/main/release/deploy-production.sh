@@ -48,7 +48,7 @@ perl src/main/release/release.pl
 sudo rm /tmp/.wro4j/buildContext.properties
 sudo rmdir /tmp/.wro4j/
 
-mvn clean compile war:war -Pproduction,minify-web-resources
+mvn clean compile war:war -Pproduction,minify-web-resources,liquibase
 if [ $? -ne 0 ] 
   then
    echoerr "==============================================="
@@ -58,6 +58,7 @@ if [ $? -ne 0 ]
    exit 1
   else
     sudo service tomcat7 stop
+	sudo cp target/ROOT.war ~tdar/app/
     sudo rm -Rrf ~tdar/app/ROOT
     sudo service tomcat7 restart
 fi

@@ -43,10 +43,10 @@
                 Enter the ontology in the text area below. Separate each concept in
                 the ontology with newlines (hit enter), and indicate parent-child relationships
                 with tabs (make sure you use the tab key on your keyboard - spaces do not work).
-                To specify synonyms for a given term use comma-separated parentheses, e.g.,
+                To specify synonyms for a given term use semicolon-separated parentheses, e.g.,
             </p>
             <blockquote>
-                <p><code>Flake (Debris, Debitage)</code></p>
+                <p><code>Flake (Debris; Debitage)</code></p>
             </blockquote>
 
             <p class="help-block">For lithic form, the following would be a simple ontology:</p>
@@ -57,7 +57,7 @@ Tool
         End Scraper
         Side Scraper
     Other Tool
-Flake (Debris, Debitage)
+Flake (Debris; Debitage)
     Utilized
     Unutilized
 Core
@@ -67,7 +67,7 @@ Core
     </#macro>
 
     <#macro localJavascript>
-    TDAR.common.setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
+    TDAR.common.setupSupportingResourceForm(${resource.totalNumberOfFiles?c}, "ontology");
     $('#fileInputTextArea').tabby();
     </#macro>
 

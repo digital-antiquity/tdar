@@ -1,8 +1,8 @@
 package org.tdar.core.bean.cache;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.service.GenericService;
+import org.tdar.utils.DataUtil;
 
 /**
  * Abstract class to help manage the cache data.
@@ -16,11 +16,11 @@ import org.tdar.core.service.GenericService;
 public abstract class AbstractCountCache<C extends AbstractCountCache, D extends Comparable<D>> extends Persistable.Base implements Comparable<C>,
         ResourceCache {
 
-    private static final long serialVersionUID = -1407077845657074783L;
+    private static final long serialVersionUID = 6182074332493898892L;
 
     @Override
     public String getLabel() {
-        return GenericService.extractStringValue(getKey());
+        return DataUtil.extractStringValue(getKey());
     }
 
     @Override
@@ -31,7 +31,7 @@ public abstract class AbstractCountCache<C extends AbstractCountCache, D extends
     @SuppressWarnings("unchecked")
     @Override
     public int compareTo(C o) {
-        return ObjectUtils.compare(getKey(), (o.getKey()));
+        return ObjectUtils.compare((C)getKey(), (o.getKey()));
     }
 
     @Override

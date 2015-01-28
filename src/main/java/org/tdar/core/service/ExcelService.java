@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
@@ -40,6 +40,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.CellFormat.Style;
 import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.utils.DataUtil;
 
 /**
  * This is a service specific to trying to centralize all of the specific issues with writing
@@ -443,7 +444,7 @@ public class ExcelService {
             row = sheet.createRow(rowNum);
         }
         for (Object datum : fields) {
-            String value = GenericService.extractStringValue(datum);
+            String value = DataUtil.extractStringValue(datum);
             createCell(row, startCol, value, headerStyle);
             startCol++;
         }
@@ -505,6 +506,7 @@ public class ExcelService {
         Workbook workbook = proxy.getWorkbook();
         proxy.preProcess();
         Iterator<Object[]> data = proxy.getData();
+
         // if the startRow is something other than 0, we assume that the caller was working on this sheet prior
         boolean newSheetNeeded = startRow == 0;
         if (newSheetNeeded) {
@@ -522,7 +524,7 @@ public class ExcelService {
             try {
                 row = data.next();
             } catch (RuntimeException re) {
-                logger.error("RuntimeException, table empty?", re);
+                logger.warn("RuntimeException, table empty?", re);
                 break;
             }
             rowNum++;

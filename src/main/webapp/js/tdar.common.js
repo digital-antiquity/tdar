@@ -61,7 +61,7 @@ jQuery.extend({
  * trying to move these functions out of global scope and apply strict parsing.
  */
 
-TDAR.common = function () {
+TDAR.common = function (TDAR, fileupload) {
     "use strict";
 
     var self = {};
@@ -193,6 +193,19 @@ TDAR.common = function () {
         //FIXME:  implement this and migrate to tdar.fileupload
     }
 
+    
+    var _validateProfileImage = function() {
+        var $profileElement = $(".profileImage");
+        if ($profileElement.length > 0) {
+            $profileElement.rules("add", {
+                extension: "jpg,tiff,jpeg,png",
+                messages: {
+                    extension: "please upload a JPG, TIFF, or PNG file for a profile image"
+                }
+            });
+        }
+    }
+    
     /**
      * Update display of copyright licenses section when the radio button selection changes
      * @private
@@ -294,7 +307,7 @@ TDAR.common = function () {
                     minlength: 3,
                     equalTo: "#password"
                 },
-                'person.contributorReason': {
+                'contributorReason': {
                     maxlength: 512
                 }
             },
@@ -326,96 +339,6 @@ TDAR.common = function () {
 
     };
 
-    //FIXME: wny is this broken out from  initEditPage?   If anything, break it out even further w/ smaller private functions
-    /**
-     * Further initialization for tdar "edit" pages
-     *
-     * @param form
-     */
-    var _setupEditForm = function (form) {
-        var $form = $(form);
-        //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
-        var formid = $form.attr("id");
-
-        // prevent "enter" from submitting
-        $form.delegate('input,select', "keypress", function (event) {
-            return event.keyCode != 13;
-        });
-
-        //initialize form validation
-        _setupFormValidate(form);
-
-        //prepwork prior to form submit (trimming fields)
-        $form.submit(function (f) {
-            try {
-                $.each($('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'), function (idx, elem) {
-                    if ($(elem).val() !== undefined) {
-                        $(elem).val($.trim($(elem).val()));
-                    }
-                });
-            } catch (err) {
-                console.error("unable to trim:" + err);
-            }
-
-            var $button = $('input[type=submit]', f);
-            $button.siblings(".waitingSpinner").show();
-
-            //warn user about leaving before saving
-            $("#jserror").val("");
-            return true;
-        });
-
-        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
-            _prepareDateFields(elem);
-        });
-
-        var $uploaded = $(formid + '_uploadedFiles');
-        if ($uploaded.length > 0) {
-            var validateUploadedFiles = function () {
-                if ($uploaded.val().length > 0) {
-                    $("#reminder").hide();
-                }
-            };
-            $uploaded.change(validateUploadedFiles);
-            validateUploadedFiles();
-        }
-
-        Modernizr.addTest('cssresize', Modernizr.testAllProps('resize'));
-
-        if (!Modernizr.cssresize) {
-            $('textarea.resizable:not(.processed)').TextAreaResizer();
-        }
-
-        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
-            _prepareDateFields(this);
-        });
-        _showAccessRightsLinkIfNeeded();
-        $('.fileProxyConfidential').change(_showAccessRightsLinkIfNeeded);
-
-        //FIXME: idea is nice, but default options produce more annoying UI than original browser treatment of 'title' attribute. also, bootstrap docs
-        //       tell you how to delegate to selectors but I couldn't figure it out.
-        //$(form).find('label[title]').tooltip();
-
-        if ($('#explicitCoordinatesDiv').length > 0) {
-            $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
-
-        }
-        $(".latLong").each(function (index, value) {
-            $(this).hide();
-            //copy value of hidden original to the visible text input
-            var id = $(this).attr('id');
-            $('#d_' + id).val($('#' + id).val());
-        });
-
-        $("#jserror").val("SAVE");
-
-        // delete/clear .repeat-row element and fire event
-        $('#copyrightHolderTable').on("click", ".row-clear", function (e) {
-            var rowElem = $(this).parents(".repeat-row")[0];
-            TDAR.repeatrow.deleteRow(rowElem);
-        });
-
-    };
 
     // called whenever date type changes
     //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be
@@ -514,13 +437,60 @@ TDAR.common = function () {
     }
 
     /**
+     * Suppress the browser's default behavior of submitting the current form when user presses RETURN while a text-input has focus.  User can still submit
+     * via keypress when focussed on a submit button.
+     *
+     * @param $form jQuery selection containing the form that will suppress keypress submissions.
+     */
+    var _suppressKeypressFormSubmissions = function($form) {
+        $form.find('input,select').keypress(function (event) {
+            if(event.keyCode === $.ui.keyCode.ENTER) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    };
+
+    /**
      * Perform initialization and setup for a typical elements and functionality of a tdar "edit page".  This does not
      * include initialization tasks for specific edit pages with unique functionality.
      *
      * @param form the form to initialize
      * @private
      */
-    var _initEditPage = function (form) {
+    var _initEditPage = function (form, props) {
+
+        if (props == undefined) {
+            props = {};
+        }
+        //FIXME: other init stuff that is separate function for some reason 
+        var $form = $(form);
+        //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
+        var formid = $form.attr("id");
+        
+
+        //information needed re: existing file uploads - needed by TDAR.upload library
+
+        if (props.multipleUpload) {
+            //init fileupload
+            var id = $('input[name=id]').val();
+            if (props.ableToUpload && props.multipleUpload) {
+                TDAR.fileupload.registerUpload({
+                    informationResourceId: id,
+                    acceptFileTypes: props.acceptFileTypes,
+                    formSelector: props.formSelector,
+                    inputSelector: '#fileAsyncUpload',
+                    fileuploadSelector: '#divFileUpload'
+                });
+
+                var fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
+                fileValidator.addRule("nodupes");
+                TDAR.fileupload.validator = fileValidator;
+            }
+        }
+
+        //wire up jquery-ui datepicker to our date fields
+        $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker({dateFormat: "mm/dd/yy"});
 
         //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it.
         _submitButtonStopWait();
@@ -570,6 +540,7 @@ TDAR.common = function () {
         TDAR.autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
         TDAR.autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
         TDAR.autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+        TDAR.autocomplete.delegateKeyword("#uncontrolledMaterialKeywordsRepeatable", "material", "MaterialKeyword");
         TDAR.autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
         TDAR.autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
         TDAR.autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
@@ -580,9 +551,7 @@ TDAR.common = function () {
                 });
 
         // prevent "enter" from submitting
-        $('input,select').keypress(function (event) {
-            return event.keyCode != 13;
-        });
+        _suppressKeypressFormSubmissions($form);
 
         //init sortables
         //FIXME: sortables currently broken 
@@ -599,7 +568,7 @@ TDAR.common = function () {
             var $scrollspy = $(this);
 
             $(document).bind("repeatrowadded repeatrowdeleted heightchange", function () {
-                console.log("resizing scrollspy");
+                //console.trace("resizing scrollspy");
                 $scrollspy.scrollspy("refresh");
             });
         });
@@ -607,8 +576,83 @@ TDAR.common = function () {
         TDAR.contexthelp.initializeTooltipContent(form);
         _applyWatermarks(form);
 
-        //FIXME: other init stuff that is separate function for some reason 
-        _setupEditForm(form);
+        // prevent "enter" from submitting
+        $form.delegate('input,select', "keypress", function (event) {
+            return event.keyCode != 13;
+        });
+
+        //initialize form validation
+        _setupFormValidate(form);
+
+        //prepwork prior to form submit (trimming fields)
+        $form.submit(function (f) {
+            try {
+                $.each($('.date, .number, .trim, .keywordAutocomplete'), function (idx, elem) {
+                    if ($(elem).val() !== undefined) {
+                        $(elem).val($.trim($(elem).val()));
+                    }
+                });
+            } catch (err) {
+                console.error("unable to trim:" + err);
+            }
+
+            var $button = $('input[type=submit]', f);
+            $button.siblings(".waitingSpinner").show();
+
+            //warn user about leaving before saving
+            $("#jserror").val("");
+            return true;
+        });
+
+        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
+            _prepareDateFields(elem);
+        });
+
+        var $uploaded = $(formid + '_uploadedFiles');
+        if ($uploaded.length > 0) {
+            var validateUploadedFiles = function () {
+                if ($uploaded.val().length > 0) {
+                    $("#reminder").hide();
+                }
+            };
+            $uploaded.change(validateUploadedFiles);
+            validateUploadedFiles();
+        }
+
+        Modernizr.addTest('cssresize', Modernizr.testAllProps('resize'));
+
+        if (!Modernizr.cssresize) {
+            $('textarea.resizable:not(.processed)').TextAreaResizer();
+        }
+
+        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
+            _prepareDateFields(this);
+        });
+        _showAccessRightsLinkIfNeeded();
+        $('.fileProxyConfidential').change(_showAccessRightsLinkIfNeeded);
+
+        //FIXME: idea is nice, but default options produce more annoying UI than original browser treatment of 'title' attribute. also, bootstrap docs
+        //       tell you how to delegate to selectors but I couldn't figure it out.
+        //$(form).find('label[title]').tooltip();
+
+        if ($('#explicitCoordinatesDiv').length > 0) {
+            $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
+
+        }
+        $(".latLong").each(function (index, value) {
+            $(this).hide();
+            //copy value of hidden original to the visible text input
+            var id = $(this).attr('id');
+            $('#d_' + id).val($('#' + id).val());
+        });
+
+        $("#jserror").val("SAVE");
+
+        // delete/clear .repeat-row element and fire event
+        $('#copyrightHolderTable').on("click", ".row-clear", function (e) {
+            var rowElem = $(this).parents(".repeat-row")[0];
+            TDAR.repeatrow.deleteRow(rowElem);
+        });
 
         _applyTreeviews();
 
@@ -618,14 +662,14 @@ TDAR.common = function () {
             var $row = $select.closest('.controls-row');
             $('.view-project', $row).remove();
             if ($select.val().length > 0 && $select.val() !== "-1") {
-                var href = getURI('project/' + $select.val());
+                var href = TDAR.uri('project/' + $select.val());
                 var $button = '<a class="view-project btn btn-small" target="_project" href="' + href + '">View project in new window</a>';
                 $row.append($button);
             }
         }).change();
 
-        //display generic wait message with ajax events
-        _registerAjaxEvents();
+        //Display status messages during ajax requests.
+        _registerAjaxStatusContainer();
 
         // I must be "last"
         $(form).not('.disableFormNavigate').FormNavigate({
@@ -634,6 +678,50 @@ TDAR.common = function () {
             cleanOnSubmit: false
         });
 
+        
+        
+
+        //register maps, if any
+        if ($('#divSpatialInformation').length) {
+            $(function () {
+                //fixme: implicitly init when necessary
+                TDAR.maps.initMapApi();
+                var mapdiv = $('#editmapv3')[0];
+                var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
+                TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
+            });
+        }
+
+        if (props.includeInheritance) {
+            TDAR.inheritance.applyInheritance(props.formSelector);
+        }
+
+
+        if (props.validExtensions != undefined) {
+            var validate = $('.validateFileType');
+            if ($(validate).length > 0) {
+                $(validate).rules("add", {
+                    extension: props.validExtensions,
+                    messages: {
+                        extension: props.validExtensionsWarning
+                    }
+                });
+            }
+        }
+        if (props.dataTableEnabled) {
+            TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+        }
+
+        $("#fileUploadField").each(function(){
+            var $fileUploadField = $(this);
+            var _updateReminderVisibility = function() {
+                if ($fileUploadField.val().length) {
+                    $("#reminder").hide();
+                }
+            };
+            $fileUploadField.change(_updateReminderVisibility);
+            _updateReminderVisibility();
+        });
     };
 
     /**
@@ -664,11 +752,6 @@ TDAR.common = function () {
                 //$divSearchContext.removeClass("active");
             });
         }
-
-        //init bootstrap image gallery (if found)
-        $(".image-carousel").each(function(idx, elem) {
-            _initImageGallery(elem);
-        })
     };
 
     /**
@@ -684,23 +767,75 @@ TDAR.common = function () {
         });
     }
 
+
+    /**
+     * Custom  ajax filter (enable by calling $.ajaxPrefilter(_customAjaxPrefilter). JQuery executes this prefilter
+     * prior to any ajax call.
+     *
+     * @param options  options for the current request (including jquery defaults)
+     * @param originalOptions options passed to $.ajax()  by the caller, without defaults.
+     * @param $xhr  jquery xmlHttpRequest object
+     * @private
+     */
+    var _statusContainerAjaxPrefilter = function(options, originalOptions, $xhr) {
+        var hdlTimeout = 0;
+        var $container, $message, $label;
+        var defaults = {
+            enabled: true,                      // Show status messages for this request
+            selector:       '#ajaxIndicator',
+            fadeInDelay:    'fast',
+            fadeOutDelay:   1 * 1000,
+            timeout:        20 * 1000,          // Hide message after specified timeout -  does not cancel the ajax request (0 for no timeout)
+            label:          "Loading",
+            waitMessage:    "...",
+            doneMessage:    "...complete",
+            failMessage:    "...failed",
+            timeoutMessage: "request timed out"
+        };
+
+        var settings = $.extend({}, options.statusContainer, defaults);
+        if(settings.enabled) {
+            $container = $(settings.selector);
+            $label = $container.find("strong");
+            $message = $container.find("span");
+            $label.text(settings.label);
+
+            //Initial message
+            $message.text(settings.waitMessage);
+            $container.fadeIn(settings.fadeInDelay);
+
+            //success message
+            $xhr.done(function(){
+                $message.text(settings.doneMessage);
+            });
+
+            //error message
+            $xhr.fail(function() {
+                $message.text(settings.failMessage);
+            });
+
+            //Fade out after success/failure
+            $xhr.always(function(){
+                $container.fadeOut(settings.fadeOutDelay);
+                clearTimeout(hdlTimeout);
+            });
+
+            //Fade out after timeout, if specified.
+            if(settings.timeout) {
+                hdlTimeout = setTimeout(function () {
+                    $container.fadeOut(settings.fadeOutDelay);
+                }, settings.timeout);
+            }
+        }
+    };
+
     /**
      * Register event listener that displays generic wait message for ajax requests. If the ajaxOptions property
      * of the event contain a "waitmessage" property, display that messages, otherwise the function displays "Loading"
      * while the request is in flight, and "Done" after the request is complete.
      */
-    var _registerAjaxEvents = function () {
-        $('body').bind('ajaxSend', function (e, jqXHR, ajaxOptions) {
-            if (typeof ajaxOptions.waitMessage === "undefined") {
-                ajaxOptions.waitMessage = "Loading";
-            }
-            $('#ajaxIndicator').html("<strong>Waiting</strong>: " + ajaxOptions.waitMessage + "...").fadeIn('fast');
-            //TODO: include a timeout to dismiss loading or display warning mesage
-        });
-        $('body').bind('ajaxComplete', function (e, jqXHR, ajaxOptions) {
-            $('#ajaxIndicator').html("<strong>Complete</strong>: " + ajaxOptions.waitMessage + "...").fadeOut(1000);
-        });
-
+    var _registerAjaxStatusContainer = function () {
+        $.ajaxPrefilter(_statusContainerAjaxPrefilter);
     };
 
     /**
@@ -757,7 +892,7 @@ TDAR.common = function () {
         var $this = $(this);
         var resourceId = $this.attr("resource-id");
         var state = $this.attr("bookmark-state");
-        var $waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
+        var $waitingElem = $("<img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
         $this.prepend($waitingElem);
         var $icon = $(".bookmark-icon", $this);
         $icon.hide();
@@ -776,7 +911,7 @@ TDAR.common = function () {
         }
         var newclass = "tdar-icon-" + newstate;
 
-        $.getJSON(getBaseURI() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
+        $.post(TDAR.uri() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
                     if (data.success) {
                         $(".bookmark-label", $this).text(newtext);
                         $icon.removeClass(oldclass).addClass(newclass).show();
@@ -891,22 +1026,28 @@ TDAR.common = function () {
         _switchDocType($(".doctype input[type=radio]:checked"));
     }
 
+    //FIXME: refactor/dedupe switchType (TDAR-3989)
     /**
-     * For use with document edit page.  display relevant fieldsets corresponding to the current "document type"
-     * @param radio
-     * @param container
+     * Toggle the display of certain elements based on the value of a specified radio button.
+     *
+     * This function shows .typeToggle elements that also have css class which matches the radio's value, and hides all other .typeToggle elements.
+     *
+     * @param radio element/selector
+     * @param container element/selector. Context for .typeToggle search.
      */
     var _switchType = function (radio, container) {
-        var type = $(radio).val().toLowerCase();
+        var val = $(radio).val();
+        var type = (typeof val !== 'undefined') ? val.toLowerCase() : "SWITCHTYPEDEFAULT";
+        type = "." + type;
 
         console.debug('switchType:start:' + type);
         var $container = $(container);
-        $(".typeToggle", $container).hide();
-        $($("." + type), $container).show();
+        $container.find(".typeToggle").hide();
+        $container.find(type).show();
 
     }
 
-    //FIXME: can switchType and switchDocType be refactored? at very least they need better names
+    //FIXME: can switchType and switchDocType be refactored? at very least they need better names (TDAR-3989)
     /**
      * Similar to switchType, but this (i think)) swaps out labels and descriptions for inputs that are re-used by
      * multiple document types.
@@ -1030,15 +1171,16 @@ TDAR.common = function () {
     var _changeSubcategory = function (categoryIdSelect, subCategoryIdSelect) {
         var $categoryIdSelect = $(categoryIdSelect);
         var $subCategoryIdSelect = $(subCategoryIdSelect);
+        $subCategoryIdSelect.empty();
         $categoryIdSelect.siblings(".waitingSpinner").show();
-        $.get(getBaseURI() + "resource/ajax/column-metadata-subcategories", {
+        $.get(TDAR.uri() + "resource/ajax/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
-        }, function (data_, textStatus) {
-            var data = jQuery.parseJSON(data_);
-
+        }, function (data, textStatus) {
             var result = "";
             for (var i = 0; i < data.length; i++) {
-                result += "<option value=\"" + data[i]['value'] + "\">" + data[i]['label'] + "</option>\n";
+                if (parseInt(data[i]['id']) > -1) {
+                    result += "<option value=\"" + data[i]['id'] + "\">" + data[i]['label'] + "</option>\n";
+                }
             }
 
             $categoryIdSelect.siblings(".waitingSpinner").hide();
@@ -1064,9 +1206,17 @@ TDAR.common = function () {
      * @private
      */
     function _switchLabel(field, type) {
-        var label = "#" + $(field).attr('id') + '-label';
-        if ($(field).attr(type) != undefined && $(label) != undefined) {
-            $(label).text($(field).attr(type));
+        var $field =  $(field);
+        var $fieldId = "#" + $(field).attr("id");
+        var label =  $fieldId + '-label';
+        var $label = $(label);
+        var $labelByName = $("label",$fieldId);
+        if (($label == undefined || $label.length == 0) && ($labelByName != undefined && $labelByName.length != 0)) {
+            $label = $labelByName;
+        }
+        
+        if ($field.attr(type) != undefined && $label != undefined) {
+            $label.text($field.attr(type));
         }
     }
 
@@ -1085,8 +1235,21 @@ TDAR.common = function () {
      * @private
      */
     var _collectionTreeview = function () {
-        $(".collection-treeview").find(".hidden").removeClass("hidden").end().treeview();
+        $(".collection-treeview").find(".hidden").removeClass("hidden").end().treeview({collapsed:true});
     }
+
+    /**
+     * format number w/ comma grouping
+     * @param num
+     * @returns {string}
+     */
+    function _formatNumber(num) {
+        var numparts = num.toString().split('.');
+        var str = numparts[0].split('').reverse().join('').replace(/(\d{3})\B/g, '$1,').split('').reverse().join('');
+        str += numparts[1] ? '.'  + numparts[1] : '';
+        return str;
+    }
+
 
     /**
      * return string that describes size of specified bytes in easier syntax
@@ -1094,12 +1257,14 @@ TDAR.common = function () {
      * @param si true if description should be in SI units (e.g. kilobyte, megabyte) vs. IEC (e.g. kibibyte, mebibyte)
      * @returns {string} size as human readable equivalent of specified bytecount
      */
-    function humanFileSize(bytes, si) {
+    function _humanFileSize(bytes, si) {
         var thresh = si ? 1000 : 1024;
         if (bytes < thresh) {
             return bytes + ' B';
         }
-        var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        //jtd: IEC names would be less ambiguous, but JEDEC names are more consistent with what we show elsewhere on the site
+        //var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] :  ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         var u = -1;
         do {
             bytes /= thresh;
@@ -1108,6 +1273,27 @@ TDAR.common = function () {
         return bytes.toFixed(1) + ' ' + units[u];
     };
 
+    function _initImageGalleryForView() {
+        //init bootstrap image gallery (if found)
+        $(".image-carousel").each(function(idx, elem) {
+            _initImageGallery(elem);
+        })
+
+        $(".thumbnailLink").click(function () {
+            var $this = $(this);
+            $("#bigImage").attr('src', $this.data('url'));
+            var rights = "";
+            if ($this.data("access-rights")) {
+                rights = "This file is <em>" + $this.data("access-rights") + "</em> but you have rights to it";
+            }
+            $("#confidentialLabel").html(rights);
+            $("#downloadText").html($this.attr('alt'));
+            $(".thumbnail-border-selected").removeClass("thumbnail-border-selected");
+            $this.parent().addClass("thumbnail-border-selected");
+        });
+    }
+
+    
     $.extend(self, {
         "initEditPage": _initEditPage,
         "initFormValidation": _setupFormValidate,
@@ -1140,13 +1326,17 @@ TDAR.common = function () {
 
         //I don't like how  Javascript Templates from "(tmpl.min.js)" puts "tmpl" in global scope, so I'm aliasing it here.
         "tmpl": tmpl,
-
+        "validateProfileImage" : _validateProfileImage,
         "collectionTreeview": _collectionTreeview,
-        "humanFileSize": humanFileSize
+        "humanFileSize": _humanFileSize,
+        "initImageGallery": _initImageGalleryForView,
+        "formatNumber": _formatNumber,
+        "registerAjaxStatusContainer": _registerAjaxStatusContainer,
+        "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions
     });
 
     return self;
-}();
+}(TDAR, TDAR.fileupload);
 
 function checkWindowSize() {
     var width = $(window).width()
@@ -1160,14 +1350,7 @@ function checkWindowSize() {
 $(document).ready(function () {
     checkWindowSize();
     $(window).resize(checkWindowSize);
-    if ($.cookie("hide_jira_button")) {
-        setTimeout(function () {
-            $('#atlwdg-trigger').hide()
-        }, 700);
-    }
-
     TDAR.common.sessionTimeoutWarning();
-
     $(document).delegate(".bookmark-link", "click", TDAR.common.applyBookmarks);
 
 });

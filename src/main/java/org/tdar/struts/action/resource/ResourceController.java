@@ -1,17 +1,18 @@
 package org.tdar.struts.action.resource;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AuthenticationAware;
 
 /**
@@ -33,34 +34,46 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public static final String BILLING = "billing";
 
-    private final SortedMap<ResourceType, String> resourceTypes = new TreeMap<ResourceType, String>();
+    @Autowired
+    private transient BillingAccountService accountService;
 
     // incoming data from /resource/add
     private ResourceType resourceType;
     private Long projectId;
+    private Resource resource;
 
     private Long resourceId;
 
     /**
      * Passthrough action, just loads add.ftl via conventions plugin.
      */
-    @Action(value = "add",
-            results = {
-                    @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
-        			@Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
-                    @Result(name = SUCCESS, location = "add.ftl")
-            })
+    @Actions(value={
+            @Action(value = "add",
+                    results = {
+                            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = SUCCESS, location = "add.ftl")
+                    }),
+                    @Action(value = "add/{projectId}",
+                    results = {
+                            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = SUCCESS, location = "add.ftl")
+                    })
+
+    })
     @Override
     public String execute() {
-		if (!isContributor()) {
-			addActionMessage(getText("resourceController.must_be_contributor"));
-			return CONTRIBUTOR;
-		}
-		if (!getTdarConfiguration().isPayPerIngestEnabled() || isAllowedToCreateResource()) {
-			return SUCCESS;
-		}
-		addActionMessage(getText("resourceController.requires_funds"));
-		return BILLING;
+        if (!isContributor()) {
+            addActionMessage(getText("resourceController.must_be_contributor"));
+            return CONTRIBUTOR;
+        }
+        accountService.assignOrphanInvoicesIfNecessary(getAuthenticatedUser());
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || isAllowedToCreateResource()) {
+            return SUCCESS;
+        }
+        addActionMessage(getText("resourceController.requires_funds"));
+        return BILLING;
     }
 
     /**
@@ -68,21 +81,16 @@ public class ResourceController extends AuthenticationAware.Base {
      * 
      * @return
      */
-    @Action(value = "edit",
+    @Action(value = "{resourceId}/edit",
             results = {
                     @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = "DATASET", type = TYPE_REDIRECT, location = "/dataset/edit?resourceId=${resource.id}"),
-                    @Result(name = "DOCUMENT", type = TYPE_REDIRECT, location = "/document/edit?resourceId=${resource.id}"),
-                    @Result(name = "ONTOLOGY", type = TYPE_REDIRECT, location = "/ontology/edit?resourceId=${resource.id}"),
-                    @Result(name = "IMAGE", type = TYPE_REDIRECT, location = "/image/edit?resourceId=${resource.id}"),
-                    @Result(name = "SENSORY_DATA", type = TYPE_REDIRECT, location = "/sensory-data/edit?resourceId=${resource.id}"),
-                    @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/edit?resourceId=${resource.id}")
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/edit?id=${resource.id}")
             })
     public String edit() {
-        InformationResource informationResource = getInformationResourceService().find(resourceId);
-        if (informationResource == null) {
+        resource = getGenericService().find(InformationResource.class, resourceId);
+        if (resource == null) {
             getLogger().error("trying to edit information resource but it was null.");
-            addActionError("Information resource wasn't loaded properly, please file a bug report.  Thanks!");
+            addActionError(getText("resourceController.invalid"));
             return INPUT;
         }
         if (resourceType == null) {
@@ -90,15 +98,12 @@ public class ResourceController extends AuthenticationAware.Base {
             return INPUT;
         }
 
-        return resourceType.name();
+        return SUCCESS;
     }
 
     public boolean isAllowedToCreateResource() {
-        // getLogger().info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
-        if ((getTdarConfiguration().isPayPerIngestEnabled() == false) || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null, true)) {
-            return true;
-        }
-        return false;
+        getLogger().trace("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null));
     }
 
     /**
@@ -106,23 +111,18 @@ public class ResourceController extends AuthenticationAware.Base {
      * 
      * @return
      */
-    @Action(value = "view",
+    @Action(value = "{id}",
             results = {
-                    @Result(name = "DATASET", type = TYPE_REDIRECT, location = "/dataset/view?id=${resourceId}"),
-                    @Result(name = "DOCUMENT", type = TYPE_REDIRECT, location = "/document/view?id=${resourceId}"),
-                    @Result(name = "ONTOLOGY", type = TYPE_REDIRECT, location = "/ontology/view?id=${resourceId}"),
-                    @Result(name = "IMAGE", type = TYPE_REDIRECT, location = "/image/view?id=${resourceId}"),
-                    @Result(name = "SENSORY_DATA", type = TYPE_REDIRECT, location = "/sensory-data/view?id=${resourceId}"),
-                    @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/view?id=${resourceId}")
+                    @Result(name = "SUCCESS", type = TYPE_REDIRECT, location = "${resource.detailUrl}")
             })
     public String view() {
-        InformationResource informationResource = getInformationResourceService().find(resourceId);
-        if (informationResource == null) {
+        resource = getGenericService().find(Resource.class, resourceId);
+        if (resource == null) {
             getLogger().error("trying to edit information resource but it was null.");
             addActionError(getText("resourceController.not_found"));
             return NOT_FOUND;
         }
-        return informationResource.getResourceType().name();
+        return SUCCESS;
     }
 
     public ResourceType getResourceType() {
@@ -132,28 +132,6 @@ public class ResourceController extends AuthenticationAware.Base {
     public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
-
-    // /**
-    // * Returns a sorted map of the allowable subset of resource types that can be
-    // * entered.
-    // */
-    // public SortedMap<ResourceType, String> getResourceTypes() {
-    // synchronized (resourceTypes) {
-    // if (resourceTypes.isEmpty()) {
-    // addResourceType(ResourceType.CODING_SHEET);
-    // addResourceType(ResourceType.DATASET);
-    // addResourceType(ResourceType.DOCUMENT);
-    // addResourceType(ResourceType.SENSORY_DATA);
-    // addResourceType(ResourceType.IMAGE);
-    // addResourceType(ResourceType.ONTOLOGY);
-    // }
-    // }
-    // return resourceTypes;
-    // }
-    //
-    // private void addResourceType(ResourceType resourceType) {
-    // resourceTypes.put(resourceType, resourceType.getLabel());
-    // }
 
     public Long getProjectId() {
         return projectId;
@@ -169,5 +147,13 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public Long getResourceId() {
         return resourceId;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 }

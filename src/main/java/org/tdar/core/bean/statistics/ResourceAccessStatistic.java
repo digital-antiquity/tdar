@@ -23,8 +23,8 @@ import org.tdar.core.bean.resource.Resource;
  *
  */
 public class ResourceAccessStatistic extends AbstractResourceStatistic<Resource> {
-    private static final long serialVersionUID = 3754152671288642718L;
 
+    private static final long serialVersionUID = -980531380055105219L;
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "resource_id")
     private Resource reference;

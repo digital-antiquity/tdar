@@ -7,16 +7,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -44,7 +43,6 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     @Autowired
     private transient UrlService urlService;
 
-    private int batchCount = 0;
     private boolean run = false;
 
     @Override
@@ -75,7 +73,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
 
             logger.info("({}) resources in sitemap", resources.size());
             for (Resource resource : resources) {
-                String url = urlService.absoluteUrl(resource);
+                String url = UrlService.absoluteUrl(resource);
                 addUrl(wsg, url);
             }
 
@@ -85,29 +83,31 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
 
             logger.info("({}) images in sitemap", totalImages);
 
-            List<Long> people = genericService.findActiveIds(Person.class);
-            total += people.size();
-            logger.info("({}) people in sitemap", people.size());
-            for (Long id : people) {
-                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+            ScrollableResults activeCreators = genericService.findAllActiveScrollable(Creator.class);
+            int totalCreator = 0;
+            while (activeCreators.next()) {
+                Creator creator = (Creator)activeCreators.get(0);
+                String url = UrlService.absoluteUrl(creator);
                 addUrl(wsg, url);
+                totalCreator++;
             }
+            logger.info("({}) creators in sitemap", totalCreator);
+            total += totalCreator;
 
-            List<Long> institutions = genericService.findActiveIds(Institution.class);
-            total += institutions.size();
-            logger.info("({}) institutions in sitemap", institutions.size());
-            for (Long id : institutions) {
-                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+            ScrollableResults activeCollections = genericService.findAllScrollable(ResourceCollection.class);
+            int totalCollections = 0;
+            while (activeCollections.next()) {
+                ResourceCollection collection = (ResourceCollection)activeCollections.get(0);
+                if (collection.isInternal() || collection.isHidden()) {
+                    continue;
+                }
+                String url = UrlService.absoluteUrl(collection);
                 addUrl(wsg, url);
+                totalCollections++;
             }
+            logger.info("({}) collections in sitemap", totalCollections);
+            total += totalCollections;
 
-            List<Long> collections = resourceCollectionService.findAllPublicActiveCollectionIds();
-            total += collections.size();
-            logger.info("({}) collections in sitemap", collections.size());
-            for (Long id : collections) {
-                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
-                addUrl(wsg, url);
-            }
             if (total > 0) {
                 wsg.write();
             }

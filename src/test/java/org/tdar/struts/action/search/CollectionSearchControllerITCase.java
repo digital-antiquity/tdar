@@ -5,21 +5,27 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.index.LookupSource;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.utils.MessageHelper;
 
 @Transactional
-public class CollectionSearchControllerITCase extends AbstractSearchControllerITCase {
+public class CollectionSearchControllerITCase extends AbstractControllerITCase {
 
+    @Autowired
+    CollectionSearchAction controller;
+    
     @Test
     @Rollback(true)
     public void testFindAllSearchPhrase() {
+        controller = generateNewInitializedController(CollectionSearchAction.class);
         doSearch("");
         assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_collections"), controller.getSearchSubtitle());
     }
@@ -27,47 +33,47 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     @Test
     @Rollback
     public void testSearchForPublicReosurceCollection() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(true, null);
+        ResourceCollection collection = setupCollection(false, null);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAnonymous() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, null);
+        ResourceCollection collection = setupCollection(true, null);
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithRights() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, getBasicUser(), true);
+        ResourceCollection collection = setupCollection(true, getBasicUser(), true);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithoutRights() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, getBasicUser());
+        ResourceCollection collection = setupCollection(true, getBasicUser());
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsAdmin() throws InstantiationException, IllegalAccessException {
-        ResourceCollection collection = setupCollection(false, getAdminUser());
+        ResourceCollection collection = setupCollection(true, getAdminUser());
         assertTrue(controller.getResults().contains(collection));
     }
 
-    private ResourceCollection setupCollection(boolean visible, Person user) {
+    private ResourceCollection setupCollection(boolean visible, TdarUser user) {
         return setupCollection(visible, user, false);
     }
 
-    private ResourceCollection setupCollection(boolean visible, Person user, boolean createAuthUser) {
+    private ResourceCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser) {
         assertEquals(getUser(), getAdminUser());
         ResourceCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
         collection.setDescription("test");
-        collection.setVisible(visible);
+        collection.setHidden(visible);
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
             AuthorizedUser authuser = new AuthorizedUser(user, GeneralPermissions.ADMINISTER_GROUP);
@@ -75,13 +81,12 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
             genericService.saveOrUpdate(collection);
         }
         searchIndexService.index(collection);
-        controller = generateNewController(AdvancedSearchController.class);
+        controller = generateNewController(CollectionSearchAction.class);
         init(controller, user);
         doSearch("Hohokam Archaeology");
         return collection;
     }
 
-    @Override
     protected void doSearch(String query) {
         controller.setQuery(query);
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.COLLECTION);
@@ -95,7 +100,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     }
 
     @Override
-    protected Person getUser() {
+    protected TdarUser getUser() {
         return getAdminUser();
     }
 }

@@ -11,7 +11,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 
 /**
  * $Id$
@@ -28,22 +28,24 @@ import org.tdar.core.service.XmlService;
 @Component
 @Scope("prototype")
 public class SchemaController extends TdarActionSupport {
-    private static final long serialVersionUID = -9216882130992021384L;
+
+    private static final long serialVersionUID = -52006343273049231L;
+
     private InputStream inputStream;
 
     @Autowired
-    private XmlService xmlService;
+    private SerializationService serializationService;
 
     @Override
     @Action(value = "current", results = {
-            @Result(name = "success", type = "stream", params = {
+            @Result(name = SUCCESS, type = "stream", params = {
                     "contentType", "text/xml",
                     "inputName", "inputStream"
             })
     })
     public String execute() {
         try {
-            File file = xmlService.generateSchema();
+            File file = serializationService.generateSchema();
             setInputStream(new FileInputStream(file));
         } catch (Exception e) {
             getLogger().error("could not create schema", e);

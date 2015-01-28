@@ -2,11 +2,11 @@ package org.tdar.search.query.part;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.tdar.core.bean.Persistable;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -35,7 +35,7 @@ public class CategoryTermQueryPart extends FieldQueryPart<String> {
             valueGroup.setOperator(Operator.OR);
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getSortCategoryId())) {
+        if (PersistableUtils.isNotNullOrTransient(getSortCategoryId())) {
             // SHOULD PREFER THINGS THAT HAVE THAT CATEGORY ID
             FieldQueryPart<String> q2 = new FieldQueryPart<String>(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString().trim());
             q2.setBoost(2f);

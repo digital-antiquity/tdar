@@ -1,7 +1,5 @@
 package org.tdar.db.conversion.converters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
@@ -15,7 +13,6 @@ public class TabConverter extends SimpleConverter {
 
     private static final char DELIMITER = '\t';
     private static final String DB_PREFIX = "tab";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public String getDatabasePrefix() {

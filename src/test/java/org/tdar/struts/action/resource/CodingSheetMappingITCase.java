@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,8 +35,8 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -46,12 +45,14 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
+import org.tdar.struts.action.dataset.ColumnMetadataController;
+import org.tdar.struts.action.download.DownloadController;
 import org.tdar.utils.ExcelUnit;
 
 /**
@@ -88,6 +89,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
      * @throws TdarActionException
      */
     public void testInvalidCodingSheet() throws TdarActionException {
+        setIgnoreActionErrors(true);
         CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
         codingSheetController.prepare();
         CodingSheet codingSheet = codingSheetController.getCodingSheet();
@@ -101,7 +103,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(codingId);
         assertTrue(codingSheet.getCodingRules().isEmpty());
         assertFalse(codingSheetController.getActionErrors().size() == 0);
-        setIgnoreActionErrors(true);
 
     }
 
@@ -136,17 +137,16 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDegenerateCodingSheetWithTabs() throws IOException {
-        getControllers().clear();
+    public void testDegenerateCodingSheetWithTabs() throws IOException, TdarActionException {
+        setIgnoreActionErrors(true);
         CodingSheet codingSheet = setupAndLoadResource("tab_as_csv.csv", CodingSheet.class);
         assertEquals(FileStatus.PROCESSING_ERROR, codingSheet.getFirstInformationResourceFile().getStatus());
-        setIgnoreActionErrors(true);
-        assertTrue(CollectionUtils.isNotEmpty(getControllers().get(0).getActionErrors()));
+        assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
     }
 
     @Test
     @Rollback
-    public void testDoubleCoding() {
+    public void testDoubleCoding() throws TdarActionException {
         CodingSheet codingSheet = setupAndLoadResource(DOUBLE_CODING, CodingSheet.class);
         Dataset dataset = setupAndLoadResource(DOUBLE_DATASET, Dataset.class);
         DataTable firstTable = dataset.getDataTables().iterator().next();
@@ -227,8 +227,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(CodingSheetController.class);
         controller.setId(codingId);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         assertNotNull(controller.getFileTextInput());
         assertEquals(codingText, controller.getFileTextInput());
@@ -242,8 +241,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(CodingSheetController.class);
         controller.setId(codingId);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         controller.setFileTextInput(codingText + "abd ");
         controller.setServletRequest(getServletPostRequest());
@@ -312,14 +310,32 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testXLSCodingSheetUpload() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
 
+        Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);
+        List<OntologyNode> nodes = ontology.getOntologyNodes();
         HashMap<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
+        int totalRules = codingSheet.getCodingRules().size();
+        int count = 0;
+        // valid because not mapped to ontology
+        assertFalse(codingSheet.isMappedImproperly());
+        codingSheet.setDefaultOntology(ontology);
+        //invalid because ontology is mapped
+        assertTrue(codingSheet.isMappedImproperly());
         for (CodingRule rule : codingSheet.getCodingRules()) {
             ruleMap.put(rule.getCode(), rule);
+            rule.setOntologyNode(nodes.get(count));
+            count++;
+            if (count < totalRules / 4) {
+                assertTrue(codingSheet.isMappedImproperly());
+            } else {
+                assertFalse(codingSheet.isMappedImproperly());
+            }
         }
+        logger.debug("total:{}", count);
         assertTrue(ruleMap.get("12") != null);
         assertTrue(ruleMap.get("6") != null);
         assertEquals("g", ruleMap.get("12").getTerm());
         assertEquals("m", ruleMap.get("6").getTerm());
+
     }
 
     @Test
@@ -401,12 +417,12 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     }
 
-    private Dataset setupDatasetWithCodingSheet(CodingSheet codingSheet) throws TdarActionException {
+    private Dataset setupDatasetWithCodingSheet(CodingSheet codingSheet) throws Exception {
         Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
         Long datasetId = dataset.getId();
         assertNotNull(datasetId);
         DataTableColumn period_ = dataset.getDataTables().iterator().next().getColumnByDisplayName("Period");
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
         datasetController.setId(datasetId);
         datasetController.prepare();
         datasetController.editColumnMetadata();
@@ -423,19 +439,14 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
                 }
             }
         }
+
         tranlatedIRFile = datasetService.createTranslatedFile(dataset);
         return dataset;
     }
 
     @Test
     @Rollback
-    /*
-     * NOTE THIS TEST CAN BE BRITTLE ... MAINLY DUE TO MEMORY CONSTRAINTS
-     * The following config currently works: -Xmx4096m -XX:PermSize=64m -XX:MaxPermSize=2048m
-     * long megs = Runtime.getRuntime().maxMemory() / 1024 / 1024;
-     * Assert.assertTrue("Expected more memory to run this test. Current heapspace:" + megs + "M", megs / 1024 >= 2);
-     */
-    public void testBigDatasetSpansSheets() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException {
+    public void testBigDatasetSpansSheets() throws Exception {
         try {
             // setup coding sheet
             CodingSheet codingSheet = createAndSaveNewInformationResource(CodingSheet.class);
@@ -452,7 +463,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             assertNotNull(datasetId);
             DataTableColumn num = dataset.getDataTableByGenericName("ds1").getColumnByDisplayName("num");
             assertNotNull(num);
-            DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+            ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
             datasetController.setId(datasetId);
             datasetController.prepare();
             datasetController.editColumnMetadata();
@@ -467,9 +478,10 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
 
             DownloadController dc = generateNewInitializedController(DownloadController.class);
-            dc.setInformationResourceFileId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.setInformationResourceFileVersionId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.prepare();
             dc.execute();
-            assertEquals("bigsheet_translated.xls", dc.getFileName());
+            assertEquals("bigsheet_translated.xls", dc.getDownloadTransferObject().getFileName());
 
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);
@@ -510,7 +522,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testDatasetMappingPreservation() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
         Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
         Long datasetId = dataset.getId();
         DataTable table = dataset.getDataTables().iterator().next();
         datasetController.setId(datasetId);
@@ -531,7 +543,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         // column.
         assertNotNull("coding sheet should exist", period.getDefaultCodingSheet());
 
-        datasetController = generateNewInitializedController(DatasetController.class);
+        datasetController = generateNewInitializedController(ColumnMetadataController.class);
         table = dataset.getDataTables().iterator().next();
         datasetController.setId(datasetId);
         period_ = table.getColumnByDisplayName("Period");
@@ -594,17 +606,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         return codingSheet;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     protected String getTestFilePath() {
         return PATH;
@@ -621,7 +622,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertNotEmpty(ontology.getOntologyNodes());
         genericService.detachFromSession(ontology);
         Dataset dataset = setupAndLoadResource("src/test/resources/data_integration_tests/periods-modified-sm-01182011.xlsx", Dataset.class);
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
         controller.setId(dataset.getId());
         dataset = null;
         controller.prepare();
@@ -630,10 +631,12 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         // 2. update mappings and set ontology on one column
         List<DataTableColumn> columns = new ArrayList<>();
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
+            logger.debug("dtc: {}", dtc);
+            logger.debug("coding sheet? {}", dtc.getDefaultCodingSheet());
             DataTableColumn clone = (DataTableColumn) BeanUtils.cloneBean(dtc);
             columns.add(clone);
-            if (clone.getName().equals("col_a")) {
-                clone.setDefaultOntology(ontology);
+            if (clone.getName().equals("column__2")) {
+                clone.setTransientOntology(ontology);
             }
         }
         controller.setDataTableColumns(columns);
@@ -641,13 +644,13 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller.getDataTableColumns();
         DataTableColumn myColumn = null;
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
-            if (dtc.getName().equals("col_a")) {
+            if (dtc.getName().equals("column__2")) {
                 myColumn = dtc;
             }
         }
-
+        assertNotNull(myColumn);
         // 3. update coding sheet mappings to point to ontology
-        CodingSheetController csc = generateNewInitializedController(CodingSheetController.class);
+        CodingSheetMappingController csc = generateNewInitializedController(CodingSheetMappingController.class);
         csc.setId(myColumn.getDefaultCodingSheet().getId());
         csc.prepare();
         csc.loadOntologyMappedColumns();

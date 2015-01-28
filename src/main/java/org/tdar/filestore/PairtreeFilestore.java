@@ -17,14 +17,15 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
+//import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -37,6 +38,7 @@ import org.tdar.utils.MessageHelper;
  */
 public class PairtreeFilestore extends BaseFilestore {
 
+    private static final String SUPPORT = "support";
     public static final String CONTAINER_NAME = "rec";
     public static final String DERIV = "deriv";
     public static final String ARCHIVAL = "archival";
@@ -100,11 +102,10 @@ public class PairtreeFilestore extends BaseFilestore {
                 throw new TdarRuntimeException(errorMessage);
             }
 
-            if (version instanceof InformationResourceFileVersion) {
-                InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
-
-                updateVersionInfo(outFile, irfv);
+            if (version.getType() == ObjectType.RESOURCE) {
+                updateVersionInfo(outFile, version);
             }
+
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
                 version.setChecksumType(digest.getAlgorithm());
@@ -184,7 +185,8 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     @Override
     public File retrieveFile(ObjectType type, FileStoreFileProxy version) throws FileNotFoundException {
-        File file = new File(getAbsoluteFilePath(type, version));
+        String absoluteFilePath = getAbsoluteFilePath(type, version);
+        File file = new File(absoluteFilePath);
         logger.trace("file requested: {}", file);
         if (!file.isFile()) {
             throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", Arrays.asList(file.getAbsolutePath())));
@@ -236,24 +238,22 @@ public class PairtreeFilestore extends BaseFilestore {
         Long irID = version.getPersistableId();
         StringBuffer base = new StringBuffer();
         base.append(getResourceDirPath(type, irID));
-        if (version instanceof InformationResourceFileVersion) {
-            InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
-            if (Persistable.Base.isNotNullOrTransient(irfv.getInformationResourceFileId())) {
-                append(base, irfv.getInformationResourceFileId());
-                append(base, "v" + irfv.getVersion());
-                if (irfv.isArchival()) {
+        if (version.getType() == ObjectType.RESOURCE) {
+            if (PersistableUtils.isNotNullOrTransient(version.getInformationResourceFileId())) {
+                append(base, version.getInformationResourceFileId());
+                append(base, "v" + version.getVersion());
+                if (version.getVersionType().isArchival()) {
                     append(base, ARCHIVAL);
-                } else if (!irfv.isUploaded()) {
+                } else if (!version.getVersionType().isUploaded()) {
                     append(base, DERIV);
                 }
             }
+        } else {
+            if (version.getVersionType() == VersionType.METADATA && "xml".equalsIgnoreCase(version.getExtension())) {
+                append(base, SUPPORT);
+            }
         }
-
-        if (version instanceof FileStoreFile) {
-            FileStoreFile fsf = (FileStoreFile) version;
-            append(base, fsf.getType().toString().toLowerCase());
-        }
-        logger.trace("{}", base);
+        logger.trace("{} ({} {})", base, type, version);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());
     }
 
@@ -296,15 +296,14 @@ public class PairtreeFilestore extends BaseFilestore {
     @Override
     public void purge(ObjectType type, FileStoreFileProxy version) throws IOException {
         File file = new File(getAbsoluteFilePath(type, version));
-        if (version instanceof InformationResourceFileVersion) {
-            InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
-            if (irfv.isDerivative() || irfv.isTranslated()) {
+        if (version.getType() == ObjectType.RESOURCE) {
+            if (version.getVersionType().isDerivative() || version.getVersionType() == VersionType.TRANSLATED) {
                 FileUtils.deleteQuietly(file);
                 cleanEmptyParents(file.getParentFile());
             } else {
                 try {
                     // if archival, need to go up one more
-                    if (irfv.isArchival()) {
+                    if (version.getVersionType().isArchival()) {
                         file = file.getParentFile();
                     }
                     File parentFile = file.getParentFile();
@@ -343,15 +342,14 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public void markSuccessfulUpload(ObjectType type, List<InformationResourceFileVersion> filesToProcess) {
-        for (InformationResourceFileVersion version : filesToProcess) {
+    public void markReadOnly(ObjectType type, List<FileStoreFileProxy> filesToProcess) {
+        for (FileStoreFileProxy version : filesToProcess) {
             String absoluteFilePath = getAbsoluteFilePath(type, version);
             File file = new File(absoluteFilePath);
-            if (version.isUploaded()) {
+            if (version.getVersionType().isUploaded() || version.getVersionType().isArchival()) {
                 file.setWritable(false);
             }
         }
     }
-
 
 }

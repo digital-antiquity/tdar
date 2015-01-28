@@ -3,9 +3,7 @@
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search />
 <head>
     <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
-    <#if lookupSource == 'RESOURCE'>
-        <@search.headerLinks includeRss=(actionName=="results") />
-    </#if>
+    <@search.headerLinks includeRss=(actionName=="results") />
 </head>
 <body>
 
@@ -50,25 +48,19 @@
                     </#if>
                 </#if>
 
-                <#if lookupSource == 'RESOURCE'>
-                    <li class="media"><i class="search-download-icon-red"></i> <span>Download these results &raquo;
-                        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-                            <@search.searchLink "download" "to Excel" />
-                            <#if (totalRecords > maxDownloadRecords)>
-                                Limited to the first ${maxDownloadRecords} results.
-                            </#if>
+                <li class="media"><i class="search-download-icon-red"></i> <span>Download these results &raquo;
+                    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
+	                    <@search.searchLink "download" "to Excel" />
+	                    <#if (totalRecords > maxDownloadRecords)>
+	                        Limited to the first ${maxDownloadRecords} results.
+	                    </#if>
 
-                        <#else>
-                            Login
-                        </#if></span>
-                    </li>
-                </#if>
-                <!--        <li>Subscribe via &raquo;
-	            <a class="subscribe"  href="${rssUrl}">RSS</a>
-	        </li> -->
+	                <#else>
+	                    Login
+	                </#if></span>
+		            </li>
             </ul>
 
-            <#if lookupSource == 'RESOURCE'>
                 <h3>View Options</h3>
                 <ul class="tools media-list">
                     <li class="media"><a href="<@s.url includeParams="all">
@@ -84,19 +76,18 @@
 	                    <@s.param name="orientation">MAP</@s.param>
 	                </@s.url>"><i class="search-map-icon-red"></i> <@s.text name="DisplayOrientation.MAP"/></a></li>
                 </ul>
-            </#if>
             <form>
-
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
         <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
         <@search.facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
         <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
+
             </form>
-        </div>
-        <div class="visible-phone">
-            <a href="<@search.refineUrl />">Refine your search &raquo;</a>
-        </div>
-        </#if>
+    </div>
+    <div class="visible-phone">
+        <a href="<@search.refineUrl />">Refine your search &raquo;</a>
+    </div>
+    </#if>
 
         <#if (referrer?? && referrer == 'TAG')>
         <div class="notice">
@@ -114,9 +105,6 @@
         </div>
         </#if>
 
-
-
-
     <div id="divResultsSortControl">
         <div class="row">
             <div class="span3">
@@ -129,20 +117,8 @@
                         <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
                         list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
                     </label>
-                    <script type='text/javascript'>
-                        $("#recordsPerPage").change(function () {
-                            var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
-                            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                            var prefix = "";
-                            if (url.indexOf("?") != 0) {
-                                prefix = "?";
-                            }
-                            url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage').val();
-                            window.location = url;
-                        });
-                    </script>
                     <#if !hideFacetsAndSort>
-                        <@search.sortFields true/>
+                        <@search.sortFields />
                     </#if>
                 </div>
             </div>
@@ -150,28 +126,38 @@
     </div>
 
     <div class="tdarresults">
-        <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
-        <#--fixme: replace explicit map sizes with css names -->
-            <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
-        <#else>
-            <#assign indx = 0/>
-            <#list results as result>
-                <#if result?has_content>
-                    <#if indx != 0>
-                        <hr/></#if>
-                    <#assign indx = indx + 1/>
-                    <div class="listItemPart">
-                        <h3 class="search-result-title-${result.status}">
-                            <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
-                        </h3>
-                        <#if result.institution?has_content><p>${result.institution.name}</p></#if>
-                        <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
-                        <blockquote class="luceneScore"
-                        <b>score:</b>${result.score!""}<br> </blockquote>
-                    </div>
-                </#if>
+        <#if (showCollectionResults && (collectionResults![])?size > 0)>
+        <#--split the collection list into, at most, two sublists -->
+        <#assign _lastIndex = (collectionResults?size -1)>
+        <#if (_lastIndex > 9)><#assign _lastIndex = 9></#if>
+        <#assign resultPage = collectionResults[0.._lastIndex]>
+        <#assign cols = collectionResults?chunk(((collectionResults?size)/2)?ceiling) >
+        <div class="collectionResultsBox">
+            <h4>Related Collections</h4>
+            <div class="row">
+            <#list cols as col>
+                <div class="span4">
+                    <ul>
+                    <#list col as res>
+                    <li> <@s.a href="${res.detailUrl}">${res.name}</@s.a>
+                    </#list>
+                    </ul>
+                </div>
             </#list>
+            </div>
+            <#if ( collectionTotalRecords > 10)>
+            <div class="row">
+                <p class="span9">
+                    <@s.a  href="/search/collections?query=${query}"
+                        cssClass="pull-right">&raquo; Show all ${collectionTotalRecords?c} collections</@s.a>
+                </p>
+            </div>
+            </#if>
+        </div>
         </#if>
+
+        <#--fixme: replace explicit map sizes with css names -->
+        <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
     </div>
         <@search.pagination ""/>
 
@@ -183,6 +169,7 @@
     //pretty controls for sort options, sidebar options (pulled from main.js)
     $(function () {
         TDAR.common.initializeView();
+        TDAR.advancedSearch.initializeResultsPage();
         <#assign map_ = "" />
         <#if map?has_content>
             <#assign map_ = map />
@@ -191,7 +178,6 @@
             <#assign map_ = g[0].latitudeLongitudeBoxes[0] />
         </#if>
         <#if map_?has_content && map_.valid && map_.minimumLatitude?has_content >
-//            ${map_.minimumLatitude}
             TDAR.maps.mapPromise.done(function () {
                 TDAR.maps.updateResourceRect($(".google-map")[0], ${map_.minimumLatitude?c}, ${map_.minimumLongitude?c}, ${map_.maximumLatitude?c}, ${map_.maximumLongitude?c});
             });
@@ -200,7 +186,5 @@
 </script>
 
 </body>
-
-
 
 </#escape>

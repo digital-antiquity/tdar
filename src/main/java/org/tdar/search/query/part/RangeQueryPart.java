@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -27,13 +28,14 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
     private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
 
-    public RangeQueryPart(String field, @SuppressWarnings("unchecked") Range<C>... values) {
+    @SafeVarargs
+    public RangeQueryPart(String field, Range<C>... values) {
         this(field, "Value", values);
     }
 
     @SuppressWarnings("unchecked")
-    public RangeQueryPart(String field, Operator operator, List<Range<C>> values) {
-        this(field, "Value");
+    public RangeQueryPart(String field, String label, Operator operator, List<Range<C>> values) {
+        this(field, label);
         if (CollectionUtils.isNotEmpty(values)) {
             for (Range<C> range : values) {
                 if ((range == null) || !range.isInitialized() || ((range.getStart() == null) && (range.getEnd() == null))) {
@@ -77,6 +79,9 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
             return null;
         }
         DateTime dateTime = new DateTime(date);
+        //we convert dates to utc when indexing them in lucene, therefore when performing a search we need to similarly convert the
+        //dates in a date range.
+        dateTime = dateTime.toDateTime(DateTimeZone.UTC);
         return dateTime.toString(dtf);
     }
 

@@ -2,7 +2,7 @@
 
     <#macro asyncUpload divId="" validFileExtensions=[] multipleFileUploadEnabled=true maxUploadFilesPerRecord=50 canReplace=false siteAcronym="tDAR">
     <div id="${divId}Help" style="display:none">
-        <div class="">
+        <div>
             <h3>Adding Files</h3>
             <ul>
                 <li>To attach files to this resource, click the button labeled "Add Files..."</li>
@@ -49,8 +49,6 @@
                     Additional information specific to this file.
                 </dd>
             </dl>
-
-            </span>
         </div>
     </div>
     </#macro>
@@ -281,6 +279,8 @@
             <dd>Use the toggle at the left to select whether you're adding a Person or Institution</dd>
             <dt>Add Another</dt>
             <dd> Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles</dd>
+            <dt>Roles</dt>
+            <dd>View <a href="https://dev.tdar.org/confluence/display/TDAR/Resource+Creator+Roles">All Roles</a></dd>
         </dl>
     </div>
     </#macro>
@@ -339,5 +339,10 @@
         </#if>
     </#macro>
 
+    <#macro userAgreementSummary>
+    which, in summary,  states that you <em>(1)</em> will not use any of the information that you obtain from ${siteAcronym} in
+    a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization 
+    that created the information that you download.
+    </#macro>
 
 </#escape>

@@ -5,9 +5,12 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
+import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.ConfigurationAssistant;
+import org.tdar.core.dao.external.auth.MockAuthenticationProvider;
 
 /**
  * $Id$
@@ -98,11 +101,11 @@ public class TestConfiguration {
     }
 
     public String getAdminUsername() {
-        return assistant.getStringProperty("tdar.admin.username", "admin@tdar.org");
+        return assistant.getStringProperty("tdar.admin.username", MockAuthenticationProvider.ADMIN_USERNAME);
     }
 
     public String getAdminPassword() {
-        return assistant.getStringProperty("tdar.admin.password", "admin");
+        return assistant.getStringProperty("tdar.admin.password", MockAuthenticationProvider.ADMIN_PASSWORD);
     }
 
     public Long getAdminUserId() {
@@ -110,11 +113,11 @@ public class TestConfiguration {
     }
 
     public String getUsername() {
-        return assistant.getStringProperty("tdar.user.username", "test@tdar.org");
+        return assistant.getStringProperty("tdar.user.username", MockAuthenticationProvider.USERNAME);
     }
 
     public String getPassword() {
-        return assistant.getStringProperty("tdar.user.password", "test");
+        return assistant.getStringProperty("tdar.user.password", MockAuthenticationProvider.PASSWORD);
     }
 
     public Long getUserId() {
@@ -122,11 +125,11 @@ public class TestConfiguration {
     }
 
     public String getEditorUsername() {
-        return assistant.getStringProperty("tdar.editor.username", "editor@tdar.org");
+        return assistant.getStringProperty("tdar.editor.username", MockAuthenticationProvider.EDITOR_USERNAME);
     }
 
     public String getEditorPassword() {
-        return assistant.getStringProperty("tdar.editor.password", "editor");
+        return assistant.getStringProperty("tdar.editor.password", MockAuthenticationProvider.EDITOR_PASSWORD);
     }
 
     public Long getEditorUserId() {
@@ -134,11 +137,11 @@ public class TestConfiguration {
     }
 
     public String getBillingAdminUsername() {
-        return assistant.getStringProperty("tdar.billing.username", "billing@tdar.org");
+        return assistant.getStringProperty("tdar.billing.username", MockAuthenticationProvider.BILLING_USERNAME);
     }
 
     public String getBillingAdminPassword() {
-        return assistant.getStringProperty("tdar.billing.password", "billing");
+        return assistant.getStringProperty("tdar.billing.password", MockAuthenticationProvider.BILLING_PASSWORD);
     }
 
     public Long getBillingAdminUserId() {
@@ -167,8 +170,27 @@ public class TestConfiguration {
         return String.format("https://%s:%s/", getHostName(), getHttpsPort());
     }
 
+    public String getChromeApplicationPath() {
+        String deflt = "Google Chrome";
+        if (isUnix()) {
+            deflt = "/usr/bin/google-chrome-stable";
+        }
+        if (isMac()) {
+            deflt = "/Applications/Google Chrome.app";
+        }
+        return assistant.getStringProperty("tdar.chrome.path", deflt);
+
+    }
+
     public String getChromeDriverPath() {
-        return assistant.getStringProperty("tdar.chromedriver.path", "/Applications/chromedriver");
+        String deflt = "chromedriver";
+        if (isUnix()) {
+            deflt = "/usr/local/bin/chromedriver";
+        }
+        if (isMac()) {
+            deflt = "/Applications/chromedriver";
+        }
+        return assistant.getStringProperty("tdar.chromedriver.path", deflt);
     }
 
     public String getIEDriverPath() {
@@ -183,4 +205,64 @@ public class TestConfiguration {
         return 1;
     }
 
+    public static boolean isWindows() {
+        return (OS.CURRENT == OS.WINDOWS);
+    }
+
+    public static boolean isMac() {
+        return (OS.CURRENT == OS.OSX);
+    }
+
+    public static boolean isUnix() {
+        return (OS.CURRENT == OS.UNIX || OS.CURRENT == OS.LINUX);
+    }
+
+    /**
+     * Convenience wrapper for SystemUtils, which is a convenience wrapper for system.os.name.
+     *
+     * OS.CURRENT is an alias to enum value for the detected OS.
+     *
+     * metaKey indicates the key used by the current browser to execute menu hotkey command (e.g. CTRL+N opens window on Windows,
+     * CMD+N opens window on OSX)
+     */
+    public enum OS {
+        WINDOWS,
+        LINUX,
+        OSX(Keys.COMMAND),
+        UNIX(Keys.META),
+        TRS_80;
+
+        private Keys metaKey;
+
+        public static OS CURRENT;
+        static {
+            if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX)
+                CURRENT = OSX;
+            else if (SystemUtils.IS_OS_WINDOWS)
+                CURRENT = WINDOWS;
+            else if (SystemUtils.IS_OS_LINUX)
+                CURRENT = LINUX;
+            else if (SystemUtils.IS_OS_UNIX)
+                CURRENT = UNIX;
+            else
+                CURRENT = TRS_80;
+        }
+
+        OS() {
+            setMetaKey(Keys.CONTROL);
+        }
+
+        OS(Keys metaKey) {
+            this.setMetaKey(metaKey);
+        }
+
+        public Keys getMetaKey() {
+            return metaKey;
+        }
+
+        public void setMetaKey(Keys metaKey) {
+            this.metaKey = metaKey;
+        }
+
+    }
 }

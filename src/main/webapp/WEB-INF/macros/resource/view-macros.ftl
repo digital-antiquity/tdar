@@ -60,7 +60,7 @@ View freemarker macros
         </#if>
         <#global numParents = parentCount />
     <li class="<#if (previewSize <=count)>hidden-nodes</#if>">
-        <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName!ontologyNode.iri}
+        <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/node/${ontologyNode.iri}"/>">${ontologyNode.displayName!ontologyNode.iri}
             <#if ontologyNode.synonyms?has_content>
                 (<#t>
                 <#list ontologyNode.synonyms as synonym><#t>
@@ -82,9 +82,10 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />
         </#if>
         <#if (version.viewable)>
-        <a href="<@s.url value='/filestore/${version.id?c}/get'/>"
-           onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')"
-           <#if resource.resourceType == 'IMAGE'>target='_blank'</#if>
+        <#local path>/filestore/download/${(irfile.informationResource.id)!id!-1?c}/${version.id?c}</#local>
+        <a href="<@s.url value='${path}'/>"
+            class="download-link download-file"
+           onClick="TDAR.common.registerDownload('${path}', '${id?c}')"
            title="click to download: ${version.filename}">
             <@common.truncate version.filename 65 />
         </a><#if newline><br/></#if>
@@ -103,11 +104,11 @@ View freemarker macros
     <#--<a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"-->
     <#-- fixme:should we change the google analytics event name, or will this be a pain? -->
         <#if resource.hasConfidentialFiles() >
-        Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
+            Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
         <#else>
-        <a href="<@s.url value='/filestore/${resource.id?c}/show-download-landing'/>" target="_blank"
-           onclick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"
-           title="download zip archive">Download All</a>
+        <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" 
+           onclick="TDAR.common.registerDownload('/filestore/download?informationResourceId=${resource.id?c}', '${id?c}')"
+           title="download all as zip">Download All</a>
         </#if>
     </#macro>
 
@@ -120,11 +121,11 @@ View freemarker macros
             <#if ableToReprocessDerivatives>
             <h2> Admin File Actions</h2>
             <ul>
-                <#if resource.resourceType=='DATASET'>
-                <li><a href="<@s.url value='/${resource.urlNamespace}/reimport?id=${resource.id?c}' />">Reimport this dataset</a></li>
-                <li><a href="<@s.url value='/${resource.urlNamespace}/retranslate?id=${resource.id?c}' />">Retranslate this dataset</a></li>
+                <#if resource.resourceType.dataTableSupported>
+                <li><a href="<@s.url value='/resource/reimport?id=${resource.id?c}' />">Reimport this dataset</a></li>
+                <li><a href="<@s.url value='/resource/retranslate?id=${resource.id?c}' />">Retranslate this dataset</a></li>
                 </#if>
-            <li><a href="<@s.url value='/${resource.urlNamespace}/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives
+            <li><a href="<@s.url value='/resource/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives
                 for this resource</a></li>
             </#if>
         </#if>
@@ -154,7 +155,7 @@ View freemarker macros
             Data column(s) in this dataset have been associated with coding sheet(s) and translated:
             <#if userAbleToReTranslate>
                 <br>
-                <small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> -
+                <small>(<a href="<@s.url value='/resource/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> -
                     <b>Note: this process may take some time</b>)
                 </small>
             </#if>
@@ -225,8 +226,8 @@ View freemarker macros
 
             </#if>
             <#if (resource.totalNumberOfFiles == 0)>
-                <li class="citationNote">This resource is a citation<#if resource.copyLocation?has_content> a physical copy is located
-                    at ${resource.copyLocation}</#if></li>
+                <li class="citationNote"><b>This resource is a citation only.</b><#if resource.copyLocation?has_content> The information that we have indicates that a copy is located
+                    at ${resource.copyLocation}.</#if></li>
             </#if>
         </ul>
         <#if showAll != ''>
@@ -236,6 +237,35 @@ View freemarker macros
         </#if>
     </div>
     </#macro>
+
+<#macro resourceCitation resource>
+<h2>Cite this Record</h2>
+<div class="citeMe">
+    <#assign citation>
+${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}.</#if>
+${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})  <#if resource.externalId?has_content>; ${resource.externalId}</#if>
+    </#assign>
+    <p class="sml">
+        <#noescape>${citation}</#noescape>
+        <#if !resource.externalId?has_content && resource.lessThanDayOld && !resource.citationRecord>
+            <br/>
+            <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
+        </#if>
+    </p>
+   <div class="links">
+<ul class="inline">
+<#assign url>http://${hostName}<#if hostPort != 80>:${hostPort}</#if>/${currentUrl?url}</#assign>
+<li><a href="https://twitter.com/share" onClick="TDAR.common.registerShare('twitter','${currentUrl}','${resource.id?c}')" >Tweet this</a></li>
+<li><a href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}" onClick="TDAR.common.registerShare('facebook','${currentUrl}','${resource.id?c}')">Share on Facebook</a></li>
+
+<li><a 
+    <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${citation?trim?url}%0D%0A%0D%0A${url}"</#noescape>
+     onClick="TDAR.common.registerShare('email','${currentUrl}','${resource.id?c}')">Email a link to a Friend</a></li>
+
+</ul></div>
+</div>
+
+</#macro>
 
 
 <#--display more detailed information about the files associated with the current resource -->
@@ -267,7 +297,7 @@ View freemarker macros
                             <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
                             <td><@createFileLink irfile false false false /></td>
                             <td><@common.convertFileSize version.fileLength /></td>
-                            <td><@_printCreatedDate irfile /></td>
+                            <td><#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?date}</#if></td>
                             <td>${irfile.latestUploadedVersion.dateCreated} </td>
                             <td>${irfile.restriction.label}</td>
 
@@ -298,47 +328,6 @@ View freemarker macros
             </#if>
 
         </div>
-        </#if>
-    </#macro>
-<#-- FIXME: FTLREFACTOR remove: rarely used (if we want formatting consistency, consider constant stringformat instead)-->
-    <#macro _printCreatedDate irfile>
-        <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if>
-    </#macro>
-
-<#-- FIXME: FTLREFACTOR move to common.ftl -->
-<#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
-    <#macro codingRules>
-        <#if codingSheet.id != -1>
-            <#nested>
-        <h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
-            <#if codingSheet.codingRules.isEmpty() >
-            <div>
-                No coding rules have been entered for this coding sheet yet.
-            </div>
-            <#else>
-            <div id='codingRulesDiv'>
-                <table width="60%" class="table table-striped tableFormat">
-                    <thead class='highlight'>
-                    <tr>
-                        <th>Code</th>
-                        <th>Term</th>
-                        <th>Description</th>
-                        <th>Mapped Ontology Node</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <#list codingSheet.sortedCodingRules as codeRule>
-                        <tr>
-                            <td>${codeRule.code}</td>
-                            <td>${codeRule.term}</td>
-                            <td>${codeRule.description!""}</td>
-                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName}</#if></td>
-                        </tr>
-                        </#list>
-                    </tbody>
-                </table>
-            </div>
-            </#if>
         </#if>
     </#macro>
 
@@ -375,7 +364,7 @@ View freemarker macros
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
 
-        <#if c?? > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a></#if>
+        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
     </#compress>
     </#macro>
 
@@ -396,7 +385,8 @@ View freemarker macros
     <#macro keywordSearch _keywords fieldName="query" quoted=true>
         <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
             <#if !_keyword.deleted>
-                <@search fieldName quoted>${_keyword.label}</@search> <#if _keyword_has_next>&bull;</#if>
+                <@common.searchFor keyword=_keyword asList=false showOccurrence=false />
+                <#if _keyword_has_next>&bull;</#if> 
             </#if>
         </#list>
     </#macro>
@@ -432,12 +422,12 @@ View freemarker macros
                 <dt>
                 <p><strong>Created by</strong></p></dt>
                 <dd><p><a
-                        href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
+                        href="<@s.url value="${resource.submitter.detailUrl}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
                     on ${resource.dateCreated}</#if></p></dd>
                 <#if resource.submitter.id != resource.uploader.id>
                     <dt>
                     <p><strong>Uploaded by</strong></p></dt>
-                    <dd><p><a href="<@s.url value="/browse/creators/${resource.uploader.id?c}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
+                    <dd><p><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
                     </p></dd>
                 </#if>
                 <#if resource.account?has_content && (administrator || editable) >
@@ -454,7 +444,7 @@ View freemarker macros
                 </#if>
                 <dt>
                 <p><strong>Last Updated by</strong></p></dt>
-                <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a>
+                <dd><p><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
                     on ${resource.dateUpdated?date!""}</p></dd>
                 <dt>
                 <p><strong>Viewed</strong></p></dt>
@@ -498,7 +488,7 @@ View freemarker macros
     <#macro pageStatusCallout>
         <#local status="danger">
         <#if (persistable.status)?has_content && !persistable.active >
-            <#if persistable.status == 'DRAFT'>
+            <#if persistable.status.draft >
                 <#local status="info"/>
             </#if>
 
@@ -552,17 +542,19 @@ View freemarker macros
                               <img class="thumbnailLink img-polaroid"<#t>
                                    <#if (resource.visibleFilesWithThumbnails?size = 1) && (irfile.description!'') = ''>
                                    alt="<@_altText irfile resource.title />"
+                                   title="<@_altText irfile resource.title />"
                                    <#else> <#t>
                                    alt="<@_altText irfile />" <#t>
+                                   title="<@_altText irfile />" <#t>
                                    </#if>
                                    <#if lazyLoad>
                                        src="/images/image_unavailable_t.gif"
-                                       data-src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                       data-src="<@s.url value="/files/sm/${irfile.latestThumbnail.id?c}"/>" <#t>
                                    <#else>
-                                       src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                       src="<@s.url value="/files/sm/${irfile.latestThumbnail.id?c}"/>" <#t>
                                    </#if>
                                    onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" <#t>
-                                   data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>" <#t>
+                                   data-url="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>" <#t>
                                    <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>> <#lt>
                           </span>
                         </div>
@@ -594,7 +586,8 @@ View freemarker macros
             <#list resource.visibleFilesWithThumbnails as irfile>
                 <div>
             <span id="imageContainer">
-            <img id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+            <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}"
+                 src="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>"/>
             <span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
                 </div>
                 <div id="downloadText">
@@ -608,25 +601,14 @@ View freemarker macros
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $(".thumbnailLink").click(function () {
-                var $this = $(this);
-                $("#bigImage").attr('src', $this.data('url'));
-                var rights = "";
-                if ($this.data("access-rights")) {
-                    rights = "This file is <em>" + $this.data("access-rights") + "</em> but you have rights to it";
-                }
-                $("#confidentialLabel").html(rights);
-                $("#downloadText").html($this.attr('alt'));
-                $(".thumbnail-border-selected").removeClass("thumbnail-border-selected");
-                $this.parent().addClass("thumbnail-border-selected");
-            });
+            TDAR.common.initImageGallery();
         });
     </script>
     </#macro>
 
     <#macro _altText irfile description = irfile.description!"">
-    ${irfile.filename} <#if ( description?has_content && (irfile.filename)?has_content ) >- ${description}</#if><#t>
-        <#if irfile.fileCreatedDate??>(<@_printCreatedDate irfile/>)</#if><#t>
+    ${irfile.filename} <#if ( description?has_content && (irfile.filename)?has_content ) >- ${description}</#if>
+        <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?date}</#if>
     </#macro>
 
 <#--emit the unapi 'link' for the specified resource (see: http://unapi.info/specs/) -->
@@ -660,13 +642,13 @@ View freemarker macros
                 <#if showNotice>
                 <span class="label label-inverse">Restricted Access</span>
                 Some or all of this resource's attached file(s) are <b>not</b> publicly accessible.
-                    <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if>
+                    <#if embargoDate?has_content>  They will be released on ${embargoDate?date}</#if>
                 </#if>
             <#else>
                 <#if showNotice && (!resource.publicallyAccessible) && !resource.citationRecord >
                 <span class="label label-inverse">Restricted Access</span>
                 <em>This resource is restricted from general view; however, you have been granted access to it.</em>
-                    <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if>
+                    <#if embargoDate?has_content>  They will be released on ${embargoDate?date}</#if>
                 </#if>
             </#if>
             <#nested/>
@@ -679,7 +661,7 @@ View freemarker macros
         <#if includeTime>
         ${_date?string.medium}<#t>
         <#else>
-        ${_date?string('MM/dd/yyyy')}<#t>
+        ${_date?date}<#t>
         </#if>
     </#macro>
 
@@ -702,7 +684,7 @@ View freemarker macros
             <#list resources as resource>
             <tr id='dtr_${resource.id?c}'>
                 <td>${resource.id?c}
-                <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="_b">${(resource.title)!""}</a>
+                <td><a href="<@s.url value="${resource.detailUrl}"/>" target="_b">${(resource.title)!""}</a>
             <td>
                 <button class="btn btn-mini" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
             </#list>
@@ -713,36 +695,7 @@ View freemarker macros
 
 
     <#macro datatableChildJavascript>
-    var _windowOpener = null;
-    //swallow cors exception. this can happen if window is a child but not an adhoc target
-    try {
-    if(window.opener) {
-    windowOpener = window.opener.TDAR.common.adhocTarget;
-    }
-    }catch(ex) {console.log("window parent not available - skipping adhoctarget check");}
-
-    if(_windowOpener)  {
-    window.opener.TDAR.common.populateTarget({
-    id:${resource.id?c},
-    title:"${resource.title?js_string}"
-    });
-
-
-    $( "#datatable-child" ).dialog({
-    resizable: false,
-    modal: true,
-    buttons: {
-    "Return to original page": function() {
-    window.opener.focus();
-    window.close();
-    },
-    "Stay on this page": function() {
-    window.opener.adhocTarget = null;
-    $( this ).dialog( "close" );
-    }
-    }
-    });
-    }
+    TDAR.datatable.registerChild(${resource.id?c},"${resource.title?js_string}");
     </#macro>
 
 <#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
@@ -752,7 +705,7 @@ View freemarker macros
         <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
         <#if seenThumbnail ><#t>
             <#t><span class="thumbnail-center-spacing"></span><#t>
-            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />"
+            <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/files/sm/${resource_.primaryThumbnail.id?c}" />"
                      title="${resource_.title!''}" alt="${_imageDescription(resource_.primaryThumbnail resource_)}"
                      onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"/><#t>
         <#else>
@@ -765,9 +718,9 @@ View freemarker macros
 <#--emit the citation section of a view page (including map depicting bounding box, if bounding box defined) -->
     <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
     <div class="item <#if count==0>active</#if>">
-        <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
+        <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${resource.detailUrl}"/></#local>
         <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-            <img alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
+            <img title="map" alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
         <#else>
             <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
         </#if>
@@ -796,51 +749,14 @@ View freemarker macros
         <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false${apikeyval}">
     </#function>
 
-<#-- emit OpenURL format url for the specified resource (for use with COIN citation) -->
-    <#macro toOpenURL resource>
-        <#noescape>
-            <#assign openUrl>ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/${hostName}&amp;rft.doi=${resource.externalId!""?url}</#assign>
-            <#if resource.date?has_content && resource.date != -1>
-                <#assign openUrl>${openUrl}&amp;rft.date=${resource.date?c?url}</#assign>
-            </#if>
-            <#if resource??>
-                <#if resource.resourceType == 'DOCUMENT'>
-                    <#if resource.documentType == 'JOURNAL_ARTICLE'>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.journalTitle!""?url}&amp;rft.jtitle=${resource.journalTitle!""?url}&amp;
-                        rft.atitle=${resource.title!""?url}</#assign>
-                    <#elseif resource.documentType == 'BOOK_SECTION'>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.bookTitle!""?url}&amp;rft.btitle=${resource.bookTitle!""?url}&amp;
-                        rft.atitle=${resource.title!""?url}</#assign>
-                    <#else>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.title!""?url}</#assign>
-                    </#if>
 
-                    <#assign openUrl>${openUrl}&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:${resource.documentType.openUrlGenre!""?url}&amp;
-                    rft.genre=${resource.documentType.openUrlGenre!""?url}&amp;rft.issn=${resource.issn!""?url}&amp;rft.isbn=${resource.isbn!""?url}</#assign>
-                <#else>
-                    <#assign openUrl>${openUrl}&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:${resource.resourceType.openUrlGenre!""?url}&amp;
-                    rft.genre=${resource.resourceType.openUrlGenre!""?url}&amp;rft.title=${resource.title!""?url}</#assign>
-                </#if>
-            </#if>
-        ${openUrl}
-        </#noescape>
-    </#macro>
-
-<#-- emit COIN microformat link -->
-    <#macro coin resource>
-        <#if resource??>
-            <#noescape>
-            <span class="Z3988" title="<@toOpenURL resource />"></span>
-            </#noescape>
-        </#if>
-    </#macro>
 
 <#-- emit license information section -->
     <#macro license>
         <#if (resource.licenseType??) >
         <h3>License</h3>
             <#if (resource.licenseType.imageURI != "")>
-            <a href="${resource.licenseType.URI}"><img alt="license image"
+            <a href="${resource.licenseType.URI}"><img alt="license image" title="license image"
                                                        src="<#if secure>${resource.licenseType.secureImageURI}<#else>${resource.licenseType.imageURI}</#if>"/></a>
             </#if>
             <#if (resource.licenseType.URI != "")>
@@ -853,6 +769,26 @@ View freemarker macros
             </#if>
         </#if>
     </#macro>
+
+<#macro featured header="Featured Content" span="span12">
+<div class="tdar-slider slider ${span}">
+    <h3>${header}</h3>
+
+    <div id="slider" class="carousel slide">
+        <!-- Carousel items -->
+        <div class="carousel-inner">
+            <#list featuredResources as featuredResource>
+            <#if featuredResource?has_content>
+                <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
+            </#if>
+            </#list>
+        </div>
+        <!-- Carousel nav -->
+        <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>
+        <a class="carousel-control right" href="#slider" data-slide="next">&rsaquo;</a>
+    </div>
+</div>
+</#macro>
 
 </#escape>
 <#-- NOTHING SHOULD GO AFTER THIS -->

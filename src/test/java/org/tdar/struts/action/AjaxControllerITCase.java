@@ -22,11 +22,6 @@ public class AjaxControllerITCase extends AbstractAdminControllerITCase {
         controller = generateNewInitializedController(AjaxController.class);
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
     @Test
     public void testColumnMetadataSubcategories() {
         CategoryVariable categoryVariable = categoryVariableService.findAllCategories().iterator().next();

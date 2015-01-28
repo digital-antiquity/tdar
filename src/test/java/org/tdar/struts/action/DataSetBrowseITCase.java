@@ -22,8 +22,8 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.struts.action.resource.DatasetController;
-import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
+import org.tdar.struts.action.dataset.DatasetController;
 
 import com.opensymphony.xwork2.Action;
 
@@ -44,7 +44,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testBrowse() throws IOException {
+    public void testBrowse() throws IOException, TdarActionException {
         // load datasets
         Dataset dataset = setupAndLoadResource(DOUBLE_DATASET, Dataset.class);
         assertNotNull(dataset);
@@ -61,7 +61,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         assertEquals(new Integer(0), resultsWrapper.getStartRecord());
         assertFalse(resultsWrapper.getResults().isEmpty());
         assertFalse(resultsWrapper.getFields().isEmpty());
-        logger.debug("{}", controller.getResultsWrapper().toJSON());
+        logger.debug("{}", controller.getJsonResult());
 
         // PAGED CASE -- START @ 5
         controller = generateNewInitializedController(DataTableBrowseController.class);
@@ -75,7 +75,8 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         assertEquals(new Integer(5), resultsWrapper.getStartRecord());
         assertFalse(resultsWrapper.getResults().isEmpty());
         assertFalse(resultsWrapper.getFields().isEmpty());
-        logger.debug("{}", controller.getResultsWrapper().toJSON());
+        
+        logger.debug("{}", controller.getJsonResult());
 
         // OVER-EXTENDED CASE -- START @ 500
         controller = generateNewInitializedController(DataTableBrowseController.class);
@@ -90,12 +91,12 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         assertTrue(resultsWrapper.getResults().isEmpty());
         assertFalse(resultsWrapper.getFields().isEmpty());
 
-        logger.debug("{}", controller.getResultsWrapper().toJSON());
+        logger.debug("{}", controller.getJsonResult());
     }
 
     @Test
     @Rollback
-    public void testSearch() throws IOException {
+    public void testSearch() throws IOException, TdarActionException {
         // load datasets
         Dataset dataset = setupAndLoadResource(TEXT_DATASET, Dataset.class);
         assertNotNull(dataset);

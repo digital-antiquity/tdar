@@ -1,8 +1,11 @@
 package org.tdar.struts.action;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,13 +15,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -26,7 +34,6 @@ import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -36,16 +43,18 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
-import org.tdar.struts.action.resource.CodingSheetController;
-import org.tdar.struts.action.resource.DatasetController;
-import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
+import org.tdar.struts.action.dataset.ColumnMetadataController;
+import org.tdar.struts.action.workspace.IntegrationDownloadAction;
+import org.tdar.struts.action.workspace.LegacyWorkspaceController;
+import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
@@ -55,11 +64,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
-
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Override
     protected String getTestFilePath() {
@@ -171,10 +175,11 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     }
 
-    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
-        CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
+    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws Exception {
+        CodingSheetMappingController controller = generateNewInitializedController(CodingSheetMappingController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, column.getDefaultCodingSheet().getId());
+        controller.setId(column.getDefaultCodingSheet().getId());
+        controller.prepare();
         controller.loadOntologyMappedColumns();
         Set<CodingRule> rules = column.getDefaultCodingSheet().getCodingRules();
         // List<OntologyNode> ontologyNodes = column.getDefaultOntology().getOntologyNodes();
@@ -198,7 +203,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         controller.setCodingRules(toSave);
         controller.saveValueOntologyNodeMapping();
 
-        Set<Long> idSet = Base.createIdMap(toSave).keySet();
+        Set<Long> idSet = PersistableUtils.createIdMap(toSave).keySet();
         for (Long toCheck : idSet) {
             CodingRule find = genericService.find(CodingRule.class, toCheck);
             assertNotNull(find.getOntologyNode());
@@ -206,88 +211,127 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         Assert.assertNotSame(0, toSave.size());
     }
 
-    public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws TdarActionException {
+    public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws Exception {
         logger.info("{}", dataTable);
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
         controller.setDataTableId(dataTable.getId());
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
         controller.setDataTableColumns(Arrays.asList(mappings));
         controller.saveColumnMetadata();
 
         for (DataTableColumn mapping : mappings) {
             DataTableColumn col = dataTable.getColumnByName(mapping.getName());
             assertNotNull(col.getName() + " is null", col);
-            assertEquals(col.getName() + " is missing ontology", mapping.getDefaultOntology(), col.getDefaultOntology());
+//            assertEquals(col.getName() + " is missing ontology", mapping.getDefaultOntology(), col.getDefaultOntology());
             assertEquals(col.getName() + " is missing coding sheet", mapping.getDefaultCodingSheet(), col.getDefaultCodingSheet());
         }
     }
 
-    public List<IntegrationDataResult> performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
-            HashMap<Ontology, String[]> nodeSelectionMap) throws IOException {
-        WorkspaceController controller = generateNewInitializedController(WorkspaceController.class);
+    public Object performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
+            HashMap<Ontology, String[]> nodeSelectionMap) throws Exception {
+        LegacyWorkspaceController controller = generateNewInitializedController(LegacyWorkspaceController.class);
         performIntegrationFiltering(integrationColumns, nodeSelectionMap);
         controller.setTableIds(tableIds);
         controller.setIntegrationColumns(integrationColumns);
         controller.displayFilteredResults();
 
         logger.info("Testing Integration Results");
-        assertNotNull(controller.getIntegrationDataResults());
-        for (IntegrationDataResult integrationDataResult : controller.getIntegrationDataResults()) {
-
-            // expected colcount includes one table name, integration column count, and display column count
-            int colCount = 1;
-
-            colCount += integrationDataResult.getIntegrationColumns().size();
-
-            for (IntegrationColumn col : integrationColumns) { // adding ontology mapping entry
-                if (!col.isDisplayColumn()) {
-                    colCount++;
-                }
-            }
-
-            int size = 0;
-            for (String[] data : integrationDataResult.getRowData()) {
-                size++;
-                assertEquals("row " + size + " didn't match expected # of columns " + colCount, colCount, data.length);
-            }
-        }
+        assertNotNull(controller.getResult());
         logger.info("{}", controller.getIntegrationColumns());
 
-        List<IntegrationDataResult> results = controller.getIntegrationDataResults();
         Long ticketId = controller.getTicketId();
         assertNotNull(ticketId);
-
-        controller = generateNewInitializedController(WorkspaceController.class);
-        controller.setTicketId(ticketId);
-        controller.downloadIntegrationDataResults();
-        InputStream integrationDataResultsInputStream = controller.getIntegrationDataResultsInputStream();
+        ModernIntegrationDataResult result = controller.getResult();
+        IntegrationDownloadAction dc = generateNewInitializedController(IntegrationDownloadAction.class);
+        dc.setTicketId(ticketId);
+        dc.prepare();
+        dc.downloadIntegrationDataResults();
+        InputStream integrationDataResultsInputStream = dc.getIntegrationDataResultsInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(integrationDataResultsInputStream));
         Assert.assertFalse(StringUtils.isEmpty(reader.readLine()));
-        return results;
+        return result;
     }
 
     public List<String> performIntegrationFiltering(List<IntegrationColumn> integrationColumns, HashMap<Ontology, String[]> nodeSelectionMap) {
         List<String> checkedNodeList = new ArrayList<String>();
         for (IntegrationColumn integrationColumn : integrationColumns) {
-            if (integrationColumn.isDisplayColumn()) {
+            if (!integrationColumn.isIntegrationColumn()) {
                 continue;
             }
-            if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
+            String[] nodeSelections = nodeSelectionMap.get(integrationColumn.getSharedOntology());
+            if (nodeSelections != null) {
                 int foundNodeCount = 0;
-                for (OntologyNode nodeData : integrationColumn.getFlattenedOntologyNodeList()) {
-                    if (ArrayUtils.contains(nodeSelectionMap.get(integrationColumn.getSharedOntology()), nodeData.getDisplayName())) {
-                        logger.trace("comparing " + nodeData.getDisplayName() + " <-> "
-                                + StringUtils.join(nodeSelectionMap.get(integrationColumn.getSharedOntology()), "|"));
+                for (OntologyNode nodeData : dataIntegrationService.getFilteredOntologyNodes(integrationColumn)) {
+                    String name = nodeData.getDisplayName();
+                    logger.debug("comparing {} <-> {}", name, StringUtils.join(nodeSelections, "|"));
+                    if (ArrayUtils.contains(nodeSelections, name)) {
                         foundNodeCount++;
                         integrationColumn.getFilteredOntologyNodes().add(new OntologyNode(nodeData.getId()));
 
                     }
                 }
-                assertEquals(foundNodeCount, nodeSelectionMap.get(integrationColumn.getSharedOntology()).length);
+                logger.debug("nodeSelections: {}", Arrays.asList(nodeSelections));
+                assertEquals(foundNodeCount, nodeSelections.length);
             } else {
                 assertTrue("found unexpected ontology", false);
             }
         }
         return checkedNodeList;
     }
+
+    public void assertArchiveContents(Collection<File> expectedFiles, File archive) throws IOException {
+        assertArchiveContents(expectedFiles, archive, true);
+    }
+
+    public void assertArchiveContents(Collection<File> expectedFiles, File archive, boolean strict) throws IOException {
+
+        Map<String, Long> nameSize = unzipArchive(archive);
+        List<String> errs = new ArrayList<>();
+        for (File expected : expectedFiles) {
+            Long size = nameSize.get(expected.getName());
+            if (size == null) {
+                errs.add("expected file not in archive:" + expected.getName());
+                continue;
+            }
+            // if doing a strict test, assert that file is exactly the same
+            if (strict) {
+                if (size.longValue() != expected.length()) {
+                    errs.add(String.format("%s: item in archive %s does not have same content", size.longValue(), expected));
+                }
+                // otherwise, just make sure that the actual file is not empty
+            } else {
+                if (expected.length() > 0) {
+                    assertThat(size, greaterThan(0L));
+                }
+            }
+        }
+        if (errs.size() > 0) {
+            for (String err : errs) {
+                logger.error(err);
+            }
+            fail("problems found in archive:" + archive);
+        }
+    }
+
+    public Map<String, Long> unzipArchive(File archive) {
+        Map<String, Long> files = new HashMap<>();
+        ZipFile zipfile = null;
+        try {
+            zipfile = new ZipFile(archive);
+            for (Enumeration<?> e = zipfile.entries(); e.hasMoreElements();) {
+                ZipEntry entry = (ZipEntry) e.nextElement();
+                files.put(entry.getName(), entry.getSize());
+                logger.info("{} {}", entry.getName(), entry.getSize());
+            }
+        } catch (Exception e) {
+            logger.error("Error while extracting file " + archive, e);
+        } finally {
+            if (zipfile != null) {
+                IOUtils.closeQuietly(zipfile);
+            }
+        }
+        return files;
+    }
+
 }

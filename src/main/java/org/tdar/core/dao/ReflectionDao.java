@@ -11,7 +11,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
@@ -57,7 +56,7 @@ public class ReflectionDao {
         Query query = getCurrentSession().createQuery(hql);
         query.setParameterList("idlist", idlist);
 
-        query.setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize());
+        query.setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize());
         return query.scroll(ScrollMode.FORWARD_ONLY);
     }
 

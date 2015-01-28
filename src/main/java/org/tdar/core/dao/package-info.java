@@ -27,7 +27,7 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
                 query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission or resCol.owner=:userId) and"
-                        + " resCol.type!='INTERNAL' and resCol.name like :name "),
+                        + " resCol.type!='INTERNAL' and lower(trim(resCol.name)) like lower(trim(:name)) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
                 query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
@@ -52,7 +52,7 @@
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP,
-                query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.visible) FROM ResourceCollection as col where col.id in (:ids) "),
+                query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.hidden) FROM ResourceCollection as col where col.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
@@ -105,8 +105,12 @@
                 query = "select br.resource from BookmarkedResource br where br.person.id = :personId and br.resource.status in (:statuses) order by br.resource.resourceType "
         ),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_BOOKMARKEDRESOURCES_FOR_USER,
+                query = "select br from BookmarkedResource br where br.person.id = :personId order by br.resource.resourceType "
+        ),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATASET_CAN_LINK_TO_ONTOLOGY,
-                query = "select dtc.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc " +
+                query = "select code.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc inner join dtc.defaultCodingSheet as code " +
                         "where dt.dataset.id=:datasetId"
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -115,11 +119,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLE_RELATED_ID,
-                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc WHERE (dtc.defaultOntology=:relatedId  or dtc.defaultCodingSheet=:relatedId) and dt.dataset.status!='DELETED'"
+                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology=:relatedId  or code=:relatedId) and dt.dataset.status!='DELETED'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY,
-                query = "FROM DataTableColumn dtc WHERE dtc.dataTable.dataset.id=:datasetId AND dtc.defaultOntology IS NOT NULL ORDER BY dtc.id"),
+                query = "FROM DataTableColumn dtc inner join dtc.defaultCodingSheet as code WHERE dtc.dataTable.dataset.id=:datasetId AND code.defaultOntology IS NOT NULL ORDER BY dtc.id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,
                 query = "SELECT file from InformationResourceFile as file, InformationResourceFileVersion as version where file.informationResource = :resource and "
@@ -152,12 +156,12 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS,
                 query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt " +
-                        "join dt.dataTableColumns as dtc where dtc.defaultOntology <> null and ds.project.id = :projectId"
+                        "join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code where code.defaultOntology <> null and ds.project.id = :projectId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS,
                 query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt " +
-                        "join dt.dataTableColumns as dtc where dtc.defaultOntology <> null and ds.project.id in (:projectIdList)"
+                        "join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code where code.defaultOntology <> null and ds.project.id in (:projectIdList)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY,
@@ -183,11 +187,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_BY_PARENT,
-                query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and col.type in (:collectionTypes) and (visible=:visible or :visible is NULL)"
+                query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and col.type in (:collectionTypes) and (hidden=:visible or :visible is NULL)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
-                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.visible is true "
+                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.hidden is false "
         ),
 
         @org.hibernate.annotations.NamedQuery(
@@ -197,7 +201,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.visible=false and col.visible=true and col.type!='INTERNAL'"
+                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,
@@ -258,7 +262,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RECENT_USERS_ADDED,
-                query = "select p from Person p where registered=TRUE and status='ACTIVE' order by id desc"
+                query = "select p from TdarUser p where status='ACTIVE' order by p.id desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_USAGE_STATS,
@@ -289,10 +293,6 @@
                 query = "UPDATE CodingRule cr set cr.ontologyNode=NULL where cr.ontologyNode in (:ontologyNodes)"
         ),
         @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.UPDATE_DATATABLECOLUMN_ONTOLOGIES,
-                query = "UPDATE DataTableColumn set defaultOntology = :ontology where defaultCodingSheet = :codingSheet"
-        ),
-        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_SUBMITTER,
                 query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from InformationResource res"
                         + " where res.submitter.id in (:submitterIds) and res.status in (:statuses) "
@@ -314,35 +314,35 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY,
-                query = "select ref.id, ref.title, ref.resourceType, date_trunc('day', ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY_OVERALL,
-                query = "select ref.id, ref.title, ref.resourceType, count(ras.id) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by ref having count(ras.id) > :minCount order by count(ras.id) desc"
+                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ras.aggregateDate between :start and :end and ras.count > :minCount order by ras.count desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.RESOURCE_ACCESS_HISTORY,
-                query = "select new org.tdar.struts.data.AggregateViewStatistic(ref.id, date_trunc('day', ras.date), count(ref)) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ref.id in (:resourceIds) and ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) >= :minCount order by date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ref.id in (:resourceIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FILE_DOWNLOAD_HISTORY,
-                query = "select new org.tdar.struts.data.AggregateDownloadStatistic(ref.id, date_trunc('day', ras.date), count(ref)) FROM FileDownloadStatistic ras inner join ras.reference as ref where ref.id in (:fileIds) and ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) >= :minCount order by date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateDownloadStatistic ras inner join ras.file as ref where ref.id in (:fileIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DOWNLOAD_BY,
-                query = "select date_trunc('day', ras.date),  count(ref),  ref.id  FROM FileDownloadStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateDownloadStatistic ras inner join ras.file as ref where ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT,
-                query = "select grp from AccountGroup grp inner join grp.accounts as account where account.id =:accountId"
+                query = "select grp from BillingAccountGroup grp inner join grp.accounts as account where account.id =:accountId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
-                query = "select act from Account act left join act.authorizedMembers as person where ( act.owner.id =:personId or person.id=:personId) and act.status in (:statuses)"
+                query = "from BillingAccount act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON,
-                query = "select act from AccountGroup act left join act.authorizedMembers as person where ( act.owner.id =:personId or person.id=:personId) and act.status in (:statuses)"
+                query = "from BillingAccountGroup act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LOGS_FOR_RESOURCE,
@@ -374,11 +374,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_LOGIN_STATS,
-                query = "select totalLogins, count(id) from Person where totalLogins > 0 group by totalLogins order by totalLogins asc"
+                query = "select totalLogins, count(person.id) from TdarUser person where totalLogins > 0 group by totalLogins order by totalLogins asc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_ACTIVE_COUPON,
-                query = "from Coupon coupon where code=:code and (select count(*) from Invoice where coupon_id=coupon.id and owner.id !=:ownerId) = 0"
+                query = "from Coupon coupon where code=:code and (select count(*) from Invoice where coupon_id=coupon.id and owner.id !=:ownerId and owner.id is NOT null) = 0"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_INVOICE_FOR_COUPON,
@@ -408,7 +408,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE,
-                query = "select account from Account account join account.invoices as invoice where invoice.id = :id"),
+                query = "select account from BillingAccount account join account.invoices as invoice where invoice.id = :id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER,
                 query = "select rescol from ResourceCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
@@ -427,11 +427,20 @@
                 //select c.id, c.name from collection c left join collection_parents as p on c.id=p.collection_id left join authorized_user auth on c.id=auth.resource_collection_id where auth.general_permission_int>399 and auth.user_id=8092 or p.parent_id in (select resource_collection_id from authorized_user where authorized_user.general_permission_int>399 and authorized_user.user_id=8092);
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
                 query = " SELECT distinct new Resource(res.id, res.title, res.resourceType) " + org.tdar.core.dao.TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX
-                        +
-                        " order by res.title, res.id"),
+                        + " order by res.title, res.id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY,
                 query = "DELETE InformationResourceFileVersion WHERE id = :id"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS,
+                query = "from UserNotification "
+                        + "WHERE messageType = 'SYSTEM_BROADCAST' OR tdarUser.id = :userId "
+                        + "ORDER BY dateCreated DESC"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_USER_NOTIFICATIONS_BY_TYPE,
+                query = "from UserNotification WHERE messageType = :messageType ORDER BY dateCreated DESC"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,
@@ -443,8 +452,47 @@
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
-        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
-                query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv")
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
+                query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.WEEKLY_EMAIL_STATS,
+                query = "select count(*) from Email where status='SENT' and dateSent >= :date and userGenerated=TRUE"),
+
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGO_EXIPRED,
+                query = "from InformationResourceFile where date_made_public <= :dateStart and restriction like 'EMBARGO%'"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
+                query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
+                query = "select distinct dt, ds.title " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX + " order by ds.title, dt.displayName"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE_COUNT,
+                query = "select count(distinct dt.id) " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INTEGRATION_ONTOLOGY,
+                query = "select distinct ont from Ontology ont left join ont.resourceCollections as rc"
+                        + " left join rc.parentIds parentId  "
+                        + "where ont.status='ACTIVE' and (:projectId=-1L or ont.project.id=:projectId) and "
+                        + " ont.title like :titleLookup and "
+                        + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
+                        + "(:categoryVariableId=-1L or ont.categoryVariable.id=:categoryVariableId) and "
+                        + "(:hasDatasets=false or ont.id in "
+                        + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultCodingSheet.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
+                        + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
+                query = "from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
+                query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.WORKFLOWS_BY_USER,
+                query = "from DataIntegrationWorkflow where submitter.id=:userId")
 })
 package org.tdar.core.dao;
 

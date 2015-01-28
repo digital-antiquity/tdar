@@ -2,9 +2,6 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,8 +11,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
 import org.slf4j.Logger;
@@ -25,17 +21,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
-import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -88,6 +82,10 @@ public class GenericService {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
+    public void setCacheModeForCurrentSession(CacheMode mode) {
+        genericDao.setCacheModeForCurrentSession(mode);
+    }
+
     /**
      * Find all ids given a specified class
      * 
@@ -120,7 +118,7 @@ public class GenericService {
      * @return
      */
     public <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
-        return Persistable.Base.extractIds(persistables);
+        return PersistableUtils.extractIds(persistables);
     }
 
     /**
@@ -211,11 +209,11 @@ public class GenericService {
             throw new TdarRecoverableRuntimeException("error.not_implemented");
         }
         // get a unique set of Ids
-        Map<Long, P> ids = Persistable.Base.createIdMap(sparseObjects);
+        Map<Long, P> ids = PersistableUtils.createIdMap(sparseObjects);
         logger.info("{}", ids);
         // populate and put into a unique map
         @SuppressWarnings("unchecked")
-        Map<Long, P> skeletons = Persistable.Base.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));
+        Map<Long, P> skeletons = PersistableUtils.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));
 
         List<P> toReturn = new ArrayList<P>();
 
@@ -326,6 +324,11 @@ public class GenericService {
     @Transactional(readOnly = true)
     public <E> ScrollableResults findAllScrollable(Class<E> persistentClass) {
         return genericDao.findAllScrollable(persistentClass);
+    }
+
+    @Transactional(readOnly = true)
+    public <E> ScrollableResults findAllActiveScrollable(Class<E> persistentClass) {
+        return genericDao.findAllActiveScrollable(persistentClass);
     }
 
     @Transactional(readOnly = true)
@@ -507,10 +510,10 @@ public class GenericService {
             if (violations.size() > 0) {
                 logger.debug(String.format("violations: %s", violations));
                 errors.add(violations);
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid_with_violations", errors));
+                throw new TdarValidationException("genericService.object_not_valid_with_violations", errors);
             }
             if ((obj instanceof Validatable) && !((Validatable) obj).isValid()) {
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid", errors));
+                throw new TdarValidationException("genericService.object_not_valid", errors);
             }
         }
     }
@@ -534,6 +537,7 @@ public class GenericService {
      */
     @Transactional
     public void delete(Object obj) {
+        genericDao.markWritableOnExistingSession(obj);
         genericDao.delete(obj);
     }
 
@@ -556,39 +560,6 @@ public class GenericService {
         genericDao.refresh(object);
     }
 
-    /**
-     * Extract the "String" value from an object. This could be a date, URL, enum, or String. If it implements @link HasLabel, use that.
-     * 
-     * @param val
-     * @return
-     */
-    public static String extractStringValue(Object val) {
-        if (val == null) {
-            return "";
-        } else if (val instanceof HasLabel) {
-            return ((HasLabel) val).getLabel();
-        } else if (val instanceof Collection<?>) {
-            Collection<?> values = (Collection<?>) val;
-            StringBuilder sb = new StringBuilder();
-            Iterator<?> iter = values.iterator();
-            while (iter.hasNext()) {
-                String val_ = extractStringValue(iter.next());
-                if (StringUtils.isNotBlank(val_)) {
-                    if (sb.length() > 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(val_);
-                }
-            }
-            return sb.toString();
-        } else {
-            String string = val.toString();
-            if (StringUtils.isNotEmpty(string)) {
-                return string;
-            }
-        }
-        return "";
-    }
 
     /**
      * Mark an object as "read only" so that changes are not persisted to the database (used in obfuscation, for example)..
@@ -607,6 +578,10 @@ public class GenericService {
      */
     public <O> O markWritable(O obj) {
         return genericDao.markWritable(obj);
+    }
+
+    public <O> void markUpdatable(O obj) {
+        genericDao.markUpdatable(obj);
     }
 
     /**
@@ -698,38 +673,6 @@ public class GenericService {
     }
 
     /**
-     * Sort @link Updatable by their updated date.
-     * 
-     * @param resourcesToEvaluate
-     */
-    public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {
-        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
-
-            @Override
-            public int compare(T o1, T o2) {
-                return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
-            }
-        });
-
-    }
-
-    /**
-     * Sort @link Updatable by their created date.
-     * 
-     * @param resourcesToEvaluate
-     */
-    public static <T extends Updatable> void sortByCreatedDate(List<T> resourcesToEvaluate) {
-        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
-
-            @Override
-            public int compare(T o1, T o2) {
-                return ObjectUtils.compare(o1.getDateCreated(), o2.getDateCreated());
-            }
-        });
-
-    }
-
-    /**
      * Find Ids of @link Persistable objects that have a @link Status of ACTIVE.
      * 
      * @param class1
@@ -751,6 +694,19 @@ public class GenericService {
     @Transactional
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         return genericDao.findAllWithProfile(class1, ids, profileName);
+    }
+
+    public <T> boolean sessionContains(T entity) {
+        return genericDao.sessionContains(entity);
+    }
+
+    public <T> List<T> findAllWithL2Cache(Class<T> persistentClass) {
+        return genericDao.findAllWithL2Cache(persistentClass, null);
+    }
+
+    public void evictFromCache(Persistable res) {
+        genericDao.evictFromCache((Persistable) res);
+
     }
 
 }

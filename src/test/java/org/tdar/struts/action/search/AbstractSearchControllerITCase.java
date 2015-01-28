@@ -20,9 +20,9 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -34,9 +34,10 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.AbstractLookupController;
 
 import com.opensymphony.xwork2.Action;
 
@@ -44,29 +45,7 @@ import com.opensymphony.xwork2.Action;
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
 
     @Autowired
-    // FIXME: MAKE GENERIC
     protected AdvancedSearchController controller;
-
-    // FIXME:these counts will change often - need to figure a better way to keep it in sync
-    /*
-     * execute the following sql against the test database to generate the count constants:
-     * 
-     * select 'protected static final int RESOURCE_COUNT_' || resource_type|| ' = ' || count(resource_type) || ';' jabba from resource where status = 'ACTIVE'
-     * group by resource_type;
-     */
-
-    protected static final int RESOURCE_COUNT_DOCUMENT = 5;
-    protected static final int RESOURCE_COUNT_ONTOLOGY = 1;
-    protected static final int RESOURCE_COUNT_PROJECT = 12;
-    protected static final int RESOURCE_COUNT_DATASET = 2;
-    protected static final int RESOURCE_COUNT_CODING_SHEET = 4;
-    protected static final int RESOURCE_COUNT_IMAGE = 0;
-    protected static final int RESOURCE_COUNT_SENSORY_DATA = 0;
-
-    protected static final int RESOURCE_COUNT_ACTIVE = 24;
-    protected static final int RESOURCE_COUNT_DRAFT = 0;
-    protected static final int RESOURCE_COUNT_FLAGGED = 0;
-    protected static final int RESOURCE_COUNT_DELETED = 1;
 
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
@@ -75,11 +54,6 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     @Autowired
     protected GenericKeywordService genericKeywordService;
-
-    @Override
-    public TdarActionSupport getController() {
-        return controller;
-    }
 
     @Before
     public void reset() {
@@ -130,7 +104,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return setupImage(getUser());
     }
 
-    protected Long setupImage(Person user) {
+    protected Long setupImage(TdarUser user) {
         Image img = new Image();
         img.setTitle("precambrian Test");
         img.setDescription("image description");
@@ -186,29 +160,29 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return list;
     }
 
-    public static void doSearch(AdvancedSearchController controller, LookupSource resource) {
+    public static void doSearch(AbstractLookupController controller, LookupSource resource) {
         doSearch(controller, resource, false);
     }
 
-    public static void doSearch(AdvancedSearchController controller, LookupSource resource, Boolean b) {
+    public static void doSearch(AbstractLookupController controller, LookupSource resource, Boolean b) {
         Exception e = null;
         String msg = null;
         Logger logger = LoggerFactory.getLogger(AbstractControllerITCase.class);
         try {
             switch (resource) {
                 case COLLECTION:
-                    msg = controller.searchCollections();
+                    msg = ((CollectionSearchAction)controller).searchCollections();
                     break;
                 case PERSON:
-                    msg = controller.searchPeople();
+                    msg = ((PersonSearchAction)controller).searchPeople();
                     break;
                 case INSTITUTION:
-                    msg = controller.searchInstitutions();
+                    msg = ((InstitutionSearchAction)controller).searchInstitutions();
                     break;
                 case RESOURCE:
-                    msg = controller.search();
+                    msg = ((AdvancedSearchController)controller).search();
                     break;
-                case KEYWORD:
+                default:
                     fail();
             }
         } catch (Exception ex) {
@@ -263,7 +237,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     @Override
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         return null;
     }
 

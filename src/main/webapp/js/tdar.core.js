@@ -24,92 +24,6 @@ TDAR.namespace = function () {
     return o;
 };
 
-/** Simple JavaScript Inheritance
- * By John Resig http://ejohn.org/
- * MIT Licensed.
- */
-(function () {
-    var initializing = false, fnTest = /xyz/.test(function () {
-        xyz;
-    }) ? /\b_super\b/ : /.*/;
-
-    /**
-     * Simple JavaScript Inheritance By John Resig.
-     *
-     * This javascript prototype mimics the behavior of class-based inheritance languages. "Sub-class" classes
-     * will have a parent methods copied to the subclass' prototype.  In addition,  subclass methods can reference
-     * the parent class via this._super.
-     *
-     * @constructor
-     */
-    this.Class = function () {
-    };
-
-    /**
-     * Creates a new "child" class.
-     * @param props class js-object containing properties and methods.  This function copies these properties to the proto-
-     * type.  If the object  contains a function property with the same name as a "parent" class' prototype property,
-     * extend() will "override"  that function, and provide an alias to the parent method via this._super.
-     *
-     * To specify a constructor for the inheriting class, define a property in the props argument named "init". when
-     * instantiating a object (e.g.  new MyClass(arg1, arg2, arg3), the class will execute the init function (along with
-     * any arguments supplied by the caller).
-     *
-     * @returns {Class}
-     */
-    Class.extend = function (props) {
-        var _super = this.prototype;
-
-        // Instantiate a base class (but only create the instance,
-        // don't run the init constructor)
-        initializing = true;
-        var prototype = new this();
-        initializing = false;
-
-        // Copy the properties over onto the new prototype
-        for (var name in props) {
-            // Check if we're overwriting an existing function
-            prototype[name] = typeof props[name] == "function" && typeof _super[name] == "function" && fnTest.test(props[name]) ? (function (name, fn) {
-                return function () {
-                    var tmp = this._super;
-
-                    // Add a new ._super() method that is the same method
-                    // but on the super-class
-                    this._super = _super[name];
-
-                    // The method only need to be bound temporarily, so we
-                    // remove it when we're done executing
-                    var ret = fn.apply(this, arguments);
-                    this._super = tmp;
-
-                    return ret;
-                };
-            })(name, props[name]) : props[name];
-        }
-
-        /**
-         * The base class constructor.
-         * @constructor
-         */
-        function Class() {
-            // All construction is actually done in the init method
-            if (!initializing && this.init) {
-                this.init.apply(this, arguments);
-            }
-        }
-
-        // Populate our constructed prototype object
-        Class.prototype = prototype;
-
-        // Enforce the constructor to be what we expect
-        Class.prototype.constructor = Class;
-
-        // And make this class extendable
-        Class.extend = arguments.callee;
-
-        return Class;
-    };
-})();
 
 /**
  * Load a script asynchronously. If jQuery is available, this function returns a promise object.  If the caller
@@ -119,22 +33,23 @@ TDAR.namespace = function () {
  * @returns {*}
  */
 TDAR.loadScript = function (url) {
-    //TODO: allow for optional callback argument  (e.g.  loadScript("foo.js", function(err, result) {})
     var _url = url;
     var head = document.getElementsByTagName("head")[0];
     var script = document.createElement("script");
     var deferred, promise;
-
+    console.debug("loading url: %s", _url);
     if (typeof jQuery === "function") {
         deferred = $.Deferred()
         promise = deferred.promise();
 
         script.onload = function () {
             deferred.resolve();
+            console.debug("successfully loaded:%s", _url);
         };
 
         script.onerror = function (err) {
             deferred.rejectWith(err);
+            console.log("failed to load url:%s  error:%s", _url, err);
         };
     }
     script.src = _url;
@@ -143,21 +58,39 @@ TDAR.loadScript = function (url) {
 }
 
 /**
+ * Scan the DOM for SCRIPT nodes of type "application/json", parse their content, and return a map of the parsed objects (keyed by script.id).  Useful
+ * for ingesting inlined data from server.
+ * @returns {{}}
+ * @private
+ */
+TDAR.loadDocumentData = function _loadDocumentData() {
+    var dataElements = $('[type="application/json"][id]').toArray();
+    var map = {};
+    dataElements.forEach(function(elem){
+        var key = elem.id;
+        var val = JSON.parse(elem.innerHTML);
+        map[key] = val;
+    });
+    return map;
+}
+
+
+/**
  * Define dummy console + log methods if not defined by browser.
  */
 if (!window.console) {
     console = {};
 }
 
-console.log = console.log || function () {
-};
-console.warn = console.warn || function () {
-};
-console.debug = console.debug || function () {
-};
-console.error = console.error || function () {
-};
-console.info = console.info || function () {
-};
-console.trace = function () {
-};
+(function(console) {
+    var _noop = function(){};
+    console.log = console.log || _noop;
+    //fixme: temporarily squelching trace
+    console.trace = _noop; //console.trace || console.log;
+    console.info = console.info || console.log;
+    console.error = console.error || console.log;
+    console.warn = console.warn || console.log;
+    console.debug = console.debug || console.log;
+    console.table = console.table || console.log;
+})(console);
+

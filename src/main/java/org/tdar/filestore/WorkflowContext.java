@@ -13,12 +13,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowContextService;
 import org.tdar.core.service.workflow.workflows.Workflow;
@@ -47,7 +47,7 @@ public final class WorkflowContext implements Serializable {
     private Long informationResourceId;
     private List<InformationResourceFileVersion> versions = new ArrayList<>();
     private List<InformationResourceFileVersion> originalFiles = new ArrayList<>();
-    private File workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
+    private File workingDirectory = null;
     private int numPages = -1;
     private transient Filestore filestore;
     private boolean processedSuccessfully = false;
@@ -55,9 +55,9 @@ public final class WorkflowContext implements Serializable {
     private Class<? extends Workflow> workflowClass;
     private List<String> dataTablesToCleanup = new ArrayList<>();
     private transient Resource transientResource;
-
+    private boolean okToStoreInFilestore = true;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
-    private transient XmlService xmlService;
+    private transient SerializationService serializationService;
     private transient TargetDatabase targetDatabase;
 
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
@@ -107,15 +107,16 @@ public final class WorkflowContext implements Serializable {
      * temp directory
      */
     public File getWorkingDirectory() {
+        if (workingDirectory == null) {
+            workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
+            workingDirectory = new File(workingDirectory, Thread.currentThread().getName()  + "-" + System.currentTimeMillis());
+            workingDirectory.mkdirs();
+        }
         return workingDirectory;
     }
 
-    public void setWorkingDirectory(File workingDirectory) {
-        this.workingDirectory = workingDirectory;
-    }
-
     public String toXML() throws Exception {
-        return getXmlService().convertToXML(this);
+        return getSerializationService().convertToXML(this);
     }
 
     public void setNumPages(int numPages) {
@@ -240,12 +241,12 @@ public final class WorkflowContext implements Serializable {
     }
 
     @XmlTransient
-    public XmlService getXmlService() {
-        return xmlService;
+    public SerializationService getSerializationService() {
+        return serializationService;
     }
 
-    public void setXmlService(XmlService xmlService) {
-        this.xmlService = xmlService;
+    public void setSerializationService(SerializationService serializationService) {
+        this.serializationService = serializationService;
     }
 
     public Class<? extends Workflow> getWorkflowClass() {
@@ -285,9 +286,17 @@ public final class WorkflowContext implements Serializable {
         transientResource = null;
         versions = null;
         originalFiles = null;
-        
+
         // TODO Auto-generated method stub
-        
+
+    }
+
+    public boolean isOkToStoreInFilestore() {
+        return okToStoreInFilestore;
+    }
+
+    public void setOkToStoreInFilestore(boolean okToStoreInFilestore) {
+        this.okToStoreInFilestore = okToStoreInFilestore;
     }
 
 }

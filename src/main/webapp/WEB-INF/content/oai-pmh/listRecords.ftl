@@ -10,6 +10,9 @@
         <header>
             <identifier>${record.identifier?html}</identifier>
             <datestamp>${record.datestamp?iso_utc}</datestamp>
+            <#list record.sets as set> 
+                <setSpec>${set?c}</setSpec>
+            </#list>
         </header>
         <metadata>
         ${record.metadata.@@markup}

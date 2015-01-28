@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +20,8 @@ import com.opensymphony.xwork2.TextProvider;
  */
 @SuppressWarnings("rawtypes")
 public class QueryPartGroup implements QueryPart, QueryGroup {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private List<QueryPart<?>> parts = new ArrayList<QueryPart<?>>();
     private Operator operator = Operator.AND;
     private boolean descriptionVisible = true;
@@ -33,8 +35,6 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
     public void setDescriptionVisible(boolean descriptionVisible) {
         this.descriptionVisible = descriptionVisible;
     }
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public QueryPartGroup() {
     }
@@ -77,12 +77,12 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
             QueryPartGroup group = (QueryPartGroup) q;
             // this may not be a good idea
             if (group.size() == 1) {
-                this.getParts().add(group.get(0));
+                getParts().add(group.get(0));
             } else {
-                this.getParts().add(group);
+                getParts().add(group);
             }
         } else {
-            this.getParts().add(q);
+            getParts().add(q);
         }
     }
 
@@ -98,29 +98,29 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
 
     @Override
     public boolean isEmpty() {
-        return this.getParts().isEmpty();
+        return getParts().isEmpty();
     }
 
     @Override
     public String generateQueryString() {
-        StringBuilder buff = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (QueryPart<?> part : getParts()) {
             String queryString = part.generateQueryString();
             logger.trace("{} -> {} ", part.getClass().getSimpleName(), queryString);
             if (StringUtils.isNotBlank(queryString) && StringUtils.isNotBlank(queryString.trim())) {
-                if (buff.length() > 0) {
-                    buff.append(' ').append(getOperator().toString()).append(' ');
+                if (builder.length() > 0) {
+                    builder.append(' ').append(getOperator().toString()).append(' ');
                 }
-                buff.append(queryString);
+                builder.append(queryString);
             }
         }
-        if (buff.length() == 0) {
+        if (builder.length() == 0) {
             return "";
         }
-        buff.insert(0, "( ");
-        buff.append(" ) ");
-        logger.trace(buff.toString());
-        return buff.toString();
+        builder.insert(0, "( ");
+        builder.append(" ) ");
+        logger.trace("{}", builder);
+        return builder.toString();
     }
 
     @Override

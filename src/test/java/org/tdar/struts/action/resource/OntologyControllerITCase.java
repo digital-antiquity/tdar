@@ -38,7 +38,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.utils.Pair;
 
 /**
@@ -57,15 +57,6 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     public final static String TAB_ONTOLOGY_FILE = "/ontology/tabOntologyFile.txt";
     public final static String UPDATED_TAB_ONTOLOGY_FILE = "/ontology/updatedTabOntologyFile.txt";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     @Test
     @Rollback
@@ -87,8 +78,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         Collection<InformationResourceFileVersion> currentVersions = ont.getLatestVersions();
         controller.setId(id);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         assertEquals(ontText, controller.getFileTextInput());
         controller.setServletRequest(getServletPostRequest());
@@ -97,8 +87,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(OntologyController.class);
         controller.setId(id);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         controller.setFileTextInput(controller.getFileTextInput() + "a");
         controller.setServletRequest(getServletPostRequest());
@@ -120,7 +109,9 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         OntologyNode node = map.get("Navicular__Central____Cuboid");
         assertNotNull(node);
         assertEquals("Navicular (Central) & Cuboid", node.getDisplayName());
-        assertEquals("4th Tarsal2", node.getSynonyms().iterator().next());
+        logger.debug("synonyms: {}", node.getSynonyms());
+        assertTrue(node.getSynonyms().contains("4th Tarsal2"));
+//        assertEquals("4th Tarsal2", node.getSynonyms().iterator().next());
         assertEquals("<Fish Element Additional>", map.get("_Fish_Element_Additional_").getDisplayName());
         assertEquals("Clavicle % Clavicle.clavicle", map.get("Clavicle___Clavicle.clavicle").getDisplayName());
     }
@@ -344,7 +335,8 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
                     nodeLabel = matcher.group(1).trim();
                     Set<String> nodeSynonyms = ontologyNodes.get(i).getSynonyms();
                     logger.debug("node synonyms for " + ontologyNodes.get(i).getDisplayName() + ": " + nodeSynonyms);
-                    assertEquals(nodeSynonyms.size(), matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX).length);
+                    // should be one fewer synonyms ... the one that matches our actual term name
+                    assertEquals(nodeSynonyms.size() -1 , matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX).length);
                     for (String synonym : matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX)) {
                         synonym = synonym.trim();
                         synonyms.add(synonym);

@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.NotFound;
@@ -17,7 +19,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * Tracks administrative changes. When the UI changes a resource, a log entry should be added.
@@ -31,6 +34,16 @@ import org.tdar.core.bean.entity.Person;
 public class ResourceRevisionLog extends Persistable.Base {
 
     private static final long serialVersionUID = -6544867903833975781L;
+
+    public ResourceRevisionLog() {
+    }
+
+    public ResourceRevisionLog(String message, Resource resource, TdarUser person) {
+        this.person = person;
+        this.timestamp = new Date();
+        this.resource = resource;
+        this.logMessage = message;
+    }
 
     @ManyToOne(optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
@@ -47,14 +60,16 @@ public class ResourceRevisionLog extends Persistable.Base {
     private String logMessage;
 
     @ManyToOne(optional = false)
-    private Person person;
+    private TdarUser person;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @Column(name = "payload", nullable = true)
     private String payload;
 
-    public Resource getResource() {
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlAttribute(name = "resourceRef")
+   public Resource getResource() {
         return resource;
     }
 
@@ -78,11 +93,13 @@ public class ResourceRevisionLog extends Persistable.Base {
         this.logMessage = action;
     }
 
-    public Person getPerson() {
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlAttribute(name = "personRef")
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person actor) {
+    public void setPerson(TdarUser actor) {
         this.person = actor;
     }
 

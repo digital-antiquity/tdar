@@ -2,29 +2,26 @@ package org.tdar.search.query;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.data.FacetGroup;
-
-import com.opensymphony.xwork2.util.ValueStack;
 
 public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
 
     private static final long serialVersionUID = 8370261049894410532L;
     private SortOption sortField;
     private SortOption secondarySortField;
-    private int resultSize;
-    private int totalRecords;
-    private int startRecord;
-    private int recordsPerPage;
+    private int resultSize = 0;
+    private int totalRecords = 0;
+    private int startRecord = 0;
+    private int recordsPerPage = getDefaultRecordsPerPage();
     private boolean debug;
     private boolean showAll;
     private List<Indexable> results;
     private String mode;
     private boolean reindexing;
-    private Person authenticatedUser;
+    private TdarUser authenticatedUser;
     private String searchTitle;
     private String searchDescription;
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
@@ -134,11 +131,11 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     }
 
     @Override
-    public Person getAuthenticatedUser() {
+    public TdarUser getAuthenticatedUser() {
         return authenticatedUser;
     }
 
-    public void setAuthenticatedUser(Person authenticatedUser) {
+    public void setAuthenticatedUser(TdarUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
     }
 
@@ -172,6 +169,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
         return 0;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub
@@ -188,77 +186,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     }
 
     @Override
-    public boolean hasKey(String key) {
-        // TODO Auto-generated method stub
-        return false;
+    public int getDefaultRecordsPerPage() {
+        return 20;
     }
-
-    @Override
-    public String getText(String key) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, String obj) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, List<?> args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String[] args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, List<?> args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, String[] args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, List<?> args,
-            ValueStack stack) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, String[] args,
-            ValueStack stack) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResourceBundle getTexts(String bundleName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResourceBundle getTexts() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

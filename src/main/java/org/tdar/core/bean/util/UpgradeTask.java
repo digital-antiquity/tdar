@@ -11,6 +11,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.Persistable;
 
@@ -23,12 +25,12 @@ import org.tdar.core.bean.Persistable;
 @Table(name = "upgrade_task")
 public class UpgradeTask extends Persistable.Base {
 
-    private static final long serialVersionUID = 2693033966156306987L;
-
+    private static final long serialVersionUID = -564380362132231493L;
     private String comment;
     private String name;
 
     @Column(name = "recorded_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date recordedDate;
 
     private Boolean run = Boolean.valueOf(false);
