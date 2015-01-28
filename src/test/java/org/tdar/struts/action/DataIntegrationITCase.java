@@ -65,10 +65,10 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         controller.setDataTableId(spitalTable.getId());
         controller.prepare();
         controller.setDataTableColumns(spitalTable.getDataTableColumns());
-        spitalSpeciesColumn.setDefaultOntology(taxonOntology);
+        spitalSpeciesColumn.setTransientOntology(taxonOntology);
         controller.saveColumnMetadata();
         assertNotNull(spitalSpeciesColumn.getDefaultCodingSheet());
-        assertNotNull(spitalSpeciesColumn.getDefaultOntology());
+        assertNotNull(spitalSpeciesColumn.getDefaultCodingSheet().getDefaultOntology());
 
         /*
          * -- this is the part of the TAG faunal ontology that we care about
@@ -146,9 +146,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // map ontologies to columns (setup proxies and then map)
         logger.info("mapping ontologies");
         DataTableColumn elementColumn = new DataTableColumn();
-        elementColumn.setDefaultOntology(bElementOntology);
+        elementColumn.setTransientOntology(bElementOntology);
         DataTableColumn taxonColumn = new DataTableColumn();
-        taxonColumn.setDefaultOntology(taxonOntology);
+        taxonColumn.setTransientOntology(taxonOntology);
         elementColumn.setName(BELEMENT_COL);
         taxonColumn.setName(TAXON_COL);
         elementColumn.setId(alexandriaTable.getColumnByName(BELEMENT_COL).getId());
@@ -158,9 +158,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         mapColumnsToDataset(alexandriaDb, alexandriaTable, elementColumn, taxonColumn);
 
         DataTableColumn elementColumn2 = new DataTableColumn();
-        elementColumn2.setDefaultOntology(bElementOntology);
+        elementColumn2.setTransientOntology(bElementOntology);
         DataTableColumn taxonColumn2 = new DataTableColumn();
-        taxonColumn2.setDefaultOntology(taxonOntology);
+        taxonColumn2.setTransientOntology(taxonOntology);
         elementColumn2.setName(BONE_COMMON_NAME_COL);
         taxonColumn2.setName(SPECIES_COMMON_NAME_COL);
         elementColumn2.setId(spitalMainTable.getColumnByName(BONE_COMMON_NAME_COL).getId());
@@ -344,7 +344,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         DataTableColumn elementColumn = new DataTableColumn();
         elementColumn.setId(alexandriaTable.getColumnByName(BELEMENT_COL).getId());
         elementColumn.setName(BELEMENT_COL);
-        elementColumn.setDefaultOntology(bElementOntology);
+        elementColumn.setTransientOntology(bElementOntology);
         // persists this pojo using the dataset controller
         mapColumnsToDataset(alexandriaDb, alexandriaTable, elementColumn);
         elementColumn.setDefaultCodingSheet(null);

@@ -92,7 +92,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setId(dataset.getId());
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
         DataTableColumn elementColumn = new DataTableColumn();
-        elementColumn.setDefaultOntology(bElementOntology);
+        elementColumn.setTransientOntology(bElementOntology);
         elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         elementColumn.setName(BELEMENT_COL);
         DataTable dataTable = dataset.getDataTables().iterator().next();
@@ -213,7 +213,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
         DataTable alexandriaTable = dataset.getDataTables().iterator().next();
         DataTableColumn elementColumn = alexandriaTable.getColumnByName(BELEMENT_COL);
-        elementColumn.setDefaultOntology(bElementOntology);
+        elementColumn.setTransientOntology(bElementOntology);
         Long elementColumnId = elementColumn.getId();
         mapColumnsToDataset(dataset, alexandriaTable, elementColumn);
         mapDataOntologyValues(alexandriaTable, BELEMENT_COL, getElementValueMap(), bElementOntology);
@@ -235,7 +235,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         DataTableColumn secondElementColumn = alexandriaTable.getColumnByName(BELEMENT_COL);
         assertNotNull(secondElementColumn);
         assertEquals(elementColumnId, secondElementColumn.getId());
-        assertEquals(secondElementColumn.getDefaultOntology(), bElementOntology);
+        assertEquals(secondElementColumn.getTransientOntology(), bElementOntology);
         Map<String, List<Long>> incomingValueToOntologyNodeIdMap = secondElementColumn.getValueToOntologyNodeIdMap();
         assertEquals(valueToOntologyNodeIdMap, incomingValueToOntologyNodeIdMap);
     }

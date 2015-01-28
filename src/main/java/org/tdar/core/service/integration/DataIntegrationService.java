@@ -185,18 +185,6 @@ public class DataIntegrationService {
     }
 
     /**
-     * @see #createGeneratedCodingSheet(DataTableColumn, Person, Ontology)
-     * 
-     * @param column
-     * @param submitter
-     * @return
-     */
-    @Transactional
-    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter) {
-        return createGeneratedCodingSheet(provider, column, submitter, column.getDefaultOntology());
-    }
-
-    /**
      * When a user maps a @link DataTableColumn to an @link Ontology without a @link CodingSheet specifically chosen, create one on-the-fly from the @link
      * OntologyNode values.
      * 
@@ -286,7 +274,7 @@ public class DataIntegrationService {
                 dataTableColumns = table.getDataTableColumns();
             }
             for (DataTableColumn column : dataTableColumns) {
-                Ontology ontology = column.getDefaultOntology();
+                Ontology ontology = column.getMappedOntology();
                 if (ontology != null) {
                     List<DataTableColumn> columns = dataTableAutoMap.get(ontology);
                     if (columns == null) {
