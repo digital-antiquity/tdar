@@ -51,7 +51,6 @@
     </@s.form>
     <script type="text/javascript">
         $(function () {
-            initializeView();
             TDAR.common.initEditPage($('#frmInstitution')[0]);
             TDAR.common.validateProfileImage();
         });
