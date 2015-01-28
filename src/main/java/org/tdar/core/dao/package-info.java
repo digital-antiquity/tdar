@@ -110,7 +110,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATASET_CAN_LINK_TO_ONTOLOGY,
-                query = "select dtc.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc " +
+                query = "select code.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc inner join dtc.defaultCodingSheet as code " +
                         "where dt.dataset.id=:datasetId"
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -119,11 +119,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLE_RELATED_ID,
-                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc WHERE (dtc.defaultOntology=:relatedId  or dtc.defaultCodingSheet=:relatedId) and dt.dataset.status!='DELETED'"
+                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology=:relatedId  or code=:relatedId) and dt.dataset.status!='DELETED'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY,
-                query = "FROM DataTableColumn dtc WHERE dtc.dataTable.dataset.id=:datasetId AND dtc.defaultOntology IS NOT NULL ORDER BY dtc.id"),
+                query = "FROM DataTableColumn dtc inner join dtc.defaultCodingSheet as code WHERE dtc.dataTable.dataset.id=:datasetId AND code.defaultOntology IS NOT NULL ORDER BY dtc.id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,
                 query = "SELECT file from InformationResourceFile as file, InformationResourceFileVersion as version where file.informationResource = :resource and "
@@ -156,12 +156,12 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS,
                 query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt " +
-                        "join dt.dataTableColumns as dtc where dtc.defaultOntology <> null and ds.project.id = :projectId"
+                        "join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code where code.defaultOntology <> null and ds.project.id = :projectId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS,
                 query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt " +
-                        "join dt.dataTableColumns as dtc where dtc.defaultOntology <> null and ds.project.id in (:projectIdList)"
+                        "join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code where code.defaultOntology <> null and ds.project.id in (:projectIdList)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY,
@@ -291,10 +291,6 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES,
                 query = "UPDATE CodingRule cr set cr.ontologyNode=NULL where cr.ontologyNode in (:ontologyNodes)"
-        ),
-        @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.UPDATE_DATATABLECOLUMN_ONTOLOGIES,
-                query = "UPDATE DataTableColumn set defaultOntology = :ontology where defaultCodingSheet = :codingSheet"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_SUBMITTER,
@@ -486,7 +482,7 @@
                         + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
                         + "(:categoryVariableId=-1L or ont.categoryVariable.id=:categoryVariableId) and "
                         + "(:hasDatasets=false or ont.id in "
-                        + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
+                        + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultCodingSheet.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
                         + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,

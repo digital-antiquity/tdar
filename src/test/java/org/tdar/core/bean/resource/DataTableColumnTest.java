@@ -61,7 +61,7 @@ public class DataTableColumnTest {
         dtc.setDefaultCodingSheet(cs);
         Ontology ontology = new Ontology();
         ontology.setId(100l);
-        dtc.setDefaultOntology(ontology);
+//        dtc.setDefaultOntology(ontology);
         assertFalse(dtc.isActuallyMapped());
         cs.setDefaultOntology(ontology);
         rule.setOntologyNode(new OntologyNode());

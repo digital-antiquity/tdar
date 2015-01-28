@@ -227,7 +227,7 @@
                         <#assign typeLabel = ""/>
                         <#if column.measurementUnit?has_content><#assign typeLabel = "measurement"/></#if>
                         <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
-                        <#if column.defaultOntology?has_content || (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
+                        <#if (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
                         <#if column.columnEncodingType?has_content && column.columnEncodingType.count><#assign typeLabel = "count"/></#if>
                         <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
                         <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
@@ -285,9 +285,7 @@
 
     <#macro _printOntology column>
         <#local ont="" />
-        <#if column.defaultOntology?? >
-            <#local ont = column.defaultOntology/>
-        <#elseif (column.defaultCodingSheet.defaultOntology)?has_content>
+        <#if (column.defaultCodingSheet.defaultOntology)?has_content>
             <#local ont = column.defaultCodingSheet.defaultOntology />
         </#if>
         <#if ont?has_content>

@@ -39,7 +39,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
 
     public int getNumberOfMappedDataValues(DataTableColumn dataTableColumn) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN);
-        query.setParameter("ontology", dataTableColumn.getDefaultOntology());
+        query.setParameter("ontology", dataTableColumn.getMappedOntology());
         query.setParameter("codingSheet", dataTableColumn.getDefaultCodingSheet());
         return ((Long) query.uniqueResult()).intValue();
     }

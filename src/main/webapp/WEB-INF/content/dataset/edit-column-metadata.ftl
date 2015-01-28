@@ -257,8 +257,8 @@
             <#if column.defaultOntology??  && column.defaultOntology.id?? && column.columnEncodingType != "CODED_VALUE" >
                         <#assign ontologyId=column.defaultOntology.id?c />
                     </#if>
-            <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
-            <@common.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
+            <@s.hidden name="dataTableColumns[${column_index}].transientOntology.id" value="${ontologyId}" id="${column_index}_oid" />
+            <@common.combobox name="dataTableColumns[${column_index}].transientOntology.title" target="#columnDiv_${column_index}"
                     label="Map it to an Ontology:"
                     placeholder="Enter the name of an Ontology"
                     autocompleteParentElement="#divOntology-${column_index}"
