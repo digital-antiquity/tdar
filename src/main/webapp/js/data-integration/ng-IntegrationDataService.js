@@ -518,7 +518,7 @@
                     rawData = rawData_[prefix];
                 }
                 var total = rawData_.totalResults;
-                var data = !!transformer ? transformer(rawData) : data;
+                var data = !!transformer ? transformer(rawData) : rawData;
                 var ret = {
                         "totalRecords": total,
                         "results": data

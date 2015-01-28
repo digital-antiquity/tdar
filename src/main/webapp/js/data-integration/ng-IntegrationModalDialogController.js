@@ -41,16 +41,11 @@
 
     // Controller that drives the add-integration-column controller
     app.controller('ModalDialogController', [ '$scope', 'DataService', function($scope, dataService) {
-        var url = null, closeWait = 500;
+        var options = {}; //will be set by  scope.openModal()
+        var closeWait = 500;
 
         // get map of embedded data stored in the DOM
         var documentData = dataService.getDocumentData();
-
-        var options = {
-            title: "add datasets",
-            categoryFilter: false,
-            searchType: 'dataset'
-        }
 
         $scope.title = options.title;
         $scope.filter = new SearchFilter();
@@ -92,7 +87,7 @@
 
         // called when user clicks 'Add Selected Items'
         $scope.confirm = function(selectedIds) {
-            close(selectedIds, closeWait);
+            $scope.close(selectedIds, closeWait);
         }
 
         // convenience function - true if specified item is in the selecteditems list
@@ -119,8 +114,8 @@
             $scope.search();
         }, true);
 
-        $scope.$on("openTdarModal", function() {
-            $scope.openTdarModal();
+        $scope.$on("openTdarModal", function(options) {
+            $scope.openTdarModal(options);
         });
 
 
@@ -135,9 +130,20 @@
             restrict: 'E',
             link: function(scope, element, attr){
                 var modalRoot = element.children();
-                scope.openTdarModal = function() {
+                var closedCallback;
+                scope.openTdarModal = function(options) {
                     modalRoot.modal();
                     scope.reset();
+                    scope.options = options;
+                    closedCallback = options.close;
+                };
+
+                scope.close = function(data, closeWait){
+                    var wait = closeWait ? closeWait : 1;
+                    modalRoot.modal("hide");
+                    setTimeout(function(){
+                        closedCallback(data);
+                    }, wait);
                 };
 
             },

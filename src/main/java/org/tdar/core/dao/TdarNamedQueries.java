@@ -204,17 +204,15 @@ public interface TdarNamedQueries {
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
             + ")"
             + ")  ";
-
-    String INTEGRATION_DATA_TABLE_WHERE = " where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
-            + " lower(ds.title) like :titleLookup and "
-            + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
-            + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
-            + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
-            + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) ";
-
-    String INTEGRATION_DATA_TABLE_COUNT_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds " + INTEGRATION_DATA_TABLE_WHERE;
-    String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join fetch dt.dataTableColumns as dtc left join dtc.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join fetch dt.dataset as ds " + INTEGRATION_DATA_TABLE_WHERE;
-
+    
+    String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
+    + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
+    + " lower(ds.title) like :titleLookup and "
+    + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
+    + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
+    + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
+    + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
+    + "";
 
     String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";

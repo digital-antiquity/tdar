@@ -41,10 +41,9 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
     @SuppressWarnings("unchecked")
     public IntegrationDataTableSearchResult findDataTables(DatasetSearchFilter searchFilter) throws IOException {
         getLogger().debug("start table query");
-        int count = -1;
-        if(searchFilter.isIncludeResultCount()) {
-            count = ((Integer)getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE_COUNT).setProperties(searchFilter).iterate().next()).intValue();
-        }
+        Query countQuery = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE_COUNT);
+        countQuery.setProperties(searchFilter);
+        Number count = (Number)countQuery.uniqueResult();
         getLogger().debug("done count: {}" , count );
         // FIXME: rewrite query to run twice, once for total count, and once for the paginated data
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE);
@@ -59,22 +58,9 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         }
         IntegrationDataTableSearchResult result = new IntegrationDataTableSearchResult();
         result.getDataTables().addAll(proxies);
-         result.setTotalResults(count);
+        result.setTotalResults(count.intValue());
         getLogger().debug("returning");
         return result;
     }
-
-    /*
-    Issues w/ find-datasets
-
-    x discover need for distinct (answer: it's the join  to dtc.  Note: left-join eager fetch dupes are by design, apparently)
-        see also: https://developer.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_does_not_return_distinct_results_for_a_query_with_outer_join_fetching_enabled_for_a_collection_even_if_I_use_the_distinct_keyword
-    x eliminate need for distinct (answer: for now, use setFirstResult which implicitly applies 'distinct')
-
-    - determine ideal way deal w/ conditional where-clauses  (this hokey sql-report-query style is for the birds)
-    - create version of query for Page N
-    - create verison of query for Next Page, Previous Page (w/ explicit sort)
-
-     */
 
 }
