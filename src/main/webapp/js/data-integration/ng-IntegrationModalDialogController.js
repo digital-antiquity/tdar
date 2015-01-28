@@ -127,6 +127,11 @@
             $scope.title = options.title;
             $scope.categoryFilter = options.categoryFilter;
             //$scope.selectedItems = [];
+        };
+
+        $scope.clearSelectedItems = function() {
+            $scope.selectedItems = [];
+            return false;
         }
     } ]);
 

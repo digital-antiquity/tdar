@@ -362,7 +362,7 @@
                                     </td>
                                     <td><label for="cbResult{{result.id}}">{{result.title}}</label></td>
                                     <td nowrap>{{result.date_created | date }}</td>
-                                    <td>
+                                    <td class="ellipsified" style="max-width: 20em">
                                         <span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
                                     </td>
                                 </tr>
@@ -370,21 +370,26 @@
                             </table>
                         </fieldset>
                     </form>
+                    <div class="pull-right" id="modalPaginationControls">
+                        Total Results: {{modalTotalResults}}
+                    </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <div class="row">
-            Total Results: {{modalTotalResults}}
-            </div>
-            <div class="pull-left" ng-show="false">
-                <button type="button" class="btn" ng-click="updateFilter()">Update Search</button>
-                <small class="muted"><em>Temporary button</em></small>
+            <div class="pull-left">
+                <ng-pluralize count="selectedItems.length"
+                        when="{'0': 'No datasets elected',
+                                '1': '1 dataset selected',
+                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
+                <span ng-show="selectedItems.length" >(<a href="javascript:void(0)"  ng-click="clearSelectedItems()">clear selections</a>).</span>
             </div>
 
-            <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
-            <button class="btn btn-primary" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
 
+            <div>
+                <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
+                <button class="btn btn-primary" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
+            </div>
         </div>
     </div>
 </script>

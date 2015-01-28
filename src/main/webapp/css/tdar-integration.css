@@ -28,13 +28,33 @@ These style definitions will likely go away when I'm certain that they don't scr
 }
 
 .modal.modal-big .modal-body {
-    max-height: 500px;
     padding: 8px;
 }
 
 .modal.modal-big .modal-footer {
     padding: 10px 8px 10px;
 }
+
+
+/* shrink the modal body if we don't have enough screen real-estate (due to physical dimensions or text-zoom)  */
+@media all and (min-height: 15em) {
+    .modal.modal-big .modal-body {
+        max-height: 10em;
+    }
+}
+@media all and (min-height: 45em) {
+    .modal.modal-big .modal-body {
+        max-height: 35em;
+    }
+}
+
+/* truncate too-wide text with ellipses (must also specify 'max-width' via styleAttr or some other class) */
+td.ellipsified {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 .table-modal-results {
 }
