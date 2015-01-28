@@ -109,6 +109,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
                 return true;
             }
         } catch (TdarActionException e) {
+            getLogger().debug("error:",e);
         }
         return false;
     }

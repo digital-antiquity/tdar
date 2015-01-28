@@ -73,7 +73,7 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
     private List<DataTableColumn> columnsToRemap;
     private DataTable dataTable;
     private List<DataTableColumn> dataTableColumns;
-    private boolean async = false;
+    private boolean async = true;
     private Long dataTableId;
     // stores the next data table column's ontology mappings to visit within this dataset when mapping data column values to ontology nodes.
     // i.e., a cursor into ontologyMappedColumns
