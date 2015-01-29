@@ -149,18 +149,52 @@ public class PdfService {
                         try {
                             wrapper.getMerger().mergeDocuments();
                             wrapper.setSuccessful(true);
+                        } catch (IOException ioe) {
+                            if (logIOException(wrapper, ioe)) {
+                                logger.error("PDF Converter Exception:",ioe);
+                            }
                         } catch (Exception e) {
-                            logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
-                            wrapper.setFailureReason(e.getMessage());
-                            // if there's a failure, then fall back and just try to copy the original
-                            try {
-                                IOUtils.copyLarge(new FileInputStream(wrapper.getDocument()), pipedOutputStream);
-                            } catch (Exception e1) {
-                                logger.error("cannot attach PDF, even w/o cover page", e1);
+                            if (logIOException(wrapper, e)) {
+                                logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
+                                wrapper.setFailureReason(e.getMessage());
+                                // if there's a failure, then fall back and just try to copy the original
+                                try {
+                                    IOUtils.copyLarge(new FileInputStream(wrapper.getDocument()), pipedOutputStream);
+                                } catch (Exception e1) {
+                                    if (logIOException(wrapper, e1)) {
+                                    logger.error("cannot attach PDF, even w/o cover page", e1);
+                                    }
+                                }
                             }
                         } finally {
                             IOUtils.closeQuietly(pipedOutputStream);
                         }
+                    }
+
+                    /**
+                     * If the cause of the error is an IO Exception and the cause of the error has "Pipe Closed" then downgrade the logging
+                     * @param wrapper
+                     * @param ioe
+                     * @return
+                     */
+                    private boolean logIOException(final PDFMergeWrapper wrapper, Throwable ioe) {
+                        if (ioe == null) {
+                            return false;
+                        }
+                        if (ioe instanceof IOException) {
+                            if (StringUtils.contains(ioe.getMessage(), "Pipe closed")) {
+                                logger.warn("PipeClosed Exception in DownloadPDFWriter", ioe);
+                            }
+                            wrapper.setFailureReason(ioe.getMessage());
+                            return false;
+                        }
+                        
+                        if (ioe.getCause() != null) {
+                            return logIOException(wrapper, ioe.getCause());
+                        } 
+                        
+                        return true;
+                        
                     }
                 }
                 );
