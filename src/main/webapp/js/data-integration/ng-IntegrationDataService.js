@@ -507,7 +507,7 @@
 
             var config = {
                 params : searchFilter.toStrutsParams(),
-                cache: false,
+                cache: true,
                 timeout: _futureCancel.promise
             };
 
@@ -536,6 +536,7 @@
          * @returns {*}
          */
         this.findDatasets = function(searchFilter) {
+            console.debug(searchFilter);
             var transformer = function(data) {
                 return data.map(function(item) {
                     var d = new Date(0);

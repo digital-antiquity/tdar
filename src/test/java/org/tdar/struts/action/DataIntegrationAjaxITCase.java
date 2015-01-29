@@ -49,7 +49,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
     
     @Test
     public void testDatasetService() throws IOException {
-        DatasetSearchFilter filter = new DatasetSearchFilter(100, 0);
+        DatasetSearchFilter filter = new DatasetSearchFilter();
         filter.setAuthorizedUser(getUser());
         IntegrationDataTableSearchResult findDataTables = dataTableService.findDataTables(filter);
         logger.debug(serializationService.convertToFilteredJson(findDataTables, JsonIntegrationFilter.class));
@@ -57,7 +57,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
     @Test
     public void testOntologyService() throws IOException {
-        OntologySearchFilter filter = new OntologySearchFilter(100, 0);
+        OntologySearchFilter filter = new OntologySearchFilter();
         filter.setAuthorizedUser(getUser());
         IntegrationOntologySearchResult findOntologies = ontologyService.findOntologies(filter);
         logger.debug(serializationService.convertToFilteredJson(findOntologies, JsonIntegrationFilter.class));

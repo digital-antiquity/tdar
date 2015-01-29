@@ -66,8 +66,8 @@ public class OntologyDao extends ResourceDao<Ontology> {
     public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
         query.setProperties(searchFilter);
-        query.setFirstResult(searchFilter.getFirstResult());
-        query.setMaxResults(searchFilter.getMaxResults());
+        query.setFirstResult(searchFilter.getStartRecord());
+        query.setMaxResults(searchFilter.getRecordsPerPage());
         IntegrationOntologySearchResult result = new IntegrationOntologySearchResult();
         for (Ontology ontology : (List<Ontology>)query.list()) {
             result.getOntologies().add(new OntologyProxy(ontology));

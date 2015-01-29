@@ -22,13 +22,13 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class IntegrationDatasetLookupAction extends AbstractIntegrationAction implements Preparable, SimpleSearchResultHandler {
+public class FindDatasetsAction extends AbstractIntegrationAction implements Preparable {
 
     private static final long serialVersionUID = 6908759745526760734L;
 
-    private Integer startRecord = 0;
-    private Integer recordsPerPage = 100;
-    private DatasetSearchFilter searchFilter = new DatasetSearchFilter(recordsPerPage, startRecord);
+    private DatasetSearchFilter searchFilter = new DatasetSearchFilter();
+
+    private boolean fetchRecordCount = true;
 
     @Autowired
     private transient DataTableService dataTableService;
@@ -38,8 +38,6 @@ public class IntegrationDatasetLookupAction extends AbstractIntegrationAction im
     @Override
     public void prepare() {
         searchFilter.setAuthorizedUser(getAuthenticatedUser());
-        searchFilter.setMaxResults(getRecordsPerPage());
-        searchFilter.setFirstResult(getStartRecord());
     }
 
     @Action(value = "find-datasets")
@@ -58,40 +56,11 @@ public class IntegrationDatasetLookupAction extends AbstractIntegrationAction im
         this.searchFilter = searchFilter;
     }
 
-    @Override
-    public void setRecordsPerPage(int recordsPerPage) {
-        // TODO Auto-generated method stub
-
+    public boolean isFetchRecordCount() {
+        return fetchRecordCount;
     }
 
-    @Override
-    public SortOption getSortField() {
-        // TODO Auto-generated method stub
-        return null;
+    public void setFetchRecordCount(boolean fetchRecordCount) {
+        this.fetchRecordCount = fetchRecordCount;
     }
-
-    @Override
-    public void setSortField(SortOption sortField) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public int getStartRecord() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public void setStartRecord(int startRecord) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public int getRecordsPerPage() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
 }

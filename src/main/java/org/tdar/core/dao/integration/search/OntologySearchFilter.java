@@ -5,10 +5,6 @@ import java.util.List;
 
 public class OntologySearchFilter extends AbstractIntegrationSearchFilter {
 
-    public OntologySearchFilter(int maxResults, int firstResult) {
-        super(maxResults, firstResult);
-    }
-
     private static final long serialVersionUID = 2222923660768327734L;
 
     private Long categoryVariableId = -1L;

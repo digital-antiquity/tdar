@@ -85,21 +85,21 @@
 
         // add and initialize an integration column associated with with the specified ontology ID
         _processAddedIntegrationColumns = function(ontologies) {
-            console.debug("_processAddedIntegrationColumns ::");
+            console.trace("_processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
         };
 
         self.integrateClicked = function() {
-            console.debug('integrate clicked');
+            console.trace('integrate clicked');
             // FIXME: HACK: NEVERDOTHIS: This is absolutely not the correct way to invoke a form submission, for a number of reasons.
             $("#btnSubmitLegacyForm").click();
 
         };
 
         self.addDatasetsClicked = function(arg) {
-            console.debug('Add Datasets clicked');
+            console.trace('Add Datasets clicked');
             _openModal({
                 title: "Add Datasets",
                 searchType: "dataset",

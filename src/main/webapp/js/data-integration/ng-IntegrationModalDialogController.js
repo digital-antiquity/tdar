@@ -19,7 +19,9 @@
             integrationCompatible : true,
             // fixme: get pagination info from paginationHelper / controller?
             startRecord : 0,
-            recordsPerPage : 500
+            recordsPerPage : 10,
+            recordCount: true
+
         };
 
         $.extend(self, _properties);
@@ -33,8 +35,10 @@
                 "searchFilter.categoryId" : self.categoryId,
                 "searchFilter.bookmarked" : self.bookmarked,
                 "searchFilter.ableToIntegrate" : self.integrationCompatible,
-                "startRecord" : self.startRecord,
-                "recordsPerPage" : self.recordsPerPage
+                "searchFilter.startRecord" : self.startRecord,
+                "searchFilter.recordsPerPage" : self.recordsPerPage,
+                "fetchRecordCount": self.recordCount
+
             };
         }
     }
@@ -48,7 +52,9 @@
         var documentData = dataService.getDocumentData();
 
         $scope.title = "";
-        $scope.filter = new SearchFilter();
+        var filter = new SearchFilter();
+        $scope.filter = filter;
+
         $scope.selectedItems = [];
         $scope.results = [];
 
@@ -81,7 +87,8 @@
 
         // update the filter whenever user updates filter UI
         $scope.updateFilter = function() {
-            var data = JSON.stringify($scope.filter, null, 4);
+            filter.startRecord = 0;
+            filter.recordCount = true;
             $scope.search();
         }
 
@@ -133,6 +140,45 @@
             $scope.selectedItems = [];
             return false;
         }
+
+        var _hasNextPage = function()  {
+            return $scope.filter.startRecord + $scope.filter.recordsPerPage < $scope.modalTotalResults;
+        };
+
+        var _hasPreviousPage = function() {
+            return filter.startRecord > 0;
+        }
+
+        $scope.hasNextPage = _hasNextPage;
+
+        $scope.hasPreviousPage = _hasPreviousPage;
+
+        $scope.nextPage = function() {
+            console.debug("nextPage::");
+            if(_hasNextPage()) {
+                filter.startRecord += filter.recordsPerPage;
+                filter.recordCount = false;
+                $scope.search();
+            }
+        };
+
+        $scope.previousPage = function() {
+            console.debug("previousPage::");
+            if(_hasPreviousPage()) {
+                filter.startRecord -= filter.recordsPerPage;
+                filter.recordCount = false;
+                $scope.search();
+            }
+        }
+
+        $scope.startRecord = function() {
+            return filter.startRecord;
+        };
+
+        $scope.endRecord = function(){
+            return filter.startRecord + $scope.results.length;
+        };
+
     } ]);
 
     app.directive("tdarModal", function() {

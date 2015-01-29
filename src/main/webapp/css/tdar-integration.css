@@ -55,10 +55,6 @@ td.ellipsified {
     text-overflow: ellipsis;
 }
 
-
-.table-modal-results {
-}
-
 .nodechild0,.nodeChild {margin-left:0em;}
 .nodechild1 {margin-left:1em;}
 .nodechild2 {margin-left:2em;}
@@ -107,8 +103,11 @@ input.intcol, select.intcol {
     width: 90pt;
 }
 
-#modalResults.disabled {
-	zoom: 1;
-	filter: alpha(opacity=50);
+div.table-modal-results-container {
+    height: 25em;
+}
+
+table.table-modal-results.disabled {
 	opacity: 0.5;
 }
+

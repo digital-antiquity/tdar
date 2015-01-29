@@ -241,7 +241,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         String hql = "from DataTable as dt left join fetch dt.dataTableColumns where dt.displayName = 'qryBone'";
         Query query = session.createQuery(hql);
 //        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-//        query.setMaxResults(10);  //implicitly applies "distinct" functionality
+//        query.setRecordsPerPage(10);  //implicitly applies "distinct" functionality
         query.setFirstResult(0); //implicitly applies "distinct"
         List results = query.list();
         getLogger().debug("result size:{}", results.size());
