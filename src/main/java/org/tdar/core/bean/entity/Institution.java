@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -60,6 +61,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
+@Check(constraints = "email <> ''")
 public class Institution extends Creator implements Comparable<Institution>, Dedupable<Institution>, Validatable {
 
     private static final long serialVersionUID = 892315581573902067L;
@@ -211,7 +213,11 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        if (StringUtils.isBlank(email)) {
+            this.email = null;
+        } else {
+            this.email = email;
+        }
     }
 
 
