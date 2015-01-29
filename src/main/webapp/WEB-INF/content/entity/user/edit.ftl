@@ -58,6 +58,7 @@
                     </div>
                 </#if>
             </@entityEdit.basicInformation>
+    <@entityEdit.hidden />
 
         <@entityEdit.uploadForm />
             <h3>Contributor</h3>
@@ -88,7 +89,6 @@
         <@s.textarea label="Proxy Note" rows=6 cols='50' name='proxyNote' cssClass="input-xxlarge"  />
     </div>
     </#if>
-    <@entityEdit.hidden />
 
     <@entityEdit.contactInfo />
     <div class="">
