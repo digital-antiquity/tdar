@@ -22,7 +22,6 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -119,8 +118,7 @@ public class IndexController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
-//        return SUCCESS;
-        throw new TdarRecoverableRuntimeException();
+        return SUCCESS;
     }
 
     @Action(value = "about", results = { @Result(name = SUCCESS, location = "about.ftl") })

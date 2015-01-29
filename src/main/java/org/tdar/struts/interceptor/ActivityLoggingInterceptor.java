@@ -70,7 +70,6 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         try {
             invoke = invocation.invoke();
         } catch (Throwable t) {
-            logger.error("::", t);
             throw t;
         } finally {
             if (activity != null) {
