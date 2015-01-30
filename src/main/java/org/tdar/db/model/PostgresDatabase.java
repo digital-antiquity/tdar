@@ -83,6 +83,7 @@ import com.opensymphony.xwork2.TextProvider;
  * @version $Revision$
  */
 @Component
+@Transactional("tdarDataTx")
 public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
 
     private static final String INTEGRATION_TABLE_NAME_COL = "tableName";
@@ -774,6 +775,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * Takes the IntegrationContext and produces a ModernIntegrationResult that contains the Excel Workbook and proxy information such as pivot data
      * and preview data.
      */
+    @Transactional(value="tdarDataTx")
     public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         @SuppressWarnings("unused")

@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -490,6 +489,7 @@ public class DataIntegrationService {
         return result;
     }
 
+    @Transactional
     public ModernIntegrationDataResult generateModernIntegrationResult(String integration, TextProvider provider, TdarUser authenticatedUser) throws JsonParseException, JsonMappingException, IOException, IntegrationDeserializationException {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
