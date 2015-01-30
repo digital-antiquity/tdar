@@ -604,6 +604,17 @@
             });
         };
 
+        //convert verbose participation info into something we can use
+        var transformVerboseNodeInfo = function(data) {
+            var transformedData = data.reduce(function(obj, info) {
+                obj[info.dataTableColumn.id] = info.flattenedNodes.map(function(node){
+                    return node.id;
+                });
+                return obj;
+            }, {});
+            return transformedData;
+        };
+
         /**
          * Returns a promise of the ontologyNodeValues that occur in each specified dataTableColumn
          * 
@@ -611,12 +622,14 @@
          */
         this.loadNodeParticipation = function(dataTableColumnIds) {
             var url = '/api/integration/node-participation?' + $.param({
-                dataTableColumnIds : dataTableColumnIds
+                dataTableColumnIds : dataTableColumnIds,
+                verbose: 'true'
             }, true);
             var httpPromise = $http.get(url);
             var futureWork = $q.defer();
             var dataTableColumns = [];
-            httpPromise.success(function(nodeIdsByColumnId) {
+            httpPromise.success(function(verboseData) {
+                var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);
                 Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId) {
                     var dataTableColumn = dataTableColumnCache.get(dataTableColumnId);
                     var nodes = nodeIdsByColumnId[dataTableColumnId].map(function(ontologyNodeId){return ontologyNodeCache.get(ontologyNodeId)});
@@ -646,7 +659,7 @@
                     });
 
             return futureData.promise;
-        }
+        };
 
     }
 
