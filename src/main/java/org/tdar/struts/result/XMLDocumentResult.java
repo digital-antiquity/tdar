@@ -83,7 +83,7 @@ public class XMLDocumentResult implements Result {
 
         logger.debug("StatusCode: {}",getStatusCode());
         resp.setStatus(getStatusCode());
-        serializationService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
+        serializationService.convertToXML(container, new OutputStreamWriter(resp.getOutputStream()));
     }
 
     public int getStatusCode() {

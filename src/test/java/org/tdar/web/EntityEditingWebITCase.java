@@ -25,7 +25,6 @@ public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCa
         assertTextNotPresent(phone);
     }
 
-
     @Test
     public void testUserEdit() {
         String url = String.format(ENTITY_USER_EDIT, 1);
@@ -41,7 +40,7 @@ public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCa
         assertTextNotPresent(phone);
     }
 
-@Test
+    @Test
     public void testInstitutionEdit() {
         String url = String.format(ENTITY_INSTITUTION_EDIT, 12088);
         gotoPage(url);

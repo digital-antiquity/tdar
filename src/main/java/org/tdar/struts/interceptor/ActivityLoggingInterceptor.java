@@ -70,7 +70,12 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         try {
             invoke = invocation.invoke();
         } catch (Throwable t) {
+            String cls = t.getClass().getSimpleName();
+            if (cls.equals("EofException") || cls.equals("ClientAbortException") || cls.equals("SocketException")) {
+                logger.warn("EOFE/ClientAbort/SocketException (downgraded to warn):", t);
+            } else {
             throw t;
+            }
         } finally {
             if (activity != null) {
                 if (action instanceof TdarActionSupport) {

@@ -58,7 +58,13 @@
     <div id="divInvoiceSubtotal" class="invoice-subtotal">
         <#--<h3>Subtotal</h3>-->
         <#--<span class="amt">$${invoice.calculatedCost}</span>-->
-        <span class="item-desc">${invoice.numberOfFiles} files / ${invoice.numberOfMb}mb</span>
+        <span class="item-desc">
+
+        <#if (invoice.numberOfFiles > 0)> ${invoice.numberOfFiles} files</#if>
+        <#if (invoice.numberOfFiles > 0) && (invoice.numberOfMb>0)> / </#if>
+        <#if (invoice.numberOfMb > 0)> ${invoice.numberOfMb}mb</#if>
+
+        </span>
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
         <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
         <#if invoice.owner??>

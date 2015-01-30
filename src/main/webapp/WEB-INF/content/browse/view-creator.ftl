@@ -190,7 +190,11 @@
 <td><b>Total Browse Occurrance Count:</b> ${creator.browseOccurrence!0}</td>
 </tr>
 <tr>
-<td colspan=2><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
+<td><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
+<#if creator.creatorType.institution && creator.email?has_content >
+<td><b>Email:</b> ${creator.email}</td>
+
+</#if>
 </tr>
 </#if>
 </table>
