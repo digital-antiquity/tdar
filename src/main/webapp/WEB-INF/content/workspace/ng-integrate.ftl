@@ -31,9 +31,16 @@
                     <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
                     <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
+                    <button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>
                 </div>
             </div>
         </div>
+        <div class="alert alert-block" ng-show="downloadReady">
+            <button type="button" class="close" ng-click="dismissDownload()">&times;</button>
+            <h4>Integration Complete!</h4>
+
+        </div>
+
         <div id="divActionsSection">
                     <div class="control-group">
                         <label class="control-label">Actions</label>

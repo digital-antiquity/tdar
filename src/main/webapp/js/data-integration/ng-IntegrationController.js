@@ -216,6 +216,38 @@
 
         };
 
+
+        $scope.downloadReady = false;
+
+        $scope.download = null;
+
+        /**
+         * Hide the 'download info' notification and dispose results.
+         */
+        $scope.dismissDownload = function() {
+            $scope.download = false;
+            $scope.download = null;
+        }
+
+        /**
+         * Send the integration to the server for processing.  If successful,  show notification.
+         */
+        self.submitIntegration  = function() {
+            $scope.downloadReady = false
+            var results = dataService.processIntegration(integration);
+            results.then(function(data){
+                console.debug("submitIntegration:: success");
+                $scope.downloadReady = true;
+                $scope.download = data;
+                console.debug(data);
+
+            }, function(err) {
+                console.debug("submitIntegration:: failed:%s", err);
+                //todo: toast explaining what went wrong
+            });
+
+        }
+
     }]);
 
     /* global jQuery, angular */

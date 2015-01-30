@@ -628,6 +628,26 @@
             return futureWork.promise;
         };
 
+        this.processIntegration = function(integration) {
+            var futureData = $q.defer();
+
+            //FIXME: refactor struts action to accept 'Content-type: application/json'. This is the angular default.
+            $http({
+                method: 'POST',
+                url: '/api/integration/integrate',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                data: $.param({integration: JSON.stringify(_dumpObject(integration))})
+            })
+                    .success(function(data){
+                        futureData.resolve(data);
+                    })
+                    .error(function(){
+                        futureData.reject("Integration failed");
+                    });
+
+            return futureData.promise;
+        }
+
     }
 
     app.service("DataService", [ '$http', '$cacheFactory', '$q', DataService ]);
