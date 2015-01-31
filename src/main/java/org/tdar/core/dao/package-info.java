@@ -492,7 +492,13 @@
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER,
-                query = "from DataIntegrationWorkflow where submitter.id=:userId")
+                query = "from DataIntegrationWorkflow where submitter.id=:userId"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.AGREEMENT_COUNTS,
+                query = "select count(*), (select count(*) from TdarUser where contributor is true) from TdarUser user where status='ACTIVE'"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.AFFILIATION_COUNTS,
+                query = "select affiliation, count(id) from TdarUser user where status='ACTIVE' group by affiliation"),
 })
 package org.tdar.core.dao;
 

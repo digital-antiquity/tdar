@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,11 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AgreementTypes;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -495,4 +498,15 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public List<BookmarkedResource> getBookmarkedResourcesForUser(TdarUser user) {
         return bookmarkedResourceDao.findBookmarksResourcesByPerson(user);
     }
+
+    @Transactional(readOnly = true)
+    public Map<AgreementTypes, Long> getAgreementCounts() {
+        return getDao().getAgreementCounts();
+    }
+
+    @Transactional(readOnly = true)
+    public Map<UserAffiliation, Long> getAffiliationCounts() {
+        return getDao().getAffiliationCounts();
+    }
+
 }

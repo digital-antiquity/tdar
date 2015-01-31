@@ -100,23 +100,21 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Pair<SiteTypeKeyword, Integer>> uncontrolledSiteTypeKeywordStats;
     private List<Pair<TemporalKeyword, Integer>> temporalKeywordStats;
     private Map<String, Float> extensionStats;
-    private List<TdarUser> recentUsers;
-    private List<Pair<Long, Long>> userLoginStats;
     private List<Resource> recentlyUpdatedResources;
     private Map<ResourceType, List<BigInteger>> currentResourceStats;
 
     private Map<Date, Map<StatisticType, Long>> historicalResourceStats;
     private Map<Date, Map<StatisticType, Long>> historicalResourceStatsWithFiles;
     private Map<Date, Map<StatisticType, Long>> historicalCollectionStats;
-    private Map<Date, Map<StatisticType, Long>> historicalUserStats;
     private List<InformationResourceFile> files;
     private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
-    private List<TdarUser> recentLogins;
 
     private Map<String, List<Number>> fileAverageStats;
     private Map<String, Long> fileStats;
 
     private Map<String, List<Number>> fileUploadedAverageStats;
+
+    private List<TdarUser> recentLogins;
 
     @Actions({
             @Action("contributors"),
@@ -128,7 +126,7 @@ public class AdminController extends AuthenticationAware.Base {
         setCurrentResourceStats(statisticService.getCurrentResourceStats());
         setHistoricalRepositorySizes(statisticService.getRepositorySizes());
         setRecentlyUpdatedResources(resourceService.findRecentlyUpdatedItemsInLastXDays(7));
-        setRecentLogins(entityService.showRecentLogins());
+        setRecentLogins(getEntityService().showRecentLogins());
         return SUCCESS;
     }
 
@@ -194,20 +192,6 @@ public class AdminController extends AuthenticationAware.Base {
     public String buildCreators() {
         getLogger().debug("manually running 'build creator'");
         scheduledProcessService.queueTask(CreatorAnalysisProcess.class);
-        return SUCCESS;
-    }
-
-    @Action("user")
-    public String userInfo() {
-        setHistoricalUserStats(statisticService.getUserStatistics());
-        setRecentUsers(entityService.findAllRegisteredUsers(10));
-        setUserLoginStats(statisticService.getUserLoginStats());
-        return SUCCESS;
-    }
-
-    @Action("user-mailchimp")
-    public String userMailchipInfo() {
-        setRecentUsers(entityService.findAllRegisteredUsers());
         return SUCCESS;
     }
 
@@ -326,14 +310,6 @@ public class AdminController extends AuthenticationAware.Base {
         this.recentlyUpdatedResources = recentlyUpdatedResources;
     }
 
-    public List<TdarUser> getRecentUsers() {
-        return recentUsers;
-    }
-
-    public void setRecentUsers(List<TdarUser> recentUsers) {
-        this.recentUsers = recentUsers;
-    }
-
     public Map<ResourceType, List<BigInteger>> getCurrentResourceStats() {
         return currentResourceStats;
     }
@@ -350,28 +326,12 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalResourceStats = map;
     }
 
-    public Map<Date, Map<StatisticType, Long>> getHistoricalUserStats() {
-        return historicalUserStats;
-    }
-
-    public void setHistoricalUserStats(Map<Date, Map<StatisticType, Long>> historicalUserStats) {
-        this.historicalUserStats = historicalUserStats;
-    }
-
     public Map<Date, Map<StatisticType, Long>> getHistoricalCollectionStats() {
         return historicalCollectionStats;
     }
 
     public void setHistoricalCollectionStats(Map<Date, Map<StatisticType, Long>> historicalCollectionStats) {
         this.historicalCollectionStats = historicalCollectionStats;
-    }
-
-    public List<TdarUser> getRecentLogins() {
-        return recentLogins;
-    }
-
-    public void setRecentLogins(List<TdarUser> recentLogins) {
-        this.recentLogins = recentLogins;
     }
 
     public Map<String, List<Number>> getFileAverageStats() {
@@ -406,14 +366,6 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalResourceStatsWithFiles = historicalResourceStatsWithFiles;
     }
 
-    public List<Pair<Long, Long>> getUserLoginStats() {
-        return userLoginStats;
-    }
-
-    public void setUserLoginStats(List<Pair<Long, Long>> userLoginStats) {
-        this.userLoginStats = userLoginStats;
-    }
-
     public List<InformationResourceFile> getFiles() {
         return files;
     }
@@ -428,6 +380,22 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setFileStats(Map<String, Long> map) {
         this.fileStats = map;
+    }
+
+    public EntityService getEntityService() {
+        return entityService;
+    }
+
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
+    }
+
+    public List<TdarUser> getRecentLogins() {
+        return recentLogins;
+    }
+
+    public void setRecentLogins(List<TdarUser> showRecentLogins) {
+        this.recentLogins = showRecentLogins;
     }
 
 }
