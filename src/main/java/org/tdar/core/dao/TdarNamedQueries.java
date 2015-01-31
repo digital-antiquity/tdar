@@ -140,6 +140,8 @@ public interface TdarNamedQueries {
     String QUERY_INTEGRATION_ONTOLOGY = "query.integration_ontology";
     String CAN_EDIT_INSTITUTION = "query.authorize_edit_institution";
     String WORKFLOWS_BY_USER = "query.workflow_by_user";
+    String AGREEMENT_COUNTS = "query.agreementCounts";
+    String AFFILIATION_COUNTS = "query.affiliationCounts";
     // raw SQL/HQL queries
 
     /**
