@@ -462,7 +462,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
-    @Transactional(value = "tdarDataTx", readOnly = true)
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void createTable(DataTable dataTable) {
         dropTable(dataTable);
         String createTable = CREATE_TABLE;
