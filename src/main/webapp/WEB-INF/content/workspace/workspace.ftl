@@ -25,8 +25,8 @@
 <#list workflows as workflow>
     <li><a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""}
         [<a href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>]</li>
-</ul>
 </#list>
+</ul>
 
 <#else>
     <@learn />
@@ -40,7 +40,9 @@
         </div>
     </div>
     <div class="row">
+		<div class="span12">
         <p><a href="/workspace/select-tables">Legacy Integration tool</a></p>
+        </div>
     </div>
 </body>
 
