@@ -830,4 +830,8 @@ public class TdarConfiguration {
         }
         return assistant.getBooleanProperty("is.test", false);
     }
+
+    public boolean isPrettyPrintJson() {
+        return assistant.getBooleanProperty("use.verbose.json", false);
+    }
 }

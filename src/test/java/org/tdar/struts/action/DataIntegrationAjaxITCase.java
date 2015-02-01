@@ -110,7 +110,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         action.prepare();
         action.execute();
         logger.debug("results:{}", action.getIntegrationColumnPartProxies());
-
+        logger.debug(IOUtils.toString(action.getJsonInputStream()));
         //we expect to have at least one node value present
         int nodesPresent = 0;
         int proxiesPresent = 0;
