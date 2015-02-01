@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +28,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.service.ReflectionService;
 
@@ -42,6 +45,30 @@ public class LocalizationTestCase {
                 Arrays.asList("abrin", "test", "test", 12340005, "test"));
         Assert.assertTrue(msg.contains("(12340005)"));
     }
+    
+    @Test
+    public void testLocalization() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(Localizable.class);
+        Set<String> badKeys = new HashSet<>();
+        for (BeanDefinition bean : findClassesThatImplement) {
+            Class<?> cls = Class.forName(bean.getBeanClassName());
+            logger.debug("{} {}", cls, cls.getEnumConstants());
+            for (Object obj : cls.getEnumConstants()) {
+                String key = String.format("%s.%s",cls.getSimpleName(), obj);
+                logger.debug(key);
+                if (!MessageHelper.checkKey(key)) {
+                    badKeys.add(key);
+                }
+            }
+        }        
+        if (!CollectionUtils.isEmpty(badKeys)) {
+            for (String key : badKeys) {
+                logger.error("no localization: " + key);
+            }
+            fail("missing localization keys: " + badKeys);
+        }
+    }
+    
 
     @Test
     public void testJavaLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
