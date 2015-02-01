@@ -148,7 +148,7 @@ public class LocalizationTestCase {
         MessageHelper freemarkerBundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-freemarker-messages"));
         MessageHelper bundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
         for (Entry<String, List<String>> key : matchingMap.entrySet()) {
-            if (key.getKey().startsWith("${")) {
+            if (key.getKey().startsWith("${") || key.getKey().contains("$")) {
                 continue;
             }
 
