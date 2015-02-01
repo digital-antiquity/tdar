@@ -1,0 +1,32 @@
+------------
+::LITHIC::
+------------
+ - add the following lines to hibernate.properties
+
+    net.sf.ehcache.configurationResourceName=hibernate-ehcache.xml
+    hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.EhCacheRegionFactory
+    hibernate.cache.use_second_level_cache=false
+    hibernate.cache.use_query_cache=true
+    hibernate.cache.use_structured_entries=true
+    hibernate.cache.generate_statistics=true
+    hibernate.transaction.manager_lookup_class=org.springframework.orm.hibernate4.HibernateTransactionManager
+
+ - re-index database
+ - check for duplicate terms in keywords (case, leading/trailing spaces)
+ - run upgrade-db
+ - remove references to spring-ldap or spring-crowd in spring-local-settings.xml (not needed anymore)
+ 
+ 
+------------
+::MUNSELL:
+------------
+ 
+ - add the following hibernate.properties to force hibernate to valdiate the database config on startup
+  -- important for the split between hibernate and liqibase:
+ 
+	 hibernate.hbm2ddl.auto=validate
+
+ - comment out "munsell.xml" in src/main/db/changelog.xml
+ - run mvn -PchangelogSync clean compile
+ - uncomment "munsell.xml" in src/main/db/changelog.xml
+ - run the usual src/main/release/deploy-production.sh
