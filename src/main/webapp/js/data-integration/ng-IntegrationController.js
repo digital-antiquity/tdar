@@ -33,6 +33,20 @@
             integration.removeOutputColumn(idx);
         }
 
+        var $idown;  // Keep it outside of the function, so it's initialized once.
+        self._downloadURL = function(url) {
+            if ($idown) {
+                $idown.attr('src',url);
+            } else {
+                $idown = $('<iframe>', { id:'idown', src:url }).hide().appendTo('body');
+            }
+        }
+
+        self.downloadResult = function(ticketId) {
+            //... How to use it:
+            _downloadURL('/workspace/download?ticketId=' + ticketId);
+        }
+
         self.saveClicked = function() {
             console.log("Saving.")
             self.updateStatus("Saving...");
@@ -238,6 +252,7 @@
             results.then(function(data){
                 console.debug("submitIntegration:: success");
                 $scope.downloadReady = true;
+                $('#divResultContainer').modal({show:true});
                 $scope.download = data;
                 console.debug(data);
 
