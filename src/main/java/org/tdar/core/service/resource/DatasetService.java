@@ -335,9 +335,10 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
         Collection<DataTable> tablesToRemove = reconcileTables.getFirst();
 
+        cleanupUnusedTablesAndColumns(dataset, tablesToRemove, reconcileTables.getSecond());
+
         reconcileRelationships(dataset, transientDatasetToPersist);
 
-        cleanupUnusedTablesAndColumns(dataset, tablesToRemove, reconcileTables.getSecond());
 
         getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
