@@ -465,42 +465,42 @@ ${categoriesJson}
         <div class="modal-body">
             <div class="row-fluid">
                 <div class="span12">
-					
-					<div role="tabpanel">
-					
-					  <!-- Nav tabs -->
-					  <ul class="nav nav-tabs" role="tablist">
-					    <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
-					    <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
-					    <li role="presentation"><a href="#download" aria-controls="download" role="tab" data-toggle="tab">Download</a></li>
-					  </ul>
-					
-					  <!-- Tab panes -->
-					  <div class="tab-content">
-					    <div role="tabpanel" class="tab-pane active" id="pivot">
-					
-					    	<table>
-					    		<tr ng-repeat="row in download.pivotData">
-					    			<td ng-repeat="col in row track by $index">{{col}}</td>
-					    		</tr>
-					    	</table>
-					
-						
-						</div>
-					    <div role="tabpanel" class="tab-pane" id="preview">
-					    	<table>
-					    		<tr ng-repeat="row in download.previewData">
-					    			<td ng-repeat="col in row track by $index">{{col}}</td>
-					    		</tr>
-					    	</table>
-					    </div>
-					    <div role="tabpanel" class="tab-pane" id="download">
-					    	 <button type="button" class="btn" ng-click="ctr.downloadResult("{{download.ticket.id}}")">Download</button>
-					    	 <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
-					    </div>
-					  </div>
-					
-					</div>
+                    
+                    <div role="tabpanel">
+                    
+                      <!-- Nav tabs -->
+                      <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
+                        <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                        <li role="presentation"><a href="#download" aria-controls="download" role="tab" data-toggle="tab">Download</a></li>
+                      </ul>
+                    
+                      <!-- Tab panes -->
+                      <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="pivot">
+                    
+                            <table>
+                                <tr ng-repeat="row in download.pivotData">
+                                    <td ng-repeat="col in row track by $index">{{col}}</td>
+                                </tr>
+                            </table>
+                    
+                        
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="preview">
+                            <table>
+                                <tr ng-repeat="row in download.previewData">
+                                    <td ng-repeat="col in row track by $index">{{col}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="download">
+                             <button type="button" class="btn" ng-click="ctr.downloadResult("{{download.ticket.id}}")">Download</button>
+                             <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
+                        </div>
+                      </div>
+                    
+                    </div>
                 </div>
             </div>
         </div>
