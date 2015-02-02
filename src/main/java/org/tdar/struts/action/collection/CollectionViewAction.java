@@ -161,8 +161,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             findAllChildCollections = getPersistable().getTransientChildren();
 
             if (isEditor()) {
-                List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.buildCollectionTreeForController(getPersistable(),
-                        getAuthenticatedUser(), CollectionType.SHARED));
+                List<Long> collectionIds = PersistableUtils.extractIds(getPersistable().getTransientChildren());
                 collectionIds.add(getId());
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, collectionIds, null,
                         Arrays.asList(Status.ACTIVE, Status.DRAFT)));
