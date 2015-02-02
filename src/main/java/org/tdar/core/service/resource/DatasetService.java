@@ -333,13 +333,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // take the dataset off the session at the last moment, and then bring it back on
 
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
-        Collection<DataTable> tablesToRemove = reconcileTables.getFirst();
 
-        cleanupUnusedTablesAndColumns(dataset, tablesToRemove, reconcileTables.getSecond());
-
+        getDao().unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(reconcileTables.getSecond()));
+        getDao().deleteRelationships(dataset.getRelationships());
         reconcileRelationships(dataset, transientDatasetToPersist);
-
-
+        
         getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
             getLogger().debug("dataTable: {}", dataTable);
@@ -406,7 +404,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     private void reconcileRelationships(Dataset dataset, Dataset transientDatasetToPersist) {
         // refresh the column relationships so that they refer to new versions of the columns which have the same names as the old columns
-        dataset.getRelationships().clear();
+//        dataset.getRelationships().clear();
 
         for (DataTableRelationship rel : transientDatasetToPersist.getRelationships()) {
             dataset.getRelationships().add(rel);

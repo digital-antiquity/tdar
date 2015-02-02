@@ -372,13 +372,15 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     private void removeAllRelationships(Dataset dataset, Collection<DataTable> tablesToRemove) {
+        
         Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
         for (DataTable table : tablesToRemove) {
             relationshipsToRemove.addAll(table.getRelationships());
         }
-        // remove affected relationships prior to deleting columns
-        dataset.getRelationships().removeAll(relationshipsToRemove);
-        getDao().delete(relationshipsToRemove);
+        datasetDao.deleteRelationships(relationshipsToRemove);
+//        // remove affected relationships prior to deleting columns
+//        dataset.getRelationships().removeAll(relationshipsToRemove);
+//        getDao().delete(relationshipsToRemove);
     }
 
     /*

@@ -5,10 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -38,6 +40,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.RssService;
@@ -45,11 +48,11 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.utils.PersistableUtils;
 
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl.ImageTag;
-import com.sun.tools.javac.jvm.Gen;
 
 /**
  * $Id$
@@ -361,6 +364,20 @@ public class DatasetDao extends ResourceDao<Dataset> {
         handler.setTotalRecords(max.intValue());
 
         return query.list();
+    }
+
+    public void deleteRelationships(Set<DataTableRelationship> relationshipsToRemove) {
+        List<Long> ids = PersistableUtils.extractIds(relationshipsToRemove);
+        ids.removeAll(Collections.singleton(null));
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        Query query = getCurrentSession().createQuery("DELETE FROM DataTableColumnRelationship rel where rel.id in (select distinct cr.id from DataTableRelationship dtr join dtr.columnRelationships as cr where dtr.id in (:ids))");
+        query.setParameterList("ids", ids);
+        query.executeUpdate();
+        Query query2 = getCurrentSession().createQuery("DELETE FROM DataTableRelationship dtr where dtr.id in :ids");
+        query2.setParameterList("ids", ids);
+        query2.executeUpdate();
     }
 
 
