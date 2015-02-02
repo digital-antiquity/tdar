@@ -31,7 +31,7 @@
                     <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
                     <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
-                    <button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>
+                    <#--<button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>-->
                 </div>
             </div>
         </div>
