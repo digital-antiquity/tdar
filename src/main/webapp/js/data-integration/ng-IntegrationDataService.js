@@ -507,7 +507,7 @@
 
             var config = {
                 params : searchFilter.toStrutsParams(),
-                cache: false,
+                cache: true,
                 timeout: _futureCancel.promise
             };
 
@@ -518,7 +518,7 @@
                     rawData = rawData_[prefix];
                 }
                 var total = rawData_.totalResults;
-                var data = !!transformer ? transformer(rawData) : data;
+                var data = !!transformer ? transformer(rawData) : rawData;
                 var ret = {
                         "totalRecords": total,
                         "results": data
@@ -536,6 +536,7 @@
          * @returns {*}
          */
         this.findDatasets = function(searchFilter) {
+            console.debug(searchFilter);
             var transformer = function(data) {
                 return data.map(function(item) {
                     var d = new Date(0);
@@ -603,6 +604,17 @@
             });
         };
 
+        //convert verbose participation info into something we can use
+        var transformVerboseNodeInfo = function(data) {
+            var transformedData = data.reduce(function(obj, info) {
+                obj[info.dataTableColumn.id] = info.flattenedNodes.map(function(node){
+                    return node.id;
+                });
+                return obj;
+            }, {});
+            return transformedData;
+        };
+
         /**
          * Returns a promise of the ontologyNodeValues that occur in each specified dataTableColumn
          * 
@@ -610,12 +622,14 @@
          */
         this.loadNodeParticipation = function(dataTableColumnIds) {
             var url = '/api/integration/node-participation?' + $.param({
-                dataTableColumnIds : dataTableColumnIds
+                dataTableColumnIds : dataTableColumnIds,
+                verbose: 'true'
             }, true);
             var httpPromise = $http.get(url);
             var futureWork = $q.defer();
             var dataTableColumns = [];
-            httpPromise.success(function(nodeIdsByColumnId) {
+            httpPromise.success(function(verboseData) {
+                var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);
                 Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId) {
                     var dataTableColumn = dataTableColumnCache.get(dataTableColumnId);
                     var nodes = nodeIdsByColumnId[dataTableColumnId].map(function(ontologyNodeId){return ontologyNodeCache.get(ontologyNodeId)});
@@ -625,6 +639,26 @@
                 futureWork.resolve(dataTableColumns);
             });
             return futureWork.promise;
+        };
+
+        this.processIntegration = function(integration) {
+            var futureData = $q.defer();
+
+            //FIXME: refactor struts action to accept 'Content-type: application/json'. This is the angular default.
+            $http({
+                method: 'POST',
+                url: '/api/integration/integrate',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                data: $.param({integration: JSON.stringify(_dumpObject(integration))})
+            })
+                    .success(function(data){
+                        futureData.resolve(data);
+                    })
+                    .error(function(){
+                        futureData.reject("Integration failed");
+                    });
+
+            return futureData.promise;
         };
 
     }

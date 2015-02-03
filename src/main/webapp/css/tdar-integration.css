@@ -28,7 +28,6 @@ These style definitions will likely go away when I'm certain that they don't scr
 }
 
 .modal.modal-big .modal-body {
-    max-height: 500px;
     padding: 8px;
 }
 
@@ -36,7 +35,24 @@ These style definitions will likely go away when I'm certain that they don't scr
     padding: 10px 8px 10px;
 }
 
-.table-modal-results {
+
+/* shrink the modal body if we don't have enough screen real-estate (due to physical dimensions or text-zoom)  */
+@media all and (min-height: 20em) {
+    .modal.modal-big .modal-body {
+        max-height: 15em;
+    }
+}
+@media all and (min-height: 45em) {
+    .modal.modal-big .modal-body {
+        max-height: 35em;
+    }
+}
+
+/* truncate too-wide text with ellipses (must also specify 'max-width' via styleAttr or some other class) */
+td.ellipsified {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .nodechild0,.nodeChild {margin-left:0em;}
@@ -87,8 +103,11 @@ input.intcol, select.intcol {
     width: 90pt;
 }
 
-#modalResults.disabled {
-	zoom: 1;
-	filter: alpha(opacity=50);
+div.table-modal-results-container {
+    height: 25em;
+}
+
+table.table-modal-results.disabled {
 	opacity: 0.5;
 }
+

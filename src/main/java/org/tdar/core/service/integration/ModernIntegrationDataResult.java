@@ -4,7 +4,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.utils.json.JsonIntegrationFilter;
@@ -22,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @JsonAutoDetect
 public class ModernIntegrationDataResult implements Serializable {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final long serialVersionUID = 3466986630097086581L;
     private IntegrationContext integrationContext;
@@ -54,11 +60,34 @@ public class ModernIntegrationDataResult implements Serializable {
         this.pivotData = pivot;
     }
     
-    @JsonView(JsonIntegrationFilter.class)
     public Map<List<OntologyNode>, HashMap<Long, IntContainer>> getPivotData() {
+        getData();
         return pivotData;
     }
 
+    @JsonView(JsonIntegrationFilter.class)
+    public Map<String,HashMap<Long, Integer>> getData() {
+        HashMap<String, HashMap<Long,Integer>> result = new HashMap<>();
+        for (Entry<List<OntologyNode>, HashMap<Long, IntContainer>> entrySet : pivotData.entrySet()) {
+            HashMap<Long, IntContainer> value = entrySet.getValue();
+            HashMap<Long, Integer> val = new HashMap<Long, Integer>();
+            for (Long k : value.keySet()) {
+                val.put(k, value.get(k).getVal());
+            }
+            String key = "";
+            for (OntologyNode node : entrySet.getKey()) {
+                if (StringUtils.isNotEmpty(key)) {
+                    key += "l ";
+                }
+                key += node.getDisplayName();
+            }
+            logger.debug("preview: {}",entrySet);
+            result.put(key, val);
+        }
+        
+        return result;
+    }
+     
     public void setPreviewData(List<Object[]> previewData) {
         this.previewData = previewData;
     }

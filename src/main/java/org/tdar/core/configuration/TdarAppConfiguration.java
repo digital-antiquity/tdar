@@ -28,8 +28,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
@@ -51,7 +53,7 @@ import org.tdar.web.SessionData;
 
 @Configuration
 @ComponentScan(basePackages = { "org.tdar" })
-@EnableTransactionManagement
+@EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableScheduling
 @EnableAsync
@@ -109,9 +111,17 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
     }
 
     @Bean
+    @Primary
     public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException {
         HibernateTransactionManager hibernateTransactionManager = new HibernateTransactionManager(getSessionFactory(dataSource));
         return hibernateTransactionManager;
+    }
+
+    @Bean
+    @Qualifier("tdarDataTx")
+    public DataSourceTransactionManager dataTransactionManager(@Qualifier("tdarDataImportDataSource") DataSource dataSource) throws PropertyVetoException {
+        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(dataSource);
+        return dataSourceTransactionManager;
     }
 
     @Bean

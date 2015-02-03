@@ -59,6 +59,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -174,6 +175,9 @@ public class SerializationService {
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
             objectWriter = mapper.writerWithView(view);
+        }
+        if (TdarConfiguration.getInstance().isPrettyPrintJson()) {
+            objectWriter = objectWriter.with(new DefaultPrettyPrinter());
         }
         objectWriter.writeValue(writer, object);
     }

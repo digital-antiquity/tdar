@@ -164,7 +164,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(By.partialLinkText(TEST_INTEGRATION)).first().click();
         waitForPageload();
         
-        find(By.id("tabtab1")).click();
+        find(By.partialLinkText("Fauna Taxon Ontology")).click();
         waitFor(4);
         logger.debug(getText());
         takeScreenshot();

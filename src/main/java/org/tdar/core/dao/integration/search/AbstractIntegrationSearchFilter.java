@@ -13,6 +13,7 @@ import org.tdar.core.bean.entity.TdarUser;
  */
 public class AbstractIntegrationSearchFilter implements Serializable {
     private static final long serialVersionUID = -6417523572672914499L;
+    public static final int DEFAULT_RECORDS_PER_PAGE = 500;
     private TdarUser authorizedUser;
 
     private Long projectId = -1L;
@@ -24,13 +25,8 @@ public class AbstractIntegrationSearchFilter implements Serializable {
      * + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
      * + "(:bookmarked=false or ds.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
      */
-    private int maxResults;
-    private int firstResult;
-
-    public AbstractIntegrationSearchFilter(int maxResults, int firstResult) {
-        this.maxResults = maxResults;
-        this.firstResult = firstResult;
-    }
+    private int recordsPerPage = DEFAULT_RECORDS_PER_PAGE;
+    private int startRecord = 0;
 
     public Boolean isBookmarked() {
         return bookmarked;
@@ -72,20 +68,20 @@ public class AbstractIntegrationSearchFilter implements Serializable {
         this.collectionId = collectionId;
     }
 
-    public int getMaxResults() {
-        return maxResults;
+    public int getRecordsPerPage() {
+        return recordsPerPage;
     }
 
-    public void setMaxResults(int maxResults) {
-        this.maxResults = maxResults;
+    public void setRecordsPerPage(int recordsPerPage) {
+        this.recordsPerPage = recordsPerPage;
     }
 
-    public int getFirstResult() {
-        return firstResult;
+    public int getStartRecord() {
+        return startRecord;
     }
 
-    public void setFirstResult(int firstResult) {
-        this.firstResult = firstResult;
+    public void setStartRecord(int startRecord) {
+        this.startRecord = startRecord;
     }
 
     public List<Long> paddedIdList() {

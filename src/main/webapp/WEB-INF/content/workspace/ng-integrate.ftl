@@ -31,9 +31,11 @@
                     <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
                     <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
+                    <#--<button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>-->
                 </div>
             </div>
         </div>
+
         <div id="divActionsSection">
                     <div class="control-group">
                         <label class="control-label">Actions</label>
@@ -277,28 +279,32 @@
 </fieldset>
 </form>
 
+<tdar-modal ng-controller="ModalDialogController"></tdar-modal>
+
 <span>
 <!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">
     <div id="divModalContainer" class="modal modal-big hide fade" tabindex="-1" role="dialog">
         <div class="modal-header alert-info">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <div id="#modalAjaxIndicator" class="pull-right">
+                <span class="small" ng-show="modalSearching">Searching</span>
+            </div>
             <h3 id="hModalHeader">{{title}}</h3>
         </div>
         <div class="modal-body">
-            <div class="row">
-                <div class="span10">
+            <div class="row-fluid">
+                <div class="span12">
                     <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur':0, 'click':0} }">
-                        <fieldset>
-                            <legend>Filters</legend>
+                        <div>
                             <div class="control-group">
-                                <label class="control-label">Title</label>
+                                <label class="control-label">Title contains</label>
                                 <div class="controls">
                                     <input type="text" ng-model="filter.title" class="input-block-level" name="searchFilter.title"></input>
                                 </div>
                             </div>
                             <div class="control-group">
-                                <label class="control-label">Project / Collection</label>
+                                <label class="control-label">Belongs to</label>
                                 <div class="controls controls-row">
                                     <div class="span3">
                                         <select name="searchFilter.projectId" class="input-block-level"
@@ -332,23 +338,21 @@
                                     <label class="checkbox inline"><input type="checkbox" name="searchFilter.integrationCompatible" ng-model="filter.integrationCompatible" value="true">Integration-compatible</label>
                                 </div>
                             </div>
-                        </fieldset>
+                        </div>
 
-                        <fieldset>
-                            <legend>Select Results <span class="small" ng-show="modalSearching">Searching...</span></legend>
-                            
+                        <div class="table-modal-results-container">
                             <table class="table table-striped table-modal-results table-hover table-condensed" id="modalResults" ng-class="{active: !modalSearching, disabled: modalSearching}">
                                 <thead>
                                 <tr>
-                                    <th>Select</th>
-                                    <th>Title</th>
-                                    <th nowrap>Date</th>
-                                    <th>Mapped Ontologies</th>
+                                    <th style="width:1em">&nbsp</th>
+                                    <th style="width:40em">Title</th>
+                                    <th style="width:10em">Date</th>
+                                    <th style="width: 20em">Mapped Ontologies</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="result in results" ng-class="{warning: isSelected(result.id)}">
-                                    <td>
+                                    <td style="width:1em">
                                         <input
                                                 type="checkbox"
                                                 id="cbResult{{result.id}}"
@@ -358,30 +362,50 @@
                                                 ng-checked="isSelected(result.id)"
                                                 ng-click="toggleSelection(result.id, this)">
                                     </td>
-                                    <td><label for="cbResult{{result.id}}">{{result.title}}</label></td>
-                                    <td nowrap>{{result.date_created | date }}</td>
-                                    <td>
+                                    <td style="width:40em"><label for="cbResult{{result.id}}">{{result.title}}</label></td>
+                                    <td style="width:10em">{{result.date_created | date }}</td>
+                                    <td class="ellipsified" style="max-width: 20em">
                                         <span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
-                        </fieldset>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <div class="row">
-            Total Results: {{modalTotalResults}}
-            </div>
-            <div class="pull-left" ng-show="false">
-                <button type="button" class="btn" ng-click="updateFilter()">Update Search</button>
-                <small class="muted"><em>Temporary button</em></small>
+            <div class="row-fluid">
+                <div class="span4 text-left">
+                    <span ng-show="results.length"> Displaying records {{startRecord() + 1| number}} - {{endRecord()  | number}} of {{modalTotalResults}} </span>
+                </div>
+                <div class="span4 text-center">
+                    <button type="button" class="btn btn-mini" id="btnPrevious" ng-click="previousPage()" ng-disabled="!hasPreviousPage()">previous</button>
+                    <button type="button" class="btn btn-mini" id="btnNext" ng-click="nextPage()" ng-disabled="!hasNextPage()">next</button>
+
+                </div>
+                <div class="span4">
+                    <ng-pluralize count="selectedItems.length"
+                                  when="{'0': 'No datasets elected',
+                                '1': '1 dataset selected',
+                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
+                    <span ng-show="selectedItems.length" >(<a href="javascript:void(0)"  ng-click="clearSelectedItems()">clear selections</a>)</span>
+                </div>
             </div>
 
-            <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
-            <button class="btn btn-primary" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
+
+
+
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
+                    <button class="btn btn-primary" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
+                </div>
+            </div>
+
+
 
         </div>
     </div>
@@ -418,6 +442,76 @@ ${categoriesJson}
 <#-- Include the file below to run some barebones tests -->
 <#--<script src="/js/data-integration/tests.js"></script>-->
 </span>
+<#-- fixme: hack: /workspace/integrate#addDatasets  -->
+<script>
+    console.warn("Tell jim to remove his auto-open hack");
+    $(function() {
+        if(window.location.hash === "#addDatasets") {
+            $("#btnAddDataset").click();
+        }
+    })
+</script>
 
+
+<script type="text/ng-template" id="workspace/modal-result.html">
+</script>
+
+    <div id="divResultContainer" class="modal modal-big fade hide" tabindex="-1" role="dialog">
+
+        <div class="modal-header alert-info">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="hModalHeader">Integration Results</h3>
+        </div>
+        <div class="modal-body">
+            <div class="row-fluid">
+                <div class="span12">
+                    
+                    <div role="tabpanel">
+                    
+                      <!-- Nav tabs -->
+                      <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
+                        <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                        <li role="presentation"><a href="#download" aria-controls="download" role="tab" data-toggle="tab">Download</a></li>
+                      </ul>
+                    
+                      <!-- Tab panes -->
+                      <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="pivot">
+                    
+                            <table>
+                                <tr ng-repeat="row in download.pivotData">
+                                    <td ng-repeat="col in row track by $index">{{col}}</td>
+                                </tr>
+                            </table>
+                    
+                        
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="preview">
+                            <table>
+                                <tr ng-repeat="row in download.previewData">
+                                    <td ng-repeat="col in row track by $index">{{col}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="download">
+                             <button type="button" class="btn" ng-click="ctr.downloadResult("{{download.ticket.id}}")">Download</button>
+                             <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
+                        </div>
+                      </div>
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
