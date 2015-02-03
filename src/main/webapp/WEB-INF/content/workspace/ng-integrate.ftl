@@ -7,6 +7,7 @@
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
     </div>
+
     <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
         <div class="row">
             <div class="span9">
@@ -31,7 +32,7 @@
                     <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
                     <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
-                    <#--<button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>-->
+                    <button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>
                 </div>
             </div>
         </div>
@@ -437,7 +438,9 @@ ${categoriesJson}
 <script src="/js/data-integration/ng-IntegrationModalDialogController.js"></script>
 <script src="/js/data-integration/ng-IntegrationDataService.js"></script>
 <script src="/js/data-integration/ng-IntegrationCustomFilters.js"></script>
+<script src="/js/data-integration/ng-DatatableDirective.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
+
 
 <#-- Include the file below to run some barebones tests -->
 <#--<script src="/js/data-integration/tests.js"></script>-->
@@ -478,24 +481,13 @@ ${categoriesJson}
                       <!-- Tab panes -->
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="pivot">
-                    
-                            <table>
-                                <tr ng-repeat="row in download.pivotData">
-                                    <td ng-repeat="col in row track by $index">{{col}}</td>
-                                </tr>
-                            </table>
-                    
-                        
+                            <table tdar-datatable aa-data="download.pivotData.data" ao-columns="download.pivotData.columns" id="tblPivotData"></table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
-                            <table>
-                                <tr ng-repeat="row in download.previewData">
-                                    <td ng-repeat="col in row track by $index">{{col}}</td>
-                                </tr>
-                            </table>
+                            <table tdar-datatable aa-data="download.previewData.data" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="download">
-                             <button type="button" class="btn" ng-click="ctr.downloadResult("{{download.ticket.id}}")">Download</button>
+                             <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticket.id}}">Download</a>
                              <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
                         </div>
                       </div>
@@ -513,5 +505,4 @@ ${categoriesJson}
             </div>
         </div>
     </div>
-
 </body>
