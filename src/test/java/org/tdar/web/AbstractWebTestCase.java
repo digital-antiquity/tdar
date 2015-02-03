@@ -1487,7 +1487,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
             logger.debug(getPageCode());
             int count = 0;
-            while (!getPageCode().contains("\"percentDone\" : 100")) {
+            while (!getPageCode().matches("(?s)(.*)percentDone\"(\\s*):(\\s*)100(.*)")) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
