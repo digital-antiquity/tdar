@@ -242,10 +242,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 name = datasetDao.normalizeTableName(name);
                 DataTable dt = dataset.getDataTableByGenericName(name);
                 getLogger().info("removing {}", dt);
+                removeAllRelationships(dataset, Arrays.asList(dt));
                 cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt), null);
-                // dataset.getDataTableByGenericName(name)
                 break;
             default:
+                removeAllRelationships(dataset, dataset.getDataTables());
                 cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables(), null);
         }
     }

@@ -225,7 +225,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage(browseDataUrl);
         logger.debug("JSON:{}", getPageBodyCode());
-        assertTextPresentInCode("{\"recordsPerPage\":50,\"startRecord\":0,\"totalRecords\":0,\"results\":[],\"fields\":[],\"sColumns\":\"\",\"scolumns\":\"\"}");
+        assertTrue(getPageBodyCode().matches("(?s)(.*)\"results\"(\\s*):(\\s*)[(\\s*)](.*)"));
     }
 
     @Test
