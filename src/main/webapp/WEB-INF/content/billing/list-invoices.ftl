@@ -9,6 +9,7 @@
 <table class="table tableFormat" id="tblAllInvoices">
     <thead>
     <tr>
+		<th></th>	
         <th>Date</th>
         <th>Owner</th>
         <th>Transaction Type</th>
@@ -17,13 +18,17 @@
         <th>Resources</th>
         <th>Space</th>
         <th>Total</th>
+        <th>Note</th>
+        <th>Coupon?</th>        
+        
     </tr>
     </thead>
     <tbody>
         <#list invoices as invoice>
             <#if invoice.transactionStatus.complete>
-            <tr>
-                <td><a href="<@s.url value="/cart/${invoice.id?c}"/>">${invoice.dateCreated}</a></td>
+            <tr class="<#if invoice.cancelled>strikethrough</#if>" >
+                <td><a href="<@s.url value="/cart/${invoice.id?c}"/>">view</a></td>
+                <td>${invoice.dateCreated}</td>
                 <td><a href="<@s.url value="/browse/creators/${invoice.owner.id?c}"/>">${invoice.owner.properName}</a></td>
                 <td>${invoice.paymentMethod!""}</td>
                 <td>${invoice.transactionStatus}</td>
@@ -31,6 +36,8 @@
                 <td>${invoice.totalResources}</td>
                 <td>${invoice.totalSpaceInMb}</td>
                 <td>$${invoice.total!0}</td>
+                <td>${invoice.otherReason!""}</td>
+                <td>${(invoice.coupon?has_content)?string("yes","")}</td>
             </tr>
             </#if>
         </#list>
