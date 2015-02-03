@@ -342,6 +342,13 @@ public class Invoice extends Base implements Updatable {
         return transactionStatus;
     }
 
+    public boolean isCancelled() {
+        if (TransactionStatus.TRANSACTION_CANCELLED.equals(getTransactionStatus()) || TransactionStatus.TRANSACTION_FAILED.equals(getTransactionStatus())) {
+            return true;
+        }
+        return false;
+    }
+    
     public void setTransactionStatus(TransactionStatus transactionStatus) {
         this.transactionStatus = transactionStatus;
     }

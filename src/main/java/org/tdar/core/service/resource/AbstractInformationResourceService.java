@@ -232,7 +232,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Unmaps all data-tables for a given @link InformationResourceFile. Handles special cases where you have TAB, CSV, or Text files where the table name is
      * not specified by the file itself
      */
-    @Transactional(readOnly = false)
     private void unmapDataTablesForFile(Dataset dataset, InformationResourceFile irFile) {
         String fileName = irFile.getFilename();
         switch (FilenameUtils.getExtension(fileName).toLowerCase()) {
@@ -243,10 +242,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 name = datasetDao.normalizeTableName(name);
                 DataTable dt = dataset.getDataTableByGenericName(name);
                 getLogger().info("removing {}", dt);
+                removeAllRelationships(dataset, Arrays.asList(dt));
                 cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt), null);
-                // dataset.getDataTableByGenericName(name)
                 break;
             default:
+                removeAllRelationships(dataset, dataset.getDataTables());
                 cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables(), null);
         }
     }
