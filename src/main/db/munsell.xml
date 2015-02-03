@@ -182,5 +182,11 @@
 			<column name="approved" valueBoolean="TRUE" />
 		</update>
 	</changeSet>
+    
+    <changeSet id="munsell-13" author="abrin">
+     <addColumn tableName="tdar_user">
+            <column name="start_as_draft" type="boolean" defaultValueBoolean="false" />
+     </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
