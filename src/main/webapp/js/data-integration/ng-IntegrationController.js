@@ -33,20 +33,6 @@
             integration.removeOutputColumn(idx);
         }
 
-        var $idown;  // Keep it outside of the function, so it's initialized once.
-        self._downloadURL = function(url) {
-            if ($idown) {
-                $idown.attr('src',url);
-            } else {
-                $idown = $('<iframe>', { id:'idown', src:url }).hide().appendTo('body');
-            }
-        }
-
-        self.downloadResult = function(ticketId) {
-            //... How to use it:
-            _downloadURL('/workspace/download?ticketId=' + ticketId);
-        }
-
         self.saveClicked = function() {
             console.log("Saving.")
             self.updateStatus("Saving...");
@@ -261,7 +247,17 @@
                 //todo: toast explaining what went wrong
             });
 
-        }
+        };
+
+        //fixme: examplse of how to refer to controller data in a directive attribute
+        self.exampleData1 = [
+                ['col1', 'col2'],
+                ['a1', 'b1'],
+                ['a2', 'b2'],
+                ['a3', 'b3'],
+        ];
+
+        self.exampleData2 = [];
 
     }]);
 
