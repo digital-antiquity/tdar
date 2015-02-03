@@ -6,7 +6,7 @@
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$scope', 'ModalService',  'IntegrationService', 'DataService', function($scope, ModalService, integration, dataService){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService',  function($rootScope, $scope, integration, dataService){
         var self = this,
             _openModal,
             _processAddedIntegrationColumns;
@@ -17,32 +17,7 @@
         self.sharedOntologies = [];
         
         _openModal = function(options) {
-            ModalService.showModal({
-                // Note: there is no file w/ this name. Angular first looks for partials in DOM elements w/ id specified by templateUrl.
-                templateUrl: "workspace/modal-dialog.html",
-                controller: "ModalDialogController",
-                inputs: {
-                    options: $.extend({categoryFilter: false}, options)
-                }
-            }).then(function(modal){
-                // model.element is a jqSelection containing the top-level element for this control (e.g. $("#modalContainer")
-                modal.element.modal();
-
-                // model.close is a promise that is resolved when the modal closes
-                modal.close.then(function(result){
-                    // modal.element.modal('hide');
-                    console.log("modal destroyed  result:%s", result);
-                    $scope.message = result ? "result was yes" : "result was no";
-
-                    if(options.close) {
-                        options.close(result);
-                    }
-                });
-
-                // if the service cannot create the modal or catches an exception, the promise calls an error callback
-            }).catch(function(error) {
-                console.error("ModalService error: %s", error);
-            });
+            $rootScope.$broadcast("openTdarModal", options);
         };
 
         // controller public methods
@@ -56,6 +31,20 @@
 
         self.closeTab = function(idx) {
             integration.removeOutputColumn(idx);
+        }
+
+        var $idown;  // Keep it outside of the function, so it's initialized once.
+        self._downloadURL = function(url) {
+            if ($idown) {
+                $idown.attr('src',url);
+            } else {
+                $idown = $('<iframe>', { id:'idown', src:url }).hide().appendTo('body');
+            }
+        }
+
+        self.downloadResult = function(ticketId) {
+            //... How to use it:
+            _downloadURL('/workspace/download?ticketId=' + ticketId);
         }
 
         self.saveClicked = function() {
@@ -110,21 +99,21 @@
 
         // add and initialize an integration column associated with with the specified ontology ID
         _processAddedIntegrationColumns = function(ontologies) {
-            console.debug("_processAddedIntegrationColumns ::");
+            console.trace("_processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
         };
 
         self.integrateClicked = function() {
-            console.debug('integrate clicked');
+            console.trace('integrate clicked');
             // FIXME: HACK: NEVERDOTHIS: This is absolutely not the correct way to invoke a form submission, for a number of reasons.
             $("#btnSubmitLegacyForm").click();
 
         };
 
         self.addDatasetsClicked = function(arg) {
-            console.debug('Add Datasets clicked');
+            console.trace('Add Datasets clicked');
             _openModal({
                 title: "Add Datasets",
                 searchType: "dataset",
@@ -240,6 +229,39 @@
             });
 
         };
+
+
+        $scope.downloadReady = false;
+
+        $scope.download = null;
+
+        /**
+         * Hide the 'download info' notification and dispose results.
+         */
+        $scope.dismissDownload = function() {
+            $scope.download = false;
+            $scope.download = null;
+        }
+
+        /**
+         * Send the integration to the server for processing.  If successful,  show notification.
+         */
+        self.submitIntegration  = function() {
+            $scope.downloadReady = false
+            var results = dataService.processIntegration(integration);
+            results.then(function(data){
+                console.debug("submitIntegration:: success");
+                $scope.downloadReady = true;
+                $('#divResultContainer').modal({show:true});
+                $scope.download = data;
+                console.debug(data);
+
+            }, function(err) {
+                console.debug("submitIntegration:: failed:%s", err);
+                //todo: toast explaining what went wrong
+            });
+
+        }
 
     }]);
 

@@ -27,7 +27,7 @@ public class IntegrationOntologyLookupAction extends AbstractIntegrationAction i
     private static final long serialVersionUID = -1440176848488485510L;
     private Integer startRecord = 0;
     private Integer recordsPerPage = 100;
-    private OntologySearchFilter searchFilter = new OntologySearchFilter(recordsPerPage, startRecord);
+    private OntologySearchFilter searchFilter = new OntologySearchFilter();
 
     @Autowired
     private transient OntologyService ontologyService;
@@ -37,8 +37,8 @@ public class IntegrationOntologyLookupAction extends AbstractIntegrationAction i
     @Override
     public void prepare() {
         searchFilter.setAuthorizedUser(getAuthenticatedUser());
-        searchFilter.setMaxResults(getRecordsPerPage());
-        searchFilter.setFirstResult(getStartRecord());
+        searchFilter.setRecordsPerPage(getRecordsPerPage());
+        searchFilter.setStartRecord(getStartRecord());
     }
 
     @Action(value = "find-ontologies")

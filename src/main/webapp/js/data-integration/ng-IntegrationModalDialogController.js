@@ -1,7 +1,6 @@
 (function(angular) {
     "use strict";
 
-    // var app = angular.module('integrationApp', ['angularModalService']);
     var app = angular.module("integrationApp");
 
     /**
@@ -20,7 +19,9 @@
             integrationCompatible : true,
             // fixme: get pagination info from paginationHelper / controller?
             startRecord : 0,
-            recordsPerPage : 500
+            recordsPerPage : 10,
+            recordCount: true
+
         };
 
         $.extend(self, _properties);
@@ -34,22 +35,26 @@
                 "searchFilter.categoryId" : self.categoryId,
                 "searchFilter.bookmarked" : self.bookmarked,
                 "searchFilter.ableToIntegrate" : self.integrationCompatible,
-                "startRecord" : self.startRecord,
-                "recordsPerPage" : self.recordsPerPage
+                "searchFilter.startRecord" : self.startRecord,
+                "searchFilter.recordsPerPage" : self.recordsPerPage,
+                "fetchRecordCount": self.recordCount
+
             };
         }
     }
 
     // Controller that drives the add-integration-column controller
-    app.controller('ModalDialogController', [ '$scope', 'DataService', 'close', 'options', function($scope, dataService, close, options) {
-        var url = options.url, closeWait = 500;
+    app.controller('ModalDialogController', [ '$scope', 'DataService', function($scope, dataService) {
+        var options = {}; //will be set by  scope.openModal()
+        var closeWait = 500;
 
         // get map of embedded data stored in the DOM
         var documentData = dataService.getDocumentData();
 
-        console.debug("ModalDialogController:: url:%s", url);
-        $scope.title = options.title;
-        $scope.filter = new SearchFilter();
+        $scope.title = "";
+        var filter = new SearchFilter();
+        $scope.filter = filter;
+
         $scope.selectedItems = [];
         $scope.results = [];
 
@@ -82,21 +87,20 @@
 
         // update the filter whenever user updates filter UI
         $scope.updateFilter = function() {
-            var data = JSON.stringify($scope.filter, null, 4);
+            filter.startRecord = 0;
+            filter.recordCount = true;
             $scope.search();
         }
 
         // called when user clicks 'Add Selected Items'
         $scope.confirm = function(selectedIds) {
-            close(selectedIds, closeWait);
+            $scope.close(selectedIds, closeWait);
         }
 
         // convenience function - true if specified item is in the selecteditems list
         $scope.isSelected = function(item) {
             return $scope.selectedItems.indexOf(item) > -1;
         }
-
-        // TODO: this could be pulled out into a commmon function, e.g. TDAR.common.toggleArrayValue(arr, value)
 
         // called when user selects/deslects one of the items in the select
         $scope.toggleSelection = function(itemId, obj) {
@@ -117,7 +121,92 @@
             $scope.search();
         }, true);
 
+        $scope.$on("openTdarModal", function(e, modalOptions) {
+            console.log("openTdarModal:: ");
+            console.log(modalOptions);
+            console.log(arguments);
+            options = modalOptions;
+            $scope.openTdarModal(options);
+        });
+
+        $scope.reset = function() {
+            console.log("reset called");
+            $scope.title = options.title;
+            $scope.categoryFilter = options.categoryFilter;
+            //$scope.selectedItems = [];
+        };
+
+        $scope.clearSelectedItems = function() {
+            $scope.selectedItems = [];
+            return false;
+        }
+
+        var _hasNextPage = function()  {
+            return $scope.filter.startRecord + $scope.filter.recordsPerPage < $scope.modalTotalResults;
+        };
+
+        var _hasPreviousPage = function() {
+            return filter.startRecord > 0;
+        }
+
+        $scope.hasNextPage = _hasNextPage;
+
+        $scope.hasPreviousPage = _hasPreviousPage;
+
+        $scope.nextPage = function() {
+            console.debug("nextPage::");
+            if(_hasNextPage()) {
+                filter.startRecord += filter.recordsPerPage;
+                filter.recordCount = false;
+                $scope.search();
+            }
+        };
+
+        $scope.previousPage = function() {
+            console.debug("previousPage::");
+            if(_hasPreviousPage()) {
+                filter.startRecord -= filter.recordsPerPage;
+                filter.recordCount = false;
+                $scope.search();
+            }
+        }
+
+        $scope.startRecord = function() {
+            return filter.startRecord;
+        };
+
+        $scope.endRecord = function(){
+            return filter.startRecord + $scope.results.length;
+        };
+
     } ]);
+
+    app.directive("tdarModal", function() {
+        return {
+            restrict: 'E',
+            link: function(scope, element, attr){
+                var modalRoot = element.children();
+                var closedCallback;
+                scope.openTdarModal = function(options) {
+                    modalRoot.modal();
+                    scope.reset();
+                    closedCallback = options.close;
+                };
+
+                scope.close = function(data, closeWait){
+                    var wait = closeWait ? closeWait : 1;
+                    modalRoot.modal("hide");
+                    setTimeout(function(){
+                        closedCallback(data);
+                    }, wait);
+                };
+
+            },
+            templateUrl: "workspace/modal-dialog.html"
+        }
+    });
+
+
 
     /* global angular */
 })(angular);
