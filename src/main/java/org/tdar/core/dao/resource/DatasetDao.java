@@ -372,10 +372,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
-        Query query = getCurrentSession().createQuery("DELETE FROM DataTableColumnRelationship rel where rel.id in (select distinct cr.id from DataTableRelationship dtr join dtr.columnRelationships as cr where dtr.id in (:ids))");
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS);
         query.setParameterList("ids", ids);
         query.executeUpdate();
-        Query query2 = getCurrentSession().createQuery("DELETE FROM DataTableRelationship dtr where dtr.id in :ids");
+        Query query2 = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS);
         query2.setParameterList("ids", ids);
         query2.executeUpdate();
     }

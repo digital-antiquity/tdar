@@ -55,7 +55,7 @@ public class LocalizationTestCase {
             logger.debug("{} {}", cls, cls.getEnumConstants());
             for (Object obj : cls.getEnumConstants()) {
                 String key = String.format("%s.%s",cls.getSimpleName(), obj);
-                logger.debug(key);
+                logger.trace(key);
                 if (!MessageHelper.checkKey(key)) {
                     badKeys.add(key);
                 }

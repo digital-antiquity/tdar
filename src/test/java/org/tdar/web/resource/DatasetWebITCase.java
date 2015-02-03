@@ -38,6 +38,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     // FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
 
+    private static final String AZ_PALEOINDIAN_POINT_SURVEY_MDB = "az-paleoindian-point-survey.mdb";
     private static final String WEST_COAST_CITIES = "West Coast Cities";
     private static final String EAST_COAST_CITIES = "East Coast Cities";
     private static final String WASHINGTON_3 = "washington";
@@ -83,6 +84,29 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String ticketId = getPersonalFilestoreTicketId();
         assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
         docValMap.remove("uploadedFiles");
+        uploadFileToPersonalFilestore(ticketId, filename);
+        gotoPage("/dataset/" + datasetId + "/edit");
+        setInput("ticketId", ticketId);
+        Long fileId = Long.parseLong(getInput("fileProxies[0].fileId").getAttribute("value"));
+        addFileProxyFields(1, FileAccessRestriction.PUBLIC, filename, fileId, FileAction.REPLACE);
+        submitForm();
+        assertFalse(getCurrentUrlPath().contains("dataset/save"));
+        
+    }
+
+    @Test
+    @Rollback
+    public void testReplaceSpitalfields() {
+        docValMap.put(PROJECT_ID_FIELDNAME, "3805");
+        String filename = TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME;
+        docValMap.put("uploadedFiles", filename);
+        uploadDataset();
+        Long datasetId = extractTdarIdFromCurrentURL();
+
+        String ticketId = getPersonalFilestoreTicketId();
+        assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
+        docValMap.remove("uploadedFiles");
+        filename = TestConstants.TEST_DATA_INTEGRATION_DIR + AZ_PALEOINDIAN_POINT_SURVEY_MDB;
         uploadFileToPersonalFilestore(ticketId, filename);
         gotoPage("/dataset/" + datasetId + "/edit");
         setInput("ticketId", ticketId);

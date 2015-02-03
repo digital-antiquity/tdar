@@ -499,6 +499,12 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.AFFILIATION_COUNTS,
                 query = "select affiliation, count(id) from TdarUser user where status='ACTIVE' group by affiliation"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS,
+                query = "DELETE FROM DataTableColumnRelationship rel where rel.id in (select distinct cr.id from DataTableRelationship dtr join dtr.columnRelationships as cr where dtr.id in (:ids))"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS,
+                query = "DELETE FROM DataTableRelationship dtr where dtr.id in :ids"),
 })
 package org.tdar.core.dao;
 

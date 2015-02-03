@@ -142,6 +142,9 @@ public interface TdarNamedQueries {
     String WORKFLOWS_BY_USER = "query.workflow_by_user";
     String AGREEMENT_COUNTS = "query.agreementCounts";
     String AFFILIATION_COUNTS = "query.affiliationCounts";
+    String DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS = "delete.data_table_column_relationships";
+    String DELETE_DATA_TABLE_RELATIONSHIPS = "delete.data_table_relationships";
+
     // raw SQL/HQL queries
 
     /**
