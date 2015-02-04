@@ -60,9 +60,9 @@
         <#--<span class="amt">$${invoice.calculatedCost}</span>-->
         <span class="item-desc">
 
-        <#if (invoice.numberOfFiles!0 > 0)> ${invoice.numberOfFiles!0 } files</#if>
-        <#if (invoice.numberOfFiles!0 > 0) && (invoice.numberOfMb!0 > 0)> / </#if>
-        <#if (invoice.numberOfMb!0 > 0)> ${invoice.numberOfMb!0}mb</#if>
+        <#if ((invoice.numberOfFiles!0) > 0)> ${invoice.numberOfFiles!0 } File<#if ((invoice.numberOfFiles!0) > 1)>s</#if></#if>
+        <#if ((invoice.numberOfFiles!0) > 0) && ((invoice.numberOfMb!0) > 0)> / </#if>
+        <#if ((invoice.numberOfMb!0) > 0)> ${invoice.numberOfMb!0}mb</#if>
 
         </span>
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
