@@ -7,6 +7,7 @@
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
     </div>
+
     <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
         <div class="row">
             <div class="span9">
@@ -29,9 +30,20 @@
             <div class="span3">
                 <div class="btn-group">
                     <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
-                    <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
+                    <!-- Split button -->
+                    <div class="btn-group">
+                      <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
+                      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                        <li>
+                        <a ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSaveAs" ng-click="ctrl.saveAsClicked()">Save As</a>
+                      </ul>
+                    </div>
+
                     <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
-                    <#--<button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>-->
+                    <button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>
                 </div>
             </div>
         </div>
@@ -50,7 +62,7 @@
                                     </a>
                                     <ul class="dropdown-menu" id="btnSetAddIntegrationColumns">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
-                                                ><a href="#" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
+                                                ><a ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 </div>
                                 <button type="button" class="btn" id="btnAddDisplayColumn"
@@ -167,15 +179,15 @@
                                                     </thead>
                                                     <tbody>
                                                     <tr ng-repeat="nodeSelection in outputColumn.nodeSelections" ng-init="nodeIndex = $index">
-                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
+                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{::nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
-                                                            <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
-                                                                <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.displayName}}</label>
+                                                            <div class="nodechild{{::nodeSelection.node.index.split('.').length}}">
+                                                                <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
                                                         <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" id="cbx-{{dataTableColumn.id}}-{{nodeSelection.node.id}}" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" id="cbx-{{::dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -437,7 +449,9 @@ ${categoriesJson}
 <script src="/js/data-integration/ng-IntegrationModalDialogController.js"></script>
 <script src="/js/data-integration/ng-IntegrationDataService.js"></script>
 <script src="/js/data-integration/ng-IntegrationCustomFilters.js"></script>
+<script src="/js/data-integration/ng-DatatableDirective.js"></script>
 <script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
+
 
 <#-- Include the file below to run some barebones tests -->
 <#--<script src="/js/data-integration/tests.js"></script>-->
@@ -478,24 +492,13 @@ ${categoriesJson}
                       <!-- Tab panes -->
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="pivot">
-                    
-                            <table>
-                                <tr ng-repeat="row in download.pivotData">
-                                    <td ng-repeat="col in row track by $index">{{col}}</td>
-                                </tr>
-                            </table>
-                    
-                        
+                            <#-- <table tdar-datatable aa-data="download.pivotData.data" ao-columns="download.pivotData.columns" id="tblPivotData"></table> -->
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
-                            <table>
-                                <tr ng-repeat="row in download.previewData">
-                                    <td ng-repeat="col in row track by $index">{{col}}</td>
-                                </tr>
-                            </table>
+                            <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="download">
-                             <button type="button" class="btn" ng-click="ctr.downloadResult("{{download.ticket.id}}")">Download</button>
+                             <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticket.id}}">Download</a>
                              <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
                         </div>
                       </div>
@@ -513,5 +516,4 @@ ${categoriesJson}
             </div>
         </div>
     </div>
-
 </body>

@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.integration.IntegrationWorkflowDao;
+import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
@@ -38,12 +38,12 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     private transient SerializationService serializationService;
 
     @Autowired
-    private transient GenericDao genericDao;
+    private transient OntologyNodeDao ontologyNodeDao;
 
     @Transactional
     public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow) throws IOException, IntegrationDeserializationException {
         IntegrationWorkflowData workflowData = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
-        IntegrationContext context = workflowData.toIntegrationContext(genericDao);
+        IntegrationContext context = workflowData.toIntegrationContext(ontologyNodeDao);
         // perform validity checks?
         return context;
     }
@@ -56,7 +56,7 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
             validateWorkflow(data);
             persistable.markUpdated(authUser);
             data.copyValuesToBean(persistable, json);
-            genericDao.saveOrUpdate(persistable);
+            ontologyNodeDao.saveOrUpdate(persistable);
             result.setStatus(IntegrationSaveResult.SUCCESS);
             result.setId(persistable.getId());
         } catch (IntegrationDeserializationException e) {
@@ -73,7 +73,7 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
 
     @Transactional(readOnly = true)
     public void validateWorkflow(IntegrationWorkflowWrapper data) throws IntegrationDeserializationException {
-        data.validate(genericDao);
+        data.validate(ontologyNodeDao);
     }
 
     @Transactional(readOnly = true)

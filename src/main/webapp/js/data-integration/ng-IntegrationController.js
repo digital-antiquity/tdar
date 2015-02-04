@@ -33,20 +33,6 @@
             integration.removeOutputColumn(idx);
         }
 
-        var $idown;  // Keep it outside of the function, so it's initialized once.
-        self._downloadURL = function(url) {
-            if ($idown) {
-                $idown.attr('src',url);
-            } else {
-                $idown = $('<iframe>', { id:'idown', src:url }).hide().appendTo('body');
-            }
-        }
-
-        self.downloadResult = function(ticketId) {
-            //... How to use it:
-            _downloadURL('/workspace/download?ticketId=' + ticketId);
-        }
-
         self.saveClicked = function() {
             console.log("Saving.")
             self.updateStatus("Saving...");
@@ -55,21 +41,29 @@
             });
             
         };
-        
+
+        self.saveAsClicked = function() {
+            console.log("Saving.")
+            self.integration.id = -1;
+            self.updateStatus("Saving...");
+            dataService.saveIntegration(self.integration).then(function(status) {
+                self.updateStatus("Save: " + status.status);
+                window.location.hash = self.integration.id;
+            });
+            
+        };
+
         /**
          * shows the user a status message
          */
         self.updateStatus = function(msg) {
             $scope.statusMessage = msg;
         }
-
         
         self.loadJSON = function() {
-            var jsonData = dataService.getDocumentData().jsondata;
-            self.updateStatus("Loading...");
-            console.log(jsonData);
-            if (jsonData.title != undefined && jsonData.dataTables != undefined) {
-                var result = dataService.loadExistingIntegration(jsonData , self.integration);
+            if (window.location.hash) {
+                var hashId = window.location.hash.substring(1);
+                var result = dataService.loadExistingIntegration(hashId , self.integration);
                 result.then(function(status){
                     self.updateStatus("Done loading");
                 });
@@ -253,15 +247,37 @@
                 console.debug("submitIntegration:: success");
                 $scope.downloadReady = true;
                 $('#divResultContainer').modal({show:true});
-                $scope.download = data;
+                $scope.download = {
+                    previewData: {
+                        //fixme: where are the column names? generate 'col1, col2, ..., coln' for now
+                        columns: data.previewData[0].map(function(val, idx){return "col" + idx}),
+                        rows: []
+                    }
+                };
+                //hack: need to make sure rows gets updated after aoColumns
+                $scope.download.previewData.rows = data.previewData;
+
                 console.debug(data);
+
+                
+
 
             }, function(err) {
                 console.debug("submitIntegration:: failed:%s", err);
                 //todo: toast explaining what went wrong
             });
 
-        }
+        };
+
+        //fixme: examplse of how to refer to controller data in a directive attribute
+        self.exampleData1 = [
+                ['col1', 'col2'],
+                ['a1', 'b1'],
+                ['a2', 'b2'],
+                ['a3', 'b3'],
+        ];
+
+        self.exampleData2 = [];
 
     }]);
 

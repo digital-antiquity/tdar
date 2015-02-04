@@ -212,9 +212,29 @@
         /**
          * Based on the specified JSON representation of a data object, try and rebuild the integration
          */
-        function _loadExistingIntegration(json, integration) {
+        function _loadExistingIntegration(id, integration) {
+            console.log(id);
             var futureData = $q.defer();
 
+            var httpPromise = $http({
+                method : "GET",
+                url : '/api/integration/view?id=' + id,
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            });
+
+            httpPromise.success(function(data) {
+                console.log(data);
+                _loadIntegrationDependencies(data, integration);
+                futureData.resolve(true);
+            });
+
+            return futureData.promise;
+        }
+
+        function _loadIntegrationDependencies(json, integration) {
+            var futureData = $q.defer();
             var dataTableIds = [];
             json.dataTables.forEach(function(dataTable) {
                 dataTableIds.push(dataTable.id);
@@ -288,7 +308,7 @@
             });
             return futureData.promise;
         }
-
+        
         self.addDataTables = function(integration, tablesToAdd) {
             integration.addDataTables(tablesToAdd);
             _rebuildSharedOntologies(integration);

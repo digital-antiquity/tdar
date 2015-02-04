@@ -23,7 +23,7 @@
 <h3>Saved Integrations</h3>
 <ul>
 <#list workflows as workflow>
-    <li><a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""}
+    <li><a href="<@s.url value="/workspace/integrate#${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""}
         [<a href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>]</li>
 </#list>
 </ul>

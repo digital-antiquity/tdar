@@ -797,6 +797,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      */
     @Transactional(value = "tdarDataTx", readOnly = false)
     public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
+        logger.debug("Context: {}", proxy);
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         @SuppressWarnings("unused")
         ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, excelService, result);
