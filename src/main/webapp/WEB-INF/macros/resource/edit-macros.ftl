@@ -570,6 +570,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                     <div class="controls">
                         <#list activeAccounts as activeAccount>
                             <span class="uneditable-input">${activeAccount.name}</span>
+                            <@s.hidden name="accountId" value="${activeAccounts?first.id}" />
                         </#list>
                     </div>
                 </div>
