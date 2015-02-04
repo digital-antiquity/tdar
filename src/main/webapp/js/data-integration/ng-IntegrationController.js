@@ -239,8 +239,20 @@
                 console.debug("submitIntegration:: success");
                 $scope.downloadReady = true;
                 $('#divResultContainer').modal({show:true});
-                $scope.download = data;
+                $scope.download = {
+                    previewData: {
+                        //fixme: where are the column names? generate 'col1, col2, ..., coln' for now
+                        columns: data.previewData[0].map(function(val, idx){return "col" + idx}),
+                        rows: []
+                    }
+                };
+                //hack: need to make sure rows gets updated after aoColumns
+                $scope.download.previewData.rows = data.previewData;
+
                 console.debug(data);
+
+                
+
 
             }, function(err) {
                 console.debug("submitIntegration:: failed:%s", err);

@@ -481,10 +481,10 @@ ${categoriesJson}
                       <!-- Tab panes -->
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="pivot">
-                            <table tdar-datatable aa-data="download.pivotData.data" ao-columns="download.pivotData.columns" id="tblPivotData"></table>
+                            <#-- <table tdar-datatable aa-data="download.pivotData.data" ao-columns="download.pivotData.columns" id="tblPivotData"></table> -->
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
-                            <table tdar-datatable aa-data="download.previewData.data" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
+                            <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="download">
                              <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticket.id}}">Download</a>

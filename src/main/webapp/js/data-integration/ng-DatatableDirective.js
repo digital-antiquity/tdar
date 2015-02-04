@@ -9,26 +9,58 @@
 
 
     app.directive("tdarDatatable", [function() {
-        return {
+        var self =  {
             restrict: 'A',
             link: function(scope, element, attrs){
-
                 console.debug("linking to dom element:%s", attrs.id);
+                var widget = false;
 
-                //step 1: initialize datatable widget
+                // If THEAD has columns, we are ready to init datatable
+                if(element.find("thead th").length) {
+                    widget = element.DataTable();
+                }
+
+                //if controller sets/modifies  $scope[attrs.aoColumns], (re)initialize the datatable
+                if(typeof attrs.aoColumns !== "undefined") {
+                    scope.$watch(attrs.aoColumns, function(val){
+                        console.debug("%s:: ao-columns:'%s'", attrs.id, val);
+                        if(!val){return}
+
+                        //aoColumns needs to be in specific format. for now we define all columns
+                        var aoColumns = val.map(function(colname){
+                            return {sTitle: colname};
+                        });
+
+                        //if datatable already exists, we need to destroy it and start over
+                        if(widget) {
+                            widget.fnClearTable();
+                            widget.fnDestroy();
+                            widget = null;
+                        }
+                        var options = {
+                            aoColumns: aoColumns,
+                            aaData: []
+                        }
+
+                        widget = element.DataTable(options);
+
+                    });
+                }
 
                 //look for changes to the aa-data attribute (which corresponds to the options.aaData value you would pass to $.Datatable() )
                 scope.$watch(attrs.aaData, function(val){
-                    console.debug("%s:: new value for aa-data:%s",attrs.id,  val);
-
-                    //step 2a: destroy existing widget (if it exists)
-                    //dataTable.fnClearTable();
-
-                    //step 2b: create  new widget (if aaData is not null)
-
+                    console.debug("%s:: aa-data:%s", attrs.id,  val);
+                    self.updateRowData(widget, val);
                 });
-            }
-        }
+            },
+
+            updateRowData: function(widget, rowData) {
+                    if(!rowData) {return}
+                    widget.fnClearTable();
+                    widget.fnAddData(rowData);
+                }
+        };
+        return self;
 
     }]);
 
