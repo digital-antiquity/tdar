@@ -61,6 +61,7 @@ public class URLServiceTest {
         //redirect to remote that mimics authenticated content
         assertThat( sanitizeRelativeUrl("http://scammysite.ru/cart/add"), is("/cart/add"));
         assertThat( sanitizeRelativeUrl("HTTP://scammysite.ru/cart/add"), is("/cart/add"));
+        assertThat( sanitizeRelativeUrl("HTTPs://scammysite.ru/cart/add"), is("/cart/add"));
 
         //attempt to  avoid ssl warning by redirecting to site w/ same scheme as trusted host
         assertThat( sanitizeRelativeUrl("//not-really-tdar.ru/foo/bar"), is("/foo/bar"));
@@ -68,11 +69,16 @@ public class URLServiceTest {
         //http credentials that look like url prefix of trusted host (this feature is deprecated in most browsers)
         assertThat( sanitizeRelativeUrl("http://core.tdar.org:%2Fjibberish%2Fcharacters%2Fthat%2Fyou%2Fprobably%2Fwont%2Fread@scammysite.ru/gimme-your-mastercard"), is("/gimme-your-mastercard"));
 
+        assertThat( sanitizeRelativeUrl("http://not-really-tdar.ru:1234/foo/bar"), is("/foo/bar"));
         //initiate file download from untrusted remote host (that appears to be trusted host)
         assertThat( sanitizeRelativeUrl("ftp://scammysite.ru/virii/clickme.exe"), is("/virii/clickme.exe"));
 
     }
 
+    @Test
+    public void testSantizeUrlWithHttp() {
+        assertThat(sanitizeRelativeUrl("/docuemnt/1234/http-test"), is ("/docuemnt/1234/http-test"));
+    }
     @Test
     public void testSanitizeLegitUrls() {
         //typical login redirects
