@@ -235,12 +235,14 @@
                                 <@common.billingAccountList accounts />
                             </div>
                             <div class="span6">
+                            <#if editor>
                                 <h2>Group Membership</h2>
                                 <ul>
                                     <#list groups as group>
                                         <li>${group}</li>
                                     </#list>
                                 </ul>
+                            </#if>
                             </div>
                         </div>
                     </#if>
