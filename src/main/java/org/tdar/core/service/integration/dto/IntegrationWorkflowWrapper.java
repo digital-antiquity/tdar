@@ -1,6 +1,7 @@
 package org.tdar.core.service.integration.dto;
 
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.Dao.HibernateBase;
+import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.integration.IntegrationContext;
 
 
@@ -14,9 +15,9 @@ public interface IntegrationWorkflowWrapper {
 
     boolean isValid();
 
-    void validate(GenericDao service) throws IntegrationDeserializationException;
+    void validate(OntologyNodeDao service) throws IntegrationDeserializationException;
     
-    IntegrationContext toIntegrationContext(GenericDao service) throws IntegrationDeserializationException;
+    IntegrationContext toIntegrationContext(OntologyNodeDao service) throws IntegrationDeserializationException;
 
     void setId(Long id);
 }

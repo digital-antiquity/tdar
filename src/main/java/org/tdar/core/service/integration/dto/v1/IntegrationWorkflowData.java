@@ -13,7 +13,8 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.Dao.HibernateBase;
+import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
@@ -55,24 +56,27 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
     /**
      * Returns true if this
      * 
-     * @param service
+     * @param ontologyNodeDao
      * @return
      * @throws IntegrationDeserializationException
      */
     @Override
-    public IntegrationContext toIntegrationContext(GenericDao service) throws IntegrationDeserializationException {
-        validate(service);
+    public IntegrationContext toIntegrationContext(OntologyNodeDao ontologyNodeDao) throws IntegrationDeserializationException {
+        validate(ontologyNodeDao);
         integrationContext.setErrorMessages(errors);
         for (IntegrationColumnDTO ic_ : getColumns()) {
             IntegrationColumn col = new IntegrationColumn(ic_.getType());
-            col.getColumns().addAll(service.findAll(DataTableColumn.class, PersistableUtils.extractIds(ic_.getDataTableColumns())));
+            col.getColumns().addAll(ontologyNodeDao.findAll(DataTableColumn.class, PersistableUtils.extractIds(ic_.getDataTableColumns())));
             if (ic_.getType() == ColumnType.INTEGRATION) {
-                col.getFilteredOntologyNodes().addAll(service.findAll(OntologyNode.class, PersistableUtils.extractIds(ic_.getNodeSelection())));
-                col.setSharedOntology(service.find(Ontology.class, ic_.getOntology().getId()));
+                col.getFilteredOntologyNodes().addAll(ontologyNodeDao.findAll(OntologyNode.class, PersistableUtils.extractIds(ic_.getNodeSelection())));
+                col.setSharedOntology(ontologyNodeDao.find(Ontology.class, ic_.getOntology().getId()));
+                // that is, even if child is not selected, should get all children for query and pull up
+
+                col.buildNodeChildHierarchy(ontologyNodeDao);
             }
             integrationContext.getIntegrationColumns().add(col);
         }
-        integrationContext.setDataTables(service.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));
+        integrationContext.setDataTables(ontologyNodeDao.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));
         return integrationContext;
     }
 
@@ -82,7 +86,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
      * @param service
      * @throws IntegrationDeserializationException
      */
-    private void validateIntegrationColumns(GenericDao service) throws IntegrationDeserializationException {
+    private void validateIntegrationColumns(OntologyNodeDao service) throws IntegrationDeserializationException {
         Set<DataTableColumnDTO> dtcs = new HashSet<>();
         Set<OntologyNodeDTO> nodes = new HashSet<>();
         for (IntegrationColumnDTO column : getColumns()) {
@@ -94,7 +98,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
     }
 
     @Override
-    public void validate(GenericDao service) throws IntegrationDeserializationException {
+    public void validate(OntologyNodeDao service) throws IntegrationDeserializationException {
         super.validate(service, getDataTables(), DataTable.class);
         super.validate(service, getDatasets(), Dataset.class);
         super.validate(service, getOntologies(), Ontology.class);

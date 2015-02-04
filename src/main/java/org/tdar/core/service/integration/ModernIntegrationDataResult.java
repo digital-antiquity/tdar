@@ -60,13 +60,12 @@ public class ModernIntegrationDataResult implements Serializable {
         this.pivotData = pivot;
     }
     
-    public Map<List<OntologyNode>, HashMap<Long, IntContainer>> getPivotData() {
-        getData();
+    public Map<List<OntologyNode>, HashMap<Long, IntContainer>> getRawPivotData() {
         return pivotData;
     }
 
     @JsonView(JsonIntegrationFilter.class)
-    public Map<String,HashMap<Long, Integer>> getData() {
+    public Map<String,HashMap<Long, Integer>> getRawData() {
         HashMap<String, HashMap<Long,Integer>> result = new HashMap<>();
         for (Entry<List<OntologyNode>, HashMap<Long, IntContainer>> entrySet : pivotData.entrySet()) {
             HashMap<Long, IntContainer> value = entrySet.getValue();

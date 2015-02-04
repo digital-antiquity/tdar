@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -24,7 +24,7 @@ public abstract class AbstractIntegrationWorkflowData {
         workflow.setJsonData(json);
     }
 
-    protected <P extends Persistable> List<P> validate(GenericDao dao, List<? extends Persistable> skeletons, Class<P> cls) throws IntegrationDeserializationException {
+    protected <P extends Persistable> List<P> validate(HibernateBase dao, List<? extends Persistable> skeletons, Class<P> cls) throws IntegrationDeserializationException {
         Map<Long, ? extends Persistable> ids = PersistableUtils.createIdMap(skeletons);
         List<P> objects = dao.findAll(cls, ids.keySet());
         for (P object : objects) {
