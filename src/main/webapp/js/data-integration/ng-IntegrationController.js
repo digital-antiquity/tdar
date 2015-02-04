@@ -41,21 +41,29 @@
             });
             
         };
-        
+
+        self.saveAsClicked = function() {
+            console.log("Saving.")
+            self.integration.id = -1;
+            self.updateStatus("Saving...");
+            dataService.saveIntegration(self.integration).then(function(status) {
+                self.updateStatus("Save: " + status.status);
+                window.location.hash = self.integration.id;
+            });
+            
+        };
+
         /**
          * shows the user a status message
          */
         self.updateStatus = function(msg) {
             $scope.statusMessage = msg;
         }
-
         
         self.loadJSON = function() {
-            var jsonData = dataService.getDocumentData().jsondata;
-            self.updateStatus("Loading...");
-            console.log(jsonData);
-            if (jsonData.title != undefined && jsonData.dataTables != undefined) {
-                var result = dataService.loadExistingIntegration(jsonData , self.integration);
+            if (window.location.hash) {
+                var hashId = window.location.hash.substring(1);
+                var result = dataService.loadExistingIntegration(hashId , self.integration);
                 result.then(function(status){
                     self.updateStatus("Done loading");
                 });
