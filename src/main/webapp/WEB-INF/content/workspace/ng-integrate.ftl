@@ -179,15 +179,15 @@
                                                     </thead>
                                                     <tbody>
                                                     <tr ng-repeat="nodeSelection in outputColumn.nodeSelections" ng-init="nodeIndex = $index">
-                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
+                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{::nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
-                                                            <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
-                                                                <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.displayName}}</label>
+                                                            <div class="nodechild{{::nodeSelection.node.index.split('.').length}}">
+                                                                <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
                                                         <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" id="cbx-{{dataTableColumn.id}}-{{nodeSelection.node.id}}" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" id="cbx-{{::dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
