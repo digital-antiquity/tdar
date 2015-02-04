@@ -1,9 +1,18 @@
 package org.tdar.core.bean.util;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UrlUtils{
 
@@ -11,6 +20,8 @@ public class UrlUtils{
     private static final Pattern PATTERN_NONWORD = Pattern.compile("[^\\w\\s-]");
     private static final Pattern PATTERN_WHITESPACE = Pattern.compile("[-\\s]+");
     private static final Pattern PATTERN_AFFIX_SLUG = Pattern.compile("(^-)|(-$)");
+
+    private static Logger logger = LoggerFactory.getLogger(UrlUtils.class);
 
     /**
      * Slightly faster version of String.replaceAll
@@ -46,5 +57,37 @@ public class UrlUtils{
         slug = replaceAll(slug, PATTERN_WHITESPACE, "-");
         slug = replaceAll(slug, PATTERN_AFFIX_SLUG, "");
         return slug.toLowerCase();
+    }
+
+    /**
+     * Enforces "relative url" syntax by stripping out host/scheme/protocol portions from an "untrusted" URL string.
+     * @param untrustedUrl URL from untrusted source (e.g. http request parameters)
+     * @return sanitized copy of untrusted url.
+     *
+     * <strong>NOTE</strong>: This method always returns a copy, even if input string is already sanitized.
+     */
+    public static String sanitizeRelativeUrl(String untrustedUrl) {
+        if(untrustedUrl == null) return untrustedUrl;
+        StringBuilder sb = new StringBuilder();
+        try {
+            URI uri = new URI(untrustedUrl.trim());
+            if(uri.getPath() != null) {
+                sb.append(uri.getPath());
+            }
+            if(uri.getQuery() != null) {
+                sb
+                        .append("?")
+                        .append(uri.getQuery());
+            }
+            if(uri.getFragment() != null) {
+                sb
+                        .append("#")
+                        .append(uri.getFragment());
+            }
+        } catch (URISyntaxException e) {
+            logger.warn("invalid url:{}  replacing with empty string", untrustedUrl);
+        }
+
+        return sb.toString();
     }
 }

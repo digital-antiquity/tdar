@@ -3,6 +3,7 @@ package org.tdar.core.search;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.tdar.core.bean.util.UrlUtils.sanitizeRelativeUrl;
 import static org.tdar.core.bean.util.UrlUtils.slugify;
 
 import org.junit.Test;
@@ -49,6 +50,42 @@ public class URLServiceTest {
     @Test
     public void testUnsluggableWords() {
         assertThat( slugify("技術的には可能、しかしそうではない"), is(""));
+    }
+
+    @Test
+    public void testSanitizeScammyUrls() {
+        //technically invalid syntax that is forgiven by most browsers
+        assertThat( sanitizeRelativeUrl("               http://scammysite.ru/register"), is("/register"));
+        assertThat( sanitizeRelativeUrl("HTTP://scammysite.ru/register"), is("/register"));
+
+        //redirect to remote that mimics authenticated content
+        assertThat( sanitizeRelativeUrl("http://scammysite.ru/cart/add"), is("/cart/add"));
+        assertThat( sanitizeRelativeUrl("HTTP://scammysite.ru/cart/add"), is("/cart/add"));
+
+        //attempt to  avoid ssl warning by redirecting to site w/ same scheme as trusted host
+        assertThat( sanitizeRelativeUrl("//not-really-tdar.ru/foo/bar"), is("/foo/bar"));
+
+        //http credentials that look like url prefix of trusted host (this feature is deprecated in most browsers)
+        assertThat( sanitizeRelativeUrl("http://core.tdar.org:%2Fjibberish%2Fcharacters%2Fthat%2Fyou%2Fprobably%2Fwont%2Fread@scammysite.ru/gimme-your-mastercard"), is("/gimme-your-mastercard"));
+
+        //initiate file download from untrusted remote host (that appears to be trusted host)
+        assertThat( sanitizeRelativeUrl("ftp://scammysite.ru/virii/clickme.exe"), is("/virii/clickme.exe"));
+
+    }
+
+    @Test
+    public void testSanitizeLegitUrls() {
+        //typical login redirects
+        assertThat( sanitizeRelativeUrl("/document/1234"), is("/document/1234"));
+        assertThat( sanitizeRelativeUrl("/dataset/save?id=12345"), is("/dataset/save?id=12345"));
+
+        //'complete' relative url w/  path, query, and hash
+        String url = "/dir/subdir/file?queryparm1=queryval1&queryparm2=queryval2#fragment";
+        assertThat( sanitizeRelativeUrl(url), is(url));
+
+        //technically not "legit", but not malicious either. Usually caused by typo in .ftl or broken urlrewrite rule
+        assertThat( sanitizeRelativeUrl("//admin"), is(""));
+        assertThat( sanitizeRelativeUrl("/dataset//12345/view"), is("/dataset//12345/view"));
     }
 
 }
