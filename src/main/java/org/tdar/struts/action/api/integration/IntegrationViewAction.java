@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class ViewIntegrationAction extends AbstractIntegrationAction implements PersistableLoadingAction<DataIntegrationWorkflow> {
+public class IntegrationViewAction extends AbstractIntegrationAction implements PersistableLoadingAction<DataIntegrationWorkflow> {
 
     private static final long serialVersionUID = -4028463597298660974L;
 
@@ -47,6 +47,7 @@ public class ViewIntegrationAction extends AbstractIntegrationAction implements 
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.VIEW);
+        
         if (workflow != null) {
             try {
                 data = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
@@ -66,6 +67,7 @@ public class ViewIntegrationAction extends AbstractIntegrationAction implements 
             }
         }
     }
+    
 
     @Action(value = "view")
     public String viewIntegration() throws IOException {
@@ -84,7 +86,7 @@ public class ViewIntegrationAction extends AbstractIntegrationAction implements 
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
+        return authorizationService.canViewWorkflow(workflow, getAuthenticatedUser());
     }
 
     @Override
