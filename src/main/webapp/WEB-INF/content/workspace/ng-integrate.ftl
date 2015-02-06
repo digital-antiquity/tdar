@@ -454,7 +454,6 @@ ${categoriesJson}
 
 
 <script type="text/ng-template" id="workspace/modal-result.html">
-</script>
 
     <div id="divResultContainer" class="modal modal-big fade hide" tabindex="-1" role="dialog">
 
@@ -495,7 +494,7 @@ ${categoriesJson}
                             </table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="download">
-                             <button type="button" class="btn" ng-click="ctr.downloadResult("{{download.ticket.id}}")">Download</button>
+                             <button type="button" class="btn" ng-click="ctrl.downloadResult("{{download.ticket.id}}")">Download</button>
                              <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
                         </div>
                       </div>
@@ -513,5 +512,5 @@ ${categoriesJson}
             </div>
         </div>
     </div>
-
+</script>
 </body>
