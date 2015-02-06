@@ -616,11 +616,8 @@ public class AuthorizationService implements Accessible {
 
     @Transactional(readOnly = true)
     public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
-        if (PersistableUtils.isNullOrTransient(workflow) ||
-                PersistableUtils.isNotNullOrTransient(workflow) && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser)) {
-            return true;
-        }
-        return false;
+        return (PersistableUtils.isNullOrTransient(workflow) ||
+                PersistableUtils.isNotNullOrTransient(workflow) && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser));
 
     }
 

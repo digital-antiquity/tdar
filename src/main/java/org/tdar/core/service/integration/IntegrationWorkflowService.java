@@ -55,6 +55,8 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
         try {
             validateWorkflow(data);
             persistable.markUpdated(authUser);
+
+            //fixme: jtd:this feels like a very bad idea.  json is an untrusted string, and we are using it here to modify fields on a writable integrationWorkflow (and thus also a writable TdarUser object).
             data.copyValuesToBean(persistable, json);
             genericDao.saveOrUpdate(persistable);
             result.setStatus(IntegrationSaveResult.SUCCESS);
