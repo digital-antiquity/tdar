@@ -155,13 +155,17 @@
         this.dataTableColumnCache = dataTableColumnCache;
 
         /**
-         * Return a map<str, obj> of objects that were embedded in the DOM using script tags of type "application/json". for each entry in the map, the entry
-         * key is the script element's ID attribute, and the key value is the parsed value of the script's JSON data.
-         * 
+         * Returns data from embedded dom element using script tags of type "application/json". If name specified, return the object contained in the script id
+         * of the same name, otherwise return map<name, object> of all embedded objects, keyed by script element's ID.
+         * @param name
          * @returns {*}
          */
-        this.getDocumentData = function() {
-            return documentData
+        this.getDocumentData = function(name) {
+            var data = name ? documentData[name] : documentData;
+            if($.isEmptyObject(data))  {
+                data = null;
+            }
+            return data;
         }
 
         /**
@@ -172,7 +176,7 @@
          */
         this.dedupe = _dedupe;
         this.dumpObject = _dumpObject;
-        this.loadExistingIntegration = _loadExistingIntegration;
+        this.loadIntegration = _loadIntegration;
         this.saveIntegration = _saveIntegration;
 
         /**
@@ -209,10 +213,12 @@
             return futureData.promise;
         }
 
+
         /**
          * Based on the specified JSON representation of a data object, try and rebuild the integration
          */
-        function _loadExistingIntegration(id, integration) {
+        //fixme: wire up load via hashurl
+        function _loadIntegrationById(id, integration) {
             console.log(id);
             var futureData = $q.defer();
 
@@ -233,8 +239,13 @@
             return futureData.promise;
         }
 
-        function _loadIntegrationDependencies(json, integration) {
+        /**
+         * Based on the specified JSON representation of a data object, try and rebuild the integration
+         */
+        function _loadIntegration(json, integration) {
             var futureData = $q.defer();
+
+
             var dataTableIds = [];
             json.dataTables.forEach(function(dataTable) {
                 dataTableIds.push(dataTable.id);
@@ -245,9 +256,12 @@
             console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
+                //These woods are lovely, dark, and deep
+                var promisesToKeep = [];
+
                 self.addDataTables(integration, dataTables);
                 var result = self.loadUpdatedParticipationInformation(integration);
-                result.then(function(status) {
+                result.then(function() {
                     json.columns.forEach(function(column) {
                         var name = column.name;
                         if (name == undefined) {
@@ -272,8 +286,7 @@
                         if (column.type == 'INTEGRATION') {
                             var ontology = undefined;
                             var ontologyIds = new Array();
-                            var ontologies = new Array();
-                            
+
                             integration.ontologies.forEach(function(ont) {
                                 if (column.ontology.id == ont.id) {
                                     ontology = ont;
@@ -281,29 +294,37 @@
                                     ontologyIds.push(ont.id);
                                 }
                             });
-                            self.loadOntologyDetails(ontologyIds).then(function() {
-                                if (ontology == undefined) {
-                                    ontology = ontologyCache.get(column.ontology.id);
-                                    integration.ontologies.push(ontology);
-                                    _rebuildSharedOntologies(integration);
-                                }
-                                // FIXME: if not loaded, then need to go to the server for ontology details
-                                integration.addIntegrationColumn(name, ontology);
-                                var col = integration.columns[integration.columns.length - 1];
+                            promisesToKeep.push(
+                                self.loadOntologyDetails(ontologyIds).then(function() {
+                                    if (ontology == undefined) {
+                                        ontology = ontologyCache.get(column.ontology.id);
+                                        integration.ontologies.push(ontology);
+                                        _rebuildSharedOntologies(integration);
+                                    }
+                                    // FIXME: if not loaded, then need to go to the server for ontology details
+                                    integration.addIntegrationColumn(name, ontology);
+                                    var col = integration.columns[integration.columns.length - 1];
 
-                                // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
-                                col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
-                                col.nodeSelections.forEach(function(node) {
-                                    column.nodeSelection.forEach(function(nodeRef) {
-                                        if (nodeRef.id == node.node.id) {
-                                            node.selected = true;
-                                        }
+                                    // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
+                                    col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
+                                    col.nodeSelections.forEach(function(node) {
+                                        column.nodeSelection.forEach(function(nodeRef) {
+                                            if (nodeRef.id == node.node.id) {
+                                                node.selected = true;
+                                            }
+                                        });
                                     });
-                                });
-                            });
+                                })
+                            );
                         }
                     });
-                    futureData.resolve(true);
+                    $q.all(promisesToKeep).then(
+                        function() {
+                            futureData.resolve();},
+                        function() {
+                            futureData.reject("failed to load all ontology details");
+                        }
+                    )
                 });
             });
             return futureData.promise;

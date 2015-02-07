@@ -468,7 +468,6 @@ ${categoriesJson}
 
 
 <script type="text/ng-template" id="workspace/modal-result.html">
-</script>
 
     <div id="divResultContainer" class="modal modal-big fade hide" tabindex="-1" role="dialog">
 
@@ -516,4 +515,5 @@ ${categoriesJson}
             </div>
         </div>
     </div>
+</script>
 </body>

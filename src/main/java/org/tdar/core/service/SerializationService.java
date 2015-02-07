@@ -183,7 +183,7 @@ public class SerializationService {
     }
 
     @Transactional(readOnly = true)
-    public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException, JsonParseException, JsonMappingException {
+    public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
         ObjectMapper mapper = initializeObjectMapper();
         return mapper.readValue(json, cls);
     }

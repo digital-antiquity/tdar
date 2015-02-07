@@ -1494,10 +1494,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <script id="template-person-autocomplete-li" type="text/x-tmpl">
     <li class="{%=o.addnew?'addnew':''%}">
         <a><#-- person-{id} class used below to allow the test autocomplete to work without having access to email addresses -->
-            <div class="person-{%=_e(o.id)%}">
-                <span class="name">{%=_e(o.properName)%}</span>
-                {% if(o.email)  %}<span class="email">({%=_e(o.email)%})</span>{%
-                %}{% if(o.institution && o.institution.name) { %}, <span class="institution">{%=_e(o.institution.name)%}</span> {% } %}
+            <div class="person-{%=o.id%}">
+                <span class="name">{%=o.properName%}</span>
+                {% if(o.email)  %}<span class="email">({%=o.email%})</span>{%
+                %}{% if(o.institution && o.institution.name) { %}, <span class="institution">{%=o.institution.name%}</span> {% } %}
                 {% if(o.addnew) { %}<em>Create a new person record</em> {% } %}
             </div>
         </a>

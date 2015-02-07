@@ -591,17 +591,20 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Wait for specified number of seconds. Use this as a last resort. Consider using {@link #waitFor(String)} or {@link #waitForPageload()}
+     * Wait for specified number of seconds. Use this as a last resort. Consider using {@link #waitFor(String)} or {@link #waitForPageload()}.
+     *
+     * @Deprecated 
+     * Honestly, the author of this API does not like to engage in hyperbole, but if you use this method there is a strong likelyhood
+     * that you are a terrible person.  LOOK AWAY.
      * 
      * @param timeInSeconds
      *            seconds to wait before timeout
      */
+    @Deprecated
     public void waitFor(int timeInSeconds) {
-        //FIXME: rewrite in terms of waitFor(ExpectedCondition, int). Still bad but at least you can catch selenium exceptions.
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
-        } catch (InterruptedException e) {
-            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+        } catch (InterruptedException ignored) {
         }
     }
 

@@ -57,19 +57,19 @@
          * shows the user a status message
          */
         self.updateStatus = function(msg) {
+            console.log("updateStatus:: %s", msg);
             $scope.statusMessage = msg;
         }
         
         self.loadJSON = function() {
-            if (window.location.hash) {
-                var hashId = window.location.hash.substring(1);
-                var result = dataService.loadExistingIntegration(hashId , self.integration);
-                result.then(function(status){
-                    self.updateStatus("Done loading");
-                });
-            } else {
+            var jsonData = dataService.getDocumentData("jsondata");
+            if(!jsonData) return;
+            self.updateStatus("Loading...");
+            //fixme: reintroduce load-via-hashurl
+            var result = dataService.loadIntegration(jsonData , self.integration);
+            result.then(function(){
                 self.updateStatus("Done loading");
-            }
+            });
          };
         
         /**

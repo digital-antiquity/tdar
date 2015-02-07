@@ -320,9 +320,6 @@
         function _dataTablesAdded(addedDataTables) {
             console.debug("_dataTablesAdded::");
 
-            addedDataTables.forEach(function(dataTable) {
-                console.log(dataTable);
-            });
             // Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the dataTables
             // Calculate the new list of shared ontologies, find out if any ontologies should
             var currentSharedOntologyIds = self.ontologies.map(function(ontology) {
@@ -338,10 +335,6 @@
             self.getIntegrationColumns().forEach(function(integrationColumn) {
                 integrationColumn.$getSelectedDataTableColumns()
             });
-
-            // Step 3: account for display columns that need an additional selectedDataTableColumn entry.
-            // todo: need to update the selectedDataTables information for all displayColumns
-
         }
 
         /**
