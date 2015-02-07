@@ -856,7 +856,7 @@ TDAR.common = function (TDAR, fileupload) {
     /**
      * Return string that has been html-encoded twice
      * @param value string to encode
-     * @returns {*} double-encoded copy of string (e.g. htmlDoubleEncode('&') == "you &amp;amp; me")
+     * @returns {*} double-encoded copy of string (e.g. htmlDoubleEncode('you & me') == "you &amp;amp; me")
      * @private
      */
     var _htmlDoubleEncode = function (value) {
