@@ -17,13 +17,11 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.stat.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -343,7 +341,7 @@ public class GenericDao {
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass) {
-        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
+        return getCriteria(persistentClass).addOrder(Order.asc("id")).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
@@ -354,7 +352,7 @@ public class GenericDao {
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass, int batchSize) {
-        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
+        return getCriteria(persistentClass).addOrder(Order.asc("id")).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
     }
 
     @SuppressWarnings("unchecked")

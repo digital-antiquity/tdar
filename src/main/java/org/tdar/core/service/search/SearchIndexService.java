@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +36,8 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
@@ -64,7 +63,7 @@ public class SearchIndexService {
     private EmailService emailService;
 
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
     private ProjectDao projectDao;
@@ -115,7 +114,7 @@ public class SearchIndexService {
      * @param person
      */
     @SuppressWarnings("deprecation")
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex, Person person) {
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
@@ -143,33 +142,8 @@ public class SearchIndexService {
                 sf.optimize(toIndex);
                 Number total = genericDao.count(toIndex);
                 ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
-                String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
-                updateAllStatuses(updateReceiver, activity, message, 0f);
-                int divisor = getDivisor(total);
-                float currentProgress = 0f;
-                int numProcessed = 0;
-                String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
-
-                while (scrollableResults.next()) {
-                    Object item = scrollableResults.get(0);
-                    currentProgress = numProcessed / total.floatValue();
-                    index(fullTextSession, item);
-                    numProcessed++;
-                    float totalProgress = ((currentProgress * maxPer) + percent);
-                    if ((numProcessed % divisor) == 0) {
-                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
-                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
-                    }
-                    if ((numProcessed % FLUSH_EVERY) == 0) {
-                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
-                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
-                        logger.trace("flushing search index");
-                        fullTextSession.flushToIndexes();
-                        fullTextSession.clear();
-                        logger.trace("flushed search index");
-                    }
-                }
-                scrollableResults.close();
+                String message;
+                indexScrollable(updateReceiver, activity, fullTextSession, percent, maxPer, toIndex, total, scrollableResults);
                 fullTextSession.flushToIndexes();
                 fullTextSession.clear();
                 percent += maxPer;
@@ -191,13 +165,47 @@ public class SearchIndexService {
         activity.end();
     }
 
+    private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, FullTextSession fullTextSession, float percent, float maxPer,
+            Class<?> toIndex, Number total, ScrollableResults scrollableResults) {
+        String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
+        updateAllStatuses(updateReceiver, activity, message, 0f);
+        int divisor = getDivisor(total);
+        float currentProgress = 0f;
+        int numProcessed = 0;
+        String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
+
+        while (scrollableResults.next()) {
+            Object item = scrollableResults.get(0);
+            currentProgress = numProcessed / total.floatValue();
+            index(fullTextSession, item);
+            numProcessed++;
+            float totalProgress = ((currentProgress * maxPer) + percent);
+            if ((numProcessed % divisor) == 0) {
+                message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
+                updateAllStatuses(updateReceiver, activity, message, totalProgress);
+                logger.debug("last indexed: {}", item);
+            }
+            if ((numProcessed % FLUSH_EVERY) == 0) {
+                message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
+                updateAllStatuses(updateReceiver, activity, message, totalProgress);
+                logger.trace("flushing search index");
+                fullTextSession.flushToIndexes();
+                fullTextSession.clear();
+                logger.trace("flushed search index");
+            }
+        }
+        scrollableResults.close();
+    }
+
     private void updateAllStatuses(AsyncUpdateReceiver updateReceiver, Activity activity, String status, float complete) {
         if (updateReceiver != null) {
             updateReceiver.setPercentComplete(complete);
             updateReceiver.setStatus(status);
         }
-        activity.setMessage(status);
-        activity.setPercentDone(complete);
+        if (activity != null) {
+            activity.setMessage(status);
+            activity.setPercentDone(complete);
+        }
         logger.debug("status: {} [{}%]", status, complete);
     }
 
@@ -226,16 +234,12 @@ public class SearchIndexService {
      * 
      * @param collectionToReindex
      */
+    @Transactional
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         logger.trace("indexing collection async");
-        List<ResourceCollection> collections = resourceCollectionService.getAllChildCollections(collectionToReindex);
-        collections.add(collectionToReindex);
-        Set<Resource> resources = new HashSet<Resource>();
-        for (ResourceCollection collection : collections) {
-            resources.addAll(collection.getResources());
-        }
-
-        indexCollection(resources);
+        Long count = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
+        ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
+        indexScrollable(getDefaultUpdateReceiver(), null, getFullTextSession(), 0f, 100f, Resource.class, count, results);
     }
 
     /**
@@ -244,6 +248,7 @@ public class SearchIndexService {
      * @param collectionToReindex
      */
     @Async
+    @Transactional
     public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
         indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
@@ -445,6 +450,7 @@ public class SearchIndexService {
      * @param project
      */
     @Async
+    @Transactional(readOnly = true)
     public void indexProjectAsync(final Project project) {
         indexProject(project);
     }
@@ -455,7 +461,7 @@ public class SearchIndexService {
     }
 
     @Async
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<Class<? extends Indexable>> toReindex, final Person person) {
         logger.info("reindexing indexall");
         indexAll(reciever, toReindex, person);
