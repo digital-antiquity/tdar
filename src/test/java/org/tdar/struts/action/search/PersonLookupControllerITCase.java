@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.lookup.PersonLookupAction;
 import org.tdar.struts.interceptor.ObfuscationResultListener;
@@ -33,6 +36,9 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     @Autowired
     ReflectionService reflectionService;
 
+    @Autowired
+    SearchService searchService;
+    
     @Autowired
     private PersonLookupAction controller;
     private Logger log = Logger.getLogger(getClass());
@@ -156,8 +162,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     @Rollback
     // we should properly escape input
     public void testPersonByUsername() {
-        TdarUser user = new TdarUser("billing", "admin", "billingadmin@tdar.net");
-        user.setUsername("billingAdmin");
+        TdarUser user = new TdarUser("billing", "admin", "billingadmin@tdar.net", "billingAdmin");
         user.markUpdated(getAdminUser());
         genericService.saveOrUpdate(user);
         searchIndexService.indexAll(getAdminUser(), Person.class);
@@ -179,6 +184,17 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         assertEquals("result should be success", Action.SUCCESS, result);
         List<Person> people = controller.getResults();
         assertEquals("person list should have exactly one item", 2, people.size());
+        
+        // personLookup: +(+firstName:keit* +registered:true) +status:ACTIVE (SORT:RELEVANCE,TITLE)  LUCENE: 132 | HYDRATION: 109 | # RESULTS: 2 | START #: 0
+        QueryBuilder builder = searchService.getQueryBuilder(TdarUser.class);
+        Query query = builder.bool().must(builder.keyword().wildcard().onField("firstName").matching("Keit*").createQuery()).must(
+                builder.phrase().onField("registered").sentence("true").createQuery()).createQuery();
+        query = builder.bool().must(query).must(builder.phrase().onField("status").sentence("ACTIVE").createQuery()).createQuery();
+        org.hibernate.Query fullTextQuery = searchService.createFullTextQuery(query, TdarUser.class);
+        logger.debug(query.toString());
+        logger.debug("results: {} ", fullTextQuery.list());
+        
+        
     }
 
     @Test

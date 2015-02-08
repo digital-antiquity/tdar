@@ -30,13 +30,12 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.util.Version;
 import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
-import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.Search;
+import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.query.facet.Facet;
 import org.hibernate.search.query.facet.FacetSortOrder;
 import org.hibernate.search.query.facet.FacetingRequest;
@@ -149,7 +148,7 @@ public class SearchService {
      * @param obj
      * @return
      */
-    public org.hibernate.search.query.dsl.QueryBuilder getQueryBuilder(Class<?> obj) {
+    public org.hibernate.search.query.dsl.QueryBuilder getQueryBuilder(Class<? extends Indexable> obj) {
         return Search.getFullTextSession(sessionFactory.getCurrentSession()).getSearchFactory().buildQueryBuilder().forEntity(obj).get();
     }
 
@@ -794,4 +793,10 @@ public class SearchService {
         queryBuilder.append(qpg);
     }
 
+    public org.hibernate.Query createFullTextQuery(Query query, Class<? extends Indexable> cls) {
+        FullTextSession fullTextSession = Search.getFullTextSession( sessionFactory.getCurrentSession() );
+        org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery( query, cls);
+        return fullTextQuery;
+        
+    }
 }
