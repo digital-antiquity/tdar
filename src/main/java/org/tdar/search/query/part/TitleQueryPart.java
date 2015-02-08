@@ -6,7 +6,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.service.search.Operator;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -15,6 +18,8 @@ public class TitleQueryPart extends FieldQueryPart<String> {
 
     private static final float TITLE_BOOST = 6f;
     private String prefix = "";
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+
 
     public TitleQueryPart() {
     }
