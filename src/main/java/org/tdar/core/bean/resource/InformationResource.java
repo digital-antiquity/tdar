@@ -566,9 +566,9 @@ public abstract class InformationResource extends Resource {
         return getLatestVersions(VersionType.UPLOADED);
     }
 
-    @Field(store = Store.NO)
-    @FieldBridge(impl = PersistentReaderBridge.class)
-    @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
+//    @Field(store = Store.NO)
+//    @FieldBridge(impl = PersistentReaderBridge.class)
+//    @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
     // @Boost(0.5f)
     @XmlTransient
