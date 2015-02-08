@@ -416,9 +416,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         <#if sessionData?? && sessionData.authenticated>
         <h2>Administrative Information</h2>
 
-			<#if !resource.resourceType.project>
-            	<@common.resourceUsageInfo />
-			</#if>
+        	<@common.resourceUsageInfo />
         <div>
             <dl class="dl-horizontal">
                 <dt>

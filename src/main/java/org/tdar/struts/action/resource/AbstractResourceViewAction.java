@@ -211,7 +211,8 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null));
+                List<Long> extractIds = PersistableUtils.extractIds(((Project) getPersistable()).getCachedInformationResources());
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, extractIds, null, null, null));
             } else {
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null));
             }
@@ -280,7 +281,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {
         return ResourceCreatorRole.getAll();
     }
-    
+
     public Set<ResourceAnnotationKey> getAllResourceAnnotationKeys() {
         Set<ResourceAnnotationKey> keys = new HashSet<>();
         if ((getPersistable() != null) && CollectionUtils.isNotEmpty(getPersistable().getActiveResourceAnnotations())) {
@@ -290,7 +291,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         }
         return keys;
     }
-    
 
     public List<ResourceCreatorProxy> getAuthorshipProxies() {
         if (CollectionUtils.isEmpty(authorshipProxies)) {
