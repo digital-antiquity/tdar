@@ -188,12 +188,12 @@
             }
 
             
-            var validMappedIntegrationColumns = true;
-            integration.getIntegrationColumns().forEach(function(col) {
-                if (col.selectedDataTableColumns.length !== integration.dataTables.length) {
-                    console.log("column has fewer selected dataTableColumns than selected dataTables:" + col.name);
-                    validMappedIntegrationColumns = false;
+            var validMappedIntegrationColumns = integration.getIntegrationColumns().every(function(col) {
+                var allColumnsMapped = col.selectedDataTableColumns.length === integration.dataTables.length;
+                if(!allColumnsMapped) {
+                    console.info("column has fewer selected dataTableColumns than selected dataTables: %s", col.name);
                 }
+                return allColumnsMapped;
             });
             
             return validMappedIntegrationColumns;
