@@ -43,8 +43,6 @@
         }
 
         self.downloadResult = function(ticketId) {
-            //... How to use it:
-            _downloadURL('/workspace/download?ticketId=' + ticketId);
         }
 
         self.saveClicked = function() {
@@ -60,22 +58,19 @@
          * shows the user a status message
          */
         self.updateStatus = function(msg) {
+            console.log("updateStatus:: %s", msg);
             $scope.statusMessage = msg;
         }
 
         
         self.loadJSON = function() {
-            var jsonData = dataService.getDocumentData().jsondata;
+            var jsonData = dataService.getDocumentData("jsondata");
+            if(!jsonData) return;
             self.updateStatus("Loading...");
-            console.log(jsonData);
-            if (jsonData.title != undefined && jsonData.dataTables != undefined) {
-                var result = dataService.loadExistingIntegration(jsonData , self.integration);
-                result.then(function(status){
-                    self.updateStatus("Done loading");
-                });
-            } else {
+            var result = dataService.loadIntegration(jsonData , self.integration);
+            result.then(function(){
                 self.updateStatus("Done loading");
-            }
+            });
          };
         
         /**

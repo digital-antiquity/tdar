@@ -65,7 +65,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public static final String REASON = "because";
 
-
     public void bookmarkResource(Resource r, TdarUser user) throws Exception {
         bookmarkResource(r, false, user);
     }
@@ -118,7 +117,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
                 seen = true;
             }
         }
-        Assert.assertTrue("should have seen resource in bookmark list",seen);
+        Assert.assertTrue("should have seen resource in bookmark list", seen);
     }
 
     public void removeBookmark(Resource r, boolean ajax, TdarUser user) throws Exception {
@@ -129,8 +128,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
                 seen = true;
             }
         }
-        
-        Assert.assertTrue("should have seen resource in bookmark list",seen);
+
+        Assert.assertTrue("should have seen resource in bookmark list", seen);
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
         bookmarkController.prepare();
@@ -166,7 +165,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertEquals(owner, controller.getAuthenticatedUser());
         ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
-//        resourceCollection.setParent(genericService.find(ResourceCollection.class, parentId));
         controller.setParentId(parentId);
         resourceCollection.setType(type);
         controller.setAsync(false);
@@ -184,6 +182,18 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertTrue(save.equals(Action.SUCCESS));
+        genericService.synchronize();
+        Long id = resourceCollection.getId();
+        resourceCollection = null;
+        resourceCollection = genericService.find(ResourceCollection.class, id);
+        logger.debug("parentId: {}", parentId);
+        logger.debug("Resources: {}", resources);
+        if (PersistableUtils.isNotNullOrTransient(parentId)) {
+            assertEquals(parentId, resourceCollection.getParent().getId());
+        }
+        if (resources != null) {
+            assertTrue(resourceCollection.getResources().containsAll(resources));
+        }
         return resourceCollection;
     }
 

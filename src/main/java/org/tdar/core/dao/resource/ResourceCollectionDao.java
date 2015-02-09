@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
+import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,6 +202,24 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query.setParameter("apiKey", apiKey);
         query.setParameter("hostname", referrer.toLowerCase());
         return query.list();
+    }
+
+    public ScrollableResults findAllResourcesInCollectionAndSubCollectionScrollable(ResourceCollection persistable) {
+        if (PersistableUtils.isNullOrTransient(persistable)) {
+            return null;
+        }
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES);
+        query.setLong("id", persistable.getId());
+        return query.scroll();
+    }
+
+    public Long countAllResourcesInCollectionAndSubCollection(ResourceCollection persistable) {
+        if (PersistableUtils.isNullOrTransient(persistable)) {
+            return null;
+        }
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT);
+        query.setLong("id", persistable.getId());
+        return (Long) query.uniqueResult();
     }
 
 }

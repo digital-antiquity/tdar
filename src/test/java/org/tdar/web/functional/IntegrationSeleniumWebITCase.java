@@ -15,6 +15,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tdar.web.functional.util.ByLabelText;
 import org.tdar.web.functional.util.WebElementSelection;
 
+import static org.openqa.selenium.By.partialLinkText;
+import static org.openqa.selenium.By.linkText;
+import static org.openqa.selenium.By.id;
+
+
 
 public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
@@ -129,26 +134,26 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
 
-        find(By.id("btnAddDisplayColumn")).click();
-        By tab1 = By.id("tab0");
+        find(id("btnAddDisplayColumn")).click();
+        By tab1 = id("tab0");
         waitFor(tab1).isDisplayed();
         // dt_ + tabid + _ + data_table_id
-        By spital_select = By.id("dt_0_" + SPITAL_DT_ID);
+        By spital_select = id("dt_0_" + SPITAL_DT_ID);
         chooseSelectByName("Site Code", spital_select);
-        By alex_select = By.id("dt_0_" + ALEX_DT_ID);
+        By alex_select = id("dt_0_" + ALEX_DT_ID);
         chooseSelectByName("LOCATION", alex_select);
 
         takeScreenshot();
-        find(By.linkText("Add Integration Column")).click();
-        find(By.linkText("Fauna Taxon Ontology")).click();
+        find(linkText("Add Integration Column")).click();
+        find(linkText("Fauna Taxon Ontology")).click();
         // wait for tab visible
-        waitFor(By.id("tabtab1")).isDisplayed();
+        waitFor(id("tabtab1")).isDisplayed();
         // wait for tab contents is visible
-        waitFor(By.id("tab1")).isDisplayed();
+        waitFor(id("tab1")).isDisplayed();
         logger.debug(getText());
 
         find(aves).click();
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(By.id("cbont_64870"), true).apply(getDriver()).booleanValue());
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(id("cbont_64870"), true).apply(getDriver()).booleanValue());
 
         find(rabbit).click();
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
@@ -161,24 +166,26 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         gotoPage("/workspace/list");
         logger.debug(getText());
         clearPageCache();
-        find(By.partialLinkText(TEST_INTEGRATION)).first().click();
+        find(partialLinkText(TEST_INTEGRATION)).first().click();
         waitForPageload();
         
-        find(By.partialLinkText("Fauna Taxon Ontology")).click();
-        waitFor(4);
+        waitFor(partialLinkText("Fauna Taxon Ontology")).click();
+        waitFor(".nodechild1");
         logger.debug(getText());
-        takeScreenshot();
+        takeScreenshot("expecting populated fauna taxon pane");
+
         assertEquals(find(By.name("integration.title")).val(),TEST_INTEGRATION);
-        assertTrue(getText().toLowerCase().contains("aves"));
-        assertTrue(getText().toLowerCase().contains("rabbit"));
-        assertTrue(getText().toLowerCase().contains("taxon"));
-        assertTrue(getText().toLowerCase().contains("element"));
+        String ontologyPaneText = getText().toLowerCase();
+        
+        assertTrue(ontologyPaneText.contains("aves"));
+        assertTrue(ontologyPaneText.contains("rabbit"));
+        assertTrue(ontologyPaneText.contains("taxon"));
+        assertTrue(ontologyPaneText.contains("element"));
         assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
-        assertTrue(getText().toLowerCase().contains("spitalfield"));
-        assertTrue(getText().toLowerCase().contains("alexandria"));
-
+        assertTrue(ontologyPaneText.contains("spitalfield"));
+        assertTrue(ontologyPaneText.contains("alexandria"));
     }
 
     
