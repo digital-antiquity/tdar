@@ -110,7 +110,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
                 return true;
             }
         } catch (TdarActionException e) {
-            getLogger().debug("error:",e);
+            getLogger().debug("error:", e);
         }
         return false;
     }
@@ -402,16 +402,16 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        if (!isRedirectBadSlug()) {
+        if (!isRedirectBadSlug() && PersistableUtils.isNotTransient(getPersistable())) {
             try {
-            buildLuceneSearch();
+                buildLuceneSearch();
             } catch (Exception e) {
                 if (e.getCause() instanceof SearchPaginationException) {
                     getLogger().warn("search pagination issue", e);
                 } else {
                     throw e;
                 }
-                
+
             }
         }
     }
