@@ -61,7 +61,24 @@
             console.log("updateStatus:: %s", msg);
         }
 
+        /**
+         * Show user status messages across the span of a promise lifecycle.
+         *
+         * @param promise
+         * @param msgStart message to immediately display
+         * @param msgDone message to display when promise resolves
+         * @param [msgFail] message to display when promise rejects (default: "${msgStart} : failed")
+         */
+        self.promiseStatus = function(promise, msgStart, msgDone, msgFail) {
+            var _msgFail = msgFail ? msgFail : (msgStart + ":" + "failed.");
 
+            $scope.statusMessage = msgStart;
+            promise.then(
+                    function(){self.updateStatus(msgDone)},
+                    function(){self.updateStatus(_msgFail)}
+            );
+            return promise;
+        }
 
 
         self.loadJSON = function() {
@@ -265,42 +282,29 @@
         self.submitIntegration  = function() {
             $scope.downloadReady = false
             var results = dataService.processIntegration(integration);
+            self.promiseStatus(results, "Processing ntegration", "Integration Results ready!");
             results.then(function(data){
-                console.debug("submitIntegration:: success");
                 $scope.downloadReady = true;
                 $('#divResultContainer').modal({show:true});
                 $scope.download = {
                     previewData: {
                         //fixme: where are the column names? generate 'col1, col2, ..., coln' for now
-                        columns: data.previewData[0].map(function(val, idx){return "col" + idx}),
+                        columns: data.previewColumnLabels,
+                        rows: data.previewData
+                    },
+                    pivotData: {
+                        columns: data.pivotColumnLabels,
                         rows: []
-                    }
+                    },
+                    ticketId: data.ticket.id
                 };
-                //hack: need to make sure rows gets updated after aoColumns
-                $scope.download.previewData.rows = data.previewData;
-
                 console.debug(data);
-
-                
-
-
             }, function(err) {
                 console.debug("submitIntegration:: failed:%s", err);
                 //todo: toast explaining what went wrong
             });
 
         };
-
-        //fixme: examplse of how to refer to controller data in a directive attribute
-        self.exampleData1 = [
-                ['col1', 'col2'],
-                ['a1', 'b1'],
-                ['a2', 'b2'],
-                ['a3', 'b3'],
-        ];
-
-        self.exampleData2 = [];
-
     }]);
 
     /* global jQuery, angular */

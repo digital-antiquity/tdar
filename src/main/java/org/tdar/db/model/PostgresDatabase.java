@@ -940,20 +940,20 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
                     dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(column.getName())));
-                    dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(column.getName())));
-                    dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(column.getName())));
 
                     DataTableColumn integrationColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
+                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(column.getName())));
 
                     DataTableColumn sortColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     sortColumn.setName(name + SORT_SUFFIX);
                     tempTable.getDataTableColumns().add(sortColumn);
                     executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));
+                    sortColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(column.getName())));
                 }
             }
         }

@@ -9,6 +9,10 @@
 
 
     app.directive("tdarDatatable", [function() {
+        var _defaultOptions = {
+            bPaginate: false
+        }
+
         var self =  {
             restrict: 'A',
             link: function(scope, element, attrs){
@@ -37,10 +41,10 @@
                             widget.fnDestroy();
                             widget = null;
                         }
-                        var options = {
+                        var options = $.extend({}, _defaultOptions, {
                             aoColumns: aoColumns,
                             aaData: []
-                        }
+                        });
 
                         widget = element.DataTable(options);
 

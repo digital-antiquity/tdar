@@ -28,22 +28,20 @@
                </div>
             </div>
             <div class="span3">
-                <div class="btn-group">
-                    <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
-                    <!-- Split button -->
-                    <div class="btn-group">
-                      <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
-                      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                        <li>
-                        <a ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSaveAs" ng-click="ctrl.saveAsClicked()">Save As</a>
-                      </ul>
-                    </div>
+                <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.submitIntegration()">Integrate</button>
+                <#--<button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>-->
 
-                    <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
-                    <button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>
+                <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
+                <!-- Split button -->
+                <div class="btn-group">
+                  <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
+                  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li>
+                    <a ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSaveAs" ng-click="ctrl.saveAsClicked()">Save As</a>
+                  </ul>
                 </div>
             </div>
         </div>
@@ -467,7 +465,7 @@ ${categoriesJson}
 </script>
 
 
-<script type="text/ng-template" id="workspace/modal-result.html">
+<div>
 
     <div id="divResultContainer" class="modal modal-big fade hide" tabindex="-1" role="dialog">
 
@@ -485,20 +483,15 @@ ${categoriesJson}
                       <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
                         <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
-                        <li role="presentation"><a href="#download" aria-controls="download" role="tab" data-toggle="tab">Download</a></li>
                       </ul>
                     
                       <!-- Tab panes -->
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="pivot">
-                            <#-- <table tdar-datatable aa-data="download.pivotData.data" ao-columns="download.pivotData.columns" id="tblPivotData"></table> -->
+                            <table tdar-datatable aa-data="download.pivotData.rows" ao-columns="download.pivotData.columns" id="tblPivotData"></table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
                             <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="download">
-                             <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticket.id}}">Download</a>
-                             <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
                         </div>
                       </div>
                     
@@ -510,10 +503,11 @@ ${categoriesJson}
 
             <div class="row-fluid">
                 <div class="span12">
+                    <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                 </div>
             </div>
         </div>
     </div>
-</script>
+</div>
 </body>
