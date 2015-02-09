@@ -130,9 +130,7 @@ public class SearchIndexService {
         try {
             genericDao.synchronize();
             FullTextSession fullTextSession = getFullTextSession();
-            FlushMode previousFlushMode = fullTextSession.getFlushMode();
-            fullTextSession.setFlushMode(FlushMode.MANUAL);
-            fullTextSession.setCacheMode(CacheMode.IGNORE);
+            FlushMode previousFlushMode = prepare(fullTextSession);
             SearchFactory sf = fullTextSession.getSearchFactory();
             float percent = 0f;
             updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
@@ -151,11 +149,7 @@ public class SearchIndexService {
                 updateAllStatuses(updateReceiver, activity, message, percent);
             }
 
-            fullTextSession.flushToIndexes();
-            fullTextSession.clear();
-            updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
-            fullTextSession.setFlushMode(previousFlushMode);
-            activity.end();
+            complete(updateReceiver, activity, fullTextSession, previousFlushMode);
         } catch (Throwable ex) {
             logger.warn("exception: {}", ex);
             if (updateReceiver != null) {
@@ -165,6 +159,46 @@ public class SearchIndexService {
         activity.end();
     }
 
+    /**
+     * Prepares a session for reindexing. REturns the old flush mode
+     * @param fullTextSession
+     * @return
+     */
+    private FlushMode prepare(FullTextSession fullTextSession) {
+        FlushMode previousFlushMode = fullTextSession.getFlushMode();
+        fullTextSession.setFlushMode(FlushMode.MANUAL);
+        fullTextSession.setCacheMode(CacheMode.IGNORE);
+        return previousFlushMode;
+    }
+
+    /**
+     * Completes the reindexing process and resets the flush mode
+     * @param updateReceiver
+     * @param activity
+     * @param fullTextSession
+     * @param previousFlushMode
+     */
+    private void complete(AsyncUpdateReceiver updateReceiver, Activity activity, FullTextSession fullTextSession, FlushMode previousFlushMode) {
+        fullTextSession.flushToIndexes();
+        fullTextSession.clear();
+        updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
+        fullTextSession.setFlushMode(previousFlushMode);
+        if (activity != null) {
+            activity.end();
+        }
+    }
+
+    /**
+     * Extracting out the indexing for scrollable results so that it can be used and shared between methods.
+     * @param updateReceiver
+     * @param activity
+     * @param fullTextSession
+     * @param percent
+     * @param maxPer
+     * @param toIndex
+     * @param total
+     * @param scrollableResults
+     */
     private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, FullTextSession fullTextSession, float percent, float maxPer,
             Class<?> toIndex, Number total, ScrollableResults scrollableResults) {
         String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
@@ -239,7 +273,10 @@ public class SearchIndexService {
         logger.trace("indexing collection async");
         Long count = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
-        indexScrollable(getDefaultUpdateReceiver(), null, getFullTextSession(), 0f, 100f, Resource.class, count, results);
+        FlushMode previousFlushMode = prepare(getFullTextSession());
+        AsyncUpdateReceiver updateReceiver = getDefaultUpdateReceiver();
+        indexScrollable(updateReceiver, null, getFullTextSession(), 0f, 100f, Resource.class, count, results);
+        complete(updateReceiver, null, getFullTextSession(), previousFlushMode);
     }
 
     /**
