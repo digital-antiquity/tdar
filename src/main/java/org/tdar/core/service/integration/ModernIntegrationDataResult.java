@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -69,27 +67,31 @@ public class ModernIntegrationDataResult implements Serializable {
     }
 
     @JsonView(JsonIntegrationFilter.class)
-    public Map<String, HashMap<String, Integer>> getRawData() {
-        HashMap<String, HashMap<String, Integer>> result = new HashMap<>();
-        Map<Long, DataTable> idMap = PersistableUtils.createIdMap(integrationContext.getDataTables());
+    public List<List<Object>> getPivotData() {
+        List<List<Object>> rows = new ArrayList<List<Object>>();
         for (Entry<List<OntologyNode>, HashMap<Long, IntContainer>> entrySet : pivotData.entrySet()) {
-            HashMap<Long, IntContainer> value = entrySet.getValue();
-            HashMap<String, Integer> val = new HashMap<String, Integer>();
-            for (Long k : value.keySet()) {
-                val.put(ModernDataIntegrationWorkbook.formatTableName(idMap.get(k)), value.get(k).getVal());
-            }
-            String key = "";
+            List<Object> cols = new ArrayList<Object>();
             for (OntologyNode node : entrySet.getKey()) {
-                if (StringUtils.isNotEmpty(key)) {
-                    key += "l ";
+                if (node != null) {
+                cols.add(node.getDisplayName());
+                } else {
+                    cols.add("");
                 }
-                key += node.getDisplayName();
             }
-            logger.debug("preview: {}", entrySet);
-            result.put(key, val);
+            
+            HashMap<Long, IntContainer> value = entrySet.getValue();
+            for (DataTable table : integrationContext.getDataTables()) {
+                Long tableId = table.getId();
+                if (value.containsKey(tableId)) {
+                    cols.add(value.get(tableId).getVal());
+                } else {
+                    cols.add("");
+                }
+            }
+            rows.add(cols);
         }
 
-        return result;
+        return rows;
     }
 
     public void setPreviewData(List<Object[]> previewData) {
