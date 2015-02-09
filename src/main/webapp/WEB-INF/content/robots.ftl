@@ -9,6 +9,8 @@ Disallow: /search/download
 Disallow: /filestore/
 Disallow: /cart/review
 Disallow: /search/advanced
+Disallow: /browse/creators/135028
+
 <#else>
 Disallow: *
 </#if>

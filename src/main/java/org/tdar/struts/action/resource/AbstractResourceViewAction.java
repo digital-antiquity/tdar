@@ -52,6 +52,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
+import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
@@ -178,6 +179,14 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         } catch (Exception e) {
             getLogger().error("error converting scholar tag for resource:", getId(), e);
         }
+        
+        try {
+            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+            transformer.convert(serializationService, getResource());
+        } catch (Exception e) {
+            getLogger().error("error converting to json-ld", e);
+        }
+        
         return sw.toString();
     }
 

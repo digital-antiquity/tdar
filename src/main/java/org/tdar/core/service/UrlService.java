@@ -94,7 +94,7 @@ public class UrlService {
      * 
      * @return
      */
-    public String thumbnailUrl(InformationResourceFileVersion version) {
+    public static String thumbnailUrl(InformationResourceFileVersion version) {
         return String.format("%s/files/img/sm/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
     }
 
