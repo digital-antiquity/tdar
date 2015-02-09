@@ -207,20 +207,24 @@ public class SearchIndexService {
         float currentProgress = 0f;
         int numProcessed = 0;
         String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
-
+        Long prevId = 0L;
+        Long currentId = 0L;
         while (scrollableResults.next()) {
             Object item = scrollableResults.get(0);
+            currentId = ((Indexable)item).getId();
             currentProgress = numProcessed / total.floatValue();
             index(fullTextSession, item);
             numProcessed++;
             float totalProgress = ((currentProgress * maxPer) + percent);
             if ((numProcessed % divisor) == 0) {
-                message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
+                String range = String.format("(%s - %s)", prevId, currentId);
+                message = String.format("indexed %s %s %s %% %s", numProcessed , MIDDLE , totalProgress, range);
                 updateAllStatuses(updateReceiver, activity, message, totalProgress);
                 logger.debug("last indexed: {}", item);
+                prevId = ((Indexable)item).getId();
             }
             if ((numProcessed % FLUSH_EVERY) == 0) {
-                message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
+                message = String.format("indexed %s %s %s %% (flushing)", numProcessed , MIDDLE , totalProgress);
                 updateAllStatuses(updateReceiver, activity, message, totalProgress);
                 logger.trace("flushing search index");
                 fullTextSession.flushToIndexes();
