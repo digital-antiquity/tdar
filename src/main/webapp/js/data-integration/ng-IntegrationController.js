@@ -183,10 +183,20 @@
             }
 
             // do we have an integration column
-            if (integration.getIntegrationColumns().length > 0) {
-                return true;
+            if (integration.getIntegrationColumns().length == 0) {
+                return false;
             }
-            return false;
+
+            
+            var validMappedIntegrationColumns = true;
+            integration.getIntegrationColumns().forEach(function(col) {
+                if (col.selectedDataTableColumns.length !== integration.dataTables.length) {
+                    console.log("column has fewer selected dataTableColumns than selected dataTables:" + col.name);
+                    validMappedIntegrationColumns = false;
+                }
+            });
+            
+            return validMappedIntegrationColumns;
         }
 
         $scope.isMinimallyValid = function() {
