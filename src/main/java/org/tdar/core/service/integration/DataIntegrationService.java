@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -185,18 +184,6 @@ public class DataIntegrationService {
     }
 
     /**
-     * @see #createGeneratedCodingSheet(DataTableColumn, Person, Ontology)
-     * 
-     * @param column
-     * @param submitter
-     * @return
-     */
-    @Transactional
-    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter) {
-        return createGeneratedCodingSheet(provider, column, submitter, column.getDefaultOntology());
-    }
-
-    /**
      * When a user maps a @link DataTableColumn to an @link Ontology without a @link CodingSheet specifically chosen, create one on-the-fly from the @link
      * OntologyNode values.
      * 
@@ -286,7 +273,7 @@ public class DataIntegrationService {
                 dataTableColumns = table.getDataTableColumns();
             }
             for (DataTableColumn column : dataTableColumns) {
-                Ontology ontology = column.getDefaultOntology();
+                Ontology ontology = column.getMappedOntology();
                 if (ontology != null) {
                     List<DataTableColumn> columns = dataTableAutoMap.get(ontology);
                     if (columns == null) {
@@ -488,24 +475,30 @@ public class DataIntegrationService {
      * @param context
      * @param provider
      * @return
+     * @throws Exception 
      */
     @Transactional
     @Deprecated
-    public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext context, TextProvider provider) {
+    public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext context, TextProvider provider) throws Exception {
         context.setDataTables(genericDao.loadFromSparseEntities(context.getDataTables(), DataTable.class));
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
             hydrateIntegrationColumn(integrationColumn);
         }
+
+//        logger.debug(serializationService.convertToXML(context));
 
         ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider, excelService);
         storeResult(result);
         return result;
     }
 
-    public ModernIntegrationDataResult generateModernIntegrationResult(String integration, TextProvider provider, TdarUser authenticatedUser) throws JsonParseException, JsonMappingException, IOException, IntegrationDeserializationException {
+    @Transactional
+    public ModernIntegrationDataResult generateModernIntegrationResult(String integration, TextProvider provider, TdarUser authenticatedUser) throws Exception {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
+        logger.debug("incoming JSON: {}", integration);
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
         IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao);
+//        logger.debug(serializationService.convertToXML(integrationContext));
         integrationContext.setCreator(authenticatedUser);
         ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)",null, authenticatedUser);
         log.setTimestamp(new Date());

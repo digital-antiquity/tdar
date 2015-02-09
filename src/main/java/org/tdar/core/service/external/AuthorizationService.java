@@ -31,7 +31,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
@@ -78,7 +77,7 @@ public class AuthorizationService implements Accessible {
     private ResourceCollectionDao resourceCollectionDao;
 
     @Override
-    public List<Resource> findEditableResources(Person person, boolean isAdmin, List<ResourceType> resourceTypes) {
+    public List<Resource> findEditableResources(TdarUser person, boolean isAdmin, List<ResourceType> resourceTypes) {
         return authorizedUserDao.findEditableResources(person, resourceTypes, isAdmin);
     }
 
@@ -453,12 +452,17 @@ public class AuthorizationService implements Accessible {
      * Checks whether a person has the rights to view a collection based on their @link GeneralPermission on the @link ResourceCollection; filters by Shared
      * Visible collections
      */
-    public boolean canViewCollection(ResourceCollection collection, Person person) {
+    public boolean canViewCollection(ResourceCollection collection, TdarUser person) {
         if (collection == null) {
             return false;
         }
 
         if (collection.isShared() && !collection.isHidden()) {
+            return true;
+        }
+        
+        if (can(InternalTdarRights.VIEW_ANYTHING, person)) {
+            logger.trace("\tuser is special': {}", person);
             return true;
         }
         return authorizedUserDao.isAllowedTo(person, collection, GeneralPermissions.VIEW_ALL);
@@ -612,11 +616,8 @@ public class AuthorizationService implements Accessible {
 
     @Transactional(readOnly = true)
     public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
-        if (PersistableUtils.isNullOrTransient(workflow) ||
-                PersistableUtils.isNotNullOrTransient(workflow) && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser)) {
-            return true;
-        }
-        return false;
+        return (PersistableUtils.isNullOrTransient(workflow) ||
+                PersistableUtils.isNotNullOrTransient(workflow) && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser));
 
     }
 

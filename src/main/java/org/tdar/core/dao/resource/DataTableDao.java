@@ -48,8 +48,8 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         // FIXME: rewrite query to run twice, once for total count, and once for the paginated data
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE);
         query.setProperties(searchFilter);
-        query.setMaxResults(searchFilter.getMaxResults());
-        query.setFirstResult(searchFilter.getFirstResult());
+        query.setMaxResults(searchFilter.getRecordsPerPage());
+        query.setFirstResult(searchFilter.getStartRecord());
         query.setReadOnly(true);
         List<DataTableProxy> proxies = new ArrayList<>();
         for (Object[] obj_ : (List<Object[]>) query.list()) {

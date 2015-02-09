@@ -123,6 +123,10 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
         return Arrays.asList(AddressType.values());
     }
 
+    public Creator getCreator() {
+        return getPersistable();
+    }
+    
     public String getReturnUrl() {
         return returnUrl;
     }

@@ -257,9 +257,16 @@ public class ImportService {
                 // using a separate collection to avoid concurrent modification of bi-directional double-lists
                 Iterator<Persistable> iterator = contents.iterator();
                 originalList.clear();
+                boolean isResourceCollection = false;
                 while (iterator.hasNext()) {
                     Persistable p = iterator.next();
+                    if (p instanceof ResourceCollection) {
+                        isResourceCollection = true;
+                    }
                     toAdd.add(processIncoming(p, incomingResource, authorizedUser));
+                }
+                if (isResourceCollection) {
+                    continue;
                 }
                 if (toAdd.size() > 0) {
                     logger.info("{} adding ({})", contents, toAdd);
@@ -508,7 +515,7 @@ public class ImportService {
 
             if (property instanceof Creator) {
                 Creator creator = (Creator) property;
-                entityService.findOrSaveCreator(creator);
+                toReturn = (P) entityService.findOrSaveCreator(creator);
             }
 
             if (property instanceof ResourceCollection && resource instanceof Resource) {
@@ -517,6 +524,7 @@ public class ImportService {
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getResourceCollections(),
                         authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
+                toReturn = null;
             }
 
             if (property instanceof ResourceAnnotation) {

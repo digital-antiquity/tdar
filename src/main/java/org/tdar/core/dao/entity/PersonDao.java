@@ -2,8 +2,10 @@ package org.tdar.core.dao.entity;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,12 +19,15 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.AgreementTypes;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 
@@ -39,6 +44,7 @@ import org.tdar.core.dao.TdarNamedQueries;
 @Component
 public class PersonDao extends Dao.HibernateBase<Person> {
 
+    private static final Long TDAR_USER_PRIOR_TO_ASKING_AFFILIATION = 5215L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public PersonDao() {
@@ -186,16 +192,21 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         logger.info("beginning updates - copyright");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
         logger.info("beginning updates - provider");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER,Creator.OCCURRENCE , Creator.OCCURRENCE)).executeUpdate();
+        session.createSQLQuery(
+                String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER, Creator.OCCURRENCE, Creator.OCCURRENCE))
+                .executeUpdate();
         logger.info("beginning updates - publisher");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER,Creator.OCCURRENCE , Creator.OCCURRENCE)).executeUpdate();
+        session.createSQLQuery(
+                String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER, Creator.OCCURRENCE, Creator.OCCURRENCE))
+                .executeUpdate();
         logger.info("beginning updates - submitter");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
         logger.info("beginning updates - institution");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_INSTITUTION)).executeUpdate();
         logger.info("completed updates");
 
-        // create a temp table for these users and drop them in (much faster than a single query); the 1st temp table is 1:1 with resources, the second is 1:1 with creators.  This is much faster.
+        // create a temp table for these users and drop them in (much faster than a single query); the 1st temp table is 1:1 with resources, the second is 1:1
+        // with creators. This is much faster.
         session.createSQLQuery(BROWSE_CREATOR_CREATE_TEMP).executeUpdate();
         // populate the resource table
         session.createSQLQuery(BROWSE_CREATOR_ACTIVE_USERS_1).executeUpdate();
@@ -218,7 +229,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     private String getFormattedRoles(CreatorType type) {
         Set<ResourceCreatorRole> roleSet = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(type);
-        String roles = String.format("'%s'",StringUtils.join(roleSet, "','"));
+        String roles = String.format("'%s'", StringUtils.join(roleSet, "','"));
         return roles;
     }
 
@@ -238,4 +249,28 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return toReturn;
     }
 
+    public Map<AgreementTypes, Long> getAgreementCounts() {
+        HashMap<AgreementTypes, Long> toReturn = new HashMap<>();
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AGREEMENT_COUNTS);
+        Object[] result = (Object[]) query.uniqueResult();
+        toReturn.put(AgreementTypes.USER_AGREEMENT, ((Number)result[0]).longValue());
+        toReturn.put(AgreementTypes.CONTRIBUTOR_AGREEMENT, ((Number)result[1]).longValue());
+        return toReturn;
+    }
+
+    public Map<UserAffiliation, Long> getAffiliationCounts() {
+        HashMap<UserAffiliation, Long> toReturn = new HashMap<>();
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AFFILIATION_COUNTS);
+        for (Object row_ : query.list()) {
+            Object[] row = (Object[]) row_;
+            toReturn.put((UserAffiliation) row[0], ((Number) row[1]).longValue());
+        }
+        Long noAnswer = toReturn.remove(null);
+        if (TdarConfiguration.getInstance().isProductionEnvironment() && TdarConfiguration.getInstance().getHostName().equalsIgnoreCase("core.tdar.org")) {
+            noAnswer = noAnswer - TDAR_USER_PRIOR_TO_ASKING_AFFILIATION;
+            toReturn.put(UserAffiliation.PRIOR_TO_ASKING, TDAR_USER_PRIOR_TO_ASKING_AFFILIATION);
+        }
+        toReturn.put(UserAffiliation.NO_RESPONSE, noAnswer);
+        return toReturn;
+    }
 }

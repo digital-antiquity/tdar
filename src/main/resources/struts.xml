@@ -5,10 +5,8 @@
     <include file="struts-local-settings.xml" />
     <!-- performance enhancements -->
     <!-- freemarker cache -->
-    <constant name="struts.freemarker.mru.max.strong.size"
-        value="250" />
-    <constant name="struts.convention.default.parent.package"
-        value="default" />
+    <constant name="struts.freemarker.mru.max.strong.size" value="250" />
+    <constant name="struts.convention.default.parent.package" value="default" />
 
     <!-- package.locators: Packages whose name end with one of these strings 
         will be scanned for actions (default: 'action, actions, struts, struts2') -->

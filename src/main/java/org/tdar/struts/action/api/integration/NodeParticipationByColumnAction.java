@@ -34,7 +34,7 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
     private List<Long> dataTableColumnIds = new ArrayList<>();
     private List<IntegrationColumnPartProxy> integrationColumnPartProxies;
     private Map<Long, List<Long>> nodeIdsByColumnId = new HashMap<>();
-    private boolean verbose = false;
+    private boolean verbose = true;
 
     @Autowired
     DataIntegrationService integrationService;

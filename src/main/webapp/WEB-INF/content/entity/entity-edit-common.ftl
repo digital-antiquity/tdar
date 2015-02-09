@@ -74,7 +74,7 @@
     </#macro>
 
     <#macro hidden>
-            <@s.checkbox label='Hide page from logged-out users' name="creator.hidden" id="hidden-page"  />
+            <@s.checkbox label='Hide page from logged-out users' name="persistable.hidden" id="hidden-page"  />
     </#macro>
 
     <#macro contactInfo>

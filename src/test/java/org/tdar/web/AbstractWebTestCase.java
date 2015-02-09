@@ -1487,7 +1487,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
             logger.debug(getPageCode());
             int count = 0;
-            while (!getPageCode().contains("\"percentDone\":100")) {
+            while (!getPageCode().matches("(?s)(.*)percentDone\"(\\s*):(\\s*)100(.*)")) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -1497,8 +1497,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 if ((count % 10) == 5) {
                     logger.info(getPageCode());
                 }
-                if (count == 1000) {
-                    fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
+                if (count == 100) {
+                    fail("we went through 200 iterations of waiting for the search index to build... assuming something is wrong");
                 }
                 count++;
             }

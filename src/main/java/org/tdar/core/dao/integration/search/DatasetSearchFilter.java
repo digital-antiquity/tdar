@@ -9,10 +9,6 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
     private List<Long> ontologyIds = new ArrayList<>();
     private boolean ableToIntegrate = false;
 
-    public DatasetSearchFilter(int maxResults, int firstResult) {
-        super(maxResults, firstResult);
-    }
-
     public List<Long> getOntologyIds() {
         return ontologyIds;
     }

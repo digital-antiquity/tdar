@@ -153,9 +153,9 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
 
                 // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
                 for (DataTableColumn column : hydrated) {
-                    getLogger().info("{} ({})", column, column.getDefaultOntology());
+                    getLogger().info("{} ({})", column, column.getMappedOntology());
                     getLogger().info("{} ({})", column, column.getDefaultCodingSheet());
-                    defaultOntology = column.getDefaultOntology();
+                    defaultOntology = column.getMappedOntology();
                     if (defaultOntology != null) {
                         getLogger().debug("default ontology: {}", defaultOntology.getTitle());
                         integrationColumn.setSharedOntology(defaultOntology);

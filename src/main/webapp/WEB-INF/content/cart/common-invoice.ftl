@@ -58,7 +58,13 @@
     <div id="divInvoiceSubtotal" class="invoice-subtotal">
         <#--<h3>Subtotal</h3>-->
         <#--<span class="amt">$${invoice.calculatedCost}</span>-->
-        <span class="item-desc">${invoice.numberOfFiles} files / ${invoice.numberOfMb}mb</span>
+        <span class="item-desc">
+
+        <#if ((invoice.numberOfFiles!0) > 0)> ${invoice.numberOfFiles!0 } File<#if ((invoice.numberOfFiles!0) > 1)>s</#if></#if>
+        <#if ((invoice.numberOfFiles!0) > 0) && ((invoice.numberOfMb!0) > 0)> / </#if>
+        <#if ((invoice.numberOfMb!0) > 0)> ${invoice.numberOfMb!0}mb</#if>
+
+        </span>
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
         <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
         <#if invoice.owner??>
@@ -66,7 +72,7 @@
         </#if>
         <#if (billingManager!false)>
             <@s.a href="/cart/continue?invoiceId=${invoice.id?c}"  >Customer Link</@s.a>
-            <#--<#noescape><@s.a href="/cart/add?invoice.numberOfFiles=${invoice.numberOfFiles?c}&invoice.numberOfMb=${invoice.numberOfFiles?c}}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape> -->
+            <#--<#noescape><@s.a href="/cart/add?invoice.numberOfFiles=${invoice.numberOfFiles?c}&invoice.numberOfMb=${invoice.numberOfMb!0?c}}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape> -->
         </#if>
     </div>
 

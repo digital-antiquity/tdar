@@ -94,6 +94,10 @@ public class TdarUser extends Person {
     @Column(name = "dismissed_notifications_date", nullable = true)
     private Date dismissedNotificationsDate;
 
+    
+    @Column(name="start_as_draft", nullable=false, columnDefinition="boolean default false")
+    private Boolean newResourceSavedAsDraft = Boolean.FALSE;
+    
     public TdarUser() {
     }
 
@@ -244,6 +248,14 @@ public class TdarUser extends Person {
 
     public void setDismissedNotificationsDate(Date dismissedNotificationsDate) {
         this.dismissedNotificationsDate = dismissedNotificationsDate;
+    }
+
+    public Boolean getNewResourceSavedAsDraft() {
+        return newResourceSavedAsDraft;
+    }
+
+    public void setNewResourceSavedAsDraft(Boolean newResourceSavedAsDraft) {
+        this.newResourceSavedAsDraft = newResourceSavedAsDraft;
     }
 
 }

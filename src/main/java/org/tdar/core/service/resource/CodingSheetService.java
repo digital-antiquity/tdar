@@ -225,9 +225,6 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             codingSheet.setDefaultOntology(ontology);
             // If we've not hit "save" yet, there's no point in actually calling this, also this stops transient refernece
             // exceptions that were dying
-            if (PersistableUtils.isNotTransient(codingSheet)) {
-                getDao().updateDataTableColumnOntologies(codingSheet, ontology);
-            }
         }
     }
 

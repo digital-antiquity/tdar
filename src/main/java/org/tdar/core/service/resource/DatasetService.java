@@ -333,12 +333,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // take the dataset off the session at the last moment, and then bring it back on
 
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
-        Collection<DataTable> tablesToRemove = reconcileTables.getFirst();
 
+        getDao().deleteRelationships(dataset.getRelationships());
         reconcileRelationships(dataset, transientDatasetToPersist);
-
-        cleanupUnusedTablesAndColumns(dataset, tablesToRemove, reconcileTables.getSecond());
-
+        cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
+        reconcileTables = null; // resetting and removing references
         getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
             getLogger().debug("dataTable: {}", dataTable);
@@ -405,7 +404,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     private void reconcileRelationships(Dataset dataset, Dataset transientDatasetToPersist) {
         // refresh the column relationships so that they refer to new versions of the columns which have the same names as the old columns
-        dataset.getRelationships().clear();
+        // dataset.getRelationships().clear();
 
         for (DataTableRelationship rel : transientDatasetToPersist.getRelationships()) {
             dataset.getRelationships().add(rel);
@@ -476,7 +475,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         incomingColumn.setDataTable(incomingTable);
         incomingColumn.setId(existingColumn.getId());
         incomingColumn.setDefaultCodingSheet(existingColumn.getDefaultCodingSheet());
-        incomingColumn.setDefaultOntology(existingColumn.getDefaultOntology());
 
         incomingColumn.setCategoryVariable(existingColumn.getCategoryVariable());
 
@@ -773,10 +771,10 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
             if (defaultOntology == null) {
                 // check if the incoming column had an ontology set
-                defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getDefaultOntology(), Ontology.class);
+                defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getTransientOntology(), Ontology.class);
             }
             getLogger().debug("incoming coding sheet: {} | default ontology: {}", incomingCodingSheet, defaultOntology);
-            incomingColumn.setDefaultOntology(defaultOntology);
+            incomingColumn.setTransientOntology(defaultOntology);
             if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
@@ -794,7 +792,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     hasOntologies = true;
                 }
                 else {
-                    incomingColumn.setDefaultOntology(null);
+                    incomingColumn.setTransientOntology(null);
                     getLogger().debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
                 }
             }
@@ -805,7 +803,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                         incomingColumn, incomingColumn.getColumnEncodingType());
             }
 
-            existingColumn.setDefaultOntology(incomingColumn.getDefaultOntology());
+            existingColumn.setTransientOntology(incomingColumn.getTransientOntology());
             existingColumn.setDefaultCodingSheet(incomingColumn.getDefaultCodingSheet());
 
             copyCategoryVariableInfo(incomingColumn, existingColumn);
@@ -879,6 +877,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     /**
      * Throws exception if the column is null or doesn't exist
+     * 
      * @param dataTable
      * @param incomingColumn
      * @param existingColumn

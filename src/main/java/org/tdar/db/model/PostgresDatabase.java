@@ -134,11 +134,13 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void dropTable(final DataTable dataTable) {
         dropTable(dataTable.getName());
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void dropTable(final String tableName) {
         try {
             jdbcTemplate.execute(String.format(DROP_TABLE, getFullyQualifiedTableName(tableName)));
@@ -150,6 +152,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         }
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void addOrExecuteBatch(DataTable dataTable, boolean force) {
         Pair<PreparedStatement, Integer> statementPair = preparedStatementMap.get(dataTable);
         logger.trace("adding or executing batch for {} with statement pair {}", dataTable, statementPair);
@@ -196,6 +199,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         }
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void createTable(final String createTableStatement) {
         logger.debug(createTableStatement);
         jdbcTemplate.execute(createTableStatement);
@@ -206,16 +210,19 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @SuppressWarnings("all")
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public List query(String sql, RowMapper rowMapper) {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T query(String sql, ResultSetExtractor<T> resultSetExtractor) {
         return jdbcTemplate.query(sql, resultSetExtractor);
     }
 
     @Override
     @Deprecated
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
@@ -223,6 +230,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Deprecated
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
         SqlSelectBuilder builder = getSelectAll(table, false);
         builder.getOrderBy().addAll(Arrays.asList(orderBy));
@@ -239,6 +247,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         builder.getOrderBy().add(DataTableColumn.TDAR_ROW_ID.getName());
@@ -246,6 +255,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public List<String> selectDistinctValues(DataTableColumn dataTableColumn) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
@@ -265,6 +275,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn) {
         if (dataTableColumn == null) {
             return Collections.emptyMap();
@@ -289,6 +300,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public List<String> selectNonNullDistinctValues(DataTableColumn dataTableColumn) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
@@ -313,6 +325,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public String normalizeTableOrColumnNames(String name) {
         String result = name.trim().replaceAll("[^\\w]", "_").toLowerCase();
         if (result.length() > MAX_NAME_SIZE) {
@@ -333,6 +346,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     // FIXME: allows for totally free form queries, refine this later?
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse) {
         return jdbcTemplate.query(psc, pss, rse);
     }
@@ -367,6 +381,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public boolean hasColumn(final String tableName, final String columnName) {
         logger.debug("Checking if " + tableName + " has column " + columnName);
         try {
@@ -388,11 +403,13 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type) {
         alterTableColumnType(tableName, column, type, -1);
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType columnType, int length) {
         String type = toImplementedTypeDeclaration(columnType, length);
         String sqlAlterTable = SQL_ALTER_TABLE;
@@ -445,6 +462,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void createTable(DataTable dataTable) {
         dropTable(dataTable);
         String createTable = CREATE_TABLE;
@@ -594,6 +612,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void closePreparedStatements(Collection<DataTable> dataTables) throws Exception {
         for (DataTable table : dataTables) {
             addOrExecuteBatch(table, true);
@@ -610,6 +629,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * @param codingSheet
      */
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet) {
         DataTable dataTable = column.getDataTable();
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
@@ -668,7 +688,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     String term = codeMap.get(code);
                     // 1st parameter is the translated term that we want to set
                     preparedStatement.setString(1, term);
-                    logger.trace("code: {} term: {} {}[{}]", code , term , columnDataType ,  updateColumnSql );
+                    logger.trace("code: {} term: {} {}[{}]", code, term, columnDataType, updateColumnSql);
                     // 2nd parameter is the where condition, the code that we want to translate.
                     boolean okToExecute = false;
                     switch (columnDataType) {
@@ -700,7 +720,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                         logger.trace("Prepared statement is: " + preparedStatement.toString());
                         preparedStatement.addBatch();
                     } else {
-                        logger.debug("code: {} was not a valid type for {}", code,  columnDataType);
+                        logger.debug("code: {} was not a valid type for {}", code, columnDataType);
                     }
                 }
                 return preparedStatement.executeBatch();
@@ -764,6 +784,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         jdbcTemplate.execute(sqlRename);
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void executeUpdateOrDelete(final String createTableStatement) {
         logger.debug(createTableStatement);
         jdbcTemplate.execute(createTableStatement);
@@ -774,6 +795,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * Takes the IntegrationContext and produces a ModernIntegrationResult that contains the Excel Workbook and proxy information such as pivot data
      * and preview data.
      */
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         @SuppressWarnings("unused")
@@ -830,11 +852,11 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
 
                 WhereCondition whereCond = new WhereCondition(column.getName());
-//                Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
+                // Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
                 // do these need to be per-table-updates?
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
                     Set<String> nodeSet = new HashSet<>();
-//                    tableNodeSetMap.put(actualColumn.getDataTable(), nodeSet);
+                    // tableNodeSetMap.put(actualColumn.getDataTable(), nodeSet);
                     nodeSet.addAll(actualColumn.getMappedDataValues(node));
                     // check parent mapping logic to make sure that we don't apply to the grantparent if multiple nodes in tree are selected
                     for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
@@ -842,7 +864,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                             nodeSet.addAll(actualColumn.getMappedDataValues(node_));
                         }
                     }
-                    
+
                     if (CollectionUtils.isEmpty(nodeSet)) {
                         continue;
                     }
@@ -900,7 +922,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             if (StringUtils.isNotBlank(column.getName())) {
                 DataTableColumn dtc = new DataTableColumn();
                 dtc.setDisplayName(column.getName());
-                int i= 0;
+                int i = 0;
                 String name = column.getName();
                 String name_ = column.getName();
                 while (seen.contains(name_)) {
@@ -996,6 +1018,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor) {
         String selectColumns = "*";
         return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, selectColumns, column.getDataTable().getName(), column.getName()),
@@ -1004,6 +1027,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void renameColumn(DataTableColumn column, String newName) {
         logger.warn("RENAMING COLUMN " + column + " TO " + newName, new Exception("altering column should only be done by tests."));
         String sql = String.format(RENAME_COLUMN, column.getDataTable().getName(), column.getName(), newName);
@@ -1011,6 +1035,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         jdbcTemplate.execute(sql);
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public List<String> getColumnNames(ResultSet resultSet) throws SQLException {
         List<String> columnNames = new ArrayList<String>();
         ResultSetMetaData metadata = resultSet.getMetaData();
@@ -1021,11 +1046,13 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return columnNames;
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public int getRowCount(DataTable dataTable) {
         String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public List<String> selectAllFrom(final DataTableColumn column) {
         if (column == null) {
             return Collections.emptyList();
@@ -1037,6 +1064,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
 
         String columnAssignments = "";
@@ -1066,11 +1094,13 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public Set<AbstractDataRecord> findAllRows(DataTable dataTable) {
         return null;
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = false)
     public void deleteRow(DataTable dataTable, Long rowId) {
         // Do nothing.
         // Not allowed this time.
@@ -1080,6 +1110,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
             String query) {
         List<String> coalesce = new ArrayList<String>();
@@ -1100,6 +1131,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         builder.getTableNames().add(dataTable.getName());
@@ -1110,6 +1142,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
     public String selectTableAsXml(DataTable dataTable) {
         String sql = String.format("select table_to_xml('%s',true,false,'');", dataTable.getName());
         logger.debug(sql);

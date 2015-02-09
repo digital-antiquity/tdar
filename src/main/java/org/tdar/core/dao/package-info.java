@@ -110,7 +110,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATASET_CAN_LINK_TO_ONTOLOGY,
-                query = "select dtc.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc " +
+                query = "select code.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc inner join dtc.defaultCodingSheet as code " +
                         "where dt.dataset.id=:datasetId"
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -119,11 +119,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLE_RELATED_ID,
-                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc WHERE (dtc.defaultOntology=:relatedId  or dtc.defaultCodingSheet=:relatedId) and dt.dataset.status!='DELETED'"
+                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology=:relatedId  or code=:relatedId) and dt.dataset.status!='DELETED'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY,
-                query = "FROM DataTableColumn dtc WHERE dtc.dataTable.dataset.id=:datasetId AND dtc.defaultOntology IS NOT NULL ORDER BY dtc.id"),
+                query = "FROM DataTableColumn dtc inner join dtc.defaultCodingSheet as code WHERE dtc.dataTable.dataset.id=:datasetId AND code.defaultOntology IS NOT NULL ORDER BY dtc.id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,
                 query = "SELECT file from InformationResourceFile as file, InformationResourceFileVersion as version where file.informationResource = :resource and "
@@ -156,12 +156,12 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS,
                 query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt " +
-                        "join dt.dataTableColumns as dtc where dtc.defaultOntology <> null and ds.project.id = :projectId"
+                        "join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code where code.defaultOntology <> null and ds.project.id = :projectId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS,
                 query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt " +
-                        "join dt.dataTableColumns as dtc where dtc.defaultOntology <> null and ds.project.id in (:projectIdList)"
+                        "join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code where code.defaultOntology <> null and ds.project.id in (:projectIdList)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY,
@@ -291,10 +291,6 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES,
                 query = "UPDATE CodingRule cr set cr.ontologyNode=NULL where cr.ontologyNode in (:ontologyNodes)"
-        ),
-        @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.UPDATE_DATATABLECOLUMN_ONTOLOGIES,
-                query = "UPDATE DataTableColumn set defaultOntology = :ontology where defaultCodingSheet = :codingSheet"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_SUBMITTER,
@@ -454,6 +450,10 @@
                 query = "select count(*) from CreatorViewStatistic  where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.COLLECTION_VIEW,
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
+        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES,
+                query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id order by res.id asc"),
+        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
+                query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
         @org.hibernate.annotations.NamedQuery(
@@ -486,7 +486,7 @@
                         + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
                         + "(:categoryVariableId=-1L or ont.categoryVariable.id=:categoryVariableId) and "
                         + "(:hasDatasets=false or ont.id in "
-                        + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
+                        + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultCodingSheet.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
                         + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
@@ -496,7 +496,19 @@
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER,
-                query = "from DataIntegrationWorkflow where submitter.id=:userId")
+                query = "from DataIntegrationWorkflow where submitter.id=:userId"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.AGREEMENT_COUNTS,
+                query = "select count(*), (select count(*) from TdarUser where contributor is true) from TdarUser user where status='ACTIVE'"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.AFFILIATION_COUNTS,
+                query = "select affiliation, count(id) from TdarUser user where status='ACTIVE' group by affiliation"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS,
+                query = "DELETE FROM DataTableColumnRelationship rel where rel.id in (select distinct cr.id from DataTableRelationship dtr join dtr.columnRelationships as cr where dtr.id in (:ids))"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS,
+                query = "DELETE FROM DataTableRelationship dtr where dtr.id in :ids"),
 })
 package org.tdar.core.dao;
 

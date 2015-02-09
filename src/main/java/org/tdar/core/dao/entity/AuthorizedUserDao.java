@@ -79,7 +79,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }
-        getLogger().trace("allowed to rights collection ids: {}", ids);
+        getLogger().info("allowed to rights collection ids: {}", ids);
         return isAllowedTo(person, permission, ids);
     }
 

@@ -399,3 +399,7 @@ xml.export.enabled=false
 # Specify userids that are admins (for use above)
 # default:(none)
 # allow.authentication.admin.users=user1,user2
+
+# force the JSON to be "pretty" i.e. not one line
+#
+use.verbose.json=false

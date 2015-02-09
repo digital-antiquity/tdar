@@ -22,13 +22,13 @@ public class SiteNameIndexingTestCase {
     @Test
     public void testRegexp() {
         Pattern compile = SiteCodeTokenizingAnalyzer.pattern;
-        assertMatches(compile, "CA-AAA-0000");
-        assertMatches(compile, "GA-AA-0000");
-        assertMatches(compile, "AZ AA:00:00(XXX)");
-        assertMatches(compile, "01-AA-0000");
+        assertMatches(compile, "CA-AAA-0001");
+        assertMatches(compile, "GA-AA-0001");
+        assertMatches(compile, "AZ AA:01:01(XXX)");
+        assertMatches(compile, "01-AA-0001");
         assertMatches(compile, "24AA9999");
-        assertMatches(compile, "22:22:13-0000");
-        assertMatches(compile, "RI-0000");
+        assertMatches(compile, "22:22:13-0005");
+        assertMatches(compile, "RI-0006");
         assertMatches(compile, "AZ U:9:1(ASM)");
         assertMatches(compile, "NA18,009(MNA)");
         assertMatches(compile, "AZ N:16:45 (PC)");
@@ -43,7 +43,7 @@ public class SiteNameIndexingTestCase {
 
     @Test
     public void testReader() throws IOException {
-        StringReader reader = new StringReader(" CA-AAA-0000 asasd qrqewr 22:22:13-0000 sadas d RI-0000");
+        StringReader reader = new StringReader(" CA-AAA-0001 asasd qrqewr 22:22:13-0010 sadas d RI-0090  44:PG:0462");
         SiteCodeTokenizingAnalyzer tokenizer = new SiteCodeTokenizingAnalyzer();
         TokenStream tokenStream = tokenizer.tokenStream("test", reader);
         while (tokenStream.incrementToken()) {
@@ -54,6 +54,21 @@ public class SiteNameIndexingTestCase {
         tokenizer.close();
     }
 
+    @Test
+    public void testReader2() throws IOException {
+        StringReader reader = new StringReader("44PG0462");
+        SiteCodeTokenizingAnalyzer tokenizer = new SiteCodeTokenizingAnalyzer();
+        TokenStream tokenStream = tokenizer.tokenStream("test", reader);
+        while (tokenStream.incrementToken()) {
+            String term = tokenStream.getAttribute(CharTermAttribute.class).toString();
+            logger.debug(term);
+            assertMatches(SiteCodeTokenizingAnalyzer.pattern, term);
+        }
+        tokenizer.close();
+    }
+
+        
+    
     public void assertMatches(Pattern pattern, String text) {
         logger.debug("\"{}\" --> {}", text, pattern.pattern());
         assertTrue("String matches:" + text, pattern.matcher(text).matches());

@@ -54,7 +54,9 @@
 
 ${resourceCollection.name!"untitled collection"}</h1>
 
-    <#if visible>
+    <#if !visible>
+    This collection is not accessible
+    <#else>
 
         <#if !collections.empty>
         <!-- Don't show header if header doesn't exist -->
@@ -174,8 +176,6 @@ ${resourceCollection.name!"untitled collection"}</h1>
 
             <@_authorizedUsers resourceCollection />
         </#if>
-    <#else>
-    This collection is not accessible
     </#if>
 
 <script type='text/javascript'>

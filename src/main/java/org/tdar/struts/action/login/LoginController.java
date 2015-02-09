@@ -131,35 +131,46 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     }
 
     private String parseReturnUrl() {
+        String parsedUrl = null;
         getLogger().debug("url: {}, sessionUrl: {}", url, getSessionData().getReturnUrl());
         if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
             return null;
         }
 
-        String url_ = getSessionData().getReturnUrl();
-        if (StringUtils.isBlank(url_)) {
-            url_ = UrlUtils.urlDecode(url);
+        //Favor the session's 'returnUrl' over the querystring 'url'.
+        if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
+            parsedUrl = getSessionData().getReturnUrl();
+        } else {
+            parsedUrl = UrlUtils.urlDecode(url);
         }
 
-        getLogger().info("url {} ", url_);
-        if (url_.contains("filestore/")) {
+        //enforce valid + relative url
+        String normalizedUrl = org.tdar.core.bean.util.UrlUtils.sanitizeRelativeUrl(parsedUrl);
+        if(!normalizedUrl.equals(parsedUrl)) {
+            getLogger().warn("Return url does not relative. Replacing {} with {}", parsedUrl, normalizedUrl);
+        }
+        parsedUrl = normalizedUrl;
+
+
+        getLogger().info("url {} ", parsedUrl);
+        if (parsedUrl.contains("filestore/")) {
             getLogger().info("download redirect");
-            if (url_.contains("/get?") || url_.contains("/get/") || url_.endsWith("/get")) {
-                url_ = url_.replace("/get", "/confirm");
-            } else if (url_.matches("^(.+)filestore/(\\d+)$")) {
-                url_ = url_ + "/confirm";
+            if (parsedUrl.contains("/get?") || parsedUrl.contains("/get/") || parsedUrl.endsWith("/get")) {
+                parsedUrl = parsedUrl.replace("/get", "/confirm");
+            } else if (parsedUrl.matches("^(.+)filestore/(\\d+)$")) {
+                parsedUrl = parsedUrl + "/confirm";
             }
-            getLogger().info(url_);
+            getLogger().info(parsedUrl);
         }
 
         // ignore AJAX/JSON requests
-        if (url_.contains("/lookup") || url_.contains("/check")
-                || url_.contains("/bookmark")) {
+        if (parsedUrl.contains("/lookup") || parsedUrl.contains("/check")
+                || parsedUrl.contains("/bookmark")) {
             return null;
         }
 
-        getLogger().debug("Redirecting to return url: " + url_);
-        return url_;
+        getLogger().debug("Redirecting to return url: " + parsedUrl);
+        return parsedUrl;
     }
 
     public UserLogin getUserLogin() {

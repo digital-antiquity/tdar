@@ -28,6 +28,28 @@
     </thead>
 </table>
 
+
+
+<h3>User Agreement Stats</h3>
+<table class="table tableFormat">
+        <#list agreementCounts?keys as key>
+        <tr>
+			<th><@s.text name="AgreementTypes.${key}" /> </th><td>${agreementCounts.get(key)}</td>	
+        </tr>
+		</#list>
+</table>
+
+
+<h3>User Affiliation Stats</h3>
+<table class="table tableFormat">
+        <#list affiliationCounts?keys as key>
+        <tr>
+			<th><@s.text name="UserAffiliation.${key}" /> </th><td>${affiliationCounts.get(key)}</td>	
+        </tr>
+		</#list>
+</table>
+
+
 <div class="glide">
     <h3>Recently Registered Users </h3>
     <table class="tableFormat">
