@@ -38,7 +38,11 @@ public class SchemaOrgMetadataTransformer implements Serializable {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
         jsonLd.put(CONTEXT, SCHEMA_ORG);
         jsonLd.put(TYPE, "Organization");
-        add(jsonLd, "url", creator.getUrl());
+        if (StringUtils.isNotBlank(creator.getUrl())) {
+            add(jsonLd, "url", creator.getUrl());
+        } else {
+            add(jsonLd, "url", UrlService.absoluteUrl(creator));
+        }
         add(jsonLd, NAME, creator.getProperName());
         add(jsonLd, "description", creator.getDescription());
         add(jsonLd, "image", imageUrl);
@@ -53,6 +57,8 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             }
             add(jsonLd, "affiliation", person.getInstitutionName());
 
+        } else {
+            add(jsonLd, "logo", imageUrl);
         }
         if (CollectionUtils.isNotEmpty(creator.getAddresses())) {
             for (Address address : creator.getAddresses()) {
@@ -113,9 +119,14 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             }
         }
 
+        if (StringUtils.isNotBlank(r.getUrl())) {
+            add(jsonLd, "url", r.getUrl());
+        } else {
+            add(jsonLd, "url", UrlService.absoluteUrl(r));
+        }
+
         if (r instanceof InformationResource) {
             InformationResource ir = (InformationResource) r;
-            add(jsonLd, "url", ir.getUrl());
 
             List<InformationResourceFile> thumbs = ir.getVisibleFilesWithThumbnails();
             if (CollectionUtils.isNotEmpty(thumbs)) {
