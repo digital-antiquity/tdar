@@ -2,6 +2,8 @@ package org.tdar.transform;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +21,13 @@ import org.tdar.core.service.UrlService;
 
 public class SchemaOrgMetadataTransformer implements Serializable {
 
+    private static final String PUBLISHER = "publisher";
+
     private static final long serialVersionUID = -5903659479081408357L;
 
     Map<String, Object> jsonLd = new HashMap<String, Object>();
 
     public String convert(SerializationService ss, Resource r) throws IOException {
-        jsonLd.put("@context", "http://schema.org");
         jsonLd.put("name", r.getTitle());
         jsonLd.put("description", r.getDescription());
         switch (r.getResourceType()) {
@@ -55,69 +58,85 @@ public class SchemaOrgMetadataTransformer implements Serializable {
         }
 
         for (ResourceCreator rc : r.getActiveResourceCreators()) {
-            jsonLd.put(rc.getRole().getSchemaOrgLabel(), rc.getCreator().getProperName());
+            if (rc.getRole().isPartOfSchemaOrg()) {
+                jsonLd.put(rc.getRole().getSchemaOrgLabel(), rc.getCreator().getProperName());
+            }
         }
 
         if (r instanceof InformationResource) {
             InformationResource ir = (InformationResource) r;
-            if (StringUtils.isNotBlank(ir.getUrl())) {
-                jsonLd.put("url", ir.getUrl());
-            }
+            add(jsonLd, "url", ir.getUrl());
 
             List<InformationResourceFile> thumbs = ir.getVisibleFilesWithThumbnails();
             if (CollectionUtils.isNotEmpty(thumbs)) {
-                jsonLd.put("thumbnailUrl", UrlService.thumbnailUrl(thumbs.get(0).getLatestThumbnail()));
+                add(jsonLd, "thumbnailUrl", UrlService.thumbnailUrl(thumbs.get(0).getLatestThumbnail()));
             }
 
             if (ir.getResourceProviderInstitution() != null) {
-                jsonLd.put("provider", ir.getResourceProviderInstitution().getName());
+                add(jsonLd, "provider", ir.getResourceProviderInstitution().getName());
             }
 
             if (ir.getPublisher() != null) {
-                jsonLd.put("publisher", ir.getPublisher().getName());
+                add(jsonLd, PUBLISHER, ir.getPublisher().getName());
             }
-
+            
+            add(jsonLd, "sameAs", ir.getDoi());
+            
             if (ir instanceof Document) {
                 Document doc = (Document) ir;
                 jsonLd.put("@type", "Book");
-                if (StringUtils.isNotBlank(doc.getSeriesName())) {
-                    jsonLd.put("alternateName", doc.getSeriesName());
-                }
-                if (doc.getIsbn() != null) {
-                    jsonLd.put("isbn", doc.getIsbn());
-                }
-                if (doc.getIssn() != null) {
-                    jsonLd.put("issn", doc.getIssn());
-                }
-                if (StringUtils.isNotBlank(doc.getEdition())) {
-                    jsonLd.put("bookEdition", doc.getEdition());
-                }
+                add(jsonLd, "alternateName", doc.getSeriesName());
+                add(jsonLd, "isbn", doc.getIsbn());
+                add(jsonLd, "bookEdition", doc.getEdition());
+                add(jsonLd, "volumeNumber", doc.getVolume());
+                add(jsonLd, "issueNumber", doc.getSeriesNumber());
 
                 if (doc.getDocumentType() == DocumentType.JOURNAL_ARTICLE) {
-                    // FIXME: http://schema.org/Article
-                    jsonLd.put("@type", "ScholarlyArticle");
-                    if (StringUtils.isNotBlank(doc.getJournalName())) {
-                        jsonLd.put("alternateName", doc.getJournalName());
+                    Map<String, Object> isPartOf = new HashMap<>();
+                    add(isPartOf, "@id", "#periodical");
+                    List<String> list = Arrays.asList("PublicationVolume", "Periodical");
+                    isPartOf.put("@type", list);
+                    add(isPartOf, "name", doc.getJournalName());
+                    add(isPartOf, "issn", doc.getIssn());
+                    add(isPartOf, "volumeNumber", doc.getVolume());
+                    add(isPartOf, PUBLISHER, ir.getPublisher().getName());
+                    jsonLd.remove(PUBLISHER);
+                    List<Object> graph = new ArrayList<>();
+                    Map<String, Object> issue = new HashMap<>();
+                    Map<String, Object> article = new HashMap<>();
+                    graph.add(issue);
+                    graph.add(article);
+                    issue.put("@id", "#issue");
+                    issue.put("@type", "PublicationIssue");
+                    add(issue, "issueNumber", doc.getSeriesNumber());
+                    issue.put("datePublished", doc.getDate());
+                    issue.put("isPartOf", isPartOf);
+                    
+                    article.put("@type", "ScholarlyArticle");
+                    article.put("isPartOf", "#issue");
+                    add(article, "description", doc.getDescription());
+                    add(article, "title", doc.getDescription());
+                    add(article, "pageStart", doc.getStartPage());
+                    add(article, "pageEnd", doc.getEndPage());
+                    for (ResourceCreator rc : r.getActiveResourceCreators()) {
+                        if (rc.getRole().isPartOfSchemaOrg()) {
+                            article.put(rc.getRole().getSchemaOrgLabel(), rc.getCreator().getProperName());
+                        }
                     }
-
-                    if (StringUtils.isNotBlank(doc.getStartPage())) {
-                        jsonLd.put("pageStart", doc.getStartPage());
-                    }
-                    if (StringUtils.isNotBlank(doc.getEndPage())) {
-                        jsonLd.put("pageEnd", doc.getEndPage());
-                    }
-                }
-                if (StringUtils.isNotBlank(doc.getVolume())) {
-                    jsonLd.put("volumeNumber", doc.getVolume());
-                }
-
-                if (StringUtils.isNotBlank(doc.getSeriesNumber())) {
-                    jsonLd.put("issueNumber", doc.getSeriesNumber());
+                    jsonLd.clear();
+                    jsonLd.put("@graph", graph);
                 }
             }
+            jsonLd.put("@context", "http://schema.org");
         }
 
         return ss.convertToJson(jsonLd);
+    }
+
+    private void add(Map<String, Object> map, String key, String val) {
+        if (StringUtils.isNotBlank(val)) {
+            map.put(key, val);
+        }
     }
 
 }
