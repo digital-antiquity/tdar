@@ -232,7 +232,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                         accountService.listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
             }
             try {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatisticsForUser(Arrays.asList(getId()), null));
             } catch (Exception e) {
                 getLogger().error("unable to set resource access statistics", e);
             }

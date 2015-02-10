@@ -309,8 +309,8 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from ResourceCollection coll left join coll.resources as res "
-                        + " where coll.id in (:collectionIds) and res.status in (:statuses) "
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.resources as res "
+                        + " where coll.id in (:collectionIds)) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY,

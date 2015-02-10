@@ -221,9 +221,9 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
                 List<Long> extractIds = PersistableUtils.extractIds(((Project) getPersistable()).getCachedInformationResources());
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, extractIds, null, null, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(extractIds, null));
             } else {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()),null));
             }
         }
 
