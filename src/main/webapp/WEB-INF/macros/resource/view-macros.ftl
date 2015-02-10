@@ -82,7 +82,16 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />
         </#if>
         <#if (version.viewable)>
-        <#local path>/filestore/download/${(irfile.informationResource.id)!id!-1?c}/${version.id?c}</#local>
+		<#-- refactor ? -->
+		<#local irid = irfile.informationResource.id />
+		<#if !irid?has_content>
+			<#local irid = id />
+		</#if>
+		<#if !irid?has_content>
+			<#local irid = -1 />
+		</#if>
+
+        <#local path>/filestore/download/${irid?c}/${version.id?c}</#local>
         <a href="<@s.url value='${path}'/>"
             class="download-link download-file"
            onClick="TDAR.common.registerDownload('${path}', '${id?c}')"
