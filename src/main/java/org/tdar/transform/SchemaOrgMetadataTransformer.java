@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
@@ -18,41 +19,45 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
+import org.tdar.utils.PersistableUtils;
 
 public class SchemaOrgMetadataTransformer implements Serializable {
 
+    private static final String NAME = "name";
+    private static final String TYPE = "@type";
+    private static final String ID = "@id";
     private static final String PUBLISHER = "publisher";
 
     private static final long serialVersionUID = -5903659479081408357L;
 
-    Map<String, Object> jsonLd = new HashMap<String, Object>();
 
     public String convert(SerializationService ss, Resource r) throws IOException {
-        jsonLd.put("name", r.getTitle());
+        Map<String, Object> jsonLd = new HashMap<String, Object>();
+        jsonLd.put(NAME, r.getTitle());
         jsonLd.put("description", r.getDescription());
         switch (r.getResourceType()) {
             case AUDIO:
-                jsonLd.put("@type", "Audio");
+                jsonLd.put(TYPE, "Audio");
                 break;
             case DATASET:
             case GEOSPATIAL:
             case SENSORY_DATA:
-                jsonLd.put("@type", "Dataset");
+                jsonLd.put(TYPE, "Dataset");
                 break;
             case DOCUMENT:
-                jsonLd.put("@type", "Book");
+                jsonLd.put(TYPE, "Book");
                 break;
             case IMAGE:
-                jsonLd.put("@type", "Image");
+                jsonLd.put(TYPE, "Image");
                 break;
             case PROJECT:
-                jsonLd.put("@type", "CollectionPage");
+                jsonLd.put(TYPE, "CollectionPage");
                 break;
             case VIDEO:
-                jsonLd.put("@type", "Video");
+                jsonLd.put(TYPE, "Video");
                 break;
             default:
-                jsonLd.put("@type", "CreativeWork");
+                jsonLd.put(TYPE, "CreativeWork");
                 break;
 
         }
@@ -81,22 +86,24 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             }
             
             add(jsonLd, "sameAs", ir.getDoi());
-            
+            if (PersistableUtils.isNotNullOrTransient(ir.getDate())) {
+                jsonLd.put("datePublished", ir.getDate());
+            }
+
             if (ir instanceof Document) {
                 Document doc = (Document) ir;
-                jsonLd.put("@type", "Book");
+                jsonLd.put(TYPE, "Book");
                 add(jsonLd, "alternateName", doc.getSeriesName());
                 add(jsonLd, "isbn", doc.getIsbn());
                 add(jsonLd, "bookEdition", doc.getEdition());
                 add(jsonLd, "volumeNumber", doc.getVolume());
-                add(jsonLd, "issueNumber", doc.getSeriesNumber());
 
                 if (doc.getDocumentType() == DocumentType.JOURNAL_ARTICLE) {
                     Map<String, Object> isPartOf = new HashMap<>();
-                    add(isPartOf, "@id", "#periodical");
+                    add(isPartOf, ID, "#periodical");
                     List<String> list = Arrays.asList("PublicationVolume", "Periodical");
-                    isPartOf.put("@type", list);
-                    add(isPartOf, "name", doc.getJournalName());
+                    isPartOf.put(TYPE, list);
+                    add(isPartOf, NAME, doc.getJournalName());
                     add(isPartOf, "issn", doc.getIssn());
                     add(isPartOf, "volumeNumber", doc.getVolume());
                     add(isPartOf, PUBLISHER, ir.getPublisher().getName());
@@ -106,13 +113,13 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                     Map<String, Object> article = new HashMap<>();
                     graph.add(issue);
                     graph.add(article);
-                    issue.put("@id", "#issue");
-                    issue.put("@type", "PublicationIssue");
+                    issue.put(ID, "#issue");
+                    issue.put(TYPE, "PublicationIssue");
                     add(issue, "issueNumber", doc.getSeriesNumber());
                     issue.put("datePublished", doc.getDate());
                     issue.put("isPartOf", isPartOf);
                     
-                    article.put("@type", "ScholarlyArticle");
+                    article.put(TYPE, "ScholarlyArticle");
                     article.put("isPartOf", "#issue");
                     add(article, "description", doc.getDescription());
                     add(article, "title", doc.getDescription());

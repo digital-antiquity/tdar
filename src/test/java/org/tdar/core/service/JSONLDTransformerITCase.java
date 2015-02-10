@@ -24,6 +24,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
         SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
 
         for (Resource r : genericService.findAll(Resource.class)) {
+            logger.debug("//  {} - {}", r.getId(), r.getResourceType());
             logger.debug(transformer.convert(serializationService, r));
         }
     }
