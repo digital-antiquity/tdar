@@ -131,6 +131,8 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
     private List<ResourceCollection> viewableResourceCollections;
 
+    private String schemaOrgJsonLD;
+
     private void initializeResourceCreatorProxyLists() {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
         resourceCreators = getPersistable().getActiveResourceCreators();
@@ -182,7 +184,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         
         try {
             SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
-            transformer.convert(serializationService, getResource());
+            setSchemaOrgJsonLD(transformer.convert(serializationService, getResource()));
         } catch (Exception e) {
             getLogger().error("error converting to json-ld", e);
         }
@@ -479,5 +481,13 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
             editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
         return editable;
+    }
+
+    public String getSchemaOrgJsonLD() {
+        return schemaOrgJsonLD;
+    }
+
+    public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
+        this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 }

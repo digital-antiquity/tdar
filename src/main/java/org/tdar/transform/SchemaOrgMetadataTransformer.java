@@ -3,14 +3,16 @@ package org.tdar.transform;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Address;
+import org.tdar.core.bean.entity.AddressType;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
@@ -23,6 +25,8 @@ import org.tdar.utils.PersistableUtils;
 
 public class SchemaOrgMetadataTransformer implements Serializable {
 
+    private static final String SCHEMA_ORG = "http://schema.org";
+    private static final String CONTEXT = "@context";
     private static final String NAME = "name";
     private static final String TYPE = "@type";
     private static final String ID = "@id";
@@ -30,6 +34,47 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
     private static final long serialVersionUID = -5903659479081408357L;
 
+    public String convert(SerializationService ss, Creator creator, String imageUrl) throws IOException {
+        Map<String, Object> jsonLd = new HashMap<String, Object>();
+        jsonLd.put(CONTEXT, SCHEMA_ORG);
+        jsonLd.put(TYPE, "Organization");
+        add(jsonLd, "url", creator.getUrl());
+        add(jsonLd, NAME, creator.getProperName());
+        add(jsonLd, "description", creator.getDescription());
+        add(jsonLd, "image", imageUrl);
+        if (creator instanceof Person) {
+            Person person = (Person) creator;
+            jsonLd.put(TYPE, "Person");
+            if (person.getEmailPublic()) {
+                add(jsonLd, "email", person.getEmail());
+            }
+            if (person.getPhonePublic()) {
+                add(jsonLd, "telephone", person.getPhone());
+            }
+            add(jsonLd, "affiliation", person.getInstitutionName());
+
+        }
+        if (CollectionUtils.isNotEmpty(creator.getAddresses())) {
+            for (Address address : creator.getAddresses()) {
+                if (address.getType() == AddressType.MAILING) {
+                    Map<String, Object> addLd = new HashMap<String, Object>();
+                    add(addLd, TYPE, "PostalAddress");
+                    add(addLd, "addressLocality", address.getCity());
+                    add(addLd, "addressRegion", address.getState());
+                    add(addLd, "postalCode", address.getPostal());
+                    String street = address.getStreet1();
+                    if (StringUtils.isNotBlank(address.getStreet2())) {
+                        street += "\n" + address.getStreet2();
+                    }
+                    add(addLd, "streetAddress", street);
+                    jsonLd.put("address", addLd);
+                    break;
+                }
+            }
+        }
+
+        return ss.convertToJson(jsonLd);
+    }
 
     public String convert(SerializationService ss, Resource r) throws IOException {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
@@ -84,7 +129,7 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             if (ir.getPublisher() != null) {
                 add(jsonLd, PUBLISHER, ir.getPublisher().getName());
             }
-            
+
             add(jsonLd, "sameAs", ir.getDoi());
             if (PersistableUtils.isNotNullOrTransient(ir.getDate())) {
                 jsonLd.put("datePublished", ir.getDate());
@@ -101,12 +146,13 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                 if (doc.getDocumentType() == DocumentType.JOURNAL_ARTICLE) {
                     Map<String, Object> isPartOf = new HashMap<>();
                     add(isPartOf, ID, "#periodical");
-                    List<String> list = Arrays.asList("PublicationVolume", "Periodical");
-                    isPartOf.put(TYPE, list);
+                    add(isPartOf, TYPE, "PublicationVolume");
                     add(isPartOf, NAME, doc.getJournalName());
                     add(isPartOf, "issn", doc.getIssn());
                     add(isPartOf, "volumeNumber", doc.getVolume());
-                    add(isPartOf, PUBLISHER, ir.getPublisher().getName());
+                    if (ir.getPublisher() != null) {
+                        add(isPartOf, PUBLISHER, ir.getPublisher().getName());
+                    }
                     jsonLd.remove(PUBLISHER);
                     List<Object> graph = new ArrayList<>();
                     Map<String, Object> issue = new HashMap<>();
@@ -118,11 +164,11 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                     add(issue, "issueNumber", doc.getSeriesNumber());
                     issue.put("datePublished", doc.getDate());
                     issue.put("isPartOf", isPartOf);
-                    
+
                     article.put(TYPE, "ScholarlyArticle");
                     article.put("isPartOf", "#issue");
                     add(article, "description", doc.getDescription());
-                    add(article, "title", doc.getDescription());
+                    add(article, NAME, doc.getTitle());
                     add(article, "pageStart", doc.getStartPage());
                     add(article, "pageEnd", doc.getEndPage());
                     for (ResourceCreator rc : r.getActiveResourceCreators()) {
@@ -134,9 +180,8 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                     jsonLd.put("@graph", graph);
                 }
             }
-            jsonLd.put("@context", "http://schema.org");
+            jsonLd.put(CONTEXT, SCHEMA_ORG);
         }
-
         return ss.convertToJson(jsonLd);
     }
 

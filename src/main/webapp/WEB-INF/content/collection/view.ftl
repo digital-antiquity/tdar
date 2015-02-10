@@ -48,7 +48,7 @@
     <@view.pageStatusCallout />
 <h1>
     <#if logoAvailable>
-        <img class="pull-right" itemprop="image"  src="/files/collection/sm/${id?c}/logo"
+        <img class="pull-right" src="/files/collection/sm/${id?c}/logo"
         alt="logo" title="logo" /> 
     </#if>
 
@@ -73,7 +73,7 @@ ${resourceCollection.name!"untitled collection"}</h1>
             <@common.description resourceCollection.description />
 
             <#if resourceCollection.adminDescription??>
-                <p itemprop="description">
+                <p>
                     <#noescape>
 			    ${resourceCollection.adminDescription}
 			  </#noescape>

@@ -628,13 +628,13 @@ with that datapoint -->
 <#-- @param deletable:boolean? render a delete button  (default:false) -->
 <#-- @param showLabel:boolean? show the address.addressType.label value (default:false) -->
     <#macro printAddress address=address creatorId=-1 creatorType='person'  modifiable=false deletable=false showLabel=true>
-    <p itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+    <p>
         <#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
-        <span itemprop="streetAddress">${address.street1}<br/>
+        <span>${address.street1}<br/>
         ${address.street2}</span><br/>
-        <span itemprop="addressLocality">${address.city}</span>, <span itemprop="addressRegion">${address.state}</span>, <span
-            itemprop="postalCode">${address.postal}</span><br/>
-        <span itemprop="addressCountry">${address.country}</span><#if modifiable><br/>
+        <span>${address.city}</span>, <span>${address.state}</span>, <span
+            >${address.postal}</span><br/>
+        <span>${address.country}</span><#if modifiable><br/>
         <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>"><@s.text name="menu.edit" /></a>
     </#if><#if deletable && modifiable> |</#if>
         <#if deletable>
@@ -742,7 +742,7 @@ with that datapoint -->
 <#-- Emit a resource description (replace crlf's with <p> tags-->
     <#macro description description_="No description specified." >
         <#assign description = description_!"No description specified."/>
-    <p itemprop="description">
+    <p>
         <#noescape>
     ${(description)?html?replace("[\r\n]++","</p><p>","r")}
   </#noescape>

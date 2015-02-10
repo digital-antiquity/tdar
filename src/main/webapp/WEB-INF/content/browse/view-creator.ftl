@@ -82,9 +82,8 @@
         </#if>
 
     <h1>
-    <#if logoAvailable>
-		<img class="pull-right" itemprop="image"  src="/files/creator/sm/${creator.id}/logo"
-		alt="logo" title="logo" />
+    <#if logoUrl?has_content>
+		<img class="pull-right"  src="${logoUrl}" alt="logo" title="logo" />
     </#if>
         <#if creator.properName??>${creator.properName}</#if></h1>
 
@@ -93,15 +92,14 @@
             <#assign scope="http://schema.org/Organization"/>
         </#if>
 
-    <div itemscope itemtype="${scope}">
-        <meta itemprop="name" content="${creator.properName}"/>
+    <div>
         <#if creator.url?has_content>
             <a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);" rel="nofollow">${creator.url?html}</a>
         </#if>
 
         <#if creator.institution??>
 
-            <a itemprop="affiliation" href="<@s.url value="${creator.detailUrl}"/>">${creator.institution}</a>
+            <a href="<@s.url value="${creator.detailUrl}"/>">${creator.institution}</a>
         </#if>
 
         <@common.description creator.description />
@@ -150,11 +148,11 @@
                     </tr>
                     <tr>
                         <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
-                            <td itemprop="email"> <@_textfield "Email" creator.email /></td>
+                            <td> <@_textfield "Email" creator.email /></td>
                         <#else>
                             <td><@_textfield "Email" "Not Shown" /></#if>
                         <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
-                            <td itemprop="telephone"><@_textfield "Phone" creator.phone true /></td>
+                            <td><@_textfield "Phone" creator.phone true /></td>
                         <#else>
                             <td><@_textfield "Phone" "Not Shown" /></td>
                         </#if>
