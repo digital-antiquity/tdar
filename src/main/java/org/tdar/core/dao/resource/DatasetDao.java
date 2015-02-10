@@ -200,7 +200,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 SQLQuery insert = getCurrentSession().createSQLQuery(format);
                 insert.executeUpdate();
                 if (count % 250 == 0) {
-                    logger.debug(format);
+                    logger.trace(format);
                 }
                 count++;
             }
