@@ -282,7 +282,7 @@
         self.submitIntegration  = function() {
             $scope.downloadReady = false
             var results = dataService.processIntegration(integration);
-            self.promiseStatus(results, "Processing ntegration", "Integration Results ready!");
+            self.promiseStatus(results, "Processing integration, please wait...", "Integration Results ready!");
             results.then(function(data){
                 $scope.downloadReady = true;
                 $('#divResultContainer').modal({show:true});
@@ -294,7 +294,7 @@
                     },
                     pivotData: {
                         columns: data.pivotColumnLabels,
-                        rows: []
+                        rows: data.pivotData
                     },
                     ticketId: data.ticket.id
                 };

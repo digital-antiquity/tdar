@@ -9,9 +9,17 @@
 
 
     app.directive("tdarDatatable", [function() {
+        //options used by the $.DataTable constructor
         var _defaultOptions = {
             bPaginate: false
-        }
+
+            //unfortunately you can't specify height in separate css (this may change in v1.1+)
+            //,sScrollY: "25em"
+            //,bScrollCollapse: true
+
+
+
+        };
 
         var self =  {
             restrict: 'A',

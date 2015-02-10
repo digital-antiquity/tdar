@@ -454,15 +454,6 @@ ${categoriesJson}
 <#-- Include the file below to run some barebones tests -->
 <#--<script src="/js/data-integration/tests.js"></script>-->
 </span>
-<#-- fixme: hack: /workspace/integrate#addDatasets  -->
-<script>
-    console.warn("Tell jim to remove his auto-open hack");
-    $(function() {
-        if(window.location.hash === "#addDatasets") {
-            $("#btnAddDataset").click();
-        }
-    })
-</script>
 
 
 <div>
