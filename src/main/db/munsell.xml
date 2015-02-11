@@ -189,4 +189,31 @@
         </addColumn>
     </changeSet>
 
+
+    <!--
+    <changeSet id="munsell-14" author="jdevos">
+        <preConditions onFail="CONTINUE" onError="WARN">
+            <sqlCheck expectedResult="1">
+                select
+                    count(*)
+                from
+                    pg_catalog.pg_class c
+                        join pg_catalog.pg_index i on (i.indexrelid = c.oid)
+                where
+                    c.relname = 'resource_access_stats_count_id';
+            </sqlCheck>
+        </preConditions>
+        <comment>Delete index "resource_access_stats_count_id" if it exists. Ignore check failures (not all db instances have this index),but warn on
+            exceptions. </comment>
+        <dropIndex indexName="resource_access_stats_count_id" tableName="resource_access_statistics" />
+    </changeSet>
+
+    <changeSet id="munsell-15" author="jdevos">
+        <comment>Add index on resource_access_statistics(date_accessed)</comment>
+        <createIndex tableName="resource_access_statistics" indexName="resource_access_statistics_date_accessed_idx">
+            <column name="date_accessed" />
+        </createIndex>
+    </changeSet>
+    -->
+
 </databaseChangeLog>
