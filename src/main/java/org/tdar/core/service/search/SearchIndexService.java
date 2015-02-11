@@ -254,6 +254,7 @@ public class SearchIndexService {
      * @param item
      */
     private void index(FullTextSession fullTextSession, Object item) {
+        try {
         if (item instanceof InformationResource) {
             datasetDao.assignMappedDataForInformationResource(((InformationResource) item));
         }
@@ -265,6 +266,10 @@ public class SearchIndexService {
             }
         }
         fullTextSession.index(item);
+        } catch (Throwable t) {
+            logger.error("error ocurred in indexing", t);
+            throw t;
+        }
     }
 
     /**
@@ -358,7 +363,7 @@ public class SearchIndexService {
                         fullTextSession.flushToIndexes();
                         fullTextSession.clear();
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     logger.error("exception in indexing, {} [{}]", toIndex, e);
                     logger.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
                             ExceptionUtils.getRootCause(e));
