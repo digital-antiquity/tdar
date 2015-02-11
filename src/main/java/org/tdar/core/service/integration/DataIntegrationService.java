@@ -508,7 +508,7 @@ public class DataIntegrationService {
         
         List<String> unauthorizedDatasets = new ArrayList<>();
         for (DataTable dt : context.getDataTables()) {
-            if (!authorizationService.canEdit(context.getCreator(), dt.getDataset())) {
+            if (!authorizationService.canViewConfidentialInformation(context.getCreator(), dt.getDataset())) {
                 unauthorizedDatasets.add(dt.getDataset().getTitle());
             }
         }

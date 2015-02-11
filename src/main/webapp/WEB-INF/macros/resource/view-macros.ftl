@@ -83,8 +83,8 @@ View freemarker macros
         </#if>
         <#if (version.viewable)>
 		<#-- refactor ? -->
-		<#local irid = irfile.informationResource.id />
-		<#if !irid?has_content>
+		<#local irid = (irfile.informationResource.id)!-1 />
+		<#if !irid?has_content || irid == -1 >
 			<#local irid = id />
 		</#if>
 		<#if !irid?has_content>
