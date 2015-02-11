@@ -123,6 +123,7 @@ public class IntegrationViewAction extends AbstractIntegrationAction implements 
             try {
                 integrationWorkflowService.validateWorkflow(data);
             } catch (IntegrationDeserializationException e) {
+                data.getErrors().add(e.getMessage());
                 getLogger().error("cannot validate", e);
             }
         }
