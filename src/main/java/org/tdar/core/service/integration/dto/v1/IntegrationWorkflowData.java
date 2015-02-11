@@ -3,11 +3,12 @@ package org.tdar.core.service.integration.dto.v1;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import org.tdar.core.bean.Persistable;
+import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -18,6 +19,7 @@ import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.dto.AbstractIntegrationWorkflowData;
+import org.tdar.core.service.integration.dto.IntegrationDTO;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.utils.PersistableUtils;
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.opensymphony.xwork2.TextProvider;
 
 @JsonInclude(Include.NON_NULL)
 @JsonAutoDetect
@@ -37,6 +40,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
     private Long id = -1L;
     private String title;
     private String description;
+    private Map<String, List<String>> fieldErrors = new HashMap<>();
 
     @Override
     public int getVersion() {
@@ -50,6 +54,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     private IntegrationContext integrationContext = new IntegrationContext();
 
+    @Deprecated
     private List<String> errors = new ArrayList<>();
 
     /**
@@ -60,8 +65,8 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
      * @throws IntegrationDeserializationException
      */
     @Override
-    public IntegrationContext toIntegrationContext(GenericDao service) throws IntegrationDeserializationException {
-        validate(service);
+    public IntegrationContext toIntegrationContext(GenericDao service, TextProvider provider) throws IntegrationDeserializationException {
+        validate(service, provider);
         integrationContext.setErrorMessages(errors);
         for (IntegrationColumnDTO ic_ : getColumns()) {
             IntegrationColumn col = new IntegrationColumn(ic_.getType());
@@ -76,29 +81,98 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         return integrationContext;
     }
 
-    /**
-     * FIXME: add error checking for missing entity ids or ontology node values
-     * 
-     * @param service
-     * @throws IntegrationDeserializationException
-     */
-    private void validateIntegrationColumns(GenericDao service) throws IntegrationDeserializationException {
-        Set<DataTableColumnDTO> dtcs = new HashSet<>();
-        Set<OntologyNodeDTO> nodes = new HashSet<>();
-        for (IntegrationColumnDTO column : getColumns()) {
-            dtcs.addAll(column.getDataTableColumns());
-            nodes.addAll(column.getNodeSelection());
+    @Override
+    public void validate(GenericDao service, TextProvider provider) throws IntegrationDeserializationException {
+        hydrateAllObjects(service);
+
+        List<Long> datasetIds = PersistableUtils.extractIds(getDatasets());
+        List<Long> dataTableIds = PersistableUtils.extractIds(getDataTables());
+        // remove nulls for general error checking
+        datasetIds.removeAll(Collections.singleton(null));
+        dataTableIds.removeAll(Collections.singleton(null));
+        try {
+            validateEntriesForNulls(service, provider, getFieldErrors(), datasetIds);
+
+            if (CollectionUtils.isEmpty(getColumns())) {
+                return;
+            }
+            // check for references
+            for (IntegrationColumnDTO col : getColumns()) {
+                if (col == null) {
+                    continue;
+                }
+                validateDataTableColumn(provider, dataTableIds, col);
+                validateOntologyNode(provider, col);
+            }
+        } catch (Exception e) {
+            logger.error("integration context validation error:", e);
+            errors.add(provider.getText("integrationWorkflowData.genericError", Arrays.asList(e.getMessage())));
         }
-        super.validate(service, new ArrayList<DataTableColumnDTO>(dtcs), DataTableColumn.class);
-        super.validate(service, new ArrayList<OntologyNodeDTO>(nodes), OntologyNode.class);
     }
 
-    @Override
-    public void validate(GenericDao service) throws IntegrationDeserializationException {
-        super.validate(service, getDataTables(), DataTable.class);
-        super.validate(service, getDatasets(), Dataset.class);
-        super.validate(service, getOntologies(), Ontology.class);
-        validateIntegrationColumns(service);
+    private void validateOntologyNode(TextProvider provider, IntegrationColumnDTO col) {
+        if (col.getType() == ColumnType.INTEGRATION) {
+            for (OntologyNodeDTO node : col.getNodeSelection()) {
+                if (PersistableUtils.isNullOrTransient(node.getPersistable()) || PersistableUtils.isNullOrTransient(col.getOntology())) {
+                    continue;
+                }
+                if (!col.getOntology().equals(node.getPersistable().getOntology())) {
+                    checkAddKey(getFieldErrors(), "node").add(
+                            provider.getText("integrationWorkflowData.bad_node_mapping", Arrays.asList(node, col.getOntology())));
+                }
+            }
+        }
+    }
+
+    private void validateDataTableColumn(TextProvider provider, List<Long> dataTableIds, IntegrationColumnDTO col) {
+        for (DataTableColumnDTO dtc : col.getDataTableColumns()) {
+            if (PersistableUtils.isNullOrTransient(dtc.getPersistable())) {
+                continue;
+            }
+
+            // make sure the DataTableColumn is in a valid DataTable
+            if (!dataTableIds.contains(dtc.getPersistable().getId())) {
+                checkAddKey(getFieldErrors(), "dataTableColumn").add(provider.getText("integrationWorkflowData.bad_datatable_column", Arrays.asList(dtc)));
+            }
+            // make sure the Ontologies match
+            if (col.getType() == ColumnType.INTEGRATION &&
+                    !col.getOntology().equals(dtc.getPersistable().getDefaultCodingSheet().getDefaultOntology())) {
+                checkAddKey(getFieldErrors(), "dataTableColumn").add(
+                        provider.getText("integrationWorkflowData.bad_datatable_column_ontology_mapping", Arrays.asList(dtc, col.getOntology())));
+            }
+            // make sure a count column is still a count column
+            if (col.getType() == ColumnType.COUNT &&
+                    !dtc.getPersistable().getColumnEncodingType().isCount()) {
+                checkAddKey(getFieldErrors(), "dataTableColumn").add(
+                        provider.getText("integrationWorkflowData.bad_datatable_column_count", Arrays.asList(dtc, col.getOntology())));
+            }
+        }
+    }
+
+    private void validateEntriesForNulls(GenericDao service, TextProvider provider, Map<String, List<String>> fieldErrors, List<Long> datasetIds) {
+        super.validateForNulls(service, getDatasets(), fieldErrors, "dataset", provider);
+        super.validateForNulls(service, getDataTables(), fieldErrors, "dataTable", provider);
+        super.validateForNulls(service, getOntologies(), fieldErrors, "ontology", provider);
+        for (IntegrationColumnDTO column : getColumns()) {
+            super.validateForNulls(service, column.getDataTableColumns(), fieldErrors, "dataTableColumn", provider);
+            super.validateForNulls(service, column.getNodeSelection(), fieldErrors, "node", provider);
+            super.validateForNulls(service, Arrays.asList(column.getOntology()), fieldErrors, "ontology", provider);
+        }
+        for (DataTableDTO dt : getDataTables()) {
+            if (PersistableUtils.isNotNullOrTransient(dt.getPersistable()) && !datasetIds.contains(dt.getPersistable().getId())) {
+                checkAddKey(fieldErrors, "dataTable").add(provider.getText("integrationWorkflowData.bad_datatable", Arrays.asList(dt)));
+            }
+        }
+    }
+
+    private void hydrateAllObjects(GenericDao service) throws IntegrationDeserializationException {
+        hydrate(service, getDataTables(), DataTable.class);
+        hydrate(service, getDatasets(), Dataset.class);
+        hydrate(service, getOntologies(), Ontology.class);
+        for (IntegrationColumnDTO column : getColumns()) {
+            hydrate(service, column.getDataTableColumns(), DataTableColumn.class);
+            hydrate(service, column.getNodeSelection(), OntologyNode.class);
+        }
     }
 
     @Override
@@ -168,13 +242,22 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         this.id = id;
     }
 
+    public Map<String, List<String>> getFieldErrors() {
+        return fieldErrors;
+    }
+
+    public void setFieldErrors(Map<String, List<String>> fieldErrors) {
+        this.fieldErrors = fieldErrors;
+    }
+
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    static class DatasetDTO implements Serializable, Persistable {
+    static class DatasetDTO implements Serializable, IntegrationDTO<Dataset> {
 
         private static final long serialVersionUID = -7582567713165436710L;
         private Long id;
         private String title;
+        private transient Dataset persistable;
 
         public Long getId() {
             return id;
@@ -191,27 +274,36 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public void setTitle(String title) {
             this.title = title;
         }
-        
+
         @Override
         public String toString() {
             return String.format("%s [%s]", title, id);
         }
-
 
         @Override
         @JsonIgnore
         public List<?> getEqualityFields() {
             return Arrays.asList(id);
         }
+
+        @JsonIgnore
+        public Dataset getPersistable() {
+            return persistable;
+        }
+
+        public void setPersistable(Dataset persistable) {
+            this.persistable = persistable;
+        }
     }
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    static class DataTableColumnDTO implements Serializable, Persistable {
+    static class DataTableColumnDTO implements Serializable, IntegrationDTO<DataTableColumn> {
         private static final long serialVersionUID = 1717839026465656147L;
 
         private Long id;
         private String name;
+        private transient DataTableColumn persistable;
 
         public Long getId() {
             return id;
@@ -239,15 +331,25 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public List<?> getEqualityFields() {
             return Arrays.asList(id);
         }
+
+        @JsonIgnore
+        public DataTableColumn getPersistable() {
+            return persistable;
+        }
+
+        public void setPersistable(DataTableColumn persistable) {
+            this.persistable = persistable;
+        }
     }
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    static class DataTableDTO implements Serializable, Persistable {
+    static class DataTableDTO implements Serializable, IntegrationDTO<DataTable> {
 
         private static final long serialVersionUID = -3269819489102125775L;
         private Long id;
         private String displayName;
+        private transient DataTable persistable;
 
         public Long getId() {
             return id;
@@ -275,6 +377,15 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public List<?> getEqualityFields() {
             return Arrays.asList(id);
         }
+
+        @JsonIgnore
+        public DataTable getPersistable() {
+            return persistable;
+        }
+
+        public void setPersistable(DataTable persistable) {
+            this.persistable = persistable;
+        }
     }
 
     @JsonAutoDetect
@@ -291,7 +402,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public List<DataTableColumnDTO> getDataTableColumns() {
             return dataTableColumns;
         }
-        
+
         public void setDataTableColumns(List<DataTableColumnDTO> dataTableColumns) {
             this.dataTableColumns = dataTableColumns;
         }
@@ -336,11 +447,12 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    static class OntologyDTO implements Serializable, Persistable {
+    static class OntologyDTO implements Serializable, IntegrationDTO<Ontology> {
 
         private static final long serialVersionUID = -7234646396247780253L;
         private Long id;
         private String title;
+        private transient Ontology persistable;
 
         public Long getId() {
             return id;
@@ -357,27 +469,36 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public void setTitle(String displayName) {
             this.title = displayName;
         }
-        
+
         @Override
         public String toString() {
             return String.format("%s [%s]", title, id);
         }
-
 
         @Override
         @JsonIgnore
         public List<?> getEqualityFields() {
             return Arrays.asList(id);
         }
+
+        @JsonIgnore
+        public Ontology getPersistable() {
+            return persistable;
+        }
+
+        public void setPersistable(Ontology persistable) {
+            this.persistable = persistable;
+        }
     }
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    static class OntologyNodeDTO implements Serializable, Persistable {
+    static class OntologyNodeDTO implements Serializable, IntegrationDTO<OntologyNode> {
         private static final long serialVersionUID = 6020897284883456005L;
 
         private Long id;
         private String iri;
+        private transient OntologyNode persistable;
 
         public Long getId() {
             return id;
@@ -404,6 +525,15 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         @JsonIgnore
         public List<?> getEqualityFields() {
             return Arrays.asList(id);
+        }
+
+        @JsonIgnore
+        public OntologyNode getPersistable() {
+            return persistable;
+        }
+
+        public void setPersistable(OntologyNode persistable) {
+            this.persistable = persistable;
         }
     }
 }

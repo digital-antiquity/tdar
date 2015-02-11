@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -530,7 +531,13 @@ public class DataIntegrationService {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         logger.debug("incoming JSON: {}", integration);
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
-        IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao);
+        if (CollectionUtils.isNotEmpty(workflow.getErrors())) {
+            throw new TdarRecoverableRuntimeException("dataIntegrationService.invalid_integration", workflow.getErrors());
+        }
+        if (workflow.getFieldErrors() != null && workflow.getFieldErrors().size() != 0) {
+            throw new TdarRecoverableRuntimeException("dataIntegrationService.invalid_integration", Arrays.asList(workflow.getFieldErrors()));
+        }
+        IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao, provider);
         // logger.debug(serializationService.convertToXML(integrationContext));
         integrationContext.setCreator(authenticatedUser);
         ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)", null, authenticatedUser);

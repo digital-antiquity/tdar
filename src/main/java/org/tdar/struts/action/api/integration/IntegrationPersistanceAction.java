@@ -61,7 +61,7 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
     @PostOnly
     @WriteableSession
     public String save() throws TdarActionException, IOException, IntegrationDeserializationException {
-        setResult(integrationWorkflowService.saveForController(getPersistable(), jsonData, integration, getAuthenticatedUser()));
+        setResult(integrationWorkflowService.saveForController(getPersistable(), jsonData, integration, getAuthenticatedUser(), this));
         setJsonObject(getResult(), JsonIntegrationFilter.class);
         if (result.getStatus() != IntegrationSaveResult.SUCCESS) {
             result.getErrors().addAll(errors);
@@ -117,7 +117,7 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
     @Override
     public void validate() {
         try {
-            integrationWorkflowService.validateWorkflow(jsonData);
+            integrationWorkflowService.validateWorkflow(jsonData, this);
         } catch (IntegrationDeserializationException e) {
             getLogger().error("error validating json", e);
             errors.add(e.getMessage());
