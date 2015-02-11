@@ -15,7 +15,6 @@
         self.integration = integration;
         self.tab = 0;
         self.sharedOntologies = [];
-        
         _openModal = function(options) {
             $rootScope.$broadcast("openTdarModal", options);
         };
@@ -38,6 +37,7 @@
             self.updateStatus("Saving...");
             dataService.saveIntegration(self.integration).then(function(status) {
                 self.updateStatus("Save: " + status.status);
+                window.location.hash = self.integration.id;
             });
             
         };
