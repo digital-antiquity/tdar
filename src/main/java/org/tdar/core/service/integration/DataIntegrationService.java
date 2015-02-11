@@ -193,7 +193,7 @@ public class DataIntegrationService {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
-        
+
         Dataset dataset = column.getDataTable().getDataset();
         CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
@@ -367,7 +367,7 @@ public class DataIntegrationService {
         Set<DataTableColumn> dataTableColumns = new HashSet<>(genericDao.findAll(DataTableColumn.class, dataTableColumnIds));
         Map<Ontology, Set<DataTableColumn>> columnsByOntology = buildOntologyToColumnMap(dataTableColumns);
 
-        // For each ontology, update tdar-data database mappings, and get the list of correlated & mapped ontology nodes 
+        // For each ontology, update tdar-data database mappings, and get the list of correlated & mapped ontology nodes
         for (Ontology ontology : columnsByOntology.keySet()) {
             logger.trace("ontology: {}", ontology);
             for (DataTableColumn col : columnsByOntology.get(ontology)) {
@@ -391,22 +391,22 @@ public class DataIntegrationService {
     /**
      * Originally ported from IntegrationColumn.flatten(); this method takes the integration column and gets the associated coding sheet
      * and thus, ontology and ontology nodes to find what should be marked as "checked"
+     * 
      * @param ontology
      * @param col
      * @param icp
      */
     private void applyLegacyFilter(Ontology ontology, DataTableColumn col, IntegrationColumnPartProxy icp) {
         SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = ontology.toOntologyNodeMap();
-        
+
         // check mapping first to see if the value should be translated a second
         // time to the common ontology format.
-        
+
         // check if distinctValues has any values in common with mapped data values
         // if the two lists are disjoint (nothing in common), then there is no
         // data value if one of the distinct values is already equivalent to the ontology
         // node label, go with that.
-        
-        
+
         for (OntologyNode ontologyNode : ontology.getOntologyNodes()) {
             List<OntologyNode> children = ontologyNodeParentChildMap.get(Integer.valueOf(ontologyNode.getIntervalStart()));
             List<CodingRule> rules = col.getDefaultCodingSheet().findRulesMappedToOntologyNode(ontologyNode);
@@ -420,7 +420,7 @@ public class DataIntegrationService {
                 }
             }
 
-            //NOTE: this can be removed once the legacy filter page is removed
+            // NOTE: this can be removed once the legacy filter page is removed
             // check if any of the children of this node matches
             if (CollectionUtils.isNotEmpty(children)) {
                 ontologyNode.setParent(true);
@@ -430,6 +430,7 @@ public class DataIntegrationService {
 
     /**
      * convenience method setting mapped to true for an ontologyNode, and thena dding it to the flattened nodes list
+     * 
      * @param col
      * @param icp
      * @param ontologyNode
@@ -442,6 +443,7 @@ public class DataIntegrationService {
 
     /**
      * Creates a reverse-map of Ontologies->DataTableColumns for mapped dataTableColumns
+     * 
      * @param dataTableColumns
      * @return
      */
@@ -468,10 +470,11 @@ public class DataIntegrationService {
 
     /**
      * Take the entire Integration Context, hydrate it (if needed) and run the integration
+     * 
      * @param context
      * @param provider
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @Transactional
     @Deprecated
@@ -481,40 +484,44 @@ public class DataIntegrationService {
             hydrateIntegrationColumn(integrationColumn);
         }
 
-//        logger.debug(serializationService.convertToXML(context));
+        // logger.debug(serializationService.convertToXML(context));
 
         validateIntegrationContext(context);
-        
+
         ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider, excelService);
         storeResult(result);
         return result;
     }
 
     private void validateIntegrationContext(IntegrationContext context) {
-        List<String> bad= new ArrayList<>();
+        List<String> bad = new ArrayList<>();
         for (IntegrationColumn col : context.getIntegrationColumns()) {
             if (col.isIntegrationColumn()) {
                 for (DataTableColumn c : col.getColumns()) {
-                    if (c.getDefaultCodingSheet() == null || c.getDefaultCodingSheet().getDefaultOntology() == null) {
+                    if (col.getColumns().size() != context.getDataTables().size()) {
+                        throw new TdarRecoverableRuntimeException("dataIntegrationService.not_all_columns_mapped");
+                    }
+                    if (c == null || c.getDefaultCodingSheet() == null || c.getDefaultCodingSheet().getDefaultOntology() == null) {
                         bad.add(c.getDisplayName());
                     }
                 }
             }
         }
-        
+
         if (CollectionUtils.isNotEmpty(bad)) {
             throw new TdarRecoverableRuntimeException("dataIntegrationService.missing_mapped_columns", Arrays.asList(bad));
         }
-        
+
         List<String> unauthorizedDatasets = new ArrayList<>();
         for (DataTable dt : context.getDataTables()) {
-            if (!authorizationService.canEdit(context.getCreator(), dt.getDataset())) {
+            if (!authorizationService.canViewConfidentialInformation(context.getCreator(), dt.getDataset())) {
                 unauthorizedDatasets.add(dt.getDataset().getTitle());
             }
         }
-        
+
         if (CollectionUtils.isNotEmpty(unauthorizedDatasets)) {
-            throw new TdarRecoverableRuntimeException("dataIntegrationService.cannot_integrate_permissions",Arrays.asList(StringUtils.join(unauthorizedDatasets,", ")));
+            throw new TdarRecoverableRuntimeException("dataIntegrationService.cannot_integrate_permissions", Arrays.asList(StringUtils.join(
+                    unauthorizedDatasets, ", ")));
         }
     }
 
@@ -523,10 +530,10 @@ public class DataIntegrationService {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         logger.debug("incoming JSON: {}", integration);
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
+
         IntegrationContext integrationContext = workflow.toIntegrationContext(ontologyNodeDao);
-//        logger.debug(serializationService.convertToXML(integrationContext));
         integrationContext.setCreator(authenticatedUser);
-        ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)",null, authenticatedUser);
+        ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)", null, authenticatedUser);
         log.setTimestamp(new Date());
         log.setPayload(integration);
         genericDao.saveOrUpdate(log);
@@ -545,7 +552,6 @@ public class DataIntegrationService {
         // }
         //
 
-
         ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(integrationContext, provider, excelService);
         storeResult(result);
         return result;
@@ -553,6 +559,7 @@ public class DataIntegrationService {
 
     /**
      * Take the result of the integration and store it in the personal filestore for retrieval
+     * 
      * @param result
      * @return
      */
