@@ -1,166 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-	<!-- http://www.liquibase.org/documentation/changes/index.html -->
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
 
-	<changeSet id="munsell-01" author="abrin">
-		<update tableName="information_resource_file">
-			<column name="restriction" value="EMBARGOED_FIVE_YEARS" />
-			<where>restriction='EMBARGOED'</where>
-		</update>
-	</changeSet>
+    <changeSet id="munsell-01" author="abrin">
+        <update tableName="information_resource_file">
+            <column name="restriction" value="EMBARGOED_FIVE_YEARS" />
+            <where>restriction='EMBARGOED'</where>
+        </update>
+    </changeSet>
 
-	<changeSet id="munsell-02" author='jtdevos'>
-		<addColumn tableName="institution">
-			<column name="email" type="varchar(255)" />
-		</addColumn>
-		<addUniqueConstraint columnNames="email"
-			constraintName="uk_9grdn54hea5ns8ahq4yogpb7u" deferrable="false"
-			disabled="false" initiallyDeferred="false" tableName="institution" />
-	</changeSet>
+    <changeSet id="munsell-02" author='jtdevos'>
+        <addColumn tableName="institution">
+            <column name="email" type="varchar(255)" />
+        </addColumn>
+        <addUniqueConstraint columnNames="email"
+                             constraintName="uk_9grdn54hea5ns8ahq4yogpb7u" deferrable="false"
+                             disabled="false" initiallyDeferred="false" tableName="institution" />
+    </changeSet>
 
-	<changeSet id="munsell-04" author="abrin">
-		<comment>Changing database to match hibernate validation requirements</comment>
-		<modifyDataType tableName="coding_sheet" columnName="category_variable_id"
-			newDataType="int8" />
-		<modifyDataType tableName="ontology" columnName="category_variable_id"
-			newDataType="int8" />
-		<modifyDataType tableName="data_table_column"
-			columnName="category_variable_id" newDataType="int8" />
-		<modifyDataType tableName="category_variable_synonyms"
-			columnName="categoryvariable_id" newDataType="int8" />
-		<modifyDataType tableName="resource_collection_view_statistics"
-			columnName="date_accessed" newDataType="date" />
-		<modifyDataType tableName="creator_view_statistics"
-			columnName="date_accessed" newDataType="date" />
-		<modifyDataType tableName="resource_access_statistics"
-			columnName="date_accessed" newDataType="date" />
-		<modifyDataType tableName="information_resource_file_download_statistics"
-			columnName="date_accessed" newDataType="date" />
-		<modifyDataType tableName="information_resource_file"
-			columnName="number_of_parts" newDataType="int4" />
-		<modifyDataType tableName="information_resource_file"
-			columnName="file_created_date" newDataType="date" />
-		<modifyDataType tableName="source_collection"
-			columnName="text" newDataType="text" />
-		<modifyDataType tableName="stats" columnName="recorded_date"
-			newDataType="date" />
-		<modifyDataType tableName="related_comparative_collection"
-			columnName="text" newDataType="text" />
-		<modifyDataType tableName="sensory_data_image"
-			columnName="sequence_number" newDataType="int4" />
-		<modifyDataType tableName="sensory_data_scan"
-			columnName="sequence_number" newDataType="int4" />
-		<!-- <modifyDataType tableName="sensory_data_scan" columnName="resolution" 
-			newDataType="float8" /> -->
-	</changeSet>
+    <changeSet id="munsell-04" author="abrin">
+        <comment>Changing database to match hibernate validation requirements</comment>
+        <modifyDataType tableName="coding_sheet" columnName="category_variable_id"
+                        newDataType="int8" />
+        <modifyDataType tableName="ontology" columnName="category_variable_id"
+                        newDataType="int8" />
+        <modifyDataType tableName="data_table_column"
+                        columnName="category_variable_id" newDataType="int8" />
+        <modifyDataType tableName="category_variable_synonyms"
+                        columnName="categoryvariable_id" newDataType="int8" />
+        <modifyDataType tableName="resource_collection_view_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="creator_view_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="resource_access_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="information_resource_file_download_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="information_resource_file"
+                        columnName="number_of_parts" newDataType="int4" />
+        <modifyDataType tableName="information_resource_file"
+                        columnName="file_created_date" newDataType="date" />
+        <modifyDataType tableName="source_collection"
+                        columnName="text" newDataType="text" />
+        <modifyDataType tableName="stats" columnName="recorded_date"
+                        newDataType="date" />
+        <modifyDataType tableName="related_comparative_collection"
+                        columnName="text" newDataType="text" />
+        <modifyDataType tableName="sensory_data_image"
+                        columnName="sequence_number" newDataType="int4" />
+        <modifyDataType tableName="sensory_data_scan"
+                        columnName="sequence_number" newDataType="int4" />
+        <!-- <modifyDataType tableName="sensory_data_scan" columnName="resolution"
+            newDataType="float8" /> -->
+    </changeSet>
 
 
-	<changeSet id="munsell-06" author="jdevos">
-		<createTable tableName="download_authorization">
-			<column name="id" autoIncrement="true" type="bigint">
-				<constraints nullable="false" primaryKey="true" />
-			</column>
-			<column name="resource_collection_id" type="bigint">
-				<constraints nullable="false" references="collection"
-					foreignKeyName="fk_download_authorization__resource_collection_id__collection" />
-			</column>
-			<column name="institution_id" type="bigint">
-				<constraints nullable="false" references="institution"
-					foreignKeyName="fk_download_authorization__institution_id__institution" />
-			</column>
-			<column name="api_key" type="varchar(50)">
-				<constraints nullable="false" />
-			</column>
-			<column name="referer_regex" type="varchar(50)">
-				<constraints nullable="false" />
-			</column>
-		</createTable>
-		<rollback>
-			<dropTable tableName="download_authorization" />
-		</rollback>
-	</changeSet>
-	<changeSet id="munsell-07" author="abrin">
-		<addColumn tableName="collection">
-			<column name="hidden" type="boolean" defaultValueBoolean="false" />
-		</addColumn>
-		<update tableName="collection">
-			<column name="hidden" valueBoolean="TRUE" />
-			<where>visible is false</where>
-		</update>
-	</changeSet>
-	<changeSet id="munsell-09" author="abrin">
-		<dropColumn tableName="collection" columnName="visible" />
-	</changeSet>
-	<changeSet id="munsell-08-ab" author="abrin">
-		<comment>Changing database to match hibernate validation requirements</comment>
-		<modifyDataType tableName="resource_collection_view_statistics"
-			columnName="date_accessed" newDataType="timestamp" />
-		<modifyDataType tableName="creator_view_statistics"
-			columnName="date_accessed" newDataType="timestamp" />
-		<modifyDataType tableName="resource_access_statistics"
-			columnName="date_accessed" newDataType="timestamp" />
-		<modifyDataType tableName="information_resource_file_download_statistics"
-			columnName="date_accessed" newDataType="timestamp" />
-		<modifyDataType tableName="information_resource_file"
-			columnName="file_created_date" newDataType="date" />
-		<modifyDataType tableName="sensory_data_scan"
-			columnName="resolution" newDataType="varchar(255)" />
-	</changeSet>
+    <changeSet id="munsell-06" author="jdevos">
+        <createTable tableName="download_authorization">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="resource_collection_id" type="bigint">
+                <constraints nullable="false" references="collection"
+                             foreignKeyName="fk_download_authorization__resource_collection_id__collection" />
+            </column>
+            <column name="institution_id" type="bigint">
+                <constraints nullable="false" references="institution"
+                             foreignKeyName="fk_download_authorization__institution_id__institution" />
+            </column>
+            <column name="api_key" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="referer_regex" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="download_authorization" />
+        </rollback>
+    </changeSet>
+    <changeSet id="munsell-07" author="abrin">
+        <addColumn tableName="collection">
+            <column name="hidden" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+        <update tableName="collection">
+            <column name="hidden" valueBoolean="TRUE" />
+            <where>visible is false</where>
+        </update>
+    </changeSet>
+    <changeSet id="munsell-09" author="abrin">
+        <dropColumn tableName="collection" columnName="visible" />
+    </changeSet>
+    <changeSet id="munsell-08-ab" author="abrin">
+        <comment>Changing database to match hibernate validation requirements</comment>
+        <modifyDataType tableName="resource_collection_view_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="creator_view_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="resource_access_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="information_resource_file_download_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="information_resource_file"
+                        columnName="file_created_date" newDataType="date" />
+        <modifyDataType tableName="sensory_data_scan"
+                        columnName="resolution" newDataType="varchar(255)" />
+    </changeSet>
 
-	<changeSet id="munsell-10" author="abrin">
-		<dropColumn tableName="download_authorization" columnName="referer_regex" />
-		<dropColumn tableName="download_authorization" columnName="institution_id" />
-		<createTable tableName="referrer_hostnames">
-			<column name="download_authorization_id" type="bigint">
-				<constraints nullable="false" references="download_authorization"
-					foreignKeyName="fk_referrer_hostnames__download_authorization_id" />
-			</column>
-			<column name="hostname" type="varchar(255)" />
-		</createTable>
-	</changeSet>
+    <changeSet id="munsell-10" author="abrin">
+        <dropColumn tableName="download_authorization" columnName="referer_regex" />
+        <dropColumn tableName="download_authorization" columnName="institution_id" />
+        <createTable tableName="referrer_hostnames">
+            <column name="download_authorization_id" type="bigint">
+                <constraints nullable="false" references="download_authorization"
+                             foreignKeyName="fk_referrer_hostnames__download_authorization_id" />
+            </column>
+            <column name="hostname" type="varchar(255)" />
+        </createTable>
+    </changeSet>
 
-	<changeSet id="munsell-11" author="abrin">
-		<comment>adding authorization table for users to manage institutions</comment>
-		<createTable tableName="institution_authorization">
-			<column name="id" type="bigserial" />
-			<column name="user_id" type="bigint">
-				<constraints nullable="false" references="tdar_user"
-					foreignKeyName="fk_institution_authorization__tdar_user_id" />
-			</column>
-			<column name="institution_id" type="bigint">
-				<constraints nullable="false" references="institution"
-					foreignKeyName="fk_institution_authorization__institution_id" />
-			</column>
-			<column name="authorized" type="boolean" defaultValueBoolean="false" />
-			<column name="reason" type="text" />
-		</createTable>
+    <changeSet id="munsell-11" author="abrin">
+        <comment>adding authorization table for users to manage institutions</comment>
+        <createTable tableName="institution_authorization">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" references="tdar_user"
+                             foreignKeyName="fk_institution_authorization__tdar_user_id" />
+            </column>
+            <column name="institution_id" type="bigint">
+                <constraints nullable="false" references="institution"
+                             foreignKeyName="fk_institution_authorization__institution_id" />
+            </column>
+            <column name="authorized" type="boolean" defaultValueBoolean="false" />
+            <column name="reason" type="text" />
+        </createTable>
 
-	</changeSet>
+    </changeSet>
 
-	<changeSet id="munsell-004766b0e703-feature-integration-ko" author="jdevos">
-		<comment>adding top-level table for persisted workflow integrations</comment>
-		<createTable tableName="data_integration_workflow">
-			<column name="id" type="bigserial" />
-			<column name="user_id" type="bigint" >
-			<!-- TODO: proposal: put fk names in form of fk_sourcetable__sourcecolumn__destinationtable instead of fk_sourcetable__destinationtable__destinationcolumn -->
-			<constraints nullable="false" references="tdar_user"
-						 foreignKeyName="fk_data_integration_workflow__tdar_user_id" />
-			</column>
-			<column name="title" type="varchar(255)">
-				<constraints nullable="false" />
-			</column>
-			<column name="description" type="varchar(2047)" defaultValue="" />
-			<column name="json_data" type="clob" />
-		</createTable>
-	</changeSet>
-	
-	<changeSet id="munsell-12-feature-integration-ko" author="alee">
-		<comment>adding fields to data integration workflow entity</comment>
-		<addColumn tableName="data_integration_workflow">
+    <changeSet id="munsell-004766b0e703-feature-integration-ko" author="jdevos">
+        <comment>adding top-level table for persisted workflow integrations</comment>
+        <createTable tableName="data_integration_workflow">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <!-- TODO: proposal: put fk names in form of fk_sourcetable__sourcecolumn__destinationtable instead of fk_sourcetable__destinationtable__destinationcolumn -->
+                <constraints nullable="false" references="tdar_user"
+                             foreignKeyName="fk_data_integration_workflow__tdar_user_id" />
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(2047)" defaultValue="" />
+            <column name="json_data" type="clob" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="munsell-12-feature-integration-ko" author="alee">
+        <comment>adding fields to data integration workflow entity</comment>
+        <addColumn tableName="data_integration_workflow">
             <column name='date_created' type='timestamp'>
                 <constraints nullable='false' />
             </column>
@@ -170,23 +170,23 @@
             <column name='version' type='int4'>
                 <constraints nullable='false' />
             </column>
-		</addColumn>
-	</changeSet>
+        </addColumn>
+    </changeSet>
 
-	<changeSet id="munsell-12" author="abrin">
-		<comment>adding material keyword</comment>
-		<addColumn tableName="material_keyword">
-			<column name="approved" defaultValueBoolean="false" type="boolean" />
-		</addColumn>
-		<update tableName="material_keyword">
-			<column name="approved" valueBoolean="TRUE" />
-		</update>
-	</changeSet>
-    
+    <changeSet id="munsell-12" author="abrin">
+        <comment>adding material keyword</comment>
+        <addColumn tableName="material_keyword">
+            <column name="approved" defaultValueBoolean="false" type="boolean" />
+        </addColumn>
+        <update tableName="material_keyword">
+            <column name="approved" valueBoolean="TRUE" />
+        </update>
+    </changeSet>
+
     <changeSet id="munsell-13" author="abrin">
-     <addColumn tableName="tdar_user">
+        <addColumn tableName="tdar_user">
             <column name="start_as_draft" type="boolean" defaultValueBoolean="false" />
-     </addColumn>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
