@@ -1,7 +1,6 @@
 package org.tdar.core.service.integration;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +46,6 @@ import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -57,8 +55,6 @@ import org.tdar.utils.PersistableUtils;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -487,9 +483,39 @@ public class DataIntegrationService {
 
 //        logger.debug(serializationService.convertToXML(context));
 
+        validateIntegrationContext(context);
+        
         ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider, excelService);
         storeResult(result);
         return result;
+    }
+
+    private void validateIntegrationContext(IntegrationContext context) {
+        List<String> bad= new ArrayList<>();
+        for (IntegrationColumn col : context.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                for (DataTableColumn c : col.getColumns()) {
+                    if (c.getDefaultCodingSheet() == null || c.getDefaultCodingSheet().getDefaultOntology() == null) {
+                        bad.add(c.getDisplayName());
+                    }
+                }
+            }
+        }
+        
+        if (CollectionUtils.isNotEmpty(bad)) {
+            throw new TdarRecoverableRuntimeException("dataIntegrationService.missing_mapped_columns", Arrays.asList(bad));
+        }
+        
+        List<String> unauthorizedDatasets = new ArrayList<>();
+        for (DataTable dt : context.getDataTables()) {
+            if (!authorizationService.canEdit(context.getCreator(), dt.getDataset())) {
+                unauthorizedDatasets.add(dt.getDataset().getTitle());
+            }
+        }
+        
+        if (CollectionUtils.isNotEmpty(unauthorizedDatasets)) {
+            throw new TdarRecoverableRuntimeException("dataIntegrationService.cannot_integrate_permissions",Arrays.asList(StringUtils.join(unauthorizedDatasets,", ")));
+        }
     }
 
     @Transactional
@@ -507,16 +533,8 @@ public class DataIntegrationService {
         logger.trace(integration);
         // ADD ERROR CHECKING LOGIC
 
-        List<String> unauthorizedDatasets = new ArrayList<>();
-        for (DataTable dt : integrationContext.getDataTables()) {
-            if (!authorizationService.canEdit(integrationContext.getCreator(), dt.getDataset())) {
-                unauthorizedDatasets.add(dt.getDataset().getTitle());
-            }
-        }
-        
-        if (CollectionUtils.isNotEmpty(unauthorizedDatasets)) {
-            throw new TdarRecoverableRuntimeException("dataIntegrationService.cannot_integrate_permissions",Arrays.asList(StringUtils.join(unauthorizedDatasets,", ")));
-        }
+        validateIntegrationContext(integrationContext);
+
         // // ok, at this point we have the integration columns that we're interested in + the ontology
         // // nodes that we want to use to filter values of interest and for aggregation.
         // // getLogger().debug("table columns are: " + tableToIntegrationColumns);

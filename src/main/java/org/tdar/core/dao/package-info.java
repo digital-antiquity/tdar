@@ -309,8 +309,8 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from ResourceCollection coll left join coll.resources as res "
-                        + " where coll.id in (:collectionIds) and res.status in (:statuses) "
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.resources as res "
+                        + " where coll.id in (:collectionIds)) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY,
@@ -450,6 +450,10 @@
                 query = "select count(*) from CreatorViewStatistic  where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.COLLECTION_VIEW,
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
+        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES,
+                query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id order by res.id asc"),
+        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
+                query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
         @org.hibernate.annotations.NamedQuery(

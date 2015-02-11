@@ -17,13 +17,6 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
     <#import "/WEB-INF/macros/header.ftl" as header>
     <#global qunit = (Parameters.qunit)??  && !production>
-    <#global schemaScope = ""/>
-    <#if (resource.resourceType)?has_content>
-        <#global schemaScope>itemscope itemtype="http://schema.org/${resource.resourceType.schema}"</#global>
-        <#if resource.documentType?has_content>
-            <#global schemaScope>itemscope itemtype="http://schema.org/${resource.documentType.schema}"</#global>
-        </#if>
-    </#if>
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
     <#if (uri != '' && uri != '/about')>
@@ -74,6 +67,12 @@
     ${head}
 
     <@common.globalJavascript />
+
+    <#if schemaOrgJsonLD?has_content>
+    <script type="application/ld+json">
+    ${schemaOrgJsonLD}
+    </script>
+    </#if>
 
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>" <#if ngApplicationName?has_content>ng-cloak</#if>>
@@ -249,7 +248,7 @@
     ${page.properties["div.titlebar"]}
     </#if>
 
-    <section ${schemaScope} class="row ${part}">
+    <section class="row ${part}">
 
         <#if page.properties["div.sidebar-left"]?has_content>
             <aside class="span3">

@@ -3,6 +3,7 @@ package org.tdar.core.configuration;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -16,7 +17,6 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
@@ -183,6 +183,12 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new SimpleAsyncUncaughtExceptionHandler();
+        return new AsyncUncaughtExceptionHandler() {
+            
+            @Override
+            public void handleUncaughtException(Throwable ex, Method method, Object... params) {
+                logger.error("exception in async: {} {} ", method, params);
+            }
+        };
     }
 }

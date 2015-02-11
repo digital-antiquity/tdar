@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
+import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -109,7 +110,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
                 return true;
             }
         } catch (TdarActionException e) {
-            getLogger().debug("error:",e);
+            getLogger().debug("error:", e);
         }
         return false;
     }
@@ -163,8 +164,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             if (isEditor()) {
                 List<Long> collectionIds = PersistableUtils.extractIds(getPersistable().getTransientChildren());
                 collectionIds.add(getId());
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, collectionIds, null,
-                        Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+                setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
             findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), false,
@@ -182,7 +182,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         getLogger().trace("lucene: end");
     }
 
-    private void buildLuceneSearch() {
+    private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
         ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 getResourceCollection(), getAuthenticatedUser(), this);
@@ -199,6 +199,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         try {
             searchService.handleSearch(qb, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+        } catch (SearchPaginationException spe) {
+            throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
@@ -399,8 +401,17 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        if (!isRedirectBadSlug()) {
-            buildLuceneSearch();
+        if (!isRedirectBadSlug() && PersistableUtils.isNotTransient(getPersistable())) {
+            try {
+                buildLuceneSearch();
+            } catch (Exception e) {
+                if (e.getCause() instanceof SearchPaginationException) {
+                    getLogger().warn("search pagination issue", e);
+                } else {
+                    throw e;
+                }
+
+            }
         }
     }
 

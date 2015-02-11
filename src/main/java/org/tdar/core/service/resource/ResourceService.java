@@ -556,21 +556,19 @@ public class ResourceService extends GenericService {
         return targetCollection;
     }
 
-    /**
-     * For a given list of People, Resources, Collections, Projects, and Statuses, return a @link ResourceSpaceUsageStatistic object for how much space,
-     * resources, and files are used.
-     * 
-     * @param personId
-     * @param resourceId
-     * @param collectionId
-     * @param projectId
-     * @param statuses
-     * @return
-     */
     @Transactional
-    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
-            List<Long> projectId, List<Status> statuses) {
-        return datasetDao.getResourceSpaceUsageStatistics(personId, resourceId, collectionId, projectId, statuses);
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Status> status) {
+        return datasetDao.getResourceSpaceUsageStatistics(resourceId, status);
+    }
+
+    @Transactional
+    public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
+        return datasetDao.getSpaceUsageForCollections(collectionId, statuses);
+    }
+
+    @Transactional
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> accountId, List<Status> status) {
+        return datasetDao.getResourceSpaceUsageStatisticsForUser(accountId, status);
     }
 
     /**
@@ -803,4 +801,6 @@ public class ResourceService extends GenericService {
         logResourceModification(resource, authUser, logMessage);
         delete(resource);
     }
+
+
 }

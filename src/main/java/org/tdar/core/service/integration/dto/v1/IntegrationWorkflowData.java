@@ -195,6 +195,12 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public void setTitle(String title) {
             this.title = title;
         }
+        
+        @Override
+        public String toString() {
+            return String.format("%s [%s]", title, id);
+        }
+
 
         @Override
         @JsonIgnore
@@ -225,6 +231,11 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
         public void setName(String displayName) {
             this.name = displayName;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s [%s]", name, id);
         }
 
         @Override
@@ -259,6 +270,11 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         }
 
         @Override
+        public String toString() {
+            return String.format("%s [%s]", displayName, id);
+        }
+
+        @Override
         @JsonIgnore
         public List<?> getEqualityFields() {
             return Arrays.asList(id);
@@ -279,7 +295,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public List<DataTableColumnDTO> getDataTableColumns() {
             return dataTableColumns;
         }
-
+        
         public void setDataTableColumns(List<DataTableColumnDTO> dataTableColumns) {
             this.dataTableColumns = dataTableColumns;
         }
@@ -298,6 +314,11 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
         public void setNodeSelection(List<OntologyNodeDTO> nodeSelection) {
             this.nodeSelection = nodeSelection;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s [%s]", name, type);
         }
 
         public ColumnType getType() {
@@ -340,6 +361,12 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public void setTitle(String displayName) {
             this.title = displayName;
         }
+        
+        @Override
+        public String toString() {
+            return String.format("%s [%s]", title, id);
+        }
+
 
         @Override
         @JsonIgnore
@@ -370,6 +397,11 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
         public void setIri(String iri) {
             this.iri = iri;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s [%s]", iri, id);
         }
 
         @Override

@@ -659,7 +659,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
         };
 
-        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
+        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTableCaseInsensitive(column, key, resultSetExtractor);
         resource.setRelatedDatasetData(dataTableQueryResults);
     }
 

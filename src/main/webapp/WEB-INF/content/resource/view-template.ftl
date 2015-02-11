@@ -24,6 +24,7 @@
     <#if local_.head?? && local_.head?is_macro>
         <@local_.head />
     </#if>
+
 </head>
 
 
@@ -54,7 +55,7 @@
 
     <@view.pageStatusCallout />
 
-<h1 itemprop="name" class="view-page-title">${resource.title!"No Title"}</h1>
+<h1 class="view-page-title">${resource.title!"No Title"}</h1>
     <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
     <div id="subtitle">
@@ -150,7 +151,7 @@
 <hr/>
     <#noescape>
         <#if resource.url! != ''>
-        <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
+        <p><strong>URL:</strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
                                    title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
         </#if>
     </#noescape>
@@ -536,7 +537,7 @@
                 <#else>
                     Publisher
                 </#if></strong><br>
-                <#if resource.publisher?has_content><span itemprop="publisher"><@view.browse creator=resource.publisher /></span></#if>
+                <#if resource.publisher?has_content><span><@view.browse creator=resource.publisher /></span></#if>
                 <#if resource.degree?has_content>${resource.degree.label}</#if>
                 <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
             </li>

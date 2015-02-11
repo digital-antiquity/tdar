@@ -93,4 +93,8 @@ public interface TargetDatabase extends Database {
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService);
+
+    @Transactional(value = "tdarDataTx", readOnly = false)
+    Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
+            ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor);
 }

@@ -62,7 +62,11 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         try {
             handleSearch();
         } catch (Exception e) {
-            getLogger().error("error in exception", e);
+            if (e.getCause() instanceof SearchPaginationException) {
+                getLogger().warn("search pagination issue", e);
+            } else {
+                getLogger().error("error in exception", e);
+            }
         }
     }
 
