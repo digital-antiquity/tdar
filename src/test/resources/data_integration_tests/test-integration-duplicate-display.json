@@ -54,6 +54,19 @@
          ]
       },
       {  
+         "type":"DISPLAY",
+         "dataTableColumns":[  
+            {  
+               "id":31800,
+               "name":"age"
+            },
+            {  
+               "id":32590,
+               "name":"bfuncgrp"
+            }
+         ]
+      },
+      {  
          "type":"INTEGRATION",
          "dataTableColumns":[  
             {  

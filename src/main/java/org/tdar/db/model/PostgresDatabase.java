@@ -931,7 +931,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     i++;
                     name_ = name + Integer.toString(i);
                 }
-                seen.add(name);
+                seen.add(name_);
                 name = name_;
                 dtc.setName(normalizeTableOrColumnNames(name));
                 name = dtc.getName();
