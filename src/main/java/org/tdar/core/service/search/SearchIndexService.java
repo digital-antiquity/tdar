@@ -264,12 +264,6 @@ public class SearchIndexService {
             if (item instanceof InformationResource) {
                 InformationResource ir = (InformationResource)item;
                 datasetDao.assignMappedDataForInformationResource(ir);
-                
-                if (StringUtils.equalsIgnoreCase("ma8583", ir.getMappedDataKeyValue())) {
-                    logger.debug("item: {}", item);
-                    logger.debug("k/v: {} / {}" , ir.getMappedDataKeyColumn(), ir.getMappedDataKeyValue() );
-                    logger.debug("data: {}", ir.getRelatedDatasetData());
-                }
             }
 
             if (item instanceof Project) {
