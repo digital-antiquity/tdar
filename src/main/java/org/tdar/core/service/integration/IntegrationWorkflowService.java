@@ -63,10 +63,6 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
             result.setId(persistable.getId());
         } catch (IntegrationDeserializationException e) {
             result.getErrors().add(e.getMessage());
-            for (Persistable p : e.getPersistables()) {
-                //fixme: make more intelligible
-                result.getErrors().add(p.toString());
-            }
         } catch (Exception e) {
             logger.error("error", e);
         }

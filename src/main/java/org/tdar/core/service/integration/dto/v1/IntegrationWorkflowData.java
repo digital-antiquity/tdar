@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.google.common.base.Objects;
 import com.opensymphony.xwork2.TextProvider;
 
 @JsonInclude(Include.NON_NULL)
@@ -54,7 +55,6 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     private IntegrationContext integrationContext = new IntegrationContext();
 
-    @Deprecated
     private List<String> errors = new ArrayList<>();
 
     /**
@@ -108,15 +108,24 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             logger.error("integration context validation error:", e);
             errors.add(provider.getText("integrationWorkflowData.genericError", Arrays.asList(e.getMessage())));
         }
+        if (CollectionUtils.isNotEmpty(errors) || !fieldErrors.isEmpty()) {
+            throw new IntegrationDeserializationException(errors, fieldErrors);
+        }
     }
 
+    /**
+     * validate that the ontology node is valid:
+     * check parent is right
+     * @param provider
+     * @param col
+     */
     private void validateOntologyNode(TextProvider provider, IntegrationColumnDTO col) {
         if (col.getType() == ColumnType.INTEGRATION) {
             for (OntologyNodeDTO node : col.getNodeSelection()) {
                 if (PersistableUtils.isNullOrTransient(node.getPersistable()) || PersistableUtils.isNullOrTransient(col.getOntology())) {
                     continue;
                 }
-                if (!col.getOntology().equals(node.getPersistable().getOntology())) {
+                if (!Objects.equal(col.getOntology().getId(), node.getPersistable().getOntology().getId())) {
                     checkAddKey(getFieldErrors(), "node").add(
                             provider.getText("integrationWorkflowData.bad_node_mapping", Arrays.asList(node, col.getOntology())));
                 }
@@ -124,31 +133,44 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         }
     }
 
+    /**
+     * check that the DTC is valid - part of mapped table; ontology is valid and mapepd; is count column numeric
+     * @param provider
+     * @param dataTableIds
+     * @param col
+     */
     private void validateDataTableColumn(TextProvider provider, List<Long> dataTableIds, IntegrationColumnDTO col) {
         for (DataTableColumnDTO dtc : col.getDataTableColumns()) {
-            if (PersistableUtils.isNullOrTransient(dtc.getPersistable())) {
+            if (dtc == null || PersistableUtils.isNullOrTransient(dtc.getPersistable())) {
                 continue;
             }
 
             // make sure the DataTableColumn is in a valid DataTable
-            if (!dataTableIds.contains(dtc.getPersistable().getId())) {
+            if (!dataTableIds.contains(dtc.getPersistable().getDataTable().getId())) {
                 checkAddKey(getFieldErrors(), "dataTableColumn").add(provider.getText("integrationWorkflowData.bad_datatable_column", Arrays.asList(dtc)));
             }
             // make sure the Ontologies match
             if (col.getType() == ColumnType.INTEGRATION &&
-                    !col.getOntology().equals(dtc.getPersistable().getDefaultCodingSheet().getDefaultOntology())) {
+                    !Objects.equal(col.getOntology().getId(), dtc.getPersistable().getDefaultCodingSheet().getDefaultOntology().getId())) {
                 checkAddKey(getFieldErrors(), "dataTableColumn").add(
                         provider.getText("integrationWorkflowData.bad_datatable_column_ontology_mapping", Arrays.asList(dtc, col.getOntology())));
             }
             // make sure a count column is still a count column
             if (col.getType() == ColumnType.COUNT &&
-                    !dtc.getPersistable().getColumnEncodingType().isCount()) {
+                    (!dtc.getPersistable().getColumnEncodingType().isCount() || !dtc.getPersistable().getColumnDataType().isNumeric())) {
                 checkAddKey(getFieldErrors(), "dataTableColumn").add(
                         provider.getText("integrationWorkflowData.bad_datatable_column_count", Arrays.asList(dtc, col.getOntology())));
             }
         }
     }
 
+    /**
+     * make sure that we don't have NULLs in mappings (once hydrated, make sure that we still have valid refernces) 
+     * @param service
+     * @param provider
+     * @param fieldErrors
+     * @param datasetIds
+     */
     private void validateEntriesForNulls(GenericDao service, TextProvider provider, Map<String, List<String>> fieldErrors, List<Long> datasetIds) {
         super.validateForNulls(service, getDatasets(), fieldErrors, "dataset", provider);
         super.validateForNulls(service, getDataTables(), fieldErrors, "dataTable", provider);
@@ -158,13 +180,24 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             super.validateForNulls(service, column.getNodeSelection(), fieldErrors, "node", provider);
             super.validateForNulls(service, Arrays.asList(column.getOntology()), fieldErrors, "ontology", provider);
         }
+        
+        if (CollectionUtils.isEmpty(datasetIds)) {
+            // escape out if we have no datasets -- not immplemented
+            return;
+        }
+        
         for (DataTableDTO dt : getDataTables()) {
-            if (PersistableUtils.isNotNullOrTransient(dt.getPersistable()) && !datasetIds.contains(dt.getPersistable().getId())) {
+            if (PersistableUtils.isNotNullOrTransient(dt.getPersistable()) && !datasetIds.contains(dt.getPersistable().getDataset().getId())) {
                 checkAddKey(fieldErrors, "dataTable").add(provider.getText("integrationWorkflowData.bad_datatable", Arrays.asList(dt)));
             }
         }
     }
 
+    /**
+     * load database versions and set them as the "persistable"
+     * @param service
+     * @throws IntegrationDeserializationException
+     */
     private void hydrateAllObjects(GenericDao service) throws IntegrationDeserializationException {
         hydrate(service, getDataTables(), DataTable.class);
         hydrate(service, getDatasets(), Dataset.class);
@@ -172,6 +205,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         for (IntegrationColumnDTO column : getColumns()) {
             hydrate(service, column.getDataTableColumns(), DataTableColumn.class);
             hydrate(service, column.getNodeSelection(), OntologyNode.class);
+            hydrate(service, Arrays.asList(column.getOntology()), Ontology.class);
         }
     }
 

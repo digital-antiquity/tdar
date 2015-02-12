@@ -42,9 +42,18 @@ public abstract class AbstractIntegrationWorkflowData {
     }
 
     
+    /**
+     * load the entry and then set the persistable on the original skeleton
+     * @param dao
+     * @param skeletons
+     * @param cls
+     * @return
+     * @throws IntegrationDeserializationException
+     */
     protected <P extends Persistable> List<P> hydrate(GenericDao dao, List<? extends IntegrationDTO<P>> skeletons, Class<P> cls) throws IntegrationDeserializationException {
         Map<Long, ? extends Persistable> ids = PersistableUtils.createIdMap(skeletons);
         List<P> objects = dao.findAll(cls, ids.keySet());
+        logger.trace("{} - id: {} : obj: {}", cls.getSimpleName(), ids, objects);
         for (P object : objects) {
             ((IntegrationDTO)ids.get(object.getId())).setPersistable(object);
         }
@@ -64,27 +73,14 @@ public abstract class AbstractIntegrationWorkflowData {
         return fieldErrors.get(string);
     }
 
-    
     /**
-     * validate the bean's contents are valid persitables (checks id).  
-     * @param dao
-     * @param skeletons
-     * @param cls
-     * @return
-     * @throws IntegrationDeserializationException
+     * for each entry, check that the mapper persistable is not null
+     * @param service
+     * @param entries
+     * @param fieldErrors
+     * @param key
+     * @param provider
      */
-    protected <P extends Persistable> List<P> validate(GenericDao dao, List<? extends Persistable> skeletons, Class<P> cls) throws IntegrationDeserializationException {
-        Map<Long, ? extends Persistable> ids = PersistableUtils.createIdMap(skeletons);
-        List<P> objects = dao.findAll(cls, ids.keySet());
-        for (P object : objects) {
-            ids.remove(object.getId());
-        }
-        if (CollectionUtils.isNotEmpty(ids.keySet())) {
-            throw new IntegrationDeserializationException(cls, ids.values());
-        }
-        return objects;
-    }
-
     public void validateForNulls(GenericDao service, List<? extends IntegrationDTO> entries, Map<String, List<String>> fieldErrors, String key, TextProvider provider) {
         if (CollectionUtils.isEmpty(entries)) {
             return;

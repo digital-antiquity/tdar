@@ -217,6 +217,7 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
             try {
                 integrationWorkflowService.validateWorkflow(data, this);
             } catch (IntegrationDeserializationException e) {
+                getLogger().debug(e.toString());
                 getLogger().error("cannot validate", e);
             }
         }
