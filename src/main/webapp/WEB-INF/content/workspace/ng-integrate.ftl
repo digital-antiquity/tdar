@@ -153,13 +153,13 @@
                                                             <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
                                                             <div ng-switch on="cc.compatCols.length">
                                                             <div ng-switch-when="1">
-                                                                {{cc.compatCols[0].displayName}}
+                                                                <span title="{{::cc.dataTable.datasetTitle}} :: {{::cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span>
                                                                 <!-- FIXME: this is "hidden", but is it even needed? -->
                                                                 <!-- FIXME: shouldn't this be the dataset name? -->
                                                                 <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
                                                             </div>
                                                             <div ng-switch-default>
-                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                                <select title="{{::cc.dataTable.datasetTitle}} :: {{::cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
                                                             </div>
                                                             </div>
                                                         </th>
