@@ -36,14 +36,11 @@ import com.opensymphony.xwork2.TextProvider;
 @JsonAutoDetect
 public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData implements Serializable, IntegrationWorkflowWrapper {
 
+    // hash keys
     public static final String ONTOLOGY = "ontology";
-
     public static final String DATA_TABLE = "dataTable";
-
     public static final String DATASET = "dataset";
-
     public static final String DATA_TABLE_COLUMN = "dataTableColumn";
-
     public static final String NODE = "node";
 
     private static final long serialVersionUID = -4483089478294270554L;
@@ -92,6 +89,13 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         return integrationContext;
     }
 
+    /**
+     * Validates the data object passing in a dao and a text provider.  Checks for:
+     *  ** NULLs or invalid Object References
+     *  ** Invalid hierarchical references DataTable <-> DataTableColumn
+     *  ** Changes in Ontology Mappings
+     *  ** Invalid Count columns 
+     */
     @Override
     public void validate(GenericDao service, TextProvider provider) throws IntegrationDeserializationException {
         hydrateAllObjects(service);
