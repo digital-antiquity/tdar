@@ -23,7 +23,7 @@ public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCas
     @Autowired  
     private SerializationService serializationService;
 
-    private String testJson = "src/test/resources/data_integration_tests/test-integration.json";
+    private String testJson = "src/test/resources/data_integration_tests/json/test-integration.json";
     
     @Test
     public void testIntegrationWorkflowData() throws IOException, IntegrationDeserializationException {
@@ -34,8 +34,6 @@ public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCas
         workflow.setJsonData(json);
         IntegrationWorkflowData workflowData = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
         IntegrationContext context = service.toIntegrationContext(workflow, MessageHelper.getInstance());
-//        getLogger().debug("{}", context.getDataTables());
-//        getLogger().debug("{}", context.getIntegrationColumns());
         assertTrue(context.getDataTables().size() > 0);
         assertTrue(context.getIntegrationColumns().size() > 0);
         logger.debug("done convrsion");

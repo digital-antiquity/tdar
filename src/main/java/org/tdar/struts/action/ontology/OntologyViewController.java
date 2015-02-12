@@ -59,11 +59,6 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
             })
     public String node() throws TdarActionException {
         getCodingSheetsWithMappings().addAll(codingSheetService.findAllUsingOntology(getOntology()));
-
-        setNode(getOntology().getNodeByIri(getIri()));
-        if (node == null) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
-        }
         setChildren(getChildElements(node));
         setParentNode(ontologyNodeService.getParent(node));
 
@@ -71,6 +66,17 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
         return SUCCESS;
     }
 
+    @Override
+    public void prepare() throws TdarActionException {
+        super.prepare();
+        if (redirectIri != null) {
+            setNode(getOntology().getNodeByIri(OntologyNode.normalizeIri(getIri())));
+            if (node == null) {
+                abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
+            }
+        }
+    }
+    
     @Override
     @HttpOnlyIfUnauthenticated
     @Actions(value = {
@@ -146,9 +152,10 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
     @Override
     protected void handleSlug() {
         if (!Objects.equals(getSlug(), getPersistable().getSlug())) {
-            OntologyNode node_ = getOntology().getNodeByIri(getIri());
+            String normalizeIri = OntologyNode.normalizeIri(getIri());
+            OntologyNode node_ = getOntology().getNodeByIri(normalizeIri);
             if (node_ != null) {
-                redirectIri = String.format("/ontology/%s/node/%s", getId(), getIri());
+                redirectIri = String.format("/ontology/%s/node/%s", getId(), normalizeIri);
             }
         } else {
             super.handleSlug();

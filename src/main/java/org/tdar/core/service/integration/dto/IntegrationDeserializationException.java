@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.MapUtils;
 
 public class IntegrationDeserializationException extends Exception {
 
@@ -40,7 +40,7 @@ public class IntegrationDeserializationException extends Exception {
             sb.append("errors: ").append(errors).append("\n");
         }
         // fixme -- cleanup
-        if (getFieldErrors() != null) {
+        if (MapUtils.isNotEmpty(getFieldErrors())) {
             sb.append("Field Errors: ").append(fieldErrors).append("\n");
         }
         return sb.toString();
