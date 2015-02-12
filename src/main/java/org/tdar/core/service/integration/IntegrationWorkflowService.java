@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.integration.IntegrationWorkflowDao;
@@ -43,7 +42,7 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     @Transactional
     public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow, TextProvider provider) throws IOException, IntegrationDeserializationException {
         IntegrationWorkflowData workflowData = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
-        IntegrationContext context = workflowData.toIntegrationContext(genericDao, provider);
+        IntegrationContext context = workflowData.toIntegrationContext(ontologyNodeDao, provider);
         // perform validity checks?
         return context;
     }
@@ -68,13 +67,8 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     }
 
     @Transactional(readOnly = true)
-<<<<<<< mine
-    public void validateWorkflow(IntegrationWorkflowWrapper data) throws IntegrationDeserializationException {
-        data.validate(ontologyNodeDao);
-=======
     public void validateWorkflow(IntegrationWorkflowWrapper data, TextProvider provider) throws IntegrationDeserializationException {
-        data.validate(genericDao, provider);
->>>>>>> theirs
+        data.validate(ontologyNodeDao, provider);
     }
 
     @Transactional(readOnly = true)

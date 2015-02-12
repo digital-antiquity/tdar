@@ -121,7 +121,7 @@ public class IntegrationViewAction extends AbstractIntegrationAction implements 
     public void validate() {
         if (data != null) {
             try {
-                integrationWorkflowService.validateWorkflow(data);
+                integrationWorkflowService.validateWorkflow(data, this);
             } catch (IntegrationDeserializationException e) {
                 data.getErrors().add(e.getMessage());
                 getLogger().error("cannot validate", e);

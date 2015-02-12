@@ -14,8 +14,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.dao.Dao.HibernateBase;
-import org.tdar.core.dao.resource.OntologyNodeDao;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
@@ -61,7 +60,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
     /**
      * Returns true if this
      * 
-     * @param ontologyNodeDao
+     * @param service
      * @return
      * @throws IntegrationDeserializationException
      */
@@ -71,17 +70,14 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         integrationContext.setErrorMessages(errors);
         for (IntegrationColumnDTO ic_ : getColumns()) {
             IntegrationColumn col = new IntegrationColumn(ic_.getType());
-            col.getColumns().addAll(ontologyNodeDao.findAll(DataTableColumn.class, PersistableUtils.extractIds(ic_.getDataTableColumns())));
+            col.getColumns().addAll(service.findAll(DataTableColumn.class, PersistableUtils.extractIds(ic_.getDataTableColumns())));
             if (ic_.getType() == ColumnType.INTEGRATION) {
-                col.getFilteredOntologyNodes().addAll(ontologyNodeDao.findAll(OntologyNode.class, PersistableUtils.extractIds(ic_.getNodeSelection())));
-                col.setSharedOntology(ontologyNodeDao.find(Ontology.class, ic_.getOntology().getId()));
-                // that is, even if child is not selected, should get all children for query and pull up
-
-                col.buildNodeChildHierarchy(ontologyNodeDao);
+                col.getFilteredOntologyNodes().addAll(service.findAll(OntologyNode.class, PersistableUtils.extractIds(ic_.getNodeSelection())));
+                col.setSharedOntology(service.find(Ontology.class, ic_.getOntology().getId()));
             }
             integrationContext.getIntegrationColumns().add(col);
         }
-        integrationContext.setDataTables(ontologyNodeDao.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));
+        integrationContext.setDataTables(service.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));
         return integrationContext;
     }
 
