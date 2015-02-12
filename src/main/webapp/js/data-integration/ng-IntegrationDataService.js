@@ -177,6 +177,7 @@
         this.dedupe = _dedupe;
         this.dumpObject = _dumpObject;
         this.loadIntegration = _loadIntegration;
+        this.loadIntegrationById = _loadIntegrationById;
         this.saveIntegration = _saveIntegration;
 
         /**
@@ -208,6 +209,29 @@
             httpPromise.success(function(data) {
                 integration.id = data.id;
                 futureData.resolve(data);
+            });
+
+            return futureData.promise;
+        }
+
+
+        /**
+         * Load Integration with specified ID into the specified integration object.
+         */
+        function _loadIntegrationById(id, integration) {
+            console.log(id);
+            var futureData = $q.defer();
+
+            var httpPromise = $http({
+                method : "GET",
+                url : '/api/integration/view?id=' + id
+            });
+
+            httpPromise.success(function(data) {
+                console.log(data);
+                _loadIntegration(data, integration).then(
+                        function(){futureData.resolve()},
+                        function(){futureData.reject()});
             });
 
             return futureData.promise;
@@ -303,7 +327,7 @@
             });
             return futureData.promise;
         }
-
+        
         self.addDataTables = function(integration, tablesToAdd) {
             integration.addDataTables(tablesToAdd);
             _rebuildSharedOntologies(integration);

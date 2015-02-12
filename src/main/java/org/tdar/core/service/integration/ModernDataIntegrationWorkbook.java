@@ -145,16 +145,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         // Create header
         // CellStyle dataTableNameStyle = CellFormat.build(Style.NORMAL).setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(getWorkbook());
 
-        List<String> headerLabels = new ArrayList<String>();
-        headerLabels.add(provider.getText("dataIntegrationWorkbook.data_table"));
-        for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
-            headerLabels.add(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(integrationColumn.getName())));
-
-            if (integrationColumn.isIntegrationColumn()) {
-                headerLabels.add(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(integrationColumn.getName())));
-                headerLabels.add(provider.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(integrationColumn.getName())));
-            }
-        }
+        List<String> headerLabels = result.getPreviewColumnLabels();
 
         // FIXME: support for cell style data table name (C1)
         SheetProxy sheetProxy = new SheetProxy(workbook, provider.getText("dataIntegrationWorkbook.data_worksheet"));
@@ -287,15 +278,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         addMergedRegion(1, 1, 0, 8, pivotSheet);
 
         rowIndex = 4;
-        List<String> rowHeaders = new ArrayList<>();
-        for (IntegrationColumn col : context.getIntegrationColumns()) {
-            if (col.isIntegrationColumn()) {
-                rowHeaders.add(col.getName());
-            }
-        }
-        for (DataTable table : context.getDataTables()) {
-            rowHeaders.add(formatTableName(table));
-        }
+        List<String> rowHeaders = result.getPivotColumnLabels();
 
         excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW + 3, ExcelService.FIRST_COLUMN, rowHeaders);
 

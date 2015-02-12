@@ -15,7 +15,6 @@
         self.integration = integration;
         self.tab = 0;
         self.sharedOntologies = [];
-        
         _openModal = function(options) {
             $rootScope.$broadcast("openTdarModal", options);
         };
@@ -33,44 +32,73 @@
             integration.removeOutputColumn(idx);
         }
 
-        var $idown;  // Keep it outside of the function, so it's initialized once.
-        self._downloadURL = function(url) {
-            if ($idown) {
-                $idown.attr('src',url);
-            } else {
-                $idown = $('<iframe>', { id:'idown', src:url }).hide().appendTo('body');
-            }
-        }
-
-        self.downloadResult = function(ticketId) {
-        }
-
         self.saveClicked = function() {
             console.log("Saving.")
             self.updateStatus("Saving...");
             dataService.saveIntegration(self.integration).then(function(status) {
                 self.updateStatus("Save: " + status.status);
+                window.location.hash = self.integration.id;
             });
             
         };
-        
+
+        self.saveAsClicked = function() {
+            console.log("Saving.")
+            self.integration.id = -1;
+            self.updateStatus("Saving...");
+            dataService.saveIntegration(self.integration).then(function(status) {
+                self.updateStatus("Save: " + status.status);
+                window.location.hash = self.integration.id;
+            });
+            
+        };
+
         /**
          * shows the user a status message
          */
         self.updateStatus = function(msg) {
-            console.log("updateStatus:: %s", msg);
             $scope.statusMessage = msg;
+            console.log("updateStatus:: %s", msg);
         }
 
-        
+        /**
+         * Show user status messages across the span of a promise lifecycle.
+         *
+         * @param promise
+         * @param msgStart message to immediately display
+         * @param msgDone message to display when promise resolves
+         * @param [msgFail] message to display when promise rejects (default: "${msgStart} : failed")
+         */
+        self.promiseStatus = function(promise, msgStart, msgDone, msgFail) {
+            var _msgFail = msgFail ? msgFail : (msgStart + ":" + "failed.");
+
+            $scope.statusMessage = msgStart;
+            promise.then(
+                    function(){self.updateStatus(msgDone)},
+                    function(){self.updateStatus(_msgFail)}
+            );
+            return promise;
+        }
+
+
         self.loadJSON = function() {
-            var jsonData = dataService.getDocumentData("jsondata");
-            if(!jsonData) return;
-            self.updateStatus("Loading...");
-            var result = dataService.loadIntegration(jsonData , self.integration);
-            result.then(function(){
-                self.updateStatus("Done loading");
-            });
+            if (window.location.hash) {
+                self.updateStatus("Loading...");
+                var integrationId = window.location.hash.substring(1);
+                var result = dataService.loadIntegrationById(integrationId , self.integration);
+                result.then(function(){
+                    self.updateStatus("Done loading");
+                });
+            } else {
+                var jsonData = dataService.getDocumentData("jsondata");
+                if(!jsonData) return;
+                self.updateStatus("Loading...");
+                //fixme: reintroduce load-via-hashurl
+                var result = dataService.loadIntegration(jsonData , self.integration);
+                result.then(function(){
+                    self.updateStatus("Done loading");
+                });
+            }
          };
         
         /**
@@ -184,10 +212,20 @@
             }
 
             // do we have an integration column
-            if (integration.getIntegrationColumns().length > 0) {
-                return true;
+            if (integration.getIntegrationColumns().length == 0) {
+                return false;
             }
-            return false;
+
+            
+            var validMappedIntegrationColumns = integration.getIntegrationColumns().every(function(col) {
+                var allColumnsMapped = col.selectedDataTableColumns.length === integration.dataTables.length;
+                if(!allColumnsMapped) {
+                    console.info("column has fewer selected dataTableColumns than selected dataTables: %s", col.name);
+                }
+                return allColumnsMapped;
+            });
+            
+            return validMappedIntegrationColumns;
         }
 
         $scope.isMinimallyValid = function() {
@@ -244,20 +282,29 @@
         self.submitIntegration  = function() {
             $scope.downloadReady = false
             var results = dataService.processIntegration(integration);
+            self.promiseStatus(results, "Processing integration, please wait...", "Integration Results ready!");
             results.then(function(data){
-                console.debug("submitIntegration:: success");
                 $scope.downloadReady = true;
                 $('#divResultContainer').modal({show:true});
-                $scope.download = data;
+                $scope.download = {
+                    previewData: {
+                        //fixme: where are the column names? generate 'col1, col2, ..., coln' for now
+                        columns: data.previewColumnLabels,
+                        rows: data.previewData
+                    },
+                    pivotData: {
+                        columns: data.pivotColumnLabels,
+                        rows: data.pivotData
+                    },
+                    ticketId: data.ticket.id
+                };
                 console.debug(data);
-
             }, function(err) {
                 console.debug("submitIntegration:: failed:%s", err);
                 //todo: toast explaining what went wrong
             });
 
-        }
-
+        };
     }]);
 
     /* global jQuery, angular */

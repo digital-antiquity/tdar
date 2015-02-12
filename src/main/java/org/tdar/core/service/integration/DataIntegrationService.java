@@ -531,6 +531,7 @@ public class DataIntegrationService {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         logger.debug("incoming JSON: {}", integration);
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
+
         if (CollectionUtils.isNotEmpty(workflow.getErrors())) {
             throw new TdarRecoverableRuntimeException("dataIntegrationService.invalid_integration", workflow.getErrors());
         }
@@ -539,6 +540,7 @@ public class DataIntegrationService {
         }
         IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao, provider);
         // logger.debug(serializationService.convertToXML(integrationContext));
+
         integrationContext.setCreator(authenticatedUser);
         ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)", null, authenticatedUser);
         log.setTimestamp(new Date());

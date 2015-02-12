@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.integration.IntegrationWorkflowDao;
+import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
@@ -38,7 +38,7 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     private transient SerializationService serializationService;
 
     @Autowired
-    private transient GenericDao genericDao;
+    private transient OntologyNodeDao ontologyNodeDao;
 
     @Transactional
     public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow, TextProvider provider) throws IOException, IntegrationDeserializationException {
@@ -55,10 +55,8 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
         try {
             validateWorkflow(data, provider);
             persistable.markUpdated(authUser);
-
-            //fixme: jtd:this feels like a very bad idea.  json is an untrusted string, and we are using it here to modify fields on a writable integrationWorkflow (and thus also a writable TdarUser object).
             data.copyValuesToBean(persistable, json);
-            genericDao.saveOrUpdate(persistable);
+            ontologyNodeDao.saveOrUpdate(persistable);
             result.setStatus(IntegrationSaveResult.SUCCESS);
             result.setId(persistable.getId());
         } catch (IntegrationDeserializationException e) {
@@ -70,8 +68,13 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     }
 
     @Transactional(readOnly = true)
+<<<<<<< mine
+    public void validateWorkflow(IntegrationWorkflowWrapper data) throws IntegrationDeserializationException {
+        data.validate(ontologyNodeDao);
+=======
     public void validateWorkflow(IntegrationWorkflowWrapper data, TextProvider provider) throws IntegrationDeserializationException {
         data.validate(genericDao, provider);
+>>>>>>> theirs
     }
 
     @Transactional(readOnly = true)
