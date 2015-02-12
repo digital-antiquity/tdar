@@ -58,7 +58,6 @@ if [ $? -ne 0 ]
    exit 1
   else
     sudo service tomcat7 stop
-	sudo cp target/ROOT.war ~tdar/app/
     sudo rm -Rrf ~tdar/app/ROOT
     sudo service tomcat7 restart
 fi

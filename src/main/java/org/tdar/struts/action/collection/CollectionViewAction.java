@@ -164,8 +164,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             if (isEditor()) {
                 List<Long> collectionIds = PersistableUtils.extractIds(getPersistable().getTransientChildren());
                 collectionIds.add(getId());
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, collectionIds, null,
-                        Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+                setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
             findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), false,

@@ -52,6 +52,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
+import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
@@ -130,6 +131,8 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
     private List<ResourceCollection> viewableResourceCollections;
 
+    private String schemaOrgJsonLD;
+
     private void initializeResourceCreatorProxyLists() {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
         resourceCreators = getPersistable().getActiveResourceCreators();
@@ -178,6 +181,14 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         } catch (Exception e) {
             getLogger().error("error converting scholar tag for resource:", getId(), e);
         }
+        
+        try {
+            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+            setSchemaOrgJsonLD(transformer.convert(serializationService, getResource()));
+        } catch (Exception e) {
+            getLogger().error("error converting to json-ld", e);
+        }
+        
         return sw.toString();
     }
 
@@ -212,9 +223,9 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
                 List<Long> extractIds = PersistableUtils.extractIds(((Project) getPersistable()).getCachedInformationResources());
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, extractIds, null, null, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(extractIds, null));
             } else {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()),null));
             }
         }
 
@@ -470,5 +481,13 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
             editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
         return editable;
+    }
+
+    public String getSchemaOrgJsonLD() {
+        return schemaOrgJsonLD;
+    }
+
+    public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
+        this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 }

@@ -98,7 +98,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             }
         };
 
-        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
+        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTableCaseInsensitive(column, key, resultSetExtractor);
         resource.setRelatedDatasetData(dataTableQueryResults);
     }
 
@@ -200,7 +200,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 SQLQuery insert = getCurrentSession().createSQLQuery(format);
                 insert.executeUpdate();
                 if (count % 250 == 0) {
-                    logger.debug(format);
+                    logger.trace(format);
                 }
                 count++;
             }

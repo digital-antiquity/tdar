@@ -82,7 +82,16 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />
         </#if>
         <#if (version.viewable)>
-        <#local path>/filestore/download/${(irfile.informationResource.id)!id!-1?c}/${version.id?c}</#local>
+		<#-- refactor ? -->
+		<#local irid = (irfile.informationResource.id)!-1 />
+		<#if !irid?has_content || irid == -1 >
+			<#local irid = id />
+		</#if>
+		<#if !irid?has_content>
+			<#local irid = -1 />
+		</#if>
+
+        <#local path>/filestore/download/${irid?c}/${version.id?c}</#local>
         <a href="<@s.url value='${path}'/>"
             class="download-link download-file"
            onClick="TDAR.common.registerDownload('${path}', '${id?c}')"
@@ -364,7 +373,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
 
-        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a <#if schemaRole?has_content >itemprop="${schemaRole }"</#if> href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
+        <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
     </#compress>
     </#macro>
 

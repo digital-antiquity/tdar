@@ -41,19 +41,19 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     private transient GenericDao genericDao;
 
     @Transactional
-    public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow) throws IOException, IntegrationDeserializationException {
+    public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow, TextProvider provider) throws IOException, IntegrationDeserializationException {
         IntegrationWorkflowData workflowData = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
-        IntegrationContext context = workflowData.toIntegrationContext(genericDao);
+        IntegrationContext context = workflowData.toIntegrationContext(genericDao, provider);
         // perform validity checks?
         return context;
     }
 
     @Transactional(readOnly = false)
-    public IntegrationSaveResult saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data,String json, TdarUser authUser) {
+    public IntegrationSaveResult saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data,String json, TdarUser authUser, TextProvider provider) {
         IntegrationSaveResult result = new IntegrationSaveResult();
         result.setStatus(IntegrationSaveResult.ERROR);
         try {
-            validateWorkflow(data);
+            validateWorkflow(data, provider);
             persistable.markUpdated(authUser);
 
             //fixme: jtd:this feels like a very bad idea.  json is an untrusted string, and we are using it here to modify fields on a writable integrationWorkflow (and thus also a writable TdarUser object).
@@ -63,10 +63,6 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
             result.setId(persistable.getId());
         } catch (IntegrationDeserializationException e) {
             result.getErrors().add(e.getMessage());
-            for (Persistable p : e.getPersistables()) {
-                //fixme: make more intelligible
-                result.getErrors().add(p.toString());
-            }
         } catch (Exception e) {
             logger.error("error", e);
         }
@@ -74,8 +70,8 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     }
 
     @Transactional(readOnly = true)
-    public void validateWorkflow(IntegrationWorkflowWrapper data) throws IntegrationDeserializationException {
-        data.validate(genericDao);
+    public void validateWorkflow(IntegrationWorkflowWrapper data, TextProvider provider) throws IntegrationDeserializationException {
+        data.validate(genericDao, provider);
     }
 
     @Transactional(readOnly = true)

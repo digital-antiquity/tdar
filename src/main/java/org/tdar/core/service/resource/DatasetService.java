@@ -641,26 +641,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     @Transactional
     public void assignMappedDataForInformationResource(InformationResource resource) {
-        String key = resource.getMappedDataKeyValue();
-        DataTableColumn column = resource.getMappedDataKeyColumn();
-        if (StringUtils.isBlank(key) || (column == null)) {
-            return;
-        }
-        final DataTable table = column.getDataTable();
-        ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
-            @Override
-            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException {
-                while (rs.next()) {
-                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, rs, false);
-                    return results;
-                }
-                return null;
-            }
-
-        };
-
-        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
-        resource.setRelatedDatasetData(dataTableQueryResults);
+        getDao().assignMappedDataForInformationResource(resource);
     }
 
     /*

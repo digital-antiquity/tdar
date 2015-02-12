@@ -42,6 +42,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.UrlService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -58,6 +60,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -96,7 +99,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public static final String XML = ".xml";
     public static final String CREATORS = "creators";
     public static final String EXPLORE = "explore";
-
+    private String logoUrl;
     private Creator creator;
     private Long viewCount = 0L;
     private List<String> groups = new ArrayList<String>();
@@ -126,6 +129,9 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private transient AuthorizationService authorizationService;
 
     @Autowired
+    public transient SerializationService serializationService;
+    
+    @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
@@ -148,6 +154,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Autowired
     private transient ResourceService resourceService;
+    private String schemaOrgJsonLD;
 
     public Creator getAuthorityForDup() {
         return entityService.findAuthorityFromDuplicate(creator);
@@ -209,6 +216,10 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         } else {
             prepareLuceneQuery();
         }
+        
+        if (isLogoAvailable()) {
+            setLogoUrl(UrlService.creatorLogoUrl(creator));
+        }
     }
 
     @Actions(value = {
@@ -218,6 +229,13 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public String browseCreators() throws ParseException, TdarActionException {
         if (isRedirectBadSlug()) {
             return BAD_SLUG;
+        }
+
+        try {
+            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+            setSchemaOrgJsonLD(transformer.convert(serializationService, getCreator(), logoUrl));
+        } catch (Exception e) {
+            getLogger().error("error converting to json-ld", e);
         }
 
         if (isEditor()) {
@@ -232,7 +250,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                         accountService.listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
             }
             try {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatisticsForUser(Arrays.asList(getId()), null));
             } catch (Exception e) {
                 getLogger().error("unable to set resource access statistics", e);
             }
@@ -500,4 +518,21 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public void setRedirectBadSlug(boolean redirectBadSlug) {
         this.redirectBadSlug = redirectBadSlug;
     }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
+    public String getSchemaOrgJsonLD() {
+        return schemaOrgJsonLD;
+    }
+
+    public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
+        this.schemaOrgJsonLD = schemaOrgJsonLD;
+    }
+    
 }

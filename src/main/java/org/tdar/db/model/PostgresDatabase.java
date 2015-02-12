@@ -90,6 +90,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String SORT_SUFFIX = "_sort";
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=?";
+    private static final String SELECT_ALL_FROM_TABLE_WHERE_LOWER = "SELECT %s FROM %s WHERE lower(\"%s\")=lower(?)";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='No coding sheet value for code: ' || \"%s\" WHERE \"%s\" IS NULL";
@@ -227,6 +228,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
+
 
     @Override
     @Deprecated
@@ -929,7 +931,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     i++;
                     name_ = name + Integer.toString(i);
                 }
-                seen.add(name);
+                seen.add(name_);
                 name = name_;
                 dtc.setName(normalizeTableOrColumnNames(name));
                 name = dtc.getName();
@@ -1024,7 +1026,16 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, selectColumns, column.getDataTable().getName(), column.getName()),
                 new String[] { key },
                 resultSetExtractor);
+    }
 
+    @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
+    public Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
+            ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor) {
+        String selectColumns = "*";
+        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE_LOWER, selectColumns, column.getDataTable().getName(), column.getName()),
+                new String[] { key },
+                resultSetExtractor);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = false)
@@ -1148,4 +1159,5 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         logger.debug(sql);
         return jdbcTemplate.queryForObject(sql, String.class);
     }
+
 }

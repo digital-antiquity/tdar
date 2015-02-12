@@ -24,17 +24,17 @@
         <li><strong>Number of Volumes</strong><br>${resource.numberOfVolumes}</li>
         </#if>
         <#if resource.edition?has_content>
-        <li><strong>Edition</strong><br><span itemprop="bookEdition">${resource.edition}</span></li>
+        <li><strong>Edition</strong><br><span>${resource.edition}</span></li>
         </#if>
     </#macro>
 
     <#macro sidebarDataBottom>
         <#if resource.isbn?has_content>
-        <li><strong>ISBN</strong><br><span itemprop="isbn"><a href="http://www.worldcat.org/isbn/${resource.isbn?replace("-","")}">${resource.isbn}</a></span>
+        <li><strong>ISBN</strong><br><span><a href="http://www.worldcat.org/isbn/${resource.isbn?replace("-","")}">${resource.isbn}</a></span>
         </li>
         </#if>
         <#if resource.issn?has_content>
-        <li><strong>ISSN</strong><br><span itemprop="issn">${resource.issn}</span></li>
+        <li><strong>ISSN</strong><br><span>${resource.issn}</span></li>
         </#if>
 
         <#if resource.documentType?has_content>
@@ -61,7 +61,7 @@
                 <#else>
                     Publisher
                 </#if></strong><br>
-                <#if resource.publisher?has_content><span itemprop="publisher"><@view.browse creator=resource.publisher /></span></#if>
+                <#if resource.publisher?has_content><span><@view.browse creator=resource.publisher /></span></#if>
                 <#if resource.degree?has_content>${resource.degree.label}</#if>
                 <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
             </li>

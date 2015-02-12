@@ -104,15 +104,13 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     @Autowired
     private transient ResourceService resourceService;
 
-
     @Action(COLLECTIONS)
     public String browseCollections() throws TdarActionException {
         performLuceneQuery();
 
         if (isEditor()) {
-            setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null,
-                    PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
-                    Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED));
+            setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
         return SUCCESS;

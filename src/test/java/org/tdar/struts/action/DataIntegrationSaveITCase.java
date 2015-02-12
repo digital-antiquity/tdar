@@ -90,9 +90,11 @@ public class DataIntegrationSaveITCase extends AbstractAdminControllerITCase {
         String integration = FileUtils.readFileToString(new File(testInvalidJson));
         action.setIntegration(integration);
         action.prepare();
+        action.validate();
         String save = action.save();
         assertEquals(TdarActionSupport.INPUT, save);
         assertTrue(action.getResult().getId() == null);
+        logger.debug("errors: {}", action.getResult().getErrors());
         assertFalse(CollectionUtils.isEmpty(action.getResult().getErrors()));
     }
 
@@ -118,6 +120,7 @@ public class DataIntegrationSaveITCase extends AbstractAdminControllerITCase {
         String integration = FileUtils.readFileToString(new File(testInvalidJsonBadFields));
         action.setIntegration(integration);
         action.prepare();
+        action.validate();
         String save = action.save();
         assertEquals(TdarActionSupport.INPUT, save);
         assertTrue(action.getResult().getId() == null);
