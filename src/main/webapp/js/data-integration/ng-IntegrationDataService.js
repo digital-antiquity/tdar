@@ -244,7 +244,7 @@
 
                         var ids = [];
                         column.dataTableColumns.forEach(function(col) {
-                            if (col != undefined && col.id != undefined) {
+                            if (col != undefined && col.id != undefined && dataTableColumnCache.get(col.id) != undefined) {
                                 ids.push(col.id);
                             }
                         });
