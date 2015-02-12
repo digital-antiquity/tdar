@@ -111,3 +111,13 @@ table.table-modal-results.disabled {
 	opacity: 0.5;
 }
 
+/* put border around tabbed controls so that it's easier to distinguish the content associated with each tab (unless it wraps, which looks as bad as it did before) */
+.tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 1em;
+}
+.nav-tabs {
+    margin-bottom: 0;
+}
