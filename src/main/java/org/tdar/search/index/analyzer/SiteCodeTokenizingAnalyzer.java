@@ -8,7 +8,8 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
 import org.apache.lucene.analysis.pattern.PatternReplaceFilter;
 import org.apache.lucene.analysis.pattern.PatternTokenizer;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class SiteCodeTokenizingAnalyzer extends Analyzer {
 
@@ -20,7 +21,6 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
      * Treats entire field value as a single Keyword Token
      */
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
 
     public static final String SEP = "([\\s\\,\\:\\-]0*)";
     public static final String SEP_OPT = SEP + "?";
@@ -40,8 +40,9 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
             // normalizing where possible so that RI-0000 matches RI0000
             PatternReplaceFilter replaceFilter = new PatternReplaceFilter(trimFilter, sep_pattern, "", true);
             return new TokenStreamComponents(tokenizer, replaceFilter);
+        } catch (Exception e) {
             logger.warn("exception in sitecode tokenization", e);
-//            throw new TdarRecoverableRuntimeException();
+            // throw new TdarRecoverableRuntimeException();
             return null;
         }
     }
