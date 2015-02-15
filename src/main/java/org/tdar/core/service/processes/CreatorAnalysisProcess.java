@@ -3,12 +3,10 @@ package org.tdar.core.service.processes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -22,11 +20,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
+import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,7 +42,6 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -109,6 +106,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     }
 
     private List<Long> findCreatorsOfRecentlyModifiedResources() {
+        // this could be optimized to get the list of creator ids from the database
         List<Resource> results = datasetDao.findRecentlyUpdatedItemsInLastXDays(getDaysToRun());
         Set<Long> ids = new HashSet<>();
         getLogger().debug("dealing with {} resource(s) updated in the last {} days", results.size(), getDaysToRun());
@@ -140,9 +138,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          * Theoretically, we could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
          * last wwek, and then use those resources to grab all associated creators, and then process those
          */
-        List<Creator> results = genericDao.findAll(getPersistentClass());
+        List<Long> results = genericDao.findAllIds(getPersistentClass());
         if (CollectionUtils.isNotEmpty(results)) {
-            return PersistableUtils.extractIds(results);
+            return results;
         }
         return null;
     }
@@ -161,15 +159,16 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
                 continue;
             }
-            Map<Creator, Double> collaborators = new HashMap<Creator, Double>();
-            Map<Keyword, Double> keywords = new HashMap<Keyword, Double>();
             int total = 0;
             if (!creator.isActive()) {
                 continue;
             }
             QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
+            Set<Long> resourceIds = new HashSet<>();
             try {
                 FullTextQuery search = searchService.search(query);
+                // change to ID only projection
+//                search.setProjection(arg0)
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
                 total = search.getResultSize();
                 if (total == 0) {
@@ -177,12 +176,14 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 }
                 while (results.next()) {
                     Resource resource = (Resource) results.get()[0];
-                    incrementKeywords(keywords, resource);
-                    incrementCreators(creator, collaborators, resource, userIdsToIgnoreInLargeTasks);
+                    resourceIds.add(resource.getId());
                 }
             } catch (Exception e) {
                 getLogger().warn("Exception", e);
             }
+
+            Map<Keyword, Integer> keywords = incrementKeywords(resourceIds);
+            Map<Creator, Integer> collaborators = incrementCreators(resourceIds, userIdsToIgnoreInLargeTasks);
 
             CreatorInfoLog log = new CreatorInfoLog();
             log.setPerson(creator);
@@ -201,22 +202,22 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             log.setKeywordMean(keywordMean.evaluate(kwdValues));
             log.setKeywordMedian(keywordMedian.evaluate(kwdValues));
 
-            for (Entry<Creator, Double> entrySet : collaborators.entrySet()) {
+            for (Entry<Creator, Integer> entrySet : collaborators.entrySet()) {
                 LogPart part = new LogPart();
                 part.setCount(entrySet.getValue().longValue());
                 Creator key = entrySet.getKey();
                 part.setId(key.getId());
-                part.setSimpleClassName(key.getClass().getSimpleName());
+                part.setSimpleClassName(getClass(key));
                 part.setName(key.getProperName());
                 log.getCollaboratorLogPart().add(part);
             }
 
-            for (Entry<Keyword, Double> entrySet : keywords.entrySet()) {
+            for (Entry<Keyword, Integer> entrySet : keywords.entrySet()) {
                 LogPart part = new LogPart();
                 part.setCount(entrySet.getValue().longValue());
                 Keyword key = entrySet.getKey();
                 part.setId(key.getId());
-                part.setSimpleClassName(key.getClass().getSimpleName());
+                part.setSimpleClassName(getClass(key));
                 part.setName(key.getLabel());
                 log.getKeywordLogPart().add(part);
             }
@@ -232,6 +233,15 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             }
         }
     }
+
+    private String getClass(Object object_) {
+        Object object = object_;
+        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
+            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
+        }
+        return object.getClass().getSimpleName();
+    }
+
 
     public static class LogPartComparator implements Comparator<LogPart> {
 
@@ -379,48 +389,13 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     }
 
-    private void incrementCreators(Creator current, Map<Creator, Double> collaborators, Resource resource, List<Long> userIdsToIgnoreInLargeTasks) {
-        for (Creator creator : resource.getRelatedCreators()) {
-            if ((creator == null) || StringUtils.isBlank(creator.getProperName())) {
-                continue;
-            }
-
-            if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
-                continue;
-            }
-
-            if (creator.isDuplicate()) {
-                creator = entityService.findAuthorityFromDuplicate(creator);
-            }
-            if (Objects.equals(creator.getId(), current.getId()) || !creator.isActive()) {
-                continue;
-            }
-
-            Double count = collaborators.get(creator);
-            if (count == null) {
-                count = 0.0;
-            }
-            count++;
-            collaborators.put(creator, count);
-        }
+    private Map<Creator, Integer> incrementCreators(Set<Long> resourceIds, List<Long> userIdsToIgnoreInLargeTasks) {
+        Map<Creator, Integer> counts = entityService.getRelatedCreatorCounts(resourceIds);
+        return counts;
     }
 
-    private void incrementKeywords(Map<Keyword, Double> keywords, Resource resource) {
-        for (Keyword kwd : resource.getAllActiveKeywords()) {
-            if (kwd.isDuplicate()) {
-                kwd = genericKeywordService.findAuthority(kwd);
-            }
-            if (!kwd.isActive()) {
-                continue;
-            }
-
-            Double count = keywords.get(kwd);
-            if (count == null) {
-                count = 0.0;
-            }
-            count++;
-            keywords.put(kwd, count);
-        }
+    private Map<Keyword, Integer> incrementKeywords(Set<Long> resourceIds) {
+        return genericKeywordService.getRelatedKeywordCounts(resourceIds);
     }
 
     @Override
