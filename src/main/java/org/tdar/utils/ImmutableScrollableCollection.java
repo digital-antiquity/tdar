@@ -3,7 +3,6 @@ package org.tdar.utils;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Spliterator;
 
 import org.apache.commons.lang.NotImplementedException;
 /**
@@ -132,12 +131,6 @@ public class ImmutableScrollableCollection<T> implements Collection<T>, Serializ
     @Override
     public int size() {
         logger.debug("size() called");
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public Spliterator<T> spliterator() {
-        logger.debug("splitIterator() called");
         throw new NotImplementedException();
     }
 
