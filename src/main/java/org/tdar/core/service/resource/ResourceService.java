@@ -67,7 +67,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.ScrollableIterable;
+import org.tdar.utils.ImmutableScrollableCollection;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -772,7 +772,7 @@ public class ResourceService extends GenericService {
             case PROJECT:
                  ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
                  Set<InformationResource> inProject = new HashSet<>();
-                 for (InformationResource ir : new ScrollableIterable<InformationResource>(findAllResourcesInProject)) {
+                 for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
                      inProject.add(ir);
                  }
                 if (CollectionUtils.isNotEmpty(inProject)) {

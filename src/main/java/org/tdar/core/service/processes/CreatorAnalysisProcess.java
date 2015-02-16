@@ -44,7 +44,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.ScrollableIterable;
+import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -118,7 +118,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             // add all children of project if project was modified (inheritance check)
             if (resource instanceof Project) {
                 ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) resource);
-                for (InformationResource ir : new ScrollableIterable<InformationResource>(findAllResourcesInProject)) {
+                for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
                     results.add(ir);
                 }
             }

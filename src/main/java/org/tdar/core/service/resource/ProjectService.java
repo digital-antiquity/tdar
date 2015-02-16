@@ -29,7 +29,7 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.ScrollableIterable;
+import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
@@ -117,7 +117,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     public Set<InformationResource> findAllResourcesInProject(Project p, Status... statuses) {
         ScrollableResults  informationResources = getDao().findAllResourcesInProject(p, statuses);
         Set<InformationResource> results = new HashSet<>();
-        for (InformationResource ir : new ScrollableIterable<InformationResource>(informationResources)) {
+        for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(informationResources)) {
             results.add(ir);
         }
 

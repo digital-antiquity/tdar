@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.CacheMode;
@@ -40,7 +39,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.utils.ScrollableIterable;
+import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.activity.Activity;
 
 @Service
@@ -270,7 +269,8 @@ public class SearchIndexService {
             if (item instanceof Project) {
                 Project project = (Project) item;
                 if (null == project.getCachedInformationResources()) {
-                    logger.error("project contents is null: {}", project);
+                    setupProjectForIndexing(project);
+//                    logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
                 }
             }
             fullTextSession.index(item);
@@ -489,10 +489,7 @@ public class SearchIndexService {
      * @param project
      */
     public boolean indexProject(Project project) {
-        Iterable<InformationResource> irs = new ScrollableIterable<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE,
-                Status.DRAFT));
-        project.setCachedInformationResources(irs);
-        project.setReadyToIndex(true);
+        setupProjectForIndexing(project);
         index(project);
         logger.debug("reindexing project contents");
         int total = 0;
@@ -500,6 +497,13 @@ public class SearchIndexService {
         indexScrollable(getDefaultUpdateReceiver(), null, getFullTextSession(), 0f, 100f, Resource.class, total, scrollableResults, true);
         logger.debug("completed reindexing project contents");
         return false;
+    }
+
+    private void setupProjectForIndexing(Project project) {
+        Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE,
+                Status.DRAFT));
+        project.setCachedInformationResources(irs);
+        project.setReadyToIndex(true);
     }
 
     /**
