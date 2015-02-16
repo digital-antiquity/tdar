@@ -130,12 +130,12 @@ public class GenericDao {
     }
 
     @SuppressWarnings("unchecked")
-    public Integer countActive(Class<? extends HasStatus> persistentClass) {
+    public Number countActive(Class<? extends HasStatus> persistentClass) {
+        Class cls = persistentClass; 
         if (persistentClass.isAssignableFrom(Creator.class)) {
-            return (Integer)getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, Creator.class.getName())).uniqueResult();
-        } else {
-            return (Integer)getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).uniqueResult();
-        }
+            cls = Creator.class;
+        } 
+            return (Number)getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")

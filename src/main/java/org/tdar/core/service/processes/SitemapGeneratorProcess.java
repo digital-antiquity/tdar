@@ -67,7 +67,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
             sig = new SitemapIndexGenerator(config.getBaseUrl(), new File(dir, "sitemap_index.xml"));
             // wsg.set
-            Integer totalResource = genericService.countActive(Resource.class);
+            Integer totalResource = genericService.countActive(Resource.class).intValue();
             total += totalResource;
 
             logger.info("({}) resources in sitemap", totalResource);
