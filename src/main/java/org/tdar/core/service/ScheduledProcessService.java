@@ -273,7 +273,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             process.execute();
         } catch (Throwable e) {
-            logger.error(MessageHelper.getMessage("scheduledProcessService.error_running", Arrays.asList(process.getDisplayName())), e);
+            logger.error("an error ocurred when running {}", process.getDisplayName(), e);
         } finally {
             Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         }
