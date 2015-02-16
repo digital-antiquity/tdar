@@ -8,7 +8,6 @@ package org.tdar.core.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -43,7 +42,6 @@ import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.utils.MessageHelper;
 
 /**
  * 
