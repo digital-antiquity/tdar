@@ -3,6 +3,8 @@ package org.tdar.utils;
 import java.io.Serializable;
 import java.util.Iterator;
 
+
+import org.apache.commons.lang.NotImplementedException;
 /**
  * wrapper for scrollable result set
  */
@@ -30,6 +32,11 @@ public class ScrollableIterable<T> implements Iterable<T>, Serializable {
             @Override
             public T next() {
                 return (T)scrollable.get(0);
+            }
+            
+            @Override
+            public void remove() {
+                throw new NotImplementedException();
             }
         };
     }
