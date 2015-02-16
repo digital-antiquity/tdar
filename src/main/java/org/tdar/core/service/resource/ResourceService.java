@@ -18,6 +18,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.ScrollableIterable;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -562,6 +564,11 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long id, List<Status> status) {
+        return datasetDao.getResourceSpaceUsageStatisticsForProject(id, status);
+    }
+
+    @Transactional
     public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
         return datasetDao.getSpaceUsageForCollections(collectionId, statuses);
     }
@@ -763,7 +770,11 @@ public class ResourceService extends GenericService {
         DeleteIssue issue = new DeleteIssue();
         switch (persistable.getResourceType()) {
             case PROJECT:
-                Set<InformationResource> inProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                 ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                 Set<InformationResource> inProject = new HashSet<>();
+                 for (InformationResource ir : new ScrollableIterable<InformationResource>(findAllResourcesInProject)) {
+                     inProject.add(ir);
+                 }
                 if (CollectionUtils.isNotEmpty(inProject)) {
                     issue.getRelatedItems().addAll(inProject);
                     issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
@@ -801,6 +812,7 @@ public class ResourceService extends GenericService {
         logResourceModification(resource, authUser, logMessage);
         delete(resource);
     }
+
 
 
 }

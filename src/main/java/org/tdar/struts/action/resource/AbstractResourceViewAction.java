@@ -222,8 +222,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
-                List<Long> extractIds = PersistableUtils.extractIds(((Project) getPersistable()).getCachedInformationResources());
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(extractIds, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatisticsForProject(getId(), null));
             } else {
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()),null));
             }

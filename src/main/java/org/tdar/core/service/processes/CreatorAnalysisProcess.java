@@ -30,8 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -42,6 +44,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.ScrollableIterable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -114,7 +117,10 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Resource resource = results.remove(0);
             // add all children of project if project was modified (inheritance check)
             if (resource instanceof Project) {
-                results.addAll(projectDao.findAllResourcesInProject((Project) resource));
+                ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) resource);
+                for (InformationResource ir : new ScrollableIterable<InformationResource>(findAllResourcesInProject)) {
+                    results.add(ir);
+                }
             }
             getLogger().trace(" - adding {} creators", resource.getRelatedCreators().size());
             for (Creator creator : resource.getRelatedCreators()) {

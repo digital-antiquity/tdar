@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.ScrollableResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.ScrollableIterable;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
@@ -113,9 +115,13 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
      */
     @Transactional(readOnly = true)
     public Set<InformationResource> findAllResourcesInProject(Project p, Status... statuses) {
-        p.setCachedInformationResources(new HashSet<InformationResource>());
-        Set<InformationResource> informationResources = getDao().findAllResourcesInProject(p, statuses);
-        return informationResources;
+        ScrollableResults  informationResources = getDao().findAllResourcesInProject(p, statuses);
+        Set<InformationResource> results = new HashSet<>();
+        for (InformationResource ir : new ScrollableIterable<InformationResource>(informationResources)) {
+            results.add(ir);
+        }
+
+        return results;
     }
 
     /**
