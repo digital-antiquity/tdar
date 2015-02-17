@@ -15,7 +15,13 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import com.opensymphony.xwork2.Preparable;
 
 /**
- * Created by jimdevos on 9/23/14.
+ * Created by jimdevos on 9/23/14. This action is designed to facilitate un-authenticated downloads if resources are part of a given collection and the host
+ * name matches one in the allowed downloads, as well as the resource being public and the valid API-key being passed.
+ * 
+ * NOTE: This action is somewhat brittle based on HTTP/HTTPS referrer rules. This seems like it will only work from HTTP->HTTP and when HTTPS is added to the
+ * mix it'll likely break, or that breakage will be browser-dependent.
+ * http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
+ * 
  */
 @Namespace("/download/hosted")
 @Component
@@ -35,6 +41,8 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
     public String execute() {
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
                 isCoverPageIncluded(), this, null, true));
+        
+        // SEE NOTE ABOVE
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }
