@@ -15,10 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -178,8 +176,12 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
         // initial header ... Integration run on ... by ...
         String title = provider.getText("dataIntegrationWorkbook.title",
-                Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
-        excelService.addHeaderRow(summarySheet, 0, 0, Arrays.asList(title));
+                Arrays.asList(person.getProperName(), context.getTitle(), new SimpleDateFormat().format(new Date())));
+        int currentRow = 0;
+        excelService.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(title));
+        currentRow++;
+        excelService.addDataRow(summarySheet, currentRow, 0, Arrays.asList(context.getDescription()));
+        currentRow++;
 
         // first and second sub-header:
         // dataset and data table list
@@ -203,10 +205,12 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     provider.getText("dataIntegrationWorkbook.col_type"), provider.getText("dataIntegrationWorkbook.col_ontology"),
                     provider.getText("dataIntegrationWorkbook.col_coding_sheet")));
         }
-        excelService.addHeaderRow(summarySheet, 1, 0, Arrays.asList(ArrayUtils.subarray(datasetNameheader, 0, max + increment)));
-        excelService.addHeaderRow(summarySheet, 2, 0, Arrays.asList(ArrayUtils.subarray(dataTableNameheader, 0, max + increment)));
-        excelService.addRow(summarySheet, 3, 0, header, summaryStyle);
-        int currentRow = 3;
+        excelService.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(ArrayUtils.subarray(datasetNameheader, 0, max + increment)));
+        currentRow++;
+        excelService.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(ArrayUtils.subarray(dataTableNameheader, 0, max + increment)));
+        currentRow++;
+        excelService.addRow(summarySheet, currentRow, 0, header, summaryStyle);
+        currentRow++;
         // for each integration column, print out all of the column type info, and then add more if it's a true integration column
         for (IntegrationColumn col : context.getIntegrationColumns()) {
             currentRow++;
@@ -271,7 +275,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         Sheet pivotSheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.summary_worksheet"));
         logger.debug("{} - {}", provider, person);
         String title = provider.getText("dataIntegrationWorkbook.title",
-                Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
+                Arrays.asList(person.getProperName(), context.getTitle(), new SimpleDateFormat().format(new Date())));
         excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
         addMergedRegion(0, 0, 0, 8, pivotSheet);
         excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
@@ -366,9 +370,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     public String getFileName() {
         // MD5 is probably overkill, but we want a filename that is unique based on the included result sheets while avoiding any OS filename restrictions (e.g.
         // maxlength)
-        String basename = StringUtils.join(names, "");
-        String basenameMd5 = DigestUtils.md5Hex(basename);
-        String fileName = provider.getText("dataIntegrationWorkbook.file_name", Arrays.asList(basenameMd5));
+        String fileName = provider.getText("dataIntegrationWorkbook.file_name", Arrays.asList(context.getTitle()));
         return fileName;
     }
 

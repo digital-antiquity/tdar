@@ -34,7 +34,8 @@ public class IntegrationContext implements Serializable {
     private Date dateCreated = new Date();
     private List<IntegrationColumn> integrationColumns = new ArrayList<>();
     private List<DataTable> dataTables;
-    
+    private String title;
+    private String description;
     private List<String> errorMessages = new ArrayList<>();
 
     public IntegrationContext() {
@@ -124,6 +125,22 @@ public class IntegrationContext implements Serializable {
 
     public List<String> getErrorMessages() {
         return Collections.unmodifiableList(errorMessages);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }
