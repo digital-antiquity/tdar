@@ -37,8 +37,8 @@
         <tika.version>1.7</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
-        <jersey.version>1.18.3</jersey.version>
-        <jackson.version>2.5.0</jackson.version>
+        <jersey.version>1.19</jersey.version>
+        <jackson.version>2.5.1</jackson.version>
         <slf4j.version>1.7.10</slf4j.version>
         <http-components.version>4.3.3</http-components.version>
         <display.port></display.port>
@@ -263,7 +263,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.8.4</version>
+            <version>1.8.5</version>
         </dependency>
         <dependency>
             <groupId>javax.media.jai</groupId>
@@ -1457,7 +1457,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.5</version>
                 <configuration>
                     <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
                     <outputDirectory>${webapp.deploy.dir}</outputDirectory>
@@ -1475,8 +1475,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
 
                     <!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> 
                         <fork>true</fork> -->
