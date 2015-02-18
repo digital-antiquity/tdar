@@ -91,6 +91,9 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
                 String url = UrlService.absoluteUrl(creator);
                 addUrl(wsg, url);
                 totalCreator++;
+                if (totalCreator % 500 == 0) {
+                    genericService.clearCurrentSession();
+                }
             }
             logger.info("({}) creators in sitemap", totalCreator);
             total += totalCreator;
@@ -105,6 +108,10 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
                 String url = UrlService.absoluteUrl(collection);
                 addUrl(wsg, url);
                 totalCollections++;
+                if (totalCollections % 500 == 0) {
+                    genericService.clearCurrentSession();
+                }
+
             }
             logger.info("({}) collections in sitemap", totalCollections);
             total += totalCollections;

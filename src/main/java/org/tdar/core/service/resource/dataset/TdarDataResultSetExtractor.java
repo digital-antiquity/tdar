@@ -5,7 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -15,6 +18,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
  */
 public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<String>>> {
     private final ResultMetadataWrapper wrapper;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     // start at record
     private final int start;
     // end at record
@@ -46,6 +50,15 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
             if (rs.isFirst()) {
                 wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
+                int addition = 0;
+                if (returnRowId) {
+                    addition = 1;
+                }
+                // if we're returning the tDAR row id, then we add one to the list of fields
+                // NOTE: this ignore's hidden columns, but these aren't enabled in the UI right now
+                if (!Objects.equals(addition + wrapper.getFields().size() , result.keySet().size())) {
+                    logger.error("mismatch column entries: {}", dataTable);
+                }
             }
 
             if ((rowNum > start) && (rowNum <= (start + page))) {

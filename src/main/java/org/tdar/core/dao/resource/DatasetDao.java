@@ -314,6 +314,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
         ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
         while (scroll.next()) {
             // select r.id, r.title, r.description, r.resource_type, irf.description, irfv.id
+            if (count % 500 == 0) {
+                clearCurrentSession();
+            }
             Number id = (Number) scroll.get(0);
             String title = (String) scroll.get(1);
             String description = (String) scroll.get(2);
