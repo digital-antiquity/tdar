@@ -80,7 +80,7 @@
                     .filter(function(c){return !c.nodeSelection.every(function(node){
                         var cachedNode = DataService.ontologyNodeCache.get(node.id);
                         if(!cachedNode) {console.error("node id not found:%s", node.id)}
-                        return !cachedNode})})
+                        return cachedNode})})
                     //convert invalid columns to list of error messages
                     .map(function(invalidColumn){
                         return "The following ontology has been modified since creating this integration:'" +
