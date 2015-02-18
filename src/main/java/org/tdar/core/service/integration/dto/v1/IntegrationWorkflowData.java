@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.tdar.core.bean.resource.Dataset;
@@ -34,6 +35,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 @JsonInclude(Include.NON_NULL)
 @JsonAutoDetect
+//@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
 public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData implements Serializable, IntegrationWorkflowWrapper {
 
     // hash keys
@@ -322,6 +324,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
+    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class DatasetDTO implements Serializable, IntegrationDTO<Dataset> {
 
         private static final long serialVersionUID = -7582567713165436710L;
@@ -368,6 +371,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
+    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class DataTableColumnDTO implements Serializable, IntegrationDTO<DataTableColumn> {
         private static final long serialVersionUID = 1717839026465656147L;
 
@@ -414,6 +418,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
+    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class DataTableDTO implements Serializable, IntegrationDTO<DataTable> {
 
         private static final long serialVersionUID = -3269819489102125775L;
@@ -460,6 +465,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
+    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class IntegrationColumnDTO implements Serializable {
 
         private static final long serialVersionUID = 9061205188321045416L;
@@ -517,6 +523,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
+    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class OntologyDTO implements Serializable, IntegrationDTO<Ontology> {
 
         private static final long serialVersionUID = -7234646396247780253L;
@@ -563,6 +570,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
+    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class OntologyNodeDTO implements Serializable, IntegrationDTO<OntologyNode> {
         private static final long serialVersionUID = 6020897284883456005L;
 

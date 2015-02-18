@@ -71,15 +71,18 @@
             self.updateStatus("Loading...");
 
             //validate the embedded json first
-            var embeddedJsonErrors = validationService.validate(jsonData);
+            var embeddedJsonErrors = validationService.validateJson(jsonData);
 
 
             var result = dataService.loadIntegration(jsonData , self.integration);
             result.then(function(){
+                        validationService.validateIntegration(jsonData, self.integration);
                     self.updateStatus("Done loading");
-                    if(embeddedJsonErrors.length) {
-                        self.updateStatus("Loading complete, but with errors. The underlying resources used in this integration may have changed.  Please review your selections before processing performing your integration");
-                        //hack to refresh the integration columns
+                    if(validationService.errors.length) {
+                        self.updateStatus("Loading complete. However, the underlying resources used in this integration may have changed. " +
+                        " Please review your selections and ensure they are up-to-date.");
+
+                        //in the event errors, rebuild cached/transient data
                         self.integration.reset();
                     }
             },
