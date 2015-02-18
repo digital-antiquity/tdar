@@ -71,7 +71,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             total += totalResource;
 
             logger.info("({}) resources in sitemap", totalResource);
-            ScrollableResults allScrollable = genericService.findAllActiveScrollable(Resource.class);
+            ScrollableResults allScrollable = resourceService.findAllActiveScrollableForSitemap();
             while (allScrollable.next()) {
                 Resource object = (Resource) allScrollable.get(0);
                 String url = UrlService.absoluteUrl(object);

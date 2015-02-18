@@ -146,7 +146,7 @@ public interface TdarNamedQueries {
     String AFFILIATION_COUNTS = "query.affiliationCounts";
     String DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS = "delete.data_table_column_relationships";
     String DELETE_DATA_TABLE_RELATIONSHIPS = "delete.data_table_relationships";
-
+    String SCROLLABLE_SITEMAP = "sitemap.active_resources";
     // raw SQL/HQL queries
 
     /**

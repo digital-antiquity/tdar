@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -307,9 +308,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @SuppressWarnings("unchecked")
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
+        query.setCacheMode(CacheMode.IGNORE);
         int count = 0;
         logger.trace(SELECT_RAW_IMAGE_SITEMAP_FILES);
-        ScrollableResults scroll = query.scroll();
+        ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
         while (scroll.next()) {
             // select r.id, r.title, r.description, r.resource_type, irf.description, irfv.id
             Number id = (Number) scroll.get(0);
