@@ -454,4 +454,24 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         }
         return null;
     }
+
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long resourceId, List<Status> statuses) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            statuses_ = statuses;
+        }
+
+        Query query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
+        query.setParameterList("projectIds", Arrays.asList(resourceId));
+
+        query.setParameterList("statuses", statuses_);
+        // query.setParameterList("types", types_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
+    }
 }

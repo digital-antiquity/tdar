@@ -208,7 +208,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
             ((Ontology) doc).getOntologyNodes().clear();
         }
         if (doc instanceof Project) {
-            ((Project) doc).getCachedInformationResources().clear();
+            ((Project) doc).setCachedInformationResources(null);
         }
         if (doc instanceof InformationResource) {
             ((InformationResource) doc).getRelatedDatasetData().clear();

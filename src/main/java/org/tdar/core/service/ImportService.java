@@ -313,7 +313,7 @@ public class ImportService {
 
         if (incomingResource instanceof Project) {
             Project project = (Project) incomingResource;
-            if (CollectionUtils.isNotEmpty(project.getCachedInformationResources())) {
+            if (null != project.getCachedInformationResources()) {
                 throw new APIException(MessageHelper.getMessage("importService.cached_data_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
         }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -127,7 +128,7 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
                 errors.addAll(e.getErrors());
             }
             // fixme -- cleanup
-            if (e.getFieldErrors() != null) {
+            if (MapUtils.isNotEmpty(e.getFieldErrors())) {
                 getLogger().debug("fieldErrs: {}", e.getFieldErrors());
                 errors.add(e.getFieldErrors().toString());
             }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.hibernate.ScrollableResults;
@@ -68,12 +67,14 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
             sig = new SitemapIndexGenerator(config.getBaseUrl(), new File(dir, "sitemap_index.xml"));
             // wsg.set
-            List<Resource> resources = resourceService.findAllSparseActiveResources();
-            total += resources.size();
+            Integer totalResource = genericService.countActive(Resource.class).intValue();
+            total += totalResource;
 
-            logger.info("({}) resources in sitemap", resources.size());
-            for (Resource resource : resources) {
-                String url = UrlService.absoluteUrl(resource);
+            logger.info("({}) resources in sitemap", totalResource);
+            ScrollableResults allScrollable = genericService.findAllActiveScrollable(Resource.class);
+            while (allScrollable.next()) {
+                Resource object = (Resource) allScrollable.get(0);
+                String url = UrlService.absoluteUrl(object);
                 addUrl(wsg, url);
             }
 
@@ -86,7 +87,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             ScrollableResults activeCreators = genericService.findAllActiveScrollable(Creator.class);
             int totalCreator = 0;
             while (activeCreators.next()) {
-                Creator creator = (Creator)activeCreators.get(0);
+                Creator creator = (Creator) activeCreators.get(0);
                 String url = UrlService.absoluteUrl(creator);
                 addUrl(wsg, url);
                 totalCreator++;
@@ -97,7 +98,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             ScrollableResults activeCollections = genericService.findAllScrollable(ResourceCollection.class);
             int totalCollections = 0;
             while (activeCollections.next()) {
-                ResourceCollection collection = (ResourceCollection)activeCollections.get(0);
+                ResourceCollection collection = (ResourceCollection) activeCollections.get(0);
                 if (collection.isInternal() || collection.isHidden()) {
                     continue;
                 }

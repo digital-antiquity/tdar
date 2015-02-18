@@ -103,7 +103,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return new HashSet<Person>(criteria.list());
     }
 
-    public Person findAuthorityFromDuplicate(Person dup) {
+    public Person findAuthorityFromDuplicate(Creator dup) {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
         @SuppressWarnings("unchecked")
         List<BigInteger> result = query.list();
@@ -253,8 +253,8 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         HashMap<AgreementTypes, Long> toReturn = new HashMap<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AGREEMENT_COUNTS);
         Object[] result = (Object[]) query.uniqueResult();
-        toReturn.put(AgreementTypes.USER_AGREEMENT, ((Number)result[0]).longValue());
-        toReturn.put(AgreementTypes.CONTRIBUTOR_AGREEMENT, ((Number)result[1]).longValue());
+        toReturn.put(AgreementTypes.USER_AGREEMENT, ((Number) result[0]).longValue());
+        toReturn.put(AgreementTypes.CONTRIBUTOR_AGREEMENT, ((Number) result[1]).longValue());
         return toReturn;
     }
 
@@ -272,5 +272,39 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         }
         toReturn.put(UserAffiliation.NO_RESPONSE, noAnswer);
         return toReturn;
+    }
+
+    public Map<Creator, Integer> getRelatedCreatorCounts(Set<Long> resourceIds) {
+        String drop = "DROP TABLE IF EXISTS temp_ccounts;";
+        getCurrentSession().createSQLQuery(drop).executeUpdate();
+
+        String sql = "CREATE TEMPORARY TABLE temp_ccounts (id bigserial, creator_id bigint);";
+        String sql1 = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id in :resourceIds";
+        String sql11 = "INSERT INTO temp_ccounts (creator_id) SELECT submitter_id from resource where id in :resourceIds";
+        String sql12 = "INSERT INTO temp_ccounts (creator_id) SELECT publisher_id from information_resource where id in :resourceIds";
+        String sql2 = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator,information_resource where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id=project_id and information_resource.id in :resourceIds";
+        String sql3 = "select count(id), creator_id from temp_ccounts where creator_id is not null group by creator_id";
+        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        getCurrentSession().createSQLQuery(sql1).setParameterList("resourceIds", resourceIds).executeUpdate();
+        getCurrentSession().createSQLQuery(sql11).setParameterList("resourceIds", resourceIds).executeUpdate();
+        getCurrentSession().createSQLQuery(sql12).setParameterList("resourceIds", resourceIds).executeUpdate();
+        getCurrentSession().createSQLQuery(sql2).setParameterList("resourceIds", resourceIds).executeUpdate();
+        Map<Creator, Integer> results = new HashMap<Creator, Integer>();
+        for (Object row_ : getCurrentSession().createSQLQuery(sql3).list()) {
+            Object[] row = (Object[]) row_;
+            Integer count = ((BigInteger) row[0]).intValue();
+            Long id = ((BigInteger) row[1]).longValue();
+            Creator creator = find(Creator.class, id);
+
+            if (creator.isDuplicate()) {
+                creator = findAuthorityFromDuplicate(creator);
+            }
+
+            if (results.containsKey(creator)) {
+                count += results.get(creator);
+            }
+            results.put(creator, count);
+        }
+        return results;
     }
 }

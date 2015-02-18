@@ -1169,12 +1169,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doc.setSiteNameKeywords(siteNames);
         doc.setSiteTypeKeywords(siteTypes);
         genericService.saveOrUpdate(doc);
-        reindex();
+        genericService.synchronize();
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.flushToIndexes();
 
         controller.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         evictCache();
-        searchIndexService.flushToIndexes();
         assertOnlyResultAndProject(doc);
         resetController();
 

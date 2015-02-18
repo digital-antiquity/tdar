@@ -6,7 +6,8 @@
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService',  function($rootScope, $scope, integration, dataService){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService', 'ValidationService',
+        function($rootScope, $scope, integration, dataService, validationService){
         var self = this,
             _openModal,
             _processAddedIntegrationColumns;
@@ -66,11 +67,29 @@
         self.loadJSON = function() {
             var jsonData = dataService.getDocumentData("jsondata");
             if(!jsonData) return;
+
             self.updateStatus("Loading...");
+
+            //validate the embedded json first
+            var embeddedJsonErrors = validationService.validate(jsonData);
+
+
             var result = dataService.loadIntegration(jsonData , self.integration);
             result.then(function(){
-                self.updateStatus("Done loading");
+                    self.updateStatus("Done loading");
+                    if(embeddedJsonErrors.length) {
+                        self.updateStatus("Loading complete, but with errors. The underlying resources used in this integration may have changed.  Please review your selections before processing performing your integration");
+                        //hack to refresh the integration columns
+                        self.integration.reset();
+                    }
+            },
+            function(err) {
+                self.updateStatus("Load failed. Please try again - if problem continues please contact a system administrator.");
+                console.log("load failed - error information follows");
+                console.error(err);
             });
+
+
          };
         
         /**

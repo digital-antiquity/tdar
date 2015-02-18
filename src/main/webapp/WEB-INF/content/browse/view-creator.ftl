@@ -99,7 +99,7 @@
 
         <#if creator.institution??>
 
-            <a href="<@s.url value="${creator.detailUrl}"/>">${creator.institution}</a>
+            <a href="<@s.url value="${creator.institution.detailUrl}"/>">${creator.institution}</a>
         </#if>
 
         <@common.description creator.description />

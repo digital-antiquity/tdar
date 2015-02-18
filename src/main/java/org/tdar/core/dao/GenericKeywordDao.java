@@ -4,7 +4,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Table;
 
@@ -165,5 +168,40 @@ public class GenericKeywordDao extends GenericDao {
         }
         criteria.setProjection(Projections.rowCount());
         return (Number) criteria.uniqueResult();
+    }
+
+    public Map<Keyword, Integer> getRelatedKeywordCounts(Set<Long> resourceIds) {
+        Map<Keyword, Integer> results = new HashMap<Keyword, Integer>();
+        String drop = "DROP TABLE IF EXISTS temp_kwd;";
+        getCurrentSession().createSQLQuery(drop).executeUpdate();
+        String sql = "CREATE TEMPORARY TABLE temp_kwd (id bigserial, kwd_id bigint);";
+        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        for (KeywordType type : KeywordType.values()) {
+            getCurrentSession().createSQLQuery("truncate table temp_kwd").executeUpdate();
+            String sql1 = "insert into temp_kwd (kwd_id) select "+type.getJoinTableKey()+" from " + type.getJoinTable() + " tp, " + type.getTableName() + " kwd where kwd.id=tp." + type.getJoinTableKey()
+                    + " and status in ('ACTIVE', 'DUPLICATE') "
+                    + " and resource_id in :resourceIds";
+            String sql2 = "insert into temp_kwd (kwd_id) select "+type.getJoinTableKey()+" from " + type.getJoinTable() + " tp, " + type.getTableName()
+                    + " kwd, information_resource where kwd.id=tp." + type.getJoinTableKey() + " and status in ('ACTIVE', 'DUPLICATE') "
+                    + " and resource_id=project_id and information_resource.id in :resourceIds";
+            String sql3 = "select count(id), kwd_id from temp_kwd where kwd_id is not null group by kwd_id";
+            getCurrentSession().createSQLQuery(sql1).setParameterList("resourceIds", resourceIds).executeUpdate();
+            getCurrentSession().createSQLQuery(sql2).setParameterList("resourceIds", resourceIds).executeUpdate();
+            for (Object row_ : getCurrentSession().createSQLQuery(sql3).list()) {
+                Object[] row = (Object[]) row_;
+                Integer count = ((BigInteger) row[0]).intValue();
+                Long id = ((BigInteger) row[1]).longValue();
+                Keyword kwd = find(type.getKeywordClass(), id);
+                if (kwd.isDuplicate()) {
+                    kwd = findAuthority(kwd);
+                }
+
+                if (results.containsKey(kwd)) {
+                    count += results.get(kwd);
+                }
+                results.put(kwd, count);
+            }
+        }
+        return results;
     }
 }

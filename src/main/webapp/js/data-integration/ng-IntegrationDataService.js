@@ -244,7 +244,7 @@
 
                         var ids = [];
                         column.dataTableColumns.forEach(function(col) {
-                            if (col != undefined && col.id != undefined) {
+                            if (col != undefined && col.id != undefined && dataTableColumnCache.get(col.id) != undefined) {
                                 ids.push(col.id);
                             }
                         });
@@ -295,11 +295,18 @@
                     $q.all(promisesToKeep).then(
                         function() {
                             futureData.resolve();},
-                        function() {
-                            futureData.reject("failed to load all ontology details");
+                        function(reason) {
+                            console.warn("loadTableDetails:: one or more of the loadOntologyDetails ajax calls failed");
+                            futureData.reject(reason);
                         }
                     )
-                });
+                },
+                    //fixme: this is getting repetitive - consider writing a defaultRejectHandler callback
+                    function(reason) {
+                        console.warn("loadParticipationInformation ajax call failed");
+                        futureData.reject(reason);
+                    }
+                );
             });
             return futureData.promise;
         }

@@ -351,6 +351,14 @@
             });
         }
 
+        /**
+         * Rebuild any computed/cached fields in this object
+         */
+        self.reset = function() {
+            //rely on the fact that  _dataTablesAdded will rebuild cached fields even if no tables actually added
+            _dataTablesAdded([]);
+        }
+
         self.getSharedOntologyIds = function() {
             var ids = dataService.dedupe(self.dataTables
             // reduce the list of all dataTables into a list of all dataTableColumns

@@ -128,7 +128,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
     @Test
     public void testIntegrationAction() throws IOException, IntegrationDeserializationException {
         IntegrationAction action = generateNewInitializedController(IntegrationAction.class, getAdminUser());
-        String integration = FileUtils.readFileToString(new File("src/test/resources/data_integration_tests/sample-valid-integration.json"));
+        String integration = FileUtils.readFileToString(new File("src/test/resources/data_integration_tests/json/sample-valid-integration.json"));
         action.setIntegration(integration);
         action.integrate();
         StringWriter writer = new StringWriter();
@@ -136,7 +136,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         logger.debug(writer.toString());
     }
     
-    private String testDupJson = "src/test/resources/data_integration_tests/test-integration-duplicate-display.json";
+    private String testDupJson = "src/test/resources/data_integration_tests/json/test-integration-duplicate-display.json";
 
     @Test
     public void testIntegrationActionDupColumns() throws IOException, IntegrationDeserializationException {
