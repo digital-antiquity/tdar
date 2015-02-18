@@ -3,10 +3,12 @@ package org.tdar.core.service.resource.dataset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -50,14 +52,21 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
             if (rs.isFirst()) {
                 wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
-                int addition = 0;
-                if (returnRowId) {
-                    addition = 1;
-                }
                 // if we're returning the tDAR row id, then we add one to the list of fields
                 // NOTE: this ignore's hidden columns, but these aren't enabled in the UI right now
-                if (!Objects.equals(addition + wrapper.getFields().size() , result.keySet().size())) {
-                    logger.error("mismatch column entries: {}", dataTable);
+                List<DataTableColumn> columns = new ArrayList<>(dataTable.getDataTableColumns());
+                Iterator<DataTableColumn> colIterator = columns.iterator();
+                while (colIterator.hasNext()) {
+                    if (!colIterator.next().isVisible()) {
+                        colIterator.remove();
+                    }
+                }
+                if (returnRowId) {
+                    columns.add(DataTableColumn.TDAR_ROW_ID);
+                }
+                columns.removeAll(result.keySet());
+                if (CollectionUtils.isNotEmpty(columns)) {
+                    logger.error("mismatch column entries: {} [columns not referenced in DT: {}] ", dataTable, columns);
                 }
             }
 
