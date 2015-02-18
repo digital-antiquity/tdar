@@ -10,7 +10,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +52,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -100,6 +100,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private InformationResourceFileDao informationResourceFileDao;
+
+    @Autowired
+    private DataTableColumnDao dataTableColumnDao;
 
     @Autowired
     private ExcelService excelService;
@@ -330,12 +333,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // take the dataset off the session at the last moment, and then bring it back on
 
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
-        Collection<DataTable> tablesToRemove = reconcileTables.getFirst();
 
+        getDao().deleteRelationships(dataset.getRelationships());
         reconcileRelationships(dataset, transientDatasetToPersist);
-
-        cleanupUnusedTablesAndColumns(dataset, tablesToRemove, reconcileTables.getSecond());
-
+        cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
+        reconcileTables = null; // resetting and removing references
         getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
             getLogger().debug("dataTable: {}", dataTable);
@@ -402,7 +404,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     private void reconcileRelationships(Dataset dataset, Dataset transientDatasetToPersist) {
         // refresh the column relationships so that they refer to new versions of the columns which have the same names as the old columns
-        dataset.getRelationships().clear();
+        // dataset.getRelationships().clear();
 
         for (DataTableRelationship rel : transientDatasetToPersist.getRelationships()) {
             dataset.getRelationships().add(rel);
@@ -473,11 +475,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         incomingColumn.setDataTable(incomingTable);
         incomingColumn.setId(existingColumn.getId());
         incomingColumn.setDefaultCodingSheet(existingColumn.getDefaultCodingSheet());
-        incomingColumn.setDefaultOntology(existingColumn.getDefaultOntology());
 
         incomingColumn.setCategoryVariable(existingColumn.getCategoryVariable());
 
         incomingColumn.copyUserMetadataFrom(existingColumn);
+        incomingColumn.copyMappingMetadataFrom(existingColumn);
         existingNameToColumnMap.remove(normalizedColumnName);
     }
 
@@ -509,15 +511,12 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Takes a Coding Table within a larger data set and converts it to a tDAR CodingSheet
      */
     @Transactional
-    public CodingSheet convertTableToCodingSheet(TdarUser user, final DataTableColumn keyColumn, final DataTableColumn valueColumn,
+    public CodingSheet convertTableToCodingSheet(TdarUser user, final TextProvider provider, final DataTableColumn keyColumn,
+            final DataTableColumn valueColumn,
             final DataTableColumn descriptionColumn) {
-        final CodingSheet codingSheet = new CodingSheet();
-        codingSheet.markUpdated(user);
         // codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
-        codingSheet.setTitle("Generated Coding Rule from " + keyColumn.getDataTable().getName());
-        codingSheet.setDescription(codingSheet.getTitle());
-        codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
-        getDao().save(codingSheet);
+        Dataset dataset = keyColumn.getDataTable().getDataset();
+        final CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(keyColumn, dataset, user, provider, null);
         ResultSetExtractor<Set<CodingRule>> resultSetExtractor = new ResultSetExtractor<Set<CodingRule>>() {
             @Override
             public Set<CodingRule> extractData(ResultSet resultSet)
@@ -642,26 +641,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     @Transactional
     public void assignMappedDataForInformationResource(InformationResource resource) {
-        String key = resource.getMappedDataKeyValue();
-        DataTableColumn column = resource.getMappedDataKeyColumn();
-        if (StringUtils.isBlank(key) || (column == null)) {
-            return;
-        }
-        final DataTable table = column.getDataTable();
-        ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
-            @Override
-            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException {
-                while (rs.next()) {
-                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, rs, false);
-                    return results;
-                }
-                return null;
-            }
-
-        };
-
-        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
-        resource.setRelatedDatasetData(dataTableQueryResults);
+        getDao().assignMappedDataForInformationResource(resource);
     }
 
     /*
@@ -749,23 +729,14 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * necessary.
      */
     @Transactional
-    public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
+    public Boolean updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
             List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser) {
-        boolean hasOntologies = false;
-        Pair<Boolean, List<DataTableColumn>> toReturn = new Pair<Boolean, List<DataTableColumn>>(hasOntologies, new ArrayList<DataTableColumn>());
+        Boolean hasOntologies = false;
         List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();
-        List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
         for (DataTableColumn incomingColumn : dataTableColumns) {
-            boolean needToRemap = false;
             getLogger().debug("incoming data table column: {}", incomingColumn);
             DataTableColumn existingColumn = dataTable.getColumnById(incomingColumn.getId());
-            if (existingColumn == null) {
-                existingColumn = dataTable.getColumnByName(incomingColumn.getName());
-                if (existingColumn == null) {
-                    throw new TdarRecoverableRuntimeException("datasetService.could_not_find_column", Arrays.asList(incomingColumn.getName(),
-                            incomingColumn.getId()));
-                }
-            }
+            existingColumn = checkForMissingColumn(dataTable, incomingColumn, existingColumn);
             CodingSheet incomingCodingSheet = incomingColumn.getDefaultCodingSheet();
             CodingSheet existingCodingSheet = existingColumn.getDefaultCodingSheet();
             Ontology defaultOntology = null;
@@ -781,11 +752,10 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
             if (defaultOntology == null) {
                 // check if the incoming column had an ontology set
-                defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getDefaultOntology(), Ontology.class);
+                defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getTransientOntology(), Ontology.class);
             }
-            getLogger().debug("default ontology: {}", defaultOntology);
-            getLogger().debug("incoming coding sheet: {}", incomingCodingSheet);
-            incomingColumn.setDefaultOntology(defaultOntology);
+            getLogger().debug("incoming coding sheet: {} | default ontology: {}", incomingCodingSheet, defaultOntology);
+            incomingColumn.setTransientOntology(defaultOntology);
             if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
@@ -793,6 +763,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 incomingColumn.setDefaultCodingSheet(generatedCodingSheet);
                 getLogger().debug("generated coding sheet {} for {}", generatedCodingSheet, incomingColumn);
             }
+
             // FIXME: can we simplify this logic? Perhaps push into DataTableColumn?
             // incoming ontology or coding sheet from the web was not null but the column encoding type was set to something that
             // doesn't support either, we set it to null
@@ -802,7 +773,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     hasOntologies = true;
                 }
                 else {
-                    incomingColumn.setDefaultOntology(null);
+                    incomingColumn.setTransientOntology(null);
                     getLogger().debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
                 }
             }
@@ -813,28 +784,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                         incomingColumn, incomingColumn.getColumnEncodingType());
             }
 
-            existingColumn.setDefaultOntology(incomingColumn.getDefaultOntology());
+            existingColumn.setTransientOntology(incomingColumn.getTransientOntology());
             existingColumn.setDefaultCodingSheet(incomingColumn.getDefaultCodingSheet());
 
-            existingColumn.setCategoryVariable(getDao().loadFromSparseEntity(incomingColumn.getCategoryVariable(), CategoryVariable.class));
-            CategoryVariable subcategoryVariable = getDao().loadFromSparseEntity(incomingColumn.getTempSubCategoryVariable(),
-                    CategoryVariable.class);
-
-            if (subcategoryVariable != null) {
-                existingColumn.setCategoryVariable(subcategoryVariable);
-            }
+            copyCategoryVariableInfo(incomingColumn, existingColumn);
             // check if values have changed
-            needToRemap = existingColumn.hasDifferentMappingMetadata(incomingColumn);
             // copy off all of the values that can be directly copied from the bean
             existingColumn.copyUserMetadataFrom(incomingColumn);
             if (!existingColumn.isValid()) {
                 throw new TdarRecoverableRuntimeException("datasetService.invalid_column", Arrays.asList(existingColumn));
             }
 
-            if (needToRemap) {
-                getLogger().debug("remapping {}", existingColumn);
-                columnsToMap.add(existingColumn);
-            }
             // if there is a change in coding sheet a column may need to be retranslated or untranslated.
             if (isRetranslationNeeded(incomingCodingSheet, existingCodingSheet)) {
                 getLogger().debug("retranslating {} for incoming coding sheet {}", existingColumn, incomingCodingSheet);
@@ -844,7 +804,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getDao().update(existingColumn);
         }
         dataset.markUpdated(authenticatedUser);
-        toReturn.getSecond().addAll(prepareAndFindMappings(dataset.getProject(), columnsToMap));
         save(dataset);
         if (!columnsToTranslate.isEmpty()) {
             // create the translation file for this dataset.
@@ -853,8 +812,67 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             createTranslatedFile(dataset);
         }
         logDataTableColumns(dataTable, "data column metadata registration", authenticatedUser);
-        getLogger().info("hasOntology: {} , mappingColumns: {} ", toReturn.getFirst(), toReturn.getSecond());
+        getLogger().info("hasOntology: {} ", hasOntologies);
+        return hasOntologies;
+    }
+
+    private void copyCategoryVariableInfo(DataTableColumn incomingColumn, DataTableColumn existingColumn) {
+        existingColumn.setCategoryVariable(getDao().loadFromSparseEntity(incomingColumn.getCategoryVariable(), CategoryVariable.class));
+        CategoryVariable subcategoryVariable = getDao().loadFromSparseEntity(incomingColumn.getTempSubCategoryVariable(),
+                CategoryVariable.class);
+
+        if (subcategoryVariable != null) {
+            existingColumn.setCategoryVariable(subcategoryVariable);
+        }
+    }
+
+    /*
+     * Takes an existing @link Dataset and @link DataTable, and an incoming list of @link DataTableColumn entries, from the edit-column-metadata function in
+     * tDAR, iterate through each incoming DataTableColumn and update the real entries in the database. Just handle resource-column-row mappings
+     */
+    @Transactional
+    public List<DataTableColumn> updateColumnResourceMappingMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
+            List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser) {
+        List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
+        for (DataTableColumn incomingColumn : dataTableColumns) {
+            getLogger().debug("incoming data table column: {}", incomingColumn);
+            DataTableColumn existingColumn = dataTable.getColumnById(incomingColumn.getId());
+            existingColumn = checkForMissingColumn(dataTable, incomingColumn, existingColumn);
+
+            if (existingColumn.hasDifferentMappingMetadata(incomingColumn)) {
+                getLogger().debug("remapping {}", existingColumn);
+                columnsToMap.add(existingColumn);
+            }
+            // copy off all of the values that can be directly copied from the bean
+            existingColumn.copyMappingMetadataFrom(incomingColumn);
+            getLogger().trace("{}", existingColumn);
+            getDao().update(existingColumn);
+        }
+        dataset.markUpdated(authenticatedUser);
+        List<DataTableColumn> toReturn = prepareAndFindMappings(dataset.getProject(), columnsToMap);
+        save(dataset);
+        logDataTableColumns(dataTable, "column metadata mapping", authenticatedUser);
+        getLogger().info("mappingColumns: {} ", toReturn);
         return toReturn;
+    }
+
+    /**
+     * Throws exception if the column is null or doesn't exist
+     * 
+     * @param dataTable
+     * @param incomingColumn
+     * @param existingColumn
+     * @return
+     */
+    private DataTableColumn checkForMissingColumn(DataTable dataTable, DataTableColumn incomingColumn, DataTableColumn existingColumn) {
+        if (existingColumn == null) {
+            existingColumn = dataTable.getColumnByName(incomingColumn.getName());
+            if (existingColumn == null) {
+                throw new TdarRecoverableRuntimeException("datasetService.could_not_find_column", Arrays.asList(incomingColumn.getName(),
+                        incomingColumn.getId()));
+            }
+        }
+        return existingColumn;
     }
 
     /*
@@ -916,7 +934,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     @Transactional(readOnly = false)
-    public void remapAllColumns(final Long datasetId, final Long projectId)  {
+    public void remapAllColumns(final Long datasetId, final Long projectId) {
         remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
     }
 

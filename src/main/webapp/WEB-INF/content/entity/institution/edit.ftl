@@ -35,6 +35,8 @@
 
         <@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
 
+        <@s.textfield name="institution.email" label="Email" id="txtEmail" cssClass="input-xlarge email"  maxlength=255 />
+
         <@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />
 
         <h3>Address List</h3>
@@ -49,7 +51,6 @@
     </@s.form>
     <script type="text/javascript">
         $(function () {
-            initializeView();
             TDAR.common.initEditPage($('#frmInstitution')[0]);
             TDAR.common.validateProfileImage();
         });

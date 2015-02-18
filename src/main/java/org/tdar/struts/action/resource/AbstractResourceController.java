@@ -276,6 +276,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String save() throws TdarActionException {
         setupSubmitterField();
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
+//        setSaveSuccessSuffix("/" + getResource().getSlug());
         return super.save();
     }
 

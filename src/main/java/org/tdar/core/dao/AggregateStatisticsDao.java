@@ -168,7 +168,7 @@ public class AggregateStatisticsDao extends GenericDao {
         labelKeys.addAll(labelDownloadKeys);
 
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
-        getLogger().debug(sql);
+        getLogger().trace(sql);
         return sql;
     }
 
@@ -204,7 +204,7 @@ public class AggregateStatisticsDao extends GenericDao {
         labelKeys.addAll(labelDownloadKeys);
 
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
-        getLogger().debug(sql);
+        getLogger().trace(sql);
         return sql;
     }
 
@@ -236,7 +236,7 @@ public class AggregateStatisticsDao extends GenericDao {
         labelKeys.addAll(labelDownloadKeys);
 
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
-        getLogger().debug(sql);
+        getLogger().trace(sql);
         return sql;
     }
 

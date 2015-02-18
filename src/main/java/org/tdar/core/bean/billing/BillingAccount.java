@@ -451,4 +451,9 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     public String toString() {
         return String.format("%s (%s)", getName(), getId());
     }
+    
+    @Override
+    public String getDetailUrl() {
+        return String.format("/%s/%s", getUrlNamespace(), getId());
+    }
 }

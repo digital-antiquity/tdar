@@ -29,7 +29,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
  * @version $Rev$
  * 
  */
-@Namespace("/unapi")
+@Namespace("/")
 @Component
 @Scope("prototype")
 @ParentPackage("default")

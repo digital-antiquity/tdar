@@ -591,17 +591,20 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Wait for specified number of seconds. Use this as a last resort. Consider using {@link #waitFor(String)} or {@link #waitForPageload()}
+     * Wait for specified number of seconds. Use this as a last resort. Consider using {@link #waitFor(String)} or {@link #waitForPageload()}.
+     *
+     * @Deprecated 
+     * Honestly, the author of this API does not like to engage in hyperbole, but if you use this method there is a strong likelyhood
+     * that you are a terrible person.  LOOK AWAY.
      * 
      * @param timeInSeconds
      *            seconds to wait before timeout
      */
+    @Deprecated
     public void waitFor(int timeInSeconds) {
-        //FIXME: rewrite in terms of waitFor(ExpectedCondition, int). Still bad but at least you can catch selenium exceptions.
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
-        } catch (InterruptedException e) {
-            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+        } catch (InterruptedException ignored) {
         }
     }
 
@@ -752,45 +755,6 @@ public abstract class AbstractSeleniumWebITCase {
     // FIXME: implement someday. the tricky part is supporting nested properties e.g. "elem.style.position", especially when property doesn't exist yet
     public void setAttribute(WebElement elem, String property, Object value) {
         throw new RuntimeException("no");
-    }
-
-    public void setStyle(WebElement elem, String property, Object value) {
-        executeJavascript("arguments[0].style[arguments[1]]=arguments[2]", elem, property, value);
-    }
-
-    public void setStyle(WebElementSelection selection, String property, Object value) {
-        for (WebElement element : selection) {
-            setStyle(element, property, value);
-        }
-    }
-
-    /**
-     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
-     * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
-     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
-     */
-    public void clearFileInputStyles() {
-        WebElement input = find("#fileAsyncUpload").first();
-        showAsyncFileInput(input);
-    }
-
-    /**
-     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
-     * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
-     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
-     * 
-     * @param input
-     *            the actual file input element (not the div that renders the jquery file upload widget)
-     */
-    public void showAsyncFileInput(WebElement input) {
-        setStyle(input, "position", "static");
-        setStyle(input, "top", "auto");
-        setStyle(input, "right", "auto");
-        setStyle(input, "margin", 0);
-        setStyle(input, "opacity", 1);
-        setStyle(input, "transform", "none");
-        setStyle(input, "direction", "ltr");
-        setStyle(input, "cursor", "auto");
     }
 
     /**
@@ -1121,7 +1085,6 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
-        clearFileInputStyles();
         waitFor( elementToBeClickable( id("fileAsyncUpload")));
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");

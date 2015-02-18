@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -45,6 +46,18 @@ public class ReflectionServiceTest {
 
         }
     }
+    
+//    @Test
+//    public void testEnums() throws ClassNotFoundException {
+//        Set<BeanDefinition> findClassesThatImplement = reflectionService.findClassesThatImplement(Persistable.class);
+//        for (BeanDefinition def : findClassesThatImplement) {
+//            for (Field field : Class.forName(def.getBeanClassName()).getDeclaredFields()) {
+//                if (field.getType().isEnum()) {
+//                    logger.debug(def.getBeanClassName() + "." + field.getName());
+//                }
+//            }
+//        }
+//    }
 
     @Test
     public void testBulkUpload() {

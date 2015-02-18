@@ -1,8 +1,13 @@
 package org.tdar.core.bean.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 public enum UserAffiliation implements HasLabel, Localizable {
     K12_STUDENT("K-12 Student"),
@@ -14,9 +19,18 @@ public enum UserAffiliation implements HasLabel, Localizable {
     PUBLIC_AGENCY_ARCH("Public Agency Archaeologist"),
     CRM_ARCHAEOLOGIST("CRM Firm Archaeologist"),
     NON_PROFESSIONAL_ARCH("Nonprofessional/Avocational Archaeologist"),
-    GENERAL_PUBLIC("General Public");
+    GENERAL_PUBLIC("General Public"),
+    NO_RESPONSE("No Response"),
+    PRIOR_TO_ASKING("Prior to Asking");
 
     private String label;
+
+    public static List<UserAffiliation> getUserSubmittableAffiliations() {
+        List<UserAffiliation> list = new ArrayList<>(Arrays.asList(values()));
+        list.remove(NO_RESPONSE);
+        list.remove(PRIOR_TO_ASKING);
+        return list;
+    }
 
     private UserAffiliation(String label) {
         this.label = label;

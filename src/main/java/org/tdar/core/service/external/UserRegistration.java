@@ -1,6 +1,5 @@
 package org.tdar.core.service.external;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +20,7 @@ public class UserRegistration extends UserAuthData {
     private static final long serialVersionUID = -378621821868811122L;
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
-    private List<UserAffiliation> affiliations = Arrays.asList(UserAffiliation.values());
+    private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
     private String password;
     private String confirmPassword;
     private String institutionName;

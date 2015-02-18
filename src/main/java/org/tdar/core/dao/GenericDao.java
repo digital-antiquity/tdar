@@ -31,6 +31,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -126,6 +127,15 @@ public class GenericDao {
         } else {
             return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Number countActive(Class<? extends HasStatus> persistentClass) {
+        Class cls = persistentClass; 
+        if (persistentClass.isAssignableFrom(Creator.class)) {
+            cls = Creator.class;
+        } 
+            return (Number)getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -341,12 +351,18 @@ public class GenericDao {
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass) {
-        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
+        return getCriteria(persistentClass).addOrder(Order.asc("id")).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
+                .scroll(ScrollMode.FORWARD_ONLY);
+    }
+
+    public <T> ScrollableResults findAllActiveScrollable(Class<T> persistentClass) {
+        return getCriteria(persistentClass).add(Restrictions.eq("status", Status.ACTIVE)).
+                setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass, int batchSize) {
-        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
+        return getCriteria(persistentClass).addOrder(Order.asc("id")).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
     }
 
     @SuppressWarnings("unchecked")

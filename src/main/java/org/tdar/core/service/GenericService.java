@@ -327,6 +327,11 @@ public class GenericService {
     }
 
     @Transactional(readOnly = true)
+    public <E> ScrollableResults findAllActiveScrollable(Class<E> persistentClass) {
+        return genericDao.findAllActiveScrollable(persistentClass);
+    }
+
+    @Transactional(readOnly = true)
     public <E> ScrollableResults findAllScrollable(Class<E> persistentClass, int batchSize) {
         return genericDao.findAllScrollable(persistentClass, batchSize);
     }
@@ -702,6 +707,11 @@ public class GenericService {
     public void evictFromCache(Persistable res) {
         genericDao.evictFromCache((Persistable) res);
 
+    }
+
+    @Transactional
+    public <T> Number countActive(Class<? extends HasStatus> cls) {
+        return genericDao.countActive(cls);
     }
 
 }

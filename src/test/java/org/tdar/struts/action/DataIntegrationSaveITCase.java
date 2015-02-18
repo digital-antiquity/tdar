@@ -17,10 +17,10 @@ import org.tdar.struts.action.api.integration.IntegrationPersistanceAction;
 
 public class DataIntegrationSaveITCase extends AbstractAdminControllerITCase {
 
-    private String testJson = "src/test/resources/data_integration_tests/test-integration.json";
-    private String testInvalidJson = "src/test/resources/data_integration_tests/test-invalid-integration-bad-id.json";
-    private String testInvalidJsonBadFields = "src/test/resources/data_integration_tests/test-invalid-integration-bad-column-fields.json";
-    private String testInvalidJsonBadColType = "src/test/resources/data_integration_tests/test-invalid-integration-bad-column-type.json";
+    private String testJson = "src/test/resources/data_integration_tests/json/test-integration.json";
+    private String testInvalidJson = "src/test/resources/data_integration_tests/json/test-invalid-integration-bad-id.json";
+    private String testInvalidJsonBadFields = "src/test/resources/data_integration_tests/json/test-invalid-integration-bad-column-fields.json";
+    private String testInvalidJsonBadColType = "src/test/resources/data_integration_tests/json/test-invalid-integration-bad-column-type.json";
 
     @Test
     @Rollback
@@ -90,9 +90,11 @@ public class DataIntegrationSaveITCase extends AbstractAdminControllerITCase {
         String integration = FileUtils.readFileToString(new File(testInvalidJson));
         action.setIntegration(integration);
         action.prepare();
+        action.validate();
         String save = action.save();
         assertEquals(TdarActionSupport.INPUT, save);
         assertTrue(action.getResult().getId() == null);
+        logger.debug("errors: {}", action.getResult().getErrors());
         assertFalse(CollectionUtils.isEmpty(action.getResult().getErrors()));
     }
 
@@ -118,6 +120,7 @@ public class DataIntegrationSaveITCase extends AbstractAdminControllerITCase {
         String integration = FileUtils.readFileToString(new File(testInvalidJsonBadFields));
         action.setIntegration(integration);
         action.prepare();
+        action.validate();
         String save = action.save();
         assertEquals(TdarActionSupport.INPUT, save);
         assertTrue(action.getResult().getId() == null);

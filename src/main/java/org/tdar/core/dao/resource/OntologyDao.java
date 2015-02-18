@@ -39,7 +39,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
 
     public int getNumberOfMappedDataValues(DataTableColumn dataTableColumn) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN);
-        query.setParameter("ontology", dataTableColumn.getDefaultOntology());
+        query.setParameter("ontology", dataTableColumn.getMappedOntology());
         query.setParameter("codingSheet", dataTableColumn.getDefaultCodingSheet());
         return ((Long) query.uniqueResult()).intValue();
     }
@@ -66,8 +66,8 @@ public class OntologyDao extends ResourceDao<Ontology> {
     public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
         query.setProperties(searchFilter);
-        query.setFirstResult(searchFilter.getFirstResult());
-        query.setMaxResults(searchFilter.getMaxResults());
+        query.setFirstResult(searchFilter.getStartRecord());
+        query.setMaxResults(searchFilter.getRecordsPerPage());
         IntegrationOntologySearchResult result = new IntegrationOntologySearchResult();
         for (Ontology ontology : (List<Ontology>)query.list()) {
             result.getOntologies().add(new OntologyProxy(ontology));

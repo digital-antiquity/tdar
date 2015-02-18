@@ -11,6 +11,11 @@ import com.opensymphony.module.sitemesh.html.rules.PageBuilder;
 import com.opensymphony.module.sitemesh.html.util.CharArray;
 import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
 
+/**
+ * Custom page parser for tDAR by adam. designed to allow us to switch columnar layouts based on div properties.
+ * @author abrin
+ *
+ */
 public class TdarSitemeshPageParser extends HTMLPageParser {
 
     @Override
@@ -34,6 +39,7 @@ public class TdarSitemeshPageParser extends HTMLPageParser {
             if (tag.getType() == Tag.OPEN) {
                 String id = tag.getAttributeValue("id", false);
                 String parse = tag.getAttributeValue("parse", false);
+                /** find all divs with IDs and parse=true and set page properties based on that so that we can change the layout of the page **/
                 if ((depth == 0) && (id != null) && (parse != null) && parse.equalsIgnoreCase("true")) {
                     // currentBuffer().append("<sitemesh:multipass id=\"div." + id + "\"/>");
                     blockId = id;

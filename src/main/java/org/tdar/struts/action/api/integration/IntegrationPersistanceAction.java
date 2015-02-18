@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -60,7 +63,7 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
     @PostOnly
     @WriteableSession
     public String save() throws TdarActionException, IOException, IntegrationDeserializationException {
-        setResult(integrationWorkflowService.saveForController(getPersistable(), jsonData, integration, getAuthenticatedUser()));
+        setResult(integrationWorkflowService.saveForController(getPersistable(), jsonData, integration, getAuthenticatedUser(), this));
         setJsonObject(getResult(), JsonIntegrationFilter.class);
         if (result.getStatus() != IntegrationSaveResult.SUCCESS) {
             result.getErrors().addAll(errors);
@@ -74,31 +77,61 @@ public class IntegrationPersistanceAction extends AbstractIntegrationAction impl
         return DataIntegrationWorkflow.class;
     }
 
-
     @Override
-    public void prepare() throws Exception {
+    public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.SAVE);
-        getLogger().trace(integration);
+        getLogger().debug("incoming json:{}", integration);
+
+        if (workflow == null) {
+            workflow = new DataIntegrationWorkflow();
+        }
         try {
             jsonData = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
-            if (workflow == null) {
-                workflow = new DataIntegrationWorkflow();
+            getLogger().debug("jsonData:{}", jsonData);
+            if (getLogger().isTraceEnabled()) {
+                diff();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             getLogger().error("cannot prepare json", e);
             errors.add(e.getMessage());
-            setupErrorResult();
+        }
+    }
+
+    /**
+     * Compare raw json to parsed, validated json. This method is expensive and swallows exceptions so it might screw something up prior to your save.
+     * Therefore, you probably only want to use this only in a debugging context.
+     */
+    private void diff() {
+        try {
+            String parsedJson = serializationService.convertToJson(jsonData);
+            int levenshteinDistance = StringUtils.getLevenshteinDistance(integration, parsedJson);
+            getLogger().trace("Comparing original json to parsed json:");
+            getLogger().trace("\tincoming json:{}", integration);
+            getLogger().trace("\t  parsed json:{}", jsonData);
+            getLogger().trace("\t     distance:{}", levenshteinDistance);
+        } catch (IOException e) {
+            getLogger().error("Integration-save encountered an exception during diff() comparison");
         }
     }
 
     @Override
     public void validate() {
+        if (jsonData == null) {
+            return;
+        }
         try {
-            integrationWorkflowService.validateWorkflow(jsonData);
+            integrationWorkflowService.validateWorkflow(jsonData, this);
         } catch (IntegrationDeserializationException e) {
-            getLogger().error("cannot validate", e);
             getLogger().error("error validating json", e);
-            errors.add(e.getMessage());
+            if (CollectionUtils.isNotEmpty(e.getErrors())) {
+                getLogger().debug("errs: {}", e.getErrors());
+                errors.addAll(e.getErrors());
+            }
+            // fixme -- cleanup
+            if (MapUtils.isNotEmpty(e.getFieldErrors())) {
+                getLogger().debug("fieldErrs: {}", e.getFieldErrors());
+                errors.add(e.getFieldErrors().toString());
+            }
             setupErrorResult();
         }
     }

@@ -130,6 +130,7 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
+import org.tdar.utils.json.JsonIntegrationFilter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
@@ -780,6 +781,7 @@ public class Resource implements Persistable,
     }
 
     @Override
+    @JsonView(JsonIntegrationFilter.class)
     public Date getDateCreated() {
         return dateCreated;
     }
@@ -1981,6 +1983,7 @@ public class Resource implements Persistable,
         this.bookmarked = bookmarked;
     }
 
+    @JsonView(JsonLookupFilter.class)
     public String getDetailUrl() {
         return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }

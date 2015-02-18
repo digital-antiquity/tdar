@@ -202,6 +202,10 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @XmlTransient
     public String getFormattedTerm() {
+        if (StringUtils.equalsIgnoreCase(getCode(), getTerm())) {
+            return getTerm();
+        }
+            
         return String.format("%s (%s)", getTerm(), getCode());
     }
 }

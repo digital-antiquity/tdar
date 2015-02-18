@@ -232,7 +232,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Unmaps all data-tables for a given @link InformationResourceFile. Handles special cases where you have TAB, CSV, or Text files where the table name is
      * not specified by the file itself
      */
-    @Transactional(readOnly = true)
     private void unmapDataTablesForFile(Dataset dataset, InformationResourceFile irFile) {
         String fileName = irFile.getFilename();
         switch (FilenameUtils.getExtension(fileName).toLowerCase()) {
@@ -243,10 +242,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 name = datasetDao.normalizeTableName(name);
                 DataTable dt = dataset.getDataTableByGenericName(name);
                 getLogger().info("removing {}", dt);
+                removeAllRelationships(dataset, Arrays.asList(dt));
                 cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt), null);
-                // dataset.getDataTableByGenericName(name)
                 break;
             default:
+                removeAllRelationships(dataset, dataset.getDataTables());
                 cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables(), null);
         }
     }
@@ -352,7 +352,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Provides a method to clear all mappings for a @link Dataset. This is called when the @link Dataset is re-mapped on the DataTable have been removed and
      * not replaced.
      */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
         getLogger().info("deleting unmerged tables: {}", tablesToRemove);
         ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
@@ -361,23 +361,25 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 columnsToUnmap.add(column);
             }
         }
-        Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
-        for (DataTable table : tablesToRemove) {
-            if ((table != null) && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
-                columnsToUnmap.addAll(table.getDataTableColumns());
-            }
-            relationshipsToRemove.addAll(table.getRelationships());
-        }
-
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
 
-        // remove affected relationships prior to deleting columns
-        dataset.getRelationships().removeAll(relationshipsToRemove);
-        getDao().delete(relationshipsToRemove);
-
         getDao().delete(columnsToRemove);
-        dataset.getDataTables().removeAll(tablesToRemove);
+        if (CollectionUtils.isNotEmpty(tablesToRemove)) {
+            dataset.getDataTables().removeAll(tablesToRemove);
+        }
+    }
+
+    private void removeAllRelationships(Dataset dataset, Collection<DataTable> tablesToRemove) {
+
+        Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
+        for (DataTable table : tablesToRemove) {
+            relationshipsToRemove.addAll(table.getRelationships());
+        }
+        datasetDao.deleteRelationships(relationshipsToRemove);
+        // // remove affected relationships prior to deleting columns
+        // dataset.getRelationships().removeAll(relationshipsToRemove);
+        // getDao().delete(relationshipsToRemove);
     }
 
     /*

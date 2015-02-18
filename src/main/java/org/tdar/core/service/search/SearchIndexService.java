@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.CacheMode;
@@ -37,10 +34,11 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.activity.Activity;
 
 @Service
@@ -64,7 +62,7 @@ public class SearchIndexService {
     private EmailService emailService;
 
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
     private ProjectDao projectDao;
@@ -115,7 +113,7 @@ public class SearchIndexService {
      * @param person
      */
     @SuppressWarnings("deprecation")
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex, Person person) {
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
@@ -131,9 +129,7 @@ public class SearchIndexService {
         try {
             genericDao.synchronize();
             FullTextSession fullTextSession = getFullTextSession();
-            FlushMode previousFlushMode = fullTextSession.getFlushMode();
-            fullTextSession.setFlushMode(FlushMode.MANUAL);
-            fullTextSession.setCacheMode(CacheMode.IGNORE);
+            FlushMode previousFlushMode = prepare(fullTextSession);
             SearchFactory sf = fullTextSession.getSearchFactory();
             float percent = 0f;
             updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
@@ -143,45 +139,15 @@ public class SearchIndexService {
                 sf.optimize(toIndex);
                 Number total = genericDao.count(toIndex);
                 ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
-                String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
-                updateAllStatuses(updateReceiver, activity, message, 0f);
-                int divisor = getDivisor(total);
-                float currentProgress = 0f;
-                int numProcessed = 0;
-                String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
-
-                while (scrollableResults.next()) {
-                    Object item = scrollableResults.get(0);
-                    currentProgress = numProcessed / total.floatValue();
-                    index(fullTextSession, item);
-                    numProcessed++;
-                    float totalProgress = ((currentProgress * maxPer) + percent);
-                    if ((numProcessed % divisor) == 0) {
-                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
-                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
-                    }
-                    if ((numProcessed % FLUSH_EVERY) == 0) {
-                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
-                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
-                        logger.trace("flushing search index");
-                        fullTextSession.flushToIndexes();
-                        fullTextSession.clear();
-                        logger.trace("flushed search index");
-                    }
-                }
-                scrollableResults.close();
+                indexScrollable(updateReceiver, activity, fullTextSession, percent, maxPer, toIndex, total, scrollableResults, false);
                 fullTextSession.flushToIndexes();
                 fullTextSession.clear();
                 percent += maxPer;
-                message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
+                String message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
                 updateAllStatuses(updateReceiver, activity, message, percent);
             }
 
-            fullTextSession.flushToIndexes();
-            fullTextSession.clear();
-            updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
-            fullTextSession.setFlushMode(previousFlushMode);
-            activity.end();
+            complete(updateReceiver, activity, fullTextSession, previousFlushMode);
         } catch (Throwable ex) {
             logger.warn("exception: {}", ex);
             if (updateReceiver != null) {
@@ -191,13 +157,94 @@ public class SearchIndexService {
         activity.end();
     }
 
+    /**
+     * Prepares a session for reindexing. REturns the old flush mode
+     * 
+     * @param fullTextSession
+     * @return
+     */
+    private FlushMode prepare(FullTextSession fullTextSession) {
+        FlushMode previousFlushMode = fullTextSession.getFlushMode();
+        fullTextSession.setFlushMode(FlushMode.MANUAL);
+        fullTextSession.setCacheMode(CacheMode.IGNORE);
+        return previousFlushMode;
+    }
+
+    /**
+     * Completes the reindexing process and resets the flush mode
+     * 
+     * @param updateReceiver
+     * @param activity
+     * @param fullTextSession
+     * @param previousFlushMode
+     */
+    private void complete(AsyncUpdateReceiver updateReceiver, Activity activity, FullTextSession fullTextSession, FlushMode previousFlushMode) {
+        fullTextSession.flushToIndexes();
+        fullTextSession.clear();
+        updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
+        fullTextSession.setFlushMode(previousFlushMode);
+        if (activity != null) {
+            activity.end();
+        }
+    }
+
+    /**
+     * Extracting out the indexing for scrollable results so that it can be used and shared between methods.
+     * 
+     * @param updateReceiver
+     * @param activity
+     * @param fullTextSession
+     * @param percent
+     * @param maxPer
+     * @param toIndex
+     * @param total
+     * @param scrollableResults
+     */
+    private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, FullTextSession fullTextSession, float percent, float maxPer,
+            Class<?> toIndex, Number total, ScrollableResults scrollableResults, boolean deleteFirst) {
+        String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
+        updateAllStatuses(updateReceiver, activity, message, 0f);
+        int divisor = getDivisor(total);
+        float currentProgress = 0f;
+        int numProcessed = 0;
+        String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
+        Long prevId = 0L;
+        Long currentId = 0L;
+        while (scrollableResults.next()) {
+            Indexable item = (Indexable) scrollableResults.get(0);
+            currentId = item.getId();
+            currentProgress = numProcessed / total.floatValue();
+            index(fullTextSession, item, deleteFirst);
+            numProcessed++;
+            float totalProgress = ((currentProgress * maxPer) + percent);
+            if ((numProcessed % divisor) == 0) {
+                String range = String.format("(%s - %s)", prevId, currentId);
+                message = String.format("indexed %s %s %s %% %s", numProcessed, MIDDLE, totalProgress, range);
+                updateAllStatuses(updateReceiver, activity, message, totalProgress);
+                logger.debug("last indexed: {}", item);
+                prevId = ((Indexable) item).getId();
+            }
+            if ((numProcessed % FLUSH_EVERY) == 0) {
+                message = String.format("indexed %s %s %s %% (flushing)", numProcessed, MIDDLE, totalProgress);
+                updateAllStatuses(updateReceiver, activity, message, totalProgress);
+                logger.trace("flushing search index");
+                fullTextSession.flushToIndexes();
+                fullTextSession.clear();
+                logger.trace("flushed search index");
+            }
+        }
+        scrollableResults.close();
+    }
+
     private void updateAllStatuses(AsyncUpdateReceiver updateReceiver, Activity activity, String status, float complete) {
         if (updateReceiver != null) {
             updateReceiver.setPercentComplete(complete);
             updateReceiver.setStatus(status);
         }
-        activity.setMessage(status);
-        activity.setPercentDone(complete);
+        if (activity != null) {
+            activity.setMessage(status);
+            activity.setPercentDone(complete);
+        }
         logger.debug("status: {} [{}%]", status, complete);
     }
 
@@ -207,18 +254,29 @@ public class SearchIndexService {
      * @param fullTextSession
      * @param item
      */
-    private void index(FullTextSession fullTextSession, Object item) {
-        if (item instanceof InformationResource) {
-            datasetDao.assignMappedDataForInformationResource(((InformationResource) item));
-        }
-
-        if (item instanceof Project) {
-            Project project = (Project) item;
-            if (CollectionUtils.isEmpty(project.getCachedInformationResources())) {
-                projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT);
+    private void index(FullTextSession fullTextSession, Indexable item, boolean deleteFirst) {
+        try {
+            if (deleteFirst) {
+                fullTextSession.purge(item.getClass(), item.getId());
             }
+
+            if (item instanceof InformationResource) {
+                InformationResource ir = (InformationResource) item;
+                datasetDao.assignMappedDataForInformationResource(ir);
+            }
+
+            if (item instanceof Project) {
+                Project project = (Project) item;
+                if (null == project.getCachedInformationResources()) {
+                    setupProjectForIndexing(project);
+//                    logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
+                }
+            }
+            fullTextSession.index(item);
+        } catch (Throwable t) {
+            logger.error("error ocurred in indexing", t);
+            throw t;
         }
-        fullTextSession.index(item);
     }
 
     /**
@@ -226,16 +284,15 @@ public class SearchIndexService {
      * 
      * @param collectionToReindex
      */
+    @Transactional
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         logger.trace("indexing collection async");
-        List<ResourceCollection> collections = resourceCollectionService.getAllChildCollections(collectionToReindex);
-        collections.add(collectionToReindex);
-        Set<Resource> resources = new HashSet<Resource>();
-        for (ResourceCollection collection : collections) {
-            resources.addAll(collection.getResources());
-        }
-
-        indexCollection(resources);
+        Long count = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
+        ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
+        FlushMode previousFlushMode = prepare(getFullTextSession());
+        AsyncUpdateReceiver updateReceiver = getDefaultUpdateReceiver();
+        indexScrollable(updateReceiver, null, getFullTextSession(), 0f, 100f, Resource.class, count, results, true);
+        complete(updateReceiver, null, getFullTextSession(), previousFlushMode);
     }
 
     /**
@@ -244,6 +301,7 @@ public class SearchIndexService {
      * @param collectionToReindex
      */
     @Async
+    @Transactional
     public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
         indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
@@ -304,15 +362,14 @@ public class SearchIndexService {
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
-                    fullTextSession.purge(toIndex.getClass(), toIndex.getId());
-                    index(fullTextSession, genericDao.merge(toIndex));
+                    index(fullTextSession, genericDao.merge(toIndex), true);
                     if (count % FLUSH_EVERY == 0) {
                         logger.debug("indexing: {}", toIndex);
                         logger.debug("flush to index ... every {}", FLUSH_EVERY);
                         fullTextSession.flushToIndexes();
                         fullTextSession.clear();
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     logger.error("exception in indexing, {} [{}]", toIndex, e);
                     logger.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
                             ExceptionUtils.getRootCause(e));
@@ -431,13 +488,21 @@ public class SearchIndexService {
      * @param project
      */
     public boolean indexProject(Project project) {
-        project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT)));
-        project.setReadyToIndex(true);
+        setupProjectForIndexing(project);
         index(project);
         logger.debug("reindexing project contents");
-        boolean exceptions = indexCollection(project.getCachedInformationResources());
+        int total = 0;
+        ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
+        indexScrollable(getDefaultUpdateReceiver(), null, getFullTextSession(), 0f, 100f, Resource.class, total, scrollableResults, true);
         logger.debug("completed reindexing project contents");
-        return exceptions;
+        return false;
+    }
+
+    private void setupProjectForIndexing(Project project) {
+        Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE,
+                Status.DRAFT));
+        project.setCachedInformationResources(irs);
+        project.setReadyToIndex(true);
     }
 
     /**
@@ -445,6 +510,7 @@ public class SearchIndexService {
      * @param project
      */
     @Async
+    @Transactional(readOnly = true)
     public void indexProjectAsync(final Project project) {
         indexProject(project);
     }
@@ -455,7 +521,7 @@ public class SearchIndexService {
     }
 
     @Async
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<Class<? extends Indexable>> toReindex, final Person person) {
         logger.info("reindexing indexall");
         indexAll(reciever, toReindex, person);

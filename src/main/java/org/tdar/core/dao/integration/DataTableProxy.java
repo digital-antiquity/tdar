@@ -34,7 +34,7 @@ public class DataTableProxy implements Serializable {
     public Set<Ontology> getMappedOntologies() {
         Set<Ontology> ontologies = new HashSet<>();
         for (DataTableColumn column : getDataTable().getDataTableColumns()) {
-            if (column.getDefaultOntology() != null) {
+            if (column.getMappedOntology() != null) {
                 ontologies.add(column.getMappedOntology());
             }
         }

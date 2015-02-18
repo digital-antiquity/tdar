@@ -9,7 +9,7 @@
 <#-- @search.initResultPagination/ -->
     <@search.headerLinks includeRss=false />
 
-	<#if creator.creatorType.person > 
+	<#if creator.creatorType.person >
     	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
 	<#else>
     	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.institution.id=${creator.id?c}&groups[0].creatorOwner.institution.name=${creator.name}">
@@ -82,9 +82,8 @@
         </#if>
 
     <h1>
-    <#if logoAvailable>
-		<img class="pull-right" itemprop="image"  src="/files/creator/sm/${creator.id}/logo"
-		alt="logo" title="logo" /> 
+    <#if logoUrl?has_content>
+		<img class="pull-right"  src="${logoUrl}" alt="logo" title="logo" />
     </#if>
         <#if creator.properName??>${creator.properName}</#if></h1>
 
@@ -93,15 +92,14 @@
             <#assign scope="http://schema.org/Organization"/>
         </#if>
 
-    <div itemscope itemtype="${scope}">
-        <meta itemprop="name" content="${creator.properName}"/>
+    <div>
         <#if creator.url?has_content>
             <a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);" rel="nofollow">${creator.url?html}</a>
         </#if>
 
         <#if creator.institution??>
 
-            <a itemprop="affiliation" href="<@s.url value="/browse/creators/${creator.institution.id?c}"/>">${creator.institution}</a>
+            <a href="<@s.url value="${creator.institution.detailUrl}"/>">${creator.institution}</a>
         </#if>
 
         <@common.description creator.description />
@@ -112,7 +110,7 @@
         </#if>
         <br/>
         <table class='tableFormat table'>
-        
+
         <#if creator.creatorType.person>
             <#if creator.url?has_content || creator.orcidId?has_content>
                     <tr>
@@ -150,11 +148,11 @@
                     </tr>
                     <tr>
                         <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
-                            <td itemprop="email"> <@_textfield "Email" creator.email /></td>
+                            <td> <@_textfield "Email" creator.email /></td>
                         <#else>
                             <td><@_textfield "Email" "Not Shown" /></#if>
                         <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
-                            <td itemprop="telephone"><@_textfield "Phone" creator.phone true /></td>
+                            <td><@_textfield "Phone" creator.phone true /></td>
                         <#else>
                             <td><@_textfield "Phone" "Not Shown" /></td>
                         </#if>
@@ -190,7 +188,11 @@
 <td><b>Total Browse Occurrance Count:</b> ${creator.browseOccurrence!0}</td>
 </tr>
 <tr>
-<td colspan=2><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
+<td><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
+<#if creator.creatorType.institution && creator.email?has_content >
+<td><b>Email:</b> ${creator.email}</td>
+
+</#if>
 </tr>
 </#if>
 </table>
@@ -231,12 +233,14 @@
                                 <@common.billingAccountList accounts />
                             </div>
                             <div class="span6">
+                            <#if editor>
                                 <h2>Group Membership</h2>
                                 <ul>
                                     <#list groups as group>
                                         <li>${group}</li>
                                     </#list>
                                 </ul>
+                            </#if>
                             </div>
                         </div>
                     </#if>

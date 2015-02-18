@@ -365,21 +365,53 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return query.list();
     }
 
-    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
-            List<Long> projectId,
-            List<Status> statuses) {
+    public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
         List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
-        // List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));
-
-        // if (CollectionUtils.isNotEmpty(types)) {
-        // types_ = types;
-        // }
 
         if (CollectionUtils.isNotEmpty(statuses)) {
             statuses_ = statuses;
         }
 
-        Object[] params = { resourceId, projectId, personId, collectionId, statuses_ };
+        Query query = getCurrentSession().getNamedQuery(SPACE_BY_COLLECTION);
+        query.setParameterList("collectionIds", collectionId);
+        query.setParameterList("statuses", statuses_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
+
+    }
+
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> personId, List<Status> status) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+
+        if (CollectionUtils.isNotEmpty(status)) {
+            statuses_ = status;
+        }
+
+        Query query = getCurrentSession().getNamedQuery(SPACE_BY_SUBMITTER);
+        query.setParameterList("submitterIds", personId);
+
+        query.setParameterList("statuses", statuses_);
+        // query.setParameterList("types", types_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
+    }
+
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Long> projectId, List<Status> statuses) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            statuses_ = statuses;
+        }
+
+        Object[] params = { resourceId, projectId, statuses_ };
         logger.trace("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {}  ]", params);
         Query query = null;
         if (CollectionUtils.isNotEmpty(resourceId)) {
@@ -390,17 +422,49 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
             query.setParameterList("projectIds", projectId);
         }
-        if (CollectionUtils.isNotEmpty(personId)) {
-            query = getCurrentSession().getNamedQuery(SPACE_BY_SUBMITTER);
-            query.setParameterList("submitterIds", personId);
-        }
-        if (CollectionUtils.isNotEmpty(collectionId)) {
-            query = getCurrentSession().getNamedQuery(SPACE_BY_COLLECTION);
-            query.setParameterList("collectionIds", collectionId);
-        }
         if (query == null) {
             return null;
         }
+        query.setParameterList("statuses", statuses_);
+        // query.setParameterList("types", types_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
+    }
+
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Status> statuses) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            statuses_ = statuses;
+        }
+
+        Query query = getCurrentSession().getNamedQuery(SPACE_BY_RESOURCE);
+        query.setParameterList("resourceIds", resourceId);
+
+        query.setParameterList("statuses", statuses_);
+        // query.setParameterList("types", types_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
+    }
+
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long resourceId, List<Status> statuses) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            statuses_ = statuses;
+        }
+
+        Query query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
+        query.setParameterList("projectIds", Arrays.asList(resourceId));
+
         query.setParameterList("statuses", statuses_);
         // query.setParameterList("types", types_);
         List<?> list = query.list();

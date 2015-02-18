@@ -290,8 +290,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @HttpsOnly
     public String add() throws TdarActionException {
 
-        // FIXME:make this a preference...
-        if ((getPersistable() instanceof HasStatus) && isEditor() && !isAdministrator()) {
+        if ((getPersistable() instanceof HasStatus) && (isEditor() && !isAdministrator() || 
+                getAuthenticatedUser().getNewResourceSavedAsDraft())) {
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
 

@@ -77,7 +77,7 @@
 
                 <#-- add grid thumbnail -->
                     <#if isGridLayout>
-                        <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
+                        <a href="<@s.url value="${resource.detailUrl}"/>" target="_top"><#t>
 	            <@view.firstThumbnail resource /><#t>
                         </a><br/>
                     </#if>
@@ -235,7 +235,7 @@ bookmark indicator, etc..
         <#if titleTag?has_content>
             <${titleTag} class="${titleCssClass}">
         </#if>
-        <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
+        <a class="resourceLink" href="<@s.url value="${result.detailUrl}"/>"><#rt>
             <#if result.title?has_content>
             ${result.title!"No Title"} <#if result.status?has_content && (editor || result.viewable) && !result.active >
                 <small>[${result.status?upper_case}]</small></#if><#t>

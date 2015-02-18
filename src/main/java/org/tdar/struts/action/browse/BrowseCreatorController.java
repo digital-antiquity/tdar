@@ -24,11 +24,11 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
@@ -42,6 +42,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.UrlService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -58,6 +60,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.SearchFieldType;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -81,7 +84,7 @@ import freemarker.ext.dom.NodeModel;
 @Component
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
-@Results(value = { @Result(location = "../creators.ftl"),
+@Results(value = { @Result(location = "../view-creator.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
@@ -96,9 +99,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public static final String XML = ".xml";
     public static final String CREATORS = "creators";
     public static final String EXPLORE = "explore";
-
+    private String logoUrl;
     private Creator creator;
-    private Persistable persistable;
     private Long viewCount = 0L;
     private List<String> groups = new ArrayList<String>();
 
@@ -127,6 +129,9 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private transient AuthorizationService authorizationService;
 
     @Autowired
+    public transient SerializationService serializationService;
+    
+    @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
@@ -149,6 +154,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Autowired
     private transient ResourceService resourceService;
+    private String schemaOrgJsonLD;
 
     public Creator getAuthorityForDup() {
         return entityService.findAuthorityFromDuplicate(creator);
@@ -206,9 +212,13 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             throw new TdarActionException(StatusCode.UNAUTHORIZED, "Creator page does not exist");
         }
         if (!handleSlugRedirect(creator, this)) {
-            redirectBadSlug = true;
+            setRedirectBadSlug(true);
         } else {
             prepareLuceneQuery();
+        }
+        
+        if (isLogoAvailable()) {
+            setLogoUrl(UrlService.creatorLogoUrl(creator));
         }
     }
 
@@ -217,8 +227,15 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             @Action(value = "{id}/{slug}")
     })
     public String browseCreators() throws ParseException, TdarActionException {
-        if (redirectBadSlug) {
+        if (isRedirectBadSlug()) {
             return BAD_SLUG;
+        }
+
+        try {
+            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+            setSchemaOrgJsonLD(transformer.convert(serializationService, getCreator(), logoUrl));
+        } catch (Exception e) {
+            getLogger().error("error converting to json-ld", e);
         }
 
         if (isEditor()) {
@@ -233,7 +250,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                         accountService.listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
             }
             try {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatisticsForUser(Arrays.asList(getId()), null));
             } catch (Exception e) {
                 getLogger().error("unable to set resource access statistics", e);
             }
@@ -269,10 +286,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
     private void prepareLuceneQuery() throws TdarActionException {
         QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
-        setPersistable(creator);
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);
         if (PersistableUtils.isNotNullOrTransient(creator)) {
@@ -310,12 +325,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return null;
     }
 
-    public Persistable getPersistable() {
-        return persistable;
-    }
-
-    public void setPersistable(Persistable persistable) {
-        this.persistable = persistable;
+    public Addressable getPersistable() {
+        return creator;
     }
 
     public List<String> getGroups() {
@@ -498,4 +509,30 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public boolean isLogoAvailable() {
         return checkLogoAvailable(ObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
     }
+
+    @Override
+    public boolean isRedirectBadSlug() {
+        return redirectBadSlug;
+    }
+
+    public void setRedirectBadSlug(boolean redirectBadSlug) {
+        this.redirectBadSlug = redirectBadSlug;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
+    public String getSchemaOrgJsonLD() {
+        return schemaOrgJsonLD;
+    }
+
+    public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
+        this.schemaOrgJsonLD = schemaOrgJsonLD;
+    }
+    
 }

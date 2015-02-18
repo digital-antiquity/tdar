@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
@@ -34,7 +35,7 @@ public class UrlService {
      * @param resource
      * @return
      */
-    public String absoluteUrl(Addressable resource) {
+    public static String absoluteUrl(Addressable resource) {
         return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
     }
 
@@ -64,8 +65,8 @@ public class UrlService {
      * @param resource
      * @return
      */
-    public String relativeUrl(Addressable resource) {
-        return String.format("/%s/%s", resource.getUrlNamespace(), resource.getId());
+    public static String relativeUrl(Addressable resource) {
+        return resource.getDetailUrl();
     }
 
     /**
@@ -86,7 +87,8 @@ public class UrlService {
      * @return
      */
     public static String downloadUrl(InformationResourceFileVersion version) {
-        return String.format("%s/filestore/get/%d/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getInformationResourceFile().getInformationResource().getId() ,version.getId());
+        return String.format("%s/filestore/get/%d/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getInformationResourceFile().getInformationResource()
+                .getId(), version.getId());
     }
 
     /**
@@ -94,7 +96,7 @@ public class UrlService {
      * 
      * @return
      */
-    public String thumbnailUrl(InformationResourceFileVersion version) {
+    public static String thumbnailUrl(InformationResourceFileVersion version) {
         return String.format("%s/files/img/sm/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
     }
 
@@ -163,6 +165,10 @@ public class UrlService {
             return null;
         }
         return String.format("/unapi/%s/%s", type, r.getId());
+    }
+
+    public static String creatorLogoUrl(Creator creator) {
+        return String.format("%s/files/creator/sm/%s/logo", StringUtils.stripEnd(getBaseUrl(), "/"), creator.getId());
     }
 
 }

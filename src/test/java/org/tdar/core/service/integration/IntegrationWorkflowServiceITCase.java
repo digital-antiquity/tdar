@@ -13,6 +13,7 @@ import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
+import org.tdar.utils.MessageHelper;
 
 public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCase {
     
@@ -22,7 +23,7 @@ public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCas
     @Autowired  
     private SerializationService serializationService;
 
-    private String testJson = "src/test/resources/data_integration_tests/test-integration.json";
+    private String testJson = "src/test/resources/data_integration_tests/json/test-integration.json";
     
     @Test
     public void testIntegrationWorkflowData() throws IOException, IntegrationDeserializationException {
@@ -32,9 +33,7 @@ public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCas
         DataIntegrationWorkflow workflow = new DataIntegrationWorkflow();
         workflow.setJsonData(json);
         IntegrationWorkflowData workflowData = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
-        IntegrationContext context = service.toIntegrationContext(workflow);
-//        getLogger().debug("{}", context.getDataTables());
-//        getLogger().debug("{}", context.getIntegrationColumns());
+        IntegrationContext context = service.toIntegrationContext(workflow, MessageHelper.getInstance());
         assertTrue(context.getDataTables().size() > 0);
         assertTrue(context.getIntegrationColumns().size() > 0);
         logger.debug("done convrsion");

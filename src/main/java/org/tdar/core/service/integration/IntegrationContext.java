@@ -89,6 +89,8 @@ public class IntegrationContext implements Serializable {
         return tempTableName;
     }
 
+    @XmlElementWrapper(name = "dataTables")
+    @XmlElement(name = "dataTable")
     public List<DataTable> getDataTables() {
         return dataTables;
     }

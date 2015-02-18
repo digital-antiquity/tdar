@@ -3,6 +3,7 @@ package org.tdar.core.configuration;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -16,7 +17,6 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
@@ -28,8 +28,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
@@ -51,7 +53,7 @@ import org.tdar.web.SessionData;
 
 @Configuration
 @ComponentScan(basePackages = { "org.tdar" })
-@EnableTransactionManagement
+@EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableScheduling
 @EnableAsync
@@ -109,9 +111,17 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
     }
 
     @Bean
+    @Primary
     public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException {
         HibernateTransactionManager hibernateTransactionManager = new HibernateTransactionManager(getSessionFactory(dataSource));
         return hibernateTransactionManager;
+    }
+
+    @Bean
+    @Qualifier("tdarDataTx")
+    public DataSourceTransactionManager dataTransactionManager(@Qualifier("tdarDataImportDataSource") DataSource dataSource) throws PropertyVetoException {
+        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(dataSource);
+        return dataSourceTransactionManager;
     }
 
     @Bean
@@ -173,6 +183,12 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new SimpleAsyncUncaughtExceptionHandler();
+        return new AsyncUncaughtExceptionHandler() {
+            
+            @Override
+            public void handleUncaughtException(Throwable ex, Method method, Object... params) {
+                logger.error("exception in async: {} {} ", method, params);
+            }
+        };
     }
 }

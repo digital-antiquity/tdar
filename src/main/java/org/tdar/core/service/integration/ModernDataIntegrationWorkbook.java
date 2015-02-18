@@ -148,7 +148,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         List<String> headerLabels = new ArrayList<String>();
         headerLabels.add(provider.getText("dataIntegrationWorkbook.data_table"));
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
-            headerLabels.add(integrationColumn.getName());
+            headerLabels.add(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(integrationColumn.getName())));
 
             if (integrationColumn.isIntegrationColumn()) {
                 headerLabels.add(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(integrationColumn.getName())));
@@ -233,7 +233,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     row[size] = dtc.getName();
                     row[size + 1] = dtc.getDescription();
                     row[size + 2] = dtc.getColumnDataType().getLabel();
-                    Ontology defaultOntology = dtc.getDefaultOntology();
+                    Ontology defaultOntology = dtc.getMappedOntology();
                     if (defaultOntology != null) {
                         row[size + 3] = provider.getText("dataIntegrationWorkbook.name_paren_id",
                                 Arrays.asList(defaultOntology.getName(), defaultOntology.getId()));

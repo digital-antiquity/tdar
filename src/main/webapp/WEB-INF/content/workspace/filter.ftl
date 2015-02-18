@@ -90,7 +90,7 @@
                             </#list>
 
                             <#-- FIXME: lift assignment of 'disabled' to java -->
-                            <#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
+                            <#list integrationColumn.flattenedOntologyNodeList![] as ontologyNode>
                                 <#assign numberOfParents=ontologyNode.numberOfParents>
                                 <#assign checkForUser=true />
                                 <#if  ontologyNode.legacyColumnHasValueMap?has_content>

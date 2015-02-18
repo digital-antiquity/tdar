@@ -37,6 +37,7 @@ public class StatistcsSeleniumWebITCase extends AbstractEditorSeleniumWebITCase 
         gotoPage("/dataset/3088");
         find(By.partialLinkText("USAGE")).click();
         waitForPageload();
+        logger.debug(getText());
         Assert.assertTrue(getText().contains("2013"));
     }
 }

@@ -58,6 +58,8 @@
                     </div>
                 </#if>
             </@entityEdit.basicInformation>
+    <@entityEdit.hidden />
+
 
         <@entityEdit.uploadForm />
             <h3>Contributor</h3>
@@ -88,11 +90,17 @@
         <@s.textarea label="Proxy Note" rows=6 cols='50' name='proxyNote' cssClass="input-xxlarge"  />
     </div>
     </#if>
-    <@entityEdit.hidden />
 
     <@entityEdit.contactInfo />
     <div class="">
             <@common.billingAccountList accounts />
+    </div>
+
+
+    <div class="">
+    <h2>Preferences</h2>
+            <@s.checkbox label='New Resources Default to Draft?' name="persistable.newResourceSavedAsDraft" id="new-as-draft"  />
+
     </div>
 
 <div class="">
@@ -110,6 +118,7 @@
         </div>
         </#if>
 
+
         <@edit.submit "Save" false />
     </div>
     <div class="callout">
@@ -119,6 +128,8 @@
                 If you would like to cancel your ${siteAcronym} account please send an email request to <@s.a href="${commentUrl}">${commentEmail}</@s.a></em>
         </p>
     </div>
+
+
     </@s.form>
 <div id="error"></div>
 <script type="text/javascript">

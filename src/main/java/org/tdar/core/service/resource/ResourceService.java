@@ -18,6 +18,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.ImmutableScrollableCollection;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -556,21 +558,24 @@ public class ResourceService extends GenericService {
         return targetCollection;
     }
 
-    /**
-     * For a given list of People, Resources, Collections, Projects, and Statuses, return a @link ResourceSpaceUsageStatistic object for how much space,
-     * resources, and files are used.
-     * 
-     * @param personId
-     * @param resourceId
-     * @param collectionId
-     * @param projectId
-     * @param statuses
-     * @return
-     */
     @Transactional
-    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
-            List<Long> projectId, List<Status> statuses) {
-        return datasetDao.getResourceSpaceUsageStatistics(personId, resourceId, collectionId, projectId, statuses);
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Status> status) {
+        return datasetDao.getResourceSpaceUsageStatistics(resourceId, status);
+    }
+
+    @Transactional
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long id, List<Status> status) {
+        return datasetDao.getResourceSpaceUsageStatisticsForProject(id, status);
+    }
+
+    @Transactional
+    public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
+        return datasetDao.getSpaceUsageForCollections(collectionId, statuses);
+    }
+
+    @Transactional
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> accountId, List<Status> status) {
+        return datasetDao.getResourceSpaceUsageStatisticsForUser(accountId, status);
     }
 
     /**
@@ -765,7 +770,11 @@ public class ResourceService extends GenericService {
         DeleteIssue issue = new DeleteIssue();
         switch (persistable.getResourceType()) {
             case PROJECT:
-                Set<InformationResource> inProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                 ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                 Set<InformationResource> inProject = new HashSet<>();
+                 for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
+                     inProject.add(ir);
+                 }
                 if (CollectionUtils.isNotEmpty(inProject)) {
                     issue.getRelatedItems().addAll(inProject);
                     issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
@@ -803,4 +812,7 @@ public class ResourceService extends GenericService {
         logResourceModification(resource, authUser, logMessage);
         delete(resource);
     }
+
+
+
 }

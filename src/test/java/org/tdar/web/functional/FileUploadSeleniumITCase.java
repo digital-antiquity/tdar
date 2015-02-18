@@ -31,7 +31,6 @@ public class FileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
         find("#resourceDescription").val("this is a test");
 
         // selenium will not operate on elements it cannot 'see', so we need to unhide the actual file upload input
-        clearFileInputStyles();
         WebElement fileInput = find("#fileAsyncUpload").first();
         fileInput.sendKeys(path);
 

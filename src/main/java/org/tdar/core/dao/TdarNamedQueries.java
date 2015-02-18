@@ -127,6 +127,8 @@ public interface TdarNamedQueries {
     String COLLECTION_VIEW = "collection.views";
     String CREATOR_VIEW = "creator.views";
     String QUERY_COLLECTION_CHILDREN = "resourceCollection.allChildren";
+    String QUERY_COLLECTION_CHILDREN_RESOURCES = "resourceCollection.allChildrenResources";
+    String QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT = "resourceCollection.allChildrenResources_count";
     String QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION = "versions.verify";
     String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
     String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
@@ -140,6 +142,11 @@ public interface TdarNamedQueries {
     String QUERY_INTEGRATION_ONTOLOGY = "query.integration_ontology";
     String CAN_EDIT_INSTITUTION = "query.authorize_edit_institution";
     String WORKFLOWS_BY_USER = "query.workflow_by_user";
+    String AGREEMENT_COUNTS = "query.agreementCounts";
+    String AFFILIATION_COUNTS = "query.affiliationCounts";
+    String DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS = "delete.data_table_column_relationships";
+    String DELETE_DATA_TABLE_RELATIONSHIPS = "delete.data_table_relationships";
+
     // raw SQL/HQL queries
 
     /**
@@ -205,7 +212,7 @@ public interface TdarNamedQueries {
             + ")"
             + ")  ";
     
-    String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
+    String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
     + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
     + " lower(ds.title) like :titleLookup and "
     + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
@@ -250,6 +257,7 @@ public interface TdarNamedQueries {
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, month, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day', date_accessed)";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
+    String COUNT_ACTIVE_PERSISTABLE_BY_ID = "select count(id) from %s where status in ('ACTIVE')";
     String FIND_ACTIVE_PERSON_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String FIND_ACTIVE_INSTITUTION_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String WEEKLY_EMAIL_STATS = "stats.weekly_emails";

@@ -120,7 +120,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
-            "problems with this submission");
+            "problems with this submission","TDAR:500","TDAR:404");
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -1487,7 +1487,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
             logger.debug(getPageCode());
             int count = 0;
-            while (!getPageCode().contains("\"percentDone\":100")) {
+            while (!getPageCode().matches("(?s)(.*)percentDone\"(\\s*):(\\s*)100(.*)")) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -1497,8 +1497,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 if ((count % 10) == 5) {
                     logger.info(getPageCode());
                 }
-                if (count == 1000) {
-                    fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
+                if (count == 100) {
+                    fail("we went through 200 iterations of waiting for the search index to build... assuming something is wrong");
                 }
                 count++;
             }

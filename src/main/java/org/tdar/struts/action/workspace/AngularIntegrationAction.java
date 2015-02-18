@@ -19,6 +19,7 @@ import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
@@ -32,6 +33,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -47,6 +49,7 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/workspace")
 @Component
 @Scope("prototype")
+@HttpsOnly
 public class AngularIntegrationAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
 
     private static final long serialVersionUID = -2356381511354062946L;
@@ -212,8 +215,9 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
     public void validate() {
         if (data != null) {
             try {
-                integrationWorkflowService.validateWorkflow(data);
+                integrationWorkflowService.validateWorkflow(data, this);
             } catch (IntegrationDeserializationException e) {
+                getLogger().debug(e.toString());
                 getLogger().error("cannot validate", e);
             }
         }

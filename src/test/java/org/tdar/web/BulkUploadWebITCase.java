@@ -289,19 +289,19 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         loadStatusPage(statusPage);
         int count = 0;
         // fixme: parse this json and get the actual number,
-        while (!getPageCode().contains("\"percentDone\":100")) {
+        while (!getPageCode().matches("(?s)(.*)percentDone\"(\\s*):(\\s*)100(.*)")) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 fail("InterruptedException during bulk upload.  sorry.");
             }
             loadStatusPage(statusPage);
-            if (count == 1000) {
+            if (count == 100) {
                 fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
             }
             count++;
-        }
-        if (expectSuccess && !getPageCode().contains("errors\":\"\"")) {
+        }//.contains("errors\":\"\"")
+        if (expectSuccess && !getPageCode().matches("(?s)(.*)errors\"(\\s*):(\\s*)\"\"(.*)")) {
             Assert.fail(getPageBodyCode());
         }
     }

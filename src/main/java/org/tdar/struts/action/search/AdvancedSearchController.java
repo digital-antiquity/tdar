@@ -30,7 +30,9 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
@@ -96,7 +98,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
             @Result(name = INPUT, location = ADVANCED_FTL) })
     public String search() throws TdarActionException {
         String result = SUCCESS;
-        //FIME: for whatever reason this is not being processed by the SessionSecurityInterceptor and thus
+        // FIME: for whatever reason this is not being processed by the SessionSecurityInterceptor and thus
         // needs manual care, but, when the TdarActionException is processed, it returns a blank page instead of
         // not_found
         try {
@@ -107,7 +109,9 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
             }
         } catch (TdarActionException e) {
             getLogger().debug("exception: {}|{}", e.getResponse(), e.getResponseStatusCode(), e);
-            addActionErrorWithException(e.getMessage(), e);
+            if (e.getResponseStatusCode() != StatusCode.NOT_FOUND) {
+                addActionErrorWithException(e.getMessage(), e);
+            }
             if (e.getResponse() == null) {
                 result = INPUT;
             } else {
@@ -359,4 +363,8 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
                 && collectionTotalRecords > 0;
     }
 
+    @Override
+    public List<Status> getAllStatuses() {
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
+    }
 }

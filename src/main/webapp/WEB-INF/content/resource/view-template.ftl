@@ -24,6 +24,7 @@
     <#if local_.head?? && local_.head?is_macro>
         <@local_.head />
     </#if>
+
 </head>
 
 
@@ -32,6 +33,9 @@
             <#assign disabled = resource.dataTables?size==0 />
             <@nav.makeLink "dataset" "columns" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
             <@nav.makeLink "dataset" "columns" "metadata" "columns" current true disabled "hidden-desktop"/>
+            <#if administrator && resource.project?? && resource.project.id != -1 >
+            <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
+            </#if>
         </#if>
 
         <#if local_.toolbarAdditions?? && local_.toolbarAdditions?is_macro>
@@ -51,7 +55,7 @@
 
     <@view.pageStatusCallout />
 
-<h1 itemprop="name" class="view-page-title">${resource.title!"No Title"}</h1>
+<h1 class="view-page-title">${resource.title!"No Title"}</h1>
     <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
     <div id="subtitle">
@@ -147,7 +151,7 @@
 <hr/>
     <#noescape>
         <#if resource.url! != ''>
-        <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
+        <p><strong>URL:</strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
                                    title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
         </#if>
     </#noescape>
@@ -224,7 +228,7 @@
                         <#assign typeLabel = ""/>
                         <#if column.measurementUnit?has_content><#assign typeLabel = "measurement"/></#if>
                         <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
-                        <#if column.defaultOntology?has_content || (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
+                        <#if (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
                         <#if column.columnEncodingType?has_content && column.columnEncodingType.count><#assign typeLabel = "count"/></#if>
                         <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
                         <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
@@ -282,9 +286,7 @@
 
     <#macro _printOntology column>
         <#local ont="" />
-        <#if column.defaultOntology?? >
-            <#local ont = column.defaultOntology/>
-        <#elseif (column.defaultCodingSheet.defaultOntology)?has_content>
+        <#if (column.defaultCodingSheet.defaultOntology)?has_content>
             <#local ont = column.defaultCodingSheet.defaultOntology />
         </#if>
         <#if ont?has_content>
@@ -451,7 +453,7 @@
     <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
     <ol style='list-style-position:inside'>
         <#list relatedResources as related >
-            <li><a href="<@s.url value="/${related.urlNamespace}/${related.id?c}"/>">${related.id?c} - ${related.title} </a></li>
+            <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${rtelated.title} </a></li>
         </#list>
     </ol>
     </#if>
@@ -461,7 +463,7 @@
     <h3>This Resource is Part of the Following Collections</h3>
     <p>
         <#list viewableResourceCollections as collection>
-            <a href="<@s.url value="/collection/${collection.id?c}"/>">${collection.name}</a> <br/>
+            <a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a> <br/>
         </#list></p>
     <hr/>
     </#if>
@@ -535,7 +537,7 @@
                 <#else>
                     Publisher
                 </#if></strong><br>
-                <#if resource.publisher?has_content><span itemprop="publisher"><@view.browse creator=resource.publisher /></span></#if>
+                <#if resource.publisher?has_content><span><@view.browse creator=resource.publisher /></span></#if>
                 <#if resource.degree?has_content>${resource.degree.label}</#if>
                 <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
             </li>

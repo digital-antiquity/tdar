@@ -17,7 +17,7 @@
 
         <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Resource Type"/>
 
-        <#if editor!false>
+        <#if authenticated>
         <#--FIXME: there seems to be a bug in numColumns when the value is 'too high' (not sure what that number is yet) -->
         <#--FIXME: also,  we need a good,efficient way to emit bootstrap's version of an inline checkboxlist -->
             <@s.checkboxlist theme="bootstrap" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
@@ -332,7 +332,7 @@
                 <#assign indx = indx + 1/>
                 <div class="listItemPart">
                     <h3 class="search-result-title-${result.status}">
-                        <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
+                        <a class="resourceLink" href="${result.detailUrl}">${result.properName}</a>
                     </h3>
                     <#if result.institution?has_content><p>${result.institution.name}</p></#if>
                     <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>

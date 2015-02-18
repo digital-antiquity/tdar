@@ -58,7 +58,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "data_table_column", indexes = {
         @Index(name = "data_table_column_data_table_id_idx", columnList = "data_table_id"),
-        @Index(name = "data_table_column_default_ontology_id_idx", columnList = "default_ontology_id"),
         @Index(name = "data_table_column_default_coding_sheet_id_idx", columnList = "default_coding_sheet_id")
 })
 @XmlRootElement
@@ -133,9 +132,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @JoinColumn(name = "category_variable_id")
     private CategoryVariable categoryVariable;
 
-    @ManyToOne
-    @JoinColumn(name = "default_ontology_id")
-    private Ontology defaultOntology;
+    @Transient
+    private transient Ontology transientOntology;
 
     @ManyToOne
     @JoinColumn(name = "default_coding_sheet_id")
@@ -216,19 +214,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public void setCategoryVariable(CategoryVariable categoryVariable) {
         this.categoryVariable = categoryVariable;
-    }
-
-    @XmlElement(name = "ontologyRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Ontology getDefaultOntology() {
-        return defaultOntology;
-    }
-
-    public void setDefaultOntology(Ontology defaultOntology) {
-        this.defaultOntology = defaultOntology;
-        if (defaultOntology != null) {
-            setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-        }
     }
 
     @XmlElement(name = "codingSheetRef")
@@ -333,11 +318,13 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
             setColumnEncodingType(column.getColumnEncodingType());
         }
         setMeasurementUnit(column.getMeasurementUnit());
+    }
+
+    public void copyMappingMetadataFrom(DataTableColumn column) {
         setMappingColumn(column.isMappingColumn());
         setDelimiterValue(column.getDelimiterValue());
         setIgnoreFileExtension(column.isIgnoreFileExtension());
     }
-
     public CategoryVariable getTempSubCategoryVariable() {
         return tempSubCategoryVariable;
     }
@@ -402,11 +389,19 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     public boolean hasDifferentMappingMetadata(DataTableColumn column) {
-        logger.trace("delim: '{}' - '{}'", getDelimiterValue(), column.getDelimiterValue());
-        logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
-        logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
-        return !(StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
-                Objects.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && Objects.equals(isMappingColumn(), column.isMappingColumn()));
+        logger.debug("delim: '{}' - '{}'", getDelimiterValue(), column.getDelimiterValue());
+        if (!StringUtils.equals(getDelimiterValue(), column.getDelimiterValue())) {
+            return true;
+        }
+        logger.debug("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
+        if (!Objects.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension())) {
+            return true;
+        }
+        logger.debug("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
+        if (!Objects.equals(isMappingColumn(), column.isMappingColumn())) {
+            return true;
+        }
+        return false;
     }
 
     @Transient
@@ -430,7 +425,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
      * @return
      */
     public boolean isActuallyMapped() {
-        if (PersistableUtils.isNullOrTransient(getDefaultOntology()) && PersistableUtils.isNullOrTransient(getDefaultCodingSheet())) {
+        if (PersistableUtils.isNullOrTransient(getMappedOntology()) && PersistableUtils.isNullOrTransient(getDefaultCodingSheet())) {
             return false;
         }
 
@@ -442,10 +437,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return false;
     }
 
+    @XmlElement(name = "mappedOntologyRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Ontology getMappedOntology() {
-        if (getDefaultOntology() != null) {
-            return getDefaultOntology();
-        }
         if (getDefaultCodingSheet() != null && getDefaultCodingSheet().getDefaultOntology() != null) {
             return getDefaultCodingSheet().getDefaultOntology();
         }
@@ -454,8 +448,19 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @JsonView(JsonIntegrationDetailsFilter.class)
     public Long getMappedOntologyId(){
-        if(getDefaultOntology() == null) return null;
-        return getDefaultOntology().getId();
+        if(getMappedOntology() == null) {
+            return null;
+        }
+        return getMappedOntology().getId();
+    }
+
+    @XmlTransient
+    public Ontology getTransientOntology() {
+        return transientOntology;
+    }
+
+    public void setTransientOntology(Ontology transientOntology) {
+        this.transientOntology = transientOntology;
     }
 
 }

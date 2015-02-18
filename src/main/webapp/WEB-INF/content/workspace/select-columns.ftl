@@ -113,14 +113,14 @@
                                     <#if count % numCols == 0>
                                     <tr></#if>
                                     <td width="${(100 / numCols)?floor }%">
-                                        <div class="drg ui-corner-all" <#if column.actuallyMapped>data-ontology="${column.defaultOntology.id?c}"</#if>
+                                        <div class="drg ui-corner-all" <#if column.actuallyMapped>data-ontology="${column.mappedOntology.id?c}"</#if>
                                              <#if column.measurementUnit??>data-measurement="${column.measurementUnit}"</#if>
                                              title="${description?html}"
                                              <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if>
                                              data-table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}
                                             . </span>
                                 <span class="name">${column.displayName}</span>
-                                            <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+                                            <#if column.mappedOntology??> <span class="ontology">- ${column.mappedOntology.title}</span></#if>
                                             <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id" value="${column.id?c}"/></span>
                                             <#assign count = count+1 />
                                         </div>

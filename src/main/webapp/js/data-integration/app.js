@@ -8,7 +8,7 @@
 (function($, angular) {
     "use strict";
 
-    var app = angular.module('integrationApp', [ 'angularModalService' ]);
+    var app = angular.module('integrationApp', []);
 
     /* global jQuery, angular */
 })(jQuery, angular);
