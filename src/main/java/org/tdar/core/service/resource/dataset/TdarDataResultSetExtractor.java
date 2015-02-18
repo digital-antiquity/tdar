@@ -52,9 +52,11 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
             if (rs.isFirst()) {
                 wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
+
                 // if we're returning the tDAR row id, then we add one to the list of fields
-                // NOTE: this ignore's hidden columns, but these aren't enabled in the UI right now
                 List<DataTableColumn> columns = new ArrayList<>(dataTable.getDataTableColumns());
+
+                // remove hidden columns
                 Iterator<DataTableColumn> colIterator = columns.iterator();
                 while (colIterator.hasNext()) {
                     if (!colIterator.next().isVisible()) {
