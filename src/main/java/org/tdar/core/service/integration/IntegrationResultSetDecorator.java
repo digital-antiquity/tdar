@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -46,8 +47,9 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         row = super.next();
         try {
             readRowToExcel();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("ex", e);
+            throw new TdarRecoverableRuntimeException(e);
         }
         return row;
     }
