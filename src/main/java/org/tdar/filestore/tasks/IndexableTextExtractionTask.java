@@ -91,6 +91,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 StringWriter sw = new StringWriter();
                 if (StringUtils.isNotBlank(metadata.get(name))) {
                     sw.append(name).append(":");
+                    //http://www.exiv2.org/tags-xmp-exif.html
                     if (name.matches("(?i).*(latitude|longitude|gpsl|gpsd|gpsi).*")) {
                         gpsValues.add(name);
                     }
