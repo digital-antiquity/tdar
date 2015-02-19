@@ -64,12 +64,13 @@ public class WorkflowResult implements Serializable {
     public ErrorTransferObject getActionErrorsAndMessages() {
         ErrorTransferObject eto = new ErrorTransferObject();
         for (ExceptionWrapper exception : getExceptions()) {
-            if (getFatalErrors()) {
+            if (exception.isFatal()) {
                 eto.getActionErrors().add(exception.getMessage());
+                logger.error("error processing file [code:{}]: {} ", exception.getErrorCode(), exception.getStackTrace());
             } else {
                 eto.getActionMessages().add(exception.getMessage());
+                logger.warn("issue processing file [code:{}]: {} ", exception.getErrorCode(), exception.getStackTrace());
             }
-            logger.error("error processing file [code:{}]: {} ", exception.getErrorCode(), exception.getStackTrace());
             eto.getStackTraces().add(exception.getErrorCode());
             if (StringUtils.isNotBlank(exception.getMoreInfoUrlKey())) {
                 eto.setMoreInfoUrlKey(exception.getMoreInfoUrlKey());

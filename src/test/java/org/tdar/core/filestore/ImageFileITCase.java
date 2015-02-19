@@ -7,21 +7,27 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.FileType;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.workflow.MessageService;
+import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.core.service.workflow.workflows.ImageWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
@@ -42,7 +48,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     @Autowired
     private MessageService messageService;
 
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     @Rollback
@@ -105,6 +111,13 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(ImageWorkflow.class, workflow.getClass());
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
+        FileProxy proxy = new FileProxy(filename, f, VersionType.UPLOADED);
+        proxy.setInformationResourceFileVersion(originalVersion);
+        proxy.setInformationResourceFile(originalVersion.getInformationResourceFile());
+        WorkflowResult workflowResult = new WorkflowResult(Arrays.asList(proxy));
+        ErrorTransferObject errorsAndMessages = workflowResult.getActionErrorsAndMessages();
+        logger.debug("ACTION ERRORS  : {}" , errorsAndMessages.getActionErrors());
+        logger.debug("ACTION Messages: {}" , errorsAndMessages.getActionMessages());
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertEquals(successful, result);
