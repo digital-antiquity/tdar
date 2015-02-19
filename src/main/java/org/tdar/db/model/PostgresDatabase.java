@@ -850,6 +850,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             if (!integrationColumn.isIntegrationColumn()) {
                 continue;
             }
+            
             for (OntologyNode node : integrationColumn.getFilteredOntologyNodes()) {
                 DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
 

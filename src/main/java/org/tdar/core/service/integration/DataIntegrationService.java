@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -138,7 +137,12 @@ public class DataIntegrationService {
         if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
             filteredOntologyNodes.removeAll(Collections.singletonList(null));
         }
+        
+        
         integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
+        if (CollectionUtils.isEmpty(filteredOntologyNodes)) {
+            filteredOntologyNodes.addAll(integrationColumn.getSharedOntology().getOntologyNodes());
+        }
 
         logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
         filteredOntologyNodes = genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class);

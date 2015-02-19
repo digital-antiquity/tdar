@@ -8,15 +8,19 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -39,6 +43,7 @@ import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 
 import com.opensymphony.xwork2.TextProvider;
+
 
 /**
  * Proxy class to handle the generation of the Excel Workbook at the end of the DataIntegration
@@ -167,8 +172,17 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         sheetProxy.setData(ird);
         result.setPivotData(ird.getPivot());
         getExcelService().addSheets(sheetProxy);
-        logger.debug("previewData: {}", ird.getPreviewData());
-        result.setPreviewData(ird.getPreviewData());
+        List<Object[]> previewData = ird.getPreviewData();
+        logger.debug("previewData: {}", previewData);
+        Collections.sort(previewData, new Comparator<Object[]>() {
+            // compare by database name, should sort together
+            @Override
+            public int compare(Object[] o1, Object[] o2) {
+                return ObjectUtils.compare((String)o1[0], (String)o2[0]);
+            }
+            
+        });
+        result.setPreviewData(previewData);
         pivot = ird.getPivot();
     }
 

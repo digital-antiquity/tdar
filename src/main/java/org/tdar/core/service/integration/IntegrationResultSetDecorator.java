@@ -63,25 +63,22 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         // the list off ontology nodes, in order becomes the "key" for the pivot table
         List<OntologyNode> ontologyNodes = new ArrayList<>();
         // first column is the table name
-        Long tableId = (Long)row[0];
+        Long tableId = (Long) row[0];
         String tableName = "";
         for (DataTable dt : context.getDataTables()) {
             if (tableId.equals(dt.getId())) {
                 tableName = ModernDataIntegrationWorkbook.formatTableName(dt);
-            } 
+            }
         }
         if (StringUtils.isEmpty(tableName)) {
             logger.warn("Table Name is not defined for: " + tableId);
         }
         values.add(tableName);
-        Double countVal = -1d;
+        Double countVal = 1d;
         for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
             // note SQL iterator is 1 based; java iterator is 0 based
             // DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
             String value = initializeDefaultValue(resultSetPosition);
-
-            // add value to the output array
-            values.add(value);
 
             // set count value if needed
             if (integrationColumn.isCountColumn()) {
@@ -91,11 +88,22 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 } catch (ParseException nfe) {
                     logger.trace("numberParseIssue", nfe);
                 }
+                value = Double.toString(countVal);
+            }
+            ;
+
+            // add value to the output array for display/count columns
+            if (!integrationColumn.isIntegrationColumn()) {
+                values.add(value);
             }
 
             // if it's an integration column, add mapped value as well
             if (integrationColumn.isIntegrationColumn()) { // MAPPED VALUE if not display column
                 resultSetPosition = resultSetPosition + 1;
+                if (StringUtils.isBlank(value)) {
+                    value = MessageHelper.getMessage("database.null_empty_integration_value");
+                }
+                values.add(value);
                 String mappedVal = (String) row[resultSetPosition];
 
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
@@ -114,7 +122,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 // increment for "sort" column
                 resultSetPosition++;
                 if (row[resultSetPosition] != null) {
-                values.add(row[resultSetPosition].toString());
+                    values.add(row[resultSetPosition].toString());
                 } else {
                     values.add(null);
                 }
@@ -142,7 +150,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             groupCount = new IntContainer();
         }
 
-        if (countVal == -1) {
+        if (countVal == 1) {
             groupCount.increment();
         } else {
             groupCount.add(countVal.intValue());
@@ -154,7 +162,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         String value;
         value = (String) row[resultSetPosition];
         if (StringUtils.isBlank(value)) {
-            value = MessageHelper.getMessage("database.null_empty_integration_value");
+            value = "";
             row[resultSetPosition] = value;
         }
         return value;
@@ -177,16 +185,8 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         return pivot;
     }
 
-    public void setPivot(Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot) {
-        this.pivot = pivot;
-    }
-
     public List<Object[]> getPreviewData() {
         return previewData;
-    }
-
-    public void setPreviewData(List<Object[]> previewData) {
-        this.previewData = previewData;
     }
 
 }
