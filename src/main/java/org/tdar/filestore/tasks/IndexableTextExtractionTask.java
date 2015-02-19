@@ -91,7 +91,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 StringWriter sw = new StringWriter();
                 if (StringUtils.isNotBlank(metadata.get(name))) {
                     sw.append(name).append(":");
-                    if (name.matches("(?i).*(latitude|longitude|gps).*")) {
+                    if (name.matches("(?i).*(latitude|longitude|gpsl|gpsd|gpsi).*")) {
                         gpsValues.add(name);
                     }
                     if (metadata.isMultiValued(name)) {
