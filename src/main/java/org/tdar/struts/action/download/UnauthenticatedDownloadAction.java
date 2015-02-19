@@ -64,35 +64,6 @@ public class UnauthenticatedDownloadAction extends AbstractDownloadController im
             return DOWNLOAD_ALL;
         }
     }
-//
-//    @Actions(value = {
-//            @Action(value = GET)
-//    })
-//    public String thumbnail() {
-//        getSessionData().clearPassthroughParameters();
-//        if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersion())) {
-//            getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
-//            return ERROR;
-//        }
-//
-//        // image must be thumbnail
-//        if (getInformationResourceFileVersion().getFileVersionType() != VersionType.WEB_SMALL) {
-//            getLogger().warn("thumbail request: requested version exists but is not a thumbnail: {}", getInformationResourceFileVersionId());
-//            return ERROR;
-//        }
-//
-//        if (!authorizationService.canDownload(getInformationResourceFileVersion(), getAuthenticatedUser())) {
-//            getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
-//            return FORBIDDEN;
-//        }
-//
-//        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-//                isCoverPageIncluded(), this, null, false));
-//        if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
-//            return getDownloadTransferObject().getResult().name().toLowerCase();
-//        }
-//        return getDownloadTransferObject().getResult().name().toLowerCase();
-//    }
 
     @Override
     public void prepare() {
