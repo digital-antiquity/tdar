@@ -53,6 +53,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.RowOperations;
@@ -163,14 +164,9 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         PreparedStatement statement = statementPair.getFirst();
         int batchNum = statementPair.getSecond().intValue() + 1;
-
+        
         statementPair.setSecond(batchNum);
-        if ((batchNum < BATCH_SIZE) && !force) {
-            try {
-                statement.addBatch();
-            } catch (SQLException e) {
-                logger.error("an error ocurred while processing a prepared statement ", e);
-            }
+        if ((batchNum < TdarConfiguration.getInstance().getTdarDataBatchSize()) && !force) {
             return;
         }
         try {
@@ -554,7 +550,16 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             i++;
         }
         // push everything into batches
+        addToBatch(preparedStatement);
         addOrExecuteBatch(dataTable, false);
+    }
+
+    private void addToBatch(PreparedStatement preparedStatement) {
+        try {
+            preparedStatement.addBatch();
+        } catch (SQLException e) {
+            logger.error("an error ocurred while processing a prepared statement ", e);
+        }
     }
 
     private void setPreparedStatementValue(PreparedStatement preparedStatement, int i, DataTableColumn column, String colValue) throws SQLException {

@@ -1,6 +1,9 @@
 package org.tdar.db.conversion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +19,7 @@ import java.util.Set;
 import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
@@ -26,9 +30,40 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
+
+    @Test
+    @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDARDATA_SMALL_BATCH })
+    public void testBatchImportRows() throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "batch-import.xlsx"), 101);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
+        converter.execute();
+        Set<DataTable> dataTables = converter.getDataTables();
+        assertEquals(1, dataTables.size());
+        DataTable table = dataTables.iterator().next();
+        List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
+
+        Integer total = tdarDataImportDatabase.selectAllFromTable(table, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+                int total = 0;
+                while (rs.next()) {
+                    String str = rs.getString(2);
+                    logger.debug(str);
+                    total += Integer.parseInt(rs.getString(2));
+                }
+                return total;
+            }
+        }, true);
+        assertEquals(946, total.intValue());
+    }
 
     @Test
     @Rollback
@@ -315,14 +350,14 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         DataTable data = converter.getDataTableByName("e_509_pfraa_ifti_data");
         assertEquals(17, data.getColumnNames().size());
     }
-    
+
     @Test
     public void testFormat() {
         String st = "1F";
         double d = NumberUtils.toDouble(st);
         logger.debug("{}", d);
     }
-    
+
     @Test
     @Rollback
     public void testMalformedFloatParse() throws IOException {
@@ -340,6 +375,5 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         }
         assertFalse(exception);
     }
-
 
 }
