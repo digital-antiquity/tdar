@@ -29,7 +29,7 @@ public class SheetProxy implements Serializable {
     private List<String> headerLabels = new ArrayList<String>();
     private int startRow = ExcelService.FIRST_ROW;
     private int startCol = ExcelService.FIRST_COLUMN;
-
+    private String noteRow;
     private Iterator<Object[]> data;
 
     // private static Callback NO_OP = new Callback() {public void apply(Workbook ignored){}};
@@ -202,6 +202,14 @@ public class SheetProxy implements Serializable {
 
     public void setCleanupNeeded(boolean bool) {
         isCleanupNeeded = bool;
+    }
+
+    public String getNoteRow() {
+        return noteRow;
+    }
+
+    public void setNoteRow(String noteRow) {
+        this.noteRow = noteRow;
     }
 
 }
