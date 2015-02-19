@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -297,7 +296,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                 Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date())));
         excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
         addMergedRegion(0, 0, 0, 8, pivotSheet);
-        excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
+        if (context.hasCountColumn()) {
+            excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
+        } else {
+            excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description_count_warning")));
+        }
         addMergedRegion(1, 1, 0, 8, pivotSheet);
 
         rowIndex = 4;

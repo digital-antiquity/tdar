@@ -32,7 +32,7 @@ public class IntegrationContext implements Serializable {
     private Date dateCreated = new Date();
     private List<IntegrationColumn> integrationColumns = new ArrayList<>();
     private List<DataTable> dataTables;
-    
+
     private List<String> errorMessages = new ArrayList<>();
 
     public IntegrationContext() {
@@ -106,13 +106,26 @@ public class IntegrationContext implements Serializable {
     public void setTempTable(DataTable tempTable) {
         this.tempTable = tempTable;
     }
-    
+
     public void setErrorMessages(List<String> messages) {
         this.errorMessages = messages;
     }
 
     public List<String> getErrorMessages() {
         return Collections.unmodifiableList(errorMessages);
+    }
+
+    public boolean hasCountColumn() {
+        if (CollectionUtils.isEmpty(integrationColumns)) {
+            return false;
+        }
+
+        for (IntegrationColumn col : getIntegrationColumns()) {
+            if (col.isCountColumn()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
