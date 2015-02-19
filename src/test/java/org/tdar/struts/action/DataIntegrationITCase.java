@@ -51,7 +51,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
     @Autowired
     private OntologyNodeDao ontologyNodeDao;
-    
+
     @Test
     @Rollback
     public void testFilteredNodesSurviveHierarchy() throws Exception {
@@ -108,8 +108,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         integrationColumn.setFilteredOntologyNodes(Arrays.asList(pleuronectiformesOntologyNode, plaiceFlounderOntologyNode, paracanthopt));
         integrationColumn.buildNodeChildHierarchy(ontologyNodeDao);
 
-//        integrationColumn.setOntologyNodesForSelect(new HashSet<OntologyNode>(Arrays.asList(pleuronectiformesOntologyNode, plaiceFlounderOntologyNode, gadidae,
-//                paracanthopt)));
+        // integrationColumn.setOntologyNodesForSelect(new HashSet<OntologyNode>(Arrays.asList(pleuronectiformesOntologyNode, plaiceFlounderOntologyNode,
+        // gadidae,
+        // paracanthopt)));
         // tests that the mapped ontology node is not aggregated up to pleuronectiformes
         for (String term : plaiceFlounderTerms) {
             assertEquals(plaiceFlounderOntologyNode.getDisplayName(),
@@ -213,7 +214,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             if (!column.isIntegrationColumn()) {
                 continue;
             }
-            
+
             for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
                 logger.trace("node: {} ", node);
                 if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {
@@ -258,8 +259,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-//            logger.trace(" {} | {} | {} | {} | {}", row.getCell(0).getRichStringCellValue(), row.getCell(1).getRichStringCellValue(),
-//                    row.getCell(2).getRichStringCellValue(), row.getCell(3).getRichStringCellValue(), row.getCell(4).getRichStringCellValue());
+            // logger.trace(" {} | {} | {} | {} | {}", row.getCell(0).getRichStringCellValue(), row.getCell(1).getRichStringCellValue(),
+            // row.getCell(2).getRichStringCellValue(), row.getCell(3).getRichStringCellValue(), row.getCell(4).getRichStringCellValue());
             if (row.getCell(1).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                 seenElementNull = true;
             }
@@ -286,12 +287,12 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         for (int i = 0; i < names.size(); i++) {
             seen.add(row.getCell(i).getStringCellValue());
         }
-        
+
         names.removeAll(seen);
         logger.debug("colNames:{}", names);
         logger.debug("seen    :{}", seen);
         assertTrue(names.isEmpty());
-        
+
         String[] row3 = new String[] { "Felis catus (Cat)", "Ulna", "23", "15" };
         row = summarySheet.getRow(4);
         for (int i = 0; i < names.size(); i++) {
@@ -400,23 +401,25 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            String value2 = row.getCell(2).getStringCellValue();
-            String value1 = row.getCell(1).getStringCellValue();
-            if (value1.equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
-                seenElementNull = true;
-            }
+            if (row.getCell(2) != null) {
+                String value2 = row.getCell(2).getStringCellValue();
+                String value1 = row.getCell(1).getStringCellValue();
+                if (value1.equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
+                    seenElementNull = true;
+                }
 
-            if (value2.equalsIgnoreCase("tarsal")) {
-                tarsal++;
-            }
-            if (value2.equalsIgnoreCase("ulna")) {
-                ulna++;
-            }
-            if (value2.equalsIgnoreCase("astragalus")) {
-                astragalus++;
-            }
-            if (value2.equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
-                empty++;
+                if (value2.equalsIgnoreCase("tarsal")) {
+                    tarsal++;
+                }
+                if (value2.equalsIgnoreCase("ulna")) {
+                    ulna++;
+                }
+                if (value2.equalsIgnoreCase("astragalus")) {
+                    astragalus++;
+                }
+                if (value2.equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
+                    empty++;
+                }
             }
         }
         logger.info("tarsal: {}", tarsal);

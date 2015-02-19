@@ -81,18 +81,20 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             // note SQL iterator is 1 based; java iterator is 0 based
             // DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
             String value = initializeDefaultValue(resultSetPosition);
-
+            final String rawStringValue = (String) row[resultSetPosition];
             // set count value if needed
             if (integrationColumn.isCountColumn()) {
                 // we go back to original version as initialized value may have been set
+                value = rawStringValue;
+
                 try {
-                    countVal = NumberFormat.getInstance().parse((String) row[resultSetPosition]).doubleValue();
+                    countVal = NumberFormat.getInstance().parse(rawStringValue).doubleValue();
                 } catch (ParseException nfe) {
                     logger.trace("numberParseIssue", nfe);
+                    countVal = null;
+                    value = MessageHelper.getMessage("database.bad_count_column");
                 }
-                value = Double.toString(countVal);
             }
-            ;
 
             // add value to the output array for display/count columns
             if (!integrationColumn.isIntegrationColumn()) {
@@ -152,9 +154,9 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             groupCount = new IntContainer();
         }
 
-        if (countVal == 1) {
+        if (countVal.intValue() == 1) {
             groupCount.increment();
-        } else {
+        } else if (countVal != null) {
             groupCount.add(countVal.intValue());
         }
         pivotVal.put(tableId, groupCount);

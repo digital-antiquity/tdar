@@ -169,7 +169,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         Iterable<Object[]> iterator = ResultSetIterator.iterable(resultSet);
         IntegrationResultSetDecorator ird = new IntegrationResultSetDecorator(iterator.iterator(), getContext());
         sheetProxy.setData(ird);
-//        sheetProxy.setNoteRow(provider.getText("dataIntegrationWorkbook.data_worksheet_note"));
+        sheetProxy.setNoteRow(provider.getText("dataIntegrationWorkbook.data_worksheet_note"));
         result.setPivotData(ird.getPivot());
         getExcelService().addSheets(sheetProxy);
         List<Object[]> previewData = ird.getPreviewData();
