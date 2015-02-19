@@ -157,10 +157,11 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                 if (doc.getDocumentType() == DocumentType.JOURNAL_ARTICLE) {
                     Map<String, Object> isPartOf = new HashMap<>();
                     add(isPartOf, ID, "#periodical");
-                    add(isPartOf, TYPE, "PublicationVolume");
+                    add(isPartOf, TYPE, "Periodical");
                     add(isPartOf, NAME, doc.getJournalName());
                     add(isPartOf, "issn", doc.getIssn());
-                    add(isPartOf, "volumeNumber", doc.getVolume());
+                    // Google as of 2/11/15 cannot handle multiple types combined, so we need to choose ISSN or volume #
+                    // add(isPartOf, "volumeNumber", doc.getVolume());
                     if (ir.getPublisher() != null) {
                         add(isPartOf, PUBLISHER, ir.getPublisher().getName());
                     }

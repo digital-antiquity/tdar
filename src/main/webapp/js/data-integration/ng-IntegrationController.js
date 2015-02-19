@@ -6,7 +6,8 @@
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService',  function($rootScope, $scope, integration, dataService){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService', 'ValidationService',
+        function($rootScope, $scope, integration, dataService, validationService){
         var self = this,
             _openModal,
             _processAddedIntegrationColumns;
@@ -82,23 +83,33 @@
 
 
         self.loadJSON = function() {
-            if (window.location.hash) {
-                self.updateStatus("Loading...");
-                var integrationId = window.location.hash.substring(1);
-                var result = dataService.loadIntegrationById(integrationId , self.integration);
-                result.then(function(){
+            var jsonData = dataService.getDocumentData("jsondata");
+            if(!jsonData) return;
+
+            self.updateStatus("Loading...");
+
+            //validate the embedded json first
+            var embeddedJsonErrors = validationService.validateJson(jsonData);
+
+
+            var result = dataService.loadIntegration(jsonData , self.integration);
+            result.then(
+                function(){
+                        validationService.validateIntegration(jsonData, self.integration);
                     self.updateStatus("Done loading");
+                    if(validationService.errors.length) {
+                        self.updateStatus("Loading complete. However, the underlying resources used in this integration may have changed. " +
+                        " Please review your selections and ensure they are up-to-date.");
+
+                        //in the event errors, rebuild cached/transient data
+                        self.integration.reset();
+                    }
+                },
+                function(err) {
+                    self.updateStatus("Load failed. Please try again - if problem continues please contact a system administrator.");
+                    console.log("load failed - error information follows");
+                    console.error(err);
                 });
-            } else {
-                var jsonData = dataService.getDocumentData("jsondata");
-                if(!jsonData) return;
-                self.updateStatus("Loading...");
-                //fixme: reintroduce load-via-hashurl
-                var result = dataService.loadIntegration(jsonData , self.integration);
-                result.then(function(){
-                    self.updateStatus("Done loading");
-                });
-            }
          };
         
         /**

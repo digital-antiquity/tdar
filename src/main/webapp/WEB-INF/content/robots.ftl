@@ -10,6 +10,7 @@ Disallow: /filestore/
 Disallow: /cart/review
 Disallow: /search/advanced
 Disallow: /browse/creators/135028
+Disallow: /browse/creators/12729
 
 <#else>
 Disallow: *

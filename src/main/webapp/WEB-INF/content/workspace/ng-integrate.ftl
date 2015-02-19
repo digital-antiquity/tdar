@@ -163,13 +163,13 @@
                                                             <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
                                                             <div ng-switch on="cc.compatCols.length">
                                                             <div ng-switch-when="1">
-                                                                {{cc.compatCols[0].displayName}}
+                                                                <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span>
                                                                 <!-- FIXME: this is "hidden", but is it even needed? -->
                                                                 <!-- FIXME: shouldn't this be the dataset name? -->
                                                                 <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
                                                             </div>
                                                             <div ng-switch-default>
-                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                                <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
                                                             </div>
                                                             </div>
                                                         </th>
@@ -195,17 +195,19 @@
 
                                             <div ng-switch-when="display" class=".display-pane-content">
                                             
-                                                <h3>Select Columns</h3>
-                                                <br/>
-                                                <table>
+                                                <h3>Choose the source columns to include in this display column </h3>
+                                                <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Table</th> <th>Column</th>
+                                                            <th>Dataset</th>
+                                                            <th>Table</th>
+                                                            <th>Column</th>
                                                         </tr>
                                                     </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
-                                                        <th>{{dataTable.displayName}}</th>
+                                                        <td class="">{{dataTable.datasetTitle}}</td>
+                                                        <td class="">{{dataTable.displayName}}</td>
                                                         <td>
                                                             <select ng-model="columnSelection.dataTableColumn" id="dt_{{$parent.$index}}_{{dataTable.id}}"
                                                                     ng-options="c.displayName for c in dataTable.dataTableColumns  | orderBy: 'displayName' ">
@@ -219,17 +221,19 @@
 
 
                                             <div ng-switch-when="count" class=".count-pane-content">
-                                                <h3>Select Columns</h3>
-                                                <br/>
-                                                <table>
+                                                <h3>Select count columns </h3>
+                                                <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Table</th> <th>Column</th>
+                                                            <th>Dataset</th>
+                                                            <th>Table</th>
+                                                            <th>Column</th>
                                                         </tr>
                                                     </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
-                                                        <th>{{dataTable.displayName}}</th>
+                                                        <th class="">{{dataTable.datasetTitle}}</th>
+                                                        <th class="">{{dataTable.displayName}}</th>
                                                         <td>
                                                             <select ng-model="columnSelection.dataTableColumn"
                                                                     ng-options="c.displayName for c in dataTable.dataTableColumns  | orderBy: 'displayName'  | filter:filterCount">
@@ -448,7 +452,7 @@ ${categoriesJson}
 <script src="/js/data-integration/ng-IntegrationDataService.js"></script>
 <script src="/js/data-integration/ng-IntegrationCustomFilters.js"></script>
 <script src="/js/data-integration/ng-DatatableDirective.js"></script>
-<script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></script>
+<script src="/js/data-integration/ng-IntegrationValidationService.js"></script>
 
 
 <#-- Include the file below to run some barebones tests -->

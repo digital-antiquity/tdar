@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.joda.time.DateTime;
@@ -306,16 +308,21 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @SuppressWarnings("unchecked")
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
+        query.setCacheMode(CacheMode.IGNORE);
         int count = 0;
         logger.trace(SELECT_RAW_IMAGE_SITEMAP_FILES);
-        for (Object[] row : (List<Object[]>) query.list()) {
+        ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
+        while (scroll.next()) {
             // select r.id, r.title, r.description, r.resource_type, irf.description, irfv.id
-            Number id = (Number) row[0];
-            String title = (String) row[1];
-            String description = (String) row[2];
-            ResourceType resourceType = ResourceType.valueOf((String) row[3]);
-            String fileDescription = (String) row[4];
-            Number imageId = (Number) row[5];
+            if (count % 500 == 0) {
+                clearCurrentSession();
+            }
+            Number id = (Number) scroll.get(0);
+            String title = (String) scroll.get(1);
+            String description = (String) scroll.get(2);
+            ResourceType resourceType = ResourceType.valueOf((String) scroll.get(3));
+            String fileDescription = (String) scroll.get(4);
+            Number imageId = (Number) scroll.get(5);
             Resource res = new Resource(id.longValue(), title, resourceType);
             markReadOnly(res);
             String resourceUrl = UrlService.absoluteUrl(res);

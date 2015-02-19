@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -80,7 +79,7 @@ public class Project extends Resource implements Sortable {
     }
 
     @Transient
-    private transient Set<InformationResource> cachedInformationResources = new HashSet<InformationResource>();
+    private transient Collection<InformationResource> cachedInformationResources;
 
     public Project() {
         setResourceType(ResourceType.PROJECT);
@@ -113,11 +112,11 @@ public class Project extends Resource implements Sortable {
     @IndexedEmbedded(prefix = "informationResources.")
     @XmlTransient
     // @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Set<InformationResource> getCachedInformationResources() {
+    public Collection<InformationResource> getCachedInformationResources() {
         return cachedInformationResources;
     }
 
-    public void setCachedInformationResources(Set<InformationResource> cachedInformationResources) {
+    public void setCachedInformationResources(Collection<InformationResource> cachedInformationResources) {
         this.cachedInformationResources = cachedInformationResources;
     }
 

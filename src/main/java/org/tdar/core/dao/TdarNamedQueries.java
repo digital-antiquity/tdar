@@ -146,7 +146,7 @@ public interface TdarNamedQueries {
     String AFFILIATION_COUNTS = "query.affiliationCounts";
     String DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS = "delete.data_table_column_relationships";
     String DELETE_DATA_TABLE_RELATIONSHIPS = "delete.data_table_relationships";
-
+    String SCROLLABLE_SITEMAP = "sitemap.active_resources";
     // raw SQL/HQL queries
 
     /**
@@ -257,6 +257,7 @@ public interface TdarNamedQueries {
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, month, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day', date_accessed)";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
+    String COUNT_ACTIVE_PERSISTABLE_BY_ID = "select count(id) from %s where status in ('ACTIVE')";
     String FIND_ACTIVE_PERSON_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String FIND_ACTIVE_INSTITUTION_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String WEEKLY_EMAIL_STATS = "stats.weekly_emails";

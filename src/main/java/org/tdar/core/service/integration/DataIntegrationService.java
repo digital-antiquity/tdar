@@ -111,7 +111,7 @@ public class DataIntegrationService {
         if (column == null) {
             return;
         }
-        logger.debug("col {}", column);
+        logger.debug("updating mapping rules on {}", column);
         CodingSheet codingSheet = column.getDefaultCodingSheet();
         if ((codingSheet == null) || CollectionUtils.isEmpty(codingSheet.getCodingRules())) {
             logger.debug("aborting, no coding rules or coding sheet {}", codingSheet);
@@ -120,7 +120,7 @@ public class DataIntegrationService {
         logger.trace("selecting distinct values from column");
         List<String> values = tdarDataImportDatabase.selectDistinctValues(column);
         logger.trace("values: {} ", values);
-        logger.info("matching coding rule terms to column values");
+        logger.trace("matching coding rule terms to column values");
         for (CodingRule rule : codingSheet.getCodingRules()) {
             if (values.contains(rule.getTerm())) {
                 logger.trace("mapping rule {} to column {}", rule, column);

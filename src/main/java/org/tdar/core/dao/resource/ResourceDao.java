@@ -11,9 +11,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -453,5 +456,31 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
         }
         return null;
+    }
+
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long resourceId, List<Status> statuses) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            statuses_ = statuses;
+        }
+
+        Query query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
+        query.setParameterList("projectIds", Arrays.asList(resourceId));
+
+        query.setParameterList("statuses", statuses_);
+        // query.setParameterList("types", types_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
+    }
+    
+    public ScrollableResults findAllActiveScrollableForSitemap() {
+        Query query = getCurrentSession().getNamedQuery(SCROLLABLE_SITEMAP);
+        return query.setCacheMode(CacheMode.IGNORE).scroll(ScrollMode.FORWARD_ONLY);
+        
     }
 }

@@ -709,4 +709,9 @@ public class GenericService {
 
     }
 
+    @Transactional
+    public <T> Number countActive(Class<? extends HasStatus> cls) {
+        return genericDao.countActive(cls);
+    }
+
 }

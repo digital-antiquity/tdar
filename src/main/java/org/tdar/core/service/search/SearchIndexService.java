@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.CacheMode;
@@ -40,6 +38,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.activity.Activity;
 
 @Service
@@ -212,7 +211,7 @@ public class SearchIndexService {
         Long prevId = 0L;
         Long currentId = 0L;
         while (scrollableResults.next()) {
-            Indexable item = (Indexable)scrollableResults.get(0);
+            Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
             currentProgress = numProcessed / total.floatValue();
             index(fullTextSession, item, deleteFirst);
@@ -260,16 +259,17 @@ public class SearchIndexService {
             if (deleteFirst) {
                 fullTextSession.purge(item.getClass(), item.getId());
             }
-            
+
             if (item instanceof InformationResource) {
-                InformationResource ir = (InformationResource)item;
+                InformationResource ir = (InformationResource) item;
                 datasetDao.assignMappedDataForInformationResource(ir);
             }
 
             if (item instanceof Project) {
                 Project project = (Project) item;
-                if (CollectionUtils.isEmpty(project.getCachedInformationResources())) {
-                    projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT);
+                if (null == project.getCachedInformationResources()) {
+                    setupProjectForIndexing(project);
+//                    logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
                 }
             }
             fullTextSession.index(item);
@@ -488,13 +488,21 @@ public class SearchIndexService {
      * @param project
      */
     public boolean indexProject(Project project) {
-        project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT)));
-        project.setReadyToIndex(true);
+        setupProjectForIndexing(project);
         index(project);
         logger.debug("reindexing project contents");
-        boolean exceptions = indexCollection(project.getCachedInformationResources());
+        int total = 0;
+        ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
+        indexScrollable(getDefaultUpdateReceiver(), null, getFullTextSession(), 0f, 100f, Resource.class, total, scrollableResults, true);
         logger.debug("completed reindexing project contents");
-        return exceptions;
+        return false;
+    }
+
+    private void setupProjectForIndexing(Project project) {
+        Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE,
+                Status.DRAFT));
+        project.setCachedInformationResources(irs);
+        project.setReadyToIndex(true);
     }
 
     /**
