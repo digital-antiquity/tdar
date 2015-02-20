@@ -4,7 +4,7 @@ import java.util.List;
 
 public class NonFatalWorkflowException extends TdarRecoverableRuntimeException {
 
-    public NonFatalWorkflowException(String message, List<Object> values) {
+    public NonFatalWorkflowException(String message, List<?> values) {
         super(message, values);
     }
 
