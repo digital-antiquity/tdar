@@ -323,7 +323,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
-    @Transactional(value = "tdarDataTx", readOnly = true)
     public String normalizeTableOrColumnNames(String name) {
         String result = name.trim().replaceAll("[^\\w]", "_").toLowerCase();
         if (result.length() > MAX_NAME_SIZE) {

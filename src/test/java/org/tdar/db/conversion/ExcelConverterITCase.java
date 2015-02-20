@@ -84,7 +84,8 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         }
     }
 
-    @Test
+
+@Test
     @Rollback
     public void testPoiInfiniteLoop() throws IOException {
         InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "infinite-loop.xlsx"), 519);

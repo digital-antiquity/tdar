@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.struts2.convention.annotation.Action;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
@@ -62,7 +63,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     private static final String BELEMENT_COL = "belement";
 
     private DatasetController controller;
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DataTableService dataTableService;
@@ -135,7 +136,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         assertNotSame(Tibia, -1);
         assertTrue(String.format("%d < %d", tibia, Tibia), tibia < Tibia);
 
-        logger.info(suggestedTibias);
+        logger.info("{}", suggestedTibias);
         Collections.sort(suggestedTibias);
         Collections.sort(tibias);
         assertEquals(tibias, suggestedTibias);
@@ -144,7 +145,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testNullResourceOperations() throws Exception {
-        List<String> successActions = Arrays.asList("add", "list","edit");
+        List<String> successActions = Arrays.asList("add", "list", "edit");
         // grab all methods on DatasetController annotated with a conventions plugin @Action
         for (Method method : DatasetController.class.getMethods()) {
             controller = generateNewInitializedController(DatasetController.class);
@@ -163,8 +164,8 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                     if (e instanceof TdarActionException) {
                         TdarActionException exception = (TdarActionException) e;
                         setIgnoreActionErrors(true);
-//                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
-//                                exception.getResultName());
+                        // assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
+                        // exception.getResultName());
                     }
 
                 }
@@ -176,9 +177,25 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDatasetReplaceSame() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
-
         dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class, dataset.getId());
+    }
 
+    @Test
+    @Rollback
+    public void testDatasetReplaceLegacy() throws TdarActionException {
+        Dataset dataset = setupAndLoadResource("Pundo faunal remains.xls", Dataset.class);
+        DataTable table = dataset.getDataTables().iterator().next();
+        Long id = dataset.getId();
+        DataTableColumn el = table.getColumnByDisplayName("Element");
+        el.setName("element");
+        Long elId = el.getId();
+        genericService.saveOrUpdate(el);
+        dataset = null;
+        el = null;
+        dataset = setupAndLoadResource("Pundo faunal remains.xls", Dataset.class, id);
+        logger.debug("cols: {}", dataset.getDataTables().iterator().next().getDataTableColumns());
+        el = table.getColumnByDisplayName("Element");
+        assertEquals(elId, el.getId());
     }
 
     @Test

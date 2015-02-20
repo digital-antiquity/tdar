@@ -361,9 +361,16 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     private Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables(Dataset dataset, Dataset transientDatasetToPersist) {
         HashMap<String, DataTable> existingTablesMap = new HashMap<String, DataTable>();
+        HashMap<String, String> secondaryLookupMap = new HashMap<>();
         for (DataTable existingDataTable : dataset.getDataTables()) {
-            existingTablesMap.put(existingDataTable.getInternalName(), existingDataTable);
-            getLogger().debug("existingTableName: {}", existingDataTable.getInternalName());
+            String internalName = existingDataTable.getInternalName();
+            existingTablesMap.put(internalName, existingDataTable);
+            getLogger().debug("existingTableName: {}", internalName);
+            String name = tdarDataImportDatabase.normalizeTableOrColumnNames(existingDataTable.getDisplayName());
+            if (!StringUtils.equals(name, internalName)) {
+                secondaryLookupMap.put(name, internalName);
+            }
+
         }
         dataset.getDataTables().clear();
         getLogger().debug("Existing name to table map: {}", existingTablesMap);
@@ -373,13 +380,23 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // first check that the incoming data table has data table columns.
             String internalTableName = tableToPersist.getInternalName();
             DataTable existingTable = existingTablesMap.get(internalTableName);
+            
+            // our naming conventions change from time-to-time, fallback to "renormalize" and use that for lookup
+            if (existingTable == null) {
+                if (secondaryLookupMap.containsKey(internalTableName)) {
+                    existingTable = existingTablesMap.get(secondaryLookupMap.get(internalTableName));
+                    internalTableName = secondaryLookupMap.get(internalTableName);
+                }
+            }
+
+            
             if ((existingTable == null) && (existingTablesMap.size() == 1) && (transientDatasetToPersist.getDataTables().size() == 1)) {
                 // the table names did not match, but we have one incoming table and one existing table. Try to match them regardless.
                 existingTable = existingTablesMap.values().iterator().next();
             }
 
             if (existingTable != null) {
-                existingTablesMap.remove(existingTable.getInternalName());
+                existingTablesMap.remove(internalTableName);
                 Pair<DataTable, Collection<DataTableColumn>> reconcileDataTable = reconcileDataTable(dataset, existingTable, tableToPersist);
                 tableToPersist = reconcileDataTable.getFirst();
                 if (CollectionUtils.isNotEmpty(reconcileDataTable.getSecond())) {
@@ -420,8 +437,14 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // if there is an analogous existing table, try to reconcile all the columns from the incoming data table
             // with the columns from the existing data table.
             HashMap<String, DataTableColumn> existingColumnsMap = new HashMap<String, DataTableColumn>();
+            HashMap<String, String> secondaryLookupMap = new HashMap<>();
             for (DataTableColumn existingColumn : existingTable.getDataTableColumns()) {
-                existingColumnsMap.put(existingColumn.getName().toLowerCase().trim(), existingColumn);
+                String key = existingColumn.getName().toLowerCase().trim();
+                existingColumnsMap.put(key, existingColumn);
+                String name = tdarDataImportDatabase.normalizeTableOrColumnNames(existingColumn.getDisplayName());
+                if (!StringUtils.equals(name, key)) {
+                    secondaryLookupMap.put(name, key);
+                }
             }
             getLogger().debug("existing columns: {}", existingColumnsMap);
             List<DataTableColumn> columnsToPersist = tableToPersist.getDataTableColumns();
@@ -430,7 +453,15 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             for (int i = 0; i < columnsToPersist.size(); i++) {
                 DataTableColumn incomingColumn = columnsToPersist.get(i);
                 String normalizedColumnName = incomingColumn.getName().toLowerCase().trim();
+                
                 DataTableColumn existingColumn = existingColumnsMap.get(normalizedColumnName);
+                // our naming conventions change from time-to-time, fallback to "renormalize" and use that for lookup
+                if (existingColumn == null) {
+                    if (secondaryLookupMap.containsKey(normalizedColumnName)) {
+                        existingColumn = existingColumnsMap.get(secondaryLookupMap.get(normalizedColumnName));
+                        normalizedColumnName = secondaryLookupMap.get(normalizedColumnName);
+                    }
+                }
                 getLogger().debug("Reconciling existing {} with incoming column {}", existingColumn, incomingColumn);
                 reconcileColumn(tableToPersist, existingColumnsMap, normalizedColumnName, incomingColumn, existingColumn);
             }
@@ -698,7 +729,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         remapColumnsWithoutIndexing(columns, project);
-        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL) {
+        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL ) {
             searchIndexService.indexProject(project);
         }
     }
