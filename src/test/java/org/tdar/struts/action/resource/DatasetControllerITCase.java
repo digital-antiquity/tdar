@@ -58,6 +58,7 @@ import org.tdar.struts.action.dataset.TableXMLDownloadAction;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
+    private static final String PUNDO_FAUNAL_REMAINS_XLS = "Pundo faunal remains.xls";
     private static final String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
     private static final String TRUNCATED_HARP_EXCEL_FILENAME = "heshfaun-truncated.xls";
     private static final String BELEMENT_COL = "belement";
@@ -181,21 +182,46 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(value=false)
+    /**
+     * make sure that the column names are re-aligned
+     * @throws TdarActionException
+     */
     public void testDatasetReplaceLegacy() throws TdarActionException {
-        Dataset dataset = setupAndLoadResource("Pundo faunal remains.xls", Dataset.class);
+        Dataset dataset = setupAndLoadResource(PUNDO_FAUNAL_REMAINS_XLS, Dataset.class);
         DataTable table = dataset.getDataTables().iterator().next();
-        Long id = dataset.getId();
+        final Long id = dataset.getId();
         DataTableColumn el = table.getColumnByDisplayName("Element");
+        final Long elId = el.getId();
         el.setName("element");
-        Long elId = el.getId();
         genericService.saveOrUpdate(el);
+        logger.debug("element:{}", el);
         dataset = null;
         el = null;
-        dataset = setupAndLoadResource("Pundo faunal remains.xls", Dataset.class, id);
-        logger.debug("cols: {}", dataset.getDataTables().iterator().next().getDataTableColumns());
-        el = table.getColumnByDisplayName("Element");
-        assertEquals(elId, el.getId());
+        table = null;
+        genericService.synchronize();
+        setVerifyTransactionCallback(new TransactionCallback<Dataset>() {
+            @Override
+            public Dataset doInTransaction(TransactionStatus status) {
+                try {
+                    DataTableColumn col = genericService.find(DataTableColumn.class, elId);
+                    col.setName("element");
+                    genericService.saveOrUpdate(col);
+                    col = null;
+                    Dataset dataset = setupAndLoadResource(PUNDO_FAUNAL_REMAINS_XLS, Dataset.class, id);
+                    logger.debug("cols: {}", dataset.getDataTables().iterator().next().getDataTableColumns());
+                    DataTableColumn el = dataset.getDataTables().iterator().next().getColumnByDisplayName("Element");
+                    Long elid2 = el.getId();
+                    el = null;
+                    assertEquals(elId, elid2);
+                } catch (TdarActionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
+
     }
 
     @Test
