@@ -44,6 +44,7 @@
                 _addErrors("You have field-specific errrors");
             }
 
+
             //rule: do any integration columns contain null dataTableColumn entries?
             _addErrors(jsonData.columns
                     //exclude  display columns (which are allowed to have null dataTableColumns)
@@ -88,8 +89,24 @@
                                 "' Please review your integration column selections."}));
 
 
+            //rule: dataTableColumns must still exist
+            _addErrors(jsonData.columns
+                        //get one big list of all the dtc ids
+                        .reduce(function(dtclist,c){
+                            return dtclist.concat(c.dataTableColumns.map(function(dtc){if(dtc) {return dtc.id} else {return -1;}}))
+                        }, [])
+                        //then include only the ones that arent' found in dtc cache
+                        .filter(function(dtcid){
+                            return !DataService.dataTableColumnCache.get(dtcid)
+                        })
+                        //convert to list of passive-aggressive error messages.
+                        .map(function(invalidDtcId){
+                            return "dataTableColumn id is obsolete:" + invalidDtcId;
+                        })
+            );
             console.trace("validateIntegration::");
             console.trace(self.errors);
+
         }
     }]);
 
