@@ -64,7 +64,7 @@ public class WorkflowResult implements Serializable {
     public ErrorTransferObject getActionErrorsAndMessages() {
         ErrorTransferObject eto = new ErrorTransferObject();
         for (ExceptionWrapper exception : getExceptions()) {
-            if (exception.isFatal()) {
+            if (exception.isFatal() || !fatalErrors) {
                 eto.getActionErrors().add(exception.getMessage());
                 logger.error("error processing file [code:{}]: {} ", exception.getErrorCode(), exception.getStackTrace());
             } else {
