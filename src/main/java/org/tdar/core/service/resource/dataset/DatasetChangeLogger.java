@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 
 public class DatasetChangeLogger implements Serializable {
 
@@ -84,7 +85,11 @@ public class DatasetChangeLogger implements Serializable {
         for (DataTable table : dataset.getDataTables()) {
             dskeys.put(table.getId(), table.getName() + " | " + table.getDisplayName());
             for (DataTableColumn col : table.getDataTableColumns()) {
-                dtkeys.put(col.getId(), col.getName() + " | " + col.getDisplayName());
+                String value = col.getName() + " | " + col.getDisplayName() + "["+col.getColumnEncodingType() +"]";
+                if (col.getColumnEncodingType() == DataTableColumnEncodingType.CODED_VALUE) {
+                    value += " : " + col.getDefaultCodingSheet();
+                }
+                dtkeys.put(col.getId(), value);
             }
         }
     }
