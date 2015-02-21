@@ -1,9 +1,16 @@
 package org.tdar.struts.action.resource;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -11,6 +18,8 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.DatasetService;
@@ -49,13 +58,12 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reprocess() throws TdarActionException {
         getLogger().info("reprocessing");
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         try {
-            ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(resource);
+            ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(getResource());
             processErrorObject(errors);
-            if (resource instanceof Dataset) {
-                datasetService.remapAllColumnsAsync(resource.getId(), resource.getProject().getId());
+            if (getResource() instanceof Dataset) {
+                datasetService.remapAllColumnsAsync(getResource().getId(), getResource().getProject().getId());
             }
         } catch (Exception e) {
             // consider removing the "sorry we were unable to ... just showing error message"
@@ -70,18 +78,60 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
 
     @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reimport() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (resource instanceof Dataset) {
-            Dataset dataset = (Dataset) resource;
-            // note this ignores the quota changes -- it's on us
-            datasetService.reprocess(dataset);
-            datasetService.retranslate(dataset);
-            datasetService.remapAllColumnsAsync(dataset.getId(), resource.getProject().getId());
+        if (getResource() instanceof Dataset) {
+            try {
+                Dataset dataset = (Dataset) getResource();
+                Map<Long, String> colkeys = new HashMap<>();
+                Map<Long, String> tabkeys = new HashMap<>();
+                extractKeys(dataset, colkeys, tabkeys);
+                // note this ignores the quota changes -- it's on us
+                datasetService.reprocess(dataset);
+                datasetService.retranslate(dataset);
+                Map<Long, String> colkeys_ = new HashMap<>();
+                Map<Long, String> tabkeys_ = new HashMap<>();
+                extractKeys(dataset, colkeys_, tabkeys_);
+                logReimportChanges(dataset, colkeys, tabkeys, colkeys_, tabkeys_);
+                datasetService.remapAllColumnsAsync(dataset.getId(), getResource().getProject().getId());
+            } catch (Exception e) {
+                getLogger().error("ex: {}", e);
+                throw e;
+            }
         } else {
             addActionError(getText("reprocessResourceController.dataset_required"));
             return ERROR;
         }
         return SUCCESS;
+    }
+
+    private void logReimportChanges(Dataset dataset, Map<Long, String> colkeys, Map<Long, String> tabkeys, Map<Long, String> colkeys_, Map<Long, String> tabkeys_) {
+        Collection<Long> disjunctTab = CollectionUtils.disjunction(tabkeys.keySet(), tabkeys_.keySet());
+        Collection<Long> disjunctCol = CollectionUtils.disjunction(colkeys.keySet(), colkeys_.keySet());
+        if (CollectionUtils.isNotEmpty(disjunctTab) || CollectionUtils.isNotEmpty(disjunctCol)) {
+            getLogger().warn("|======= TABLES/COLS CHANGED FOR {} ===========|", dataset.getId());
+            getLogger().warn("| {}", dataset.getTitle());
+            if (CollectionUtils.isNotEmpty(disjunctTab)) {
+                getLogger().warn("| COLUMNS:");
+                for (Long dis : disjunctTab) {
+                    getLogger().warn("| id: {} [{}{}]", tabkeys.get(dis), tabkeys_.get(dis));
+                }
+            }
+            if (CollectionUtils.isNotEmpty(disjunctCol)) {
+                getLogger().warn("| TABLES:");
+                for (Long dis : disjunctCol) {
+                    getLogger().warn("| id: {} [{}{}]", colkeys.get(dis), colkeys_.get(dis));
+                }
+            }
+            getLogger().warn("|==============================================|");
+        }
+    }
+
+    private void extractKeys(Dataset dataset, Map<Long, String> dtkeys, Map<Long, String> dskeys) {
+        for (DataTable table : dataset.getDataTables()) {
+            dskeys.put(table.getId(), table.getName() + " | " + table.getDisplayName());
+            for (DataTableColumn col : table.getDataTableColumns()) {
+                dtkeys.put(col.getId(), col.getName() + " | " + col.getDisplayName());
+            }
+        }
     }
 
     /**
@@ -90,9 +140,9 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
      */
     @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String retranslate() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (resource instanceof Dataset) {
-            Dataset dataset = (Dataset) resource;
+        // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        if (getResource() instanceof Dataset) {
+            Dataset dataset = (Dataset) getResource();
             datasetService.retranslate(dataset);
             datasetService.createTranslatedFile(dataset);
         } else {
@@ -118,12 +168,12 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return getAuthorizationService().canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_METADATA);
+        return getAuthorizationService().canEditResource(getAuthenticatedUser(), getResource(), GeneralPermissions.MODIFY_METADATA);
     }
 
     @Override
     public InformationResource getPersistable() {
-        return resource;
+        return getResource();
     }
 
     @Override
@@ -133,11 +183,19 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
 
     @Override
     public void setPersistable(InformationResource persistable) {
-        this.resource = persistable;
+        this.setResource(persistable);
     }
 
     @Override
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.EDIT_ANYTHING;
+    }
+
+    public InformationResource getResource() {
+        return resource;
+    }
+
+    public void setResource(InformationResource resource) {
+        this.resource = resource;
     }
 }
