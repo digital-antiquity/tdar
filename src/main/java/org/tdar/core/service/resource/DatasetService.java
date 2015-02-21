@@ -61,6 +61,7 @@ import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
+import org.tdar.core.service.resource.dataset.DatasetChangeLogger;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
@@ -332,6 +333,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // helper Map to manage existing tables - all remaining entries in this existingTablesMap will be purged at the end of this process
         // take the dataset off the session at the last moment, and then bring it back on
 
+        DatasetChangeLogger dsChangeLog = new DatasetChangeLogger(dataset);
+        
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
 
         getDao().deleteRelationships(dataset.getRelationships());
@@ -352,6 +355,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         transientDatasetToPersist = null;
 
         dataset = getDao().merge(dataset);
+        dsChangeLog.compare(dataset);
     }
 
     /*
@@ -380,7 +384,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // first check that the incoming data table has data table columns.
             String internalTableName = tableToPersist.getInternalName();
             DataTable existingTable = existingTablesMap.get(internalTableName);
-            
+            if ((existingTable == null) && (existingTablesMap.size() == 1) && (transientDatasetToPersist.getDataTables().size() == 1)) {
+                // the table names did not match, but we have one incoming table and one existing table. Try to match them regardless.
+                existingTable = existingTablesMap.values().iterator().next();
+            }
+
             // our naming conventions change from time-to-time, fallback to "renormalize" and use that for lookup
             if (existingTable == null) {
                 if (secondaryLookupMap.containsKey(internalTableName)) {
@@ -389,14 +397,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 }
             }
 
-            
-            if ((existingTable == null) && (existingTablesMap.size() == 1) && (transientDatasetToPersist.getDataTables().size() == 1)) {
-                // the table names did not match, but we have one incoming table and one existing table. Try to match them regardless.
-                existingTable = existingTablesMap.values().iterator().next();
-            }
-
             if (existingTable != null) {
-                existingTablesMap.remove(internalTableName);
+                existingTablesMap.remove(existingTable.getInternalName());
                 Pair<DataTable, Collection<DataTableColumn>> reconcileDataTable = reconcileDataTable(dataset, existingTable, tableToPersist);
                 tableToPersist = reconcileDataTable.getFirst();
                 if (CollectionUtils.isNotEmpty(reconcileDataTable.getSecond())) {
@@ -453,7 +455,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             for (int i = 0; i < columnsToPersist.size(); i++) {
                 DataTableColumn incomingColumn = columnsToPersist.get(i);
                 String normalizedColumnName = incomingColumn.getName().toLowerCase().trim();
-                
+
                 DataTableColumn existingColumn = existingColumnsMap.get(normalizedColumnName);
                 // our naming conventions change from time-to-time, fallback to "renormalize" and use that for lookup
                 if (existingColumn == null) {
@@ -729,7 +731,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         remapColumnsWithoutIndexing(columns, project);
-        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL ) {
+        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL) {
             searchIndexService.indexProject(project);
         }
     }
