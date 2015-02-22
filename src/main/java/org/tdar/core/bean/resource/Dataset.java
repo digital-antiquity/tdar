@@ -181,7 +181,6 @@ public class Dataset extends InformationResource {
     }
 
     @Transient
-    @XmlTransient
     public boolean hasMappingColumns() {
         if (CollectionUtils.isEmpty(getDataTables())) {
             return false;
