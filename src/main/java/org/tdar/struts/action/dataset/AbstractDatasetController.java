@@ -241,7 +241,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     protected void postSaveCallback(String actionMessage) {
         super.postSaveCallback(actionMessage);
         if (isHasFileProxyChanges()) {
-            if (isAsync()) {
+            if (isAsync() && getDataResource().hasMappingColumns()) {
                 datasetService.remapAllColumnsAsync(getId(), getProject().getId());
             } else {
                 datasetService.remapAllColumns(getId(), getProject().getId());

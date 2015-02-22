@@ -16,7 +16,9 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -109,8 +111,8 @@ public class Dataset extends InformationResource {
     }
 
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-//    @Transient
-    @JsonView({JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class})
+    // @Transient
+    @JsonView({ JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class })
     public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
@@ -178,4 +180,22 @@ public class Dataset extends InformationResource {
         return relationships;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean hasMappingColumns() {
+        if (CollectionUtils.isEmpty(getDataTables())) {
+            return false;
+        }
+        for (DataTable dt : getDataTables()) {
+            if (CollectionUtils.isEmpty(dt.getDataTableColumns())) {
+                return false;
+            }
+            for (DataTableColumn cols : dt.getDataTableColumns()) {
+                if (cols.isMappingColumn()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

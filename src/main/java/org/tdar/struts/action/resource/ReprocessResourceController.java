@@ -20,6 +20,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -67,15 +68,24 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
         return SUCCESS;
     }
 
+    @WriteableSession
     @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reimport() throws TdarActionException {
         if (getResource() instanceof Dataset) {
             try {
+
                 Dataset dataset = (Dataset) getResource();
+                boolean hasMappings = dataset.hasMappingColumns();
+                Long projectId = getResource().getProject().getId();
                 // note this ignores the quota changes -- it's on us
+                resource = null;
                 datasetService.reprocess(dataset);
-                datasetService.retranslate(dataset);
-                datasetService.remapAllColumnsAsync(dataset.getId(), getResource().getProject().getId());
+                dataset = getGenericService().merge(dataset);
+                setResource(dataset);
+                getGenericService().saveOrUpdate(dataset);
+                if (hasMappings) {
+                    datasetService.remapAllColumnsAsync(id, projectId);
+                }
             } catch (Exception e) {
                 getLogger().error("ex: {}", e);
                 throw e;
