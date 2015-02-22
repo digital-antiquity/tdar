@@ -16,7 +16,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.search.annotations.Analyzer;
@@ -33,6 +32,7 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonIntegrationFilter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 
@@ -189,8 +189,26 @@ public class Dataset extends InformationResource {
             if (CollectionUtils.isEmpty(dt.getDataTableColumns())) {
                 return false;
             }
-            for (DataTableColumn cols : dt.getDataTableColumns()) {
-                if (cols.isMappingColumn()) {
+            for (DataTableColumn col : dt.getDataTableColumns()) {
+                if (col.isMappingColumn()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    @Transient
+    public boolean hasCodingColumns() {
+        if (CollectionUtils.isEmpty(getDataTables())) {
+            return false;
+        }
+        for (DataTable dt : getDataTables()) {
+            if (CollectionUtils.isEmpty(dt.getDataTableColumns())) {
+                return false;
+            }
+            for (DataTableColumn col : dt.getDataTableColumns()) {
+                if (PersistableUtils.isNotNullOrTransient(col.getDefaultCodingSheet())) {
                     return true;
                 }
             }

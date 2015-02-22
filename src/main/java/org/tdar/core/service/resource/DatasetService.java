@@ -247,7 +247,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
 
             getAnalyzer().processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
-
+            if (dataset.hasCodingColumns()) {
+                createTranslatedFile(dataset);
+            }
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);
         }
@@ -334,7 +336,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // take the dataset off the session at the last moment, and then bring it back on
 
         DatasetChangeLogger dsChangeLog = new DatasetChangeLogger(dataset);
-        
+
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
 
         getDao().deleteRelationships(dataset.getRelationships());
