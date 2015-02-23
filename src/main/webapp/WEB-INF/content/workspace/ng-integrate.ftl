@@ -35,6 +35,7 @@
                 <!-- Split button -->
                 <div class="btn-group">
                   <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
+                  <#--
                   <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                     <span class="caret"></span>
                   </button>
@@ -42,6 +43,7 @@
                     <li>
                     <a ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSaveAs" ng-click="ctrl.saveAsClicked()">Save As</a>
                   </ul>
+                  -->
                 </div>
             </div>
         </div>

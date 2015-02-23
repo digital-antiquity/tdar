@@ -17,22 +17,38 @@
 <div class="glide">
 
     <div class="row">
-        <div class="span6">
+        <div class="span8">
+            <#if (workflows?size > 0) >
+            <h3>Saved Integrations</h3>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Name / Description</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <#list workflows as workflow>
+                        <tr>
+                            <td style="width:60%">
+                                <a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} </a>
+                                <p class="">${workflow.description!""}</p>
+                            </td>
+                            <td>${workflow.dateCreated?string.short}</td>
+                            <td>
+                                <a class="btn btn-mini" href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>
+                            </td>   
+                        </tr>
+                    </#list>
+                </tbody>
+            </table>
 
-<#if (workflows?size > 0) >
-<h3>Saved Integrations</h3>
-<ul>
-<#list workflows as workflow>
-    <li><a href="<@s.url value="/workspace/integrate#${workflow.id?c}"/>">${workflow.title!"untitled"} - ${workflow.dateCreated?string.short}</a><br>${workflow.description!""}
-        [<a href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>]</li>
-</#list>
-</ul>
-
-<#else>
-    <@learn />
-</#if>
+            <#else>
+                <@learn />
+            </#if>
         </div>
-        <div class="span6">
+        <div class="span4">
         <#if workflows?size != 0>
             <@learn />
         </#if>
@@ -41,7 +57,7 @@
     </div>
     <div class="row">
 		<div class="span12">
-        <p><a href="/workspace/select-tables">Legacy Integration tool</a></p>
+        <p><a href="/workspace/select-tables">Click here to use the Legacy Integration tool</a></p>
         </div>
     </div>
 </body>
