@@ -18,6 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.ResourceType;
@@ -38,8 +39,8 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFindAllWithCache() {
-        for (Class<?> cls : Arrays.asList(InvestigationType.class, MaterialKeyword.class)) {
-            assertEquals(new HashSet<>(genericService.findAll(cls)), new HashSet<>(genericService.findAllWithCache(cls)));
+        for (Class<? extends Keyword> cls : Arrays.asList(InvestigationType.class, MaterialKeyword.class)) {
+            assertEquals(new HashSet<Keyword>(genericService.findAll(cls)), new HashSet<Keyword>(genericService.findAllWithCache(cls)));
         }
     }
 
