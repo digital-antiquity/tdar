@@ -91,7 +91,8 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 StringWriter sw = new StringWriter();
                 if (StringUtils.isNotBlank(metadata.get(name))) {
                     sw.append(name).append(":");
-                    if (name.matches("(?i).*(latitude|longitude|gps).*")) {
+                    //http://www.exiv2.org/tags-xmp-exif.html
+                    if (name.matches("(?i).*(latitude|longitude|gpsl|gpsd|gpsi).*")) {
                         gpsValues.add(name);
                     }
                     if (metadata.isMultiValued(name)) {
@@ -104,7 +105,9 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 }
             }
             if (CollectionUtils.isNotEmpty(gpsValues)) {
-                getWorkflowContext().getExceptions().add(new ExceptionWrapper(MessageHelper.getMessage("indexableText.gps_message", gpsValues), ""));
+                ExceptionWrapper wrapper = new ExceptionWrapper(MessageHelper.getMessage("indexableText.gps_message", gpsValues), "");
+                wrapper.setFatal(false);
+                getWorkflowContext().getExceptions().add(wrapper);
             }
         } catch (Throwable t) {
             // Marking this as a "warn" as it's a derivative

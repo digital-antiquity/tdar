@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.exception.NonFatalWorkflowException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
@@ -80,7 +81,7 @@ public class ListArchiveTask extends AbstractTask {
                     entry = ais.getNextEntry();
                 }
             } catch (ArchiveException e) {
-                throw new TdarRecoverableRuntimeException("listArchiveTask.couldn_not_find_file", Arrays.asList(f_));
+                throw new NonFatalWorkflowException("listArchiveTask.couldn_not_find_file", Arrays.asList(f_));
             } finally {
                 if (ais != null) {
                     IOUtils.closeQuietly(ais);
@@ -88,7 +89,7 @@ public class ListArchiveTask extends AbstractTask {
             }
 
             if ((seenFiles < 2) && !validEntries) {
-                throw new TdarRecoverableRuntimeException("listArchiveTask.invalid");
+                throw new NonFatalWorkflowException("listArchiveTask.invalid");
             }
 
             // write that to a file with a known format (one file per line)

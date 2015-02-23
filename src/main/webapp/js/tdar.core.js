@@ -85,8 +85,7 @@ if (!window.console) {
 (function(console) {
     var _noop = function(){};
     console.log = console.log || _noop;
-    //fixme: temporarily squelching trace
-    console.trace = _noop; //console.trace || console.log;
+    console.trace = console.trace || console.log;
     console.info = console.info || console.log;
     console.error = console.error || console.log;
     console.warn = console.warn || console.log;

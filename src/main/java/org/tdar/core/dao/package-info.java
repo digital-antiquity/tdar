@@ -42,6 +42,9 @@
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
+                name= TdarNamedQueries.SCROLLABLE_SITEMAP,
+                query = "SELECT new Resource(res.id, res.title, res.resourceType, null, 'ACTIVE') from Resource as res where res.status='ACTIVE'"),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_BY_TDAR_YEAR,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.dateCreated between :year_start and :year_end and status='ACTIVE' order by res.dateCreated "),
         @org.hibernate.annotations.NamedQuery(

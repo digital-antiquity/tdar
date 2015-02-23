@@ -15,7 +15,7 @@ public interface URLConstants {
     String ENTITY_NAMESPACE = "browse/creators";
     String COLUMNS_RESOURCE_ID = "columns?id=${resource.id}&startRecord=${startRecord}&recordsPerPage=${recordsPerPage}";
     String VIEW_RESOURCE_ID = "${resource.id}";
-    String VIEW_RESOURCE_ID_AS_ID = "/resource/${id}";
+    String VIEW_RESOURCE_ID_AS_ID = "${resource.detailUrl}";
     String MY_PROFILE = "/entity/user/myprofile";
 
     String CART_ADD = "/cart/add";

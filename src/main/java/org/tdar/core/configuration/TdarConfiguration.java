@@ -834,4 +834,8 @@ public class TdarConfiguration {
     public boolean isPrettyPrintJson() {
         return assistant.getBooleanProperty("use.verbose.json", false);
     }
+
+    public int getTdarDataBatchSize() {
+        return assistant.getIntProperty("tdardata.batch_size", 5000);
+    }
 }

@@ -515,6 +515,10 @@ public class ExcelService {
             sheet = workbook.getSheet(sheetName);
         }
         addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
+        rowNum++;
+        if (proxy.getNoteRow() != null) {
+            addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(proxy.getNoteRow()));
+        }
         int maxRows = version.getMaxRows();
         if (TdarConfiguration.getInstance().getMaxSpreadSheetRows() > 1) {
             maxRows = TdarConfiguration.getInstance().getMaxSpreadSheetRows();

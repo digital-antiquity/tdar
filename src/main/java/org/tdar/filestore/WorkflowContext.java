@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.NonFatalWorkflowException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowContextService;
@@ -221,7 +222,12 @@ public final class WorkflowContext implements Serializable {
             maxDepth--;
         }
 
-        this.getExceptions().add(new ExceptionWrapper(sb.toString(), e));
+        
+        ExceptionWrapper exceptionWrapper = new ExceptionWrapper(sb.toString(), e);
+        if (e instanceof NonFatalWorkflowException || thrw instanceof NonFatalWorkflowException) {
+            exceptionWrapper.setFatal(false);
+        }
+        this.getExceptions().add(exceptionWrapper);
     }
 
     /**

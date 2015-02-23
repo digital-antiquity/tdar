@@ -49,10 +49,15 @@
         self.saveClicked = function() {
             console.log("Saving.")
             self.updateStatus("Saving...");
-            dataService.saveIntegration(self.integration).then(function(status) {
-                self.updateStatus("Save: " + status.status);
-            });
-            
+            dataService.saveIntegration(self.integration).then(
+                    function(status) {
+                        self.updateStatus("Save: " + status.status);
+                    },
+                    function(err){
+                        self.updateStatus("Unable to save. Please review your seledtions and try again. If problem persists, please contact an administrator.");
+                        console.error(err);
+                    }
+            );
         };
         
         /**
@@ -71,25 +76,28 @@
             self.updateStatus("Loading...");
 
             //validate the embedded json first
-            var embeddedJsonErrors = validationService.validate(jsonData);
+            var embeddedJsonErrors = validationService.validateJson(jsonData);
 
 
             var result = dataService.loadIntegration(jsonData , self.integration);
-            result.then(function(){
-                    self.updateStatus("Done loading");
-                    if(embeddedJsonErrors.length) {
-                        self.updateStatus("Loading complete, but with errors. The underlying resources used in this integration may have changed.  Please review your selections before processing performing your integration");
-                        //hack to refresh the integration columns
-                        self.integration.reset();
-                    }
-            },
-            function(err) {
-                self.updateStatus("Load failed. Please try again - if problem continues please contact a system administrator.");
-                console.log("load failed - error information follows");
-                console.error(err);
-            });
+            result.then(
+                    function(){
+                            validationService.validateIntegration(jsonData, self.integration);
+                            self.updateStatus("Done loading");
+                        if(validationService.errors.length) {
+                            self.updateStatus("Loading complete. However, the underlying resources used in this integration may have changed. " +
+                            " Please review your selections and ensure they are up-to-date.");
 
+                            //in the event errors, rebuild cached/transient data
+                            self.integration.reset();
+                        }
 
+                    },
+                    function(err) {
+                        self.updateStatus("Load failed. Please try again - if the problem continues please contact a system administrator.");
+                        console.log("load failed - error information follows");
+                        console.error(err);
+                    });
          };
         
         /**
@@ -104,9 +112,15 @@
                 dataService.addDataTables(integration, dataTables);
                 self.updateStatus("done loading data table information");
                 self.updateStatus("loading column details");
-                dataService.loadUpdatedParticipationInformation(integration).then(function(status){
-                    self.updateStatus("done loading column details");
-                });
+                dataService.loadUpdatedParticipationInformation(integration).then(
+                        function(status){
+                            self.updateStatus("done loading column details");
+                        },
+                        function(err){
+                            self.updateStatus("Error: unable to load ontology info.  Please try again - if the problem continues please contact a system administrator")
+                            console.error(err);
+                        }
+                );
             });
 //            dataService.loadColumnDetails();
         };

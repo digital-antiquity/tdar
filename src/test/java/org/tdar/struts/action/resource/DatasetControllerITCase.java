@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.struts2.convention.annotation.Action;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
@@ -57,12 +58,13 @@ import org.tdar.struts.action.dataset.TableXMLDownloadAction;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
+    private static final String PUNDO_FAUNAL_REMAINS_XLS = "Pundo faunal remains.xls";
     private static final String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
     private static final String TRUNCATED_HARP_EXCEL_FILENAME = "heshfaun-truncated.xls";
     private static final String BELEMENT_COL = "belement";
 
     private DatasetController controller;
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DataTableService dataTableService;
@@ -135,7 +137,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         assertNotSame(Tibia, -1);
         assertTrue(String.format("%d < %d", tibia, Tibia), tibia < Tibia);
 
-        logger.info(suggestedTibias);
+        logger.info("{}", suggestedTibias);
         Collections.sort(suggestedTibias);
         Collections.sort(tibias);
         assertEquals(tibias, suggestedTibias);
@@ -144,7 +146,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testNullResourceOperations() throws Exception {
-        List<String> successActions = Arrays.asList("add", "list","edit");
+        List<String> successActions = Arrays.asList("add", "list", "edit");
         // grab all methods on DatasetController annotated with a conventions plugin @Action
         for (Method method : DatasetController.class.getMethods()) {
             controller = generateNewInitializedController(DatasetController.class);
@@ -163,8 +165,8 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                     if (e instanceof TdarActionException) {
                         TdarActionException exception = (TdarActionException) e;
                         setIgnoreActionErrors(true);
-//                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
-//                                exception.getResultName());
+                        // assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
+                        // exception.getResultName());
                     }
 
                 }
@@ -176,8 +178,49 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDatasetReplaceSame() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
-
         dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class, dataset.getId());
+    }
+
+    @Test
+    @Rollback(value=false)
+    /**
+     * make sure that the column names are re-aligned
+     * @throws TdarActionException
+     */
+    public void testDatasetReplaceLegacy() throws TdarActionException {
+        Dataset dataset = setupAndLoadResource(PUNDO_FAUNAL_REMAINS_XLS, Dataset.class);
+        DataTable table = dataset.getDataTables().iterator().next();
+        final Long id = dataset.getId();
+        DataTableColumn el = table.getColumnByDisplayName("Element");
+        final Long elId = el.getId();
+        el.setName("element");
+        genericService.saveOrUpdate(el);
+        logger.debug("element:{}", el);
+        dataset = null;
+        el = null;
+        table = null;
+        genericService.synchronize();
+        setVerifyTransactionCallback(new TransactionCallback<Dataset>() {
+            @Override
+            public Dataset doInTransaction(TransactionStatus status) {
+                try {
+                    DataTableColumn col = genericService.find(DataTableColumn.class, elId);
+                    col.setName("element");
+                    genericService.saveOrUpdate(col);
+                    col = null;
+                    Dataset dataset = setupAndLoadResource(PUNDO_FAUNAL_REMAINS_XLS, Dataset.class, id);
+                    logger.debug("cols: {}", dataset.getDataTables().iterator().next().getDataTableColumns());
+                    DataTableColumn el = dataset.getDataTables().iterator().next().getColumnByDisplayName("Element");
+                    Long elid2 = el.getId();
+                    el = null;
+                    assertEquals(elId, elid2);
+                } catch (TdarActionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
 
     }
 

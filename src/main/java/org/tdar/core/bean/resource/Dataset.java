@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -31,6 +32,7 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonIntegrationFilter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 
@@ -109,8 +111,8 @@ public class Dataset extends InformationResource {
     }
 
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-//    @Transient
-    @JsonView({JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class})
+    // @Transient
+    @JsonView({ JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class })
     public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
@@ -178,4 +180,39 @@ public class Dataset extends InformationResource {
         return relationships;
     }
 
+    @Transient
+    public boolean hasMappingColumns() {
+        if (CollectionUtils.isEmpty(getDataTables())) {
+            return false;
+        }
+        for (DataTable dt : getDataTables()) {
+            if (CollectionUtils.isEmpty(dt.getDataTableColumns())) {
+                return false;
+            }
+            for (DataTableColumn col : dt.getDataTableColumns()) {
+                if (col.isMappingColumn()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    @Transient
+    public boolean hasCodingColumns() {
+        if (CollectionUtils.isEmpty(getDataTables())) {
+            return false;
+        }
+        for (DataTable dt : getDataTables()) {
+            if (CollectionUtils.isEmpty(dt.getDataTableColumns())) {
+                return false;
+            }
+            for (DataTableColumn col : dt.getDataTableColumns()) {
+                if (PersistableUtils.isNotNullOrTransient(col.getDefaultCodingSheet())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

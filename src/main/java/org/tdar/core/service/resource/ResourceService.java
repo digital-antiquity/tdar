@@ -813,6 +813,11 @@ public class ResourceService extends GenericService {
         delete(resource);
     }
 
+    @Transactional(readOnly=true)
+    public ScrollableResults findAllActiveScrollableForSitemap() {
+        return datasetDao.findAllActiveScrollableForSitemap();
+    }
+
 
 
 }

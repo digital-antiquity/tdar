@@ -3,9 +3,14 @@ package org.tdar.core.service.resource.dataset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -15,6 +20,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
  */
 public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<String>>> {
     private final ResultMetadataWrapper wrapper;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     // start at record
     private final int start;
     // end at record
@@ -46,6 +52,24 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
             if (rs.isFirst()) {
                 wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
+
+                // if we're returning the tDAR row id, then we add one to the list of fields
+                List<DataTableColumn> columns = new ArrayList<>(dataTable.getDataTableColumns());
+
+                // remove hidden columns
+                Iterator<DataTableColumn> colIterator = columns.iterator();
+                while (colIterator.hasNext()) {
+                    if (!colIterator.next().isVisible()) {
+                        colIterator.remove();
+                    }
+                }
+                if (returnRowId) {
+                    columns.add(DataTableColumn.TDAR_ROW_ID);
+                }
+                columns.removeAll(result.keySet());
+                if (CollectionUtils.isNotEmpty(columns)) {
+                    logger.error("mismatch column entries: {} [columns not referenced in DT: {}] ", dataTable, columns);
+                }
             }
 
             if ((rowNum > start) && (rowNum <= (start + page))) {
