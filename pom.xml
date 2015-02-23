@@ -1037,8 +1037,6 @@
             <version>2.6</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter 
-            w/ collections correctly) -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
