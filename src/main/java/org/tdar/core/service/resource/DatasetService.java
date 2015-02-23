@@ -372,6 +372,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             String internalName = existingDataTable.getInternalName();
             existingTablesMap.put(internalName, existingDataTable);
             getLogger().debug("existingTableName: {}", internalName);
+            // note there may be failures to match here as table names are too long and thus get arbitrary numbers that cannot be matched
             String name = tdarDataImportDatabase.normalizeTableOrColumnNames(existingDataTable.getDisplayName());
             if (!StringUtils.equals(name, internalName)) {
                 secondaryLookupMap.put(name, internalName);

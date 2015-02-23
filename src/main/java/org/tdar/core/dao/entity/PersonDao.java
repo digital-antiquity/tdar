@@ -44,6 +44,7 @@ import org.tdar.core.dao.TdarNamedQueries;
 @Component
 public class PersonDao extends Dao.HibernateBase<Person> {
 
+    private static final String RESOURCE_IDS = "resourceIds";
     private static final Long TDAR_USER_PRIOR_TO_ASKING_AFFILIATION = 5215L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -274,22 +275,28 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return toReturn;
     }
 
+    /**
+     * Creates a temporary table with creator IDs for all resources Ids in list. This is used by the creator analysis process for related creators. It was
+     * initially designed to run in loops but it took too much memory, so using temp tables in the database to generate the logic
+     * @param resourceIds
+     * @return
+     */
     public Map<Creator, Integer> getRelatedCreatorCounts(Set<Long> resourceIds) {
-        String drop = "DROP TABLE IF EXISTS temp_ccounts;";
+        String drop = TdarNamedQueries.CREATOR_DROP_TEMP;
         getCurrentSession().createSQLQuery(drop).executeUpdate();
 
-        String sql = "CREATE TEMPORARY TABLE temp_ccounts (id bigserial, creator_id bigint);";
-        String sql1 = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id in :resourceIds";
-        String sql11 = "INSERT INTO temp_ccounts (creator_id) SELECT submitter_id from resource where id in :resourceIds";
-        String sql12 = "INSERT INTO temp_ccounts (creator_id) SELECT publisher_id from information_resource where id in :resourceIds";
-        String sql2 = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator,information_resource where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id=project_id and information_resource.id in :resourceIds";
-        String sql3 = "select count(id), creator_id from temp_ccounts where creator_id is not null group by creator_id";
+        String sql = TdarNamedQueries.CREATOR_ANALYSIS_CREATE_TEMP;
         getCurrentSession().createSQLQuery(sql).executeUpdate();
-        getCurrentSession().createSQLQuery(sql1).setParameterList("resourceIds", resourceIds).executeUpdate();
-        getCurrentSession().createSQLQuery(sql11).setParameterList("resourceIds", resourceIds).executeUpdate();
-        getCurrentSession().createSQLQuery(sql12).setParameterList("resourceIds", resourceIds).executeUpdate();
-        getCurrentSession().createSQLQuery(sql2).setParameterList("resourceIds", resourceIds).executeUpdate();
+        String sql1 = TdarNamedQueries.CREATOR_ANALYSIS_RESOURCE_CREATOR_INSERT;
+        getCurrentSession().createSQLQuery(sql1).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
+        String sql11 =TdarNamedQueries.CREATOR_ANALYSIS_SUBMITTER_INSERT;
+        getCurrentSession().createSQLQuery(sql11).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
+        String sql12 = TdarNamedQueries.CREATOR_ANALYSIS_PUBLISHER_INSERT;
+        getCurrentSession().createSQLQuery(sql12).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
+        String sql2 = TdarNamedQueries.CREATOR_ANALYSIS_INHERITED_CREATORS_INSERT;
+        getCurrentSession().createSQLQuery(sql2).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
         Map<Creator, Integer> results = new HashMap<Creator, Integer>();
+        String sql3 = TdarNamedQueries.CREATOR_ANALYSIS__SLECT_COUNTS;
         for (Object row_ : getCurrentSession().createSQLQuery(sql3).list()) {
             Object[] row = (Object[]) row_;
             Integer count = ((BigInteger) row[0]).intValue();
