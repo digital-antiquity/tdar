@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
@@ -14,6 +16,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 public class DatasetUtils {
 
     private static final String NULL = "NULL";
+    private static final Logger logger = LoggerFactory.getLogger(DatasetUtils.class);
 
     /*
      * Converts a JDBC @link ResultSet row into a Map of @link DataTableColumn (key) and String (value).
@@ -26,7 +29,8 @@ public class DatasetUtils {
             results.put(table.getColumnByName(DataTableColumn.TDAR_ID_COLUMN), null);
         }
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
+            String columnName = rs.getMetaData().getColumnName(i);
+            DataTableColumn col = table.getColumnByName(columnName);
             // ignore if null (non translated version of translated)
             if ((col != null) && col.isVisible()) {
                 results.put(col, null);

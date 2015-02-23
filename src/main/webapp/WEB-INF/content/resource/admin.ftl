@@ -66,7 +66,7 @@
                         <td></td>
                         <td></td>
                         <#assign orig = file.latestUploadedVersion />
-                        <td>${vers.fileLength}</td>
+                        <td>${vers.fileLength!0}</td>
                         <td>${vers.dateCreated}</td>
                         <td>${vers.mimeType}</td>
                         <td></td>

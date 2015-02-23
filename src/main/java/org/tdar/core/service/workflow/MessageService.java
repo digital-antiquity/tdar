@@ -43,24 +43,6 @@ public class MessageService {
     private transient final Logger logger = Logger.getLogger(getClass());
 
     /*
-     * Supporting method to look in the RabbitMQ Queue for contextObjects that need persisting.
-     */
-    // @Scheduled(fixedDelay = 10000)
-    // public void checkMessagesToPersist() {
-    // if (!TdarConfiguration.getInstance().useExternalMessageQueue())
-    // return;
-    // logger.trace("checking for message");
-    // Object msg = getRabbitTemplate(getPersistenceQueue()).receiveAndConvert();
-    // if (msg != null) {
-    // WorkflowContext ctx = extractWorkflowContext(msg);
-    // if (ctx != null) {
-    // logger.debug("saving entites in stored message");
-    // workflowContextService.processContext(ctx);
-    // }
-    // }
-    // }
-
-    /*
      * ContextObjects are embedded in messages as objects and need to be casted back
      */
     @SuppressWarnings("unused")
@@ -74,31 +56,6 @@ public class MessageService {
         }
         return null;
     }
-
-    /*
-     * This method is designed to be run on a separate machine or process from tDAR (though it can run locally too). It is database independent and will
-     * run with only knowledge of the filesystem. It looks for files to process and when done adds them to the "toPersist" queue.
-     */
-    // @Scheduled(fixedDelay = 10000)
-    // public void checkFilesToProcess() {
-    // if (!TdarConfiguration.getInstance().useExternalMessageQueue())
-    // return;
-    // Object msg = getRabbitTemplate(getFilesToProcessQueue()).receiveAndConvert();
-    // WorkflowContext ctx = extractWorkflowContext(msg);
-    // if (ctx != null) {
-    // Workflow w = ctx.getWorkflow();
-    // if (w != null) {
-    // try {
-    // w.run();
-    // RabbitTemplate template = getRabbitTemplate(getPersistenceQueue());
-    // template.setRequireAck(true);
-    // template.convertAndSend(ctx.toXML());
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // }
-    // }
-    // }
 
     /**
      * FIXME: should this be transactional? If so, convert GenericService references to GenericDao.
@@ -153,23 +110,5 @@ public class MessageService {
     public void setWorkflowContextService(WorkflowContextService workflowContextService) {
         this.workflowContextService = workflowContextService;
     }
-
-    //
-    //
-    // public synchronized Queue getFilesToProcessQueue() {
-    // if (toProcess == null) {
-    // toProcess = new Queue(TdarConfiguration.getInstance().getQueuePrefix() + TO_PROCESS);
-    // amqpAdmin().declareQueue(toProcess);
-    // }
-    // return toProcess;
-    // }
-    //
-    // public synchronized Queue getPersistenceQueue() {
-    // if (toPersist == null) {
-    // toPersist = new Queue(TdarConfiguration.getInstance().getQueuePrefix() + TO_PERSIST);
-    // amqpAdmin().declareQueue(toPersist);
-    // }
-    // return toPersist;
-    // }
 
 }

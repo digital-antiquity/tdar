@@ -77,7 +77,6 @@ public interface PostgresConstants {
                     "xmlserialize", "xmltable", "xmltext", "xmlvalidate", "year", "yes", "zone")
             );
     String SCHEMA_NAME = "public";
-    int BATCH_SIZE = 5000;
     int MAX_NAME_SIZE = 52;
     int MAX_ALLOWED_COLUMNS = 500;
 

@@ -16,6 +16,7 @@ public @interface RunWithTdarConfiguration {
     String TOS_CHANGE = "src/test/resources/tdar.tos.properties";
     String TDAR_DISABLED_OBFUSCATION = "src/test/resources/tdar.no_obfs.properties";
     String BROKEN_KETTLE = "src/test/resources/tdar.broken.kettle.properties";
+    String TDARDATA_SMALL_BATCH = "src/test/resources/tdar.small.batch.properties";
 
     public String[] runWith() default {};
 

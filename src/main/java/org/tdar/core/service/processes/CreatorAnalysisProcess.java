@@ -33,7 +33,6 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -43,8 +42,9 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.ImmutableScrollableCollection;
+import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -212,6 +212,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 LogPart part = new LogPart();
                 part.setCount(entrySet.getValue().longValue());
                 Creator key = entrySet.getKey();
+                if (PersistableUtils.isNullOrTransient(key)) {
+                    continue;
+                }
                 part.setId(key.getId());
                 part.setSimpleClassName(getClass(key));
                 part.setName(key.getProperName());
@@ -222,6 +225,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 LogPart part = new LogPart();
                 part.setCount(entrySet.getValue().longValue());
                 Keyword key = entrySet.getKey();
+                if (PersistableUtils.isNullOrTransient(key)) {
+                    continue;
+                }
                 part.setId(key.getId());
                 part.setSimpleClassName(getClass(key));
                 part.setName(key.getLabel());

@@ -43,6 +43,13 @@
         <http-components.version>4.3.3</http-components.version>
         <display.port></display.port>
         <warfile.name>ROOT</warfile.name>
+        <!--
+        
+        For parallel-deployment when enabled
+         
+        <maven.build.timestamp.format>yyyyMMddHHmmssSS</maven.build.timestamp.format>
+        <warfile.name>ROOT##${maven.build.timestamp}</warfile.name>
+        -->
         <skipTestLiquibase>true</skipTestLiquibase>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <!-- Following points to the profile directory to use for filtering 

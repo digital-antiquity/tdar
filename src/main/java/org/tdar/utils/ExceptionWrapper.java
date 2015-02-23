@@ -17,7 +17,7 @@ public class ExceptionWrapper implements Serializable {
     private static final long serialVersionUID = 2876359066385787018L;
 
     private String message;
-    private boolean fatal;
+    private boolean fatal = true;
     private String stackTrace;
     private String code;
     private String moreInfoUrlKey;

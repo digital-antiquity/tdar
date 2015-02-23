@@ -88,7 +88,9 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             parseUpload(codingSheet, toProcess);
             saveOrUpdate(codingSheet);
         } catch (Throwable e) {
-            ctx.getExceptions().add(new ExceptionWrapper(e.getMessage(), e));
+            ExceptionWrapper e2 = new ExceptionWrapper(e.getMessage(), e);
+            e2.setFatal(true);
+            ctx.getExceptions().add(e2);
             ctx.setErrorFatal(true);
             ctx.setProcessedSuccessfully(false);
             getDao().saveOrUpdate(toProcess.getInformationResourceFile());
@@ -100,8 +102,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
      * Parses a coding sheet file and adds it to the coding sheet. Part of the Post-Workflow process, and @see ingestCodingSheet; exposed for testing
      */
     @Transactional
-    protected void parseUpload(CodingSheet codingSheet, InformationResourceFileVersion version)
-            throws IOException, CodingSheetParserException {
+    protected void parseUpload(CodingSheet codingSheet, InformationResourceFileVersion version) throws IOException, CodingSheetParserException {
         // FIXME: ensure that this is all in one transaction boundary so if an exception occurs
         // this delete will get rolled back. Also, parse cannot swallow exceptions if the
         // new coding rules are not inputed.

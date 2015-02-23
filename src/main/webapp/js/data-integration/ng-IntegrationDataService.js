@@ -208,7 +208,10 @@
             httpPromise.success(function(data) {
                 integration.id = data.id;
                 futureData.resolve(data);
+            }).error(function(err){
+                futureData.reject(err);
             });
+
 
             return futureData.promise;
         }
@@ -426,6 +429,8 @@
                     // now that we have everything in the cache, return the requested dataTables back to the caller
                     futureData.resolve(self.getCachedDataTables(dataTableIds));
 
+                }).error(function(err){
+                    futureData.reject(err);
                 });
 
             } else {
@@ -433,8 +438,6 @@
                 futureData.resolve(self.getCachedDataTables(dataTableIds));
 
             }
-
-            // TODO: create recursive 'unroll' function that emits params in struts-friendly syntax
 
             return futureData.promise;
         };
@@ -475,6 +478,8 @@
 
                     futureData.resolve(true);
 
+                }).error(function(err){
+                    futureData.reject(err);
                 });
 
             } else {
@@ -503,7 +508,8 @@
 
             httpPromise.success(function(data) {
                 futureData.resolve(data);
-
+            }).error(function(err){
+                futureData.reject(err);
             });
 
             return futureData.promise;
@@ -544,8 +550,10 @@
                 var ret = {
                         "totalRecords": total,
                         "results": data
-                }
+                };
                 futureData.resolve(ret);
+            }).error(function(err){
+                futureData.reject(err);
             });
             return futureData.promise;
         }
@@ -659,6 +667,8 @@
                 });
                 // Note that we mutate the data directly, so there is not anything to "return". We're just notifying the caller that we are done.
                 futureWork.resolve(dataTableColumns);
+            }).error(function(err){
+                futureWork.reject(err);
             });
             return futureWork.promise;
         };
