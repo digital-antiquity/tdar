@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.OntologyNodeDao;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * 
@@ -88,8 +89,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", columnType, getColumns());
-
+        return String.format("%s (ontology: %s | columns: %s | nodes: %s)", columnType, sharedOntology, PersistableUtils.extractIds(getColumns()), PersistableUtils.extractIds(getFilteredOntologyNodes()));
     }
 
     public void setColumns(List<DataTableColumn> columns) {
