@@ -88,6 +88,8 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             integrationContext.getIntegrationColumns().add(col);
         }
         integrationContext.setDataTables(service.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));
+        integrationContext.setTitle(title);
+        integrationContext.setDescription(description);
         return integrationContext;
     }
 

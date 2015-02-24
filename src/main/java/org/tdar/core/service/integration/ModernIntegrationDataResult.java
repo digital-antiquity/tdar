@@ -1,16 +1,18 @@
 package org.tdar.core.service.integration;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -35,7 +37,7 @@ public class ModernIntegrationDataResult implements Serializable {
     private Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivotData;
     private List<Object[]> previewData;
     private PersonalFilestoreTicket ticket;
-    
+
     public ModernIntegrationDataResult(IntegrationContext proxy) {
         this.setIntegrationContext(proxy);
     }
@@ -59,35 +61,39 @@ public class ModernIntegrationDataResult implements Serializable {
     public void setPivotData(Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot) {
         this.pivotData = pivot;
     }
-    
-    public Map<List<OntologyNode>, HashMap<Long, IntContainer>> getPivotData() {
-        getData();
+
+    public Map<List<OntologyNode>, HashMap<Long, IntContainer>> getRawPivotData() {
         return pivotData;
     }
 
     @JsonView(JsonIntegrationFilter.class)
-    public Map<String,HashMap<Long, Integer>> getData() {
-        HashMap<String, HashMap<Long,Integer>> result = new HashMap<>();
+    public List<List<Object>> getPivotData() {
+        List<List<Object>> rows = new ArrayList<List<Object>>();
         for (Entry<List<OntologyNode>, HashMap<Long, IntContainer>> entrySet : pivotData.entrySet()) {
-            HashMap<Long, IntContainer> value = entrySet.getValue();
-            HashMap<Long, Integer> val = new HashMap<Long, Integer>();
-            for (Long k : value.keySet()) {
-                val.put(k, value.get(k).getVal());
-            }
-            String key = "";
+            List<Object> cols = new ArrayList<Object>();
             for (OntologyNode node : entrySet.getKey()) {
-                if (StringUtils.isNotEmpty(key)) {
-                    key += "l ";
+                if (node != null) {
+                cols.add(node.getDisplayName());
+                } else {
+                    cols.add("");
                 }
-                key += node.getDisplayName();
             }
-            logger.debug("preview: {}",entrySet);
-            result.put(key, val);
+            
+            HashMap<Long, IntContainer> value = entrySet.getValue();
+            for (DataTable table : integrationContext.getDataTables()) {
+                Long tableId = table.getId();
+                if (value.containsKey(tableId)) {
+                    cols.add(value.get(tableId).getVal());
+                } else {
+                    cols.add("");
+                }
+            }
+            rows.add(cols);
         }
-        
-        return result;
+
+        return rows;
     }
-     
+
     public void setPreviewData(List<Object[]> previewData) {
         this.previewData = previewData;
     }
@@ -105,4 +111,28 @@ public class ModernIntegrationDataResult implements Serializable {
     public void setTicket(PersonalFilestoreTicket ticket) {
         this.ticket = ticket;
     }
+
+    @JsonView(JsonIntegrationFilter.class)
+    public List<String> getPreviewColumnLabels() {
+        List<String> labels = new ArrayList<String>();
+        for (DataTableColumn dtc : integrationContext.getTempTable().getDataTableColumns()) {
+            labels.add(dtc.getDisplayName());
+        }
+        return labels;
+    }
+
+    @JsonView(JsonIntegrationFilter.class)
+    public List<String> getPivotColumnLabels() {
+        List<String> labels = new ArrayList<String>();
+        for (IntegrationColumn col : integrationContext.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                labels.add(col.getName());
+            }
+        }
+        for (DataTable table : integrationContext.getDataTables()) {
+            labels.add(ModernDataIntegrationWorkbook.formatTableName(table));
+        }
+        return labels;
+    }
+
 }
