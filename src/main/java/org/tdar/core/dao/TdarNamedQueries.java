@@ -284,7 +284,7 @@ public interface TdarNamedQueries {
     String CREATOR_ANALYSIS_TRUNCATE_TEMP = "truncate table temp_kwd";
     String CREATOR_ANALYSIS_KWD_SELECT_COUNTS = "select count(id), kwd_id from temp_kwd where kwd_id is not null group by kwd_id";
     String CREATOR_ANALYSIS_KWD_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id in :resourceIds";
-    String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s  kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE'),  and resource_id=project_id and information_resource.id in :resourceIds";
+    String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
     
 
     
