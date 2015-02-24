@@ -42,7 +42,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
 
     private static final long serialVersionUID = 9120049059501138213L;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<GeographicKeyword> synonyms = new HashSet<GeographicKeyword>();

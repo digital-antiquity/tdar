@@ -21,7 +21,6 @@ import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -85,7 +84,6 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         if (hasActionErrors()) {
             return INPUT;
         }
-        getLogger().debug("{}", getLocale());
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 1) {
             addActionError(getText("authorityManagementController.error_too_many_protected_records"));
             return INPUT;
@@ -129,7 +127,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         // so now we should have everything we need to pass to the service
         try {
             authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode, true);
-        } catch (TdarRecoverableRuntimeException trex) {
+        } catch (Exception trex) {
             addActionErrorWithException(getText("authorityManagementController.could_not_dedup"), trex);
             return INPUT;
         }

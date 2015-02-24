@@ -32,7 +32,7 @@ public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements Co
 
     private static final long serialVersionUID = -8439705822874264175L;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<MaterialKeyword> synonyms = new HashSet<MaterialKeyword>();

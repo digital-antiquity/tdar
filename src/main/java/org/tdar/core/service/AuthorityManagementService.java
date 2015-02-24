@@ -47,6 +47,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -56,6 +57,7 @@ import org.tdar.core.dao.ReflectionDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
 import org.tdar.utils.MessageHelper;
@@ -121,7 +123,7 @@ public class AuthorityManagementService {
 
     // List of classes we will evaluate when looking for references.
     private static List<Class<?>> hostClasses = Arrays.<Class<?>> asList(Resource.class, InformationResource.class, ResourceCreator.class,
-            Person.class, Institution.class, AuthorizedUser.class, ResourceCollection.class);
+            Person.class, Institution.class, TdarUser.class, IntegrationWorkflowData.class, BookmarkedResource.class, AuthorizedUser.class, ResourceCollection.class);
 
     /**
      * Search through all of the defined classes in {@link #hostClasses} and find Fields that refer to the specified class.
@@ -271,11 +273,12 @@ public class AuthorityManagementService {
          * + get scalar setter and set to authority record
          * -hibsession.save() each reference
          */
+        logger.debug("mode: {}", dupeMode);
         AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes, user, dupeMode);
         for (Map.Entry<Field, ScrollableResults> entry : referrers.entrySet()) {
             Field field = entry.getKey();
             ScrollableResults scrollableResults = entry.getValue();
-            logger.trace("field:{}", field);
+            logger.debug("field:{}", field);
             while (scrollableResults.next()) {
                 affectedRecordCount++;
 
@@ -311,7 +314,7 @@ public class AuthorityManagementService {
         if ((dupeMode != DupeMode.MARK_DUPS_ONLY) && (affectedRecordCount > maxAffectedRecordsCount)) {
             throw new TdarRecoverableRuntimeException("authorityManagementService.dedup_not_allowed_too_many", Arrays.asList(maxAffectedRecordsCount));
         }
-
+        logger.debug("Done initial round ... processing synonyms");
         // add the dupes to the authority as synonyms
         processSynonyms(authority, dupes, dupeMode);
         logAndNotify(authorityManagementLog, sendEmail);
@@ -349,6 +352,9 @@ public class AuthorityManagementService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T extends Dedupable> void processSynonyms(T authority, Set<T> dupes, DupeMode markAndConsoldiateDups) {
         for (T dup : dupes) {
+            if (dup.equals(authority)) {
+                continue;
+            }
             authority.getSynonyms().addAll(dup.getSynonyms());
             authority.getSynonyms().remove(authority);
             dup.getSynonyms().clear();
