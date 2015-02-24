@@ -1,5 +1,8 @@
 package org.tdar.web.functional;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -75,7 +78,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     @Test
     public void testValidIntegrate() throws InterruptedException {
-        // add two datasets that work, assert that we get back to an integratable state
+        // add two datasets that work, assert that we get back to an integrate-able state
         
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
@@ -105,24 +108,31 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         assertTrue("Perca flavescens node should be visible for spitalfields", find(By.id("cbx-32450-60600")).isDisplayed());
         assertTrue("Coding error should be visible for alexandria", find(By.id("cbx-31710-56490")).isDisplayed());
-
-        
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+
+        //click the integrate button and wait for results
         find(By.id("btnIntegrate")).click();
-        waitForPageload();
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.id("divResultContainer")));
         takeScreenshot();
         clearPageCache();
-        logger.debug(getText());
-        assertTrue(getText().contains("Summary of Integration Results"));
+        find(By.linkText("Preview")).click();
         // test ontology present
-        assertTrue(getText().contains("Fauna Taxon"));
+        //assertTrue(getText().contains("Fauna Taxon"));  //fixme: jtd: is this assertion valid for the ajax integration popup?
+
+        //Capture the contents of the preview table body.
+        // Heads up: the dt.net library (sometimes) uses multiple tables + tomfoolery to simulate a scrolling table body.  We may need to rewrite this portion if we fiddle w/ the td.net options.
+        String pivotTableText = find("#divResultContainer tbody").first().getText();
+        String previewTableText = find("#divResultContainer tbody").last().getText();
+        logger.debug("integration results text: {}", previewTableText);
+
         // test nodes present
-        assertTrue(getText().contains("Aves"));
-        assertTrue(getText().toLowerCase().contains("sheep"));
-        assertTrue(getText().toLowerCase().contains("rabbit"));
+        assertThat(previewTableText, containsString("Aves"));
+        assertThat(previewTableText.toLowerCase(), containsString("sheep"));
+        assertThat(pivotTableText.toLowerCase(), containsString("rabbit"));
+
         // test databases present
-        assertTrue(getText().contains("Spitalfields"));
-        assertTrue(getText().contains("Alexandria"));
+        assertThat(previewTableText, containsString("Spitalfields"));
+        assertThat(previewTableText, containsString("Alexandria"));
     }
 
     
@@ -161,7 +171,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(ExpectedConditions.elementToBeClickable(saveButton));
 
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
-        find(saveButton).click();
+        waitFor(saveButton).click();
         waitFor(4);
         gotoPage("/workspace/list");
         logger.debug(getText());
