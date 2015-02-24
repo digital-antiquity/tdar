@@ -236,7 +236,6 @@ public class RssService implements Serializable {
             OaiDcProvider oaiResource = (OaiDcProvider) resource_;
             entry.setTitle(cleanStringForXML(oaiResource.getTitle()));
             SyndContent description = new SyndContentImpl();
-
             if (StringUtils.isEmpty(oaiResource.getDescription())) {
                 description.setValue(MessageHelper.getMessage("rssService.no_description"));
             } else {
@@ -264,7 +263,8 @@ public class RssService implements Serializable {
                 }
             }
             entry.setDescription(description);
-            entry.setLink(urlService.absoluteUrl(oaiResource));
+            entry.setUri(UrlService.absoluteUrl(oaiResource));
+            entry.setLink(UrlService.absoluteUrl(oaiResource));
             entry.setPublishedDate(oaiResource.getDateCreated());
             entries.add(entry);
         } else if (resource_ != null) {
@@ -309,7 +309,6 @@ public class RssService implements Serializable {
      * @param resource
      * @param hasRestrictions
      */
-    @SuppressWarnings("unchecked")
     private void addGeoRssLatLongBox(GeoRssMode mode, SyndEntry entry, Resource resource, boolean hasRestrictions) {
         LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
         /*
@@ -318,8 +317,8 @@ public class RssService implements Serializable {
         if ((latLong != null) && latLong.isObfuscatedObjectDifferent() == false && hasRestrictions == false) {
             GeoRSSModule geoRss = new SimpleModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
-                geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
-                        .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
+                geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), 
+                                                latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
             }
             if (mode == GeoRssMode.POINT) {
                 geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
@@ -335,7 +334,6 @@ public class RssService implements Serializable {
      * @param entry
      * @param version
      */
-    @SuppressWarnings("unchecked")
     private void addEnclosure(TdarUser user, SyndEntry entry, InformationResourceFileVersion version) {
         if (version == null) {
             return;
@@ -345,7 +343,7 @@ public class RssService implements Serializable {
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());
             enclosure.setType(version.getMimeType());
-            enclosure.setUrl(urlService.downloadUrl(version));
+            enclosure.setUrl(UrlService.downloadUrl(version));
             entry.getEnclosures().add(enclosure);
         }
     }
