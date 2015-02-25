@@ -542,6 +542,11 @@ public class DataIntegrationService {
             throw new TdarRecoverableRuntimeException("dataIntegrationService.invalid_integration", Arrays.asList(workflow.getFieldErrors()));
         }
         IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao, provider);
+        for (IntegrationColumn col : integrationContext.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                col.buildNodeChildHierarchy(ontologyNodeDao);
+            }
+        }
         // logger.debug(serializationService.convertToXML(integrationContext));
 
         integrationContext.setCreator(authenticatedUser);
