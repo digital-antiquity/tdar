@@ -104,7 +104,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             int rowIndex = 0;
             seenOntologies.add(ontology);
             String name = provider.getText("dataIntegrationWorkbook.ontology_worksheet", Arrays.asList(ontology.getTitle()));
-            logger.debug("creating sheet with name: {}", name);;
+            logger.debug("creating sheet with name: {}", name);
+            if (workbook.getSheet(name) != null) {
+                logger.error("sheet already exists: {}", name);
+                continue;
+            }
             Sheet ontologySheet = workbook.createSheet(name);
             excelService.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
             rowIndex++;
