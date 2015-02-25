@@ -48,13 +48,53 @@
             </div>
         </div>
 
-        <div id="divActionsSection">
+    <div>
+    {{statusMessage}} {{$scope.statusMessage}}
+    </div>
+
+        <div id="divSelectedItemsSection">
+            <div class="row">
+                <div class="span12">
+                    <div class="control-group">
+                        <label class="control-label">Datasets & Ontologies</label>
+                        <div class="controls controls-row">
+                            <div class="span4">
+                                <label><b>Selected Datasets</b></label>
+                                <div>
+                                    <select size="5" class="input-block-level" multiple
+                                            ng-model="selectedDataTables" name="selectedDatasets" id="selDatasets"
+                                            ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
+                                </div>
+                                
+                                
+<div class="controls controls-row">
+                                <div class="btn-group">
+                                    <button type="button" class="btn"  id="btnAddDataset"
+                                            ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
+                                    
+                                    <button type="button" class="btn" id="rmDatasetBtn" 
+                                            ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
+                                </div>
+                        </div>
+                        </div>
+                            <div class="span4">
+                                <label><b>Shared Ontologies</b></label>
+                                <ul>
+                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+        <form>
+                <div id="divActionsSection">
                     <div class="control-group">
                         <label class="control-label">Actions</label>
                         <div class="controls">
                             <div class="btn-group">
-                                <button type="button" class="btn"  id="btnAddDataset"
-                                        ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
                                 <div class="btn-group" >
                                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
                                         Add Integration Column
@@ -79,40 +119,7 @@
                         </div>
                     </div>
         </div>
-
-    <div>
-    {{statusMessage}} {{$scope.statusMessage}}
-    </div>
-
-        <div id="divSelectedItemsSection">
-            <div class="row">
-                <div class="span12">
-                    <div class="control-group">
-                        <label class="control-label">Datasets & Ontologies</label>
-                        <div class="controls controls-row">
-                            <div class="span4">
-                                <label>Selected Datasets</label>
-                                <div>
-                                    <select size="5" class="input-block-level" multiple
-                                            ng-model="selectedDataTables" name="selectedDatasets" id="selDatasets"
-                                            ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
-                                </div>
-                                <button type="button" class="btn input-block-level" id="rmDatasetBtn"
-                                        ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
-                            </div>
-                            <div class="span4">
-                                <label>Shared Ontologies</label>
-                                <ul>
-                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </form>
-        <form>
+        
         <div id="divColumnSection">
             <div class="row">
                 <div class="span12">
@@ -403,9 +410,8 @@
                 </div>
                 <div class="span4">
                     <ng-pluralize count="selectedItems.length"
-                                  when="{'0': 'No datasets elected',
-                                '1': '1 dataset selected',
-                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
+                                  when="{'0': 'No datasets selected',
+                                '1': '1 dataset selected',                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
                     <span ng-show="selectedItems.length" >(<a href="javascript:void(0)"  ng-click="clearSelectedItems()">clear selections</a>)</span>
                 </div>
             </div>
