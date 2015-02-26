@@ -113,8 +113,8 @@
                 self.updateStatus("done loading data table information");
                 self.updateStatus("loading column details");
                 dataService.loadUpdatedParticipationInformation(integration).then(
-                        function(status){
-                            self.updateStatus("done loading column details");
+                        function(){
+                            self.updateStatus("Done loading column details");
                         },
                         function(err){
                             self.updateStatus("Error: unable to load ontology info.  Please try again - if the problem continues please contact a system administrator")
