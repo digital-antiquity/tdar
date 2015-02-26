@@ -351,7 +351,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Field
     @XmlTransient
     public boolean isTopLevel() {
-        if ((getParent() == null) || (getParent().isHidden() != true)) {
+        if ((getParent() == null) || (getParent().isHidden() == true)) {
             return true;
         }
         return false;
