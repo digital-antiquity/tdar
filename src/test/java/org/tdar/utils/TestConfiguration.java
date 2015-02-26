@@ -193,6 +193,11 @@ public class TestConfiguration {
         return assistant.getStringProperty("tdar.chromedriver.path", deflt);
     }
 
+    public Boolean isAppUpdateEnabled() {
+        //currently applies only to firefox.
+        return assistant.getBooleanProperty("app.update.enable", true);
+    }
+
     public String getIEDriverPath() {
         return assistant.getStringProperty("tdar.iedriver.path", "c:\\opt\\workspace\\IEDriverServer.exe");
     }

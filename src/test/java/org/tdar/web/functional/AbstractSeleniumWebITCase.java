@@ -347,6 +347,8 @@ public abstract class AbstractSeleniumWebITCase {
 				// Use this to disable Acrobat plugin for previewing PDFs in Firefox (if you have Adobe reader installed on your computer)
 				profile.setPreference("plugin.scan.Acrobat", "99.0");
 				profile.setPreference("plugin.scan.plid.all", false);
+                profile.setPreference("app.update.enabled", CONFIG.isAppUpdateEnabled());
+
 				
 				
 				//			    profile.setPreference("browser.download.dir","c:\\downloads");
