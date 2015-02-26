@@ -399,11 +399,16 @@
                     .map(function(col){return col.id})
 
             if (unprocessedIds.length === 0) {
-                futureData.resolve(true);
+                futureData.resolve();
             } else {
-                self.loadNodeParticipation(unprocessedIds).then(function(newColumns) {
-                    futureData.resolve(true);
-                });
+                self.loadNodeParticipation(unprocessedIds).then(
+                        function() {
+                            futureData.resolve();
+                        },
+                        function(err){
+                            futureData.reject(err);
+                        }
+                );
             }
             return futureData.promise;
         };
@@ -681,7 +686,6 @@
             }, true);
             var httpPromise = $http.get(url);
             var futureWork = $q.defer();
-            var dataTableColumns = [];
             httpPromise.success(function(verboseData) {
                 var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);
                 Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId) {
@@ -690,7 +694,7 @@
                     dataTableColumn.transientNodeParticipation = nodes;
                 });
                 // Note that we mutate the data directly, so there is not anything to "return". We're just notifying the caller that we are done.
-                futureWork.resolve(dataTableColumns);
+                futureWork.resolve();
             }).error(function(err){
                 futureWork.reject(err);
             });

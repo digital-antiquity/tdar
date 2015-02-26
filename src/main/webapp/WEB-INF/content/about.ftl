@@ -8,6 +8,19 @@
 <head>
     <title>Welcome to ${siteName}</title>
     <meta name="lastModifiedDate" content="$Date: 2009-02-13 09:05:44 -0700 (Fri, 13 Feb 2009)$"/>
+    
+    <script type="application/ld+json">
+{
+   "@context": "http://schema.org",
+   "@type": "WebSite",
+   "url": "<@s.url value="/"/>",
+   "potentialAction": {
+     "@type": "SearchAction",
+     "target": "${baseUrl}/search/results?query={search_term_string}",
+     "query-input": "required name=search_term_string"
+   }
+}
+</script>
 </head>
 <body>
 <#escape _untrusted as _untrusted?html >

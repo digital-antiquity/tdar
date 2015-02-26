@@ -31,7 +31,7 @@ public class InvestigationType extends Keyword.Base<InvestigationType> implement
 
     private static final long serialVersionUID = 2557655317256194003L;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InvestigationType> synonyms = new HashSet<InvestigationType>();

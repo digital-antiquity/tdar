@@ -64,6 +64,7 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
             nodeIdsByColumnId.put(dataTableColumnId, new ArrayList<Long>());
         }
 
+
         for(IntegrationColumnPartProxy columnPart : integrationColumnPartProxies) {
             for(OntologyNode ontologyNode : columnPart.getFlattenedNodes()) {
                 nodeIdsByColumnId.get(columnPart.getDataTableColumn().getId()).add(ontologyNode.getId());

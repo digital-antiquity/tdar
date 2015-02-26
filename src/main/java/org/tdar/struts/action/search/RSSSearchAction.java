@@ -60,6 +60,8 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
             } else {
                 setInputStream(new ByteArrayInputStream("".getBytes()));
             }
+        } catch (TdarActionException tdae) {
+            return tdae.getResponse();
         } catch (Exception e) {
             getLogger().error("rss error", e);
             addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
