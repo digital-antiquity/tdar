@@ -778,7 +778,7 @@ public class SearchService {
         queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
 
         QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
-        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
+        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES, "true"));
         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
             // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
             if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {

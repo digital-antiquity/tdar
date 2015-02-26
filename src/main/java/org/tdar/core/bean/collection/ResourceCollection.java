@@ -823,4 +823,19 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public String getSlug() {
         return UrlUtils.slugify(getName());
     }
+    
+    @Field(name=QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES)
+    @XmlTransient
+    public boolean isVisibleInSearch() {
+        if (hidden) {
+            return false;
+        }
+        for (Resource resource : getResources()) {
+            if (resource.isActive()) {
+                return true;
+            }
+        }
+        return false;
+        
+    }
 }
