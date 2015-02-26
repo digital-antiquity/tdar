@@ -803,10 +803,11 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      */
     @Transactional(value = "tdarDataTx", readOnly = false)
     public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
+        logger.debug("Context: {}", proxy);
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         @SuppressWarnings("unused")
         ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, excelService, result);
-        createIntegrationTempTable(proxy);
+        createIntegrationTempTable(proxy, provider);
         populateTempInterationTable(proxy);
         applyOntologyMappings(proxy);
         extractIntegationResults(result);
@@ -913,15 +914,16 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * @param proxy
      * @return
      */
-    private DataTable createIntegrationTempTable(final IntegrationContext proxy) {
+    private DataTable createIntegrationTempTable(final IntegrationContext proxy, TextProvider provider) {
         final DataTable tempTable = new DataTable();
         tempTable.setName(proxy.getTempTableName());
-
         createTable(String.format("CREATE TEMPORARY TABLE %1$s (" + DataTableColumn.TDAR_ID_COLUMN + " bigserial)", tempTable.getName()));
         DataTableColumn tableColumn = new DataTableColumn();
         tableColumn.setName(INTEGRATION_TABLE_NAME_COL);
         executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), tableColumn.getName()));
         tempTable.getDataTableColumns().add(tableColumn);
+        tableColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_table"));
+
         proxy.setTempTable(tempTable);
         Set<String> seen = new HashSet<>();
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
@@ -944,18 +946,21 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 if (column.isIntegrationColumn()) {
-                    // integrated name
+                    dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(column.getName())));
+
                     DataTableColumn integrationColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
+                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(column.getName())));
 
                     DataTableColumn sortColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     sortColumn.setName(name + SORT_SUFFIX);
                     tempTable.getDataTableColumns().add(sortColumn);
                     executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));
+                    sortColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(column.getName())));
                 }
             }
         }

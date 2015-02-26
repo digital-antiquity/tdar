@@ -87,6 +87,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Override
     @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR_DISABLED_OBFUSCATION})
     public void testDatasetView() {
         super.testDatasetView();
         clickLinkWithText("edit");
