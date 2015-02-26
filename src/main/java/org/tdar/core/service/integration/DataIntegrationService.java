@@ -134,15 +134,16 @@ public class DataIntegrationService {
         dataTableColumns.removeAll(Collections.singletonList(null));
         integrationColumn.setColumns(dataTableColumns);
         List<OntologyNode> filteredOntologyNodes = integrationColumn.getFilteredOntologyNodes();
-        if (CollectionUtils.isEmpty(filteredOntologyNodes) && integrationColumn.isIntegrationColumn()) {
+        if (integrationColumn.isIntegrationColumn()) {
             if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
                 filteredOntologyNodes.removeAll(Collections.singletonList(null));
             }
 
             integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
-            filteredOntologyNodes.addAll(integrationColumn.getSharedOntology().getOntologyNodes());
+            if (CollectionUtils.isEmpty(filteredOntologyNodes)) {
+                filteredOntologyNodes.addAll(integrationColumn.getSharedOntology().getOntologyNodes());
+            }
         }
-
         logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
         filteredOntologyNodes = genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class);
         integrationColumn.setFilteredOntologyNodes(filteredOntologyNodes);

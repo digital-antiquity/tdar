@@ -101,6 +101,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                 continue;
             }
             Ontology ontology = col.getSharedOntology();
+            if (ontology == null) {
+                ontology = col.getColumns().get(0).getDefaultCodingSheet().getDefaultOntology();
+            }
             int rowIndex = 0;
             seenOntologies.add(ontology);
             String name = provider.getText("dataIntegrationWorkbook.ontology_worksheet", Arrays.asList(ontology.getTitle()));
