@@ -1393,7 +1393,7 @@ public class Resource implements Persistable,
         }
 
         for (ResourceCollection coll : getSharedResourceCollections()) {
-            if (coll.isHidden()) {
+            if (!coll.isHidden()) {
                 sb.append(coll.getName()).append(" ");
             }
         }
@@ -1602,7 +1602,7 @@ public class Resource implements Persistable,
     public Set<ResourceCollection> getSharedVisibleResourceCollections() {
         Set<ResourceCollection> sharedCollections = new LinkedHashSet<ResourceCollection>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.isShared() && collection.isHidden()) {
+            if (collection.isShared() && !collection.isHidden()) {
                 sharedCollections.add(collection);
             }
         }
