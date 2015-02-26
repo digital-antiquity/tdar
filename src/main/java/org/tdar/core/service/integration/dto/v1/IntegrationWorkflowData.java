@@ -84,6 +84,10 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             if (ic_.getType() == ColumnType.INTEGRATION) {
                 col.getFilteredOntologyNodes().addAll(service.findAll(OntologyNode.class, PersistableUtils.extractIds(ic_.getNodeSelection())));
                 col.setSharedOntology(service.find(Ontology.class, ic_.getOntology().getId()));
+                // if empty --add all
+                if (CollectionUtils.isEmpty(col.getFilteredOntologyNodes())) {
+                    col.getFilteredOntologyNodes().addAll(col.getSharedOntology().getOntologyNodes());
+                }
             }
             integrationContext.getIntegrationColumns().add(col);
         }
