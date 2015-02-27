@@ -17,10 +17,9 @@ import static org.hamcrest.core.IsNull.nullValue;
 /**
  * Created by jimdevos on 2/26/15.
  */
-public class FileSystemResourceServiceITCase extends AbstractIntegrationTestCase {
+public class FileSystemResourceServiceITCase  {
 
-    @Autowired
-    private FileSystemResourceService service;
+    private FileSystemResourceService service = new FileSystemResourceService();
 
 
     @Test
@@ -29,7 +28,7 @@ public class FileSystemResourceServiceITCase extends AbstractIntegrationTestCase
     }
 
 
-    @Test @Ignore
+    @Test 
     public void testGroupContentDefault() {
         List<String> list = service.fetchGroupUrls("default");
         assertThat(list, is( not (empty())));
