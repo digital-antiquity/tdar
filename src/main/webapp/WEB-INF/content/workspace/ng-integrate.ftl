@@ -2,7 +2,6 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
     <title>Dataset Integration: Edit</title>
-    <@link rel="stylesheet" href="/css/tdar-integration.css" media="screen" />
 </head>
 <body>
 <div id="divIntegrationMain" ng-controller="IntegrationController as ctrl">
@@ -434,15 +433,6 @@ ${categoriesJson}
 </script>
 <script src="/includes/js-emca-5.1-polyfill.js""></script>
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
-<@script src="/js/data-integration/app.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationController.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationModel.js?"></@script>
-<@script src="/js/data-integration/ng-IntegrationLegacyFormController.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationModalDialogController.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationDataService.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationCustomFilters.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationValidationService.js"></@script>
-<@script src="/includes/angular-modal-service-0.4.0/angular-modal-service.js"></@script>
 
 <#-- Include the file below to run some barebones tests -->
 <#--<script src="/js/data-integration/tests.js"></script>-->
@@ -519,7 +509,3 @@ ${categoriesJson}
     </div>
 </script>
 </body>
-<#--HACK:  tack on a querystring to static resources to prevent browsers from using an obsolete cached version -->
-<#assign buildParam = "_vid=${common.tdarBuildId?url}">
-<#macro script src><script src="${src}?buildId=${common.tdarBuildId?url}"></script></#macro>
-<#macro link rel href media><link rel="${rel}" href="${href}?buildId=${common.tdarBuildId?url}" media="${media}"></#macro>

@@ -45,6 +45,7 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
+import org.tdar.struts.WROProfile;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -52,6 +53,8 @@ import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
+
+import ro.isdc.wro.model.resource.ResourceType;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -598,11 +601,15 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<String> getJavascriptFiles() {
-        return filesystemResourceService.parseWroXML("js");
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.JS);
     }
 
     public List<String> getCssFiles() {
-        return filesystemResourceService.parseWroXML("css");
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.CSS);
+    }
+
+    protected String getWroProfile() {
+        return WROProfile.DEFAULT.getProfileName();
     }
 
     public boolean isWebFilePreprocessingEnabled() {
