@@ -116,26 +116,25 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         takeScreenshot();
         clearPageCache();
         find(By.linkText("Preview")).click();
-        // test ontology present
-        //assertTrue(getText().contains("Fauna Taxon"));  //fixme: jtd: is this assertion valid for the ajax integration popup?
 
         //Capture the contents of the preview table body.
         // Heads up: the dt.net library (sometimes) uses multiple tables + tomfoolery to simulate a scrolling table body.  We may need to rewrite this portion if we fiddle w/ the td.net options.
         String pivotTableText = find("#divResultContainer tbody").first().getText();
         String previewTableText = find("#divResultContainer tbody").last().getText();
-        logger.debug("integration results text: {}", previewTableText);
+        logger.trace("integration results text: {}", previewTableText);
+
+        // test ontology present
+        assertTrue(pivotTableText.contains("Fauna Taxon"));
 
         // test nodes present
-        assertThat(previewTableText, containsString("Aves"));
-        assertThat(previewTableText.toLowerCase(), containsString("sheep"));
+        assertThat(pivotTableText, containsString("Aves"));
+        assertThat(pivotTableText.toLowerCase(), containsString("sheep"));
         assertThat(pivotTableText.toLowerCase(), containsString("rabbit"));
 
         // test databases present
         assertThat(previewTableText, containsString("Spitalfields"));
         assertThat(previewTableText, containsString("Alexandria"));
     }
-
-    
 
     @Test
     public void testSaveAndReload() throws InterruptedException {
@@ -215,10 +214,16 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(By.id("tabtab0")).isDisplayed();
         // wait for tab contents is visible
         waitFor(By.id("tab0")).isDisplayed();
+
+        //fixme: don't look for ID,  look for label with child text node containing desired ontologyNode name(xpath is your best bet, i think), then click on that text node
         find(aves).click();
         find(rabbit).click();
         find(sheep).click();
 
+        //fixme: using variables for  locators impacts readibility (in this call below you can't immediately discern value of the argument, nor whether it is a css selector, id, or elementLocator)
+        //  Consider saving the result instead, e.g.:
+        //      WebElement rabbitCheckbox = find("#cbont_1234").click().first();
+        //      assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbitCheckbox, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
@@ -228,8 +233,6 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         removeDatasetByPartialName("Spital");
         removeDatasetByPartialName("Alexandria");
         
-//        assertFalse(find(By.id("btnIntegrate")).isEnabled());
-
         // add one back
         openDatasetsModal();
         findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
