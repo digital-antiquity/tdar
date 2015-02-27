@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -26,10 +24,6 @@ import ro.isdc.wro.model.WroModelInspector;
 import ro.isdc.wro.model.group.Group;
 import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.ResourceType;
-import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
-import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
-import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
-import ro.isdc.wro.model.resource.processor.factory.ProcessorsFactory;
 import freemarker.ext.dom.NodeModel;
 
 /**
@@ -73,54 +67,14 @@ public class FileSystemResourceService {
         return fileSystemResourceDao.getWroDir();
     }
 
+    /**
+     * Return list of urls associated with the specified group (included urls inherited from any parent groups).
+     * 
+     * @param groupName
+     * @return
+     */
     public List<String> fetchGroupUrls(String groupName) {
-        //borrowed heavily from https://code.google.com/p/wro4j/source/browse/wro4j-runner/src/main/java/ro/isdc/wro/runner/Wro4jCommandLineRunner.java
-        Context.set(Context.standaloneContext());
-        WroManager wroManager = getManagerFactory().create();
-        WroModel wroModel = wroManager.getModelFactory().create();
-        WroModelInspector wroModelInspector = new WroModelInspector(wroModel);
-        List<String> groupNames = wroModelInspector.getGroupNames();
-        logger.debug("names : {}", groupNames);
-        Group group = wroModelInspector.getGroupByName(groupName);
-        List<Resource> resources = group.getResources();
-        List<String> srcList = new ArrayList<>();
-        for (Resource resource : resources) {
-            srcList.add(resource.getUri());
-        }
-        logger.debug("sourceList: {}", srcList);
-        return srcList;
-    }
-
-    private StandaloneContext createStandaloneContext() {
-        final StandaloneContext runContext = new StandaloneContext();
-        runContext.setContextFoldersAsCSV("src/main/webapp/");
-        runContext.setWroFile(new File("src/main/resources/wro.xml"));
-        return runContext;
-    }
-
-    private DefaultStandaloneContextAwareManagerFactory getManagerFactory() {
-        DefaultStandaloneContextAwareManagerFactory managerFactory = new DefaultStandaloneContextAwareManagerFactory();
-        managerFactory.setProcessorsFactory(createProcessorsFactory());
-        managerFactory.initialize(createStandaloneContext());
-        DefaultStandaloneContextAwareManagerFactory dcsaf = new DefaultStandaloneContextAwareManagerFactory();
-        dcsaf.initialize(createStandaloneContext());
-
-        return dcsaf;
-    }
-
-    private ProcessorsFactory createProcessorsFactory() {
-        final Properties props = new Properties();
-        return new ConfigurableProcessorsFactory() {
-            protected Map<String, ResourcePreProcessor> newPreProcessorsMap() {
-                final Map<String, ResourcePreProcessor> map = super.newPreProcessorsMap();
-                return map;
-            }
-
-            protected Map<String, ResourcePostProcessor> newPostProcessorsMap() {
-                final Map<String, ResourcePostProcessor> map = super.newPostProcessorsMap();
-                return map;
-            }
-        }.setProperties(props);
+        return fetchGroupUrls(groupName, null);
     }
 
     /**
@@ -131,21 +85,10 @@ public class FileSystemResourceService {
      *            only include items of the specified type (CSS or JS)
      * @return
      */
-    public List<String> fetchGroupUrls(String groupName, ResourceType resourceTypefilter) {
-        // todo: implement me
-        return null;
+    public List<String> fetchGroupUrls(String groupName, ResourceType type) {
+        // borrowed heavily from https://code.google.com/p/wro4j/source/browse/wro4j-runner/src/main/java/ro/isdc/wro/runner/Wro4jCommandLineRunner.java
+        return fileSystemResourceDao.fetchGroupUrls(groupName, type);
     }
-
-    /**
-     * Return list of urls associated with the specified group (included urls inherited from any parent groups).
-     * 
-     * @param groupName
-     * @return
-     */
-    // public List<String> fetchGroupUrls(String groupName) {
-    // return null;
-    // // return fetchGroupUrls(groupName, null);
-    // }
 
     /**
      * Return list of WRO group names as specified by wro.xml
@@ -153,8 +96,9 @@ public class FileSystemResourceService {
      * @return
      */
     public List<String> fetchGroupNames() {
-        // todo: implement me
-        return null;
+        WroModelInspector wroModelInspector = fileSystemResourceDao.getWroInspector();
+        List<String> groupNames = wroModelInspector.getGroupNames();
+        return groupNames;
     }
 
 }
