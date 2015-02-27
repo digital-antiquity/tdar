@@ -2,7 +2,6 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,14 +14,7 @@ import org.tdar.core.dao.FileSystemResourceDao;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import ro.isdc.wro.config.Context;
-import ro.isdc.wro.manager.WroManager;
-import ro.isdc.wro.manager.factory.standalone.DefaultStandaloneContextAwareManagerFactory;
-import ro.isdc.wro.manager.factory.standalone.StandaloneContext;
-import ro.isdc.wro.model.WroModel;
 import ro.isdc.wro.model.WroModelInspector;
-import ro.isdc.wro.model.group.Group;
-import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.ResourceType;
 import freemarker.ext.dom.NodeModel;
 
