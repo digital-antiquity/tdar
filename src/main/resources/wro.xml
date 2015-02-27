@@ -91,7 +91,7 @@
         <css>/css/tdar-integration.css</css>
 
         <js>/includes/js-emca-5.1-polyfill.js""></js>
-        <js minimize="false">https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js</js>
+<!--          <js minimize="false">https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js</js> -->
         <!-- LICENSE: MIT -->
         <js>/js/data-integration/app.js</js>
         <js>/js/data-integration/ng-IntegrationController.js</js>
