@@ -136,7 +136,14 @@
         self.integrateClicked = function() {
             console.trace('integrate clicked');
             // FIXME: HACK: NEVERDOTHIS: This is absolutely not the correct way to invoke a form submission, for a number of reasons.
-            $("#btnSubmitLegacyForm").click();
+            //invoke a click to force form submission.  Normally angular would know whether an $apply() is necessary, but because of our hack we do it manually
+
+            setTimeout(function() {
+                $("#frmLegacy").scope().$apply();
+                $("#frmLegacy").scope().$root.$apply();
+                $("#btnSubmitLegacyForm").click();
+            }, 1);
+
 
         };
 
