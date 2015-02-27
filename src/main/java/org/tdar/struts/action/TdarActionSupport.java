@@ -608,7 +608,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.CSS);
     }
 
-    protected String getWroProfile() {
+    public String getWroProfile() {
         return WROProfile.DEFAULT.getProfileName();
     }
 

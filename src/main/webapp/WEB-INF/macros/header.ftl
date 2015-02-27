@@ -16,10 +16,10 @@
 
 <#macro css combine=true>
     <#if combine>
-    <link rel="stylesheet" type="text/css" href="${staticHost}${wroTempDirName}/${wroProfile}.css"/>
+    <link rel="stylesheet" type="text/css" href="${staticHost}${wroTempDirName}/${wroProfile}.css" />
     <#else>
         <#list cssFiles as src>
-        <link rel="stylesheet" type="text/css" href="${staticHost}${src}?buildId=${common.tdarBuildId}" data-version="${common.tdarBuildId}">
+        <link rel="stylesheet" type="text/css" href="${staticHost}${src}?buildId=${common.tdarBuildId}" data-version="${common.tdarBuildId}" />
         </#list>
     </#if>
 
