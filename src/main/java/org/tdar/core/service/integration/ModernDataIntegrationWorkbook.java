@@ -114,6 +114,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
             Sheet ontologySheet = workbook.createSheet(name);
             excelService.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
+            addMergedRegion(0, 0, 0, 8, ontologySheet);
             rowIndex++;
             String termText = provider.getText("dataIntegrationWorkbook.ontology_term");
             String orderText = provider.getText("dataIntegrationWorkbook.ontology_order");
