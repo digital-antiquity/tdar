@@ -102,5 +102,6 @@
         <js>/js/data-integration/ng-IntegrationCustomFilters.js</js>
         <js>/js/data-integration/ng-IntegrationValidationService.js</js>
         <js>/includes/angular-modal-service-0.4.0/angular-modal-service.js</js>
+        <js>/js/data-integration/ng-DatatableDirective.js</js>
     </group>
 </groups>

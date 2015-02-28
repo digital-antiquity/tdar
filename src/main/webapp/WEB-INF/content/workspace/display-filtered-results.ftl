@@ -39,7 +39,7 @@
         </tr>
         </thead>
         <tbody>
-            <#assign pivot = result.pivotData />
+            <#assign pivot = result.rawPivotData />
             <#assign keys = pivot?keys >
             <#list keys?sort as key >
             <tr>

@@ -1,5 +1,7 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,6 +34,9 @@ import org.tdar.struts.action.api.integration.NodeParticipationByColumnAction;
 import org.tdar.struts.action.api.integration.TableDetailsAction;
 import org.tdar.struts.action.workspace.AngularIntegrationAction;
 import org.tdar.utils.json.JsonIntegrationFilter;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
@@ -127,12 +132,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
     @Test
     public void testIntegrationAction() throws IOException, IntegrationDeserializationException {
-        IntegrationAction action = generateNewInitializedController(IntegrationAction.class, getAdminUser());
-        String integration = FileUtils.readFileToString(new File("src/test/resources/data_integration_tests/json/sample-valid-integration.json"));
-        action.setIntegration(integration);
-        action.integrate();
-        StringWriter writer = new StringWriter();
-        IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
+        StringWriter writer = runJson("src/test/resources/data_integration_tests/json/sample-valid-integration.json");
         logger.debug(writer.toString());
     }
     
@@ -140,12 +140,26 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
     @Test
     public void testIntegrationActionDupColumns() throws IOException, IntegrationDeserializationException {
+        StringWriter writer = runJson(testDupJson);
+        logger.debug(writer.toString());
+    }
+
+    private StringWriter runJson(String jsonFilename) throws IOException, JsonParseException, JsonMappingException, IntegrationDeserializationException {
         IntegrationAction action = generateNewInitializedController(IntegrationAction.class, getAdminUser());
-        String integration = FileUtils.readFileToString(new File(testDupJson));
+        String integration = FileUtils.readFileToString(new File(jsonFilename));
         action.setIntegration(integration);
         action.integrate();
         StringWriter writer = new StringWriter();
         IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
+        return writer;
+    }
+
+    private String testJson = "src/test/resources/data_integration_tests/json/selenium-integrate.json";
+
+    @Test
+    public void testIntegrationParllelToSelenium() throws JsonParseException, JsonMappingException, IOException, IntegrationDeserializationException {
+        StringWriter writer = runJson(testJson);
         logger.debug(writer.toString());
+        assertTrue(writer.toString().contains("rabbit"));
     }
 }
