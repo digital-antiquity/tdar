@@ -268,6 +268,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         initializeResourceCreatorProxyLists();
         loadEffectiveResourceCollections();
+        getLogger().debug("effective collections: {}", getEffectiveResourceCollections());
     }
 
     private void loadEffectiveResourceCollections() {
