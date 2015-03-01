@@ -79,10 +79,10 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
 
     private String workflowJson;
 
-    @Override
-    public String getWroProfile() {
-        return WROProfile.NG_INTEGRATE.getProfileName();
-    }
+//    @Override
+//    public String getWroProfile() {
+//        return WROProfile.NG_INTEGRATE.getProfileName();
+//    }
     
     @Override
     public void prepare() throws TdarActionException {

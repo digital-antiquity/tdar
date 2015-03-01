@@ -86,13 +86,13 @@
         <!-- LICENSE: MIT -->
     </group>
     <group name="ng-integrate">
-        <group-ref>default</group-ref>
 
         <css>/css/tdar-integration.css</css>
 
         <js>/includes/js-emca-5.1-polyfill.js""></js>
 <!--          <js minimize="false">https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js</js> -->
         <!-- LICENSE: MIT -->
+        <js>/includes/angular-modal-service-0.4.0/angular-modal-service.js</js>
         <js>/js/data-integration/app.js</js>
         <js>/js/data-integration/ng-IntegrationController.js</js>
         <js>/js/data-integration/ng-IntegrationModel.js</js>
@@ -101,6 +101,6 @@
         <js>/js/data-integration/ng-IntegrationDataService.js</js>
         <js>/js/data-integration/ng-IntegrationCustomFilters.js</js>
         <js>/js/data-integration/ng-IntegrationValidationService.js</js>
-        <js>/includes/angular-modal-service-0.4.0/angular-modal-service.js</js>
+        <group-ref>default</group-ref>
     </group>
 </groups>
