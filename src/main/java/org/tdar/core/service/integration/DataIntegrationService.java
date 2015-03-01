@@ -535,6 +535,7 @@ public class DataIntegrationService {
         logger.trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         logger.debug("incoming JSON: {}", integration);
         IntegrationWorkflowData workflow = serializationService.readObjectFromJson(integration, IntegrationWorkflowData.class);
+
         if (CollectionUtils.isNotEmpty(workflow.getErrors())) {
             throw new TdarRecoverableRuntimeException("dataIntegrationService.invalid_integration", workflow.getErrors());
         }
@@ -542,7 +543,13 @@ public class DataIntegrationService {
             throw new TdarRecoverableRuntimeException("dataIntegrationService.invalid_integration", Arrays.asList(workflow.getFieldErrors()));
         }
         IntegrationContext integrationContext = workflow.toIntegrationContext(genericDao, provider);
+        for (IntegrationColumn col : integrationContext.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                col.buildNodeChildHierarchy(ontologyNodeDao);
+            }
+        }
         // logger.debug(serializationService.convertToXML(integrationContext));
+
         integrationContext.setCreator(authenticatedUser);
         ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)", null, authenticatedUser);
         log.setTimestamp(new Date());
@@ -553,6 +560,13 @@ public class DataIntegrationService {
 
         validateIntegrationContext(integrationContext);
 
+        for (IntegrationColumn col : integrationContext.getIntegrationColumns()) {
+            if (col.isIntegrationColumn()) {
+                if (CollectionUtils.isEmpty(col.getFilteredOntologyNodes())) {
+                    col.getFilteredOntologyNodes().addAll(col.getSharedOntology().getOntologyNodes());
+                }
+            }
+        }
         // // ok, at this point we have the integration columns that we're interested in + the ontology
         // // nodes that we want to use to filter values of interest and for aggregation.
         // // getLogger().debug("table columns are: " + tableToIntegrationColumns);

@@ -1,5 +1,8 @@
 package org.tdar.web.functional;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -75,7 +78,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     @Test
     public void testValidIntegrate() throws InterruptedException {
-        // add two datasets that work, assert that we get back to an integratable state
+        // add two datasets that work, assert that we get back to an integrate-able state
         
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
@@ -105,27 +108,34 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         assertTrue("Perca flavescens node should be visible for spitalfields", find(By.id("cbx-32450-60600")).isDisplayed());
         assertTrue("Coding error should be visible for alexandria", find(By.id("cbx-31710-56490")).isDisplayed());
-
-        
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+
+        //click the integrate button and wait for results
         find(By.id("btnIntegrate")).click();
-        waitForPageload();
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.id("divResultContainer")));
         takeScreenshot();
         clearPageCache();
-        logger.debug(getText());
-        assertTrue(getText().contains("Summary of Integration Results"));
-        // test ontology present
-        assertTrue(getText().contains("Fauna Taxon"));
-        // test nodes present
-        assertTrue(getText().contains("Aves"));
-        assertTrue(getText().toLowerCase().contains("sheep"));
-        assertTrue(getText().toLowerCase().contains("rabbit"));
-        // test databases present
-        assertTrue(getText().contains("Spitalfields"));
-        assertTrue(getText().contains("Alexandria"));
-    }
+        String pivotTableText = find("#divResultContainer tbody").first().getText();
+        find(By.linkText("Preview")).click();
 
-    
+        //Capture the contents of the preview table body.
+        String previewTableText = find("#divResultContainer tbody").last().getText();
+        logger.debug("previewTableText: {}", previewTableText);
+        logger.debug("pivotTableText: {}", pivotTableText);
+
+        // test ontology present
+        //todo:  jtd: I don't think we show the names of the ontologies in the new integration preview (are we supposed to?). commenting out for now.
+        //assertTrue(pivotTableText.contains("Fauna Taxon"));
+
+        // test nodes present
+        assertThat(pivotTableText, containsString("Aves"));
+        assertThat(pivotTableText.toLowerCase(), containsString("sheep"));
+        assertThat(pivotTableText.toLowerCase(), containsString("rabbit"));
+
+        // test databases present
+        assertThat(previewTableText, containsString("Spitalfields"));
+        assertThat(previewTableText, containsString("Alexandria"));
+    }
 
     @Test
     public void testSaveAndReload() throws InterruptedException {
@@ -161,7 +171,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(ExpectedConditions.elementToBeClickable(saveButton));
 
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
-        find(saveButton).click();
+        waitFor(saveButton).click();
         waitFor(4);
         gotoPage("/workspace/list");
         logger.debug(getText());
@@ -205,10 +215,16 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(By.id("tabtab0")).isDisplayed();
         // wait for tab contents is visible
         waitFor(By.id("tab0")).isDisplayed();
+
+        //fixme: don't look for ID,  look for label with child text node containing desired ontologyNode name(xpath is your best bet, i think), then click on that text node
         find(aves).click();
         find(rabbit).click();
         find(sheep).click();
 
+        //fixme: using variables for  locators impacts readibility (in this call below you can't immediately discern value of the argument, nor whether it is a css selector, id, or elementLocator)
+        //  Consider saving the result instead, e.g.:
+        //      WebElement rabbitCheckbox = find("#cbont_1234").click().first();
+        //      assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbitCheckbox, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
@@ -218,8 +234,6 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         removeDatasetByPartialName("Spital");
         removeDatasetByPartialName("Alexandria");
         
-//        assertFalse(find(By.id("btnIntegrate")).isEnabled());
-
         // add one back
         openDatasetsModal();
         findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
