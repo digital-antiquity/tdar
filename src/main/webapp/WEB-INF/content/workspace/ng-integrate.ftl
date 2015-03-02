@@ -454,9 +454,10 @@ ${categoriesJson}
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <@script src="/js/data-integration/app.js" />
 <@script src="/js/data-integration/ng-IntegrationController.js" />
+<@script src="/js/ng-DatatableDirective.js" />
 <@script src="/js/data-integration/ng-IntegrationModel.js?" />
-<@script src="/js/data-integration/ng-IntegrationLegacyFormController.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationModalDialogController.js"></@script>
+<@script src="/js/data-integration/ng-IntegrationLegacyFormController.js" />
+<@script src="/js/data-integration/ng-IntegrationModalDialogController.js" />
 <@script src="/js/data-integration/ng-IntegrationDataService.js"></@script>
 <@script src="/js/data-integration/ng-IntegrationCustomFilters.js"></@script>
 <@script src="/js/data-integration/ng-IntegrationValidationService.js"></@script>

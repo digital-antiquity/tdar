@@ -2,10 +2,12 @@ package org.tdar.web.functional;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.By.linkText;
+import static org.openqa.selenium.By.partialLinkText;
 
 import java.util.List;
 
@@ -17,10 +19,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tdar.web.functional.util.ByLabelText;
 import org.tdar.web.functional.util.WebElementSelection;
-
-import static org.openqa.selenium.By.partialLinkText;
-import static org.openqa.selenium.By.linkText;
-import static org.openqa.selenium.By.id;
 
 
 
