@@ -305,7 +305,6 @@
 
 <tdar-modal ng-controller="ModalDialogController"></tdar-modal>
 
-<span>
 <!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">
     <div id="divModalContainer" class="modal modal-big hide fade" tabindex="-1" role="dialog">
@@ -454,7 +453,7 @@ ${categoriesJson}
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
 <@script src="/js/data-integration/app.js" />
 <@script src="/js/data-integration/ng-IntegrationController.js" />
-<@script src="/js/ng-DatatableDirective.js" />
+<@script src="/js/data-integration/ng-DatatableDirective.js" />
 <@script src="/js/data-integration/ng-IntegrationModel.js?" />
 <@script src="/js/data-integration/ng-IntegrationLegacyFormController.js" />
 <@script src="/js/data-integration/ng-IntegrationModalDialogController.js" />
