@@ -48,12 +48,14 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -76,8 +78,10 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.DynamicQueryComponent;
 import org.tdar.search.query.builder.DynamicQueryComponentHelper;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
@@ -109,9 +113,10 @@ public class SearchService {
     private final DatasetDao datasetDao;
 
     private final AuthorizationService authorizationService;
-    
+
     @Autowired
-    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao, AuthorizationService authorizationService) {
+    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao,
+            AuthorizationService authorizationService) {
         this.sessionFactory = sessionFactory;
         this.obfuscationService = obfuscationService;
         this.genericService = genericService;
@@ -166,7 +171,21 @@ public class SearchService {
         setupQueryParser(queryBuilder);
         Query query = new MatchAllDocsQuery();
         if (!queryBuilder.isEmpty()) {
-            query = queryBuilder.buildQuery();
+            if (queryBuilder instanceof ResourceQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(Resource.class));
+            }
+            if (queryBuilder instanceof ResourceCollectionQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(ResourceCollection.class));
+            }
+            if (queryBuilder instanceof KeywordQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(Keyword.class));
+            }
+            if (queryBuilder instanceof InstitutionQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(Institution.class));
+            }
+            if (queryBuilder instanceof PersonQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(Person.class));
+            }
         }
         FullTextQuery ftq = fullTextSession.createFullTextQuery(query, queryBuilder.getClasses());
 
@@ -220,7 +239,7 @@ public class SearchService {
         logger.trace("completed hibernate hydration ");
 
         List<Indexable> toReturn = convertProjectedResultIntoObjects(resultHandler, projections, list);
-        Object searchMetadata[] = { resultHandler.getMode(), q.getQuery(), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
+        Object searchMetadata[] = { resultHandler.getMode(), ftq.getQueryString(), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                 lucene, (System.currentTimeMillis() - num),
                 ftq.getResultSize(),
                 resultHandler.getStartRecord() };
@@ -537,7 +556,7 @@ public class SearchService {
      * @param fields
      * @param cmpnts
      * @param analyzer
-     * @return 
+     * @return
      */
     @SuppressWarnings("deprecation")
     private PerFieldAnalyzerWrapper applyAnalyzers(QueryBuilder qb, List<String> fields, Set<DynamicQueryComponent> cmpnts) {
@@ -555,7 +574,7 @@ public class SearchService {
             cmpnts.addAll(qb.getOverrides());
         }
 
-        Map<String,Analyzer> defaults = new HashMap<>();
+        Map<String, Analyzer> defaults = new HashMap<>();
         for (DynamicQueryComponent cmp : cmpnts) {
             String partialLabel = qb.stringContainedInLabel(cmp.getLabel());
             if (partialLabel != null) {
@@ -794,9 +813,9 @@ public class SearchService {
     }
 
     public org.hibernate.Query createFullTextQuery(Query query, Class<? extends Indexable> cls) {
-        FullTextSession fullTextSession = Search.getFullTextSession( sessionFactory.getCurrentSession() );
-        org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery( query, cls);
+        FullTextSession fullTextSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
+        org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(query, cls);
         return fullTextQuery;
-        
+
     }
 }

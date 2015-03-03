@@ -258,7 +258,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,TdarActionSupport.NOT_FOUND);
         } catch (TdarRecoverableRuntimeException tdre) {
-            getLogger().warn("search parse exception: {}", tdre.getMessage());
+            getLogger().warn("search parse exception: {}", tdre.getMessage(), tdre);
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
             getLogger().warn("search parse exception: {}", e.getMessage());

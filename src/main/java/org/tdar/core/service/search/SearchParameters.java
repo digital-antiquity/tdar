@@ -332,7 +332,8 @@ public class SearchParameters {
                     FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
                     siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
                     siteCodePart.setDisplayName(support.getText("searchParameters.site_code"));
-                    subgroup.append(siteCodePart.setBoost(5f));
+                    siteCodePart.setBoost(5f);
+                    subgroup.append(siteCodePart);
                 }
             }
             appendKeywordQueryParts(subgroup, KeywordType.SITE_NAME_KEYWORD, Arrays.asList(siteNames));

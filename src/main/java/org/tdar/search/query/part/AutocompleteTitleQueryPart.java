@@ -4,6 +4,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.service.search.Operator;
@@ -33,6 +35,11 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         return StringUtils.isBlank(title);
     }
 
+    @Override
+    public Query generateQuery(QueryBuilder builder) {
+        return getQueryPart().generateQuery(builder);
+    }
+    
     protected QueryPart<?> getQueryPart() {
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
         // look up quoted leading match in autocomplete index
@@ -55,8 +62,10 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
                 keywordTitlePart.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
             }
         }
-        titleGroup.append(autoPart.setBoost(TITLE_BOOST));
-        titleGroup.append(titleSortPart.setBoost(TITLE_SORT_BOOST));
+        autoPart.setBoost(TITLE_BOOST);
+        titleGroup.append(autoPart);
+        titleSortPart.setBoost(TITLE_SORT_BOOST);
+        titleGroup.append(titleSortPart);
         titleGroup.append(keywordTitlePart);
         logger.info("{}", titleGroup);
         return titleGroup;

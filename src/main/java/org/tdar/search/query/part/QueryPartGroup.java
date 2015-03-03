@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.BooleanJunction;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.service.search.Operator;
@@ -101,6 +104,24 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         return getParts().isEmpty();
     }
 
+    @Override
+    public Query generateQuery(QueryBuilder builder) {
+        BooleanJunction<?> bq = builder.bool();
+        for (QueryPart<?> part : getParts()) {
+            Query q = part.generateQuery(builder);
+            if (q == null) {
+                continue;
+            }
+            switch (getOperator()) {
+                case AND:
+                    bq = bq.must(q);
+                case OR:
+                    bq = bq.should(q);
+            }
+        }
+        return bq.createQuery();
+    }
+    
     @Override
     public String generateQueryString() {
         StringBuilder builder = new StringBuilder();

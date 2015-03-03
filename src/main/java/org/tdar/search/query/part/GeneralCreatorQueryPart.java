@@ -50,7 +50,8 @@ public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
             }
         }
 
-        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.NAME_TOKEN, fields).setBoost(ANY_FIELD_BOOST);
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.NAME_TOKEN, fields);
+        allFieldsAsPart.setBoost(ANY_FIELD_BOOST);
         allFieldsAsPart.setOperator(Operator.AND);
         allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 
@@ -61,8 +62,8 @@ public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
                 titlePart.setProximity(3);
             }
         }
-
-        primary.append(titlePart.setBoost(NAME_BOOST));
+        titlePart.setBoost(NAME_BOOST);
+        primary.append(titlePart);
         primary.append(allFieldsAsPart);
 
         return primary;

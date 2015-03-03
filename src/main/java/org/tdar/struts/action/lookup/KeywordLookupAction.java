@@ -78,7 +78,8 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
                 FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, getTerm());
                 siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
                 siteCodePart.setDisplayName(getText("searchParameters.site_code"));
-                subgroup.append(siteCodePart.setBoost(5f));
+                siteCodePart.setBoost(5f);
+                subgroup.append(siteCodePart);
             }
 
         }
