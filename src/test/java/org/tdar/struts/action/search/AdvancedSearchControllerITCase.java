@@ -21,6 +21,11 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.BooleanJunction;
+import org.hibernate.search.query.dsl.PhraseTermination;
+import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.query.dsl.TermTermination;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -123,6 +128,51 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     @Test
+    public void testHibernateDSL() {
+        QueryBuilder builder = searchService.getQueryBuilder(Resource.class);
+
+        long userId = 8092L;
+        String txt = "us air";
+
+        PhraseTermination allPhrase = builder.phrase().withSlop(4).boostedTo(3.2f).onField("allPhrase").sentence(txt);
+        PhraseTermination titlePhrase = builder.phrase().boostedTo(6.0f).onField("title.phrase").sentence(txt);
+        PhraseTermination descrPhrase = builder.phrase().boostedTo(4.0f).onField("description.phrase").sentence(txt);
+        PhraseTermination creator = builder.phrase().boostedTo(5.0f).onField("activeResourceCreators.creator.properName").sentence(txt);
+        PhraseTermination siteCode = builder.phrase().onField("siteCode").sentence(txt);
+        PhraseTermination content = builder.phrase().onField("content").sentence(txt);
+        PhraseTermination dataValuePair = builder.phrase().onField("dataValuePair").sentence(txt);
+        
+        
+        // all
+        //((+(all:"az all:az) +((all:u\:9\:1\(asm\)" all:u all:u91asm) all:asm))^2.0)
+        
+        
+        PhraseTermination all = builder.phrase().boostedTo(2.0f).onField("all").sentence(txt);
+        
+        BooleanJunction should = builder.bool().should(allPhrase.createQuery()).should(titlePhrase.createQuery()).should(descrPhrase.createQuery()).should(all.createQuery()).should(siteCode.createQuery()).should(creator.createQuery()).should(dataValuePair.createQuery()).should(content.createQuery());
+        logger.debug(should.createQuery().toString());
+//        allPhrase:"az (u:9:1(asm) u u91asm) asm"^3.2 title.phrase:"az (u:9:1(asm) u u91asm) asm"^6.0 description.phrase:"az (u:9:1(asm) u u91asm) asm"^4.0 all:"az (u:9:1(asm) u u91asm) asm"^4.0
+        Query rights = buildRightsQuery(builder, userId);
+        Query query = builder.bool().must(rights).createQuery();
+
+        // +(status:ACTIVE (+status:DRAFT +(usersWhoCanModify:[8092 to 8092] usersWhoCanView:[8092 to 8092])))
+
+        org.hibernate.Query fullTextQuery = searchService.createFullTextQuery(query, Resource.class);
+        // assertEquals("+(status:ACTIVE (+status:DRAFT +(usersWhoCanModify:[8092 to 8092] usersWhoCanView:[8092 to 8092])))", query.toString());
+        logger.debug(query.toString());
+        logger.debug("results: {} ", fullTextQuery.list());
+
+    }
+
+    private Query buildRightsQuery(QueryBuilder builder, long userId) {
+        Query draft = builder.phrase().onField("status").sentence("DRAFT").createQuery();
+        Query range = builder.bool().should(builder.range().onField("usersWhoCanModify").andField("usersWhoCanView").from(userId).to(userId).createQuery())
+                .createQuery();
+        return builder.bool().must(builder.phrase().onField("status").sentence("ACTIVE").createQuery())
+                .should(builder.bool().must(draft).must(range).createQuery()).createQuery();
+    }
+
+    @Test
     @Rollback
     public void testSiteNameKeywords() {
         SiteNameKeyword snk = genericKeywordService.findByLabel(SiteNameKeyword.class, "Atsinna");
@@ -155,7 +205,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         updateAndIndex(lowerCase);
         updateAndIndex(upperCase);
         updateAndIndex(usafLowerCase);
-        
+
         // search lowercase one word
         controller.setQuery("usaf");
         doSearch();
@@ -165,7 +215,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doc.setTitle("usaf");
         resetController();
         updateAndIndex(doc);
-        
+
         // search uppercase one word
         controller.setQuery("USAF");
         doSearch();
@@ -194,7 +244,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(controller.getCollectionResults().contains(titleCase));
         assertTrue(controller.getCollectionResults().contains(lowerCase));
 
-    
         // search lowercase middle word
         controller.setQuery("force");
         doSearch();
@@ -206,7 +255,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doSearch();
         assertTrue(controller.getCollectionResults().contains(titleCase));
         assertTrue(controller.getCollectionResults().contains(lowerCase));
-}
+    }
 
     @Test
     public void testTitleCaseSensitivity() {
@@ -343,7 +392,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     }
 
-    
     @Test
     @Rollback
     public void testApprovedSiteTypeKeywords() {
