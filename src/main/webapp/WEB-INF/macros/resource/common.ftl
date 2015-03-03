@@ -29,7 +29,7 @@ Common macros used in multiple contexts
     <#assign tdarBuildId>
         <#attempt><#include  "/version.txt" parse=false/><#recover></#attempt>
     </#assign>
-    <#assign tdarBuildId = tdarBuildId?trim?replace("+", ".001") />
+    <#assign tdarBuildId = (tdarBuildId!'unknown')?trim?replace("+", ".001") />
 
 <#--
 //Emit Javascript intended for every page in tDAR (regardless of login status)

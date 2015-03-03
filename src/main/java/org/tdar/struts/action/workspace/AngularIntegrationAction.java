@@ -19,7 +19,6 @@ import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
@@ -29,6 +28,7 @@ import org.tdar.core.service.integration.dto.IntegrationDeserializationException
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.struts.WROProfile;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
@@ -79,6 +79,11 @@ public class AngularIntegrationAction extends AuthenticationAware.Base implement
 
     private String workflowJson;
 
+//    @Override
+//    public String getWroProfile() {
+//        return WROProfile.NG_INTEGRATE.getProfileName();
+//    }
+    
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.VIEW);

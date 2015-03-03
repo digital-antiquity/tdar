@@ -6,12 +6,16 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.dao.FileSystemResourceDao;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import ro.isdc.wro.model.WroModelInspector;
+import ro.isdc.wro.model.resource.ResourceType;
 import freemarker.ext.dom.NodeModel;
 
 /**
@@ -27,6 +31,8 @@ public class FileSystemResourceService {
 
     @Autowired
     private FileSystemResourceDao fileSystemResourceDao;
+
+    Logger logger = LoggerFactory.getLogger(FileSystemResourceDao.class);
 
     public boolean testWRO() {
         return fileSystemResourceDao.testWRO();
@@ -51,6 +57,40 @@ public class FileSystemResourceService {
 
     public String getWroDir() {
         return fileSystemResourceDao.getWroDir();
+    }
+
+    /**
+     * Return list of urls associated with the specified group (included urls inherited from any parent groups).
+     * 
+     * @param groupName
+     * @return
+     */
+    public List<String> fetchGroupUrls(String groupName) {
+        return fetchGroupUrls(groupName, null);
+    }
+
+    /**
+     * Return list of urls associated with the specified group (included urls inherited from any parent groups).
+     * 
+     * @param groupName
+     * @param resourceTypefilter
+     *            only include items of the specified type (CSS or JS)
+     * @return
+     */
+    public List<String> fetchGroupUrls(String groupName, ResourceType type) {
+        // borrowed heavily from https://code.google.com/p/wro4j/source/browse/wro4j-runner/src/main/java/ro/isdc/wro/runner/Wro4jCommandLineRunner.java
+        return fileSystemResourceDao.fetchGroupUrls(groupName, type);
+    }
+
+    /**
+     * Return list of WRO group names as specified by wro.xml
+     * 
+     * @return
+     */
+    public List<String> fetchGroupNames() {
+        WroModelInspector wroModelInspector = fileSystemResourceDao.getWroInspector();
+        List<String> groupNames = wroModelInspector.getGroupNames();
+        return groupNames;
     }
 
 }

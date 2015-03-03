@@ -170,21 +170,25 @@ public class GenericKeywordDao extends GenericDao {
         return (Number) criteria.uniqueResult();
     }
 
+    /**
+     * Creates a temporary table with Keyword IDs for all resources Ids in list. This is used by the creator analysis process for related creators. It was
+     * initially designed to run in loops but it took too much memory, so using temp tables in the database to generate the logic
+     * 
+     * @param resourceIds
+     * @return
+     */
     public Map<Keyword, Integer> getRelatedKeywordCounts(Set<Long> resourceIds) {
         Map<Keyword, Integer> results = new HashMap<Keyword, Integer>();
-        String drop = "DROP TABLE IF EXISTS temp_kwd;";
+        String drop = TdarNamedQueries.CREATOR_ANALYSIS_KWD_DROP_TEMP;
         getCurrentSession().createSQLQuery(drop).executeUpdate();
-        String sql = "CREATE TEMPORARY TABLE temp_kwd (id bigserial, kwd_id bigint);";
+        String sql = TdarNamedQueries.CREATOR_ANALYSIS_KWD_CREATE_TEMP;
         getCurrentSession().createSQLQuery(sql).executeUpdate();
         for (KeywordType type : KeywordType.values()) {
-            getCurrentSession().createSQLQuery("truncate table temp_kwd").executeUpdate();
-            String sql1 = "insert into temp_kwd (kwd_id) select "+type.getJoinTableKey()+" from " + type.getJoinTable() + " tp, " + type.getTableName() + " kwd where kwd.id=tp." + type.getJoinTableKey()
-                    + " and status in ('ACTIVE', 'DUPLICATE') "
-                    + " and resource_id in :resourceIds";
-            String sql2 = "insert into temp_kwd (kwd_id) select "+type.getJoinTableKey()+" from " + type.getJoinTable() + " tp, " + type.getTableName()
-                    + " kwd, information_resource where kwd.id=tp." + type.getJoinTableKey() + " and status in ('ACTIVE', 'DUPLICATE') "
-                    + " and resource_id=project_id and information_resource.id in :resourceIds";
-            String sql3 = "select count(id), kwd_id from temp_kwd where kwd_id is not null group by kwd_id";
+            getCurrentSession().createSQLQuery(TdarNamedQueries.CREATOR_ANALYSIS_TRUNCATE_TEMP).executeUpdate();
+            String sql1 = String.format(TdarNamedQueries.CREATOR_ANALYSIS_KWD_INSERT, type.getJoinTableKey(), type.getJoinTable(), type.getTableName(),
+                    type.getJoinTableKey());
+            String sql2 = String.format(TdarNamedQueries.CREATOR_ANALYSIS_KWD_INHERIT_INSERT, type.getJoinTableKey(), type.getJoinTable(), type.getTableName(), type.getJoinTableKey());
+            String sql3 = TdarNamedQueries.CREATOR_ANALYSIS_KWD_SELECT_COUNTS;
             getCurrentSession().createSQLQuery(sql1).setParameterList("resourceIds", resourceIds).executeUpdate();
             getCurrentSession().createSQLQuery(sql2).setParameterList("resourceIds", resourceIds).executeUpdate();
             for (Object row_ : getCurrentSession().createSQLQuery(sql3).list()) {

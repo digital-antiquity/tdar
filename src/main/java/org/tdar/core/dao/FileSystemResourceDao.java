@@ -28,6 +28,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import ro.isdc.wro.config.Context;
+import ro.isdc.wro.manager.WroManager;
+import ro.isdc.wro.manager.factory.standalone.DefaultStandaloneContextAwareManagerFactory;
+import ro.isdc.wro.manager.factory.standalone.StandaloneContext;
+import ro.isdc.wro.model.WroModel;
+import ro.isdc.wro.model.WroModelInspector;
+import ro.isdc.wro.model.group.Group;
+import ro.isdc.wro.model.resource.ResourceType;
+
 import com.hp.hpl.jena.util.FileUtils;
 
 import freemarker.ext.dom.NodeModel;
@@ -188,4 +197,59 @@ public class FileSystemResourceDao {
         return null;
     }
 
+    
+    
+
+    /**
+     * Create and setup a model insepector
+     * 
+     * @return
+     */
+    public WroModelInspector getWroInspector() {
+        WroManager wroManager = getManagerFactory().create();
+        WroModel wroModel = wroManager.getModelFactory().create();
+        WroModelInspector wroModelInspector = new WroModelInspector(wroModel);
+        return wroModelInspector;
+    }
+
+    /**
+     * Setup the WRO Context
+     * 
+     * @return
+     */
+    private StandaloneContext createStandaloneContext() {
+        Context.set(Context.standaloneContext());
+        final StandaloneContext runContext = new StandaloneContext();
+        runContext.setWroFile(new File("src/main/resources/wro.xml"));
+        return runContext;
+    }
+
+    /**
+     * Create the WRO Manager Factory
+     * 
+     * @return
+     */
+    private DefaultStandaloneContextAwareManagerFactory getManagerFactory() {
+        DefaultStandaloneContextAwareManagerFactory managerFactory = new DefaultStandaloneContextAwareManagerFactory();
+        managerFactory.initialize(createStandaloneContext());
+        DefaultStandaloneContextAwareManagerFactory dcsaf = new DefaultStandaloneContextAwareManagerFactory();
+        dcsaf.initialize(createStandaloneContext());
+        return dcsaf;
+    }
+
+    public List<String> fetchGroupUrls(String groupName, ResourceType type) {
+        List<String> srcList = new ArrayList();
+        WroModelInspector wroModelInspector = getWroInspector();
+
+        Group group = wroModelInspector.getGroupByName(groupName);
+        for (ro.isdc.wro.model.resource.Resource resource : group.getResources()) {
+            if (type == null || type == resource.getType()) {
+                srcList.add(resource.getUri());
+            }
+        }
+        return srcList;
+    }
+
+    
+    
 }

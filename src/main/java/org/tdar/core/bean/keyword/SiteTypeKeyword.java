@@ -67,7 +67,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
         this.parent = parent;
     }
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteTypeKeyword> synonyms = new HashSet<SiteTypeKeyword>();

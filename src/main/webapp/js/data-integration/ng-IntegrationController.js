@@ -113,8 +113,8 @@
                 self.updateStatus("done loading data table information");
                 self.updateStatus("loading column details");
                 dataService.loadUpdatedParticipationInformation(integration).then(
-                        function(status){
-                            self.updateStatus("done loading column details");
+                        function(){
+                            self.updateStatus("Done loading column details");
                         },
                         function(err){
                             self.updateStatus("Error: unable to load ontology info.  Please try again - if the problem continues please contact a system administrator")
@@ -136,7 +136,14 @@
         self.integrateClicked = function() {
             console.trace('integrate clicked');
             // FIXME: HACK: NEVERDOTHIS: This is absolutely not the correct way to invoke a form submission, for a number of reasons.
-            $("#btnSubmitLegacyForm").click();
+            //invoke a click to force form submission.  Normally angular would know whether an $apply() is necessary, but because of our hack we do it manually
+
+            setTimeout(function() {
+                $("#frmLegacy").scope().$apply();
+                $("#frmLegacy").scope().$root.$apply();
+                $("#btnSubmitLegacyForm").click();
+            }, 1);
+
 
         };
 

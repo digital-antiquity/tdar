@@ -201,6 +201,10 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         usafLowerCase.markUpdated(getAdminUser());
         doc.setTitle("USAF");
         updateAndIndex(doc);
+        usafLowerCase.getResources().add(doc);
+        titleCase.getResources().add(doc);
+        lowerCase.getResources().add(doc);
+        upperCase.getResources().add(doc);
         updateAndIndex(titleCase);
         updateAndIndex(lowerCase);
         updateAndIndex(upperCase);

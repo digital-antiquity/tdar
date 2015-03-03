@@ -47,8 +47,10 @@
         <#list downloadStats as stats>
         <tr>
             <td>
-                <a href="<@s.url value="/${stats.informationResource.resourceType.urlNamespace}/${stats.informationResource.id?c}" />">${stats.informationResource.title}</a>
+            	<#if (stats.informationResource)?has_content>
+                <a href="<@s.url value="${stats.informationResource.detailUrl}" />">${stats.informationResource.title}</a>
                 (${stats.informationResource.id?c})
+                </#if>
             </td>
             <td>
                 <a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />">${stats.filename}</a> (${stats.informationResourceId?c})
