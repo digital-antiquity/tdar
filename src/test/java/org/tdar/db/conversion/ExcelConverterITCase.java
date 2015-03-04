@@ -353,15 +353,6 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    public void testFormat() {
-        String st = "02588.000F";
-        logger.debug("{} | {}", NumberUtils.isDigits(st), NumberUtils.isNumber(st));
-        assertTrue(st.matches("\\-?[0-9\\.]+"));
-        double d = NumberUtils.toDouble(st);
-        logger.debug("{}", d);
-    }
-
-    @Test
     @Rollback
     public void testMalformedFloatParse() throws IOException {
         InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(),
