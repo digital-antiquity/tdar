@@ -347,7 +347,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     }
 
     public static String formatTableName(DataTable table) {
-        return String.format("%s - %s", table.getDataset().getTitle(), table.getName());
+        return String.format("%s - %s", table.getDataset().getTitle(), table.getDisplayName());
     }
 
     public ExcelService getExcelService() {
