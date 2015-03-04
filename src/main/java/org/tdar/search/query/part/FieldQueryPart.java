@@ -131,7 +131,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     @Override
     public Query generateQuery(QueryBuilder builder) {
+
         BooleanJunction<?> bq = builder.bool();
+        boolean seen = false;
         for (int i = 0; i < fieldValues.size(); i++) {
             C item = fieldValues.get(i);
             Query q = null;
@@ -143,6 +145,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             if (q == null) {
                 continue;
             }
+            seen = true;
             switch (getOperator()) {
                 case AND:
                     bq = bq.must(q);
@@ -150,7 +153,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
                     bq = bq.should(q);
             }
         }
-
+        if (seen == false) {
+            return null;
+        }
         return bq.createQuery();
     }
 
@@ -210,7 +215,6 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             return null;
         }
 
-        
         return onField.onField(getFieldName()).sentence(value).createQuery();
     }
 
@@ -239,7 +243,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             fld.boostedTo(getBoost());
         }
         if (StringUtils.isEmpty(getFieldName())) {
-            throw new TdarRecoverableRuntimeException("fieldQueryPart.field_is_null", Arrays.asList(getFieldName() , getFieldValues()));
+            throw new TdarRecoverableRuntimeException("fieldQueryPart.field_is_null", Arrays.asList(getFieldName(), getFieldValues()));
         }
     }
 
@@ -248,7 +252,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         value = formatValueAsStringForQuery(index);
         TermContext onField = builder.keyword();
         applyBoostProximitySlop(onField);
-        
+
         if (StringUtils.isBlank(value)) {
             return null;
         }
