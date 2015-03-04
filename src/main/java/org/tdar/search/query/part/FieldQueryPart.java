@@ -239,7 +239,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             fld.boostedTo(getBoost());
         }
         if (StringUtils.isEmpty(getFieldName())) {
-            throw new TdarRecoverableRuntimeException("field is null: " + getFieldName() + " :" + getFieldValues());
+            throw new TdarRecoverableRuntimeException("fieldQueryPart.field_is_null", Arrays.asList(getFieldName() , getFieldValues()));
         }
     }
 
