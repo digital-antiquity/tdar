@@ -11,7 +11,8 @@ import org.tdar.utils.Pair;
  */
 public class RangeImpl<D extends Comparable<D>> extends Pair<D, D> implements Range<D> {
 
-    private static final long serialVersionUID = -8495377173625819907L;
+
+    private static final long serialVersionUID = -2052313977410727097L;
 
     public RangeImpl() {
         super(null, null);
