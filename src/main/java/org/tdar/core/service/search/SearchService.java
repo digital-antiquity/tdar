@@ -168,10 +168,11 @@ public class SearchService {
     public FullTextQuery search(QueryBuilder queryBuilder, SortOption... sortOptions) throws ParseException {
         FullTextSession fullTextSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
         fullTextSession.setDefaultReadOnly(true);
-        setupQueryParser(queryBuilder);
+        //setupQueryParser(queryBuilder);
         Query query = new MatchAllDocsQuery();
         if (!queryBuilder.isEmpty()) {
             if (queryBuilder instanceof ResourceQueryBuilder) {
+                logger.debug("resource");
                 query = queryBuilder.generateQuery(getQueryBuilder(Resource.class));
             }
             if (queryBuilder instanceof ResourceCollectionQueryBuilder) {

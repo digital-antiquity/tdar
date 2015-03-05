@@ -15,6 +15,8 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.QueryCustomization;
 import org.hibernate.search.query.dsl.RangeContext;
 import org.hibernate.search.query.dsl.TermContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Validatable;
@@ -25,7 +27,6 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.search.Operator;
 
 import com.opensymphony.xwork2.TextProvider;
-import com.sun.media.Log;
 
 /**
  * @author abrin
@@ -47,7 +48,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     private boolean inverse;
     private boolean descriptionVisible = true;
     private boolean allowInvalid = false;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    
     public FieldQueryPart() {
     }
 
@@ -158,8 +161,10 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     protected Query appendQuery(QueryBuilder builder, int i, C item) {
         Query q;
         if ( Number.class.isAssignableFrom(item.getClass())) {
+            logger.debug("NUMBER:" + item);
             q = appendNumericQuery(builder, i);
         } else {
+            logger.debug("PHRASE:" + item);
             q = appendPhrase(builder, i);
         }
         return q;

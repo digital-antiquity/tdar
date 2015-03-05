@@ -274,7 +274,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback(true)
     public void testFindResourceById() {
-        controller.setId(Long.valueOf(3074));
+        controller.setId(3074L);
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         assertTrue(resultsContainId(3074l));

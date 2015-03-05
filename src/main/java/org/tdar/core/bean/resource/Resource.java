@@ -743,7 +743,8 @@ public class Resource implements Persistable,
     }
 
     @Override
-    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+    @NumericField
+    @Field(store = Store.YES, name = QueryFieldNames.ID)
     @XmlAttribute
     public Long getId() {
         return id;

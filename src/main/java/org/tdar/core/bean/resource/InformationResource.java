@@ -47,6 +47,7 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
@@ -381,7 +382,8 @@ public abstract class InformationResource extends Resource {
     }
 
     @Field(name = QueryFieldNames.PROJECT_ID)
-    @Analyzer(impl = KeywordAnalyzer.class)
+    @NumericField
+//    @Analyzer(impl = KeywordAnalyzer.class)
     public Long getProjectId() {
         if (projectId == null) {
             projectId = getProject().getId();
