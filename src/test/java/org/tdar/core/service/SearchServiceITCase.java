@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +21,13 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.service.search.Operator;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 
 @SuppressWarnings("unchecked")
@@ -124,14 +129,13 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     public void testYearSorting() throws ParseException {
         resourceQueryBuilder = new ResourceQueryBuilder();
         // get information resources only
-        resourceQueryBuilder
-                .setRawQuery("+(resourceType:DOCUMENT resourceType:CODING_SHEET resourceType:IMAGE resourceType:SENSORY_DATA resourceType:DATASET resourceType:ONTOLOGY)");
+        resourceQueryBuilder.append(new FieldQueryPart<ResourceType>(QueryFieldNames.RESOURCE_TYPE, Operator.OR, Arrays.asList(ResourceType.DOCUMENT, ResourceType.CODING_SHEET, ResourceType.IMAGE, ResourceType.SENSORY_DATA, ResourceType.DATASET, ResourceType.ONTOLOGY)));
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
             @Override
             public int compare(Resource arg0, Resource arg1) {
                 InformationResource ir1 = (InformationResource) arg0;
                 InformationResource ir2 = (InformationResource) arg1;
-                logger.debug("comparing {} vs. {}", ir1.getDate(), ir2.getDate());
+                logger.trace("comparing {} vs. {}", ir1.getDate(), ir2.getDate());
                 return ObjectUtils.compare(ir1.getDate(), ir2.getDate());
             }
         };
