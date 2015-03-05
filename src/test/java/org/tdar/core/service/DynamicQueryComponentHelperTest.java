@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.search.query.QueryFieldNames;
@@ -115,6 +116,7 @@ public class DynamicQueryComponentHelperTest {
     }
 
     @Test
+    @Ignore
     public void testSimpleFieldAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
