@@ -161,10 +161,8 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     protected Query appendQuery(QueryBuilder builder, int i, C item) {
         Query q;
         if ( Number.class.isAssignableFrom(item.getClass())) {
-            logger.debug("NUMBER:" + item);
             q = appendNumericQuery(builder, i);
         } else {
-            logger.debug("PHRASE:" + item);
             q = appendPhrase(builder, i);
         }
         return q;

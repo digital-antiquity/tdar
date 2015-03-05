@@ -56,6 +56,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.KeywordBase;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -179,7 +180,7 @@ public class SearchService {
                 query = queryBuilder.generateQuery(getQueryBuilder(ResourceCollection.class));
             }
             if (queryBuilder instanceof KeywordQueryBuilder) {
-                query = queryBuilder.generateQuery(getQueryBuilder(Keyword.class));
+                query = queryBuilder.generateQuery(getQueryBuilder(KeywordBase.class));
             }
             if (queryBuilder instanceof InstitutionQueryBuilder) {
                 query = queryBuilder.generateQuery(getQueryBuilder(Institution.class));
