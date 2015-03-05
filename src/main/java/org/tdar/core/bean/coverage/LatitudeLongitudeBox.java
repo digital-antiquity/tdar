@@ -53,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "latitude_longitude", indexes = {
         @Index(name = "resource_latlong", columnList = "resource_id, id") })
-@ClassBridge(impl = LatLongClassBridge.class)
+//@ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.coverage.LatitudeLongitudeBox")

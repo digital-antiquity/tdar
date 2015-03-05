@@ -25,6 +25,7 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.search.Operator;
 
 import com.opensymphony.xwork2.TextProvider;
+import com.sun.media.Log;
 
 /**
  * @author abrin
@@ -156,7 +157,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     protected Query appendQuery(QueryBuilder builder, int i, C item) {
         Query q;
-        if (item instanceof Number) {
+        if ( Number.class.isAssignableFrom(item.getClass())) {
             q = appendNumericQuery(builder, i);
         } else {
             q = appendPhrase(builder, i);
