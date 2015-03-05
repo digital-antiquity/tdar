@@ -136,12 +136,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         boolean seen = false;
         for (int i = 0; i < fieldValues.size(); i++) {
             C item = fieldValues.get(i);
-            Query q = null;
-            if (item instanceof Number) {
-                q = appendNumericQuery(builder, i);
-            } else {
-                q = appendPhrase(builder, i);
-            }
+            Query q = appendQuery(builder, i, item);
             if (q == null) {
                 continue;
             }
@@ -157,6 +152,16 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             return null;
         }
         return bq.createQuery();
+    }
+
+    protected Query appendQuery(QueryBuilder builder, int i, C item) {
+        Query q;
+        if (item instanceof Number) {
+            q = appendNumericQuery(builder, i);
+        } else {
+            q = appendPhrase(builder, i);
+        }
+        return q;
     }
 
     protected void constructQueryPhrase(StringBuilder sb, String fieldName) {
@@ -229,7 +234,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return range.onField(getFieldName()).from(item).to(item).createQuery();
     }
 
-    private void applyBoostProximitySlop(QueryCustomization<?> fld) {
+    protected void applyBoostProximitySlop(QueryCustomization<?> fld) {
         if (getProximity() != null) {
             if (fld instanceof TermContext) {
                 ((TermContext) fld).fuzzy().withEditDistanceUpTo(getProximity());

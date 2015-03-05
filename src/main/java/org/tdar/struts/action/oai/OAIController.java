@@ -54,7 +54,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.RangeQueryPart;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.data.DateRange;
+import org.tdar.struts.data.RangeImpl;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
 import org.tdar.struts.data.oai.OAIParameter;
@@ -355,7 +355,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             throws ParseException, ParserConfigurationException,
             JAXBException, OAIException {
         setStartRecord(cursor);
-        queryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
+        queryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new RangeImpl(effectiveFrom, effectiveUntil)));
         int total = 0;
         try {
             switchProjectionModel(queryBuilder);
@@ -551,7 +551,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // only publish Persons and Institutions if this feature is specifically enabled in TDAR configuration,
         // and only with oai_dc and tdar metadata formats, not MODS
         setStartRecord(cursor);
-        collectionQueryBuilder.append(new RangeQueryPart<Date>(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
+        collectionQueryBuilder.append(new RangeQueryPart<Date>(QueryFieldNames.DATE_UPDATED, new RangeImpl(effectiveFrom, effectiveUntil)));
         int total = 0;
         try {
             switchProjectionModel(collectionQueryBuilder);

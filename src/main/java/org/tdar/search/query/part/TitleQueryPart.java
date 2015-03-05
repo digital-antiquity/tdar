@@ -6,10 +6,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.service.search.Operator;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -71,14 +72,24 @@ public class TitleQueryPart extends FieldQueryPart<String> {
         group.append(wordsInTitle);
         return group;
     }
+    
+    @Override
+    public Query generateQuery(QueryBuilder builder) {
+        return generateRawQuery().generateQuery(builder);
+    }
 
     @Override
     public String generateQueryString() {
+        QueryPartGroup group = generateRawQuery();
+        return group.generateQueryString();
+    }
+
+    private QueryPartGroup generateRawQuery() {
         QueryPartGroup group = new QueryPartGroup(getOperator());
         for (String title : getFieldValues()) {
             group.append(getQueryPart(title));
         }
-        return group.generateQueryString();
+        return group;
     }
 
     @Override

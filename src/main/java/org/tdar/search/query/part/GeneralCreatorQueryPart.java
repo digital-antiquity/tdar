@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
@@ -23,14 +25,24 @@ public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
         add(creator);
     }
 
+    @Override
+    public Query generateQuery(QueryBuilder builder) {
+        return createRawQuery().generateQuery(builder);
+    }
 
     @Override
     public String generateQueryString() {
+        QueryPartGroup group = createRawQuery();
+        return group.generateQueryString();
+    }
+
+
+    private QueryPartGroup createRawQuery() {
         QueryPartGroup group = new QueryPartGroup(getOperator());
         for (Creator value : getFieldValues()) {
             group.append(this.getQueryPart(value));
         }
-        return group.generateQueryString();
+        return group;
     }
 
     protected QueryPartGroup getQueryPart(Creator value) {
