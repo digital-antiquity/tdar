@@ -743,8 +743,7 @@ public class Resource implements Persistable,
     }
 
     @Override
-    @NumericField
-    @Field(store = Store.YES, name = QueryFieldNames.ID)
+//    @Field(store = Store.YES, name = QueryFieldNames.ID)
     @XmlAttribute
     public Long getId() {
         return id;

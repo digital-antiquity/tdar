@@ -78,7 +78,7 @@ public interface Persistable extends Serializable {
 
         // @XmlTransient
         @Override
-        @Field(store = Store.YES, name = QueryFieldNames.ID)
+        @Field(name = QueryFieldNames.ID)
         @NumericField
         @XmlAttribute(name = "id")
         public Long getId() {
