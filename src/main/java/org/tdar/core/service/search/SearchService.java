@@ -172,7 +172,6 @@ public class SearchService {
         Query query = new MatchAllDocsQuery();
         if (!queryBuilder.isEmpty()) {
             if (queryBuilder instanceof ResourceQueryBuilder) {
-                logger.debug("resource");
                 query = queryBuilder.generateQuery(getQueryBuilder(Resource.class));
             }
             if (queryBuilder instanceof ResourceCollectionQueryBuilder) {

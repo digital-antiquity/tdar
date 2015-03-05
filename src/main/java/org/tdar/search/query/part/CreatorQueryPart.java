@@ -40,17 +40,14 @@ public class CreatorQueryPart<C extends Creator> extends
                 if (proxy.isValid()) {
                     List<Creator> creators = new ArrayList<Creator>();
                     if (rc.getCreator() instanceof Dedupable<?>) {
-                        creators.addAll(((Dedupable<Creator>) rc.getCreator())
-                                .getSynonyms());
+                        creators.addAll(((Dedupable<Creator>) rc.getCreator()).getSynonyms());
                     }
                     creators.add(rc.getCreator());
                     for (Creator creator_ : creators) {
                         if (PersistableUtils.isTransient(creator_)) {
                             // user entered a complete-ish creator record but
                             // autocomplete callback did fire successfully
-                            throw new TdarRecoverableRuntimeException(
-                                    "creatorQueryPart.use_autocomplete",
-                                    Arrays.asList(creator_.toString()));
+                            throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", Arrays.asList(creator_.toString()));
                         }
                         this.roles.add(rc.getRole());
                         this.getFieldValues().add((C) creator_);
@@ -119,8 +116,7 @@ public class CreatorQueryPart<C extends Creator> extends
             ResourceCreatorRole role = getRoles().get(i);
             if ((creator != null) && !creator.hasNoPersistableValues()) {
                 if (names.length() > 0) {
-                    names.append(" " + getOperator().name().toLowerCase())
-                            .append(" ");
+                    names.append(" ").append(getOperator().name().toLowerCase()).append(" ");
                 }
                 names.append(creator.getProperName());
                 if (role != null) {

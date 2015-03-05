@@ -43,17 +43,22 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     @Override
     public Query generateQuery(QueryBuilder builder) {
         BooleanJunction<?> bq = builder.bool();
+        boolean seen = false;
         for (String value : getFieldValues()) {
             Query q = this.getQueryPart(value).generateQuery(builder);
             if (q == null) {
                 continue;
             }
+            seen = true;
             switch (getOperator()) {
                 case AND:
                     bq = bq.must(q);
                 case OR:
                     bq = bq.should(q);
             }
+        }
+        if (seen == false) {
+            return null;
         }
         return bq.createQuery();
     }
