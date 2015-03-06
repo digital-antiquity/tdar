@@ -3,12 +3,10 @@ package org.tdar.search.index.analyzer;
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.KeywordTokenizer;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
-import org.apache.lucene.util.Version;
 
 public final class NonTokenizingLowercaseKeywordAnalyzer extends Analyzer {
 

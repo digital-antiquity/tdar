@@ -25,7 +25,6 @@ import org.apache.lucene.search.Query;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.PhraseTermination;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.hibernate.search.query.dsl.TermTermination;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;

@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.NumericField;
-import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;

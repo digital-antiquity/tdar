@@ -14,9 +14,9 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
 import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.analysis.pattern.PatternTokenizer;
+import org.apache.lucene.util.Version;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.apache.lucene.util.Version;
 public final class LowercaseWhiteSpaceStandardAnalyzer extends Analyzer {
 
     /*
