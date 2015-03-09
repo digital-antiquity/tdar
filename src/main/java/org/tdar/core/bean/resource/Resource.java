@@ -68,11 +68,14 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Latitude;
+import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Spatial;
 import org.hibernate.search.annotations.SpatialMode;
+import org.hibernate.search.annotations.Spatials;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
@@ -171,11 +174,14 @@ import com.fasterxml.jackson.annotation.JsonView;
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
+//@Spatials({
+//  @Spatial(name="min",  spatialMode = SpatialMode.HASH),
+//  @Spatial(name="max",  spatialMode = SpatialMode.HASH)
+//})
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource", propOrder = {})
-@Spatial(spatialMode=SpatialMode.HASH)
 @XmlTransient
 public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
@@ -2006,4 +2012,40 @@ public class Resource implements Persistable,
     public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
         this.bookmarkedResources = bookmarkedResources;
     }
+    
+//    @Latitude(of="min")
+//    @XmlTransient
+//    public Double getMinLatitude() {
+//        if (getFirstActiveLatitudeLongitudeBox() != null) {
+//            return getFirstActiveLatitudeLongitudeBox().getMinObfuscatedLatitude();
+//        }
+//        return null;
+//    }
+//
+//    @Latitude(of="max")
+//    @XmlTransient
+//    public Double getMaxLatitude() {
+//        if (getFirstActiveLatitudeLongitudeBox() != null) {
+//            return getFirstActiveLatitudeLongitudeBox().getMaxObfuscatedLatitude();
+//        }
+//        return null;
+//    }
+//
+//    @Longitude(of="min")
+//    @XmlTransient
+//    public Double getMinLongitude() {
+//        if (getFirstActiveLatitudeLongitudeBox() != null) {
+//            return getFirstActiveLatitudeLongitudeBox().getMinObfuscatedLongitude();
+//        }
+//        return null;
+//    }
+//
+//    @Longitude(of="max")
+//    @XmlTransient
+//    public Double getMaxLongitude() {
+//        if (getFirstActiveLatitudeLongitudeBox() != null) {
+//            return getFirstActiveLatitudeLongitudeBox().getMaxObfuscatedLongitude();
+//        }
+//        return null;
+//    }
 }

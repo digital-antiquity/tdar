@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
@@ -18,7 +20,18 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
     private boolean registered = false;
 
     @Override
+    public Query generateQuery(QueryBuilder builder) {
+        return generateRawQuery().generateQuery(builder);
+    };
+    
+    @Override
     public String generateQueryString() {
+        QueryPartGroup group = generateRawQuery();
+                return group.toString();
+    }
+
+    
+    private QueryPartGroup generateRawQuery() {
         List<String> fns = new ArrayList<>();
         List<String> lns = new ArrayList<>();
         List<String> ems = new ArrayList<>();
@@ -115,10 +128,11 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
             qpg.append(group);
             qpg.append(new FieldQueryPart<Boolean>("registered", Boolean.TRUE));
-            return qpg.generateQueryString();
+            return qpg;
         }
-        return group.toString();
+        return group;
     }
+
 
     public boolean isRegistered() {
         return registered;

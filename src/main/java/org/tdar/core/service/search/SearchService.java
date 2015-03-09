@@ -57,6 +57,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.KeywordBase;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -81,6 +82,7 @@ import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceAnnotationKeyQueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
@@ -185,6 +187,9 @@ public class SearchService {
             }
             if (queryBuilder instanceof PersonQueryBuilder) {
                 query = queryBuilder.generateQuery(getQueryBuilder(Person.class));
+            }
+            if (queryBuilder instanceof ResourceAnnotationKeyQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(ResourceAnnotationKey.class));
             }
         }
         FullTextQuery ftq = fullTextSession.createFullTextQuery(query, queryBuilder.getClasses());
