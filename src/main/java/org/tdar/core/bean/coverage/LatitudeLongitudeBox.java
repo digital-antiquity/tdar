@@ -17,9 +17,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Loader;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Latitude;
+import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
@@ -131,10 +134,12 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return minimumLatitude;
     }
 
+    @Latitude(of="center")
     public Double getCenterLatitude() {
         return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
     }
 
+    @Longitude(of="center")
     public Double getCenterLongitude() {
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
@@ -249,6 +254,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
+    @Latitude(of="min")
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
             setMinObfuscatedLatitude();
@@ -264,6 +270,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
+    @Latitude(of="max")
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
             setMaxObfuscatedLatitude();
@@ -279,6 +286,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
+    @Longitude(of="min")
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
             setMinObfuscatedLongitude();
@@ -294,6 +302,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
+    @Longitude(of="max")
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
             setMaxObfuscatedLongitude();
