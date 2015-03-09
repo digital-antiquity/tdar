@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.UrlService;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -134,6 +135,8 @@ public abstract class ModsTransformer<R extends Resource> implements
                     .concat(longLat.getMinObfuscatedLongitude().toString()));
             sub.addCartographics(coords, "wgs84", null);
         }
+
+        mods.addIdentifier(UrlService.absoluteUrl(source), "uri", false, null);
 
         for (CoverageDate date : source.getCoverageDates()) {
             Subject sub = mods.createSubject();
