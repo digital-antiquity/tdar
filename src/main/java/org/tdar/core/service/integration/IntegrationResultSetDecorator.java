@@ -154,10 +154,12 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             groupCount = new IntContainer();
         }
 
-        if (countVal.intValue() == 1) {
-            groupCount.increment();
-        } else if (countVal != null) {
-            groupCount.add(countVal.intValue());
+        if (countVal != null) {
+            if (countVal.intValue() == 1) {
+                groupCount.increment();
+            } else {
+                groupCount.add(countVal.intValue());
+            }
         }
         pivotVal.put(tableId, groupCount);
     }

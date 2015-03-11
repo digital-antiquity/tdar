@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortField.Type;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
@@ -18,18 +19,18 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 
 public enum SortOption {
-    RELEVANCE(null, "Relevance", null, SortField.SCORE, false),
-    ID(null, "ID", QueryFieldNames.ID, SortField.INT, false),
-    ID_REVERSE(null, "ID (Most Recent)", QueryFieldNames.ID, SortField.INT, true),
+    RELEVANCE(null, "Relevance", null, SortField.Type.SCORE, false),
+    ID(null, "ID", QueryFieldNames.ID, SortField.Type.LONG, false),
+    ID_REVERSE(null, "ID (Most Recent)", QueryFieldNames.ID, SortField.Type.LONG, true),
     COLLECTION_TITLE(ResourceCollection.class, "Title", QueryFieldNames.TITLE_SORT),
     COLLECTION_TITLE_REVERSE(ResourceCollection.class, "Title (Z-A)", QueryFieldNames.TITLE_SORT, true),
     TITLE(Resource.class, "Title", QueryFieldNames.TITLE_SORT),
     TITLE_REVERSE(Resource.class, "Title (Z-A)", QueryFieldNames.TITLE_SORT, true),
     PROJECT(Resource.class, "Project", QueryFieldNames.PROJECT_TITLE_SORT),
-    DATE(Resource.class, "Date", QueryFieldNames.DATE, SortField.STRING, false),
-    DATE_REVERSE(Resource.class, "Date (Most Recent)", QueryFieldNames.DATE, SortField.STRING, true),
-    DATE_UPDATED(Resource.class, "Date Updated", QueryFieldNames.DATE_UPDATED, SortField.STRING, false),
-    DATE_UPDATED_REVERSE(Resource.class, "Date Updated (Most Recent)", QueryFieldNames.DATE_UPDATED, SortField.STRING, true),
+    DATE(Resource.class, "Date", QueryFieldNames.DATE, SortField.Type.INT, false),
+    DATE_REVERSE(Resource.class, "Date (Most Recent)", QueryFieldNames.DATE, SortField.Type.INT, true),
+    DATE_UPDATED(Resource.class, "Date Updated", QueryFieldNames.DATE_UPDATED, SortField.Type.LONG, false),
+    DATE_UPDATED_REVERSE(Resource.class, "Date Updated (Most Recent)", QueryFieldNames.DATE_UPDATED, SortField.Type.LONG, true),
     RESOURCE_TYPE(Resource.class, "Resource Type", QueryFieldNames.RESOURCE_TYPE_SORT),
     RESOURCE_TYPE_REVERSE(Resource.class, "Resource Type (Z-A)", QueryFieldNames.RESOURCE_TYPE_SORT, true),
     LABEL(Keyword.class, "Label", QueryFieldNames.LABEL_SORT),
@@ -43,7 +44,7 @@ public enum SortOption {
 
     private String label;
     private String sortField;
-    private int luceneSortType;
+    private Type luceneSortType;
     private boolean reversed;
     private Class<? extends Indexable> context;
 
@@ -52,10 +53,10 @@ public enum SortOption {
     }
 
     private SortOption(Class<? extends Indexable> context, String label, String sortField, boolean reversed) {
-        this(context, label, sortField, SortField.STRING, reversed);
+        this(context, label, sortField, SortField.Type.STRING, reversed);
     }
 
-    private SortOption(Class<? extends Indexable> context, String label, String sortField, int sortType, boolean reversed) {
+    private SortOption(Class<? extends Indexable> context, String label, String sortField, Type sortType, boolean reversed) {
         this.setLabel(label);
         this.setSortField(sortField);
         this.setReversed(reversed);
@@ -128,14 +129,14 @@ public enum SortOption {
      * @param luceneSortType
      *            the luceneSortType to set
      */
-    public void setLuceneSortType(int luceneSortType) {
+    public void setLuceneSortType(Type luceneSortType) {
         this.luceneSortType = luceneSortType;
     }
 
     /**
      * @return the luceneSortType
      */
-    public int getLuceneSortType() {
+    public Type getLuceneSortType() {
         return luceneSortType;
     }
 

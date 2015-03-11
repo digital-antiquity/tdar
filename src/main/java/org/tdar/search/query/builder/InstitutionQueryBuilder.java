@@ -1,7 +1,7 @@
 package org.tdar.search.query.builder;
 
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.service.search.Operator;
 
 public class InstitutionQueryBuilder extends QueryBuilder {
 

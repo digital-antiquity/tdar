@@ -48,8 +48,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     public static final String PASSWORD = "test";
 
     // used for defining local passwords and rights for users
-    private Map<String,MockAuthenticationInfo> localValues = new HashMap<>();
-    
+    private Map<String, MockAuthenticationInfo> localValues = new HashMap<>();
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, MockAuthenticationInfo> users = new ConcurrentHashMap<String, MockAuthenticationInfo>();
@@ -122,7 +122,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             if (ArrayUtils.isEmpty(groups)) {
                 groups = AuthenticationProvider.DEFAULT_GROUPS;
             }
-            logger.debug("adding: {} [{}]", person.getUsername().toLowerCase(), groups);
+            logger.trace("adding: {} [{}]", person.getUsername().toLowerCase(), groups);
             MockAuthenticationInfo info = new MockAuthenticationInfo();
             info.setPassword(password);
             info.setUsername(person.getUsername().toLowerCase());
@@ -213,11 +213,12 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             if (user.getUsername().equals(USERNAME)) {
                 info.setPassword(PASSWORD);
             }
-            
+
             if (localValues.containsKey(user.getUsername())) {
                 MockAuthenticationInfo local = localValues.get(user.getUsername());
                 info.setPassword(local.getPassword());
                 info.getMemberships().addAll(local.getMemberships());
+                logger.debug("init: {}", user.getUsername().toLowerCase());
             }
             logger.trace("init: {}", user.getUsername().toLowerCase());
             users.put(user.getUsername().toLowerCase(), info);
@@ -226,7 +227,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public AuthenticationResult checkToken(String token, HttpServletRequest request) {
-        AuthenticationResult result  = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
+        AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         for (MockAuthenticationInfo info : users.values()) {
             if (Objects.equals(token, info.getToken())) {
                 result.setTokenUsername(info.getUsername());
@@ -237,11 +238,11 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
         return result;
     }
 
-    public Map<String,MockAuthenticationInfo> getLocalValues() {
+    public Map<String, MockAuthenticationInfo> getLocalValues() {
         return localValues;
     }
 
-    public void setLocalValues(Map<String,MockAuthenticationInfo> localValues) {
+    public void setLocalValues(Map<String, MockAuthenticationInfo> localValues) {
         this.localValues = localValues;
     }
 }

@@ -40,9 +40,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
-
 
 /**
  * Proxy class to handle the generation of the Excel Workbook at the end of the DataIntegration
@@ -97,25 +97,33 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private void createOntologySheets() {
         Set<Ontology> seenOntologies = new HashSet<>();
         for (IntegrationColumn col : context.getIntegrationColumns()) {
-            if (col.isIntegrationColumn()) {
-                Ontology ontology = col.getSharedOntology();
-                if (seenOntologies.contains(ontology) || ontology == null) {
-                    continue;
-                }
-                int rowIndex = 0;
-                seenOntologies.add(ontology);
-                Sheet ontologySheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.ontology_worksheet", Arrays.asList(ontology.getTitle())));
-                excelService.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
+            if (!col.isIntegrationColumn() || seenOntologies.contains(col.getSharedOntology()) || PersistableUtils.isNullOrTransient(col.getSharedOntology())) {
+                continue;
+            }
+            Ontology ontology = col.getSharedOntology();
+            if (ontology == null) {
+                ontology = col.getColumns().get(0).getDefaultCodingSheet().getDefaultOntology();
+            }
+            int rowIndex = 0;
+            seenOntologies.add(ontology);
+            String name = provider.getText("dataIntegrationWorkbook.ontology_worksheet", Arrays.asList(ontology.getTitle()));
+            logger.debug("creating sheet with name: {}", name);
+            if (workbook.getSheet(name) != null) {
+                logger.error("sheet already exists: {}", name);
+                continue;
+            }
+            Sheet ontologySheet = workbook.createSheet(name);
+            excelService.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
+            addMergedRegion(0, 0, 0, 8, ontologySheet);
+            rowIndex++;
+            String termText = provider.getText("dataIntegrationWorkbook.ontology_term");
+            String orderText = provider.getText("dataIntegrationWorkbook.ontology_order");
+            excelService.addHeaderRow(ontologySheet, rowIndex, 0, Arrays.asList(orderText, termText));
+            rowIndex++;
+            for (OntologyNode node : ontology.getSortedOntologyNodesByImportOrder()) {
+                String order = Long.toString(node.getImportOrder());
+                excelService.addDataRow(ontologySheet, rowIndex, 0, Arrays.asList(order, node.getDisplayName()));
                 rowIndex++;
-                String termText = provider.getText("dataIntegrationWorkbook.ontology_term");
-                String orderText = provider.getText("dataIntegrationWorkbook.ontology_order");
-                excelService.addHeaderRow(ontologySheet, rowIndex, 0, Arrays.asList(orderText, termText  ));
-                rowIndex++;
-                for (OntologyNode node : ontology.getSortedOntologyNodesByImportOrder()) {
-                    String order = Long.toString(node.getImportOrder());
-                    excelService.addDataRow(ontologySheet, rowIndex, 0, Arrays.asList(order, node.getDisplayName()));
-                    rowIndex++;
-                }
             }
         }
     }
@@ -178,9 +186,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             // compare by database name, should sort together
             @Override
             public int compare(Object[] o1, Object[] o2) {
-                return ObjectUtils.compare((String)o1[0], (String)o2[0]);
+                return ObjectUtils.compare((String) o1[0], (String) o2[0]);
             }
-            
+
         });
         result.setPreviewData(previewData);
         pivot = ird.getPivot();
@@ -239,7 +247,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             if (col.getColumnType() != null) {
                 row[1] = col.getColumnType().name();
             }
-            
+
             int size = 2;
             for (DataTable table : context.getDataTables()) {
                 DataTableColumn dtc = col.getColumnForTable(table);

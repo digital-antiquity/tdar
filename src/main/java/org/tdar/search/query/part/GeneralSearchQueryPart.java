@@ -7,9 +7,12 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.BooleanJunction;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.struts.action.search.SearchFieldType;
 
@@ -36,6 +39,29 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         add(values.toArray(new String[0]));
     }
 
+    @Override
+    public Query generateQuery(QueryBuilder builder) {
+        BooleanJunction<?> bq = builder.bool();
+        boolean seen = false;
+        for (String value : getFieldValues()) {
+            Query q = this.getQueryPart(value).generateQuery(builder);
+            if (q == null) {
+                continue;
+            }
+            seen = true;
+            switch (getOperator()) {
+                case AND:
+                    bq = bq.must(q);
+                case OR:
+                    bq = bq.should(q);
+            }
+        }
+        if (seen == false) {
+            return null;
+        }
+        return bq.createQuery();
+    }
+
     protected QueryPartGroup getQueryPart(String value) {
 
         String cleanedQueryString = getCleanedQueryString(value);
@@ -46,7 +72,8 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
-        FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
+        FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString);
+        allFields.setBoost(ANY_FIELD_BOOST);
 
         List<String> fields = new ArrayList<String>();
         for (String txt : StringUtils.split(cleanedQueryString)) {
@@ -55,7 +82,8 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
             }
         }
 
-        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, fields).setBoost(ANY_FIELD_BOOST);
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, fields);
+        allFieldsAsPart.setBoost(ANY_FIELD_BOOST);
 
         allFieldsAsPart.setOperator(Operator.AND);
         allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
@@ -77,8 +105,10 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
             }
         }
 
-        primary.append(titlePart.setBoost(TITLE_BOOST));
-        primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
+        titlePart.setBoost(TITLE_BOOST);
+        primary.append(titlePart);
+        descriptionPart.setBoost(DESCRIPTION_BOOST);
+        primary.append(descriptionPart);
         primary.append(allFields);
         primary.append(allFieldsAsPart);
 

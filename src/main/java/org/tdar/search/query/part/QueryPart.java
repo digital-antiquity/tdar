@@ -1,6 +1,8 @@
 package org.tdar.search.query.part;
 
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
+import org.tdar.core.service.search.Operator;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -29,5 +31,7 @@ public interface QueryPart<T> {
     boolean isEmpty();
 
     Operator getOperator();
+
+    Query generateQuery(QueryBuilder builder);
 
 }

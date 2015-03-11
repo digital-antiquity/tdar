@@ -31,11 +31,11 @@ import org.tdar.search.query.QueryFieldNames;
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteNameKeyword")
 @Cacheable
-public class SiteNameKeyword extends UncontrolledKeyword.Base<SiteNameKeyword> {
+public class SiteNameKeyword extends KeywordBase<SiteNameKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = 60750909588980398L;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteNameKeyword> synonyms = new HashSet<SiteNameKeyword>();

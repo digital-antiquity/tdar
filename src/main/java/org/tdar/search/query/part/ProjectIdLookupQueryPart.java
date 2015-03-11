@@ -4,7 +4,9 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -17,13 +19,23 @@ public class ProjectIdLookupQueryPart extends FieldQueryPart<Long> {
 
     @Override
     public String generateQueryString() {
+        QueryPartGroup group = generateRawQuery();
+        return group.generateQueryString();
+    }
+
+    @Override
+    public Query generateQuery(QueryBuilder builder) {
+        return generateRawQuery().generateQuery(builder);
+    }
+
+    private QueryPartGroup generateRawQuery() {
         QueryPartGroup group = new QueryPartGroup();
         group.setOperator(Operator.OR);
         for (Long value : getFieldValues()) {
             group.append(new FieldQueryPart<Long>(QueryFieldNames.PROJECT_ID, value));
             group.append(new FieldQueryPart<Long>(QueryFieldNames.ID, value));
         }
-        return group.generateQueryString();
+        return group;
     }
 
     @Override

@@ -8,13 +8,19 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.BooleanJunction;
+import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.query.dsl.RangeContext;
+import org.hibernate.search.query.dsl.RangeMatchingContext;
+import org.hibernate.search.query.dsl.RangeTerminationExcludable;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
 
@@ -53,6 +59,70 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     @Override
+    public Query generateQuery(QueryBuilder builder) {
+
+        BooleanJunction<?> bq = builder.bool();
+        List<Range<C>> values = getFieldValues(); 
+        boolean seen = false;
+        for (int i = 0; i < values.size(); i++) {
+            Query q = appendRange(builder, getFieldName(), i);
+            if (q == null) {
+                continue;
+            }
+            seen = true;
+            switch (getOperator()) {
+                case AND:
+                    bq = bq.must(q);
+                case OR:
+                    bq = bq.should(q);
+            }
+        }
+        if (seen == false) {
+            return null;
+        }
+        return bq.createQuery();
+    }
+    
+    protected C getStart(int i) {
+        return getFieldValues().get(i).getStart();
+    }
+
+    protected C getEnd(int i) {
+        return getFieldValues().get(i).getEnd();
+    }
+
+    
+    protected Query appendRange(QueryBuilder builder, String fieldName, int index) {
+        RangeContext range = builder.range();
+        applyBoostProximitySlop(range);
+        if (range == null) {
+            return null;
+        }
+        C start = getStart(index);
+        C end = getEnd(index);
+        String start_ = convert(start);
+        String end_ = convert(end);
+
+        RangeTerminationExcludable query = null;
+        if (StringUtils.isBlank(start_) && StringUtils.isBlank(end_)) {
+            return null;
+        }
+        RangeMatchingContext onField = range.onField(fieldName);
+        if (StringUtils.isNotBlank(start_) && StringUtils.isNotBlank(end_)) {
+            onField.from(start).to(end);
+        } else if (StringUtils.isNotBlank(start_)) {
+            onField.above(start);
+        } else {
+            onField.below(end);
+        }
+
+        if (!inclusive) {
+            query = query.excludeLimit();
+        }
+        return query.createQuery();
+    }
+
+    @Override
     protected void appendPhrase(StringBuilder sb, int index) {
         Range<C> value = getFieldValues().get(index);
         String start = convert(value.getStart());
@@ -79,8 +149,8 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
             return null;
         }
         DateTime dateTime = new DateTime(date);
-        //we convert dates to utc when indexing them in lucene, therefore when performing a search we need to similarly convert the
-        //dates in a date range.
+        // we convert dates to utc when indexing them in lucene, therefore when performing a search we need to similarly convert the
+        // dates in a date range.
         dateTime = dateTime.toDateTime(DateTimeZone.UTC);
         return dateTime.toString(dtf);
     }

@@ -18,11 +18,15 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Latitude;
+import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.NumericField;
+import org.hibernate.search.annotations.Spatial;
+import org.hibernate.search.annotations.SpatialMode;
+import org.hibernate.search.annotations.Spatials;
 import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +38,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -53,7 +56,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "latitude_longitude", indexes = {
         @Index(name = "resource_latlong", columnList = "resource_id, id") })
-@ClassBridge(impl = LatLongClassBridge.class)
+//@ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.coverage.LatitudeLongitudeBox")
@@ -66,8 +69,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public static final double MAX_LONGITUDE = 180d;
     public static final double MIN_LONGITUDE = -180d;
-    public static final int LATITUDE = 1;
-    public static final int LONGITUDE = 2;
+    public static final int _LATITUDE = 1;
+    public static final int _LONGITUDE = 2;
 
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
 
@@ -93,22 +96,26 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     // ranges from -90 (South) to +90 (North)
     @Field
     @NumericField(precisionStep = 6)
+    @Latitude(of="minimum")
     @Column(nullable = false, name = "minimum_latitude")
     private Double minimumLatitude;
 
     @Field
     @NumericField(precisionStep = 6)
     @Column(nullable = false, name = "maximum_latitude")
+    @Latitude(of="maximum")
     private Double maximumLatitude;
 
     // ranges from -180 (West) to +180 (East)
     @Field
+    @Longitude(of="minimum")
     @NumericField(precisionStep = 6)
     @Column(nullable = false, name = "minimum_longitude")
     private Double minimumLongitude;
 
     @Field
     @NumericField(precisionStep = 6)
+    @Longitude(of="maximum")
     @Column(nullable = false, name = "maximum_longitude")
     private Double maximumLongitude;
 
@@ -133,10 +140,12 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return minimumLatitude;
     }
 
+//    @Latitude(of="center")
     public Double getCenterLatitude() {
         return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
     }
 
+//    @Longitude(of="center")
     public Double getCenterLongitude() {
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
@@ -208,7 +217,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         }
         // -5 - .05 - .02
         double ret = numOne.doubleValue() + add + salt * r.nextDouble();
-        if (type == LONGITUDE) {
+        if (type == _LONGITUDE) {
             if (ret > MAX_LONGITUDE)
                 ret -= 360;
             if (ret < MIN_LONGITUDE)
@@ -217,7 +226,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
         // NOTE: Ideally, this should do something different, but in reality, how
         // many archaeological sites are really going to be in this area???
-        if (type == LATITUDE) {
+        if (type == _LATITUDE) {
             if (Math.abs(ret) > MAX_LATITUDE)
                 ret = MAX_LATITUDE;
         }
@@ -244,7 +253,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMinObfuscatedLatitude() {
-        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
+        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, _LATITUDE);
     }
 
     /**
@@ -259,7 +268,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMaxObfuscatedLatitude() {
-        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
+        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, _LATITUDE);
     }
 
     /**
@@ -274,7 +283,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMinObfuscatedLongitude() {
-        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
+        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, _LONGITUDE);
     }
 
     /**
@@ -289,7 +298,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMaxObfuscatedLongitude() {
-        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
+        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, _LONGITUDE);
     }
 
     /**

@@ -272,4 +272,20 @@ public interface TdarNamedQueries {
     String MONTH_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%1$s' and month='%2$s') as \"%1$s-%2$s Downloads\"";
     String DAY_VIEW_PART = "(select sum(count) from resource_access_day_agg where resource_id=resource.id and date_accessed = '%1$s') as \"%1$s Views\"";
     String DAY_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and date_accessed = '%1$s') as \"%1$s Downloads\"";
+    String CREATOR_ANALYSIS_CREATE_TEMP = "CREATE TEMPORARY TABLE temp_ccounts (id bigserial, creator_id bigint);";
+    String CREATOR_ANALYSIS_RESOURCE_CREATOR_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id in :resourceIds";
+    String CREATOR_ANALYSIS_SUBMITTER_INSERT =  "INSERT INTO temp_ccounts (creator_id) SELECT submitter_id from resource where id in :resourceIds";
+    String CREATOR_ANALYSIS_PUBLISHER_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT publisher_id from information_resource where id in :resourceIds";
+    String CREATOR_ANALYSIS_INHERITED_CREATORS_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator,information_resource where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id=project_id and information_resource.id in :resourceIds";
+    String CREATOR_ANALYSIS__SLECT_COUNTS = "select count(id), creator_id from temp_ccounts where creator_id is not null group by creator_id";
+    String CREATOR_DROP_TEMP =  "DROP TABLE IF EXISTS temp_ccounts;";
+    String CREATOR_ANALYSIS_KWD_DROP_TEMP = "DROP TABLE IF EXISTS temp_kwd;";
+    String CREATOR_ANALYSIS_KWD_CREATE_TEMP = "CREATE TEMPORARY TABLE temp_kwd (id bigserial, kwd_id bigint);";
+    String CREATOR_ANALYSIS_TRUNCATE_TEMP = "truncate table temp_kwd";
+    String CREATOR_ANALYSIS_KWD_SELECT_COUNTS = "select count(id), kwd_id from temp_kwd where kwd_id is not null group by kwd_id";
+    String CREATOR_ANALYSIS_KWD_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id in :resourceIds";
+    String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
+    
+
+    
 }

@@ -10,8 +10,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -34,6 +33,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.search.Operator;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
@@ -258,7 +258,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,TdarActionSupport.NOT_FOUND);
         } catch (TdarRecoverableRuntimeException tdre) {
-            getLogger().warn("search parse exception: {}", tdre.getMessage());
+            getLogger().warn("search parse exception: {}", tdre.getMessage(), tdre);
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
             getLogger().warn("search parse exception: {}", e.getMessage());

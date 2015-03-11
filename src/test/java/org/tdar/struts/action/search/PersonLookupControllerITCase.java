@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.lookup.PersonLookupAction;
 import org.tdar.struts.interceptor.ObfuscationResultListener;
@@ -33,6 +36,9 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     @Autowired
     ReflectionService reflectionService;
 
+    @Autowired
+    SearchService searchService;
+    
     @Autowired
     private PersonLookupAction controller;
     private Logger log = Logger.getLogger(getClass());
@@ -56,70 +62,26 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testUserLookupWithrelevancy() {
-        TdarUser person = new TdarUser();
-        person.setLastName("Savala");
-        person.setFirstName("M");
-        person.setEmail("savala@coxasdsad.net");
-        person.setUsername("savala@coxasdsad.net");
+        TdarUser person = new TdarUser("M", "Savala", "savala@coxasdsad.net", "savala@coxasdsad.net");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Gomez");
-        person.setFirstName("m");
-        person.setEmail("gomez@hotmaadsasdil.com");
-        person.setUsername("gomez@hotmaadsasdil.com");
+        person = new TdarUser("m", "Gomez", "gomez@hotmaadsasdil.com", "gomez@hotmaadsasdil.com");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("R");
-        person.setFirstName("M");
-        person.setEmail("mr@gmasdasdail.com");
-        person.setUsername("mr@gmasdasdail.com");
+        person = new TdarUser("M", "R", "mr@gmasdasdail.com", "mr@gmasdasdail.com");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("W");
-        person.setFirstName("M");
-        person.setEmail("wm@gmaiadssadl.com");
-        person.setUsername("wm@gmaiadssadl.com");
+        person = new TdarUser("M", "W", "wm@gmaiadssadl.com", "wm@gmaiadssadl.com");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Ron");
-        person.setEmail("scott@coasdsadx.net");
-        person.setUsername("scott@coasdsadx.net");
+        person = new TdarUser("Ron", "Scott", "scott@coasdsadx.net", "scott@coasdsadx.net");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Frederick");
-        person.setEmail("fredrerick@hotasdasdmail.com");
-        person.setUsername("fredrerick@hotasdasdmail.com");
+        person = new TdarUser("Frederick", "Scott", "fredrerick@hotasdasdmail.com", "fredrerick@hotasdasdmail.com");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Anne");
-        person.setEmail("anne@mchasdasdsi.com");
-        person.setUsername("anne@mchasdasdsi.com");
+        person = new TdarUser("Anne", "Scott", "anne@mchasdasdsi.com", "anne@mchasdasdsi.com");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Susan");
-        person.setEmail("susan@gmailasda.com");
-        person.setUsername("susan@gmailasda.com");
+        person = new TdarUser("Susan", "Scott", "susan@gmailasda.com", "susan@gmailasda.com");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Kathleen");
-        person.setEmail("katheen@designworkasdasds-tn.com");
-        person.setUsername("katheen@designworkasdasds-tn.com");
+        person = new TdarUser("Kathleen", "Scott", "katheen@designworkasdasds-tn.com", "katheen@designworkasdasds-tn.com");
         genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Ortman");
-        person.setFirstName("Scott");
-        person.setEmail("ortman@coloradoasd.edu");
-        person.setUsername("ortman@coloradoasd.edu");
-        person = new TdarUser();
-        person.setLastName("Scott Thompson");
-        person.setFirstName("M");
-        person.setEmail("mscottthompson@sua.edu");
-        person.setUsername("mscottthompson@sua.edu");
+        person = new TdarUser("Scott", "Ortman", "ortman@coloradoasd.edu", "ortman@coloradoasd.edu");
+        person = new TdarUser("M", "Scott Thompson", "mscottthompson@sua.edu", "mscottthompson@sua.edu");
         genericService.saveOrUpdate(person);
 
         // searching by name
@@ -200,8 +162,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     @Rollback
     // we should properly escape input
     public void testPersonByUsername() {
-        TdarUser user = new TdarUser("billing", "admin", "billingadmin@tdar.net");
-        user.setUsername("billingAdmin");
+        TdarUser user = new TdarUser("billing", "admin", "billingadmin@tdar.net", "billingAdmin");
         user.markUpdated(getAdminUser());
         genericService.saveOrUpdate(user);
         searchIndexService.indexAll(getAdminUser(), Person.class);
@@ -223,6 +184,17 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         assertEquals("result should be success", Action.SUCCESS, result);
         List<Person> people = controller.getResults();
         assertEquals("person list should have exactly one item", 2, people.size());
+        
+        // personLookup: +(+firstName:keit* +registered:true) +status:ACTIVE (SORT:RELEVANCE,TITLE)  LUCENE: 132 | HYDRATION: 109 | # RESULTS: 2 | START #: 0
+        QueryBuilder builder = searchService.getQueryBuilder(TdarUser.class);
+        Query query = builder.bool().must(builder.keyword().wildcard().onField("firstName").matching("Keit*").createQuery()).must(
+                builder.phrase().onField("registered").sentence("true").createQuery()).createQuery();
+        query = builder.bool().must(query).must(builder.phrase().onField("status").sentence("ACTIVE").createQuery()).createQuery();
+        org.hibernate.Query fullTextQuery = searchService.createFullTextQuery(query, TdarUser.class);
+        logger.debug(query.toString());
+        logger.debug("results: {} ", fullTextQuery.list());
+        
+        
     }
 
     @Test

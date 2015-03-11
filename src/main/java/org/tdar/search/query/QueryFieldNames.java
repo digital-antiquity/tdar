@@ -98,5 +98,6 @@ public interface QueryFieldNames {
     String NAME_TOKEN = "name_token";
     String USERNAME = "username";
     String PROPER_AUTO = "proper_name_auto";
+    String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
 
 }

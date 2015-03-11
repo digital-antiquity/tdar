@@ -28,11 +28,11 @@ import org.hibernate.search.annotations.Indexed;
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.TemporalKeyword")
 @Cacheable
-public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
+public class TemporalKeyword extends KeywordBase<TemporalKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = -626136232824053935L;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();

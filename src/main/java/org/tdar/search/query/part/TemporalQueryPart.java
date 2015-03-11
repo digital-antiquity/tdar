@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -42,6 +44,14 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
     public TemporalQueryPart(Collection<CoverageDate> coverageDates, Operator operator) {
         this(coverageDates.toArray(new CoverageDate[0]));
         setOperator(operator);
+    }
+    
+    @Override
+    protected Query appendQuery(QueryBuilder builder, int i, CoverageDate item) {
+        Query start = builder.range().onField(QueryFieldNames.ACTIVE_START_DATE).below(item.getEndDate()).createQuery();
+        Query end = builder.range().onField(QueryFieldNames.ACTIVE_END_DATE).above(item.getStartDate()).createQuery();
+        Query type = builder.phrase().onField(QueryFieldNames.ACTIVE_COVERAGE_TYPE).sentence(item.getDateType().name()).createQuery();
+        return builder.bool().must(start).must(end).must(type).createQuery();
     }
 
     @Override

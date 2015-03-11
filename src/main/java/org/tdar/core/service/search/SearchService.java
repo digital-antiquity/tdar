@@ -20,23 +20,22 @@ import java.util.regex.Pattern;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.util.Version;
 import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
-import org.hibernate.search.ProjectionConstants;
 import org.hibernate.search.Search;
+import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.query.facet.Facet;
 import org.hibernate.search.query.facet.FacetSortOrder;
 import org.hibernate.search.query.facet.FacetingRequest;
@@ -49,13 +48,16 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.KeywordBase;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -77,8 +79,11 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.DynamicQueryComponent;
 import org.tdar.search.query.builder.DynamicQueryComponentHelper;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceAnnotationKeyQueryBuilder;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
@@ -110,9 +115,10 @@ public class SearchService {
     private final DatasetDao datasetDao;
 
     private final AuthorizationService authorizationService;
-    
+
     @Autowired
-    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao, AuthorizationService authorizationService) {
+    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao,
+            AuthorizationService authorizationService) {
         this.sessionFactory = sessionFactory;
         this.obfuscationService = obfuscationService;
         this.genericService = genericService;
@@ -124,7 +130,7 @@ public class SearchService {
     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
 
-    private transient ConcurrentMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> parserCacheMap = new ConcurrentHashMap<>();
+    private transient ConcurrentMap<Class<?>, Pair<String[], org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper>> parserCacheMap = new ConcurrentHashMap<>();
 
     public static final int MAX_FTQ_RESULTS = 50_000;
 
@@ -149,7 +155,7 @@ public class SearchService {
      * @param obj
      * @return
      */
-    public org.hibernate.search.query.dsl.QueryBuilder getQueryBuilder(Class<?> obj) {
+    public org.hibernate.search.query.dsl.QueryBuilder getQueryBuilder(Class<? extends Indexable> obj) {
         return Search.getFullTextSession(sessionFactory.getCurrentSession()).getSearchFactory().buildQueryBuilder().forEntity(obj).get();
     }
 
@@ -164,10 +170,27 @@ public class SearchService {
     public FullTextQuery search(QueryBuilder queryBuilder, SortOption... sortOptions) throws ParseException {
         FullTextSession fullTextSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
         fullTextSession.setDefaultReadOnly(true);
-        setupQueryParser(queryBuilder);
+        //setupQueryParser(queryBuilder);
         Query query = new MatchAllDocsQuery();
         if (!queryBuilder.isEmpty()) {
-            query = queryBuilder.buildQuery();
+            if (queryBuilder instanceof ResourceQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(Resource.class));
+            }
+            if (queryBuilder instanceof ResourceCollectionQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(ResourceCollection.class));
+            }
+            if (queryBuilder instanceof KeywordQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(KeywordBase.class));
+            }
+            if (queryBuilder instanceof InstitutionQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(Institution.class));
+            }
+            if (queryBuilder instanceof PersonQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(Person.class));
+            }
+            if (queryBuilder instanceof ResourceAnnotationKeyQueryBuilder) {
+                query = queryBuilder.generateQuery(getQueryBuilder(ResourceAnnotationKey.class));
+            }
         }
         FullTextQuery ftq = fullTextSession.createFullTextQuery(query, queryBuilder.getClasses());
 
@@ -221,7 +244,7 @@ public class SearchService {
         logger.trace("completed hibernate hydration ");
 
         List<Indexable> toReturn = convertProjectedResultIntoObjects(resultHandler, projections, list);
-        Object searchMetadata[] = { resultHandler.getMode(), q.getQuery(), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
+        Object searchMetadata[] = { resultHandler.getMode(), ftq.getQueryString(), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                 lucene, (System.currentTimeMillis() - num),
                 ftq.getResultSize(),
                 resultHandler.getStartRecord() };
@@ -512,14 +535,13 @@ public class SearchService {
         if (pair == null) {
             List<String> fields = new ArrayList<>();
             Set<DynamicQueryComponent> cmpnts = new HashSet<>();
-            PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new LowercaseWhiteSpaceStandardAnalyzer());
 
             // add all DynamicQueryComponents for specified classes
             for (Class<?> cls : qb.getClasses()) {
                 cmpnts.addAll(DynamicQueryComponentHelper.createFields(cls, ""));
             }
 
-            applyAnalyzers(qb, fields, cmpnts, analyzer);
+            PerFieldAnalyzerWrapper analyzer = applyAnalyzers(qb, fields, cmpnts);
             // XXX: do not cache the actual MultiFieldQueryParser, it's not thread-safe
             // MultiFieldQueryParser qp = new MultiFieldQueryParser(Version.LUCENE_31, fields.toArray(new String[0]), analyzer);
             Pair<String[], PerFieldAnalyzerWrapper> newPair = new Pair<>(fields.toArray(new String[fields.size()]), analyzer);
@@ -528,7 +550,7 @@ public class SearchService {
                 pair = newPair;
             }
         }
-        QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_36, pair.getFirst(), pair.getSecond());
+        QueryParser parser = new MultiFieldQueryParser(pair.getFirst(), pair.getSecond());
         qb.setQueryParser(parser);
     }
 
@@ -539,9 +561,10 @@ public class SearchService {
      * @param fields
      * @param cmpnts
      * @param analyzer
+     * @return
      */
     @SuppressWarnings("deprecation")
-    private void applyAnalyzers(QueryBuilder qb, List<String> fields, Set<DynamicQueryComponent> cmpnts, PerFieldAnalyzerWrapper analyzer) {
+    private PerFieldAnalyzerWrapper applyAnalyzers(QueryBuilder qb, List<String> fields, Set<DynamicQueryComponent> cmpnts) {
         List<DynamicQueryComponent> toRemove = new ArrayList<>();
         // add all overrides and replace existing settings
         if (qb.getOverrides() != null) {
@@ -555,6 +578,8 @@ public class SearchService {
             cmpnts.removeAll(toRemove);
             cmpnts.addAll(qb.getOverrides());
         }
+
+        Map<String, Analyzer> defaults = new HashMap<>();
         for (DynamicQueryComponent cmp : cmpnts) {
             String partialLabel = qb.stringContainedInLabel(cmp.getLabel());
             if (partialLabel != null) {
@@ -569,13 +594,14 @@ public class SearchService {
             fields.add(cmp.getLabel());
             if (cmp.getAnalyzer() != null) {
                 try {
-                    analyzer.addAnalyzer(cmp.getLabel(), (org.apache.lucene.analysis.Analyzer) cmp.getAnalyzer().newInstance());
+                    defaults.put(cmp.getLabel(), (org.apache.lucene.analysis.Analyzer) cmp.getAnalyzer().newInstance());
                 } catch (Exception e) {
                     logger.debug("cannot add analyzer:", e);
                 }
                 logger.trace(cmp.getLabel() + " : " + cmp.getAnalyzer().getCanonicalName());
             }
         }
+        return new PerFieldAnalyzerWrapper(new LowercaseWhiteSpaceStandardAnalyzer(), defaults);
     }
 
     /**
@@ -778,7 +804,7 @@ public class SearchService {
         queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
 
         QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
-        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
+        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES, "true"));
         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
             // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
             if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
@@ -791,4 +817,10 @@ public class SearchService {
         queryBuilder.append(qpg);
     }
 
+    public org.hibernate.Query createFullTextQuery(Query query, Class<? extends Indexable> cls) {
+        FullTextSession fullTextSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
+        org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(query, cls);
+        return fullTextQuery;
+
+    }
 }

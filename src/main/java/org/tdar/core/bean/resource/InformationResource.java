@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -47,6 +46,7 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
@@ -73,13 +73,10 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
-import org.tdar.search.index.bridge.PersistentReaderBridge;
 import org.tdar.search.index.bridge.StringMapBridge;
-import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -209,13 +206,11 @@ public abstract class InformationResource extends Resource {
     // currently just a 4 digit year.
     @Column(name = "date_created")
     @BulkImportField(key="YEAR", required = true, order = -10)
-    @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @JsonView(JsonLookupFilter.class)
     private Integer date = -1;
 
     @Column(name = "date_created_normalized")
-    @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.DATE_CREATED_DECADE, analyze = Analyze.NO)
     @XmlTransient
     private Integer dateNormalized = -1;
@@ -386,7 +381,8 @@ public abstract class InformationResource extends Resource {
     }
 
     @Field(name = QueryFieldNames.PROJECT_ID)
-    @Analyzer(impl = KeywordAnalyzer.class)
+    @NumericField
+//    @Analyzer(impl = KeywordAnalyzer.class)
     public Long getProjectId() {
         if (projectId == null) {
             projectId = getProject().getId();
@@ -566,9 +562,9 @@ public abstract class InformationResource extends Resource {
         return getLatestVersions(VersionType.UPLOADED);
     }
 
-    @Field(store = Store.NO)
-    @FieldBridge(impl = PersistentReaderBridge.class)
-    @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
+//    @Field(store = Store.NO)
+//    @FieldBridge(impl = PersistentReaderBridge.class)
+//    @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
     // @Boost(0.5f)
     @XmlTransient

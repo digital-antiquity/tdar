@@ -1,8 +1,8 @@
 package org.tdar.search.query.builder;
 
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.search.Operator;
 
 /**
  * 
