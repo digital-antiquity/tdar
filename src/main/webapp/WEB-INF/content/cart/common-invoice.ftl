@@ -130,4 +130,17 @@
         </dl>
     </div>
     </#macro>
+
+    <#macro pricingOption label files storage cost id=label?lower_case>
+    <div class="span2 well" id=div${id}>
+        <h3><span class="red">$${cost}</span>: ${label}</h3>
+        <ul>
+            <li>${files}</li>
+            <li>${storage}</li>
+        </ul>
+
+        <button type="button" class="tdar-button" id="${id}-option">SELECT</button>
+    </div>
+    </#macro>
+
     </#escape>
