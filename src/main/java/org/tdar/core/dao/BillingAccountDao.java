@@ -333,7 +333,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         return status;
     }
 
-    private boolean isOverdrawn(BillingAccount account, ResourceEvaluator resourceEvaluator) {
+    public boolean isOverdrawn(BillingAccount account, ResourceEvaluator resourceEvaluator) {
         return canAddResource(account, resourceEvaluator) != AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 
