@@ -69,7 +69,7 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         }
     }
 
-    @Test @Ignore
+    @Test
     /**
      * Perform a hosted download request with valid key, referrer, and file ID.
      */
@@ -79,7 +79,7 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         assertNotNull(irfv);
 
         HttpGet httpget = httpGet(uriBuilder()
-                .setScheme("https")
+                .setScheme("http")
                 .setHost(tdarConfig.getHostName())
                 .setPort(tdarConfig.getPort())
                 .setPath("/download/hosted/" + IRFV_ID)

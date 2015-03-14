@@ -593,25 +593,24 @@ public class AuthorizationService implements Accessible {
      * @param informationResourceFileVersion
      * @param apiKey
      * @param request
-     * @return
-     * @throws MalformedURLException
+     * @return  true, if download authorized.
      */
     @Transactional(readOnly = true)
-    public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
-            HttpServletRequest request) throws MalformedURLException {
+    public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, HttpServletRequest request) {
         String referrer = request.getHeader("referer");
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
+        try {
+            URL url = new URL(referrer);
+            referrer = url.getHost();
+        } catch (MalformedURLException e) {
+            logger.warn("Referrer invalid,  treating as blank: {}", referrer);
+            referrer = "";
+        }
         if (StringUtils.isBlank(referrer)) {
             throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
         }
-        URL url = new URL(referrer);
-        referrer = url.getHost();
         List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
-        if (CollectionUtils.isNotEmpty(authorizations)) {
-            return true;
-        } else {
-            return false;
-        }
+        return CollectionUtils.isNotEmpty(authorizations);
     }
 
     @Transactional(readOnly = true)
