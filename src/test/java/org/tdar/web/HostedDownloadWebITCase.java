@@ -69,7 +69,7 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         }
     }
 
-    @Test
+    @Test @Ignore
     /**
      * Perform a hosted download request with valid key, referrer, and file ID.
      */
