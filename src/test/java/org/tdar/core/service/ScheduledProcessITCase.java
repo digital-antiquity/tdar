@@ -35,6 +35,7 @@ import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.EmbargoedFilesUpdateProcess;
+import org.tdar.core.service.processes.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
@@ -64,6 +65,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private CreatorAnalysisProcess pap;
+
+    @Autowired
+    private LegacyObfuscateLatLongProcess llbprocess;
 
     private class MockScheduledProcess extends ScheduledBatchProcess<Dataset> {
 
@@ -235,6 +239,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @Test
+    @Rollback
+    public void testLLB() {
+        llbprocess.execute();
+    }
+    
     @Test
     @Rollback(true)
     public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
