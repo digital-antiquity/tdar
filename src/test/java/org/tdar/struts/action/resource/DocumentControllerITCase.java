@@ -200,13 +200,14 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // try to edit as basic user -- should fail
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(id);
+        int statusCode = -1;
         try {
             dc.prepare();
             assertNotEquals(Action.SUCCESS, dc.edit());
         } catch (TdarActionException e) {
-            assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
+            statusCode = e.getStatusCode();
         }
-        assertNotEmpty(dc.getActionErrors());
+        assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), statusCode);
 
         // try to edit as new user, should work
         doc = null;

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -42,8 +43,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
-import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
+import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLog;
+import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLogPart;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
@@ -316,7 +317,7 @@ public class SerializationService {
      * @param log
      * @throws IOException
      */
-    public void generateFOAF(Creator creator, CreatorInfoLog log) throws IOException {
+    public void generateFOAF(Creator creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
         com.hp.hpl.jena.rdf.model.Resource rdf = null;
@@ -332,7 +333,7 @@ public class SerializationService {
             throw new TdarRecoverableRuntimeException("serializationService.cannot_determine_creator");
         }
 
-        for (LogPart part : log.getCollaboratorLogPart()) {
+        for (RelatedInfoLogPart part : log.getCollaboratorLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             if (part.getSimpleClassName().equals(INSTITUTION)) {
                 res.addProperty(RDF.type, FOAF.Organization);
@@ -346,7 +347,7 @@ public class SerializationService {
         }
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEDIAN), log.getCreatorMedian().toString());
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEAN), log.getCreatorMean().toString());
-        for (LogPart part : log.getKeywordLogPart()) {
+        for (RelatedInfoLogPart part : log.getKeywordLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             res.addProperty(RDF.type, part.getSimpleClassName());
             res.addLiteral(FOAF.name, part.getName());
@@ -412,13 +413,18 @@ public class SerializationService {
      * @return
      * @throws Exception
      */
-    public void generateCreatorLog(Creator creator, CreatorInfoLog log) throws Exception {
+    public void generateRelatedLog(Persistable creator, RelatedInfoLog log) throws Exception {
         File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + ".xml");
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         convertToXML(log, writer);
         IOUtils.closeQuietly(writer);
-        FileStoreFile fsf = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
-        TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
+        ObjectType type = ObjectType.CREATOR;
+        if (creator instanceof ResourceCollection) {
+            type = ObjectType.COLLECTION;
+        }
+        
+        FileStoreFile fsf = new FileStoreFile(type, VersionType.METADATA, creator.getId(), file.getName());
+        TdarConfiguration.getInstance().getFilestore().store(type, file, fsf);
 
     }
 

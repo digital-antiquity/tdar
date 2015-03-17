@@ -34,6 +34,14 @@ import com.opensymphony.xwork2.Preparable;
 // @HttpsOnly
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
 
+    private static final String STREAMHTTP = "streamhttp";
+    private static final String STREAM = "stream";
+    private static final String STATUS = "status";
+    private static final String ERROR_INPUT_STREAM = "errorInputStream";
+    private static final String INPUT_STREAM = "inputStream";
+    private static final String INPUT_NAME = "inputName";
+    private static final String TEXT_TEXT = "text/text";
+    private static final String CONTENT_TYPE = "contentType";
     private static final long serialVersionUID = 5114065112304206226L;
     public static final String NELNET_RESPONSE_SUCCESS = "success";
     public static final String NELNET_RESPONSE_FAILURE = "failure";
@@ -70,12 +78,12 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     @WriteableSession
     @PostOnly
     @Action(value = "process-external-payment-response", results = {
-            @Result(name = SUCCESS, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" }),
-            @Result(name = INPUT, type = "streamhttp", params = { "contentType", "text/text", "inputName", "errorInputStream", "status", "400" }),
+            @Result(name = SUCCESS, type = STREAM, params = { CONTENT_TYPE, TEXT_TEXT, INPUT_NAME, INPUT_STREAM }),
+            @Result(name = INPUT, type = STREAMHTTP, params = { CONTENT_TYPE, TEXT_TEXT, INPUT_NAME, ERROR_INPUT_STREAM, STATUS, "400" }),
             // fixme: jtd I'm not sure if the following mapping is safe. Can an exception occur when the action object is undefined? And if so, will struts
             // still attempt to populate the result with action object properties?
-            @Result(name = "exception", type = "streamhttp", params = { "contentType", "text/text", "inputName", "errorInputStream", "status", "500" }),
-            @Result(name = ERROR, type = "streamhttp", params = { "contentType", "text/text", "inputName", "errorInputStream", "status", "400" })
+            @Result(name = "exception", type = STREAMHTTP, params = { CONTENT_TYPE, TEXT_TEXT, INPUT_NAME, ERROR_INPUT_STREAM, STATUS, "500" }),
+            @Result(name = ERROR, type = STREAMHTTP, params = { CONTENT_TYPE, TEXT_TEXT, INPUT_NAME, ERROR_INPUT_STREAM, STATUS, "400" })
     })
     public String processExternalPayment() {
         getLogger().trace("PROCESS RESPONSE {}", extraParameters);

@@ -591,6 +591,11 @@ public class InvoiceService {
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                 // send notifications. if any error happens we want to log it but not rollback the transaction
                 handlePurchaseNotifications(invoice);
+                BillingAccount account = genericDao.markWritableOnExistingSession(accountDao.getAccountForInvoice(invoice));
+                // this is unlikely, but possible (especially if a "bad" request is made
+                if (account != null && CollectionUtils.isNotEmpty(account.getResources())) {
+                    accountDao.updateQuota(account, account.getResources());
+                }
             }
         }
     }

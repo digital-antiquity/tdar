@@ -353,13 +353,6 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    public void testFormat() {
-        String st = "1F";
-        double d = NumberUtils.toDouble(st);
-        logger.debug("{}", d);
-    }
-
-    @Test
     @Rollback
     public void testMalformedFloatParse() throws IOException {
         InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(),

@@ -63,12 +63,8 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
         if (StringUtils.isBlank(apiKey)) {
             addActionError("hostedDownloadController.api_key_required");
         }
-        try {
-            if (!authorzationService.checkValidUnauthenticatedDownload(getInformationResourceFileVersion(), getApiKey(), getServletRequest())) {
-                addActionError("hostedDownloadController.invalid_request");
-            }
-        } catch (Exception e) {
-            addActionErrorWithException("hostedDownloadController.error", e);
+        if (!authorzationService.checkValidUnauthenticatedDownload(getInformationResourceFileVersion(), getApiKey(), getServletRequest())) {
+            addActionError("hostedDownloadController.invalid_request");
         }
     }
 

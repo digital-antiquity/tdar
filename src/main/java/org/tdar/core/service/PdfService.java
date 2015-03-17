@@ -1,13 +1,6 @@
 package org.tdar.core.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -150,58 +143,58 @@ public class PdfService {
                             wrapper.getMerger().mergeDocuments();
                             wrapper.setSuccessful(true);
                         } catch (IOException ioe) {
-                            if (logIOException(wrapper, ioe)) {
+                            //downgrade broken pipe exceptions
+                            if (isBrokenPipeException(ioe)) {
+                                logger.warn("broken pipe", ioe);
+                            } else {
                                 logger.error("PDF Converter Exception:",ioe);
+                                //if IO exception was due to encrypted document, try again without the cover page
+                                attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
                             }
+                            wrapper.setFailureReason(ioe.getMessage());
+
                         } catch (Exception e) {
-                            if (logIOException(wrapper, e)) {
-                                logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
-                                wrapper.setFailureReason(e.getMessage());
-                                // if there's a failure, then fall back and just try to copy the original
-                                try {
-                                    IOUtils.copyLarge(new FileInputStream(wrapper.getDocument()), pipedOutputStream);
-                                } catch (Exception e1) {
-                                    if (logIOException(wrapper, e1)) {
-                                    logger.error("cannot attach PDF, even w/o cover page", e1);
-                                    }
-                                }
-                            }
+                            logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
+                            wrapper.setFailureReason(e.getMessage());
+                            //if some other kind of error occured during the merge, try to send without cover page.
+                            attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
                         } finally {
                             IOUtils.closeQuietly(pipedOutputStream);
                         }
                     }
 
-                    /**
-                     * If the cause of the error is an IO Exception and the cause of the error has "Pipe Closed" then downgrade the logging
-                     * @param wrapper
-                     * @param ioe
-                     * @return
-                     */
-                    private boolean logIOException(final PDFMergeWrapper wrapper, Throwable ioe) {
-                        if (ioe == null) {
-                            return false;
-                        }
-                        if (ioe instanceof IOException) {
-                            if (StringUtils.contains(ioe.getMessage(), "Pipe closed")) {
-                                logger.warn("PipeClosed Exception in DownloadPDFWriter", ioe);
-                            }
-                            wrapper.setFailureReason(ioe.getMessage());
-                            return false;
-                        }
-                        
-                        if (ioe.getCause() != null) {
-                            return logIOException(wrapper, ioe.getCause());
-                        } 
-                        
-                        return true;
-                        
-                    }
                 }
                 );
         thread.start();
-        logger.trace("done with PDF Merge");
+        logger.trace("done with PDF Merge");  //fixme: technically the method is done, but really you've just started the merge operation.
         return inputStream;
     }
+
+    /**
+     * Java has no built-in broken pipe exception,  however, it's sometimes convenient to treat them differently from other types
+     * of IO Exception (e.g. log them at different lower level, because they are inevetible in a web-serving environment).
+     * @param exception
+     * @return
+     */
+    private boolean isBrokenPipeException(IOException exception) {
+        return
+                //the tomcat implementation of this exception
+                exception.getClass().getSimpleName().contains("ClientAbortException")
+                        //if not tomcat, maybe it has "pipe closed" in the error message?
+                        || StringUtils.contains(exception.getMessage(), "Pipe Closed");
+
+
+    }
+
+    private void attemptTransferWithoutMerge(File document, OutputStream os) {
+        try {
+            logger.warn("attempting to send pdf without cover page: {}", document);
+            IOUtils.copyLarge(new FileInputStream(document), os);
+        } catch (Exception ex) {
+            logger.error("cannot attach PDF, even w/o cover page", ex);
+        }
+    }
+
 
     /**
      * Create the cover page from the template file and the @link resource provided

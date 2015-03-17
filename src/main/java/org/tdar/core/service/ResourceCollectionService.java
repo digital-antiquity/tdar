@@ -666,7 +666,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
         Set<ResourceCollection> tempSet = new HashSet<>();
         for (ResourceCollection collection : resource.getSharedResourceCollections()) {
-            if ((collection != null) && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
+            if (collection != null) {
                 tempSet.addAll(collection.getHierarchicalResourceCollections());
             }
         }
@@ -675,6 +675,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 CollectionUtils.isNotEmpty(internal.getAuthorizedUsers())) {
             tempSet.add(internal);
         }
+        
+        Iterator<ResourceCollection> iter = tempSet.iterator();
+        while (iter.hasNext()) {
+            ResourceCollection next = iter.next();
+            if (CollectionUtils.isEmpty(next.getAuthorizedUsers())) {
+                iter.remove();
+            }
+        }
+        
         return tempSet;
     }
 

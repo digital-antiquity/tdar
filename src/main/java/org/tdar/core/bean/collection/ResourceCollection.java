@@ -830,11 +830,19 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         if (hidden) {
             return false;
         }
+        boolean contents = false;
         for (Resource resource : getResources()) {
+            contents = true;
+            // if we have 1 active item, return true
             if (resource.isActive()) {
                 return true;
             }
         }
+        // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
+        if (contents == false) {
+            return true;
+        }
+        
         return false;
         
     }

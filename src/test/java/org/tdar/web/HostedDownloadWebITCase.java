@@ -79,7 +79,7 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         assertNotNull(irfv);
 
         HttpGet httpget = httpGet(uriBuilder()
-                .setScheme("https")
+                .setScheme("http")
                 .setHost(tdarConfig.getHostName())
                 .setPort(tdarConfig.getPort())
                 .setPath("/download/hosted/" + IRFV_ID)

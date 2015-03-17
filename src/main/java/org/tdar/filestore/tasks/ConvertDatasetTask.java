@@ -42,7 +42,7 @@ public class ConvertDatasetTask extends AbstractTask {
 
         if (getWorkflowContext().getResourceType() == ResourceType.GEOSPATIAL) {
             for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
-                if (version.getExtension().equals("shp")) {
+                if (version.getExtension().equals("shp") || version.getExtension().equals("mdb") || version.getExtension().equals("gdb")) {
                     filesToProcess.clear();
                     filesToProcess.add(version);
                 }
