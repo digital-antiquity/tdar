@@ -1,14 +1,8 @@
 package org.tdar.struts.action.collection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,6 +131,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return options;
     }
 
+
+
     @Override
     public String loadViewMetadata() {
         setParentId(getPersistable().getParentId());
@@ -145,6 +141,17 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             getGenericService().saveOrUpdate(rcvs);
         } else {
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
+        }
+
+        //sort facets A-Z unless sortOption explicitly  otherwise
+        if(getResourceCollection() != null && CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
+            final boolean reversed = getResourceCollection().getSortBy() == SortOption.RESOURCE_TYPE_REVERSE;
+                Collections.sort(getResourceTypeFacets(), new Comparator<FacetValue>() {
+                    @Override
+                    public int compare(FacetValue o1, FacetValue o2) {
+                        return reversed ? o2.getValue().compareTo(o1.getValue()) : o1.getValue().compareTo(o2.getValue()) ;
+                    }
+                });
         }
         return SUCCESS;
     }
