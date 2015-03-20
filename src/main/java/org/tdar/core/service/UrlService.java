@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -87,8 +88,18 @@ public class UrlService {
      * @return
      */
     public static String downloadUrl(InformationResourceFileVersion version) {
-        return String.format("%s/filestore/get/%d/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getInformationResourceFile().getInformationResource()
-                .getId(), version.getId());
+        return downloadUrl(version.getInformationResourceFile().getInformationResource(), version);
+    }
+
+
+    /**
+     * Generate a download URL
+     * 
+     * @param version
+     * @return
+     */
+    public static String downloadUrl(InformationResource ir, InformationResourceFileVersion version) {
+        return String.format("%s/filestore/get/%d/%d", StringUtils.stripEnd(getBaseUrl(), "/"), ir.getId(), version.getId());
     }
 
     /**
