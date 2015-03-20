@@ -114,7 +114,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     public void testOptimize() {
         searchIndexService.optimizeAll();
     }
-    
+
     @Test
     @Rollback
     public void testDailyEmailProcess() {
@@ -125,11 +125,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         user.setLastName("last");
         user.setDateUpdated(new Date());
         genericService.saveOrUpdate(user);
-        
+
         dailyEmailProcess.execute();
-        
+
     }
-    
+
     @Test
     @Rollback
     public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
@@ -138,22 +138,20 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         fsp.execute();
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
-    
-    
 
     @Test
     @Rollback
     public void testEmbargo() throws InstantiationException, IllegalAccessException {
         // queue the embargo task
         Document doc = generateDocumentWithFileAndUser();
-        long id =doc.getId();
+        long id = doc.getId();
 
         InformationResourceFile irf = doc.getFirstInformationResourceFile();
         irf.setRestriction(FileAccessRestriction.EMBARGOED_SIX_MONTHS);
@@ -167,11 +165,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         doc = genericService.find(Document.class, id);
         assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.PUBLIC);
 
-        //FIXME: add tests for checking email
+        // FIXME: add tests for checking email
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
-        
         doc.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         doc.getFirstInformationResourceFile().setDateMadePublic(DateTime.now().toDate());
         genericService.saveOrUpdate(doc.getFirstInformationResourceFile());
@@ -182,7 +179,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        
+
     }
 
     @Test
@@ -193,7 +190,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(account);
         oau.execute();
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getText().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -242,9 +239,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testLLB() {
-        llbprocess.execute();
+        while (CollectionUtils.isNotEmpty(llbprocess.getNextBatch())) {
+            llbprocess.execute();
+        }
     }
-    
+
     @Test
     @Rollback(true)
     public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
