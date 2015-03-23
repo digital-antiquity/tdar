@@ -216,4 +216,18 @@
     </changeSet>
     -->
 
+    <changeSet id="munsell-14-feature-whitelabel" author="jdevos">
+        <createTable tableName="whitelabel_collection">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" references="collection" foreignKeyName="whitelabel_collection_id_collection_fkey" />
+            </column>
+            <column name="customHeaderEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="featuredResourcesEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="searchEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="subCollectionsEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="css" type="clob" />
+
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
