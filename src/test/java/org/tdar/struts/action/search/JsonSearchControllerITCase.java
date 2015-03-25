@@ -32,10 +32,11 @@ import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
 @Transactional
-public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
+public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
+
 
     @Autowired
-    private RSSSearchAction controller;
+    private JsonSearchAction controller;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -90,7 +91,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
 //        doSearch("");
-        controller.viewRss();
+        controller.viewJson();
         // the record we created should be the absolute first record
         assertEquals(document, controller.getResults().get(0));
     }
@@ -113,14 +114,26 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertTrue(xml.contains("<georss:box>57.89149735271034 84.37156598282918 27.0703125 -131.484375</georss:box>"));
     }
 
+    @Test
+    @Rollback(true)
+    public void testRSSLoggedIn() throws TdarActionException, IOException {
+        reindex();
+        controller = generateNewInitializedController(JsonSearchAction.class, getAdminUser());
+        controller.viewJson();
+        assertNotEmpty(controller.getResults());
+        String xml = IOUtils.toString(controller.getJsonInputStream());
+        logger.debug(xml);
+        assertTrue(xml.contains("link rel=\"enclosure\" type=\"application/vnd.ms-excel"));
+    }
+    
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
-        controller = generateNewInitializedController(RSSSearchAction.class);
+        controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         controller.setGeoMode(mode);
-        controller.viewRss();
+        controller.viewJson();
         // the record we created should be the absolute first record
         assertEquals(document, controller.getResults().get(0));
-        String xml = IOUtils.toString(controller.getInputStream());
+        String xml = IOUtils.toString(controller.getJsonInputStream());
         return xml;
     }
 
@@ -133,7 +146,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
 //        doSearch("");
-        String viewRss = controller.viewRss();
+        String viewRss = controller.viewJson();
         logger.debug(viewRss);
         logger.debug("{}", controller.getActionErrors());
         // the record we created should be the absolute first record
@@ -154,8 +167,8 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
         assertFalse(controller.isReindexing());
-        controller.viewRss();
-        String rssFeed = IOUtils.toString(controller.getInputStream());
+        controller.viewJson();
+        String rssFeed = IOUtils.toString(controller.getJsonInputStream());
 
         assertTrue(resultsContainId(3074l, controller));
         logger.info(rssFeed);
@@ -164,7 +177,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertXpathEvaluatesTo("Durrington Walls Humerus Dataset", "/atom:feed/atom:entry/atom:title", rssFeed);
     }
 
-    protected boolean resultsContainId(Long id, RSSSearchAction controller_) {
+    protected boolean resultsContainId(Long id, JsonSearchAction controller_) {
         boolean found = false;
         for (Resource r : controller_.getResults()) {
             logger.trace(r.getId() + " " + r.getResourceType());
@@ -175,6 +188,4 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         }
         return found;
     }
-
-
 }

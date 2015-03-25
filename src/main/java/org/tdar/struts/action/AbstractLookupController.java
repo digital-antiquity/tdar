@@ -488,6 +488,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private Map<String, Object> result = new HashMap<>();
 
     public void jsonifyResult(Class<?> filter) {
+        prepareResult();
+        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
+    }
+
+    protected void prepareResult() {
         List<I> actual = new ArrayList<>();
         for (I obj : results) {
             if (obj == null) {
@@ -503,7 +508,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {
