@@ -25,6 +25,7 @@ public class WhiteLabelCollection extends ResourceCollection{
     @Lob
     @Column
     private String css;
+    //trivial comment
 
     public WhiteLabelCollection() {
         super(CollectionType.SHARED);
