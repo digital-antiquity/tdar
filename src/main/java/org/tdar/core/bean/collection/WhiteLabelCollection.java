@@ -10,22 +10,20 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class WhiteLabelCollection extends ResourceCollection{
 
-    @Column
+    @Column(name = "custom_header_enabled")
     private boolean customHeaderEnabled;
 
-    @Column
+    @Column(name = "featured_resources_enabled")
     private boolean featuredResourcesEnabled;
 
-    @Column
+    @Column(name = "search_enabled")
     private boolean searchEnabled;
 
-    @Column
+    @Column(name = "sub_collections_enabled")
     private boolean subCollectionsEnabled;
 
     @Lob
-    @Column
     private String css;
-    //trivial comment
 
     public WhiteLabelCollection() {
         super(CollectionType.SHARED);

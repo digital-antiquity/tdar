@@ -226,8 +226,16 @@
             <column name="searchEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
             <column name="subCollectionsEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
             <column name="css" type="clob" />
-
         </createTable>
+    </changeSet>
+
+    <changeSet id="munsell-15-feature-whitelabel" author="jdevos">
+        <comment>Renaming column names according to convention (also, I discovered that camelCase identifiers are a problem in hibernate because hibernate
+        generates sql with unquoted identifiers.  Postgres normalizes unquoted identifiers to lowercase, so the sql fails because.</comment>
+        <renameColumn tableName="whitelabel_collection" oldColumnName="customHeaderEnabled" newColumnName="custom_header_enabled" />
+        <renameColumn tableName="whitelabel_collection" oldColumnName="featuredResourcesEnabled" newColumnName="featured_resources_enabled" />
+        <renameColumn tableName="whitelabel_collection" oldColumnName="searchEnabled" newColumnName="search_enabled" />
+        <renameColumn tableName="whitelabel_collection" oldColumnName="subCollectionsEnabled" newColumnName="sub_collections_enabled" />
     </changeSet>
 
 </databaseChangeLog>
