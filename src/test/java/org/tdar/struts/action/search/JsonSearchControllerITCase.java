@@ -34,40 +34,11 @@ import org.xml.sax.SAXException;
 @Transactional
 public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
-
     @Autowired
     private JsonSearchAction controller;
 
     @Autowired
     SearchIndexService searchIndexService;
-
-    /*
-     * Here's a good webp-based tool for testing xpath queries: http://www.whitebeam.org/library/guide/TechNotes/xpathtestbed.rhtm
-     * You can test against the sample snippet below:
-     * 
-     * <feed xmlns="http://www.w3.org/2005/Atom" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-     * xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:dc="http://purl.org/dc/elements/1.1/"
-     * xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/">
-     * <title>tDAR Search Results: All Records</title>
-     * <link rel="alternate" href="" />
-     * <subtitle>Searching for resource with tDAR ID: &lt;strong&gt; 3074 &lt;/strong&gt;</subtitle>
-     * <opensearch:itemsPerPage>20</opensearch:itemsPerPage>
-     * <opensearch:totalResults>1</opensearch:totalResults>
-     * <opensearch:startIndex>1</opensearch:startIndex>
-     * <opensearch:link rel="search" type="application/opensearchdescription+xml" href="http://core.tdar.org/includes/opensearch.xml" />
-     * <entry>
-     * <title>Durrington Walls Humerus Dataset</title>
-     * <link rel="alternate" href="http://core.tdar.org/dataset/3074" />
-     * <author>
-     * <name />
-     * </author>
-     * <updated>2010-03-05T19:59:58Z</updated>
-     * <published>2010-03-05T19:59:58Z</published>
-     * <summary type="HTML" />
-     * <dc:date>2010-03-05T19:59:58Z</dc:date>
-     * </entry>
-     * </feed>
-     */
 
     @Before
     public void setup() {
@@ -75,10 +46,10 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         HashMap<String, String> m = new HashMap<String, String>();
         m.put("atom", "http://www.w3.org/2005/Atom");
         m.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-        m.put("sy", "http://purl.org/rss/1.0/modules/syndication/");
+        m.put("sy", "http://purl.org/Json/1.0/modules/syndication/");
         m.put("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
         m.put("dc", "http://purl.org/dc/elements/1.1/");
-        m.put("taxo", "http://purl.org/rss/1.0/modules/taxonomy");
+        m.put("taxo", "http://purl.org/Json/1.0/modules/taxonomy");
         NamespaceContext ctx = new SimpleNamespaceContext(m);
         XMLUnit.setXpathNamespaceContext(ctx);
 
@@ -86,11 +57,11 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testJsonDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
-//        doSearch("");
+        // doSearch("");
         controller.viewJson();
         // the record we created should be the absolute first record
         assertEquals(document, controller.getResults().get(0));
@@ -98,35 +69,29 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testGeoRSS() throws InstantiationException, IllegalAccessException, TdarActionException, IOException {
+    public void testGeoJson() throws InstantiationException, IllegalAccessException, TdarActionException, IOException {
         InformationResource document = generateDocumentWithUser();
         document.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(84.37156598282918, 57.89149735271034, -131.484375, 27.0703125));
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
-        String xml = setupGeoRssCall(document, GeoRssMode.POINT);
+        String xml = setupGeoJsonCall(document, GeoRssMode.ENVELOPE);
         logger.debug(xml);
-        assertTrue(xml.contains("<georss:point>42.480904926355166 -23.55640450858541</georss:point>"));
-        xml = setupGeoRssCall(document, GeoRssMode.NONE);
-        logger.debug(xml);
-        assertTrue(!xml.contains("<georss"));
-        xml = setupGeoRssCall(document, GeoRssMode.ENVELOPE);
-        logger.debug(xml);
-        assertTrue(xml.contains("<georss:box>57.89149735271034 84.37156598282918 27.0703125 -131.484375</georss:box>"));
+        assertTrue(xml.contains("coordinate\" : [ [ 57.89149735271034, 84.37156598282918 ], [ 57.89149735271034, -131.484375 ], [ 27.0703125, -131.484375 ], [ 27.0703125, 84.37156598282918 ], [ 57.89149735271034, 84.37156598282918 ] ]"));
     }
 
     @Test
     @Rollback(true)
-    public void testRSSLoggedIn() throws TdarActionException, IOException {
+    public void testJsonLoggedIn() throws TdarActionException, IOException {
         reindex();
         controller = generateNewInitializedController(JsonSearchAction.class, getAdminUser());
         controller.viewJson();
         assertNotEmpty(controller.getResults());
         String xml = IOUtils.toString(controller.getJsonInputStream());
         logger.debug(xml);
-        assertTrue(xml.contains("link rel=\"enclosure\" type=\"application/vnd.ms-excel"));
+        assertTrue(xml.contains("resources\" : [ {"));
     }
-    
-    private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
+
+    private String setupGeoJsonCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
         controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         controller.setGeoMode(mode);
@@ -139,15 +104,15 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testJsonInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException {
         InformationResource document = generateDocumentWithUser();
         document.setDescription("\u0001");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
-//        doSearch("");
-        String viewRss = controller.viewJson();
-        logger.debug(viewRss);
+        // doSearch("");
+        String viewJson = controller.viewJson();
+        logger.debug(viewJson);
         logger.debug("{}", controller.getActionErrors());
         // the record we created should be the absolute first record
         assertEquals(0, controller.getActionErrors().size());
@@ -155,7 +120,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException {
+    public void testFindResourceBuildJson() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException {
         ActivityManager.getInstance().getActivityQueueClone().clear();
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);
@@ -168,13 +133,13 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         controller.setSessionData(new SessionData()); // create unauthenticated session
         assertFalse(controller.isReindexing());
         controller.viewJson();
-        String rssFeed = IOUtils.toString(controller.getJsonInputStream());
+        String JsonFeed = IOUtils.toString(controller.getJsonInputStream());
 
         assertTrue(resultsContainId(3074l, controller));
-        logger.info(rssFeed);
-        assertTrue("feed should contain id " + r.getId() + ": " + rssFeed, rssFeed.contains(r.getId().toString()));
-        assertTrue(rssFeed.contains("Durrington Walls Humerus Dataset"));
-        assertXpathEvaluatesTo("Durrington Walls Humerus Dataset", "/atom:feed/atom:entry/atom:title", rssFeed);
+        logger.info(JsonFeed);
+        assertTrue("feed should contain id " + r.getId() + ": " + JsonFeed, JsonFeed.contains(r.getId().toString()));
+        assertTrue(JsonFeed.contains("Durrington Walls Humerus Dataset"));
+        assertTrue(JsonFeed.contains("title\" : \"Durrington Walls Humerus Dataset\","));
     }
 
     protected boolean resultsContainId(Long id, JsonSearchAction controller_) {

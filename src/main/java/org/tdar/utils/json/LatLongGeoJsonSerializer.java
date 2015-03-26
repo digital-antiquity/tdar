@@ -33,7 +33,6 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
     //http://www.baeldung.com/jackson-custom-serialization
     //http://geojson.org/geojson-spec.html#polygon
             */
-            System.err.println("HELLOW");
             jgen.writeStartObject();
             jgen.writeStringField("type", "Feature");
             jgen.writeFieldName("geometry");
