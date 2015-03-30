@@ -822,11 +822,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             }
         }
         // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
-        if (contents == false) {
-            return true;
-        }
-        
+        return !contents;
+    }
+
+    public boolean isWhiteLabelCollection() {
         return false;
-        
     }
 }

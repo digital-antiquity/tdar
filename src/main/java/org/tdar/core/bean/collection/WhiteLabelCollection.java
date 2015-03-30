@@ -68,4 +68,9 @@ public class WhiteLabelCollection extends ResourceCollection{
     public void setCss(String css) {
         this.css = css;
     }
+
+    @Override
+    public boolean isWhiteLabelCollection() {
+        return true;
+    }
 }
