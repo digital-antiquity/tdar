@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.GenericService;
 
 import java.util.ArrayList;
@@ -34,10 +35,17 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testSave() {
-        ResourceCollection rc = new WhiteLabelCollection();
+        WhiteLabelCollection rc = new WhiteLabelCollection();
         rc.setName("default white label collection");
         rc.markUpdated(getAdminUser());
+        Institution institution = new Institution("Bob's burgers");
+
+        //Note: if you remove @Cascade annotation from WhiteLabelCollection.institution, you must also uncomment the next line.
+        //genericService.save(institution);
+
+        rc.setInstitution(institution);
         genericService.save(rc);
+        //todo: see if same is true for  genericService.saveOrUpdate()
         assertThat(rc.getId(), not(nullValue()));
         assertThat(rc.getId(), not( -1L ));
         logger.debug("collection: {}", rc);

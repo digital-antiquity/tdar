@@ -825,6 +825,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return !contents;
     }
 
+
+    @XmlTransient
     public boolean isWhiteLabelCollection() {
         return false;
     }

@@ -1,6 +1,13 @@
 package org.tdar.core.bean.collection;
 
+import org.hibernate.annotations.*;
+import org.tdar.core.bean.entity.Institution;
+
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Created by jimdevos on 3/17/15.
@@ -24,6 +31,17 @@ public class WhiteLabelCollection extends ResourceCollection{
 
     @Lob
     private String css;
+
+    //Cascaded saves of transient references don't work for this declaration (using javasx annotations)
+
+
+    @OneToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(nullable = false)
+
+    //Hibernate will not cascade saveOrUpdate()  if object is transient and relation is also transient. (see http://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/)
+    //This is probably not a big deal, as it's unlikely we will be saving a new institution and a new WhiteLabelCollection in the same session in real-world conditions.
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+    Institution institution;
 
     public WhiteLabelCollection() {
         super(CollectionType.SHARED);
@@ -67,6 +85,14 @@ public class WhiteLabelCollection extends ResourceCollection{
 
     public void setCss(String css) {
         this.css = css;
+    }
+
+    public Institution getInstitution() {
+        return institution;
+    }
+
+    public void setInstitution(Institution institution) {
+        this.institution = institution;
     }
 
     @Override
