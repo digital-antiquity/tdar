@@ -20,5 +20,7 @@ vim:sts=2:sw=2:
     <decorator name="main" page="layout-bootstrap.dec">
         <pattern>/*</pattern>
     </decorator>
+    <decorator name="whitelabel1" page="layout-whitelabel-treatment1.dec" />
+    <decorator name="whitelabel2" page="layout-whitelabel-treatment2.dec" />
 </decorators>
 

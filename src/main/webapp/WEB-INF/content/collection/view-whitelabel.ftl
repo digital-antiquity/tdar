@@ -6,6 +6,7 @@
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
 <head>
+    <meta name="decorator" content="whitelabel2">
     <@search.headerLinks includeRss=false />
     <title>${resourceCollection.name!"untitled collection"}</title>
     <@view.canonical resourceCollection />
