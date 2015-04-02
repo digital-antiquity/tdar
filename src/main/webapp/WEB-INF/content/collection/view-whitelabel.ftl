@@ -6,26 +6,34 @@
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
 <head>
-    <meta name="decorator" content="whitelabel2">
+    <meta name="decorator" content="whitelabel1">
     <@search.headerLinks includeRss=false />
     <title>${resourceCollection.name!"untitled collection"}</title>
     <@view.canonical resourceCollection />
     <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl />
 
-    <style>
-        i.search-list-checkbox-grey {
-            background-image: none !important;
-        }
-
-        li.media {
-            display: inline-block
-        }
-    </style>
-
-
+    <#if resourceCollection.css??>
+        <#noescape>
+        <style>${resourceCollection.css}</style>
+        </#noescape>
+    </#if>
 </head>
 <body>
+
+<#-- todo: move these to .css and use collection-specific css classes -->
+<style>
+    i.search-list-checkbox-grey {
+        background-image: none !important;
+    }
+
+    li.media {
+        display: inline-block
+    }
+</style>
+
+
+
 
 <div id="divSearchContext" parse="true">
     <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">

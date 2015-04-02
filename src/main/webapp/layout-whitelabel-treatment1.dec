@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+<head>
+
+    ${head}
+</head>
 <body>
     <header>
         <h1>Whitelabel Treatment #1 - Header</h1>
