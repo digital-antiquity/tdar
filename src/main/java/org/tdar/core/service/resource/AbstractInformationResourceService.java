@@ -246,8 +246,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt), null);
                 break;
             default:
+                logger.debug(" deleting relationships");
                 removeAllRelationships(dataset, dataset.getDataTables());
+                logger.debug(" deleting all tables");
                 cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables(), null);
+                logger.debug(" done");
         }
     }
 
