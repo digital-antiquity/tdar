@@ -365,6 +365,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     @SuppressWarnings("unchecked")
     public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
+        logger.trace("s:{} e: {} min:{}", start,end,minCount);
         return query.list();
     }
 

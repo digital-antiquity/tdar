@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.joda.time.DateTime;
@@ -12,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * $Id$
@@ -33,7 +33,7 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class AdminUsageStatsController extends AuthenticationAware.Base {
+public class AdminUsageStatsController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 6455397601247694602L;
     private String dateStart;
@@ -43,39 +43,31 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
     private List<AggregateViewStatistic> usageStats;
     DateTime end = new DateTime();
     DateTime start = end.minusDays(7);
+    private Long minCount = 5L;
 
     @Autowired
     private transient ResourceService resourceService;
 
-    @Actions({
-            @Action("stats")
-    })
+    @Action("stats")
     @Override
     public String execute() {
-        setUsageStats(resourceService.getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
+        setUsageStats(resourceService.getAggregateUsageStats(granularity, start.toDate(), end.toDate(), minCount));
         return SUCCESS;
     }
 
     public void prepare() {
         if (StringUtils.isNotBlank(dateEnd)) {
-            DateTime.parse(dateEnd);
+            end = DateTime.parse(dateEnd);
         }
         if (StringUtils.isNotBlank(dateStart)) {
-            DateTime.parse(dateStart);
+            start = DateTime.parse(dateStart);
         }
     }
 
-    @Actions({
-            @Action("downloads")
-    })
+    @Action("downloads")
     public String downloadStats() {
-        setDownloadStats(resourceService.getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
-//        for (AggregateDownloadStatistic download : getDownloadStats()) {
-//            InformationResourceFile irf = getGenericService().find(InformationResourceFile.class, download.getInformationResourceFileId());
-//            if (download != null && irf != null) {
-//                download.setInformationResource(irf.getInformationResource());
-//            }
-//        }
+        setDownloadStats(resourceService.getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), minCount));
+        getLogger().debug("{}", downloadStats);
         return SUCCESS;
     }
 
@@ -117,6 +109,14 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
 
     public void setDownloadStats(List<AggregateDownloadStatistic> downloadStats) {
         this.downloadStats = downloadStats;
+    }
+
+    public Long getMinCount() {
+        return minCount;
+    }
+
+    public void setMinCount(Long minCount) {
+        this.minCount = minCount;
     }
 
 }

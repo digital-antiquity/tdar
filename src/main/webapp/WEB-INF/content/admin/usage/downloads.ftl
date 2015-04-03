@@ -7,7 +7,7 @@
 </head>
     <@admin.header/>
 
-<h1>Download Stats for (${dateStart!"last week"} - ${dateEnd!.now} ) </h1>
+<h1>Download Stats for (${dateStart!"last week"} - ${dateEnd!.now} ); Minimum Downloads: ${minCount} </h1>
 
 <h2>Download Stats</h2>
 <table class="tableFormat table" id="tblDownloadStats">
@@ -23,13 +23,13 @@
         <#list downloadStats as stats>
         <tr>
             <td>
-<#--            	<#if (stats.informationResource)?has_content>
-                <a href="<@s.url value="${stats.informationResource.detailUrl}" />">${stats.informationResource.title}</a>
-                (${stats.informationResource.id?c})
-                </#if> -->
+            	<#if (stats.file.informationResource)?has_content>
+                <a href="<@s.url value="${stats.file.informationResource.detailUrl}" />">${stats.file.informationResource.title}</a>
+                (${stats.file.informationResource.id?c})
+                </#if> 
             </td>
             <td>
-                <a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />">${stats.filename}</a> (${stats.informationResourceId?c})
+                <a href="<@s.url value="/filestore/${stats.file.informationResource.id?c}/${stats.file.id?c}" />">${stats.file.filename}</a> (${stats.file.informationResource.id?c})
             </td>
             <td>${stats.count}</td>
             <td>${stats.aggregateDate}</td>

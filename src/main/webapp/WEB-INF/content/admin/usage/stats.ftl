@@ -7,7 +7,7 @@
 </head>
     <@admin.header/>
 
-<h1>stats for (${dateStart!"last week"} - ${dateEnd!.now} ) </h1>
+<h1>stats for (${dateStart!"last week"} - ${dateEnd!.now} );  Minimum Views: ${minCount} </h1>
 
 
 <h2>Usage Stats</h2>
