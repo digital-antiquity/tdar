@@ -51,7 +51,7 @@ import static org.tdar.struts.action.collection.CollectionViewAction.SUCCESS_WHI
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction {
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction, ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
 
@@ -144,8 +144,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return options;
     }
 
-
-
     @Override
     public String loadViewMetadata() {
         setParentId(getPersistable().getParentId());
@@ -156,18 +154,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
 
-        //sort facets A-Z unless sortOption explicitly  otherwise
-        if(getResourceCollection() != null && CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
-            final boolean reversed = getResourceCollection().getSortBy() == SortOption.RESOURCE_TYPE_REVERSE;
-                Collections.sort(getResourceTypeFacets(), new Comparator<FacetValue>() {
-                    @Override
-                    public int compare(FacetValue o1, FacetValue o2) {
-                        return reversed ? o2.getValue().compareTo(o1.getValue()) : o1.getValue().compareTo(o2.getValue()) ;
-                    }
-                });
-        }
+        reSortFacets(this, getPersistable());
         return SUCCESS;
     }
+
 
     @Override
     public void loadExtraViewMetadata() {

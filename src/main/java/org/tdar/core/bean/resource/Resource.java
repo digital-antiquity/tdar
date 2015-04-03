@@ -1381,7 +1381,7 @@ public class Resource implements Persistable,
         for (ResourceNote note : getActiveResourceNotes()) {
             sb.append(note.getNote()).append(" ");
         }
-        for (ResourceCreator creator : getResourceCreators()) {
+        for (ResourceCreator creator : getActiveResourceCreators()) {
             if (creator.getCreator().isDeleted()) {
                 continue;
             }
@@ -1398,11 +1398,11 @@ public class Resource implements Persistable,
             }
         }
 
-        for (RelatedComparativeCollection rcc : getRelatedComparativeCollections()) {
+        for (RelatedComparativeCollection rcc : getActiveRelatedComparativeCollections()) {
             sb.append(rcc.getText()).append(" ");
         }
 
-        for (SourceCollection src : getSourceCollections()) {
+        for (SourceCollection src : getActiveSourceCollections()) {
             sb.append(src.getText()).append(" ");
         }
 

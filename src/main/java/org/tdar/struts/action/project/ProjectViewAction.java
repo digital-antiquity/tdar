@@ -26,6 +26,7 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
@@ -34,7 +35,7 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/project")
-public class ProjectViewAction extends AbstractResourceViewAction<Project> implements SearchResultHandler<Resource> {
+public class ProjectViewAction extends AbstractResourceViewAction<Project> implements SearchResultHandler<Resource>, ResourceFacetedAction {
 
     private static final long serialVersionUID = 974044619477885680L;
     private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
@@ -86,6 +87,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         try {
             searchService.handleSearch(qb, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+            reSortFacets(this, project);
 
         } catch (SearchPaginationException e) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, e);

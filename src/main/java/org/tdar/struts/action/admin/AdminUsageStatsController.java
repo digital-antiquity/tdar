@@ -41,6 +41,8 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
     private DateGranularity granularity = DateGranularity.DAY;
     private List<AggregateDownloadStatistic> downloadStats;
     private List<AggregateViewStatistic> usageStats;
+    DateTime end = new DateTime();
+    DateTime start = end.minusDays(7);
 
     @Autowired
     private transient ResourceService resourceService;
@@ -50,25 +52,30 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
-        DateTime end = new DateTime();
-        DateTime start = end.minusDays(7);
+        setUsageStats(resourceService.getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
+        return SUCCESS;
+    }
+
+    public void prepare() {
         if (StringUtils.isNotBlank(dateEnd)) {
             DateTime.parse(dateEnd);
         }
         if (StringUtils.isNotBlank(dateStart)) {
             DateTime.parse(dateStart);
         }
-        setUsageStats(resourceService.getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
-//        for (AggregateViewStatistic stat : getUsageStats()) {
-//            getLogger().debug("usage: {}", stat);
-//        }
+    }
+
+    @Actions({
+            @Action("downloads")
+    })
+    public String downloadStats() {
         setDownloadStats(resourceService.getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
-        for (AggregateDownloadStatistic download : getDownloadStats()) {
-            InformationResourceFile irf = getGenericService().find(InformationResourceFile.class, download.getInformationResourceFileId());
-            if (download != null && irf != null) {
-                download.setInformationResource(irf.getInformationResource());
-            }
-        }
+//        for (AggregateDownloadStatistic download : getDownloadStats()) {
+//            InformationResourceFile irf = getGenericService().find(InformationResourceFile.class, download.getInformationResourceFileId());
+//            if (download != null && irf != null) {
+//                download.setInformationResource(irf.getInformationResource());
+//            }
+//        }
         return SUCCESS;
     }
 
