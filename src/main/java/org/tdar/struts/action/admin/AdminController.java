@@ -99,20 +99,14 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Pair<SiteTypeKeyword, Integer>> controlledSiteTypeKeywordStats;
     private List<Pair<SiteTypeKeyword, Integer>> uncontrolledSiteTypeKeywordStats;
     private List<Pair<TemporalKeyword, Integer>> temporalKeywordStats;
-    private Map<String, Float> extensionStats;
     private List<Resource> recentlyUpdatedResources;
     private Map<ResourceType, List<BigInteger>> currentResourceStats;
 
     private Map<Date, Map<StatisticType, Long>> historicalResourceStats;
     private Map<Date, Map<StatisticType, Long>> historicalResourceStatsWithFiles;
     private Map<Date, Map<StatisticType, Long>> historicalCollectionStats;
-    private List<InformationResourceFile> files;
     private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
 
-    private Map<String, List<Number>> fileAverageStats;
-    private Map<String, Long> fileStats;
-
-    private Map<String, List<Number>> fileUploadedAverageStats;
 
     private List<TdarUser> recentLogins;
 
@@ -135,17 +129,6 @@ public class AdminController extends AuthenticationAware.Base {
         setHistoricalResourceStats(statisticService.getResourceStatistics());
         setHistoricalResourceStatsWithFiles(statisticService.getResourceStatisticsWithFiles());
         setHistoricalCollectionStats(statisticService.getCollectionStatistics());
-        return SUCCESS;
-    }
-
-    @Action("file-info")
-    public String fileInfo() {
-        setFileAverageStats(statisticService.getFileAverageStats(Arrays.asList(VersionType.values())));
-        setFileStats(statisticService.getFileStats(Arrays.asList(VersionType.values())));
-        setFileUploadedAverageStats(statisticService.getFileAverageStats(
-                Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
-        setExtensionStats(informationResourceFileService.getAdminFileExtensionStats());
-        setFiles(informationResourceFileService.findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
         return SUCCESS;
     }
 
@@ -294,14 +277,6 @@ public class AdminController extends AuthenticationAware.Base {
         return temporalKeywordStats;
     }
 
-    public Map<String, Float> getExtensionStats() {
-        return extensionStats;
-    }
-
-    public void setExtensionStats(Map<String, Float> map) {
-        this.extensionStats = map;
-    }
-
     public List<Resource> getRecentlyUpdatedResources() {
         return recentlyUpdatedResources;
     }
@@ -334,13 +309,6 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalCollectionStats = historicalCollectionStats;
     }
 
-    public Map<String, List<Number>> getFileAverageStats() {
-        return fileAverageStats;
-    }
-
-    public void setFileAverageStats(Map<String, List<Number>> fileAverageStats) {
-        this.fileAverageStats = fileAverageStats;
-    }
 
     public Map<Date, Map<StatisticType, Long>> getHistoricalRepositorySizes() {
         return historicalRepositorySizes;
@@ -350,13 +318,6 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalRepositorySizes = historicalRepositorySizes;
     }
 
-    public Map<String, List<Number>> getFileUploadedAverageStats() {
-        return fileUploadedAverageStats;
-    }
-
-    public void setFileUploadedAverageStats(Map<String, List<Number>> fileUploadedAverageStats) {
-        this.fileUploadedAverageStats = fileUploadedAverageStats;
-    }
 
     public Map<Date, Map<StatisticType, Long>> getHistoricalResourceStatsWithFiles() {
         return historicalResourceStatsWithFiles;
@@ -364,22 +325,6 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setHistoricalResourceStatsWithFiles(Map<Date, Map<StatisticType, Long>> historicalResourceStatsWithFiles) {
         this.historicalResourceStatsWithFiles = historicalResourceStatsWithFiles;
-    }
-
-    public List<InformationResourceFile> getFiles() {
-        return files;
-    }
-
-    public void setFiles(List<InformationResourceFile> files) {
-        this.files = files;
-    }
-
-    public Map<String, Long> getFileStats() {
-        return fileStats;
-    }
-
-    public void setFileStats(Map<String, Long> map) {
-        this.fileStats = map;
     }
 
     public EntityService getEntityService() {

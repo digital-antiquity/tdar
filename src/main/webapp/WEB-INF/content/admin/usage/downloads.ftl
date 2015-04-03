@@ -23,6 +23,10 @@
         <#list downloadStats as stats>
         <tr>
             <td>
+            
+                    <#if stats.file.latestThumbnail?? && !stats.file.deleted>
+                        <img src="<@s.url value="/files/sm/${stats.file.latestThumbnail.id?c}"/>"><br/>
+                    </#if>
             	<#if (stats.file.informationResource)?has_content>
                 <a href="<@s.url value="${stats.file.informationResource.detailUrl}" />">${stats.file.informationResource.title}</a>
                 (${stats.file.informationResource.id?c})
