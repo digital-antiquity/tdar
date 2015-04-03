@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonIdNameFilter;
 
 import com.opensymphony.xwork2.Preparable;
@@ -71,7 +72,7 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
         }
     }
 
-    @Action("node-participation")
+    @Action("node-participation") @PostOnly
     public String execute() throws IOException {
         if(verbose) {
             setJsonObject(integrationColumnPartProxies, JsonIdNameFilter.class);
