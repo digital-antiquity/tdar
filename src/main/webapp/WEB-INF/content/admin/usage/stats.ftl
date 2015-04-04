@@ -7,7 +7,7 @@
 </head>
     <@admin.header/>
 
-<h1>stats for (${dateStart!"last week"} - ${dateEnd!.now} ) </h1>
+<h1>stats for (${dateStart!"last week"} - ${dateEnd!.now} );  Minimum Views: ${minCount} </h1>
 
 
 <h2>Usage Stats</h2>
@@ -32,36 +32,6 @@
         </#list>
     </tbody>
 </table>
-
-<h2>Download Stats</h2>
-<table class="tableFormat table" id="tblDownloadStats">
-    <thead>
-    <tr>
-        <th>Resource</th>
-        <th>File</th>
-        <th>Downloads</th>
-        <th>day</th>
-    </tr>
-    </thead>
-    <tbody>
-        <#list downloadStats as stats>
-        <tr>
-            <td>
-            	<#if (stats.informationResource)?has_content>
-                <a href="<@s.url value="${stats.informationResource.detailUrl}" />">${stats.informationResource.title}</a>
-                (${stats.informationResource.id?c})
-                </#if>
-            </td>
-            <td>
-                <a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />">${stats.filename}</a> (${stats.informationResourceId?c})
-            </td>
-            <td>${stats.count}</td>
-            <td>${stats.aggregateDate}</td>
-        </tr>
-        </#list>
-    </tbody>
-</table>
-
 
 <script>
     $(function () {

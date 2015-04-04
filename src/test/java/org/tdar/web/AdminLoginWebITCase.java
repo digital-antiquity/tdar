@@ -66,6 +66,7 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/admin/internal");
         clickLinkByHref("/admin/usage/stats");
         assertTextPresentInPage("stats for");
+        clickLinkByHref("/admin/usage/downloads");
         assertTextPresentInPage("Download Stats");
     }
 

@@ -1,14 +1,8 @@
 package org.tdar.struts.action.collection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +40,7 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/collection")
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction {
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction, ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
 
@@ -146,8 +140,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         } else {
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
+
+        reSortFacets(this, getPersistable());
         return SUCCESS;
     }
+
 
     @Override
     public void loadExtraViewMetadata() {

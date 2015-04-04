@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
@@ -56,9 +57,11 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
-                if ((objs == null) || (objs[0] == null)) {
+                if (ArrayUtils.isEmpty(objs)) {
                     continue;
                 }
+                //0 == extension
+                //1 == count
                 toReturn.put(String.format("%s (%s)", objs[0], objs[1]), ((Long) objs[1]).floatValue());
                 total += (Long) objs[1];
             } catch (Exception e) {

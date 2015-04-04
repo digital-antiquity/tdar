@@ -2,10 +2,13 @@ package org.tdar.struts.action;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
@@ -13,16 +16,22 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
@@ -329,5 +338,21 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.VIEW_ANYTHING;
     }
-
+    
+    protected void reSortFacets(ResourceFacetedAction handler, Sortable persistable) {
+        // sort facets A-Z unless sortOption explicitly otherwise
+        if (PersistableUtils.isNotNullOrTransient(getPersistable()) && CollectionUtils.isNotEmpty(handler.getResourceTypeFacets())) {
+            final boolean reversed = persistable.getSortBy() == SortOption.RESOURCE_TYPE_REVERSE;
+            Collections.sort(handler.getResourceTypeFacets(), new Comparator<FacetValue>() {
+                @Override
+                public int compare(FacetValue o1, FacetValue o2) {
+                    if (reversed) {
+                        return o2.getKey().compareTo(o1.getKey());
+                    } else {
+                        return o1.getKey().compareTo(o2.getKey());
+                    }
+                }
+            });
+        }
+    }
 }

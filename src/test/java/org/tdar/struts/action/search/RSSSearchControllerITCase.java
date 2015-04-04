@@ -113,6 +113,18 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertTrue(xml.contains("<georss:box>57.89149735271034 84.37156598282918 27.0703125 -131.484375</georss:box>"));
     }
 
+    @Test
+    @Rollback(true)
+    public void testRSSLoggedIn() throws TdarActionException, IOException {
+        reindex();
+        controller = generateNewInitializedController(RSSSearchAction.class, getAdminUser());
+        controller.viewRss();
+        assertNotEmpty(controller.getResults());
+        String xml = IOUtils.toString(controller.getInputStream());
+        logger.debug(xml);
+        assertTrue(xml.contains("link rel=\"enclosure\" type=\"application/vnd.ms-excel"));
+    }
+    
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
         controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session

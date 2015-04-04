@@ -64,6 +64,7 @@ import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -269,7 +270,12 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                 dom = fileSystemResourceService.openCreatorInfoLog(foafFile);
                 getKeywords();
                 getCollaborators();
-                NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
+                // legacy name, deprecated
+                NodeList list = dom.getElementsByTagName("creatorInfoLog");
+                if (list == null) {
+                    list = dom.getElementsByTagName("relatedInfoLog");
+                }
+                NamedNodeMap attributes = list.item(0).getAttributes();
                 // getLogger().info("attributes: {}", attributes);
                 setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
                 setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));

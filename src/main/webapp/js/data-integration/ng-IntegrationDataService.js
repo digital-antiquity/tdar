@@ -656,11 +656,19 @@
          * @param dataTableColumnIds
          */
         this.loadNodeParticipation = function(dataTableColumnIds) {
-            var url = '/api/integration/node-participation?' + $.param({
+            var postData = $.param({
                 dataTableColumnIds : dataTableColumnIds,
                 verbose: 'true'
             }, true);
-            var httpPromise = $http.get(url);
+
+            var httpPromise = $http({
+                method: 'POST',
+                url: '/api/integration/node-participation',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                data: postData
+            });
+
+            //var httpPromise = $http.get(url);
             var futureWork = $q.defer();
             httpPromise.success(function(verboseData) {
                 var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);

@@ -39,7 +39,7 @@ import org.tdar.filestore.Filestore.ObjectType;
  * Converts a text formatted Ontology into an OWL XML ontology
  * 
  */
-public class OwlOntologyConverter {
+public class    OwlOntologyConverter {
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
 
@@ -129,6 +129,7 @@ public class OwlOntologyConverter {
         try {
             while ((line = reader.readLine()) != null) {
                 order++;
+                logger.trace("processing line {}:\t{}", order, line);
                 if (StringUtils.isEmpty(line.trim())) {
                     continue;
                 }
@@ -184,6 +185,8 @@ public class OwlOntologyConverter {
                     }
                     currentNode.setParentNode(parentNodes.get(parentIndex));
                 }
+                logger.trace("parentNode list:{}", parentNodes);
+                logger.trace("adding node to position {}: {}", currentDepth, currentNode);
                 parentNodes.add(currentDepth, currentNode);
             }
 

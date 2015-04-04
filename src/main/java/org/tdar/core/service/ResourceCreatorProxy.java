@@ -235,7 +235,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         }
 
         if (isValid()) {
-            return StringUtils.isNotBlank(getPerson().getEmail());
+            return StringUtils.isNotBlank(getResourceCreator().getCreator().getEmail());
         }
 
         return false;
