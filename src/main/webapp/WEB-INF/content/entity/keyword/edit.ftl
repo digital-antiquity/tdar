@@ -8,7 +8,7 @@
     <@s.hidden name="id" />
     <@s.hidden name="keywordType" />
     <@s.textfield name="label" value="${keyword.label}" label="Label" cssClass="input-xxlarge" labelPosition="left" required=true />
-    <@s.textarea name="description" value="${keyword.definition!''}" label="Definition" labelposition="top" cssClass="input-xxlarge" />
+    <@s.textarea name="description" value="${keyword.definition!''}" label="Definition" labelposition="top" cssClass="input-xxlarge"  cols="80" />
     
     <@edit.submit fileReminder=false />
     </@s.form>

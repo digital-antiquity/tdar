@@ -214,7 +214,7 @@
                 <h2>Empty Projects</h2>
                 <ol id="emptyProjects">
                     <#list emptyProjects as res>
-                        <li id="li-recent-resource-${res.id?c}">
+                        <li id="li-empty-project-${res.id?c}">
                             <a href="<@s.url value="${res.detailUrl}"/>">
                                 <@common.truncate res.title 60 />
                             </a>

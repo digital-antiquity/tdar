@@ -405,7 +405,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                     <#nested 'manualEntry'>
                 </div>
             </div>
-            <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable resize-vertical input-xxlarge' />
+            <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable resize-vertical input-xxlarge' cols="80" />
         </div>
     </div>
 
@@ -547,7 +547,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 </div>
                 <div class="controls-row">
                     <@s.textarea rows="4" theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='span6 resizable resize-vertical'
-                    maxlength='5000' />
+                    maxlength='5000' cols="80" />
                 </div>
             </div>
             <div class="span1">
@@ -791,7 +791,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
                 </#if>
                 Date             <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
-                Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" />
+                Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
             </div>
             </@_singleFileUpload>
@@ -951,7 +951,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <#local val = proxy.fileCreatedDate?string("MM/dd/yyyy")>
                     </#if>
                 <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
-                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" />
+                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
 
                     </div>
                 </div>

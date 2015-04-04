@@ -15,7 +15,7 @@
 
     <span data-tiplabel="Currentness &amp; Update Notes"
           data-tooltipcontent="Please describe how current this dataset is and what the frequency for updates is">
-        <@s.textarea rows="4" label="Currentness & Update Information" name='geospatial.currentnessUpdateNotes' cssClass='resizable resize-vertical input-xxlarge required' required=true title="A description is required" />
+        <@s.textarea rows="4" label="Currentness & Update Information" name='geospatial.currentnessUpdateNotes' cssClass='resizable resize-vertical input-xxlarge required' required=true title="A description is required"  cols="80" />
     </span>
 
         <@helptext.srid />
