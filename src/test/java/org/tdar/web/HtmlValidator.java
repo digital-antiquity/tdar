@@ -212,6 +212,23 @@ public class HtmlValidator {
                             continue;
                         }
                         
+                        //
+                        if (line.contains("Bad value  for attribute \"src\" on element \"img\": Illegal character in query")) {
+                            warnings.add(line);
+                            continue;
+                        }
+                        
+                        ///collection/2821/test-security-collection?null?type=
+                        if (line.contains("Attribute \"alt\" not allowed on element \"i\"")) {
+                            warnings.add(line);
+                            continue;
+                        }
+
+                        if (line.contains("Element \"legend\" not allowed as child of element \"fieldset\"")) {
+                            warnings.add(line);
+                            continue;
+                        }
+                        
                         if (line.contains("Duplicate ID \"metadataForm_authorshipProxies") ||
                             line.contains("Duplicate ID \"metadataForm_authorizedUsers")) {
                             warnings.add(line);
@@ -227,6 +244,8 @@ public class HtmlValidator {
                                 line.contains("Attribute \"other\"") ||
                                 line.contains("Attribute \"truncate\"") ||
                                 line.contains("Attribute \"thesis\"") ||
+                                line.contains("Attribute \"numcolumns\"") ||
+                                line.contains("Attribute \"emptyoption\"") ||
                                 line.contains("Attribute \"resource-id\"") ||
                                 line.contains("Attribute \"placeholder\"") ||
                                 line.contains("Attribute \"tooltipfor") ||

@@ -154,7 +154,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private HtmlElement documentElement;
     protected boolean skipHtmlValidation = false;
 
-    private boolean validateViaNu = true;
+    private boolean validateViaNu = false;
 
     // disregard an encoding error if it's in the exclusions set;
 
