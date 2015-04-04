@@ -37,7 +37,7 @@
 
         <@s.textfield name="institution.email" label="Email" id="txtEmail" cssClass="input-xlarge email"  maxlength=255 />
 
-        <@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge"  cols="80" />
+        <@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge"  cols="80"  rows="4"/>
 
         <h3>Address List</h3>
         <@common.listAddresses entity=institution entityType="institution" />

@@ -335,7 +335,7 @@
         <div class="conditional-scantype phase_based time_of_flight triangulation"
              data-tiplabel="Camera Details"
              data-tooltipcontent="If applicable, provide the make/model/lense for the external camera that is is used to capture images for color mapping onto the scanned object">
-            <@s.textarea name="sensoryData.cameraDetails" id="rgbDataCaptureInfo" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Camera Details" labelposition="top" rows="5"  cols="80"  />
+            <@s.textarea name="sensoryData.cameraDetails" id="cameraDetails" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Camera Details" labelposition="top" rows="5"  cols="80"  />
         </div>
 
     </div>

@@ -45,7 +45,7 @@
                 <div class="add-new hidden">
                     <#-- NOTE: these should not be the account. variants as we want to not overwrite the values-->
                     <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
-                    <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"  cols="80" />
+                    <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"  cols="80"  rows="4" />
                     <p>Note: you can modify this account later to change the name, description, or specify who can charge it.</p>
                 </div>
             </div>
