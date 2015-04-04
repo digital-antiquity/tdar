@@ -56,7 +56,7 @@ public class FilestoreTest {
             FileUtils.deleteDirectory(f);
             f = new File(TestConstants.FILESTORE_PATH);
             f.mkdirs();
-            System.out.println(f.getAbsolutePath());
+            logger.debug(f.getAbsolutePath());
         } catch (IOException e) {
             Logger.getLogger(getClass()).info("Couldn't cleanup filestore, perhaps you're on windows...");
             e.printStackTrace();
