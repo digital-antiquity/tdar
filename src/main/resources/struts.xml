@@ -233,4 +233,7 @@
         </interceptors>
         <default-interceptor-ref name="authenticatedStack" />
     </package>
+
+
+
 </struts>
