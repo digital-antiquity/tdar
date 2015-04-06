@@ -535,11 +535,14 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private Long createAndTestInvoiceQuantity(InvoiceController controller, Long numberOfFiles, String code) throws TdarActionException {
+        logger.debug("setup");
         controller.prepare();
         String result = controller.execute();
         assertEquals(Action.SUCCESS, result);
+        logger.debug("done initial");
         controller = generateNewInitializedController(InvoiceController.class);
         controller.prepare();
+        logger.debug("set code");
         if (StringUtils.isNotBlank(code)) {
             controller.setCode(code);
         }
@@ -547,6 +550,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.getInvoice().setNumberOfFiles(numberOfFiles);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.processInvoice();
+        logger.debug("done process invoice");
 
         assertEquals(Action.SUCCESS, save);
         // assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
