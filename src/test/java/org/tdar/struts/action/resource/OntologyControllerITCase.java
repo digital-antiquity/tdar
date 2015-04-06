@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
@@ -114,6 +115,24 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 //        assertEquals("4th Tarsal2", node.getSynonyms().iterator().next());
         assertEquals("<Fish Element Additional>", map.get("_Fish_Element_Additional_").getDisplayName());
         assertEquals("Clavicle % Clavicle.clavicle", map.get("Clavicle___Clavicle.clavicle").getDisplayName());
+    }
+
+    @Test
+    @Rollback
+    public void testOntologyWithSpaces() throws Exception {
+        String ontText = IOUtils.toString(getClass().getResourceAsStream("/ontology/degenerate_spaces_taxon.txt"));
+        setIgnoreActionErrors(true);
+        Long id = loadOntologyFromText(ontText);
+        assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
+    }
+
+    @Test
+    @Rollback
+    public void testOntologyWithDegenerateTree() throws Exception {
+        String ontText = IOUtils.toString(getClass().getResourceAsStream("/ontology/degenerate_tree_taxon.txt"));
+        setIgnoreActionErrors(true);
+        Long id = loadOntologyFromText(ontText);
+        assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
     }
 
     @Test
