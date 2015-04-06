@@ -51,6 +51,11 @@ public class Document extends InformationResource {
     @BulkImportField(key ="DOCUMENT_TYPE")
     private DocumentType documentType;
 
+    @Column(name = "document_subtype", length = FieldLength.FIELD_LENGTH_50)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    private DocumentSubType documentSubType;
+    
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))

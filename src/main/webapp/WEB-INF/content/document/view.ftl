@@ -70,7 +70,7 @@
 
         <li>
             <strong>Document Type</strong><br>
-        ${resource.documentType.label}
+        ${resource.documentType.label} <#if document.documentSubType?has_content>${document.documentSubType.label}</#if>
         </li>
         </#if>
 
