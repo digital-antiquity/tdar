@@ -2,13 +2,13 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
     <title>Dataset Integration: Edit</title>
-    <@link rel="stylesheet" href="/css/tdar-integration.css" media="screen" />
 </head>
 <body>
 <div id="divIntegrationMain" ng-controller="IntegrationController as ctrl">
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
     </div>
+
     <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
         <div class="row">
             <div class="span9">
@@ -29,22 +29,73 @@
                </div>
             </div>
             <div class="span3">
+                <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.submitIntegration()">Integrate</button>
+                <#--<button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>-->
+
+                <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
+                <!-- Split button -->
                 <div class="btn-group">
-                    <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
-                    <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
-                    <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>
-                    <#--<button type="button" class="btn btn-warn" id="btnSubmitIntegration" ng-click="ctrl.submitIntegration()">??? </button>-->
+                  <button type="button" class="btn" ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSave" ng-click="ctrl.saveClicked()">Save</button>
+                  <#--
+                  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li>
+                    <a ignore-ng-disabled="!isMinimallyValid()" ng-disabled="!isValid()"  id="btnSaveAs" ng-click="ctrl.saveAsClicked()">Save As</a>
+                  </ul>
+                  -->
                 </div>
             </div>
         </div>
 
-        <div id="divActionsSection">
+    <div>
+    {{statusMessage}} {{$scope.statusMessage}}
+    </div>
+
+        <div id="divSelectedItemsSection">
+            <div class="row">
+                <div class="span12">
+                    <div class="control-group">
+                        <label class="control-label">Datasets & Ontologies</label>
+                        <div class="controls controls-row">
+                            <div class="span4">
+                                <label><b>Selected Datasets</b></label>
+                                <div>
+                                    <select size="5" class="input-block-level" multiple
+                                            ng-model="selectedDataTables" name="selectedDatasets" id="selDatasets"
+                                            ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
+                                </div>
+                                
+                                
+<div class="controls controls-row">
+                                <div class="btn-group">
+                                    <button type="button" class="btn"  id="btnAddDataset"
+                                            ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
+                                    
+                                    <button type="button" class="btn" id="rmDatasetBtn" 
+                                            ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
+                                </div>
+                        </div>
+                        </div>
+                            <div class="span4">
+                                <label><b>Shared Ontologies</b></label>
+                                <ul>
+                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+        <form>
+                <div id="divActionsSection">
                     <div class="control-group">
                         <label class="control-label">Actions</label>
                         <div class="controls">
                             <div class="btn-group">
-                                <button type="button" class="btn"  id="btnAddDataset"
-                                        ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
                                 <div class="btn-group" >
                                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
                                         Add Integration Column
@@ -52,7 +103,7 @@
                                     </a>
                                     <ul class="dropdown-menu" id="btnSetAddIntegrationColumns">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
-                                                ><a href="#" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
+                                                ><a ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 </div>
                                 <button type="button" class="btn" id="btnAddDisplayColumn"
@@ -69,40 +120,7 @@
                         </div>
                     </div>
         </div>
-
-    <div>
-    {{statusMessage}} {{$scope.statusMessage}}
-    </div>
-
-        <div id="divSelectedItemsSection">
-            <div class="row">
-                <div class="span12">
-                    <div class="control-group">
-                        <label class="control-label">Datasets & Ontologies</label>
-                        <div class="controls controls-row">
-                            <div class="span4">
-                                <label>Selected Datasets</label>
-                                <div>
-                                    <select size="5" class="input-block-level" multiple
-                                            ng-model="selectedDataTables" name="selectedDatasets" id="selDatasets"
-                                            ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
-                                </div>
-                                <button type="button" class="btn input-block-level" id="rmDatasetBtn"
-                                        ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
-                            </div>
-                            <div class="span4">
-                                <label>Shared Ontologies</label>
-                                <ul>
-                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </form>
-        <form>
+        
         <div id="divColumnSection">
             <div class="row">
                 <div class="span12">
@@ -169,15 +187,15 @@
                                                     </thead>
                                                     <tbody>
                                                     <tr ng-repeat="nodeSelection in outputColumn.nodeSelections" ng-init="nodeIndex = $index">
-                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{nodeSelection.node.id}}"></td>
+                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{::nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
-                                                            <div class="nodechild{{nodeSelection.node.index.split('.').length}}">
-                                                                <label for="cbont_{{nodeSelection.node.id}}">{{nodeSelection.node.displayName}}</label>
+                                                            <div class="nodechild{{::nodeSelection.node.index.split('.').length}}">
+                                                                <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
                                                         <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" id="cbx-{{dataTableColumn.id}}-{{nodeSelection.node.id}}" ng-show="ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" id="cbx-{{::dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -286,7 +304,6 @@
 
 <tdar-modal ng-controller="ModalDialogController"></tdar-modal>
 
-<span>
 <!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">
     <div id="divModalContainer" class="modal modal-big hide fade" tabindex="-1" role="dialog">
@@ -392,9 +409,8 @@
                 </div>
                 <div class="span4">
                     <ng-pluralize count="selectedItems.length"
-                                  when="{'0': 'No datasets elected',
-                                '1': '1 dataset selected',
-                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
+                                  when="{'0': 'No datasets selected',
+                                '1': '1 dataset selected',                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
                     <span ng-show="selectedItems.length" >(<a href="javascript:void(0)"  ng-click="clearSelectedItems()">clear selections</a>)</span>
                 </div>
             </div>
@@ -432,16 +448,7 @@ ${allResourceCollectionsJson}
 <script type="application/json" id="allCategories">
 ${categoriesJson}
 </script>
-<script src="/includes/js-emca-5.1-polyfill.js""></script>
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js'></script>
-<@script src="/js/data-integration/app.js" />
-<@script src="/js/data-integration/ng-IntegrationController.js" />
-<@script src="/js/data-integration/ng-IntegrationModel.js?" />
-<@script src="/js/data-integration/ng-IntegrationLegacyFormController.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationModalDialogController.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationDataService.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationCustomFilters.js"></@script>
-<@script src="/js/data-integration/ng-IntegrationValidationService.js"></@script>
 
 <#-- fixme: hack: /workspace/integrate#addDatasets  -->
 <script>
@@ -454,7 +461,7 @@ ${categoriesJson}
 </script>
 
 
-<script type="text/ng-template" id="workspace/modal-result.html">
+<div>
 
     <div id="divResultContainer" class="modal modal-big fade hide" tabindex="-1" role="dialog">
 
@@ -472,31 +479,15 @@ ${categoriesJson}
                       <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
                         <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
-                        <li role="presentation"><a href="#download" aria-controls="download" role="tab" data-toggle="tab">Download</a></li>
                       </ul>
                     
                       <!-- Tab panes -->
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="pivot">
-                    
-                            <table>
-                                <tr ng-repeat="row in download.pivotData">
-                                    <td ng-repeat="col in row track by $index">{{col}}</td>
-                                </tr>
-                            </table>
-                    
-                        
+                            <table tdar-datatable aa-data="download.pivotData.rows" ao-columns="download.pivotData.columns" id="tblPivotData"></table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
-                            <table>
-                                <tr ng-repeat="row in download.previewData">
-                                    <td ng-repeat="col in row track by $index">{{col}}</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="download">
-                             <button type="button" class="btn" ng-click="ctrl.downloadResult("{{download.ticket.id}}")">Download</button>
-                             <button type="button" class="btn" ng-click="ctrl.saveClicked()">Save</button>
+                            <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
                         </div>
                       </div>
                     
@@ -508,14 +499,11 @@ ${categoriesJson}
 
             <div class="row-fluid">
                 <div class="span12">
+                    <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                 </div>
             </div>
         </div>
     </div>
-</script>
+</div>
 </body>
-<#--HACK:  tack on a querystring to static resources to prevent browsers from using an obsolete cached version -->
-<#assign buildParam = "_vid=${common.tdarBuildId?url}">
-<#macro script src><script src="${src}?buildId=${common.tdarBuildId?url}"></script></#macro>
-<#macro link rel href media><link rel="${rel}" href="${href}?buildId=${common.tdarBuildId?url}" media="${media}"></#macro>

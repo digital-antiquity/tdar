@@ -101,6 +101,7 @@
         <js>/js/data-integration/ng-IntegrationDataService.js</js>
         <js>/js/data-integration/ng-IntegrationCustomFilters.js</js>
         <js>/js/data-integration/ng-IntegrationValidationService.js</js>
+        <js>/js/data-integration/ng-DatatableDirective.js</js>
         <group-ref>default</group-ref>
     </group>
 </groups>
