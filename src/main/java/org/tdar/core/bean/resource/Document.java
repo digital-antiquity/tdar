@@ -352,4 +352,12 @@ public class Document extends InformationResource {
     public boolean isSupportsThumbnails() {
         return true;
     }
+
+    public DocumentSubType getDocumentSubType() {
+        return documentSubType;
+    }
+
+    public void setDocumentSubType(DocumentSubType documentSubType) {
+        this.documentSubType = documentSubType;
+    }
 }
