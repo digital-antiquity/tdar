@@ -155,17 +155,22 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testAvaliableActivities() {
         BillingActivityModel model = new BillingActivityModel();
+        model.setActive(true);
         BillingActivity disabledDctivity = new BillingActivity();
         disabledDctivity.setEnabled(false);
         disabledDctivity.setName("not active");
         genericService.saveOrUpdate(model);
         disabledDctivity.setModel(model);
         genericService.saveOrUpdate(disabledDctivity);
-
+        model.setVersion(100);
         BillingActivity ctivity = new BillingActivity("test", 1f, model);
         ctivity.setEnabled(true);
         ctivity.setName("active");
         genericService.saveOrUpdate(ctivity);
+        model.getActivities().add(disabledDctivity);
+        model.getActivities().add(ctivity);
+        genericService.saveOrUpdate(model);
+        genericService.synchronize();
 
         List<BillingActivity> activeBillingActivities = invoiceService.getActiveBillingActivities();
         assertTrue(activeBillingActivities.contains(ctivity));
