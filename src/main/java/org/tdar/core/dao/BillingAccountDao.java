@@ -232,6 +232,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         List<BillingActivityModel> findAll = findAll(BillingActivityModel.class);
         BillingActivityModel latest = null;
         for (BillingActivityModel model : findAll) {
+            logger.trace("{} {} {} {}", model.getActive(), model.getDescription(), model.getId(), model.getVersion());
             logger.debug("{} {} {} {}", model.getActive(), model.getDescription(), model.getId(), model.getVersion());
             if (!model.getActive()) {
                 continue;

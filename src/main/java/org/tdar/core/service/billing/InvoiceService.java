@@ -91,7 +91,7 @@ public class InvoiceService {
             }
         }
         Collections.sort(toReturn);
-        logger.debug("{}", model);
+        logger.trace("{}", toReturn);
         return toReturn;
     }
 
