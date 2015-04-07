@@ -141,11 +141,11 @@ public class FileSystemResourceDao {
         // use the factory to take an instance of the document builder
         DocumentBuilder db = dbf.newDocumentBuilder();
         // parse using the builder to get the DOM mapping of the XML file
-        Document dom = null;
+
         if (filename.exists()) {
-            dom = db.parse(filename);
+            return db.parse(filename);
         }
-        return dom;
+        return null;
     }
 
     public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
@@ -197,9 +197,6 @@ public class FileSystemResourceDao {
         return null;
     }
 
-    
-    
-
     /**
      * Create and setup a model insepector
      * 
@@ -250,6 +247,4 @@ public class FileSystemResourceDao {
         return srcList;
     }
 
-    
-    
 }

@@ -104,7 +104,7 @@
                     if(validationService.errors.length) {
                         self.updateStatus("Loading complete. However, the underlying resources used in this integration may have changed. " +
                         " Please review your selections and ensure they are up-to-date.");
-
+                        console.warn(validationService.errors);
                         //in the event errors, rebuild cached/transient data
                         self.integration.reset();
                     }
