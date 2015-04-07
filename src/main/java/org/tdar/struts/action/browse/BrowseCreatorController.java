@@ -271,12 +271,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                 getKeywords();
                 getCollaborators();
                 // legacy name, deprecated
-                NodeList list = dom.getElementsByTagName("creatorInfoLog");
-                if (list == null) {
-                    list = dom.getElementsByTagName("relatedInfoLog");
-                }
-                NamedNodeMap attributes = list.item(0).getAttributes();
-                // getLogger().info("attributes: {}", attributes);
+
+                NamedNodeMap attributes = dom.getChildNodes().item(0).getAttributes();
                 setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
                 setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
                 setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
@@ -391,7 +387,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             return collaborators;
         }
         try {
-            collaborators = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
+            collaborators = fileSystemResourceService.parseCreatorInfoLog("*/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
                     dom);
         } catch (TdarRecoverableRuntimeException trre) {
             getLogger().warn(trre.getLocalizedMessage());
@@ -404,7 +400,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             return keywords;
         }
         try {
-            keywords = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
+            keywords = fileSystemResourceService.parseCreatorInfoLog("*/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
         } catch (TdarRecoverableRuntimeException trre) {
             getLogger().warn(trre.getLocalizedMessage());
         }
