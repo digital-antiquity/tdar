@@ -216,4 +216,10 @@
     </changeSet>
     -->
 
+    <changeSet id="munsell-15" author="abrin">
+        <addColumn tableName="document">
+            <column name="document_subtype" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

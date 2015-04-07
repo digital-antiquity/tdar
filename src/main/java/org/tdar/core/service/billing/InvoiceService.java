@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Coupon;
@@ -83,7 +84,8 @@ public class InvoiceService {
     public List<BillingActivity> getActiveBillingActivities() {
         List<BillingActivity> toReturn = new ArrayList<>();
 
-        for (BillingActivity activity : accountDao.getLatestActivityModel().getActivities()) {
+        BillingActivityModel model = accountDao.getLatestActivityModel();
+        for (BillingActivity activity : model.getActivities()) {
             if (activity.getEnabled() ) {
                 toReturn.add(activity);
             }
