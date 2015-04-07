@@ -4,6 +4,7 @@
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+    <#import "/WEB-INF/macros/whitelabel-macros.ftl" as whitelabel>
 
 <head>
     <meta name="decorator" content="whitelabel1">
@@ -32,7 +33,9 @@
     }
 </style>
 
-
+<#if resourceCollection.searchEnabled>
+    <@whitelabel.searchheader />
+</#if>
 
 
 <div id="divSearchContext" parse="true">
