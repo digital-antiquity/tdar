@@ -498,4 +498,4 @@
     // //expose the class to the application in case another component wants to create a unique instance
     // app.value("IntegrationClass", Integration);
 
-})(angular)
+})(angular);

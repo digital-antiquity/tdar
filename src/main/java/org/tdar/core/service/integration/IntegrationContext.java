@@ -14,8 +14,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Helper class to corral all of the integration info in one place
@@ -32,6 +34,8 @@ public class IntegrationContext implements Serializable {
     private Date dateCreated = new Date();
     private List<IntegrationColumn> integrationColumns = new ArrayList<>();
     private List<DataTable> dataTables;
+    private String title;
+    private String description;
 
     private List<String> errorMessages = new ArrayList<>();
 
@@ -89,6 +93,15 @@ public class IntegrationContext implements Serializable {
         return tempTableName;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("creator: %s\n", getCreator()));
+        sb.append(String.format("dataTables: %s\n", PersistableUtils.extractIds(dataTables)));
+        sb.append(StringUtils.join(getIntegrationColumns(), "\n"));
+        return sb.toString();
+    }
+    
     @XmlElementWrapper(name = "dataTables")
     @XmlElement(name = "dataTable")
     public List<DataTable> getDataTables() {
@@ -113,6 +126,22 @@ public class IntegrationContext implements Serializable {
 
     public List<String> getErrorMessages() {
         return Collections.unmodifiableList(errorMessages);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public boolean hasCountColumn() {
