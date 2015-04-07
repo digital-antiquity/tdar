@@ -526,10 +526,10 @@
      */
     TDAR.fileupload.addGisValidation = function (validator) {
         var fileinfo = {
-            shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
+            shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg","lyr"],
             jpeg: ["jpg", "jpeg", "jpw", "jgw"],
             tiff: ["tif", "tiff", "tfw"],
-            image: ["jpg", "jpeg", "jpw", "jgw", "tfw", "aux", "ovr", "rrd", "aux.xml", "mxd"]
+            image: ["jpg", "jpeg", "jpw", "jgw", "tfw", "aux", "ovr", "rrd", "aux.xml", "mxd","lyr"]
         };
 
         var requiredFiles = {
