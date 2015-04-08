@@ -89,17 +89,12 @@ ${head}
         </div>
     </div>
 
-
-    <#if customSearchHeader!true>
-        <@dec.searchheader />
-    <#else>
-        <@dec.subnav />
-    </#if>
+    <@dec.subnav />
 
 
+    <@dec.searchHeader />
 
-
-            <!-- BEGIN-TDAR-CONTENT -->
+    <!-- BEGIN-TDAR-CONTENT -->
 
     <div class="container">
 
@@ -109,7 +104,6 @@ ${head}
             ${page.properties["div.toolbars"]}
             </div>
         </#if>
-
 
         <#if errorWarningSectionVisible >
             <div class="alert alert-error error-banner">

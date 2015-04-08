@@ -601,7 +601,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<String> getJavascriptFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.JS);
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
     }
 
     public List<String> getCssFiles() {
@@ -850,5 +850,22 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isTest() {
         return getTdarConfiguration().isTest();
+    }
+
+
+    /**
+     * Indicates to view layer whether it should show the login menu  (e.g.  "Welcome Back, Walter Kurtz").
+     * @return
+     */
+    public boolean isLoginMenuEnabled() {
+        return false;
+    }
+
+    /**
+     * Indicates whether the view layer should show sub-navigation elements (usually true while logged in, but some actions may wish to disable).
+     *
+     * */
+    public boolean isSubnavEnabled() {
+        return true;
     }
 }

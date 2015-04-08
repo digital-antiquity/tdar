@@ -1,7 +1,27 @@
+/*
+    overrides of tdar-base.css and tdar-bootstrap.css go here
+*/
 .subnav-section {
     background: url("/images/wl/bg-sub.jpg") top center no-repeat;
 }
 
 div.searchheader {
     background: url("/images/r4/bg-home.jpg") 0 0 no-repeat;
+}
+
+
+/*
+    whitelabel-specific selectors go here
+*/
+.whitelabel-login-menu {
+    padding:12px 12px 12px 0; background-color: rgba(106, 83, 58, 0.2);
+}
+
+.whitelabel-login-menu li {
+    margin: 0 0 0 12px;
+}
+.whitelabel-login-menu a {
+    padding: 0 8px 0 8px;
+    width: 105px;
+
 }

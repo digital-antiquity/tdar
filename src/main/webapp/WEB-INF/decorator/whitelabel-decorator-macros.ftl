@@ -50,10 +50,12 @@
 </nav>
 </#macro>
 
-
-<#macro searchheader>
+<#macro searchHeader>
+<#if searchHeaderEnabled>
 <div class="searchheader">
     <div class="container hero">
+        <#--fixme: This boolean arg is gross. Kill it! -->
+        <div class="pull-right whitelabel-login-menu" ><@common.loginMenu false/></div>
         <h2>${title}</h2>
         <p>Subtitle goes here</p>
         <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
@@ -63,9 +65,11 @@
         </form>
     </div>
 </div>
+</#if>
 </#macro>
 
 <#macro subnav>
+<#if subnavEnabled>
 <div class="subnav-section">
     <div class="container">
         <div class="row">
@@ -89,4 +93,5 @@
         </div>
     </div>
 </div>
+</#if>
 </#macro>

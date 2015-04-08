@@ -450,4 +450,21 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return checkLogoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
     }
 
+    /**
+     * Indicate to view layer that we should display a search header.
+     * @return
+     */
+    public boolean isSearchHeaderEnabled() {
+        return getResourceCollection().isSearchEnabled();
+    }
+
+    /**
+     * Indicates whether the view layer should show sub-navigation elements.  We turn this off when the 'search header' is enabled.
+     *
+     */
+    @Override
+    public boolean isSubnavEnabled() {
+        return !isSearchHeaderEnabled();
+    }
+
 }

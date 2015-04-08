@@ -21,20 +21,16 @@
     </#if>
 </head>
 <body>
+<#-- todo: move these to .css and use collection-specific css classes -->
+<style>
+    i.search-list-checkbox-grey {
+        background-image: none !important;
+    }
 
-
-<#if resourceCollection.searchEnabled>
-    <@whitelabel.searchheader />
-</#if>
-
-
-<div id="divSearchContext" parse="true">
-    <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
-    <label for="cbctxid">Search within this collection</label>
-</div>
-
-<h1>THIS SUPER FANCY COLLECTION BROUGHT TO YOU BY:  </h1>
-<h2><em>Name Goes Here</em></h2>
+    li.media {
+        display: inline-block
+    }
+</style>
 
     <#if editable>
         <@nav.collectionToolbar "collection" "view">
@@ -51,20 +47,18 @@
     </#if>
 
     <@view.pageStatusCallout />
-<h1>
+
     <#if logoAvailable>
-        <img class="pull-right" src="/files/collection/sm/${id?c}/logo"
-        alt="logo" title="logo" /> 
+        <div class="pull-right" style="padding: 5em 0 1em 1em; "><img class="img-rounded" src="/files/collection/sm/${id?c}/logo" alt="logo" title="logo"> </div>
     </#if>
 
-${resourceCollection.name!"untitled collection"}</h1>
+    <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
 
     <#if !visible>
     This collection is not accessible
     <#else>
 
         <#if !collections.empty>
-        <!-- Don't show header if header doesn't exist -->
         <div id="sidebar-right" parse="true">
             <h3 class="sidebar-spacer">Child Collections</h3>
             <@common.listCollections collections=collections showOnlyVisible=true />
@@ -80,8 +74,8 @@ ${resourceCollection.name!"untitled collection"}</h1>
             <#if resourceCollection.adminDescription??>
                 <p>
                     <#noescape>
-			    ${resourceCollection.adminDescription}
-			  </#noescape>
+                    ${resourceCollection.adminDescription}
+                    </#noescape>
                 </p>
             </#if>
 

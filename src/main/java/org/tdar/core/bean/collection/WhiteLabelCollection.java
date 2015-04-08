@@ -63,6 +63,7 @@ public class WhiteLabelCollection extends ResourceCollection{
         this.featuredResourcesEnabled = featuredResourcesEnabled;
     }
 
+    @Override
     public boolean isSearchEnabled() {
         return searchEnabled;
     }

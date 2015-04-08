@@ -185,7 +185,6 @@ public interface Persistable extends Serializable {
                 sequenceNumber++;
             }
         }
-
     }
 
 }
