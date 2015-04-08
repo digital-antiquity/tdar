@@ -14,6 +14,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
@@ -22,6 +23,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -48,14 +50,14 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Column(name = "start_date")
     @Field(name = "startDate", store = Store.YES)
     // @NumericField
-//    @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @JsonView(JsonLookupFilter.class)
     private Integer startDate;
 
     @Column(name = "end_date")
     @Field(name = "endDate", store = Store.YES)
     // @NumericField
-//    @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @JsonView(JsonLookupFilter.class)
     private Integer endDate;
 

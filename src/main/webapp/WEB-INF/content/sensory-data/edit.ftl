@@ -119,7 +119,7 @@
                             </div>
                         </div>
                         <div data-tiplabel="Additional Scan Notes" data-tooltipcontent="Additional notes related to this scan">
-                            <@s.textarea name="sensoryDataScans[${_scan_index}].scanNotes" label="Scan Notes" labelposition="top" cssClass="resizable input-xxlarge" rows="5" />
+                            <@s.textarea name="sensoryDataScans[${_scan_index}].scanNotes" label="Scan Notes" labelposition="top" cssClass="resizable input-xxlarge" rows="5"  cols="80" />
                         </div>
                     </div>
                 </div>
@@ -194,7 +194,7 @@
         </div>
         <div data-tiplabel="Point Editing Summary"
              data-tooltipcontent="Include a description of major editing operations (IE overlap reduction, point deletion, etc...) that have been performed on the dataset">
-            <@s.textarea  name="sensoryData.pointDeletionSummary" cssClass="resizable input-xxlarge" label="Point Editing Summary" labelposition="top" rows="5" />
+            <@s.textarea  name="sensoryData.pointDeletionSummary" cssClass="resizable input-xxlarge" label="Point Editing Summary" labelposition="top" rows="5"  cols="80" />
         </div>
         <br/>
 
@@ -248,7 +248,7 @@
             </div>
         </div>
         <br/>
-        <@s.textarea name="sensoryData.meshProcessingNotes" cssClass="resizable input-xxlarge" label="Additional Processing Notes" labelposition="top" rows="5" />
+        <@s.textarea name="sensoryData.meshProcessingNotes" cssClass="resizable input-xxlarge" label="Additional Processing Notes" labelposition="top" rows="5"  cols="80" />
         <br/>
 
         <h4>Decimated Polygonal Mesh Metadata / Triangle Counts</h4>
@@ -326,16 +326,16 @@
              data-tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
             <@s.radio name='sensoryData.rgbCapture'  listValue="label"
             list='%{rgbCaptureOptions}' label="RGB Capture" />
-        <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5" />
+        <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5"  cols="80" />
         </div>
         <div data-tiplabel="Description of Final Datasets for Archive" data-tooltipcontent="What datasets will be archived (include file names if possible).">
-            <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
+            <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5"  cols="80" />
         </div>
 
         <div class="conditional-scantype phase_based time_of_flight triangulation"
              data-tiplabel="Camera Details"
              data-tooltipcontent="If applicable, provide the make/model/lense for the external camera that is is used to capture images for color mapping onto the scanned object">
-            <@s.textarea name="sensoryData.cameraDetails" id="rgbDataCaptureInfo" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Camera Details" labelposition="top" rows="5" />
+            <@s.textarea name="sensoryData.cameraDetails" id="cameraDetails" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Camera Details" labelposition="top" rows="5"  cols="80"  />
         </div>
 
     </div>

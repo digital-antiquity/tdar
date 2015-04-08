@@ -17,7 +17,8 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Indexable;
@@ -31,7 +32,6 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.Operator;
 import org.tdar.core.service.search.ReservedSearchParameters;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
@@ -488,6 +488,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private Map<String, Object> result = new HashMap<>();
 
     public void jsonifyResult(Class<?> filter) {
+        prepareResult();
+        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
+    }
+
+    protected void prepareResult() {
         List<I> actual = new ArrayList<>();
         for (I obj : results) {
             if (obj == null) {
@@ -503,7 +508,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {

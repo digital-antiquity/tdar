@@ -48,6 +48,8 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * $Id$
  * 
@@ -270,6 +272,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return null;
     }
 
+    @JsonIgnore
     public InformationResourceFileVersion getLatestUploadedVersion() {
         return getUploadedVersion(getLatestVersion());
     }
@@ -279,6 +282,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     /* Use for Ontology (or perhaps coding sheet); will need to verify that this does not break things when we have true archival version */
+    @JsonIgnore
     public InformationResourceFileVersion getLatestUploadedOrArchivalVersion() {
         return getVersion(getLatestVersion(), VersionType.UPLOADED, VersionType.UPLOADED_TEXT, VersionType.UPLOADED_ARCHIVAL, VersionType.ARCHIVAL);
     }

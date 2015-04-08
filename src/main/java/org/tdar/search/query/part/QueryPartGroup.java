@@ -5,11 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.service.search.Operator;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -103,12 +101,6 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         return getParts().isEmpty();
     }
 
-    @Override
-    public Query generateQuery(QueryBuilder builder) {
-        return BooleanHelper.generateQuery(builder, getParts(), getOperator());
-    }
-
-    
     @Override
     public String generateQueryString() {
         StringBuilder builder = new StringBuilder();

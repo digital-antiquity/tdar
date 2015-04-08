@@ -1,7 +1,9 @@
 package org.tdar.core.bean.collection;
 
+import java.beans.Transient;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -12,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.Persistable;
 
 /**
@@ -24,6 +27,7 @@ import org.tdar.core.bean.Persistable;
 public class DownloadAuthorization extends Persistable.Base {
 
     private static final long serialVersionUID = 2087845303008388117L;
+    private static final int UUID_BEGIN_INDEX = 24;
 
     @Column(name = "api_key")
     private String apiKey;
@@ -39,6 +43,31 @@ public class DownloadAuthorization extends Persistable.Base {
     @ManyToOne
     @JoinColumn(name = "resource_collection_id")
     private ResourceCollection resourceCollection;
+
+    private static String generateSimpleKey() {
+        return  "d" + UUID.randomUUID().toString().substring(UUID_BEGIN_INDEX);
+    };
+
+    //zero-arg constructor for hibernate (does not generate key)
+    public DownloadAuthorization(){}
+
+    /**
+     * Create new downloadAuthorization w/ default api key for the specified resourceCollection.
+     * @param resourceCollection
+     */
+    public DownloadAuthorization(ResourceCollection resourceCollection) {
+        this(resourceCollection, generateSimpleKey());
+    }
+
+    /**
+     * Create new downloadAuth with specified resourceCollection & key
+     * @param resourceCollection
+     * @param apiKey
+     */
+    public DownloadAuthorization(ResourceCollection resourceCollection, String apiKey) {
+        this.resourceCollection = resourceCollection;
+        this.apiKey = apiKey;
+    }
 
     public String getApiKey() {
         return apiKey;
@@ -62,6 +91,27 @@ public class DownloadAuthorization extends Persistable.Base {
 
     public void setRefererHostnames(Set<String> refererHostnames) {
         this.refererHostnames = refererHostnames;
+    }
+
+    /**
+     * Returns true if downloads are supported for requests from any referrer.  The convention for this policy is for a
+     * DownloadAuthorization object to have a single referrerHostname with a value of '*'  (the asterisk symbol).
+     * @return
+     */
+//    @Transient
+//    public boolean  isAnyReferrerAllowed() {
+//        if(CollectionUtils.isEmpty(refererHostnames)) return false;
+//        return refererHostnames.size() == 1 && refererHostnames.iterator().next().equals("*");
+//    }
+
+    @Transient
+    public boolean  isAnyReferrerAllowed() {
+        //FIXME: needs implementation
+        return false;
+    }
+
+    public boolean isReferrerAllowed(String referrerHostname) {
+        return isAnyReferrerAllowed() || refererHostnames.contains(referrerHostname);
     }
 
 }

@@ -160,7 +160,7 @@
 
     <rule>
         <from>^/(sensory-data|geospatial)/view-row(.*)</from>
-        <to>/dataset/view-row$1</to>
+        <to>/dataset/view-row$2</to>
     </rule>
 
 	<!-- managing searches, or basic URLs that could be searches -->

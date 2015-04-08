@@ -210,7 +210,7 @@ public class GenericService {
         }
         // get a unique set of Ids
         Map<Long, P> ids = PersistableUtils.createIdMap(sparseObjects);
-        logger.trace("{}", ids);
+        logger.info("{}", ids);
         // populate and put into a unique map
         @SuppressWarnings("unchecked")
         Map<Long, P> skeletons = PersistableUtils.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));

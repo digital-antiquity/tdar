@@ -47,7 +47,6 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.query.SortOption;
-import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.browse.BrowseCollectionController;
@@ -68,6 +67,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     private EntityService entityService;
+
+    @Autowired
+    AuthorizedUserDao authorizedUserDao;
 
     @Autowired
     private ResourceCollectionService resourceCollectionService;
@@ -148,89 +150,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.info("{} {} ", resource, resource.getSubmitter());
         }
 
-    }
-
-    @Test
-    @Rollback
-    public void testResourceCollectionController() throws Exception
-    {
-        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        String name = "test collection";
-        String description = "test description";
-
-        InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
-        InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
-                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
-        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, true, users, resources, null);
-        Long collectionid = collection.getId();
-        logger.info("{}", collection.getResources());
-        assertFalse(collectionid.equals(-1L));
-        collection = null;
-        ResourceCollection foundCollection = genericService.find(ResourceCollection.class, collectionid);
-        assertNotNull(foundCollection);
-        assertEquals(3, foundCollection.getAuthorizedUsers().size());
-        assertEquals(2, foundCollection.getResources().size());
-
-        assertEquals(name, foundCollection.getName());
-        assertEquals(description, foundCollection.getDescription());
-        assertEquals(CollectionType.SHARED, foundCollection.getType());
-        assertEquals(SortOption.RESOURCE_TYPE, foundCollection.getSortBy());
-
-        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile2));
-        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile));
-
-        int count = 0;
-        for (AuthorizedUser user : foundCollection.getAuthorizedUsers())
-        {
-            if (user.getUser().equals(testPerson))
-            {
-                count++;
-                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
-            }
-            if (user.getUser().equals(getAdminUser()))
-            {
-                count++;
-                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
-            }
-            if (user.getUser().equals(getBasicUser()))
-            {
-                count++;
-                assertEquals(GeneralPermissions.ADMINISTER_GROUP, user.getGeneralPermission());
-            }
-        }
-        assertEquals(3, count);
-    }
-
-    @Test
-    @Rollback
-    public void testResourceCollectionPermissionsController() throws Exception
-    {
-        TdarUser testPerson = createAndSaveNewPerson("a2@basda.com", "1234");
-        String name = "test collection";
-        String description = "test description";
-
-        InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
-        InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
-
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
-                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
-        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, resources, null);
-        Long id = collection.getId();
-        collection = null;
-        assertFalse(id.equals(-1L));
-
-        ResourceCollection foundCollection = genericService.find(ResourceCollection.class, id);
-
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile2, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), generateInformationResourceWithFile2,
-                GeneralPermissions.MODIFY_METADATA));
-
-        assertTrue(authenticationAndAuthorizationService.canEditCollection(getBasicUser(), foundCollection));
-        assertFalse(authenticationAndAuthorizationService.canEditCollection(testPerson, foundCollection));
     }
 
     @Test
@@ -331,52 +250,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertEquals(Action.SUCCESS, save);
     }
 
-    @Autowired
-    AuthorizedUserDao authorizedUserDao;
-
-    @Test
-    @Rollback
-    public void testResourceCollectionPermissionsWithDepthController() throws Exception {
-        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
-                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
-
-        Long resId = setupResource(testPerson, users);
-        InformationResource generateInformationResourceWithFile = genericService.find(InformationResource.class, resId);
-        logger.debug("collections: {}", generateInformationResourceWithFile.getResourceCollections());
-        authorizedUserDao.clearUserPermissionsCache();
-        assertTrue("user can edit based on parent of parent resource collection",
-                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-    }
-
-    @Test
-    @Rollback
-    public void testResourceCollectionPermissionsWithDepthInvalidController() throws Exception {
-        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        Long resId = setupResource(testPerson, null);
-        InformationResource generateInformationResourceWithFile = genericService.find(InformationResource.class, resId);
-//
-//        assertTrue("user can no longer edit",
-//                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-        authorizedUserDao.clearUserPermissionsCache();
-        assertFalse("user can no longer edit",
-                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-    }
-
-    private Long setupResource(TdarUser testPerson, List<AuthorizedUser> users) throws Exception {
-        String name = "test collection";
-        String description = "test description";
-
-        InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
-        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, null, null);
-        logger.debug("parent: {}", collection);
-        ResourceCollection child = generateResourceCollection(name, description, CollectionType.SHARED, false, null, resources, collection.getId());
-        Long childId = child.getId();
-        logger.info("{}", generateInformationResourceWithFile);
-        Long resId = generateInformationResourceWithFile.getId();
-        return resId;
-    }
 
     @Test
     @Rollback
@@ -794,28 +667,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(controller.getCandidateParentResourceCollections().contains(collectionWithUserAsAdministrator));
     }
 
-    @Test
-    @Rollback
-    public void testDocumentControllerAssigningResourceCollectionsWithoutLocalRights() throws Exception
-    {
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, null, new ArrayList<Resource>(), null);
-        DocumentController controller = generateNewInitializedController(DocumentController.class);
-        controller.prepare();
-        controller.add();
-        Document document = controller.getDocument();
-        document.setTitle("test");
-        document.setDescription("test");
-        document.setDate(1234);
-        controller.getResourceCollections().add(collection1);
-        controller.setServletRequest(getServletPostRequest());
-        assertEquals(Action.SUCCESS, controller.save());
-        evictCache();
-        ResourceCollection first = document.getResourceCollections().iterator().next();
-        assertEquals(1, document.getResourceCollections().size());
-        assertEquals(collection1, first);
-        assertEquals(getUser(), first.getOwner());
-        assertEquals(1, first.getResources().size());
-    }
+
 
     @Test
     @Rollback
@@ -870,202 +722,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertEquals(Action.SUCCESS, vc.view());
         logger.info("results: {}", vc.getResults());
         assertTrue(vc.getResults().contains(document));
-    }
-
-    @Test
-    @Rollback
-    public void testInvalidRightsAssignment() throws Exception
-    {
-        Document document = generateDocumentWithUser();
-        document.setSubmitter(getAdminUser());
-        genericService.save(document);
-        // try and assign access to aa document that user should not have rights
-        // to add, assert that this document cannot be added
-
-        CollectionController controller = generateNewController(CollectionController.class);
-        init(controller, getBasicUser());
-        controller.add();
-        ResourceCollection resourceCollection = controller.getResourceCollection();
-        resourceCollection.setType(CollectionType.SHARED);
-        resourceCollection.setName("tst");
-        resourceCollection.setDescription("tst");
-        resourceCollection.markUpdated(getBasicUser());
-        resourceCollection.setSortBy(SortOption.ID);
-        controller.getToAdd().add(document.getId());
-        controller.setServletRequest(getServletPostRequest());
-        String result = controller.save();
-        assertFalse(result.equals(Action.SUCCESS));
-        controller = generateNewInitializedController(CollectionController.class);
-        controller.setId(resourceCollection.getId());
-        assertEquals(0, resourceCollection.getResources().size());
-        resourceCollection = null;
-        controller.prepare();
-        controller.edit();
-        assertEquals(0, controller.getResourceCollection().getResources().size());
-
-    }
-
-    @Test
-    @Rollback
-    public void testRightsEscalation() throws Exception
-    {
-        // Create document, add user to it with MODIFY_METADATA, have them create a collection, and add it where they're the owner and thus have higher rights
-        Document document = generateDocumentWithUser();
-        document.setSubmitter(getAdminUser());
-        genericService.save(document);
-        Long docId = document.getId();
-        // document = null;
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
-
-        controller = null;
-        // try and assign access to aa document that user should not have rights
-        // to add, assert that this document cannot be added
-
-        CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
-        cc.prepare();
-        cc.getResourceCollection().setName("test");
-        cc.getResourceCollection().setDescription("test");
-        cc.getToAdd().add(document.getId());
-        assertWeFailedToSave(cc);
-    }
-
-    @Test
-    @Rollback
-    public void testOwnRightsEscalation() throws Exception
-    {
-        // Create document, add user to it with MODIFY_METADATA, have them create a collection, and add it where they're the owner and thus have higher rights
-        Document document = generateDocumentWithUser();
-        document.setSubmitter(getAdminUser());
-        genericService.save(document);
-        Long docId = document.getId();
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
-
-        controller = null;
-        // try and assign access to aa document that user should not have rights
-        // to add, assert that this document cannot be added
-        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.edit();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
-        Exception e = null;
-        try {
-            resourceCollectionService.saveAuthorizedUsersForResource(controller.getDocument(), controller.getAuthorizedUsers(), true, getBasicUser());
-        } catch (Exception es) {
-            e = es;
-        }
-        assertNotNull(e);
-    }
-
-    private void assertWeFailedToSave(AbstractPersistableController<?> cc) {
-        cc.setServletRequest(getServletPostRequest());
-        String result = Action.SUCCESS;
-        setIgnoreActionErrors(true);
-        try {
-            cc.prepare();
-            result = cc.save();
-        } catch (Exception e) {
-            logger.error("{}", e);
-            result = null;
-        }
-        assertFalse(Action.SUCCESS.equals(result));
-    }
-
-    @Test
-    @Rollback
-    public void testRightsEscalationUserUpsSelf() throws Exception
-    {
-        // Create document, add user to it with MODIFY_METADATA, have them edit document and add it to an adhoc collection, then try and add higher rights
-        Document document = generateDocumentWithUser();
-        document.setSubmitter(getAdminUser());
-        genericService.save(document);
-        Long docId = document.getId();
-        document = null;
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
-
-        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getResourceCollections().add(
-                new ResourceCollection("test123", "test123", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getBasicUser()));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
-        Long id = -1L;
-        for (ResourceCollection c : controller.getResourceCollections()) {
-            if (c.getTitle().equals("test123")) {
-                id = c.getId();
-            }
-        }
-        controller = null;
-        // try and assign access to aa document that user should not have rights
-        // to add, assert that this document cannot be added
-
-        CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
-        cc.setId(id);
-        // cc.prepare();
-        // controller.getResources().add(document);
-        cc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
-        assertWeFailedToSave(cc);
-    }
-
-    @Test
-    @Rollback
-    public void testRightsEscalationUserUpsParent() throws Exception
-    {
-        List<AuthorizedUser> users = Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
-        ResourceCollection parent = generateResourceCollection("parent", "parent", CollectionType.SHARED, true, users, getBasicUser(), Collections.EMPTY_LIST,
-                null);
-        Long parentId = parent.getId();
-        // Create document, add user to it with MODIFY_METADATA, have them edit document and add it to an adhoc collection, then try and add higher rights
-        Document document = generateDocumentWithUser();
-        document.setSubmitter(getAdminUser());
-        genericService.save(document);
-        Long docId = document.getId();
-        document = null;
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
-
-        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getResourceCollections().add(
-                new ResourceCollection("test123", "test123", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getBasicUser()));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
-        Long id = -1L;
-        for (ResourceCollection c : controller.getResourceCollections()) {
-            if (c.getTitle().equals("test123")) {
-                id = c.getId();
-            }
-        }
-        controller = null;
-        // try and assign access to aa document that user should not have rights
-        // to add, assert that this document cannot be added
-
-        CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
-        cc.setId(id);
-        // cc.prepare();
-        cc.setParentId(parentId);
-        assertWeFailedToSave(cc);
     }
 
     @Test
@@ -1556,14 +1212,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(seen);
     }
 
-    private Map<Long, Resource> getIdmap(Set<Resource> resources) {
-        Map<Long, Resource> idmap = new HashMap<>();
-        for (Resource resource : resources) {
-            idmap.put(resource.getId(), resource);
-        }
-        return idmap;
-    }
-
     @Test
     /**
      *  Assert that the sparse resource list returned by findCollectionSparseResources  matches the persisted list (for
@@ -1578,7 +1226,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         for (ResourceCollection collection : allCollections) {
             // get map of persisted resources
-            Map<Long, Resource> persistedResourceMap = getIdmap(collection.getResources());
+            Map<Long, Resource> persistedResourceMap = PersistableUtils.createIdMap(collection.getResources());
 
             // get list of sparse resources, make sure it has same size & contents as the persisted resource list.
             List<Resource> sparseResources = resourceCollectionService.findCollectionSparseResources(collection.getId());

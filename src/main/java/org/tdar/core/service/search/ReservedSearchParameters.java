@@ -3,6 +3,7 @@ package org.tdar.core.service.search;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;

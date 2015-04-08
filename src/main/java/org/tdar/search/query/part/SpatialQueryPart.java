@@ -8,15 +8,10 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.BooleanJunction;
-import org.hibernate.search.query.dsl.MustJunction;
-import org.hibernate.search.query.dsl.QueryBuilder;
-import org.hibernate.search.query.dsl.RangeTerminationExcludable;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.service.search.Operator;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.query.QueryFieldNames;
@@ -40,10 +35,9 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
 
-    private static final double MERIDIAN = 180d;
     public static final int SCALE_RANGE = 2;
-    private static final double MIN_LUCENE = -540d;
-    private static final double MAX_LUCENE = 540d;
+    private static final String MIN_LUCENE = TdarIndexNumberFormatter.format(-540);
+    private static final String MAX_LUCENE = TdarIndexNumberFormatter.format(540);
 
     private Operator operator = Operator.AND;
 
@@ -93,73 +87,6 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
      * AND (( status:(draft) ) )
      */
 
-    public Query generateQuery(QueryBuilder builder) {
-
-        BooleanJunction<?> bool = builder.bool();
-        for (LatitudeLongitudeBox spatialLimit : getFieldValues()) {
-            if (!spatialLimit.isInitialized()) {
-                continue;
-            }
-
-            logger.trace("crosses primeMeridian: {}, crosses antiMeridian: {}", spatialLimit.crossesPrimeMeridian(), spatialLimit.crossesDateline());
-            // If the search bounds cross the antimeridian, we need to split up the spatial limit into two separate
-            // boxes because the degrees change from positive to negative.
-            Query query = null;
-            if (spatialLimit.crossesDateline() && !spatialLimit.crossesPrimeMeridian()) {
-                Query prime1 = createPrimeQuery(builder, spatialLimit.getMinObfuscatedLongitude(), 180d, spatialLimit.getMinObfuscatedLatitude(), spatialLimit.getMaxObfuscatedLatitude(),MAX_LUCENE, MIN_LUCENE);
-                Query prime2 = createPrimeQuery(builder, -180d, spatialLimit.getMaxObfuscatedLongitude(), spatialLimit.getMinObfuscatedLatitude(), spatialLimit.getMaxObfuscatedLatitude(), MAX_LUCENE, MIN_LUCENE);
-                query = builder.bool().should(prime1).should(prime2).createQuery();
-            } else {
-                query = createNormQuery(builder, spatialLimit);
-            }
-            MustJunction must = builder.bool().must(query).must(builder.range().onField(QueryFieldNames.SCALE).from(TdarIndexNumberFormatter.MIN_ALLOWED).to(spatialLimit.getScale() + SCALE_RANGE).createQuery());
-            if (getOperator() == Operator.AND) {
-                bool = bool.must(must.createQuery());
-            } else {
-                bool = bool.should(must.createQuery());
-            }
-        }
-        return bool.createQuery();
-    }
-
-    private Query createPrimeQuery(QueryBuilder builder, Double d1, Double d2, Double d3, Double d4, Double d5, Double d6) {
-        
-
-        RangeTerminationExcludable q1 = builder.range().onField(QueryFieldNames.MINX).from(d6).to(d2);
-        RangeTerminationExcludable q2 = builder.range().onField(QueryFieldNames.MAXX).from(d1).to(d5);
-        RangeTerminationExcludable q3 = builder.range().onField(QueryFieldNames.MINXPRIME).from(d6).to(d2);
-        RangeTerminationExcludable q4 = builder.range().onField(QueryFieldNames.MAXXPRIME).from(d1).to(d5);
-        RangeTerminationExcludable q5 = builder.range().onField(QueryFieldNames.MINY).from(d6).to(d4);
-        RangeTerminationExcludable q6 = builder.range().onField(QueryFieldNames.MAXY).from(d3).to(d5);
-
-        MustJunction b1 = builder.bool().must(q1.createQuery()).must(q2.createQuery());
-        MustJunction b2 = builder.bool().must(q3.createQuery()).must(q2.createQuery());
-        MustJunction b3 = builder.bool().must(q1.createQuery()).must(q4.createQuery());
-        MustJunction b4 = builder.bool().must(q5.createQuery()).must(q6.createQuery());
-        return builder.bool().should(b1.createQuery()).should(b2.createQuery()).should(b3.createQuery()).should(b4.createQuery()).createQuery();
-    };
-
-    
-    private org.apache.lucene.search.Query createNormQuery(org.hibernate.search.query.dsl.QueryBuilder builder, LatitudeLongitudeBox box) {
-            // should be boolean w/and?
-        RangeTerminationExcludable q1 = builder.range().boostedTo(1).onField(QueryFieldNames.MINX).andField(QueryFieldNames.MAXX).from(box.getMinObfuscatedLongitude()).to(box.getMaxObfuscatedLongitude());
-
-        RangeTerminationExcludable q2 = builder.range().onField(QueryFieldNames.MINX).from(MIN_LUCENE).to(box.getMaxObfuscatedLongitude());
-        RangeTerminationExcludable q3 = builder.range().onField(QueryFieldNames.MAXX).from(box.getMinObfuscatedLongitude()).to(MAX_LUCENE);
-        
-        // should be boolean w/and?
-        RangeTerminationExcludable q4 = builder.range().boostedTo(1).onField(QueryFieldNames.MINY).andField(QueryFieldNames.MAXY).from(box.getMinObfuscatedLatitude()).to(box.getMaxObfuscatedLatitude());
-
-        RangeTerminationExcludable q5 = builder.range().onField(QueryFieldNames.MINY).from(MIN_LUCENE).to(box.getMaxObfuscatedLatitude());
-        RangeTerminationExcludable q6 = builder.range().onField(QueryFieldNames.MAXY).from(box.getMinObfuscatedLatitude()).to(MAX_LUCENE);
-
-        MustJunction b1 = builder.bool().must(q2.createQuery()).must(q3.createQuery());
-        MustJunction b2 = builder.bool().must(q5.createQuery()).must(q6.createQuery());
-        BooleanJunction b3 = builder.bool().should(q1.createQuery()).should(b1.createQuery());
-        BooleanJunction b4 = builder.bool().should(q4.createQuery()).should(b2.createQuery());
-        return builder.bool().must(b3.createQuery()).must(b4.createQuery()).createQuery();
-    };
-
     @Override
     public String generateQueryString() {
         StringBuilder q = new StringBuilder();
@@ -190,9 +117,6 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
                                 MIN_LUCENE
                                 ));
                 q.append(" OR ");
-                
-                
-                
                 q.append(
                         String.format(
                                 format,

@@ -17,8 +17,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.NumericField;
+import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
@@ -77,8 +79,7 @@ public interface Persistable extends Serializable {
 
         // @XmlTransient
         @Override
-        @Field(name = QueryFieldNames.ID)
-        @NumericField
+        @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
         @XmlAttribute(name = "id")
         public Long getId() {
             return id;

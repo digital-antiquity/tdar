@@ -41,7 +41,7 @@
             <tr>
                 <td colspan="2"><strong>${file.filename!"unnamed file"}</strong>
                     <#if file.latestThumbnail?? && !file.deleted>
-                        <br><img src="<@s.url value="/filestore/${file.latestThumbnail.id?c}/thumbnail"/>">
+                        <br><img src="<@s.url value="/files/sm/${file.latestThumbnail.id?c}"/>">
                     </#if>
                 </td>
                 <td>${file.informationResourceFileType}</td>

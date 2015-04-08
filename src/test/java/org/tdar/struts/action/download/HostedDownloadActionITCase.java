@@ -2,6 +2,7 @@ package org.tdar.struts.action.download;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.http.HttpHeaders.REFERER;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -20,6 +22,7 @@ import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
@@ -30,13 +33,13 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
     private Document doc;
 
-
     @Autowired
     DownloadService downloadService;
     int COVER_PAGE_WIGGLE_ROOM = 155_000;
 
     @Autowired
     PdfService pdfService;
+
 
     @Test
     @Rollback
@@ -66,7 +69,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         init(controller, null);
         controller.setApiKey("test");
         HttpServletRequest request = new MockHttpServletRequest();
-        ((MockHttpServletRequest) request).addHeader("referer", "http://tdar.org/blog/this-is-my-test-url");
+        ((MockHttpServletRequest) request).addHeader(REFERER, "http://tdar.org/blog/this-is-my-test-url");
         controller.setServletRequest(request);
         controller.setInformationResourceFileVersionId(doc.getFirstInformationResourceFile().getLatestPDF().getId());
 
@@ -74,7 +77,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
 
-    @Test
+    @Test(expected = TdarRecoverableRuntimeException.class)
     @Rollback
     public void testMissingHostedDownloadReferrer() throws Exception {
         setIgnoreActionErrors(true);
@@ -88,7 +91,6 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         controller.setInformationResourceFileVersionId(doc.getFirstInformationResourceFile().getLatestPDF().getId());
 
         controller.prepare();
-        assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
 
     @Test
@@ -100,30 +102,30 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         init(controller, null);
         controller.setApiKey("testasasfasf");
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(REFERER, "http://bobs-file-hut.ru/tdar");
 
         controller.setServletRequest(request);
         controller.setInformationResourceFileVersionId(doc.getFirstInformationResourceFile().getLatestPDF().getId());
 
         controller.prepare();
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
-
     }
 
     @Test
     @Rollback
-    public void testMissingApiKeyHostedDownloadReferrer() throws Exception {
+    public void testMissingApiKeyHostedDownloadReferrer() {
         setIgnoreActionErrors(true);
 
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(REFERER, "http://invalid-apikey-exchange.biz/archaeology");
 
         controller.setServletRequest(request);
         controller.setInformationResourceFileVersionId(doc.getFirstInformationResourceFile().getLatestPDF().getId());
 
         controller.prepare();
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
-
     }
 
     @Before

@@ -53,7 +53,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -68,14 +68,8 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Latitude;
-import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Resolution;
-import org.hibernate.search.annotations.Spatial;
-import org.hibernate.search.annotations.SpatialMode;
-import org.hibernate.search.annotations.Spatials;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
@@ -141,6 +135,7 @@ import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -174,10 +169,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
-//@Spatials({
-//  @Spatial(name="min",  spatialMode = SpatialMode.HASH),
-//  @Spatial(name="max",  spatialMode = SpatialMode.HASH)
-//})
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
@@ -514,6 +505,7 @@ public class Resource implements Persistable,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
     @IndexedEmbedded
     @ElementCollection
+    @JsonIgnore
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -540,9 +532,9 @@ public class Resource implements Persistable,
      * modify a record which is useful for limiting things on the project page
      */
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
-    @NumericField
     @IndexedEmbedded
     @ElementCollection
+    @JsonIgnore
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -752,7 +744,7 @@ public class Resource implements Persistable,
     }
 
     @Override
-//    @Field(store = Store.YES, name = QueryFieldNames.ID)
+    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     @XmlAttribute
     public Long getId() {
         return id;
@@ -883,6 +875,8 @@ public class Resource implements Persistable,
     }
 
     @JsonView(JsonProjectLookupFilter.class)
+    @XmlTransient
+    @JsonIgnore
     public LatitudeLongitudeBox getFirstActiveLatitudeLongitudeBox() {
         if (CollectionUtils.isEmpty(getActiveLatitudeLongitudeBoxes())) {
             return null;
@@ -892,7 +886,7 @@ public class Resource implements Persistable,
 
     @Transient
     @XmlTransient
-    // @DidWeMentionThisPropertyIsTransient
+    @JsonIgnore
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
         logger.trace("hasConfidentialFiles:{}\t latLongBox:{}", hasConfidentialFiles(), latLongBox);
@@ -931,7 +925,6 @@ public class Resource implements Persistable,
         return geographicKeywords;
     }
 
-    // @IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return getGeographicKeywords();
@@ -1362,6 +1355,8 @@ public class Resource implements Persistable,
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
             @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    @JsonIgnore
+    @XmlTransient
     public String getKeywords() {
         if (isReadyToIndex() && (keywords != null)) {
             return keywords;
@@ -1392,7 +1387,7 @@ public class Resource implements Persistable,
         for (ResourceNote note : getActiveResourceNotes()) {
             sb.append(note.getNote()).append(" ");
         }
-        for (ResourceCreator creator : getResourceCreators()) {
+        for (ResourceCreator creator : getActiveResourceCreators()) {
             if (creator.getCreator().isDeleted()) {
                 continue;
             }
@@ -1409,11 +1404,11 @@ public class Resource implements Persistable,
             }
         }
 
-        for (RelatedComparativeCollection rcc : getRelatedComparativeCollections()) {
+        for (RelatedComparativeCollection rcc : getActiveRelatedComparativeCollections()) {
             sb.append(rcc.getText()).append(" ");
         }
 
-        for (SourceCollection src : getSourceCollections()) {
+        for (SourceCollection src : getActiveSourceCollections()) {
             sb.append(src.getText()).append(" ");
         }
 
@@ -1426,6 +1421,7 @@ public class Resource implements Persistable,
     }
 
     @XmlTransient
+    @JsonIgnore
     public Collection<Keyword> getAllActiveKeywords() {
         Collection<Keyword> kwds = new HashSet<Keyword>();
         kwds.addAll(getActiveCultureKeywords());
@@ -1679,6 +1675,7 @@ public class Resource implements Persistable,
      * that creator
      */
     @Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
+    @JsonIgnore
     @XmlTransient
     public Long getResourceOwner() {
         if (CollectionUtils.isEmpty(getResourceCreators())) {
@@ -1687,6 +1684,8 @@ public class Resource implements Persistable,
         return null;
     }
 
+    @JsonIgnore
+    @XmlTransient
     public String getFormattedAuthorList() {
         StringBuilder sb = new StringBuilder();
         for (ResourceCreator creator : getPrimaryCreators()) {
@@ -1702,6 +1701,8 @@ public class Resource implements Persistable,
         return sb.toString();
     }
 
+    @JsonIgnore
+    @XmlTransient
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
         appendIfNotBlank(sb, getTitle(), "", "");
@@ -1709,7 +1710,8 @@ public class Resource implements Persistable,
     }
 
     // FIXME: ADD IS?N
-
+    @JsonIgnore
+    @XmlTransient
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
         return sb.toString();
@@ -1718,6 +1720,7 @@ public class Resource implements Persistable,
     @Field(name = QueryFieldNames.CREATOR_ROLE_IDENTIFIER, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
     @IndexedEmbedded
     @ElementCollection
+    @JsonIgnore
     @XmlTransient
     // This field facilitates unified lucene search for submitter, updater,
     // resourceProvider, and resourceCreators
@@ -1734,6 +1737,7 @@ public class Resource implements Persistable,
         return list;
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<Creator> getRelatedCreators() {
         List<Creator> creators = new ArrayList<Creator>();
@@ -1758,6 +1762,7 @@ public class Resource implements Persistable,
         return sb;
     }
 
+    @JsonIgnore
     @XmlTransient
     public Long getTransientAccessCount() {
         return transientAccessCount;
@@ -1848,6 +1853,7 @@ public class Resource implements Persistable,
         return toReturn;
     }
 
+    @JsonIgnore
     @XmlTransient
     public BillingAccount getAccount() {
         return account;
@@ -1911,21 +1917,25 @@ public class Resource implements Persistable,
         this.previousFilesUsed = previousFilesUsed;
     }
 
+    @JsonIgnore
     @XmlTransient
     public Long getEffectiveSpaceUsed() {
         return getSpaceInBytesUsed() - getPreviousSpaceInBytesUsed();
     }
 
+    @JsonIgnore
     @XmlTransient
     public Long getSpaceUsedInMb() {
         return MathUtils.divideByRoundUp(spaceInBytesUsed, MathUtils.ONE_MB);
     }
 
+    @JsonIgnore
     @XmlTransient
     public Long getEffectiveFilesUsed() {
         return getFilesUsed() - getPreviousFilesUsed();
     }
 
+    @JsonIgnore
     @XmlTransient
     public boolean isUpdated() {
         return updated;
@@ -1935,6 +1945,7 @@ public class Resource implements Persistable,
         this.updated = updated;
     }
 
+    @JsonIgnore
     @XmlTransient
     public boolean isCountedInBillingEvaluation() {
         return countedInBillingEvaluation;
@@ -1985,6 +1996,7 @@ public class Resource implements Persistable,
         return getIndividualAndInstitutionalCredit();
     }
 
+    @JsonIgnore
     @XmlTransient
     public boolean isBookmarked() {
         return bookmarked;
@@ -2004,6 +2016,7 @@ public class Resource implements Persistable,
         return UrlUtils.slugify(getName());
     }
 
+    @JsonIgnore
     @XmlTransient
     public Set<BookmarkedResource> getBookmarkedResources() {
         return bookmarkedResources;
@@ -2012,40 +2025,4 @@ public class Resource implements Persistable,
     public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
         this.bookmarkedResources = bookmarkedResources;
     }
-    
-//    @Latitude(of="min")
-//    @XmlTransient
-//    public Double getMinLatitude() {
-//        if (getFirstActiveLatitudeLongitudeBox() != null) {
-//            return getFirstActiveLatitudeLongitudeBox().getMinObfuscatedLatitude();
-//        }
-//        return null;
-//    }
-//
-//    @Latitude(of="max")
-//    @XmlTransient
-//    public Double getMaxLatitude() {
-//        if (getFirstActiveLatitudeLongitudeBox() != null) {
-//            return getFirstActiveLatitudeLongitudeBox().getMaxObfuscatedLatitude();
-//        }
-//        return null;
-//    }
-//
-//    @Longitude(of="min")
-//    @XmlTransient
-//    public Double getMinLongitude() {
-//        if (getFirstActiveLatitudeLongitudeBox() != null) {
-//            return getFirstActiveLatitudeLongitudeBox().getMinObfuscatedLongitude();
-//        }
-//        return null;
-//    }
-//
-//    @Longitude(of="max")
-//    @XmlTransient
-//    public Double getMaxLongitude() {
-//        if (getFirstActiveLatitudeLongitudeBox() != null) {
-//            return getFirstActiveLatitudeLongitudeBox().getMaxObfuscatedLongitude();
-//        }
-//        return null;
-//    }
 }

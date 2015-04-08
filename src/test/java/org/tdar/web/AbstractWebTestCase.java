@@ -12,11 +12,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -67,7 +64,6 @@ import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.CSSParseException;
 import org.w3c.css.sac.ErrorHandler;
-import org.w3c.tidy.Tidy;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.CookieManager;
@@ -120,7 +116,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
-            "problems with this submission","TDAR:500","TDAR:404");
+            "problems with this submission", "TDAR:500", "TDAR:404","TDAR:509");
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -138,22 +134,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected static final String MY_TEST_ACCOUNT = "my test account";
     protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
     // "link isn't allowed in <div> elements",
-    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>",
-            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
-            "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
-            "Warning: '<' + '/' + letter not allowed here", /* javascript */
-            "missing </a> before <div>",
-            "missing </a> before <h3>",
-            "discarding unexpected </div",
-            "discarding unexpected </a>",
-            "missing </div> before link",
-            "discarding unexpected </span>", "missing </span> before ",
-            "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */
-            "input repeated attribute" /* radiobutton duplicate css */,
-            "inserting implicit <br>",
-            "replacing element</p>",
-            "discarding unexpected hr"
-    };
+
     // "unescaped & or unknown entity" /*add back later */,
 
     protected Set<String> encodingErrorExclusions = new HashSet<>();
@@ -173,6 +154,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private HtmlElement documentElement;
     protected boolean skipHtmlValidation = false;
 
+    private boolean validateViaNu = false;
+
     // disregard an encoding error if it's in the exclusions set;
 
     /*
@@ -187,8 +170,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return CONFIG.getBaseSecureUrl();
     }
 
-    
-    
     public Page getPage(String localPath) {
         try {
             if (localPath.startsWith("http")) {
@@ -238,7 +219,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      */
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
+        assertThat(statusCode, not(anyOf(is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         assertNoAccessibilityErrors();
@@ -247,12 +228,13 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     /**
      * Request a page similar to gotoPage(), sans html validaton
+     * 
      * @param path
      * @return
      */
     public String gotoJson(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
+        assertThat(statusCode, not(anyOf(is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
         return internalPage.getWebResponse().getContentAsString();
     }
 
@@ -305,7 +287,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertPageValidHtml() {
-        if(skipHtmlValidation) return;
+        if (skipHtmlValidation)
+            return;
         if (internalPage.getWebResponse().getContentType().contains("json")) {
             try {
                 JSONObject.fromObject(getPageCode());
@@ -314,58 +297,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             }
         }
         if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
-            Tidy tidy = new Tidy(); // obtain a new Tidy instance
-            tidy.setXHTML(true); // set desired config options using tidy setters
-            tidy.setQuiet(true);
-            // tidy.setOnlyErrors(true);
-            // tidy.setShowWarnings(false);
-            try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                StringWriter errs = new StringWriter();
-                tidy.setErrout(new PrintWriter(errs, true));
-                tidy.parse(internalPage.getWebResponse().getContentAsStream(), baos);
-                String[] lines = getPageCode().split("\n");
-                StringBuilder errors = new StringBuilder();
-                for (String line : StringUtils.split(errs.toString(), "\n")) {
-                    boolean skip = false;
-                    for (String ignore : ignores) {
-                        if (StringUtils.containsIgnoreCase(line, ignore)) {
-                            skip = true;
-                            logger.trace("skipping: {} ", line);
-                        }
-                    }
-                    if (!skip && line.contains("unknown entity")) {
-                        String part = line.substring(5, line.indexOf("column"));
-                        int lineNum = Integer.parseInt(part.trim());
-                        String lineText = lines[lineNum - 1];
-                        logger.debug("{}: {}", lineNum, lineText);
-                        if (lineText.toLowerCase().contains("http")) {
-                            // NOTE: we may need to make this more strict in the future
-                            // String substring = lineText.substring(lineText.toLowerCase().indexOf("http"));
-                            skip = true;
-                            logger.debug("skipping encoding in URL");
-                        }
-                    }
-                    // FIXME: add regex to get line number from error: line 291 column 180 - Warning: unescaped & or unknown entity "&amount"
-                    // then check for URL
-
-                    if (skip) {
-                        continue;
-                    }
-
-                    if (line.contains("Error:") || line.contains("Warning:")) {
-                        errors.append(line).append("\n");
-                        logger.error("adding: {}", line);
-                    }
-                }
-                String string = errors.toString();
-                if (StringUtils.isNotBlank(string.trim())) {
-                    fail(string + "\r\n\r\n" + getPageCode());
-                }
-            } catch (IOException e) {
-                logger.error("{}", e);
-            } // run tidy, providing an input and output stream
-
+            HtmlValidator validator = new HtmlValidator();
+            if (validateViaNu) {
+                validator.validateHtmlViaNuValidator(internalPage);
+            } else {
+                validator.validateViaTidy(internalPage);
+            }
         }
     }
 
@@ -897,6 +834,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // need to disable javascript
         // testing on the mac :(
         // if (System.getProperty("os.name").toLowerCase().contains("mac os x"))
+        initializeAndConfigureWebClient();
+        // reset encoding error exclusions for each test
+        encodingErrorExclusions = new HashSet<String>();
+        // <generated> gets emitted by cglib methods in stacktrace, let's not consider it to be a double encoding error.
+        encodingErrorExclusions.add("&lt;generated&gt;");
+        skipHtmlValidation = false;
+    }
+
+    private void initializeAndConfigureWebClient() {
         webClient.getOptions().setUseInsecureSSL(true);
         // webClient.getOptions().setThrowExceptionOnScriptError(false);
         webClient.getOptions().setJavaScriptEnabled(false);
@@ -956,10 +902,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 }
             }
         });
-        // reset encoding error exclusions for each test
-        encodingErrorExclusions = new HashSet<String>();
-        // <generated> gets emitted by cglib methods in stacktrace, let's not consider it to be a double encoding error.
-        encodingErrorExclusions.add("&lt;generated&gt;");
     }
 
     public void testOntologyView() {
@@ -1482,7 +1424,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/buildIndex");
         try {
-            URL url = new URL(getBaseUrl() +"/admin/searchindex/checkstatus?userId=" + getAdminUserId());
+            URL url = new URL(getBaseUrl() + "/admin/searchindex/checkstatus?userId=" + getAdminUserId());
             internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
 
             logger.debug(getPageCode());

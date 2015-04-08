@@ -35,6 +35,7 @@ import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.EmbargoedFilesUpdateProcess;
+import org.tdar.core.service.processes.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
@@ -64,6 +65,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private CreatorAnalysisProcess pap;
+
+    @Autowired
+    private LegacyObfuscateLatLongProcess llbprocess;
 
     private class MockScheduledProcess extends ScheduledBatchProcess<Dataset> {
 
@@ -110,7 +114,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     public void testOptimize() {
         searchIndexService.optimizeAll();
     }
-    
+
     @Test
     @Rollback
     public void testDailyEmailProcess() {
@@ -121,11 +125,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         user.setLastName("last");
         user.setDateUpdated(new Date());
         genericService.saveOrUpdate(user);
-        
+
         dailyEmailProcess.execute();
-        
+
     }
-    
+
     @Test
     @Rollback
     public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
@@ -134,22 +138,20 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         fsp.execute();
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
-    
-    
 
     @Test
     @Rollback
     public void testEmbargo() throws InstantiationException, IllegalAccessException {
         // queue the embargo task
         Document doc = generateDocumentWithFileAndUser();
-        long id =doc.getId();
+        long id = doc.getId();
 
         InformationResourceFile irf = doc.getFirstInformationResourceFile();
         irf.setRestriction(FileAccessRestriction.EMBARGOED_SIX_MONTHS);
@@ -163,11 +165,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         doc = genericService.find(Document.class, id);
         assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.PUBLIC);
 
-        //FIXME: add tests for checking email
+        // FIXME: add tests for checking email
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
-        
         doc.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         doc.getFirstInformationResourceFile().setDateMadePublic(DateTime.now().toDate());
         genericService.saveOrUpdate(doc.getFirstInformationResourceFile());
@@ -178,7 +179,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        
+
     }
 
     @Test
@@ -189,7 +190,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(account);
         oau.execute();
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getText().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -233,6 +234,14 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertEquals("id queue should be empty", 0, mock.getBatchIdQueue().size());
         assertSame("number of runs should be 1 now", 1, numberOfRuns);
 
+    }
+
+    @Test
+    @Rollback
+    public void testLLB() {
+        while (CollectionUtils.isNotEmpty(llbprocess.getNextBatch())) {
+            llbprocess.execute();
+        }
     }
 
     @Test

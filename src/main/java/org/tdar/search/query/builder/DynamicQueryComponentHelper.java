@@ -4,8 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 
-import javax.persistence.Id;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DocumentId;
@@ -98,11 +96,6 @@ public class DynamicQueryComponentHelper {
                         cmpts.add(createDynamicQueryComponent(parent_, annField, label_, null));
                     }
                 }
-                if (ann instanceof Id || ann instanceof DocumentId) {
-//                    logger.debug("p: {}, a: {}, l: {}", parent_, ann, label_);
-                    cmpts.add(createDynamicQueryComponent(parent_, ann, label_, null));
-                }
-
                 if (ann instanceof IndexedEmbedded) {
                     IndexedEmbedded ian = (IndexedEmbedded) ann;
                     String prefix = ReflectionService.cleanupMethodName(mthd);
@@ -136,15 +129,12 @@ public class DynamicQueryComponentHelper {
      * @return
      */
     private static DynamicQueryComponent createDynamicQueryComponent(String parent_, Annotation ann, String label, Class<?> analyzerClass2) {
+        Field annField = (Field) ann;
         String label_ = label;
-        Class<?> analyzerClass = null;
-        if (ann instanceof Field) {
-            Field annField = (Field) ann;
-            if (StringUtils.isNotBlank(annField.name())) {
-                label_ = annField.name();
-            }
-            analyzerClass = evaluateAnalyzerClass(analyzerClass2, annField.analyzer());
+        if (StringUtils.isNotBlank(annField.name())) {
+            label_ = annField.name();
         }
+        Class<?> analyzerClass = evaluateAnalyzerClass(analyzerClass2, annField.analyzer());
         logger.trace("creating annotation for: " + parent_ + "." + label_);
         return new DynamicQueryComponent(label_, analyzerClass, parent_);
     }

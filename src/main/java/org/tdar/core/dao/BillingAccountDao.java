@@ -232,6 +232,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         List<BillingActivityModel> findAll = findAll(BillingActivityModel.class);
         BillingActivityModel latest = null;
         for (BillingActivityModel model : findAll) {
+            logger.trace("{} {} {} {}", model.getActive(), model.getDescription(), model.getId(), model.getVersion());
             if (!model.getActive()) {
                 continue;
             }
@@ -333,7 +334,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         return status;
     }
 
-    private boolean isOverdrawn(BillingAccount account, ResourceEvaluator resourceEvaluator) {
+    public boolean isOverdrawn(BillingAccount account, ResourceEvaluator resourceEvaluator) {
         return canAddResource(account, resourceEvaluator) != AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 

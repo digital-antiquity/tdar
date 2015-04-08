@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryParser.ParseException;
 import org.hibernate.search.FullTextQuery;
 import org.junit.Ignore;
 import org.junit.Test;

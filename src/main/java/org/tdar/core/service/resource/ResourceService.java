@@ -66,8 +66,8 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.ImmutableScrollableCollection;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;

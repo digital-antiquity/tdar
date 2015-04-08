@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.service.search.Operator;
 
 public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution> {
 
@@ -16,23 +14,7 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
     }
 
     @Override
-    public Query generateQuery(QueryBuilder builder) {
-        QueryPartGroup group = generateRawQuery();
-        if (group == null) {
-            return null;
-        }
-        return group.generateQuery(builder);
-    }
-    @Override
     public String generateQueryString() {
-        QueryPartGroup group = generateRawQuery();
-        if (group == null) {
-            return "";
-        }
-        return group.generateQueryString();
-    }
-
-    private QueryPartGroup generateRawQuery() {
         QueryPartGroup group = new QueryPartGroup(Operator.OR);
         List<String> names = new ArrayList<String>();
         if (CollectionUtils.isNotEmpty(getFieldValues())) {
@@ -55,8 +37,8 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
         acronym.setBoost(7f);
         group.append(acronym);
         if (CollectionUtils.isEmpty(names)) {
-            return null;
+            return "";
         }
-        return group;
+        return group.generateQueryString();
     }
 }

@@ -34,7 +34,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -42,8 +44,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
-import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
+import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLog;
+import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLogPart;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
@@ -53,6 +56,7 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.LatLongGeoJsonSerializer;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -62,6 +66,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -166,14 +171,15 @@ public class SerializationService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper();
+    public void convertToJson(Object object, Writer writer, Class<?> view, GeoRssMode mode) throws IOException {
+        ObjectMapper mapper = initializeObjectMapper(mode);
         ObjectWriter objectWriter = mapper.writer();
 
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
             objectWriter = mapper.writerWithView(view);
         }
+
         if (TdarConfiguration.getInstance().isPrettyPrintJson()) {
             objectWriter = objectWriter.with(new DefaultPrettyPrinter());
         }
@@ -182,18 +188,27 @@ public class SerializationService {
 
     @Transactional(readOnly = true)
     public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper();
+        ObjectMapper mapper = initializeObjectMapper(GeoRssMode.NONE);
         return mapper.readValue(json, cls);
     }
 
-    private ObjectMapper initializeObjectMapper() {
+    private ObjectMapper initializeObjectMapper(GeoRssMode mode) {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.registerModules(new JaxbAnnotationModule());
         Hibernate4Module hibernate4Module = new Hibernate4Module();
         hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-        mapper.registerModules(hibernate4Module);
+        SimpleModule module = new SimpleModule();
+        switch (mode) {
+            case ENVELOPE:
+                module.addSerializer(LatitudeLongitudeBox.class, new LatLongGeoJsonSerializer());
+                mapper.registerModules(hibernate4Module, module);
+                break;
+            default:
+                mapper.registerModules(hibernate4Module);
+                break;
+        }
         mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
         return mapper;
     }
@@ -208,7 +223,7 @@ public class SerializationService {
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, null);
+        convertToJson(object, writer, null, GeoRssMode.NONE);
         return writer.toString();
     }
 
@@ -251,7 +266,7 @@ public class SerializationService {
     @Transactional
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, view);
+        convertToJson(object, writer, view, GeoRssMode.NONE);
         return writer.toString();
     }
 
@@ -316,7 +331,7 @@ public class SerializationService {
      * @param log
      * @throws IOException
      */
-    public void generateFOAF(Creator creator, CreatorInfoLog log) throws IOException {
+    public void generateFOAF(Creator creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
         com.hp.hpl.jena.rdf.model.Resource rdf = null;
@@ -332,7 +347,7 @@ public class SerializationService {
             throw new TdarRecoverableRuntimeException("serializationService.cannot_determine_creator");
         }
 
-        for (LogPart part : log.getCollaboratorLogPart()) {
+        for (RelatedInfoLogPart part : log.getCollaboratorLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             if (part.getSimpleClassName().equals(INSTITUTION)) {
                 res.addProperty(RDF.type, FOAF.Organization);
@@ -346,7 +361,7 @@ public class SerializationService {
         }
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEDIAN), log.getCreatorMedian().toString());
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEAN), log.getCreatorMean().toString());
-        for (LogPart part : log.getKeywordLogPart()) {
+        for (RelatedInfoLogPart part : log.getKeywordLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             res.addProperty(RDF.type, part.getSimpleClassName());
             res.addLiteral(FOAF.name, part.getName());
@@ -412,13 +427,18 @@ public class SerializationService {
      * @return
      * @throws Exception
      */
-    public void generateCreatorLog(Creator creator, CreatorInfoLog log) throws Exception {
+    public void generateRelatedLog(Persistable creator, RelatedInfoLog log) throws Exception {
         File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + ".xml");
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         convertToXML(log, writer);
         IOUtils.closeQuietly(writer);
-        FileStoreFile fsf = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
-        TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
+        ObjectType type = ObjectType.CREATOR;
+        if (creator instanceof ResourceCollection) {
+            type = ObjectType.COLLECTION;
+        }
+
+        FileStoreFile fsf = new FileStoreFile(type, VersionType.METADATA, creator.getId(), file.getName());
+        TdarConfiguration.getInstance().getFilestore().store(type, file, fsf);
 
     }
 
@@ -430,5 +450,11 @@ public class SerializationService {
         logger.trace("converting: {}", object);
         marshaller.marshal(object, writer);
 
+    }
+
+    public String createJsonFromResourceList(Map<String, Object> map, String rssUrl, Class<?> view) throws IOException {
+        StringWriter writer = new StringWriter();
+        convertToJson(map, writer, view, GeoRssMode.ENVELOPE);
+        return writer.toString();
     }
 }

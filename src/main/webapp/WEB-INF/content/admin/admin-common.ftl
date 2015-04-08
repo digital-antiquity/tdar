@@ -13,6 +13,7 @@
             <ul class='dropdown-menu'>
                 <li><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
                 <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li>
+                <li><a href="<@s.url value="/admin/usage/downloads"/>">Download Statistics</a></li>
                 <li><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
                 <li><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
             </ul>

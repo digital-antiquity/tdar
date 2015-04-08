@@ -57,6 +57,9 @@ public class ExcelService {
     // official office spec states that sheet max is limited by available RAM but has no max. So this is an arbitrary number.
     public static final int MAX_SHEETS_PER_WORKBOOK = 32;
 
+    //sheet name cannot exceed 31 chars
+    private static final int MAX_SHEET_NAME_LENGTH = 31;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final int FIRST_ROW = 0;
@@ -455,7 +458,6 @@ public class ExcelService {
      * Add a full data row based on the list of Objects
      * 
      * @param rowNum
-     * @param i
      */
     public void addDataRow(Sheet sheet, int rowNum, int startCol, List<? extends Object> data) {
         addRow(sheet, rowNum, startCol, data, null);
@@ -496,14 +498,27 @@ public class ExcelService {
         addDataRow(sheet, rowIndex, startCol, row);
     }
 
+    private String normalizeSheetName(Workbook workbook, String sheetName) {
+        String name = sheetName;
+        if(name.length() > MAX_SHEET_NAME_LENGTH) {
+            name = sheetName.substring(0, MAX_SHEET_NAME_LENGTH);
+            int num = 2; //suffix to use for uniqueifying the name - keep incrementing until it doesn't exist in the workbook
+            while (workbook.getSheet(name) != null) {
+                String suffix = "_" + Integer.toString(num++);
+                name = name.substring(0, name.length() - suffix.length()) + suffix;
+            }
+        }
+        return name;
+    }
+
     public void addSheets(SheetProxy proxy) {
         int sheetIndex = 0;
-        String sheetName = proxy.getName();
         Sheet sheet = null;
         int rowNum = proxy.getStartRow();
         int startRow = proxy.getStartRow();
         SpreadsheetVersion version = proxy.getVersion();
         Workbook workbook = proxy.getWorkbook();
+        String sheetName = normalizeSheetName(workbook, proxy.getName());
         proxy.preProcess();
         Iterator<Object[]> data = proxy.getData();
 
@@ -538,7 +553,7 @@ public class ExcelService {
                     autoSizeColumnsOnSheet(sheet);
                 }
                 sheetIndex++;
-                sheet = workbook.createSheet(proxy.getSheetName(sheetIndex));
+                sheet = workbook.createSheet(normalizeSheetName(workbook, proxy.getSheetName(sheetIndex)));
                 rowNum = FIRST_ROW;
                 addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
             }

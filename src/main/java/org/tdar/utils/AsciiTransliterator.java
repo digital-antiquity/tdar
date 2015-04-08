@@ -5,8 +5,8 @@ import java.io.StringReader;
 
 import javax.persistence.Transient;
 
-import org.apache.lucene.analysis.core.KeywordTokenizer;
-import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.KeywordTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +33,7 @@ public class AsciiTransliterator {
         {
             try
             {
-                keywordTokenizer.setReader(new StringReader(line));
-                keywordTokenizer.reset();
+                keywordTokenizer.reset(new StringReader(line));
                 if (asciiFoldingFilter.incrementToken())
                 {
                     return new String(termAttribute.buffer());

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
@@ -32,6 +33,7 @@ import org.tdar.search.query.part.CreatorQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.search.query.part.PaddedNumberQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.query.part.RangeQueryPart;
@@ -331,8 +333,7 @@ public class SearchParameters {
                     FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
                     siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
                     siteCodePart.setDisplayName(support.getText("searchParameters.site_code"));
-                    siteCodePart.setBoost(5f);
-                    subgroup.append(siteCodePart);
+                    subgroup.append(siteCodePart.setBoost(5f));
                 }
             }
             appendKeywordQueryParts(subgroup, KeywordType.SITE_NAME_KEYWORD, Arrays.asList(siteNames));
@@ -383,7 +384,7 @@ public class SearchParameters {
         queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
-        queryPartGroup.append(new FieldQueryPart<Integer>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
+        queryPartGroup.append(new PaddedNumberQueryPart<Integer>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
 
         // explore: title starts with
         if (startingLetter != null) {

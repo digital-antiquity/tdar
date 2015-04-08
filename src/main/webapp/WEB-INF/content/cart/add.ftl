@@ -18,17 +18,6 @@
         }
     </style>
 </head>
-    <#macro pricingOption label files storage cost id=label?lower_case>
-    <div class="span2 well" id=div${id}>
-        <h3><span class="red">$${cost}</span>: ${label}</h3>
-        <ul>
-            <li>${files}</li>
-            <li>${storage}</li>
-        </ul>
-
-        <button type="button" class="tdar-button" id="${id}-option">SELECT</button>
-    </div>
-    </#macro>
 <body>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='process-choice'>
         <@s.token name='struts.csrf.token' />
@@ -80,9 +69,9 @@
                             <h2>Suggested Levels</h2>
 
                             <div class="row">
-                                <@pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
-                                <@pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
-                                <@pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
+                                <@invoicecommon.pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
+                                <@invoicecommon.pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
+                                <@invoicecommon.pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
                             </div>
                         </div>
                     </div>

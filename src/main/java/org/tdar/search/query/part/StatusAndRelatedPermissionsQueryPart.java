@@ -7,13 +7,11 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
@@ -32,16 +30,6 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
 
     @Override
     public String generateQueryString() {
-        QueryPartGroup statusSubgroup = createRawQuery();
-        return statusSubgroup.generateQueryString();
-    }
-
-    @Override
-    public Query generateQuery(QueryBuilder builder) {
-        return createRawQuery().generateQuery(builder);
-    }
-    
-    private QueryPartGroup createRawQuery() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
         if (PersistableUtils.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
@@ -58,7 +46,8 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
         localStatuses.remove(Status.DRAFT);
         QueryPartGroup statusSubgroup = new QueryPartGroup(Operator.OR, new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, localStatuses),
                 draftSubgroup);
-        return statusSubgroup;
+
+        return statusSubgroup.generateQueryString();
     }
 
     @Override

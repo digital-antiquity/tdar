@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.service.search.Operator;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -69,13 +69,11 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
             queryPart.append(idPart);
         }
 
-        creatorPart.setBoost(CREATOR_BOOST);
-        queryPart.append(creatorPart);
+        queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
         // we use the original value because we'd be esacping things we don't want to otherwise
         if (siteCodeSearch) {
             FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
-            siteCodePart.setBoost(SITE_CODE_BOOST);
-            queryPart.append(siteCodePart);
+            queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         }
         queryPart.append(content);
         queryPart.append(linkedContent);

@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
-import org.tdar.core.service.search.Operator;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -42,24 +40,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     }
 
     @Override
-    public Query generateQuery(QueryBuilder builder) {
-        QueryPartGroup topLevel = generateRawQuery();
-        if (topLevel == null) {
-            return null;
-        }
-            return topLevel.generateQuery(builder);
-    }
-    
-    @Override
     public String generateQueryString() {
-        QueryPartGroup topLevel = generateRawQuery();
-        if (topLevel == null) {
-            return "";
-        }
-        return topLevel.generateQueryString();
-    }
-
-    private QueryPartGroup generateRawQuery() {
         List<String> labels = new ArrayList<String>();
         List<Long> ids = new ArrayList<Long>();
         for (int i = 0; i < getFieldValues().size(); i++) {
@@ -91,7 +72,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             QueryPartGroup group = new QueryPartGroup(getOperator(), irLabelPart, irIdPart, irLabelKeyPart);
             topLevel.append(group);
         }
-        return topLevel;
+        return topLevel.generateQueryString();
     }
 
     public String getDescriptionLabel(TextProvider provider) {

@@ -38,7 +38,7 @@ import org.tdar.core.bean.FieldLength;
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.GeographicKeyword")
 @Cacheable
-public class GeographicKeyword extends KeywordBase<GeographicKeyword> implements UncontrolledKeyword {
+public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
 
     private static final long serialVersionUID = 9120049059501138213L;
 

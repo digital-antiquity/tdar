@@ -27,7 +27,7 @@ import org.hibernate.search.annotations.Indexed;
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.OtherKeyword")
 @Cacheable
-public class OtherKeyword extends KeywordBase<OtherKeyword> implements UncontrolledKeyword {
+public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
 
     private static final long serialVersionUID = -6649756235199570108L;
 

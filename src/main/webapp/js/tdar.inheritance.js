@@ -26,23 +26,6 @@ TDAR.inheritance = (function () {
         });
     }
 
-    //FIXME: HACK:  workaround chrome-specific rendering issue that occurs when updating inherited sections (TDAR-4358)
-    /**
-     * Force repaint in chrome blanking out the entire page for 10ms.  This is not ideal AT ALL, but the only thing i've found so far that appears to work
-     * around the ghost element issue in chrome 100% of the time.
-     *
-     *
-     * @param $parentElement jquery selection containing the div to repaint.
-     * @private
-     */
-    function _forceChromeRepaint($parentElement) {
-        $(document.body).css("visibility", "hidden");
-        setTimeout(function(){
-            $(document.body).css("visibility", "visible");
-        }, 10);
-
-    }
-
     /**
      * convert a serialized project into the json format needed by the form.
      * @param rawJson
@@ -191,9 +174,6 @@ TDAR.inheritance = (function () {
 
         //if sibling is an add-another button,  enable that too.
         $(idSelector).next(".add-another-control").find("button").prop('disabled', false);
-
-        //force a repaint to dispel any ghost elements.
-        _forceChromeRepaint($(idSelector));
     }
 
     /**

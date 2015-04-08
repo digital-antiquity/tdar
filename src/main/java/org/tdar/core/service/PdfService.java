@@ -1,7 +1,6 @@
 package org.tdar.core.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,7 +15,6 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -143,65 +141,14 @@ public class PdfService {
         };
         // Separate thread needed here to call merge
         // FIXME: handle exceptions better
-        Thread thread = new Thread(
-                new Runnable() {
-                    public void run() {
-                        try {
-                            wrapper.getMerger().mergeDocuments();
-                            wrapper.setSuccessful(true);
-                        } catch (IOException ioe) {
-                            if (logIOException(wrapper, ioe)) {
-                                logger.error("PDF Converter Exception:",ioe);
-                            }
-                        } catch (Exception e) {
-                            if (logIOException(wrapper, e)) {
-                                logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
-                                wrapper.setFailureReason(e.getMessage());
-                                // if there's a failure, then fall back and just try to copy the original
-                                try {
-                                    IOUtils.copyLarge(new FileInputStream(wrapper.getDocument()), pipedOutputStream);
-                                } catch (Exception e1) {
-                                    if (logIOException(wrapper, e1)) {
-                                    logger.error("cannot attach PDF, even w/o cover page", e1);
-                                    }
-                                }
-                            }
-                        } finally {
-                            IOUtils.closeQuietly(pipedOutputStream);
-                        }
-                    }
-
-                    /**
-                     * If the cause of the error is an IO Exception and the cause of the error has "Pipe Closed" then downgrade the logging
-                     * @param wrapper
-                     * @param ioe
-                     * @return
-                     */
-                    private boolean logIOException(final PDFMergeWrapper wrapper, Throwable ioe) {
-                        if (ioe == null) {
-                            return false;
-                        }
-                        if (ioe instanceof IOException) {
-                            if (StringUtils.contains(ioe.getMessage(), "Pipe closed")) {
-                                logger.warn("PipeClosed Exception in DownloadPDFWriter", ioe);
-                            }
-                            wrapper.setFailureReason(ioe.getMessage());
-                            return false;
-                        }
-                        
-                        if (ioe.getCause() != null) {
-                            return logIOException(wrapper, ioe.getCause());
-                        } 
-                        
-                        return true;
-                        
-                    }
-                }
-                );
+        Thread thread = new Thread(new PDFMergeTask(wrapper, pipedOutputStream));
         thread.start();
-        logger.trace("done with PDF Merge");
+        logger.trace("done with PDF Merge");  //fixme: technically the method is done, but really you've just started the merge operation.
         return inputStream;
     }
+
+
+
 
     /**
      * Create the cover page from the template file and the @link resource provided

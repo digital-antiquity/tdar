@@ -132,7 +132,7 @@
                 <table id="groups[${groupid}].siteTypeKeywordTable[${fieldIndex}]" class="field">
                     <tbody>
                     <tr>
-                        <td><@s.checkboxlist theme="hier" id="myid" name="groups[${groupid}].approvedSiteTypeIdLists[${fieldIndex}]" keywordList="allApprovedSiteTypeKeywords" /></td>
+                        <td><@s.checkboxlist theme="hier" name="groups[${groupid}].approvedSiteTypeIdLists[${fieldIndex}]" keywordList="allApprovedSiteTypeKeywords" /></td>
                     </tr>
                     </tbody>
                 </table>
@@ -154,7 +154,7 @@
                 <table id="groups[${groupid}].siteTypeKeywordTable[${fieldIndex}]" class="field">
                     <tbody>
                     <tr>
-                        <td><@s.checkboxlist theme="hier" id="myid" name="groups[${groupid}].approvedCultureKeywordIdLists[${fieldIndex}]" keywordList="allApprovedCultureKeywords" /></td>
+                        <td><@s.checkboxlist theme="hier" name="groups[${groupid}].approvedCultureKeywordIdLists[${fieldIndex}]" keywordList="allApprovedCultureKeywords" /></td>
                     </tr>
                     </tbody>
                 </table>

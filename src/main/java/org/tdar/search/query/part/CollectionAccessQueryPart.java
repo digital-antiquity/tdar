@@ -1,14 +1,12 @@
 package org.tdar.search.query.part;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.service.search.Operator;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
@@ -32,12 +30,6 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
     public boolean isEmpty() {
         return (PersistableUtils.isNullOrTransient(user) || (permissions == null));
     }
-    
-    @Override
-    public Query generateQuery(QueryBuilder builder) {
-        return getQueryPart(user, permissions).generateQuery(builder);
-    }
-
 
     protected QueryPart<?> getQueryPart(Person value, GeneralPermissions permissions) {
         if (isEmpty()) {

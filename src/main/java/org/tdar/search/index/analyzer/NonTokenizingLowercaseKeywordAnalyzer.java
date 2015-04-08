@@ -2,11 +2,13 @@ package org.tdar.search.index.analyzer;
 
 import java.io.Reader;
 
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.KeywordTokenizer;
-import org.apache.lucene.analysis.core.LowerCaseFilter;
-import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
-import org.apache.lucene.analysis.miscellaneous.TrimFilter;
+import org.apache.lucene.analysis.KeywordTokenizer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.util.Version;
+import org.apache.solr.analysis.TrimFilter;
 
 public final class NonTokenizingLowercaseKeywordAnalyzer extends Analyzer {
 
@@ -18,12 +20,12 @@ public final class NonTokenizingLowercaseKeywordAnalyzer extends Analyzer {
      * Treats entire field value as a single Keyword Token
      */
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+    public TokenStream tokenStream(String fieldName, Reader reader) {
         KeywordTokenizer kt = new KeywordTokenizer(reader);
-        LowerCaseFilter stream = new LowerCaseFilter(kt);
+        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_36, kt);
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stream);
-        TrimFilter trimFilter = new TrimFilter(filter);
-        return new TokenStreamComponents(kt, trimFilter);
+        TrimFilter trimFilter = new TrimFilter(filter, true);
+        return trimFilter;
     }
 
 }

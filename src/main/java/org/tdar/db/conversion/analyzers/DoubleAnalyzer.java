@@ -1,6 +1,6 @@
 package org.tdar.db.conversion.analyzers;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
@@ -30,10 +30,13 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
         } catch (NumberFormatException nfx) {
             return false;
         }
-        if (!NumberUtils.isNumber(value)) {
-            // handles cases like "1F" which Double.parseDouble handles but cannot be casted to double in postgres
+        
+        String lastChar = value.substring(value.length() -1);
+        // handles cases like "1F" which Double.parseDouble handles but cannot be casted to double in postgres
+        if (StringUtils.isAlpha(lastChar)) {
             return false;
         }
+        
         return true;
     }
 

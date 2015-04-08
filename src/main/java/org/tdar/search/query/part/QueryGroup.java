@@ -2,7 +2,7 @@ package org.tdar.search.query.part;
 
 import java.util.List;
 
-import org.tdar.core.service.search.Operator;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 
 /**
  * $Id$

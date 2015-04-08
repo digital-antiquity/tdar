@@ -36,7 +36,7 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "hierKwdbase")
 @XmlTransient
-public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> extends KeywordBase<HierarchicalKeyword<T>> {
+public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> extends Keyword.Base<HierarchicalKeyword<T>> {
 
     private static final long serialVersionUID = -9098940417785842655L;
 

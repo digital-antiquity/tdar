@@ -4,9 +4,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.QueryBuilder;
-import org.tdar.core.service.search.Operator;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
@@ -27,17 +25,6 @@ public class CategoryTermQueryPart extends FieldQueryPart<String> {
     public String generateQueryString() {
         // assumption: if sortCategoryId is set, we assume we are serving a coding-sheet/ontology autocomplete
         // FIXME: instead of guessing this way it may be better to break codingsheet/ontology autocomplete lookups to another action.
-        QueryPartGroup valueGroup = generateRawQuery();
-
-        return valueGroup.generateQueryString();
-    }
-
-    @Override
-    public Query generateQuery(QueryBuilder builder) {
-        return generateRawQuery().generateQuery(builder);
-    }
-    
-    private QueryPartGroup generateRawQuery() {
         QueryPartGroup valueGroup = new QueryPartGroup();
         if (StringUtils.isNotBlank(getTerm())) {
             valueGroup.append(new AutocompleteTitleQueryPart(getTerm()));
@@ -56,7 +43,8 @@ public class CategoryTermQueryPart extends FieldQueryPart<String> {
             valueGroup.setOperator(Operator.OR);
 
         }
-        return valueGroup;
+
+        return valueGroup.generateQueryString();
     }
 
     @Override

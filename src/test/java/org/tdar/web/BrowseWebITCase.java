@@ -73,12 +73,16 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testMapView() {
+        skipHtmlValidation = true;
         gotoPage("/map");
+        skipHtmlValidation = false;
     }
 
     @Test
     public void testFeaturedItemView() {
+        skipHtmlValidation = true;
         gotoPage("/featured");
+        skipHtmlValidation = false;
     }
 
     @Test

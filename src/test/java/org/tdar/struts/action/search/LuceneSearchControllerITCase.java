@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryParser.ParseException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
@@ -274,7 +274,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback(true)
     public void testFindResourceById() {
-        controller.setId(3074L);
+        controller.setId(Long.valueOf(3074));
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         assertTrue(resultsContainId(3074l));

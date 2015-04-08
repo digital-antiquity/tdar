@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -51,6 +51,12 @@ public class Document extends InformationResource {
     @BulkImportField(key ="DOCUMENT_TYPE")
     private DocumentType documentType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "document_subtype", length = FieldLength.FIELD_LENGTH_50)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    private DocumentSubType documentSubType;
+    
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
@@ -346,5 +352,13 @@ public class Document extends InformationResource {
     @Transient
     public boolean isSupportsThumbnails() {
         return true;
+    }
+
+    public DocumentSubType getDocumentSubType() {
+        return documentSubType;
+    }
+
+    public void setDocumentSubType(DocumentSubType documentSubType) {
+        this.documentSubType = documentSubType;
     }
 }

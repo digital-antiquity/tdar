@@ -12,6 +12,8 @@ import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.search.query.SimpleSearchResultHandler;
+import org.tdar.search.query.SortOption;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.opensymphony.xwork2.Preparable;
