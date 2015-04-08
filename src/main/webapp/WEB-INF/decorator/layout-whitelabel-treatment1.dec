@@ -75,9 +75,8 @@ ${head}
     ${schemaOrgJsonLD}
     </script>
     </#if>
-
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>" <#if ngApplicationName?has_content>ng-cloak</#if>>
+<body data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>" <#if ngApplicationName?has_content>ng-cloak</#if>>
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
@@ -88,28 +87,21 @@ ${head}
                 <@dec.layout_header />
             </header>
         </div>
-        <div class="row">
-            <div class="span12 subnav">
-                <ul class="subnav-lft">
-                    <li><a href="<@s.url value="/search"/>"><@s.text name="menu.search"/></a></li>
-                    <li><a href="<@s.url value="/search/results"/>"><@s.text name="menu.browse"/></a></li>
-                    <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>
-                    <#if sessionData?? && sessionData.authenticated>
-                        <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
-                        <li><a href="<@s.url value="/workspace/list"/>"><@s.text name="menu.integrate"/></a></li>
-                        <#if editor>
-                            <li><a href="<@s.url value="/admin"/>"><@s.text name="menu.admin"/></a></li>
-                        </#if>
-                    </#if>
-                </ul>
-                <#if actionName!='login' && actionName!='register' && actionName!='download' && actionName!='review-unauthenticated'>
-                    <@common.loginMenu true />
-                </#if>
-            </div>
-        </div>
+    </div>
+
+
+    <#if customSearchHeader!true>
+        <@dec.searchheader />
+    <#else>
+        <@dec.subnav />
+    </#if>
+
+
+
+
             <!-- BEGIN-TDAR-CONTENT -->
 
-
+    <div class="container">
 
         <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
             <!-- toolbar -->

@@ -22,16 +22,6 @@
 </head>
 <body>
 
-<#-- todo: move these to .css and use collection-specific css classes -->
-<style>
-    i.search-list-checkbox-grey {
-        background-image: none !important;
-    }
-
-    li.media {
-        display: inline-block
-    }
-</style>
 
 <#if resourceCollection.searchEnabled>
     <@whitelabel.searchheader />
