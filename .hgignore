@@ -33,6 +33,8 @@ import.log
 *.sublime-workspace
 *.sublime-project
 
+node
+node_modules
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 
