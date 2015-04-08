@@ -133,6 +133,12 @@ public class    OwlOntologyConverter {
                 if (StringUtils.isEmpty(line.trim())) {
                     continue;
                 }
+                
+                // validate that we don't start with a space start with 
+                if (line.startsWith(" ")) {
+                    throw new TdarRecoverableRuntimeException("owlOntologyConverter.start_invalid_char", Arrays.asList(line));
+                }
+                
                 int currentDepth = getNumberOfPrefixTabs(line);
                 // remove tabs and replace all repeated non-word characters ([a-zA-Z_0-9]) with single "_". sanitized label for OWL use, and a description.
                 Matcher descriptionMatcher = DESCRIPTION_PATTERN.matcher(line.trim());
@@ -185,8 +191,11 @@ public class    OwlOntologyConverter {
                     }
                     currentNode.setParentNode(parentNodes.get(parentIndex));
                 }
-                logger.trace("parentNode list:{}", parentNodes);
-                logger.trace("adding node to position {}: {}", currentDepth, currentNode);
+                if (parentNodes.size() +1 < currentDepth) {
+                    logger.debug("parentNode list:{}", parentNodes);
+                    logger.debug("adding node to position {}: {}", currentDepth, currentNode);
+                    throw new TdarRecoverableRuntimeException("owlOntologyConverter.bad_depth", Arrays.asList(currentDepth, currentNode.getDisplayName()));
+                }
                 parentNodes.add(currentDepth, currentNode);
             }
 

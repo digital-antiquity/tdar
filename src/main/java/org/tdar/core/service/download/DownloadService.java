@@ -228,15 +228,23 @@ public class DownloadService {
                 resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version);
                 version.setTransientFile(resourceFile);
             } catch (FileNotFoundException e1) {
-                logger.error("FILE NOT FOUND: {}", version);
+                logger.error("FILE NOT FOUND: {} ({})", version, TdarConfiguration.getInstance().getServerEnvironmentStatus(), e1);
                 dto.setResult(DownloadResult.NOT_FOUND);
                 return dto;
             }
-            if ((resourceFile == null) || !resourceFile.exists()) {
-                logger.warn("FILE NOT FOUND: {}", resourceFile);
+
+            if ((resourceFile == null)) {
+                logger.error("FILE NOT FOUND: {} ({})", version, TdarConfiguration.getInstance().getServerEnvironmentStatus() );
                 dto.setResult(DownloadResult.NOT_FOUND);
                 return dto;
             }
+
+            if (!resourceFile.exists()) {
+                logger.error("FILE NOT FOUND: {} ({})", version, TdarConfiguration.getInstance().getServerEnvironmentStatus(), resourceFile.getAbsolutePath());
+                dto.setResult(DownloadResult.NOT_FOUND);
+                return dto;
+            }
+            
 
         }
 
