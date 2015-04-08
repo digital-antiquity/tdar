@@ -2,7 +2,9 @@
     overrides of tdar-base.css and tdar-bootstrap.css go here
 */
 .subnav-section {
-    background: url("/images/wl/bg-sub.jpg") top center no-repeat;
+    background-image: url("/images/wl/bg-sub.jpg");
+    background-position: top center;
+    background-repeat: no-repeat;
 }
 
 div.searchheader {

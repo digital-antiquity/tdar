@@ -450,6 +450,13 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return checkLogoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
     }
 
+    public boolean isSearchHeaderLogoAvailable() {
+        //for now, we just look in hosted + collection ID
+        String filename = "search-header-" + Long.toString(getResourceCollection().getId()) + ".jpg";
+        return checkPublicFileAvailable(filename);
+    }
+
+
     /**
      * Indicate to view layer that we should display a search header.
      * @return
@@ -466,5 +473,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public boolean isSubnavEnabled() {
         return !isSearchHeaderEnabled();
     }
+
 
 }

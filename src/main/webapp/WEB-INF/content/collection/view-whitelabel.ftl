@@ -30,8 +30,16 @@
     li.media {
         display: inline-block
     }
-</style>
 
+
+</style>
+<#if searchHeaderLogoAvailable>
+    <style>
+        div.searchheader {
+            background-image: url("/hosted/search-header-${resourceCollection.id?c}.jpg");
+        }
+    </style>
+</#if>
     <#if editable>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
