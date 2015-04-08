@@ -246,7 +246,12 @@
                 <constraints nullable="false" foreignKeyName="whitelabel_collection_institution_id_institution_fkey" references="institution(id)"  />
             </column>
         </addColumn>
-
-
     </changeSet>
+
+    <changeSet id="munsell-15" author="abrin">
+        <addColumn tableName="document">
+            <column name="document_subtype" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

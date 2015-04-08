@@ -85,6 +85,7 @@
                             validationService.validateIntegration(jsonData, self.integration);
                             self.updateStatus("Done loading");
                         if(validationService.errors.length) {
+                            console.warn(validationService.errors);
                             self.updateStatus("Loading complete. However, the underlying resources used in this integration may have changed. " +
                             " Please review your selections and ensure they are up-to-date.");
 
