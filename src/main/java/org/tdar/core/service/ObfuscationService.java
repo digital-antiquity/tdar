@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.LazyInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +135,15 @@ public class ObfuscationService {
             }
         } else {
             if (obj instanceof Obfuscatable) {
-                obfuscate((Obfuscatable) obj, user);
+                try {
+                    obfuscate((Obfuscatable) obj, user);
+                } catch (LazyInitializationException e) {
+                    if (isWritableSession()) {
+                        logger.error("failed obfuscation of {} for user: {} ", obj, user);
+                    } else {
+                        logger.debug("failed obfuscation for non-writable sessions due to LazyInitException {}", obj);
+                    }
+                }
             } else {
                 logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
             }
