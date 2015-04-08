@@ -134,7 +134,11 @@ public class ObfuscationService {
             }
         } else {
             if (obj instanceof Obfuscatable) {
+                try {
                 obfuscate((Obfuscatable) obj, user);
+                } catch (Exception e) {
+                    logger.error("failed obfuscation of {} for user: {} ", obj, user);
+                }
             } else {
                 logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
             }
