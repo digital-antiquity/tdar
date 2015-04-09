@@ -4,8 +4,6 @@
   "description": "The Digital Archaeological Record Web Application",
   "main": "index.js",
   "dependencies": {
-    "grunt": "~0.4.1",
-    "grunt-cli": "~0.1.9",
     "bower": "~1.3.12"
   },
   "devDependencies": {},
