@@ -139,7 +139,7 @@ public class ObfuscationService {
                     obfuscate((Obfuscatable) obj, user);
                 } catch (LazyInitializationException e) {
                     if (isWritableSession()) {
-                        logger.error("failed obfuscation of {} for user: {} ", obj, user);
+                        logger.warn("failed obfuscation of {} for user: {} ", obj, user);
                     } else {
                         logger.debug("failed obfuscation for non-writable sessions due to LazyInitException {}", obj);
                     }

@@ -404,7 +404,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status) {
         markResourcesAsFlagged(helper.getFlagged());
         unMarkResourcesAsFlagged(helper.getUnflagged());
-        logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged());
+        logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged().size());
         if (helper.getFlagged().size() > 0) {
             if (helper.getAvailableSpaceInBytes() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
@@ -412,7 +412,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
-        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged());
+        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged().size());
         return status;
     }
 
