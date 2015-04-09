@@ -184,9 +184,11 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
     @Action(value = "advanced")
     public String advanced() {
+        getLogger().debug("greetings from advanced search");
         // process query paramter or legacy parameters, if present.
         processBasicSearchParameters();
         processLegacySearchParameters();
+        processWhitelabelSearch();
 
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : getGroups()) {
@@ -202,8 +204,20 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         if (hasActionErrors()) {
             getGroups().clear();
         }
-
+        getLogger().debug("advanced search doen");
         return SUCCESS;
+    }
+
+    private void processWhitelabelSearch() {
+        ResourceCollection rc = getGenericService().find(ResourceCollection.class, getCollectionId());
+        if(rc == null) return;
+
+        SearchParameters sp = new SearchParameters();
+        getGroups().add(sp);
+
+        sp.getFieldTypes().addAll(Arrays.asList(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
+        sp.getCollections().addAll(Arrays.asList(rc, null));
+        sp.getAllFields().addAll(Arrays.asList(null, ""));
     }
 
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {

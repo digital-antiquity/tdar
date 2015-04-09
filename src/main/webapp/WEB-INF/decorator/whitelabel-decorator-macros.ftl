@@ -60,8 +60,9 @@
         <p>Subtitle goes here</p>
         <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
             <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
-            <a href="/search">advanced</a>
+            <a href="/search/advanced?collectionId=${resourceCollection.id?c}">advanced</a>
             <input type="hidden" name="_tdar.searchType" value="simple">
+            <input type="hidden" name="collectionId" value="${resourceCollection.id}">
         </form>
     </div>
 </div>
