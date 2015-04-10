@@ -8,7 +8,9 @@
 }
 
 div.searchheader {
-    background: url("/images/r4/bg-home.jpg") 0 0 no-repeat;
+    background: url("/images/r4/bg-home.jpg");
+    background-position: center 0;
+    background-repeat: no-repeat;
 }
 
 

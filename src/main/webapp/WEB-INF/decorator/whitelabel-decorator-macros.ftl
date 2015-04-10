@@ -53,17 +53,20 @@
 <#macro searchHeader>
 <#if searchHeaderEnabled>
 <div class="searchheader">
-    <div class="container hero">
-        <#--fixme: This boolean arg is gross. Kill it! -->
-        <div class="pull-right whitelabel-login-menu" ><@common.loginMenu false/></div>
-        <h2>${title}</h2>
-        <p>Subtitle goes here</p>
-        <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
-            <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
-            <a href="/search/advanced?collectionId=${resourceCollection.id?c}">advanced</a>
-            <input type="hidden" name="_tdar.searchType" value="simple">
-            <input type="hidden" name="collectionId" value="${resourceCollection.id}">
-        </form>
+    <div class="hero">
+        <div class="container">
+            <div class="pull-right whitelabel-login-menu" ><@common.loginMenu false/></div>
+
+            <h2>${title}</h2>
+            <p>Subtitle goes here</p>
+            <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
+                <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
+                <a href="/search/advanced?collectionId=${resourceCollection.id?c}">advanced</a>
+                <input type="hidden" name="_tdar.searchType" value="simple">
+                <input type="hidden" name="collectionId" value="${resourceCollection.id}">
+            </form>
+
+        </div>
     </div>
 </div>
 </#if>

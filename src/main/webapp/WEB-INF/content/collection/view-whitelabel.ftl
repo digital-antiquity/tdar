@@ -6,6 +6,8 @@
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
     <#import "/WEB-INF/macros/whitelabel-macros.ftl" as whitelabel>
 
+<#--This is just an alias to help illustrate when we are using fields exclusive to whitelabel collections -->
+    <#assign whitelabelCollection = resourceCollection>
 <head>
     <meta name="decorator" content="whitelabel1">
     <@search.headerLinks includeRss=false />
@@ -16,9 +18,14 @@
 
     <#if resourceCollection.css??>
         <#noescape>
-        <style>${resourceCollection.css}</style>
+            <style>${resourceCollection.css}</style>
         </#noescape>
     </#if>
+
+    <style>
+    <#noescape>${whitelabelCollection.css!''}</#noescape>
+    </style>
+    
 </head>
 <body>
 <#-- todo: move these to .css and use collection-specific css classes -->
@@ -33,13 +40,13 @@
 
 
 </style>
-<#if searchHeaderLogoAvailable>
+    <#if searchHeaderLogoAvailable>
     <style>
         div.searchheader {
             background-image: url("/hosted/search-header-${resourceCollection.id?c}.jpg");
         }
     </style>
-</#if>
+    </#if>
     <#if editable>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
@@ -57,22 +64,18 @@
     <@view.pageStatusCallout />
 
     <#if logoAvailable>
-        <div class="pull-right" style="padding: 5em 0 1em 1em; "><img class="img-rounded" src="/files/collection/sm/${id?c}/logo" alt="logo" title="logo"> </div>
+    <div class="pull-right" style="padding: 5em 0 1em 1em; "><img class="img-rounded" src="/files/collection/sm/${id?c}/logo" alt="logo" title="logo"> </div>
     </#if>
 
     <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
 
+<#-- FIXME: have the controller handle isVisible via separate result name -->
     <#if !visible>
     This collection is not accessible
     <#else>
 
-        <#if !collections.empty>
-        <div id="sidebar-right" parse="true">
-            <h3 class="sidebar-spacer">Child Collections</h3>
-            <@common.listCollections collections=collections showOnlyVisible=true />
-        </div>
-        </#if>
 
+    <#-- <@whitelabel.subcollectionSidebar /> -->
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
         <div class="glide">
             <#if resourceCollection.parent??><p><b>Part of:</b> <a
@@ -83,12 +86,15 @@
                 <p>
                     <#noescape>
                     ${resourceCollection.adminDescription}
-                    </#noescape>
+                </#noescape>
                 </p>
             </#if>
 
         </div>
         </#if>
+
+
+
         <#if  results?has_content && results?size !=0 >
         <br/>
 
@@ -113,18 +119,18 @@
                 <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
             <#else>
             <h4>
-               There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
+                There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
-            <#if selectedResourceTypes?has_content>
-                <#if paginationHelper.totalNumberOfItems == 1>
-                    <@s.text name="${resourceTypeFacets[0].key}" />
+                <#if selectedResourceTypes?has_content>
+                    <#if paginationHelper.totalNumberOfItems == 1>
+                        <@s.text name="${resourceTypeFacets[0].key}" />
+                    <#else>
+                        <@s.text name="${resourceTypeFacets[0].pluralKey}" />
+                    </#if>
                 <#else>
-                    <@s.text name="${resourceTypeFacets[0].pluralKey}" />
-                </#if>
-            <#else>
-                <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
-            </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
-                                                                                                      href="<@s.url includeParams="all">
+                    <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
+                </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
+                                                                                                             href="<@s.url includeParams="all">
 			            <@s.param name="selectedResourceTypes"value="" />
 			            <@s.param name="startRecord" value=""/>
 			</@s.url>">[remove this filter]</a></sup>
