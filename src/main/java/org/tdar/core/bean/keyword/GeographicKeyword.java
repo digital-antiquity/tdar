@@ -53,8 +53,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
         STATE("State / Territory"),
         COUNTY("County"),
         CITY("City"),
-        FIPS_CODE("Fips Code"),
-        ISO_COUNTRY("ISO Country Code");
+        FIPS_CODE("Fips Code");
 
         private String label;
 

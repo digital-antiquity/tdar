@@ -79,12 +79,7 @@ public class GeoSearchService {
         for (Map<String, Object> result : countryResults) {
             if (result.containsKey(COL_COUNTRY_LONG_NAME)) {
                 GeographicKeyword entityToFind = createGeoKeyword((String) result.get(COL_COUNTRY_LONG_NAME), Level.COUNTRY);
-                if (entityToFind != null) {
-                    geoSet.add(entityToFind);
-                }
-            }
-            if (result.containsKey(COL_ISO_2DIGITS)) {
-                GeographicKeyword entityToFind = createGeoKeyword((String) result.get(COL_ISO_2DIGITS), Level.ISO_COUNTRY);
+                entityToFind.setCode((String) result.get(COL_ISO_2DIGITS));
                 if (entityToFind != null) {
                     geoSet.add(entityToFind);
                 }

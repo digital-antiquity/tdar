@@ -88,7 +88,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         CodingSheet cs = createAndSaveNewInformationResource(CodingSheet.class);
         GeographicKeyword mgc = new GeographicKeyword();
         mgc.setLabel("test");
-        mgc.setLevel(Level.ISO_COUNTRY);
+        mgc.setLevel(Level.COUNTRY);
         genericService.save(mgc);
         cs.getManagedGeographicKeywords().add(mgc);
         genericService.saveOrUpdate(cs);
