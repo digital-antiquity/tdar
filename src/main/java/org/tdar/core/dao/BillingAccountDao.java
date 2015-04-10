@@ -412,7 +412,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
-        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged().size());
+        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged().size(), helper.getFlagged().size());
         return status;
     }
 
@@ -584,7 +584,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
         Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
         logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log2);
-        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
+        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems().size(), helper.getNewItems().size());
     }
 
     public Number findCountOfFlaggedResourcesInAccount(BillingAccount account) {
