@@ -17,25 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -123,6 +105,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlRootElement(name = "ResourceCollection")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable {
 
@@ -839,11 +822,17 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             }
         }
         // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
-        if (contents == false) {
-            return true;
-        }
-        
+        return !contents;
+    }
+
+
+    @XmlTransient
+    public boolean isWhiteLabelCollection() {
         return false;
-        
+    }
+
+    @XmlTransient
+    public boolean isSearchEnabled() {
+        return false;
     }
 }

@@ -3,8 +3,7 @@ package org.tdar.struts.action.collection;
 import java.util.*;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -32,17 +31,31 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
+
+import static org.tdar.struts.action.collection.CollectionViewAction.SUCCESS_WHITELABEL;
 
 @Component
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/collection")
+@Results(value = {
+        @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
+        @Result(name = SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+                location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,keywordPath,slug" }),
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+})
 public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction, ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
+
+    public static final String SUCCESS_WHITELABEL = "success_whitelabel";
 
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
@@ -178,6 +191,22 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
         getLogger().trace("lucene: end");
     }
+
+
+    @HttpOnlyIfUnauthenticated
+    @Actions(value = {
+            @Action(value = "{id}/{slug}"),
+            @Action(value = "{id}")
+    })
+    public String view() throws TdarActionException {
+        String result = super.view();
+        if(SUCCESS.equals(result) && getPersistable().isWhiteLabelCollection()) {
+            result =  SUCCESS_WHITELABEL;
+        }
+        return result;
+    }
+
+
 
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
@@ -422,5 +451,30 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public boolean isLogoAvailable() {
         return checkLogoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
     }
+
+    public boolean isSearchHeaderLogoAvailable() {
+        //for now, we just look in hosted + collection ID
+        String filename = "search-header-" + Long.toString(getResourceCollection().getId()) + ".jpg";
+        return checkPublicFileAvailable(filename);
+    }
+
+
+    /**
+     * Indicate to view layer that we should display a search header.
+     * @return
+     */
+    public boolean isSearchHeaderEnabled() {
+        return getResourceCollection().isSearchEnabled();
+    }
+
+    /**
+     * Indicates whether the view layer should show sub-navigation elements.  We turn this off when the 'search header' is enabled.
+     *
+     */
+    @Override
+    public boolean isSubnavEnabled() {
+        return !isSearchHeaderEnabled();
+    }
+
 
 }

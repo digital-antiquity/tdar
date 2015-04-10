@@ -1,8 +1,6 @@
 package org.tdar.struts.action.search;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1321,6 +1319,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testRefineSearchWithSparseCollection() {
+
         ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
         ResourceCollection sparseCollection = new ResourceCollection();
         evictCache();
@@ -1328,8 +1327,24 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertThat(collectionId, greaterThan(0L));
         sparseCollection.setId(collectionId);
         firstGroup().getCollections().add(sparseCollection);
+        controller.advanced();
 
-        assertThat(sparseCollection.getTitle(), equalTo(firstGroup().getCollections().get(0).getTitle()));
+        assertThat(firstGroup().getCollections().get(0).getTitle(), is("Mega Collection"));
+    }
+
+
+    @Test
+    @Rollback
+    public void testWhitelabelAdvancedSearch() {
+        String collectionTitle = "The History Channel Presents: Ancient Ceramic Bowls That Resemble Elvis";
+        ResourceCollection rc = createAndSaveNewResourceCollection(collectionTitle);
+
+        controller.setCollectionId(rc.getId());
+        controller.advanced();
+
+        //We should now have two terms:  within-collection, and all-fields
+        assertThat(firstGroup().getFieldTypes(), contains(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
+        assertThat(firstGroup().getCollections().get(0).getTitle(), is(collectionTitle));
     }
 
     private void assertOnlyResultAndProject(InformationResource informationResource) {
