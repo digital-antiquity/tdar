@@ -2,7 +2,7 @@
 <!-- $Id$ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <version>13-MUNSELL</version>
+    <version>14-NEOLITHIC</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -10,7 +10,7 @@
         <struts2.version>2.3.20</struts2.version>
         <hibernate.version>4.3.8.Final</hibernate.version>
         <hibernate.search.version>4.5.3.Final</hibernate.search.version>
-        <spring.framework.version>4.1.4.RELEASE</spring.framework.version>
+        <spring.framework.version>4.1.6.RELEASE</spring.framework.version>
         <spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
         <postgresql.jdbc.version>9.3-1102-jdbc41</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
@@ -19,8 +19,8 @@
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
-        <apache.cxf.version>3.0.3</apache.cxf.version>
-        <jena.version>2.12.1</jena.version>
+        <apache.cxf.version>3.0.4</apache.cxf.version>
+        <jena.version>2.13.0</jena.version>
         <exec-maven-version>1.3.2</exec-maven-version>
         <!-- /end managed versions -->
         <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
@@ -33,13 +33,13 @@
         <jetty.stop.port>12919</jetty.stop.port>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>12.1</geotools.version>
-        <tika.version>1.6</tika.version>
+        <geotools.version>13.0</geotools.version>
+        <tika.version>1.7</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
-        <jersey.version>1.18.3</jersey.version>
-        <jackson.version>2.4.4</jackson.version>
-        <slf4j.version>1.7.9</slf4j.version>
+        <jersey.version>1.19</jersey.version>
+        <jackson.version>2.5.2</jackson.version>
+        <slf4j.version>1.7.12</slf4j.version>
         <http-components.version>4.3.3</http-components.version>
         <display.port></display.port>
         <warfile.name>ROOT</warfile.name>
@@ -252,7 +252,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.49m</version>
+            <version>1.49q</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
         </dependency>
         <dependency>
@@ -270,7 +270,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.8.4</version>
+            <version>1.8.5</version>
         </dependency>
         <dependency>
             <groupId>javax.media.jai</groupId>
@@ -700,6 +700,11 @@
             <version>2.2.4</version>
         </dependency>
         <dependency>
+		    <groupId>nu.validator</groupId>
+		    <artifactId>validator</artifactId>
+		    <version>15.3.28</version>
+		</dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>javax.el</artifactId>
             <version>2.2.6</version>
@@ -817,7 +822,7 @@
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
             <artifactId>jackcess</artifactId>
-            <version>2.0.8</version>
+            <version>2.0.9</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <!-- OpenCSV -->
@@ -831,13 +836,13 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <version>2.0.1</version>
+            <version>2.1</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.4</version>
+            <version>3.4.1</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -917,7 +922,7 @@
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>1.8.8</version>
+            <version>1.8.9</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
 
@@ -1034,7 +1039,7 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -1462,7 +1467,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.5</version>
                 <configuration>
                     <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
                     <outputDirectory>${webapp.deploy.dir}</outputDirectory>
@@ -1480,8 +1485,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
 
                     <!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> 
                         <fork>true</fork> -->
@@ -1595,6 +1600,48 @@
                     </execution>
                  </executions>
              </plugin>
+             
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, 
+                    like in README.md -->
+                <version>0.0.22</version>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v0.10.30</nodeVersion>
+                            <npmVersion>1.4.21</npmVersion>
+
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <!-- Optional configuration which provides for running any npm command -->
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <!-- meed to run npm install bower; npm install grunt -->
+                    <execution>
+                        <id>bower install</id>
+                        <goals>
+                            <goal>bower</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+             
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>

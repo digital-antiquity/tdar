@@ -91,14 +91,14 @@
         <@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
     </div>
     <div class="typeToggle manual">
-        <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
+        <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason"  cols="80" rows="4" />
     </div>
 
     </#macro>
 
     <#macro accountInfoForm>
         <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
-        <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
+        <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"  cols="80" rows="4" />
         <@s.hidden name="invoiceId" />
 
         <#if billingAdmin>

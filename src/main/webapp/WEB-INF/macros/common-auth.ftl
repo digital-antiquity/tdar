@@ -110,7 +110,7 @@
                         Please briefly describe the geographical areas, time periods, or other subjects for which you
                         would like to contribute information
                     </span>
-                        <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='${beanPrefix}.contributorReason' id='contributorReasonId' />
+                        <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='${beanPrefix}.contributorReason' id='contributorReasonId'  cols="80" />
                     </div>
                 </div>
             </div>

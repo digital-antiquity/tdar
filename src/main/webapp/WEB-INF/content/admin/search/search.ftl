@@ -4,7 +4,7 @@
     list='%{allQueryBuilders}' />
     <br/>
     <@s.textarea labelposition='top' label='Raw Search Query' name='rawQuery'
-    cssClass='resizable input-xxlarge' title="Please enter the query" />
+    cssClass='resizable input-xxlarge' title="Please enter the query" cols="80" />
 
     <@s.select value="sortField" name='sortField'
     emptyOption='false' listValue='label' list='%{sortOptions}'/>

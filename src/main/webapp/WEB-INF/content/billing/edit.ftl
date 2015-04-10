@@ -20,7 +20,7 @@
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
         <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
-        <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
+        <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"  cols="80"  />
 
         <@s.hidden name="id" value="${account.id?c!-1}" />
         <@accountcommon.accountInfoForm />

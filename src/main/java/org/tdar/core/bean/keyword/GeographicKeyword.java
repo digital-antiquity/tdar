@@ -75,6 +75,9 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     @Enumerated(EnumType.STRING)
     @Column(length = FieldLength.FIELD_LENGTH_50)
     private Level level;
+    
+    @Column(length=FieldLength.FIELD_LENGTH_5)
+    private String code;
 
     /**
      * @param level
@@ -114,5 +117,13 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     @Override
     public String getUrlNamespace() {
         return KeywordType.GEOGRAPHIC_KEYWORD.getUrlNamespace();
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

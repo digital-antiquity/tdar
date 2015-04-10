@@ -1,4 +1,4 @@
-package org.tdar.struts;
+package org.tdar.struts.freemarker;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -13,12 +13,19 @@ import org.springframework.stereotype.Component;
 import com.opensymphony.xwork2.util.ValueStack;
 
 import freemarker.template.ObjectWrapper;
+import freemarker.template.TemplateException;
 
 @Component
 public class TdarFreemarkerManager extends FreemarkerManager {
 
     protected transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
+    public void init(ServletContext servletContext) throws TemplateException {
+        super.init(servletContext);
+        config.setTemplateExceptionHandler(new TdarFreemarkerTemplateExceptionHandler());
+    }
+    
     @Override
     public ScopesHashModel buildTemplateModel(ValueStack stack, Object action, ServletContext servletContext, HttpServletRequest request,
             HttpServletResponse response, ObjectWrapper wrapper) {
@@ -27,7 +34,6 @@ public class TdarFreemarkerManager extends FreemarkerManager {
 
     @Override
     protected void populateContext(ScopesHashModel model, ValueStack stack, Object action, HttpServletRequest request, HttpServletResponse response) {
-        logger.debug("action: {} {} {} {}", action, wrapper, stack);
         super.populateContext(model, stack, action, request, response);
     }
 

@@ -1,5 +1,6 @@
 <#setting url_escaping_charset="UTF-8">
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
+
 <head>
     <title>Dataset Integration: Edit</title>
     <@link rel="stylesheet" href="/css/tdar-integration.css" media="screen" />
