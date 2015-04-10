@@ -16,6 +16,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.json.JsonLookupFilter;
 
 @Namespace("/search")
 @Component
@@ -40,7 +41,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
             }
             setMode("json");
             performResourceSearch();
-            jsonifyResult(null);
+            jsonifyResult(JsonLookupFilter.class);
         } catch (TdarActionException tdae) {
             return tdae.getResponse();
         } catch (Exception e) {
