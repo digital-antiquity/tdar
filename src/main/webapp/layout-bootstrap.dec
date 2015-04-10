@@ -23,6 +23,7 @@
         <#assign bodyid = "alt" />
     </#if>
 
+
 <#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
 <head>
     <title>${title!siteName}</title>

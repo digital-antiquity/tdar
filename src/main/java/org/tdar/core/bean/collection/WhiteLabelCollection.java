@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class WhiteLabelCollection extends ResourceCollection{
     @ManyToMany
     @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "collection_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "resource_id") })
-    private List<Resource> featuredResources;
+    private List<Resource> featuredResources = new ArrayList<>();
 
     //Cascaded saves of transient references don't work for this declaration (using javasx annotations)
 

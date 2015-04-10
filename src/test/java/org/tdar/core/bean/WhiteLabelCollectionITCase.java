@@ -1,5 +1,6 @@
 package org.tdar.core.bean;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.GenericService;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -28,6 +31,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     GenericService genericService;
+
+
 
     /**
      * Try to save a new 'white label' collection with all default values;
@@ -73,7 +78,63 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
             }
         }
         assertThat(wlc, not( nullValue()));
-        assertThat(count, is( 1));
+        assertThat(count, is(1));
+    }
+
+    @Test
+    @Rollback
+    public void testAddFeaturedRsourceSuccessful() {
+        //fixme: stop being so lazy and just write a createWhiteLabelCollection() method.
+        testSave();
+
+        WhiteLabelCollection wlc = genericService.findAll(WhiteLabelCollection.class).iterator().next();
+
+        Document document1 = createAndSaveNewResource(Document.class);
+        Document document2 = createAndSaveNewResource(Document.class);
+        Long wlcId = wlc.getId();
+
+        document2.setTitle("my featured document");
+        genericService.saveOrUpdate(document2);
+        wlc.getResources().add(document1);
+        wlc.getResources().add(document2);
+        genericService.saveOrUpdate(wlc);
+
+        Document featuredDocument = genericService.find(Document.class, document2.getId());
+        wlc = genericService.find(WhiteLabelCollection.class, wlcId);
+        assertThat(wlc.getResources().size(), greaterThan(0));
+        logger.debug("wlcid:{},  resources:{}", wlcId, wlc.getResources());
+        wlc.getFeaturedResources().add(featuredDocument);
+        genericService.save(wlc);
+    }
+
+    @Test(expected = Exception.class)
+    @Rollback
+    public void testAddFeaturedResourceFailure() {
+        WhiteLabelCollection wlc = createAndSaveWhiteLabelCollection();
+        Document document1 = createAndSaveNewResource(Document.class);
+        Document document2 = createAndSaveNewResource(Document.class);
+        document2.setTitle("my featured document");
+        genericService.saveOrUpdate(document2);
+        wlc.getResources().add(document1);
+        genericService.saveOrUpdate(wlc);
+
+        //note that document2 does not exist in the list of resource,  so we shouldn't be able to make it a featured
+        //collection.
+
+        Document featuredDocument = document2;
+        wlc.getFeaturedResources().add(featuredDocument);
+        genericService.saveOrUpdate(wlc);
+        flush();
+    }
+
+    private WhiteLabelCollection createAndSaveWhiteLabelCollection() {
+        WhiteLabelCollection rc = new WhiteLabelCollection();
+        rc.setName("default white label collection");
+        rc.markUpdated(getAdminUser());
+        Institution institution = new Institution("Bob's burgers");
+        rc.setInstitution(institution);
+        genericService.save(rc);
+        return rc;
     }
 
 
