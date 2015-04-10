@@ -12,6 +12,14 @@
             <column name="code" type="varchar(5)" />
         </addColumn>
     </changeSet>
+    <changeSet id="neolithic-2" author="abrin">
+        <update tableName="geographic_keyword">
+            <column name="level" value="COUNTRY" />
+            <where>level='ISO_COUNTRY'</where>
+        
+        </update>
+    </changeSet>
+
 
 
 </databaseChangeLog>
