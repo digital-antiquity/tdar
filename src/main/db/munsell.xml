@@ -254,4 +254,19 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="munsell-17-feature-whitelabel" author="jdevos">
+        <comment>Join table for featured resources. Note the additional fk on collection_resource. </comment>
+        <createTable tableName="whitelabel_featured_resource" >
+            <column name="collection_id" type="bigint" ><constraints  nullable="false"/></column>
+            <column name="resource_id" type="bigint" ><constraints nullable="false"/></column>
+        </createTable>
+        <addPrimaryKey tableName="whitelabel_featured_resource" columnNames="collection_id, resource_id"/>
+        <addForeignKeyConstraint
+                constraintName="whitelabel_featured_resource_collection_id_resource_id_collection_resource_fk"
+                baseTableName="whitelabel_featured_resource"
+                baseColumnNames="collection_id, resource_id"
+                referencedTableName="collection_resource"
+                referencedColumnNames="collection_id, resource_id"/>
+    </changeSet>
+
 </databaseChangeLog>

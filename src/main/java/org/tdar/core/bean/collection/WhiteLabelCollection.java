@@ -2,12 +2,14 @@ package org.tdar.core.bean.collection;
 
 import org.hibernate.annotations.*;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.resource.Resource;
 
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.List;
 
 /**
  * Created by jimdevos on 3/17/15.
@@ -31,6 +33,11 @@ public class WhiteLabelCollection extends ResourceCollection{
 
     @Lob
     private String css;
+
+    @ManyToMany
+    @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "collection_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "resource_id") })
+    private List<Resource> featuredResources;
 
     //Cascaded saves of transient references don't work for this declaration (using javasx annotations)
 
@@ -99,5 +106,13 @@ public class WhiteLabelCollection extends ResourceCollection{
     @Override
     public boolean isWhiteLabelCollection() {
         return true;
+    }
+
+    public List<Resource> getFeaturedResources() {
+        return featuredResources;
+    }
+
+    public void setFeaturedResources(List<Resource> featuredResources) {
+        this.featuredResources = featuredResources;
     }
 }
