@@ -25,7 +25,7 @@
     <style>
     <#noescape>${whitelabelCollection.css!''}</#noescape>
     </style>
-    
+
 </head>
 <body>
 <#-- todo: move these to .css and use collection-specific css classes -->
