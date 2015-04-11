@@ -601,11 +601,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<String> getJavascriptFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.JS);
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
     }
 
     public List<String> getCssFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.CSS);
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.CSS);
     }
 
     public String getWroProfile() {
@@ -848,7 +848,38 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
 
+    /**
+     * Is the specified public file available for the current resource
+     * @param filename
+     * @return
+     */
+    protected boolean checkPublicFileAvailable(String filename) {
+        //TODO: add an override in AbstractPersistableController that utilzes pairtree to resolve path for named file for current persistable
+        String basepath = TdarConfiguration.getInstance().getPersonalFileStoreLocation() + "/hosted";
+        File file = new File(basepath, filename);
+        boolean exists = file.exists();
+        getLogger().debug("checkPublicFile({})\t -> {}", filename, exists);
+        return exists;
+    }
+
     public boolean isTest() {
         return getTdarConfiguration().isTest();
+    }
+
+
+    /**
+     * Indicates to view layer whether it should show the login menu  (e.g.  "Welcome Back, Walter Kurtz").
+     * @return
+     */
+    public boolean isLoginMenuEnabled() {
+        return false;
+    }
+
+    /**
+     * Indicates whether the view layer should show sub-navigation elements (usually true while logged in, but some actions may wish to disable).
+     *
+     * */
+    public boolean isSubnavEnabled() {
+        return true;
     }
 }

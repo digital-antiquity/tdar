@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <header>
+        <h1>Treatment #2 - Header</h1>
+    </header>
+    <section>
+        ${body}
+    </section>
+    <footer>
+        <h1>Treatment #2 - Footer</h1>
+    </footer>
+</body>
+</html>
