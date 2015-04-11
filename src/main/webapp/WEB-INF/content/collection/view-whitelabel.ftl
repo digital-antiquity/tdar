@@ -75,29 +75,35 @@
     <#else>
 
 
-    <#-- <@whitelabel.subcollectionSidebar /> -->
+        <#-- <@whitelabel.subcollectionSidebar /> -->
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
-        <div class="glide">
+        <div>
             <#if resourceCollection.parent??><p><b>Part of:</b> <a
                     href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
-            <@common.description resourceCollection.description />
 
-            <#if resourceCollection.adminDescription??>
-                <p>
-                    <#noescape>
-                    ${resourceCollection.adminDescription}
-                </#noescape>
-                </p>
-            </#if>
+            <div class="viewpage-section">
+                <@common.description resourceCollection.description />
 
+                <#if resourceCollection.adminDescription??>
+                    <p>
+                        <#noescape>
+                        ${resourceCollection.adminDescription}
+                    </#noescape>
+                    </p>
+                </#if>
+            </div>
         </div>
         </#if>
 
+        <#if whitelabelCollection.featuredResourcesEnabled>
+            <div class="viewpage-section">
+
+            <@view.featured resourceList=whitelabelCollection.featuredResources />
+            </div>
+        </#if>
 
 
         <#if  results?has_content && results?size !=0 >
-        <br/>
-
         <div id="divResultsSortControl">
             <div class="row">
                 <div class="span4">

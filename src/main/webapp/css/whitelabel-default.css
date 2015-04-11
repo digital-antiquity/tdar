@@ -13,7 +13,6 @@ div.searchheader {
     background-repeat: no-repeat;
 }
 
-
 /*
     whitelabel-specific selectors go here
 */
@@ -24,8 +23,20 @@ div.searchheader {
 .whitelabel-login-menu li {
     margin: 0 0 0 12px;
 }
+
 .whitelabel-login-menu a {
     padding: 0 8px 0 8px;
     width: 105px;
+}
 
+div.viewpage-section {
+    margin-top: 1em;
+    padding-bottom: 3em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid black;
+}
+
+/** override carousel item height when inside viewpage **/
+div.viewpage-section .tdar-slider .carousel-inner .item {
+    height: inherit !important;
 }
