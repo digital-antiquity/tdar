@@ -75,7 +75,10 @@
     <#else>
 
 
-        <#-- <@whitelabel.subcollectionSidebar /> -->
+        <#if resourceCollection.parent??>
+        <@whitelabel.subcollectionSidebar />
+        </#if>
+
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
         <div>
             <#if resourceCollection.parent??><p><b>Part of:</b> <a
@@ -100,6 +103,21 @@
 
             <@view.featured resourceList=whitelabelCollection.featuredResources />
             </div>
+        </#if>
+
+        <#if whitelabelCollection.subCollectionsEnabled>
+            <div class="viewpage-section">
+                <h2>Collections</h2>
+                <#list whitelabelCollection.directChildren as childCollection>
+                    <p>
+                        <@s.a href="/collection/${childCollection.id?c}/${childCollection.slug}" cssClass="title"
+                            >${childCollection.name}</@s.a>
+
+                        ${common.fnTruncate(childCollection.description, 500)}
+                    </p>
+                </#list>
+            </div>
+
         </#if>
 
 
