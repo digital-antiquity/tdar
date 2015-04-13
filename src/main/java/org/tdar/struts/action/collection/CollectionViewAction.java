@@ -2,7 +2,6 @@ package org.tdar.struts.action.collection;
 
 import java.util.*;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -454,8 +453,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     public boolean isSearchHeaderLogoAvailable() {
         //for now, we just look in hosted + collection ID
-        String filename = "search-header-" + Long.toString(getResourceCollection().getId()) + ".jpg";
-        return checkPublicFileAvailable(filename);
+        String filename =  getResourceCollection().getId() +  "/search-header.jpg";
+        return checkHostedFileAvailable(filename);
     }
 
 

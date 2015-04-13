@@ -36,6 +36,9 @@ public class WhiteLabelCollection extends ResourceCollection{
     @Type(type = "org.hibernate.type.TextType")
     private String css;
 
+    @Column
+    private String subtitle;
+
     @ManyToMany
     @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "collection_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "resource_id") })
@@ -116,5 +119,13 @@ public class WhiteLabelCollection extends ResourceCollection{
 
     public void setFeaturedResources(List<Resource> featuredResources) {
         this.featuredResources = featuredResources;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 }

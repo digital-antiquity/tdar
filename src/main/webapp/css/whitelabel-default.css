@@ -13,6 +13,11 @@ div.searchheader {
     background-repeat: no-repeat;
 }
 
+div.searchheader {
+
+}
+
+
 /*
     whitelabel-specific selectors go here
 */
@@ -46,4 +51,8 @@ strong.title, a.title {
     color: #7a1501;
     font-weight: bold;
     font-size: larger;
+}
+
+.whitelabel-logo {
+    width: 15em;
 }

@@ -269,4 +269,18 @@
                 referencedColumnNames="collection_id, resource_id"/>
     </changeSet>
 
+    <changeSet id="munsell-18-feature-whitelabel" author="jdevos">
+        <comment>adding whitelabel subtitle, institution no longer required</comment>
+        <addColumn tableName="whitelabel_collection">
+            <column name="subtitle" type="varchar(255)" />
+        </addColumn>
+
+        <dropColumn tableName="whitelabel_collection" columnName="institution_id" />
+        <addColumn tableName="whitelabel_collection">
+            <column name="institution_id" type="bigint">
+                <constraints nullable="true" foreignKeyName="whitelabel_collection_institution_id_institution_fkey" references="institution(id)"  />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

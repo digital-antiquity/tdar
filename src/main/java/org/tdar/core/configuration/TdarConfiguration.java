@@ -318,6 +318,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("personal.file.store.location", "/home/tdar/personal-filestore");
     }
 
+    public String getHostedFileStoreLocation() {
+        return assistant.getStringProperty("hosted.file.store.location", "/home/tdar/hosted-filestore");
+    }
+
     public String getSmtpHost() {
         return assistant.getStringProperty("mail.smtp.host", DEFAULT_SMTP_HOST);
     }

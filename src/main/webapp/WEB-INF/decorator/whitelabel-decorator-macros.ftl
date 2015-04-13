@@ -51,14 +51,16 @@
 </#macro>
 
 <#macro searchHeader>
-<#if searchHeaderEnabled>
+<#if !searchHeaderEnabled><#return></#if>
+<#assign subtitle = (resourceCollection.subtitle!resourceCollection.institution.name!'')>
 <div class="searchheader">
     <div class="hero">
         <div class="container">
             <div class="pull-right whitelabel-login-menu" ><@common.loginMenu false/></div>
-
-            <h2>${title}</h2>
-            <p>Subtitle goes here</p>
+            <h2 class="color-title">${title}</h2>
+            <#if subtitle?has_content>
+            <p class="color-subtitle">${subtitle}</p>
+            </#if>
             <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
                 <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
                 <a href="/search/advanced?collectionId=${resourceCollection.id?c}">advanced</a>
@@ -69,7 +71,6 @@
         </div>
     </div>
 </div>
-</#if>
 </#macro>
 
 <#macro subnav>

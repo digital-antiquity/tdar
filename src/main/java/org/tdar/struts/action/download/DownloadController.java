@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
@@ -25,8 +24,6 @@ public class DownloadController extends AbstractDownloadController implements Pr
     private static final String CONFIRM_DOWNLOAD_FTL = "confirm-download.ftl";
     @Autowired
     private transient DownloadService downloadService;
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     private static final long serialVersionUID = 7548544212676661097L;
 

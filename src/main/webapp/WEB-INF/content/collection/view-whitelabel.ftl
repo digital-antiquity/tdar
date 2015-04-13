@@ -16,12 +16,6 @@
     <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl />
 
-    <#if resourceCollection.css??>
-        <#noescape>
-            <style>${resourceCollection.css}</style>
-        </#noescape>
-    </#if>
-
     <style>
     <#noescape>${whitelabelCollection.css!''}</#noescape>
     </style>
@@ -29,21 +23,10 @@
 </head>
 <body>
 <#-- todo: move these to .css and use collection-specific css classes -->
-<style>
-    i.search-list-checkbox-grey {
-        background-image: none !important;
-    }
-
-    li.media {
-        display: inline-block
-    }
-
-
-</style>
     <#if searchHeaderLogoAvailable>
     <style>
         div.searchheader {
-            background-image: url("/hosted/search-header-${resourceCollection.id?c}.jpg");
+            background-image: url("/hosted/${resourceCollection.id?c}/search-header.jpg");
         }
     </style>
     </#if>
@@ -63,9 +46,6 @@
 
     <@view.pageStatusCallout />
 
-    <#if logoAvailable>
-    <div class="pull-right" style="padding: 5em 0 1em 1em; "><img class="img-rounded" src="/files/collection/sm/${id?c}/logo" alt="logo" title="logo"> </div>
-    </#if>
 
     <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
 
@@ -85,6 +65,9 @@
                     href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
 
             <div class="viewpage-section">
+                <#if logoAvailable>
+                    <div class="pull-right"><img class="img-rounded whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
+                </#if>
                 <@common.description resourceCollection.description />
 
                 <#if resourceCollection.adminDescription??>
