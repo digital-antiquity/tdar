@@ -19,7 +19,7 @@
     <#global qunit = (Parameters.qunit)??  && !production>
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
-    <#if (uri != '' && uri != '/about')>
+    <#if (uri != '' && uri != '/about' && uri != '/')>
         <#assign bodyid = "alt" />
     </#if>
 

@@ -121,7 +121,9 @@ public class IndexController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "about", results = { @Result(name = SUCCESS, location = "about.ftl") })
+    @Actions(value={
+            @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") })
+    })
     @HttpOnlyIfUnauthenticated
     public String about() {
         worldMap();

@@ -409,8 +409,8 @@ public class TdarConfiguration {
      * @return the theme directory
      */
     public String getThemeDir() {
-        String dir = assistant.getStringProperty("app.theme.dir", "includes/themes/tdar/");
-        if (dir.startsWith("/") || dir.startsWith("\\")) {
+        String dir = assistant.getStringProperty("app.theme.dir", "/WEB-INF/themes/tdar/");
+        if ((dir.startsWith("/") || dir.startsWith("\\")) && !dir.startsWith("/WEB-INF")) {
             dir = dir.substring(1);
         }
         if (dir.endsWith("/") || dir.startsWith("\\")) {

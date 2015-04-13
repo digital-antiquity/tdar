@@ -2,7 +2,7 @@
 <!--
 vim:sts=2:sw=2:
 -->
-<decorators defaultdir="/">
+<decorators defaultdir="/WEB-INF/decorators">
     <excludes>
         <pattern>**/ajax/**</pattern>
         <pattern>/css/*</pattern>
