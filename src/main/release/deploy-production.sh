@@ -46,7 +46,7 @@ hg pull
 hg update $PARAM
 perl src/main/release/release.pl
 # sudo rm /tmp/.wro4j/buildContext.properties
-sudo rmdir /tmp/.wro4j/
+# sudo rmdir /tmp/.wro4j/
 
 mvn clean compile war:war -Pproduction,minify-web-resources,liquibase
 if [ $? -ne 0 ] 
