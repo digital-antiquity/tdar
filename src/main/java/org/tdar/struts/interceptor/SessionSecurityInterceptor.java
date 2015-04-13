@@ -96,6 +96,15 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 setSessionClosed(true);
             }
             return resultName;
+        } catch (Exception e) {
+            if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException") && e.getMessage().contains("Broken pipe")) {
+                logger.warn("ClientAbortException:{}", e, e);
+                genericService.clearCurrentSession();
+                setSessionClosed(true);
+                return TdarActionSupport.INPUT;
+            } else {
+                throw e;
+            }
         }
     }
 

@@ -1,6 +1,8 @@
 package org.tdar.core.service;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +25,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
@@ -76,7 +81,7 @@ public class PdfService {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document)
+    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document, File coverPageLogo)
             throws PdfCoverPageGenerationException {
         try {
             logger.debug("IR: {}, {} {}", document, version, version.getExtension());
@@ -95,11 +100,11 @@ public class PdfService {
                     int after = instance.following(MAX_DESCRIPTION_LENGTH);
                     description = description.substring(0, after) + "...";
                 }
-                template = createCoverPage(provider, submitter, template, document, description);
+                template = createCoverPage(provider, submitter, template, document, description,coverPageLogo);
 
                 // merge the two PDFs
                 logger.debug("calling merge on: {}", version);
-                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
+                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version), coverPageLogo);
             } else {
                 logger.debug("IR: invalid type");
                 throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");
@@ -119,7 +124,7 @@ public class PdfService {
      * @throws COSVisitorException
      * @throws InterruptedException
      */
-    private PipedInputStream mergePDFs(File coverPage, File document) throws IOException, COSVisitorException, InterruptedException {
+    private PipedInputStream mergePDFs(File coverPage, File document, File coverPageImage) throws IOException, COSVisitorException, InterruptedException {
         final PDFMergeWrapper wrapper = new PDFMergeWrapper();
         /*
          * FIXME:
@@ -162,7 +167,7 @@ public class PdfService {
      * @throws FileNotFoundException
      * @throws URISyntaxException
      */
-    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description) throws IOException,
+    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description, File coverPageLogo) throws IOException,
             COSVisitorException, FileNotFoundException,
             URISyntaxException {
         PDDocument doc = PDDocument.load(template);
@@ -175,6 +180,16 @@ public class PdfService {
         }
 
         PDPageContentStream content = new PDPageContentStream(doc, page, true, false);
+        if (coverPageLogo != null && coverPageLogo.exists() ) {
+            InputStream in = new FileInputStream(coverPageLogo);
+            
+            BufferedImage awtImage = ImageIO.read( in );
+            PDXObjectImage img = new PDPixelMap(doc, awtImage);
+            
+            int TOP = 639;
+            int LEFT = 580 - img.getWidth();
+            content.drawImage(img, LEFT, TOP);
+        }
         int cursorPositionFromBottom = 580;
         /*
          * Title: An Interaction Model for Resource Implement Complexity Based on Risk and Number of Annual Moves

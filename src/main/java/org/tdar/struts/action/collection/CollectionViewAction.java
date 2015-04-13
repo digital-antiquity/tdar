@@ -249,7 +249,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     public void setCollections(List<ResourceCollection> findAllChildCollections) {
-        getLogger().info("child collections: {}", findAllChildCollections);
+        if (getLogger().isTraceEnabled()) {
+            getLogger().trace("child collections: {}", findAllChildCollections);
+        }
         this.collections = findAllChildCollections;
     }
 
@@ -314,7 +316,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     @Override
     public String getSearchTitle() {
-        return String.format("Resources in the %s Collection", getPersistable().getTitle());
+        return getText("collectionViewAction.search_title", Arrays.asList(getPersistable().getTitle()));
     }
 
     @Override
