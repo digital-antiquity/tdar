@@ -1660,6 +1660,14 @@
                             <name>jetty.port</name>
                             <value>${jetty.port}</value>
                         </systemProperty>
+                        <systemProperty>
+                            <name>log4j.configuration</name>
+                            <value>file:${basedir}/src/main/resources/log4j.properties</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>slf4j</name>
+                            <value>true</value>
+                        </systemProperty>
                      </systemProperties>
                      <contextPath>/</contextPath>
                       <webDefaultXml>src/main/resources/jetty/webdefault.xml</webDefaultXml>
@@ -1694,26 +1702,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- FIXME: disabling this for the interim in favor of using <filters></filters> in the default profile
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>read-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <files>
-                                <file>src/main/resources/hibernate.properties</file>
-                            </files>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
