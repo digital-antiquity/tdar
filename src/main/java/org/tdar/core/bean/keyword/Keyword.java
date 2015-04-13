@@ -50,7 +50,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Addressable {
 
     @Transient
-    public static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "approved", "selectable", "level", "occurrence" }; // fixme: should ID be here too?
+    public static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "approved", "selectable", "level", "code", "occurrence" }; // fixme: should ID be here too?
 
     @Override
     public String getLabel();
