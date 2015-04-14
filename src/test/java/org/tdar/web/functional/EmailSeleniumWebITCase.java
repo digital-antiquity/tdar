@@ -24,9 +24,10 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LING)).first().click();
-        waitFor(visibilityOf(find("#messageBody").first())).sendKeys("This is a test email");
+        waitFor(visibilityOf(find("#messageBody").first()));
+        find("#messageBody").first().sendKeys("This is a test email");
         find(By.name("send")).click();
-        waitFor(visibilityOf(find("#email-close-button").first())).sendKeys("This is a test email");
+        waitFor(visibilityOf(find("#email-close-button").first()));
         reportJavascriptErrors();
         assertTrue(getText().contains("Your message has been sent"));
         find(By.id("email-close-button")).click();
