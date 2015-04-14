@@ -62,15 +62,15 @@ public class FileSystemResourceDao {
             return wroExists;
         }
         try {
-            List<String> urls = fetchGroupUrls("default", ResourceType.JS);
-            if (CollectionUtils.isNotEmpty(urls)) {
+            String wroFile = getWroDir() + "/default.js";
+            logger.debug("wroFile: {}", wroFile);
+            Resource resource = resourceLoader.getResource(wroFile);
+            wroExists = resource.exists();
+            
+            if (wroExists) {
                 logger.debug("WRO found? true");
-                wroExists = true;
-                return true;
-            } else {
-                logger.debug("wro does not exist");
-                wroExists = false;
             }
+            return wroExists;
 
         } catch (Exception e) {
             logger.error("{}", e);
