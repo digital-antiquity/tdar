@@ -498,10 +498,14 @@
 
 <div id="sidebar-right" parse="true">
     <i class="${resource.resourceType?lower_case}-bg-large"></i>
+    <#if whiteLabelLogoAvailable>
+        <@s.a href="/collection/${whiteLabelCollection.id?c}/${whiteLabelCollection.slug}"
+            title="${whiteLabelCollection.title}"
+            ><img src="${whiteLabelLogoUrl}" class="img-rounded whitelabel-logo"></@s.a>
+    </#if>
     <#if !resource.resourceType.project>
         <@view.uploadedFileInfo />
     </#if>
-         
         <ul class="inline">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media"><i class="icon-envelope pull-left"></i>

@@ -723,6 +723,13 @@ aside.tdar-icon:before {
     display: inline-block;
 }
 
+.whitelabel-logo {
+    width: 100%;
+    margin-top:1em;
+    margin-bottom: 1em;
+}
+
+
 .search-map-icon-red {
     background: url(/images/r4/resource-types-large.gif) -75px -2531px;
     background-repeat: no-repeat;
@@ -769,10 +776,6 @@ aside.tdar-icon:before {
     width: 14px;
     height: 13.5px;
     display: inline-block;
-}
-
-pull-left search-list-checkedbox-grey {
-    padding-right: 4px;
 }
 
 .search-list-checkedbox-grey {
@@ -1711,5 +1714,4 @@ div.grippie {
 option.emptyoption {
     font-style: italic;
 }
-
 

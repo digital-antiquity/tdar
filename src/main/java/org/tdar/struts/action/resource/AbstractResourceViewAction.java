@@ -511,4 +511,9 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         if(wlc == null) return false;
         return checkLogoAvailable(Filestore.ObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
+
+    public String getWhiteLabelLogoUrl() {
+        return String.format("/files/collection/lg/%s/logo", getWhiteLabelCollection().getId());
+    }
+
 }
