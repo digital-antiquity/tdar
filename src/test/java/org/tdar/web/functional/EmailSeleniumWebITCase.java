@@ -1,11 +1,14 @@
 package org.tdar.web.functional;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +27,11 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LING)).first().click();
-        waitFor(visibilityOf(find("#messageBody").first()));
-        find("#messageBody").first().sendKeys("This is a test email");
+        waitFor(visibilityOf(find("#messageBody").first())).sendKeys("This is a test email");
         find(By.name("send")).click();
-        waitFor(visibilityOf(find("#email-close-button").first()));
-        reportJavascriptErrors();
-        assertTrue(getText().contains("Your message has been sent"));
+
+        WebElement statusModal = waitFor(visibilityOf(find("#emailStatusModal").first()));
+        assertThat(statusModal.getText(), containsString("Your message has been sent"));
         find(By.id("email-close-button")).click();
         // we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
