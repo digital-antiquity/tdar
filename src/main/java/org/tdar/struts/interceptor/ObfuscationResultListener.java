@@ -192,7 +192,9 @@ public class ObfuscationResultListener implements PreResultListener {
                 // if the session is not closed, then we probably have a real error here
                 if ((sessionSecurityInterceptor != null) && !sessionSecurityInterceptor.isSessionClosed()) {
                     logger.error("error durring obfuscation", e);
-                    invocation.setResultCode("error");
+//                    if (!invocation.getResultCode().equals(TdarActionSupport.INPUT)) {
+                        invocation.setResultCode(TdarActionSupport.ERROR);
+//                    }
                 }
             }
         }

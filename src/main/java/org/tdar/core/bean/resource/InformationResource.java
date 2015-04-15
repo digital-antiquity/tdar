@@ -603,7 +603,6 @@ public abstract class InformationResource extends Resource {
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE, analyzer = @Analyzer(
             impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Transient
-    @JsonIgnore
     public ResourceAccessType getResourceAccessType() {
         int totalFiles = getNonDeletedFiles().size();
         int publicFiles = getPublicFiles().size();

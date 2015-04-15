@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,10 +44,6 @@ public class FileSystemResourceService {
         return fileSystemResourceDao.loadTemplate(path);
     }
 
-    public List<String> parseWroXML(String prefix) {
-        return fileSystemResourceDao.parseWroXML(prefix);
-    }
-
     public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
         return fileSystemResourceDao.openCreatorInfoLog(filename);
     }
@@ -64,8 +61,9 @@ public class FileSystemResourceService {
      * 
      * @param groupName
      * @return
+     * @throws URISyntaxException 
      */
-    public List<String> fetchGroupUrls(String groupName) {
+    public List<String> fetchGroupUrls(String groupName) throws URISyntaxException {
         return fetchGroupUrls(groupName, null);
     }
 
@@ -76,8 +74,9 @@ public class FileSystemResourceService {
      * @param resourceTypefilter
      *            only include items of the specified type (CSS or JS)
      * @return
+     * @throws URISyntaxException 
      */
-    public List<String> fetchGroupUrls(String groupName, ResourceType type) {
+    public List<String> fetchGroupUrls(String groupName, ResourceType type)  {
         // borrowed heavily from https://code.google.com/p/wro4j/source/browse/wro4j-runner/src/main/java/ro/isdc/wro/runner/Wro4jCommandLineRunner.java
         return fileSystemResourceDao.fetchGroupUrls(groupName, type);
     }
@@ -86,8 +85,9 @@ public class FileSystemResourceService {
      * Return list of WRO group names as specified by wro.xml
      * 
      * @return
+     * @throws URISyntaxException 
      */
-    public List<String> fetchGroupNames() {
+    public List<String> fetchGroupNames() throws URISyntaxException {
         WroModelInspector wroModelInspector = fileSystemResourceDao.getWroInspector();
         List<String> groupNames = wroModelInspector.getGroupNames();
         return groupNames;

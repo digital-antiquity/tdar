@@ -41,7 +41,7 @@ public class DownloadPdfFile extends DownloadFile {
         getLogger().debug("person: {} version: {} provider: {}", person, version, provider);
         InputStream inputStream = null;
         try {
-            inputStream = pdfService.mergeCoverPage(provider, person, version, document);
+            inputStream = pdfService.mergeCoverPage(provider, person, version, document, null);
         } catch (PdfCoverPageGenerationException pcpe) {
             inputStream = new FileInputStream(getFile());
         }

@@ -96,7 +96,7 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         logger.info("{}", countryInfo);
         for (GeographicKeyword kwd : countryInfo) {
             logger.debug("{}", kwd);
-            if (kwd.getLabel().contains("US")) {
+            if (kwd.getLabel().contains("United States")) {
                 found = true;
             }
         }
@@ -132,11 +132,11 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         for (GeographicKeyword kwd : extractedGeoInfo) {
             assertFalse(kwd.getLabel().contains("Asia"));
 
-            if (kwd.getLabel().contains("US") || kwd.getLabel().contains("Virginia") || kwd.getLabel().contains("Alexandria")) {
+            if (kwd.getLabel().contains("Virginia") || kwd.getLabel().contains("Alexandria")) {
                 fnd++;
             }
         }
-        assertEquals("expected 3 (1 for US, Virginia, Alexandria) " + fnd, 3, fnd);
+        assertEquals("expected 3 (1 for US, Virginia, Alexandria) " + fnd, 2, fnd);
         genericService.saveOrUpdate(project);
         project = null;
 
@@ -266,7 +266,7 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         int found = 0;
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
-            if (kwd.getLabel().contains("RU (") || kwd.getLabel().contains("CA (") || kwd.getLabel().contains("US (")) {
+            if (kwd.getLabel().contains("Russia") || kwd.getLabel().contains("Canada") || kwd.getLabel().contains("United States")) {
                 found++;
             }
         }

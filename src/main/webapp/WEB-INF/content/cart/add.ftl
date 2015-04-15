@@ -147,7 +147,7 @@
 
         <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
 
-        <h3>Nelnet: Extra Parameters</h3>
+        <h3>Extra Parameters</h3>
         <div class="alert alert-warning">
             This lets us send arbitrary parameters to Nelnet, our payment processor.  Please skip this section
                 if the previous sentence sounded like gibberish.

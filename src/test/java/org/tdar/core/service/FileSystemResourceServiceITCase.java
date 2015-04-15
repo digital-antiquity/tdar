@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.junit.Ignore;
@@ -28,7 +29,7 @@ public class FileSystemResourceServiceITCase extends AbstractIntegrationTestCase
     }
 
     @Test
-    public void testGroupContentDefault() {
+    public void testGroupContentDefault() throws URISyntaxException {
         List<String> list = service.fetchGroupUrls("default");
         assertThat(list, is(not(empty())));
         List<String> integrationList = service.fetchGroupUrls("ng-integrate");
@@ -37,7 +38,7 @@ public class FileSystemResourceServiceITCase extends AbstractIntegrationTestCase
 
     @Test
     @Ignore
-    public void testFetchGroupNames() {
+    public void testFetchGroupNames() throws URISyntaxException {
         List<String> groups = service.fetchGroupNames();
         assertThat(groups, is(not(empty())));
     }

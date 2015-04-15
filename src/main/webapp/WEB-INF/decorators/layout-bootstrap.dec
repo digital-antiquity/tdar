@@ -12,14 +12,14 @@
 <#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error. 
 	 This is a less-than ideal solution, but seems to be the best that we have. -->
 <#if !(protocol?has_content)>
-    <#include "500.html" />
+    <#include "/500.html" />
 <#else>
     <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
     <#import "/WEB-INF/macros/header.ftl" as header>
     <#global qunit = (Parameters.qunit)??  && !production>
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
-    <#if (uri != '' && uri != '/about')>
+    <#if (uri != '' && uri != '/about' && uri != '/')>
         <#assign bodyid = "alt" />
     </#if>
 
@@ -355,7 +355,7 @@
     <#-- close the test fixture div -->
     </div>
     <script src="/test/js/tdar.commontest.js"></script>
-    <script src="/test/js${namespace}/${actionName}.qunit.js"></script>
+    <script src="/test/js<#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
     </#if>
 </#if>
 

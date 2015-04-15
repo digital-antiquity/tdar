@@ -505,7 +505,6 @@ public class Resource implements Persistable,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
     @IndexedEmbedded
     @ElementCollection
-    @JsonIgnore
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -534,7 +533,6 @@ public class Resource implements Persistable,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
     @IndexedEmbedded
     @ElementCollection
-    @JsonIgnore
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -869,7 +867,7 @@ public class Resource implements Persistable,
     }
 
     @IndexedEmbedded
-    @JsonView(JsonProjectLookupFilter.class)
+    @JsonView({JsonProjectLookupFilter.class,JsonLookupFilter.class})
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return getLatitudeLongitudeBoxes();
     }
@@ -1355,7 +1353,6 @@ public class Resource implements Persistable,
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
             @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
-    @JsonIgnore
     @XmlTransient
     public String getKeywords() {
         if (isReadyToIndex() && (keywords != null)) {
@@ -1675,7 +1672,6 @@ public class Resource implements Persistable,
      * that creator
      */
     @Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
-    @JsonIgnore
     @XmlTransient
     public Long getResourceOwner() {
         if (CollectionUtils.isEmpty(getResourceCreators())) {
@@ -1720,7 +1716,6 @@ public class Resource implements Persistable,
     @Field(name = QueryFieldNames.CREATOR_ROLE_IDENTIFIER, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
     @IndexedEmbedded
     @ElementCollection
-    @JsonIgnore
     @XmlTransient
     // This field facilitates unified lucene search for submitter, updater,
     // resourceProvider, and resourceCreators
@@ -1737,7 +1732,7 @@ public class Resource implements Persistable,
         return list;
     }
 
-    @JsonIgnore
+
     @XmlTransient
     public List<Creator> getRelatedCreators() {
         List<Creator> creators = new ArrayList<Creator>();

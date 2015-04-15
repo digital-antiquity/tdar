@@ -2,6 +2,7 @@ package org.tdar.core.bean;
 
 public interface FieldLength {
 
+    final int FIELD_LENGTH_5 = 5;
     final int FIELD_LENGTH_25 = 25;
     final int FIELD_LENGTH_32 = 32;
     final int FIELD_LENGTH_50 = 50;

@@ -14,6 +14,7 @@ import net.sf.ehcache.constructs.web.ShutdownListener;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter;
+import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter;
 import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
 import org.apache.struts2.dispatcher.ng.listener.StrutsListener;
 import org.apache.struts2.sitemesh.FreemarkerDecoratorServlet;
@@ -116,7 +117,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);
         urlRewriteFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
         urlRewriteFilter.setInitParameter("confReloadCheckInterval", configuration.getURLRewriteRefresh());
-        urlRewriteFilter.setInitParameter("logLevel", "INFO");
+        urlRewriteFilter.setInitParameter("logLevel", "slf4j");
     }
 
     private void configureStrutsAndSiteMeshFilters(ServletContext container) {

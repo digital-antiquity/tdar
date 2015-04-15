@@ -3,6 +3,7 @@ package org.tdar.core.dao;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,42 +62,21 @@ public class FileSystemResourceDao {
             return wroExists;
         }
         try {
-            Document dom = getWroDom();
-            XPathFactory xPathFactory = XPathFactory.newInstance();
-            // Create XPath object from XPathFactory
-            XPath xpath = xPathFactory.newXPath();
-            XPathExpression xPathExpr = xpath.compile(".//groups/group");
-            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
-            if (nodes.getLength() > 0) {
-                Node group = nodes.item(0).getAttributes().getNamedItem("name");
-                String wroFile = getWroDir() + "/" + group.getTextContent() + ".js";
-                logger.debug("wroFile: {}", wroFile);
-                Resource resource = resourceLoader.getResource(wroFile);
-                wroExists = resource.exists();
-                if (wroExists) {
-                    logger.debug("WRO found? true");
-                    return true;
-                }
-            } else {
-                logger.debug("wro does not exist");
-                wroExists = false;
+            String wroFile = getWroDir() + "/default.js";
+            logger.debug("wroFile: {}", wroFile);
+            Resource resource = resourceLoader.getResource(wroFile);
+            wroExists = resource.exists();
+            
+            if (wroExists) {
+                logger.debug("WRO found? true");
             }
+            return wroExists;
 
         } catch (Exception e) {
             logger.error("{}", e);
         }
         logger.debug("WRO found? false");
         return false;
-    }
-
-    private Document getWroDom() throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        // use the factory to take an instance of the document builder
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        // parse using the builder to get the DOM mapping of the
-        // XML file
-        Document dom = db.parse(getClass().getClassLoader().getResourceAsStream("wro.xml"));
-        return dom;
     }
 
     // helper to load the PDF Template for the cover page
@@ -116,23 +97,6 @@ public class FileSystemResourceDao {
             }
         }
         return template;
-    }
-
-    public List<String> parseWroXML(String prefix) {
-        List<String> toReturn = new ArrayList<>();
-        try {
-            Document dom = getWroDom();
-            // Create XPath object from XPathFactory
-            XPath xpath = xPathFactory.newXPath();
-            XPathExpression xPathExpr = xpath.compile(".//" + prefix);
-            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
-            for (int i = 0; i < nodes.getLength(); i++) {
-                toReturn.add(nodes.item(i).getTextContent());
-            }
-        } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException("fileSystemResourceDao.wro_missing", e);
-        }
-        return toReturn;
     }
 
     public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
@@ -201,8 +165,9 @@ public class FileSystemResourceDao {
      * Create and setup a model insepector
      * 
      * @return
+     * @throws URISyntaxException
      */
-    public WroModelInspector getWroInspector() {
+    public WroModelInspector getWroInspector() throws URISyntaxException {
         WroManager wroManager = getManagerFactory().create();
         WroModel wroModel = wroManager.getModelFactory().create();
         WroModelInspector wroModelInspector = new WroModelInspector(wroModel);
@@ -213,11 +178,12 @@ public class FileSystemResourceDao {
      * Setup the WRO Context
      * 
      * @return
+     * @throws URISyntaxException
      */
-    private StandaloneContext createStandaloneContext() {
+    private StandaloneContext createStandaloneContext() throws URISyntaxException {
         Context.set(Context.standaloneContext());
         final StandaloneContext runContext = new StandaloneContext();
-        runContext.setWroFile(new File("src/main/resources/wro.xml"));
+        runContext.setWroFile(new File(getClass().getClassLoader().getResource("wro.xml").toURI()));
         return runContext;
     }
 
@@ -225,8 +191,9 @@ public class FileSystemResourceDao {
      * Create the WRO Manager Factory
      * 
      * @return
+     * @throws URISyntaxException
      */
-    private DefaultStandaloneContextAwareManagerFactory getManagerFactory() {
+    private DefaultStandaloneContextAwareManagerFactory getManagerFactory() throws URISyntaxException {
         DefaultStandaloneContextAwareManagerFactory managerFactory = new DefaultStandaloneContextAwareManagerFactory();
         managerFactory.initialize(createStandaloneContext());
         DefaultStandaloneContextAwareManagerFactory dcsaf = new DefaultStandaloneContextAwareManagerFactory();
@@ -236,6 +203,7 @@ public class FileSystemResourceDao {
 
     public List<String> fetchGroupUrls(String groupName, ResourceType type) {
         List<String> srcList = new ArrayList();
+        try {
         WroModelInspector wroModelInspector = getWroInspector();
 
         Group group = wroModelInspector.getGroupByName(groupName);
@@ -243,6 +211,9 @@ public class FileSystemResourceDao {
             if (type == null || type == resource.getType()) {
                 srcList.add(resource.getUri());
             }
+        }
+        } catch (URISyntaxException uriEx) {
+            logger.error("could not find wro.xml", uriEx);
         }
         return srcList;
     }

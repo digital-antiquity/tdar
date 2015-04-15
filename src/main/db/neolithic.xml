@@ -7,5 +7,19 @@
 
   	<!-- http://www.liquibase.org/documentation/changes/index.html -->
 
+    <changeSet id="neolithic-1" author="abrin">
+        <addColumn tableName="geographic_keyword">
+            <column name="code" type="varchar(5)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="neolithic-2" author="abrin">
+        <update tableName="geographic_keyword">
+            <column name="level" value="COUNTRY" />
+            <where>level='ISO_COUNTRY'</where>
+        
+        </update>
+    </changeSet>
+
+
 
 </databaseChangeLog>
