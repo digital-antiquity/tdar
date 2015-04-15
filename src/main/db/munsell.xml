@@ -283,4 +283,23 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="munsell-19-feature-whitelabel" author="jdevos">
+        <comment>Dialing back the costraints on whitelabel featured resources.  The resources/collections no longer need to belong to a resource collection
+            (though they still need to refer to valid entities).
+        </comment>
+        <dropForeignKeyConstraint baseTableName="whitelabel_featured_resource" constraintName="whitelabel_featured_resource_collection_id_resource_id_collection_resource_fk" />
+        <addForeignKeyConstraint
+                baseTableName="whitelabel_featured_resource"
+                baseColumnNames="collection_id"
+                constraintName="whitelabel_featured_resource_collection_id_collection_fk"
+                referencedTableName="collection"
+                referencedColumnNames="id" />
+        <addForeignKeyConstraint
+                baseTableName="whitelabel_featured_resource"
+                baseColumnNames="resource_id"
+                constraintName="whitelabel_featured_resource_resource_id_resource_fk"
+                referencedTableName="resource"
+                referencedColumnNames="id" />
+    </changeSet>
+
 </databaseChangeLog>
