@@ -17,12 +17,10 @@ import java.nio.file.Files;
  * Very basic servlet for serving static content outside of application path.  This is temporary and you should not use this.
  * Instead,  you should configure your static web server to handle static content, as it does a much better job.
  */
-//FIXME:  Neat idea, but it's better to specify this path the old-fashioned way: config files.
 @WebServlet("/hosted/*")
-@Deprecated //seriously, don't use this.
 public class StaticContentServlet extends HttpServlet {
 
-    String basepath = TdarConfiguration.getInstance().getPersonalFileStoreLocation() + "/hosted";
+    String basepath = TdarConfiguration.getInstance().getHostedFileStoreLocation();
     Logger logger = LoggerFactory.getLogger(getClass());
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -19,7 +19,7 @@ vim:sts=2:sw=2:
     <decorator name="main" page="layout-bootstrap.dec">
         <pattern>/*</pattern>
     </decorator>
-    <decorator name="whitelabel1" page="WEB-INF/decorator/layout-whitelabel-treatment1.dec" />
-    <decorator name="whitelabel2" page="WEB-INF/decorator/layout-whitelabel-treatment2.dec" />
+    <!--whitelabel has no lookup pattern; to use, explicitly declare in request attributes or in META tag on to-be-decorated page -->
+    <decorator name="whitelabel" page="WEB-INF/decorator/layout-whitelabel.dec" />
 </decorators>
 
