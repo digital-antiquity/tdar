@@ -210,13 +210,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
-    /* Immutable list of  direct sub-children. Note: the implementation of collection trees is such that retrieving a
-     * a full graph can be costly.
-     */
-    @OneToMany( mappedBy = "parent", fetch = FetchType.LAZY)
-    @Immutable
-    private List<ResourceCollection> directChildren = new ArrayList<>();
-
     @Field
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
@@ -715,18 +708,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.transientChildren = transientChildren;
     }
 
-    /**
-     * Returns the direct children of this resource collection object.  Do not attempt to modify this list direcly.
-     * Instead, indirectly build the list by calling {@link #setParent(ResourceCollection) setParent} on a child
-     * collection.
-     *
-     * @return
-     */
-    @XmlTransient
-    public List<ResourceCollection> getDirectChildren() {
-        return Collections.unmodifiableList(directChildren);
-    }
-
     public SortOption getSecondarySortBy() {
         return secondarySortBy;
     }
@@ -859,6 +840,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     public boolean isLeafCollection() {
-        return directChildren.isEmpty();
+        return transientChildren.isEmpty();
     }
 }
