@@ -2,7 +2,7 @@
 <h1 class="view-page-title">Row number ${rowId} of ${dataset.name}</h1>
 <#-- At the moment no sidebar: we await further refinement of the users needs. -->
     <#if dataTableRowAsMap??>
-    <p><strong>Dataset:</strong> ${dataset.name}</p>
+    <p><strong>Dataset:</strong> <a href="<@s.url value="${dataset.detailUrl}"/>">${dataset.name}</a></p>
     <p><strong>Description:</strong> ${dataset.description}</p>
     <table class="table table-striped">
         <thead>
