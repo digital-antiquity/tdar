@@ -29,7 +29,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     BillingAccountService accountService;
-    
+
     @Autowired
     InvoiceService invoiceService;
 
@@ -81,6 +81,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         model.setActive(true);
         model.setVersion(100);
         genericService.saveOrUpdate(model);
+        final Long modelId = model.getId();
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         resource.setAccount(account);
         final long rid = resource.getId();
@@ -104,7 +105,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(account);
         logger.info("updating quotas");
         resource = null;
-
+        invoice = null;
         setVerifyTransactionCallback(new TransactionCallback<Document>() {
             @Override
             public Document doInTransaction(org.springframework.transaction.TransactionStatus status) {
@@ -114,10 +115,14 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
                 assertFalse(resource2.isUpdated());
                 assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, resource2.getStatus());
                 accountService.updateQuota(account, account.getResources());
-
+                Invoice invoice_ = account.getInvoices().iterator().next();
                 assertEquals(Status.ACTIVE, resource2.getStatus());
                 genericService.delete(resource2);
                 genericService.delete(account);
+                genericService.delete(invoice_.getItems());
+                BillingActivityModel model_ = genericService.find(BillingActivityModel.class, modelId);
+                genericService.delete(model_.getActivities());
+                genericService.delete(model_);
                 return null;
             }
 
@@ -134,7 +139,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAccountGroupPermissions()  {
+    public void testAccountGroupPermissions() {
         BillingAccountGroup group = new BillingAccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
@@ -152,20 +157,25 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testAvaliableActivities() {
         BillingActivityModel model = new BillingActivityModel();
+        model.setActive(true);
         BillingActivity disabledDctivity = new BillingActivity();
         disabledDctivity.setEnabled(false);
         disabledDctivity.setName("not active");
         genericService.saveOrUpdate(model);
         disabledDctivity.setModel(model);
         genericService.saveOrUpdate(disabledDctivity);
-
+        model.setVersion(105);
         BillingActivity ctivity = new BillingActivity("test", 1f, model);
         ctivity.setEnabled(true);
         ctivity.setName("active");
         genericService.saveOrUpdate(ctivity);
+        model.getActivities().add(disabledDctivity);
+        model.getActivities().add(ctivity);
+        genericService.saveOrUpdate(model);
+        genericService.synchronize();
 
         List<BillingActivity> activeBillingActivities = invoiceService.getActiveBillingActivities();
         assertTrue(activeBillingActivities.contains(ctivity));

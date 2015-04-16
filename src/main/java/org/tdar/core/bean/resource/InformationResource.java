@@ -880,9 +880,10 @@ public abstract class InformationResource extends Resource {
             }
         }
 
-        // if (getProject() != null) {
-        // getProject().getTitle();
-        // }
+        if (getProject() != Project.NULL) {
+            sb.append(getProject().getTitle());
+            sb.append(" ");
+        }
         return sb.toString();
     }
 

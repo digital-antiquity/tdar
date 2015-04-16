@@ -52,6 +52,12 @@ public class Document extends InformationResource {
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "document_subtype", length = FieldLength.FIELD_LENGTH_50)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    private DocumentSubType documentSubType;
+    
+    
+    @Enumerated(EnumType.STRING)
     @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(key="DEGREE")
@@ -346,5 +352,13 @@ public class Document extends InformationResource {
     @Transient
     public boolean isSupportsThumbnails() {
         return true;
+    }
+
+    public DocumentSubType getDocumentSubType() {
+        return documentSubType;
+    }
+
+    public void setDocumentSubType(DocumentSubType documentSubType) {
+        this.documentSubType = documentSubType;
     }
 }

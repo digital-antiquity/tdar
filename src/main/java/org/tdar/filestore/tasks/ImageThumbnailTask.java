@@ -208,8 +208,7 @@ public class ImageThumbnailTask extends AbstractTask {
         ImageProcessor ip = ijSource.getProcessor();
         int sourceWidth = ip.getWidth();
         int sourceHeight = ip.getHeight();
-        float scalingRatio = getScalingRatio(sourceWidth, sourceHeight,
-                resolution);
+        float scalingRatio = getScalingRatio(sourceWidth, sourceHeight, resolution);
 
         FileOutputStream outputStream = null;
         try {
@@ -220,8 +219,7 @@ public class ImageThumbnailTask extends AbstractTask {
 
         try {
             if (scalingRatio > 1.0f) {
-                ip = averageReductionScale(ip, ijSource,
-                        (sourceWidth >= sourceHeight ? sourceWidth : sourceHeight));
+                ip = averageReductionScale(ip, ijSource, (sourceWidth >= sourceHeight ? sourceWidth : sourceHeight));
             } else if (scalingRatio != 1.0f) {
                 // First interpolate to this size, then use the new image for scaling to all the smaller sizes
                 ip.setInterpolate(true);

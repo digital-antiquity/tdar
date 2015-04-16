@@ -62,8 +62,10 @@ public class WorkflowContextService {
         // Delete the old, existing derivatives on current IRFile. That is, any derivatives that have previously been persisted.
         // FIXME: only delete the derivatives for the CURRENT VERSON, not ALL VERSIONS
 
+        int count = 0;
         for (InformationResourceFileVersion orig : ctx.getOriginalFiles()) {
             informationResourceFileVersionService.deleteDerivatives(orig);
+            count++;
             // gets the uploaded IRFileVersion
             // InformationResourceFileVersion orig = ctx.getOriginalFile();
 
@@ -83,12 +85,14 @@ public class WorkflowContextService {
                     if (ctx.getTransientResource() == null) {
                         break;
                     }
-                    // this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
-                    // FIXME: look at removing
-                    genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
-                    logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
-                    datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
-                    genericDao.saveOrUpdate(dataset);
+
+                    // This should only be done once; if it's a composite geospatial resource, it might be dangerous to do twice as you're merging and reconcilling with yourself over yourself
+                    if (count == 1) {
+                        genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
+                        logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
+                        datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
+                        genericDao.saveOrUpdate(dataset);
+                    }
                     break;
                 case ONTOLOGY:
                     Ontology ontology = (Ontology) resource;

@@ -3,6 +3,9 @@
     <#import "admin-common.ftl" as admin>
 <title>Admin Pages - file info</title>
 
+    <@admin.header/>
+
+
 <h1>Files with processing Errors and Warnings</h1>
 <table class="table tableFormat">
     <thead>

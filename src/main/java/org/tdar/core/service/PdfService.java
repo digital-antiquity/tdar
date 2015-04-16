@@ -1,15 +1,23 @@
 package org.tdar.core.service;
 
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.URISyntaxException;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.persistence.Transient;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -17,6 +25,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
@@ -71,7 +81,7 @@ public class PdfService {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document)
+    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document, File coverPageLogo)
             throws PdfCoverPageGenerationException {
         try {
             logger.debug("IR: {}, {} {}", document, version, version.getExtension());
@@ -90,11 +100,11 @@ public class PdfService {
                     int after = instance.following(MAX_DESCRIPTION_LENGTH);
                     description = description.substring(0, after) + "...";
                 }
-                template = createCoverPage(provider, submitter, template, document, description);
+                template = createCoverPage(provider, submitter, template, document, description,coverPageLogo);
 
                 // merge the two PDFs
                 logger.debug("calling merge on: {}", version);
-                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
+                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version), coverPageLogo);
             } else {
                 logger.debug("IR: invalid type");
                 throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");
@@ -114,7 +124,7 @@ public class PdfService {
      * @throws COSVisitorException
      * @throws InterruptedException
      */
-    private PipedInputStream mergePDFs(File coverPage, File document) throws IOException, COSVisitorException, InterruptedException {
+    private PipedInputStream mergePDFs(File coverPage, File document, File coverPageImage) throws IOException, COSVisitorException, InterruptedException {
         final PDFMergeWrapper wrapper = new PDFMergeWrapper();
         /*
          * FIXME:
@@ -136,64 +146,13 @@ public class PdfService {
         };
         // Separate thread needed here to call merge
         // FIXME: handle exceptions better
-        Thread thread = new Thread(
-                new Runnable() {
-                    public void run() {
-                        try {
-                            wrapper.getMerger().mergeDocuments();
-                            wrapper.setSuccessful(true);
-                        } catch (IOException ioe) {
-                            //downgrade broken pipe exceptions
-                            if (isBrokenPipeException(ioe)) {
-                                logger.warn("broken pipe", ioe);
-                            } else {
-                                logger.error("PDF Converter Exception:",ioe);
-                                //if IO exception was due to encrypted document, try again without the cover page
-                                attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
-                            }
-                            wrapper.setFailureReason(ioe.getMessage());
-
-                        } catch (Exception e) {
-                            logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
-                            wrapper.setFailureReason(e.getMessage());
-                            //if some other kind of error occured during the merge, try to send without cover page.
-                            attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
-                        } finally {
-                            IOUtils.closeQuietly(pipedOutputStream);
-                        }
-                    }
-
-                }
-                );
+        Thread thread = new Thread(new PDFMergeTask(wrapper, pipedOutputStream));
         thread.start();
         logger.trace("done with PDF Merge");  //fixme: technically the method is done, but really you've just started the merge operation.
         return inputStream;
     }
 
-    /**
-     * Java has no built-in broken pipe exception,  however, it's sometimes convenient to treat them differently from other types
-     * of IO Exception (e.g. log them at different lower level, because they are inevetible in a web-serving environment).
-     * @param exception
-     * @return
-     */
-    private boolean isBrokenPipeException(IOException exception) {
-        return
-                //the tomcat implementation of this exception
-                exception.getClass().getSimpleName().contains("ClientAbortException")
-                        //if not tomcat, maybe it has "pipe closed" in the error message?
-                        || StringUtils.contains(exception.getMessage(), "Pipe Closed");
 
-
-    }
-
-    private void attemptTransferWithoutMerge(File document, OutputStream os) {
-        try {
-            logger.warn("attempting to send pdf without cover page: {}", document);
-            IOUtils.copyLarge(new FileInputStream(document), os);
-        } catch (Exception ex) {
-            logger.error("cannot attach PDF, even w/o cover page", ex);
-        }
-    }
 
 
     /**
@@ -208,7 +167,7 @@ public class PdfService {
      * @throws FileNotFoundException
      * @throws URISyntaxException
      */
-    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description) throws IOException,
+    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description, File coverPageLogo) throws IOException,
             COSVisitorException, FileNotFoundException,
             URISyntaxException {
         PDDocument doc = PDDocument.load(template);
@@ -221,6 +180,16 @@ public class PdfService {
         }
 
         PDPageContentStream content = new PDPageContentStream(doc, page, true, false);
+        if (coverPageLogo != null && coverPageLogo.exists() ) {
+            InputStream in = new FileInputStream(coverPageLogo);
+            
+            BufferedImage awtImage = ImageIO.read( in );
+            PDXObjectImage img = new PDPixelMap(doc, awtImage);
+            
+            int TOP = 639;
+            int LEFT = 580 - img.getWidth();
+            content.drawImage(img, LEFT, TOP);
+        }
         int cursorPositionFromBottom = 580;
         /*
          * Title: An Interaction Model for Resource Implement Complexity Based on Risk and Number of Annual Moves

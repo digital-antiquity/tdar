@@ -232,6 +232,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         List<BillingActivityModel> findAll = findAll(BillingActivityModel.class);
         BillingActivityModel latest = null;
         for (BillingActivityModel model : findAll) {
+            logger.trace("{} {} {} {}", model.getActive(), model.getDescription(), model.getId(), model.getVersion());
             if (!model.getActive()) {
                 continue;
             }
@@ -403,7 +404,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status) {
         markResourcesAsFlagged(helper.getFlagged());
         unMarkResourcesAsFlagged(helper.getUnflagged());
-        logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged());
+        logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged().size());
         if (helper.getFlagged().size() > 0) {
             if (helper.getAvailableSpaceInBytes() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
@@ -411,7 +412,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
-        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged());
+        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged().size(), helper.getFlagged().size());
         return status;
     }
 
@@ -583,7 +584,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
         Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
         logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log2);
-        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
+        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems().size(), helper.getNewItems().size());
     }
 
     public Number findCountOfFlaggedResourcesInAccount(BillingAccount account) {

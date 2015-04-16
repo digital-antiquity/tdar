@@ -67,8 +67,10 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         // first column is the table name
         Long tableId = (Long) row[0];
         String tableName = "";
+        DataTable table = null;
         for (DataTable dt : context.getDataTables()) {
             if (tableId.equals(dt.getId())) {
+                table = dt;
                 tableName = ModernDataIntegrationWorkbook.formatTableName(dt);
             }
         }
@@ -86,13 +88,17 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             if (integrationColumn.isCountColumn()) {
                 // we go back to original version as initialized value may have been set
                 value = rawStringValue;
-
-                try {
-                    countVal = NumberFormat.getInstance().parse(rawStringValue).doubleValue();
-                } catch (ParseException nfe) {
-                    logger.trace("numberParseIssue", nfe);
-                    countVal = null;
-                    value = MessageHelper.getMessage("database.bad_count_column");
+                // if we're mapping to a "count" column that doesn't exist (e.g. a table where each row has an implict count of 1) then force to be 1.
+                if (integrationColumn.getColumnForTable(table) == null) {
+                    countVal = 1d;
+                } else {
+                    try {
+                        countVal = NumberFormat.getInstance().parse(rawStringValue).doubleValue();
+                    } catch (ParseException nfe) {
+                        logger.trace("numberParseIssue", nfe);
+                        countVal = null;
+                        value = MessageHelper.getMessage("database.bad_count_column");
+                    }
                 }
             }
 

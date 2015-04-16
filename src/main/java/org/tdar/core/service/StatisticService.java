@@ -166,8 +166,10 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     @Transactional(readOnly = true)
     public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
         Set<Long> ids = new HashSet<>();
-        if (collection != null && CollectionUtils.isNotEmpty(collection.getResources())) {
-            ids.addAll(PersistableUtils.extractIds(collection.getResources()));
+        if (collection != null) {
+            if (CollectionUtils.isNotEmpty(collection.getResources())) {
+                ids.addAll(PersistableUtils.extractIds(collection.getResources()));
+            }
             for (ResourceCollection child : resourceCollectionDao.getAllChildCollections(collection)) {
                 if (child != null && CollectionUtils.isNotEmpty(child.getResources())) {
                     ids.addAll(PersistableUtils.extractIds(child.getResources()));
