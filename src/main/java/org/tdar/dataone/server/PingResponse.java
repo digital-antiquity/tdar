@@ -5,9 +5,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 @Path("/monitor")
-public class Ping extends AbstractDataOneResponse {
+public class PingResponse extends AbstractDataOneResponse {
 
     /*
      * Raises:
@@ -35,10 +36,9 @@ public class Ping extends AbstractDataOneResponse {
     @GET
     @Path("ping")
     @Produces("text/plain")
-    public String ping() {
+    public Response ping() {
         setupResponseContext(response);
-        System.out.println("hi");
-        return "";
+        return Response.ok().build();
     }
 
 }

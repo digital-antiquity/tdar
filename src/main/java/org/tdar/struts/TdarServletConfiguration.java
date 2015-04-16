@@ -18,7 +18,6 @@ import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
 import org.apache.struts2.dispatcher.ng.listener.StrutsListener;
 import org.apache.struts2.sitemesh.FreemarkerDecoratorServlet;
 import org.ebaysf.web.cors.CORSFilter;
-import org.hsqldb.server.ServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.support.OpenSessionInViewFilter;
@@ -31,7 +30,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 public class TdarServletConfiguration implements Serializable, WebApplicationInitializer {
@@ -59,6 +57,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     }
 
     TdarConfiguration configuration = TdarConfiguration.getInstance();
+    private boolean enableServer = false;
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
@@ -68,27 +67,38 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(TdarAppConfiguration.class);
         container.addListener(new ContextLoaderListener(rootContext));
-        configureCxfForTag(container);
-        configureFreemarker(container);
-
+        if (enableServer) {
+            configureCxfForTag(container);
+            configureFreemarker(container);
+        }
         container.addListener(RequestContextListener.class);
-        container.addListener(StrutsListener.class);
+
+        if (enableServer) {
+            container.addListener(StrutsListener.class);
+        }
         container.addListener(ShutdownListener.class);
 
-        configureOdata(container);
-        configureDataOneServlet(container);
-        
-        configureUrlRewriteRule(container);
+        if (enableServer) {
+            configureOdata(container);
+        }
 
-        if (configuration.getContentSecurityPolicyEnabled()) {
-            logger.debug("enabling cors");
-            configureCorsFilter(container);
+        configureDataOneServlet(container);
+
+        if (enableServer) {
+            configureUrlRewriteRule(container);
+
+            if (configuration.getContentSecurityPolicyEnabled()) {
+                logger.debug("enabling cors");
+                configureCorsFilter(container);
+            }
         }
 
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
 
-        configureStrutsAndSiteMeshFilters(container);
+        if (enableServer) {
+            configureStrutsAndSiteMeshFilters(container);
+        }
 
     }
 
@@ -98,15 +108,14 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         freemarker.setLoadOnStartup(1);
         freemarker.addMapping("*.dec");
     }
-    
+
     private void configureDataOneServlet(ServletContext container) {
-        //http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
-        ServletRegistration.Dynamic dataOne = container.addServlet("dataone", ServletContainer.class);
+        // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
+        ServletRegistration.Dynamic dataOne = container.addServlet("dataone", SpringServlet.class);
         dataOne.setLoadOnStartup(1);
-        dataOne.setInitParameter("com.sun.jersey.config.property.packages","org.tdar.dataone.server");
+        dataOne.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.dataone.server");
         dataOne.addMapping("/dataone/*");
     }
-    
 
     private void configureCxfForTag(ServletContext container) {
         ServletRegistration.Dynamic cxf = container.addServlet("cxf", CXFServlet.class);
