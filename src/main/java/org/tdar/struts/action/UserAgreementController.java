@@ -52,27 +52,28 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     @PostOnly
     public String agreementResponse() {
         if (!isAuthenticated()) {
+            getLogger().debug("redirecting to login page");
             return LOGIN;
         }
 
         if (DECLINE.equals(userResponse)) {
             String fmt = getText("userAgreementController.decline_message");
             addActionMessage(String.format(fmt, getSiteAcronym()));
-            getLogger().debug("agreements declined,  redirecting to logout page");
+            getLogger().debug("agreements declined,  redirecting to logout page: {}", getAuthenticatedUser().getUsername());
             return NONE;
         }
 
         if (ACCEPT.equals(userResponse)) {
             if (processResponse()) {
-                getLogger().debug("all requirements met,  success!! returning success");
+                getLogger().debug("all requirements met,  success!! returning success: {}", getAuthenticatedUser().getUsername());
                 return SUCCESS;
             } else {
-                getLogger().debug("some requirements remain, returning input");
+                getLogger().debug("some requirements remain, returning input: {}", getAuthenticatedUser().getUsername());
                 addActionError(getText("userAgreementController.please_choose"));
                 return INPUT;
             }
         } else {
-            // unexpected response. bail out!
+            getLogger().debug("bad request for user agreement: {}", getAuthenticatedUser().getUsername());
             return BAD_REQUEST;
         }
     }
@@ -82,6 +83,10 @@ public class UserAgreementController extends AuthenticationAware.Base implements
         getLogger().trace("accepted notices:{}", acceptedAuthNotices);
         authenticationService.satisfyUserPrerequisites(getSessionData(), acceptedAuthNotices);
         boolean allRequirementsMet = !authenticationService.userHasPendingRequirements(user);
+        if (!allRequirementsMet) {
+            getLogger().debug(" pending notices:{}", authNotices);
+            getLogger().debug("accepted notices:{}", acceptedAuthNotices);
+        }
         return allRequirementsMet;
     }
 
