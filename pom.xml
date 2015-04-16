@@ -128,6 +128,13 @@
             <url>http://repo.springsource.org/libs-release</url>
         </repository>
         <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>jcenter</id>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
+        <repository>
             <id>repository.springframework.milestone</id>
             <name>Spring Framework Maven Milestone Repository</name>
             <url>http://maven.springframework.org/milestone</url>
@@ -298,8 +305,8 @@
             <!-- declared dependency with excludes for DataOne and maven 
                 version management -->
             <artifactId>foresite</artifactId>
-            <groupId>com.googlecode.foresite-toolkit</groupId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>org.digitalantiquity.foresite-toolkit</groupId>
+            <version>0.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jena</artifactId>

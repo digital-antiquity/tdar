@@ -11,6 +11,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.types.selectors.modifiedselector.ChecksumAlgorithm;
+import org.dataone.service.types.v1.ChecksumAlgorithmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +38,16 @@ public class ChecksumResponse extends AbstractDataOneResponse {
     @GET
     @Path("{pid}")
     @Produces(APPLICATION_XML)
-    public Response checksum(@PathParam("pid") String pid, 
+    public Response checksum(@PathParam("pid") String pid,
             @QueryParam("checksumAlgorithm") String checksum) {
         setupResponseContext(response);
+
+        if (StringUtils.isNotEmpty(checksum) && !"MD5".equalsIgnoreCase(checksum)) {
+            // FIXME: how do we get a list of algorithms
+            // how do we set a detail code?
+            return Response.serverError().status(Status.BAD_REQUEST).build();
+        }
+
         try {
             return Response.ok().entity(service.getChecksumResponse(pid, checksum)).build();
         } catch (Exception e) {
