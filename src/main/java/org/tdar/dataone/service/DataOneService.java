@@ -1,5 +1,7 @@
 package org.tdar.dataone.service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -12,6 +14,16 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.dspace.foresite.Agent;
+import org.dspace.foresite.AggregatedResource;
+import org.dspace.foresite.Aggregation;
+import org.dspace.foresite.OREException;
+import org.dspace.foresite.OREFactory;
+import org.dspace.foresite.ORESerialiser;
+import org.dspace.foresite.ORESerialiserException;
+import org.dspace.foresite.ORESerialiserFactory;
+import org.dspace.foresite.ResourceMap;
+import org.dspace.foresite.ResourceMapDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Resource;
@@ -54,6 +66,23 @@ public class DataOneService {
     private static final String DATAONE = "/dataone/";
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
+    
+    public ResourceMapDocument createAggregationForResource(Resource resource) throws OREException, URISyntaxException, ORESerialiserException {
+        Aggregation agg = OREFactory.createAggregation(new URI("my-aggregation-uri"));
+        ResourceMap rem = agg.createResourceMap(new URI("my-rem-uri"));
+        AggregatedResource ar = agg.createAggregatedResource(new URI("my-resource-uri"));
+
+        Agent creator = OREFactory.createAgent();
+        creator.addName("My Creator");
+        rem.addCreator(creator);
+
+        agg.addCreator(creator);
+        agg.addTitle("My Aggregation");
+        ORESerialiser serial = ORESerialiserFactory.getInstance("N3");
+        ResourceMapDocument doc = serial.serialise(rem);
+        return doc;
+    }
+    
     public Node getNodeResponse() {
 
         Node node = new Node();
