@@ -22,10 +22,14 @@ import org.dspace.foresite.OREFactory;
 import org.dspace.foresite.ORESerialiser;
 import org.dspace.foresite.ORESerialiserException;
 import org.dspace.foresite.ORESerialiserFactory;
+import org.dspace.foresite.Predicate;
 import org.dspace.foresite.ResourceMap;
 import org.dspace.foresite.ResourceMapDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.dataone.bean.AccessPolicy;
@@ -49,6 +53,8 @@ import org.tdar.dataone.bean.Subject;
 import org.tdar.dataone.bean.Synchronization;
 import org.tdar.dataone.bean.SystemMetadata;
 
+import com.sun.tools.doclets.internal.toolkit.resources.doclets;
+
 @org.springframework.stereotype.Service
 public class DataOneService {
 
@@ -66,23 +72,40 @@ public class DataOneService {
     private static final String DATAONE = "/dataone/";
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
-    
-    public ResourceMapDocument createAggregationForResource(Resource resource) throws OREException, URISyntaxException, ORESerialiserException {
-        Aggregation agg = OREFactory.createAggregation(new URI("my-aggregation-uri"));
-        ResourceMap rem = agg.createResourceMap(new URI("my-rem-uri"));
-        AggregatedResource ar = agg.createAggregatedResource(new URI("my-resource-uri"));
+    public ResourceMapDocument createAggregationForResource(InformationResource resource) throws OREException, URISyntaxException, ORESerialiserException {
+        String idref = "/doi/" + resource.getExternalId();
+        Aggregation agg = OREFactory.createAggregation(new URI(CONFIG.getBaseSecureUrl() + idref + "/agg"));
+        ResourceMap rem = agg.createResourceMap(new URI(CONFIG.getBaseSecureUrl() + idref + "/map"));
 
-        Agent creator = OREFactory.createAgent();
-        creator.addName("My Creator");
-        rem.addCreator(creator);
+        AggregatedResource ar = agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "/meta"));
+        String literal = "scimeta_id";
+        ar.addIdentifier(literal);
+        for (InformationResourceFile irf : resource.getActiveInformationResourceFiles()) {
+            agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "/" + irf.getId() + "/" + irf.getLatestVersion()));
+        }
 
-        agg.addCreator(creator);
-        agg.addTitle("My Aggregation");
-        ORESerialiser serial = ORESerialiserFactory.getInstance("N3");
+        for (ResourceCreator rc : resource.getPrimaryCreators()) {
+            Agent creator = OREFactory.createAgent();
+            creator.addName(rc.getCreator().getName());
+            rem.addCreator(creator);
+            agg.addCreator(creator);
+        }
+
+        agg.addTitle(resource.getTitle());
+
+        ORESerialiser serial = ORESerialiserFactory.getInstance("RDF/XML");
         ResourceMapDocument doc = serial.serialise(rem);
         return doc;
     }
-    
+
+    private void addIdentifier(AggregatedResource ar, Predicate pred, String literal) throws URISyntaxException, OREException {
+        pred.setName("identifier");
+        pred.setNamespace("http://purl.org/dc/terms");
+        pred.setPrefix("dcterms");
+        pred.setURI(new URI("http://purl.org/dc/terms/Idenitifier"));
+        ar.createTriple(pred, literal);
+    }
+
     public Node getNodeResponse() {
 
         Node node = new Node();
@@ -173,10 +196,10 @@ public class DataOneService {
             // entry.setEntryId(value);
             // entry.setEvent(value);
             // entry.setIdentifier(value);
-             entry.setIpAddress(request.getRemoteAddr());
+            entry.setIpAddress(request.getRemoteAddr());
             // entry.setNodeIdentifier(value);
             // entry.setSubject(value);
-             entry.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
+            entry.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
             logEntries.add(entry);
         }
         return log;
