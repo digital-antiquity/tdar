@@ -530,6 +530,7 @@ public class InvoiceService {
             }
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             genericDao.saveOrUpdate(invoice);
+            handlePurchaseNotifications(invoice);
         } else {
             invoice.setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
         }

@@ -8,7 +8,6 @@ import java.io.PipedOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PDFMergeTask implements Runnable {
 
-    private static final String PIPE_CLOSED = "Pipe closed";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private PDFMergeWrapper wrapper;
     private PipedOutputStream pipedOutputStream;
@@ -36,16 +34,17 @@ public class PDFMergeTask implements Runnable {
         try {
             wrapper.getMerger().mergeDocuments();
             wrapper.setSuccessful(true);
-        } catch (IOException | COSVisitorException ex ) {
+        } catch (IOException ioe) {
             // downgrade broken pipe exceptions
-            if (isBrokenPipeException(ex)) {
-                logger.warn("broken pipe", ex);
+            if (isBrokenPipeException(ioe)) {
+                logger.warn("broken pipe", ioe);
             } else {
-                logger.error("PDF Converter Exception:", ex);
+                logger.error("PDF Converter Exception:", ioe);
                 // if IO exception was due to encrypted document, try again without the cover page
                 attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
             }
-            wrapper.setFailureReason(ex.getMessage());
+            wrapper.setFailureReason(ioe.getMessage());
+
         } catch (Exception e) {
             logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
             wrapper.setFailureReason(e.getMessage());
@@ -63,19 +62,12 @@ public class PDFMergeTask implements Runnable {
      * @param exception
      * @return
      */
-    private boolean isBrokenPipeException(Exception exception) {
-        if (exception.getClass().getSimpleName().contains("ClientAbortException")) {
-            return true;
-        }
-        if (StringUtils.contains(exception.getMessage(), PIPE_CLOSED)) {
-            return true;
-        }
-        
-        if (exception.getCause() != null && exception.getCause().getMessage().contains(PIPE_CLOSED)) {
-            return true;
-        }
-        
-        return false;
+    private boolean isBrokenPipeException(IOException exception) {
+        return
+        // the tomcat implementation of this exception
+        exception.getClass().getSimpleName().contains("ClientAbortException")
+                // if not tomcat, maybe it has "pipe closed" in the error message?
+                || StringUtils.contains(exception.getMessage(), "Pipe Closed");
 
     }
 
