@@ -88,7 +88,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             int totalCreator = 0;
             while (activeCreators.next()) {
                 Creator creator = (Creator) activeCreators.get(0);
-                if (creator.isHidden() || creator.getBrowseOccurrence() == 0) {
+                if (!creator.isBrowsePageVisible()) {
                     continue;
                 }
                 String url = UrlService.absoluteUrl(creator);
