@@ -64,6 +64,7 @@ import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -269,8 +270,9 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                 dom = fileSystemResourceService.openCreatorInfoLog(foafFile);
                 getKeywords();
                 getCollaborators();
-                NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
-                // getLogger().info("attributes: {}", attributes);
+                // legacy name, deprecated
+
+                NamedNodeMap attributes = dom.getChildNodes().item(0).getAttributes();
                 setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
                 setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
                 setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
@@ -385,7 +387,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             return collaborators;
         }
         try {
-            collaborators = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
+            collaborators = fileSystemResourceService.parseCreatorInfoLog("*/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
                     dom);
         } catch (TdarRecoverableRuntimeException trre) {
             getLogger().warn(trre.getLocalizedMessage());
@@ -398,7 +400,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             return keywords;
         }
         try {
-            keywords = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
+            keywords = fileSystemResourceService.parseCreatorInfoLog("*/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
         } catch (TdarRecoverableRuntimeException trre) {
             getLogger().warn(trre.getLocalizedMessage());
         }

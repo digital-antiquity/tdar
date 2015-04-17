@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Coupon;
@@ -73,6 +74,7 @@ public class InvoiceService {
     @Autowired
     private transient UserNotificationService notificationService;
 
+    
     /**
      * Return defined @link BillingActivity entries that are enabled. A billing activity represents a type of charge (uses ASU Verbage)
      * 
@@ -81,8 +83,10 @@ public class InvoiceService {
     @Transactional(readOnly = true)
     public List<BillingActivity> getActiveBillingActivities() {
         List<BillingActivity> toReturn = new ArrayList<>();
-        for (BillingActivity activity : genericDao.findAll(BillingActivity.class)) {
-            if (activity.getEnabled()) {
+
+        BillingActivityModel model = accountDao.getLatestActivityModel();
+        for (BillingActivity activity : model.getActivities()) {
+            if (activity.getEnabled() ) {
                 toReturn.add(activity);
             }
         }
@@ -526,6 +530,7 @@ public class InvoiceService {
             }
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             genericDao.saveOrUpdate(invoice);
+            handlePurchaseNotifications(invoice);
         } else {
             invoice.setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
         }

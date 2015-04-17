@@ -40,7 +40,7 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/collection")
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction {
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction, ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
 
@@ -131,8 +131,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return options;
     }
 
-
-
     @Override
     public String loadViewMetadata() {
         setParentId(getPersistable().getParentId());
@@ -143,18 +141,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
 
-        //sort facets A-Z unless sortOption explicitly  otherwise
-        if(getResourceCollection() != null && CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
-            final boolean reversed = getResourceCollection().getSortBy() == SortOption.RESOURCE_TYPE_REVERSE;
-                Collections.sort(getResourceTypeFacets(), new Comparator<FacetValue>() {
-                    @Override
-                    public int compare(FacetValue o1, FacetValue o2) {
-                        return reversed ? o2.getValue().compareTo(o1.getValue()) : o1.getValue().compareTo(o2.getValue()) ;
-                    }
-                });
-        }
+        reSortFacets(this, getPersistable());
         return SUCCESS;
     }
+
 
     @Override
     public void loadExtraViewMetadata() {
@@ -259,7 +249,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     public void setCollections(List<ResourceCollection> findAllChildCollections) {
-        getLogger().info("child collections: {}", findAllChildCollections);
+        if (getLogger().isTraceEnabled()) {
+            getLogger().trace("child collections: {}", findAllChildCollections);
+        }
         this.collections = findAllChildCollections;
     }
 
@@ -324,7 +316,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     @Override
     public String getSearchTitle() {
-        return String.format("Resources in the %s Collection", getPersistable().getTitle());
+        return getText("collectionViewAction.search_title", Arrays.asList(getPersistable().getTitle()));
     }
 
     @Override

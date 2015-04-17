@@ -518,7 +518,7 @@ with that datapoint -->
 
                     <#local path>/browse/geographic-keyword/${entry.keywordId?c}/${entry.slug}</#local>
                 <area coords="${coords}" shape="poly" title="${title} (${entry.count?c})" alt="${title} (${entry.count?c})" target="_top"
-                      href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${path}"/>' iso="${code}"
+                      href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${path}"/>' iso="${code}" cnt="${entry.count?c}"
                       class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}">
                 </#if>
             </#if>

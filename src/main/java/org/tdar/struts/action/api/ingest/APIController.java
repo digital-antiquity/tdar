@@ -159,7 +159,9 @@ public class APIController extends AuthenticationAware.Base {
             getXmlResultObject().setStatus(code.toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
             xmlResultObject.setMessage(message);
-            getLogger().debug(serializationService.convertToXML(loadedRecord));
+            if (getLogger().isTraceEnabled()) {
+                getLogger().trace(serializationService.convertToXML(loadedRecord));
+            }
             return SUCCESS;
         } catch (Exception e) {
             message = "";

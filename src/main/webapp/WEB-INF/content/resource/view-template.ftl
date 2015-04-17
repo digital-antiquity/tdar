@@ -313,7 +313,7 @@
 
     <#if resource.containsActiveKeywords >
     <h2>Keywords</h2>
-        <#if resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
+        <#if resource.project?has_content && resource.project.id != -1 && resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
         <em>Note: Inherited values from this project are not available because the project is not active</em>
         </#if>
     <div class="row">
