@@ -1,6 +1,7 @@
 package org.tdar.core.bean.collection;
 
 import org.hibernate.annotations.*;
+import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @Entity
 @Table(name="whitelabel_collection")
 @Inheritance(strategy = InheritanceType.JOINED)
+@Indexed(index = "Collection")
 public class WhiteLabelCollection extends ResourceCollection{
 
     @Column(name = "custom_header_enabled")
