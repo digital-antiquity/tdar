@@ -569,7 +569,9 @@ public class Resource implements Persistable,
         return new ArrayList<Long>(collectionIds);
     }
 
+
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS)
+    @IndexedEmbedded
     public List<Long> getDirectSharedResourceIds() {
         Set<Long> collectionIds = new HashSet<>();
         for(ResourceCollection rc: getSharedResourceCollections() ) {
