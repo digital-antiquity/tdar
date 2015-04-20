@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -25,6 +26,8 @@ import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+
+import com.github.jsonldjava.utils.Obj;
 
 @Component
 @Scope("prototype")
@@ -58,11 +61,15 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
                     @Result(name = SUCCESS, location = "view-node.ftl")
             })
     public String node() throws TdarActionException {
-        getCodingSheetsWithMappings().addAll(codingSheetService.findAllUsingOntology(getOntology()));
-        setChildren(getChildElements(node));
-        setParentNode(ontologyNodeService.getParent(node));
+        try {
+            getCodingSheetsWithMappings().addAll(codingSheetService.findAllUsingOntology(getOntology()));
+            setChildren(getChildElements(node));
+            setParentNode(ontologyNodeService.getParent(node));
 
-        setDatasetsWithMappingsToNode(ontologyNodeService.listDatasetsWithMappingsToNode(getNode()));
+            setDatasetsWithMappingsToNode(ontologyNodeService.listDatasetsWithMappingsToNode(getNode()));
+        } catch (Exception e) {
+            getLogger().warn("{}", e, e);
+        }
         return SUCCESS;
     }
 
@@ -70,13 +77,21 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
     public void prepare() throws TdarActionException {
         super.prepare();
         if (redirectIri != null) {
-            setNode(getOntology().getNodeByIri(OntologyNode.normalizeIri(getIri())));
+            setNode(getNodeByIri());
             if (node == null) {
                 abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
             }
         }
     }
-    
+
+    private OntologyNode getNodeByIri() {
+        OntologyNode node = getOntology().getNodeByIri(OntologyNode.normalizeIri(getIri()));
+        if (node == null) {
+            return fallbackCheckForIri(getIri());
+        }
+        return node;
+    }
+
     @Override
     @HttpOnlyIfUnauthenticated
     @Actions(value = {
@@ -153,13 +168,37 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
     protected void handleSlug() {
         if (!Objects.equals(getSlug(), getPersistable().getSlug())) {
             String normalizeIri = OntologyNode.normalizeIri(getIri());
+            getLogger().debug("iri:{} --> {}", getIri(), normalizeIri);
             OntologyNode node_ = getOntology().getNodeByIri(normalizeIri);
+            getLogger().debug("nodel:{}", node_);
+            if (node_ == null) {
+                node_ = fallbackCheckForIri(normalizeIri);
+            }
+
             if (node_ != null) {
                 redirectIri = String.format("/ontology/%s/node/%s", getId(), normalizeIri);
             }
         } else {
             super.handleSlug();
         }
+    }
+
+    /**
+     * Checks for IRI, also removes parenthesis which may be removed by struts
+     * 
+     * @param normalizeIri
+     * @param node_
+     * @return
+     */
+    private OntologyNode fallbackCheckForIri(String normalizeIri) {
+        for (OntologyNode node : getOntology().getOntologyNodes()) {
+            String iri_ = node.getNormalizedIri().replaceAll("[\\(\\)]", "");
+            getLogger().trace("|{}|<--{}-->|{}|", iri_, Objects.equals(iri_, normalizeIri), normalizeIri);
+            if (Objects.equals(normalizeIri, iri_)) {
+                return node;
+            }
+        }
+        return null;
     }
 
     public List<CodingSheet> getCodingSheetsWithMappings() {
