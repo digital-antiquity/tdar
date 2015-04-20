@@ -147,6 +147,11 @@ public interface TdarNamedQueries {
     String DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS = "delete.data_table_column_relationships";
     String DELETE_DATA_TABLE_RELATIONSHIPS = "delete.data_table_relationships";
     String SCROLLABLE_SITEMAP = "sitemap.active_resources";
+
+    
+    String QUERY_BY_DOI = "query.by_doi";
+    String QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI = "query.recent_ir_with_doi";
+
     // raw SQL/HQL queries
 
     /**
@@ -287,5 +292,4 @@ public interface TdarNamedQueries {
     String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
     
 
-    
 }

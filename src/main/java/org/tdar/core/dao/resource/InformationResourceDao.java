@@ -1,6 +1,7 @@
 package org.tdar.core.dao.resource;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -65,6 +66,20 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
             result.add(new BrowseYearCountCache(((Number) row[0]).intValue(), ((Number) row[1]).longValue()));
         }
         return result;
+    }
+
+    public InformationResource findByDoi(String doi) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_BY_DOI);
+        query.setParameter("doi", doi);
+        return (InformationResource) query.uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<InformationResource> findUpdatedResourcesWithDOIs(Date start, Date end) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI);
+        query.setDate("start", start);
+        query.setDate("end", end);
+        return query.list();
     }
 
 }

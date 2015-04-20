@@ -1,7 +1,13 @@
 package org.tdar.dataone.server;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -10,11 +16,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -38,6 +49,9 @@ public class ObjectResponse extends AbstractDataOneResponse {
     private static final String DATA_ONE_EXCEPTION_PID = "DataONE-Exception-PID";
     private static final String NOT_FOUND = "NotFound";
 
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    
     @Autowired
     private DataOneService service;
     /*
@@ -63,14 +77,25 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletResponse response;
 
+    @Context
+    private HttpServletRequest request;
+
     @GET
     @Path("{id}")
     public Response object(@PathParam("id") String id) {
         setupResponseContext(response);
         try {
-            ObjectResponseContainer container = service.getObject(id);
-            return Response.ok(container.getObject()).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
+            ObjectResponseContainer container = service.getObject(id, request);
+            StreamingOutput stream = new StreamingOutput() {
+                @Override
+                public void write(OutputStream os) throws IOException, WebApplicationException {
+                    Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+                    IOUtils.copyLarge(container.getReader(), writer);
+                };
+            };
+            return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
         } catch (Exception e) {
+            logger.error("error in DataOne getObject:",e);
         }
         return Response.serverError().status(Status.NOT_FOUND).build();
 
@@ -82,7 +107,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
     public Response describe(@PathParam("id") String id) {
         setupResponseContext(response);
 
-        ObjectResponseContainer container = service.getObject(id);
+        ObjectResponseContainer container = service.getObject(id, null);
         if (container != null) {
             return Response.ok().header(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat()).
                     header(DATA_ONE_CHECKSUM, container.getChecksum()).

@@ -5,7 +5,7 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 
-  	<!-- http://www.liquibase.org/documentation/changes/index.html -->
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
 
     <changeSet id="neolithic-1" author="abrin">
         <addColumn tableName="geographic_keyword">
@@ -16,10 +16,23 @@
         <update tableName="geographic_keyword">
             <column name="level" value="COUNTRY" />
             <where>level='ISO_COUNTRY'</where>
-        
+
         </update>
     </changeSet>
 
-
+    <changeSet id="neolithic-dataone-1" author="abrin">
+        <createTable tableName="dataone_log">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="identifier" type="varchar(100)" />
+            <column name="user_agent" type="varchar(1024)" />
+            <column name="ip_address" type="varchar(100)" />
+            <column name="event" type="varchar(50)" />
+            <column name="subject" type="varchar(255)" />
+            <column name="node_reference" type="varchar(255)" />
+            <column name="date_logged" type='timestamp' />
+            </createTable>
+    </changeSet>
 
 </databaseChangeLog>

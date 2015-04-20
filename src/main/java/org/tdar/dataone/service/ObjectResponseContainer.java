@@ -1,5 +1,6 @@
 package org.tdar.dataone.service;
 
+import java.io.Reader;
 import java.util.Date;
 
 public class ObjectResponseContainer {
@@ -10,7 +11,8 @@ public class ObjectResponseContainer {
     private String checksum = "SHA-1,2e01e17467891f7c933dbaa00e1459d23db3fe4f";
     private String identifier;
     private Long serialVersionId = 1234L;
-    private Object object;
+    private int size;
+    private Reader reader;
     
     public String getObjectFormat() {
         return objectFormat;
@@ -60,12 +62,20 @@ public class ObjectResponseContainer {
         this.serialVersionId = serialVersionId;
     }
 
-    public Object getObject() {
-        return object;
+    public int getSize() {
+        return size;
     }
 
-    public void setObject(Object object) {
-        this.object = object;
+    public void setSize(int length) {
+        this.size = length;
+    }
+
+    public Reader getReader() {
+        return reader;
+    }
+
+    public void setReader(Reader reader) {
+        this.reader = reader;
     }
 
 

@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
-import org.dspace.foresite.ResourceMapDocument;
 import org.jdom2.JDOMException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,7 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testOaiORE() throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         Document doc = genericService.find(Document.class, 4287L);
-        ResourceMapDocument mapDocument = service.createAggregationForResource(doc);
+        String mapDocument = service.createResourceMap(doc);
         logger.debug(mapDocument.toString());
-        service.createResourceMap(doc);
     }
 }

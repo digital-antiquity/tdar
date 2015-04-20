@@ -2,8 +2,11 @@ package org.tdar.dataone.service;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,24 +19,18 @@ import java.util.Map;
 
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
+import javax.xml.bind.JAXBContext;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.StringUtils;
 import org.dataone.ore.ResourceMapFactory;
 import org.dataone.service.types.v1.Identifier;
-import org.dspace.foresite.Agent;
-import org.dspace.foresite.AggregatedResource;
-import org.dspace.foresite.Aggregation;
 import org.dspace.foresite.OREException;
-import org.dspace.foresite.OREFactory;
-import org.dspace.foresite.ORESerialiser;
 import org.dspace.foresite.ORESerialiserException;
-import org.dspace.foresite.ORESerialiserFactory;
-import org.dspace.foresite.Predicate;
 import org.dspace.foresite.ResourceMap;
-import org.dspace.foresite.ResourceMapDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -42,17 +39,22 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.entity.ResourceCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.dataone.bean.AccessPolicy;
 import org.tdar.dataone.bean.AccessRule;
 import org.tdar.dataone.bean.Checksum;
 import org.tdar.dataone.bean.Event;
 import org.tdar.dataone.bean.Log;
 import org.tdar.dataone.bean.LogEntry;
+import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.bean.Node;
 import org.tdar.dataone.bean.NodeReference;
 import org.tdar.dataone.bean.NodeState;
@@ -67,9 +69,23 @@ import org.tdar.dataone.bean.Services;
 import org.tdar.dataone.bean.Subject;
 import org.tdar.dataone.bean.Synchronization;
 import org.tdar.dataone.bean.SystemMetadata;
+import org.tdar.transform.ModsTransformer;
+import org.tdar.utils.PersistableUtils;
+
+import edu.asu.lib.mods.ModsDocument;
 
 @org.springframework.stereotype.Service
 public class DataOneService {
+
+    private static final String META = "meta";
+
+    private static final String D1_VERS_SEP = "&v=";
+
+    private static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=UTF-8";
+
+    private static final String D1_SEP = "#";
+
+    private static final String D1_FORMAT = "format=d1rem";
 
     private static final String PUBLIC = "public";
 
@@ -83,20 +99,28 @@ public class DataOneService {
     private static final String MN_CORE = "MNCore";
     private static final String VERSION = "v1";
     private static final String DATAONE = "/dataone/";
+
+    private static final String XML_CONTENT_TYPE = "application/xml; charset=UTF-8";
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
-    
-    
-    public void createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
+    @Autowired
+    private GenericService genericService;
+    @Autowired
+    private ObfuscationService obfuscationService;
+
+    @Autowired
+    private InformationResourceService informationResourceService;
+
+    public String createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         Identifier id = new Identifier();
-        id.setValue(ir.getExternalId() + "?format=d1rem" + ir.getDateUpdated().toString());
+        id.setValue(ir.getExternalId() + D1_SEP + D1_FORMAT + ir.getDateUpdated().toString());
 
         Identifier packageId = new Identifier();
-        packageId.setValue(ir.getExternalId() + "?" + ir.getDateUpdated().toString());
+        packageId.setValue(ir.getExternalId() + D1_SEP + ir.getDateUpdated().toString());
         List<Identifier> dataIds = new ArrayList<>();
         for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
             Identifier fileId = new Identifier();
-            fileId.setValue(ir.getExternalId() + "?" + irf.getId() + "&v=" + irf.getLatestVersion());
+            fileId.setValue(ir.getExternalId() + D1_SEP + irf.getId() + D1_VERS_SEP + irf.getLatestVersion());
             dataIds.add(fileId);
         }
         Map<Identifier, List<Identifier>> idMap = new HashMap<Identifier, List<Identifier>>();
@@ -109,91 +133,59 @@ public class DataOneService {
         String rdfXml = ResourceMapFactory.getInstance().serializeResourceMap(resourceMap);
         SAXBuilder builder = new SAXBuilder();
         Document d = builder.build(new StringReader(rdfXml));
-        Iterator it = d.getRootElement().getChildren().iterator();
+        Iterator<Element> it = d.getRootElement().getChildren().iterator();
         List<Element> children = new ArrayList<Element>();
-        while(it.hasNext()) {
-            Element element = (Element)it.next();
+        while (it.hasNext()) {
+            Element element = (Element) it.next();
             children.add(element);
         }
         d.getRootElement().removeContent();
-        Collections.sort(children, new Comparator<Element> () {
+        Collections.sort(children, new Comparator<Element>() {
             @Override
             public int compare(Element t, Element t1) {
                 return t.getAttributes().toString().compareTo(t1.getAttributes().toString());
             }
         });
-        for(Element el : children) {
+        for (Element el : children) {
             d.getRootElement().addContent(el);
         }
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
         rdfXml = outputter.outputString(d);
         logger.debug(rdfXml);
+        return rdfXml;
         /*
-        
-        // associate the metadata and data identifiers
-
-        // serialize it as RDF/XML
-        String rdfXml = ResourceMapFactory.getInstance().serializeResourceMap(resourceMap);
-            // Reorder the RDF/XML to a predictable order
-            SAXBuilder builder = new SAXBuilder();
-            try {
-                Document d = builder.build(new StringReader(rdfXml));
-                Iterator it = d.getRootElement().getChildren().iterator();
-                List<Element> children = new ArrayList<Element>();
-                while(it.hasNext()) {
-                    Element element = (Element)it.next();
-                    children.add(element);
-                }
-                d.getRootElement().removeContent();
-                Collections.sort(children, new Comparator<Element> () {
-                    @Override
-                    public int compare(Element t, Element t1) {
-                        return t.getAttributes().toString().compareTo(t1.getAttributes().toString());
-                    }
-                });
-                for(Element el : children) {
-                    d.getRootElement().addContent(el);
-                }
-                XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-                rdfXml = outputter.outputString(d);
-            } catch (JDOMException ex) {
-                log.error("Exception parsing rdfXml", ex);
-            }
-*/
-    }
-    
-    public ResourceMapDocument createAggregationForResource(InformationResource resource) throws OREException, URISyntaxException, ORESerialiserException {
-        String idref = "/doi/" + resource.getExternalId();
-        Aggregation agg = OREFactory.createAggregation(new URI(CONFIG.getBaseSecureUrl() + idref + "#agg"));
-        ResourceMap rem = agg.createResourceMap(new URI(CONFIG.getBaseSecureUrl() + idref + "#map"));
-
-        AggregatedResource ar = agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "#meta"));
-        String literal = "scimeta_id";
-        ar.addIdentifier(literal);
-        for (InformationResourceFile irf : resource.getActiveInformationResourceFiles()) {
-            agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "/" + irf.getId() + "#" + irf.getLatestVersion()));
-        }
-
-        for (ResourceCreator rc : resource.getPrimaryCreators()) {
-            Agent creator = OREFactory.createAgent();
-            creator.addName(rc.getCreator().getName());
-            rem.addCreator(creator);
-            agg.addCreator(creator);
-        }
-
-        agg.addTitle(resource.getTitle());
-
-        ORESerialiser serial = ORESerialiserFactory.getInstance("RDF/XML");
-        ResourceMapDocument doc = serial.serialise(rem);
-        return doc;
-    }
-
-    private void addIdentifier(AggregatedResource ar, Predicate pred, String literal) throws URISyntaxException, OREException {
-        pred.setName("identifier");
-        pred.setNamespace("http://purl.org/dc/terms");
-        pred.setPrefix("dcterms");
-        pred.setURI(new URI("http://purl.org/dc/terms/Idenitifier"));
-        ar.createTriple(pred, literal);
+         * 
+         * // associate the metadata and data identifiers
+         * 
+         * // serialize it as RDF/XML
+         * String rdfXml = ResourceMapFactory.getInstance().serializeResourceMap(resourceMap);
+         * // Reorder the RDF/XML to a predictable order
+         * SAXBuilder builder = new SAXBuilder();
+         * try {
+         * Document d = builder.build(new StringReader(rdfXml));
+         * Iterator it = d.getRootElement().getChildren().iterator();
+         * List<Element> children = new ArrayList<Element>();
+         * while(it.hasNext()) {
+         * Element element = (Element)it.next();
+         * children.add(element);
+         * }
+         * d.getRootElement().removeContent();
+         * Collections.sort(children, new Comparator<Element> () {
+         * 
+         * @Override
+         * public int compare(Element t, Element t1) {
+         * return t.getAttributes().toString().compareTo(t1.getAttributes().toString());
+         * }
+         * });
+         * for(Element el : children) {
+         * d.getRootElement().addContent(el);
+         * }
+         * XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+         * rdfXml = outputter.outputString(d);
+         * } catch (JDOMException ex) {
+         * log.error("Exception parsing rdfXml", ex);
+         * }
+         */
     }
 
     public Node getNodeResponse() {
@@ -269,27 +261,23 @@ public class DataOneService {
 
     public Log getLogResponse(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, HttpServletRequest request) {
         Log log = new Log();
-        // log.setCount(value);
-        // log.setStart(value);
-        // log.setTotal(value);
-        // Event.CREATE;
-        // Event.DELETE;
-        // Event.READ;
-        // Event.REPLICATE;
-        // Event.REPLICATION_FAILED;
-        // Event.SYNCHRONIZATION_FAILED;
-        // Event.UPDATE;
+        // LogEntryImpl from LogEntryImpl where logDate is between :fromDate and :toDate and (useEventType=true and eventType=:eventType) and (useIdFilter=true and idFilter startsWith(idFilter)
+        // log.setCount...
+        
+        
         List<LogEntry> logEntries = log.getLogEntry();
-        for (Resource resource : new ArrayList<Resource>()) {
+        for (LogEntryImpl impl : new ArrayList<LogEntryImpl>()) {
             LogEntry entry = new LogEntry();
-            // entry.setDateLogged(value);
-            // entry.setEntryId(value);
-            // entry.setEvent(value);
-            // entry.setIdentifier(value);
-            entry.setIpAddress(request.getRemoteAddr());
-            // entry.setNodeIdentifier(value);
-            // entry.setSubject(value);
-            entry.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
+            entry.setDateLogged(dateToGregorianCalendar(impl.getDateLogged()));
+            entry.setEntryId(impl.getId().toString());
+            entry.setEvent(impl.getEvent());
+            org.tdar.dataone.bean.Identifier identifier = new org.tdar.dataone.bean.Identifier();
+            identifier.setValue(impl.getIdentifier());
+            entry.setIdentifier(identifier);
+            entry.setNodeIdentifier(entry.getNodeIdentifier());
+            entry.setSubject(createSubject(impl.getSubject()));
+            entry.setIpAddress(impl.getIpAddress());
+            entry.setUserAgent(impl.getUserAgent());
             logEntries.add(entry);
         }
         return log;
@@ -308,7 +296,8 @@ public class DataOneService {
         // list.setStart(value);
         // list.setTotal(value);
         List<ObjectInfo> objectInfoList = list.getObjectInfo();
-        for (Resource resource : new ArrayList<Resource>()) {
+        List<InformationResource> resources = informationResourceService.findResourcesWithDois(fromDate, toDate);
+        for (InformationResource resource : resources) {
             ObjectInfo info = new ObjectInfo();
             // info.setChecksum(value);
             // info.setDateSysMetadataModified(value);
@@ -319,8 +308,9 @@ public class DataOneService {
         return list;
     }
 
-    public void synchronizationFailed(String id, long serialVersion, Date dateSysMetaLastModified) {
-        // TODO Auto-generated method stub
+    public void synchronizationFailed(String id, long serialVersion, Date dateSysMetaLastModified, HttpServletRequest request) {
+        LogEntryImpl entry = new LogEntryImpl(id, request, Event.REPLICATION_FAILED);
+        genericService.save(entry);
 
     }
 
@@ -367,9 +357,72 @@ public class DataOneService {
         return subject;
     }
 
-    public ObjectResponseContainer getObject(String id) {
-        // TODO Auto-generated method stub
-        return null;
+    public ObjectResponseContainer getObject(String id, HttpServletRequest request) {
+        ObjectResponseContainer resp = null;
+        try {
+            String doi = StringUtils.substringBefore(id, D1_SEP);
+            String partIdentifier = StringUtils.substringAfter(id, D1_SEP);
+            InformationResource ir = informationResourceService.findByDoi(doi);
+            obfuscationService.obfuscate(ir, null);
+            resp = new ObjectResponseContainer();
+            if (PersistableUtils.isNullOrTransient(ir)) {
+                return null;
+            }
+
+            resp.setIdentifier(id);
+            if (partIdentifier.equals(D1_FORMAT)) {
+                resp.setContentType(RDF_CONTENT_TYPE);
+                String map = createResourceMap(ir);
+                resp.setSize( map.getBytes("UTF-8").length);
+                resp.setReader(new StringReader(map));
+                resp.setChecksum(checksumString(map));
+            } else if (partIdentifier.equals(META)) {
+                resp.setContentType(XML_CONTENT_TYPE);
+                ModsDocument modsDoc = ModsTransformer.transformAny(ir);
+                JAXBContext jaxbContext = JAXBContext.newInstance(ModsDocument.class);
+                StringWriter sw = new StringWriter();
+                jaxbContext.createMarshaller().marshal(modsDoc, sw);
+                String metaXml = sw.toString();
+                resp.setSize( metaXml.getBytes("UTF-8").length);
+                resp.setReader(new StringReader(metaXml));
+                resp.setChecksum(checksumString(metaXml));
+            } else if (partIdentifier.contains(D1_VERS_SEP)) {
+                Long irfid = Long.parseLong(StringUtils.substringBefore(partIdentifier, D1_VERS_SEP));
+                Integer versionNumber = Integer.parseInt(StringUtils.substringAfter(partIdentifier, D1_VERS_SEP));
+                
+                for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
+                    if (irf.getId().equals(irfid)) {
+                        InformationResourceFileVersion version = irf.getUploadedVersion(versionNumber);
+                        resp.setContentType(version.getMimeType());
+                        resp.setSize(version.getFileLength().intValue());
+                        resp.setChecksum(version.getChecksum());
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            logger.error("error in DataOneObjectRequest", e);
+        }
+        if (request != null && resp != null) {
+            LogEntryImpl entry = new LogEntryImpl(id, request, Event.READ);
+            genericService.save(entry);
+        }
+        return resp;
+    }
+
+    private String checksumString(String string) throws NoSuchAlgorithmException {
+        final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        messageDigest.reset();
+        messageDigest.update(string.getBytes(Charset.forName("UTF8")));
+        final byte[] resultByte = messageDigest.digest();
+        final String result = new String(Hex.encodeHex(resultByte));
+        return result;
+    }
+
+    public void replicate(String pid, HttpServletRequest request) {
+        LogEntryImpl entry = new LogEntryImpl(pid, request, Event.REPLICATE);
+        genericService.save(entry);
+
     }
 
 }

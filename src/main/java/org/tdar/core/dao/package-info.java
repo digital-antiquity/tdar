@@ -220,6 +220,11 @@
                 query = "from Resource res where (res.dateUpdated > :updatedDate or res.dateCreated > :updatedDate )"
         ),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI,
+                query = "from InformationResource res where (res.dateUpdated is between :startDate and :endDate or res.dateCreated is between :startDate  and :endDate) and externalId != '' and externalId is not NULL"
+        ),
+
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED,
                 query = "select keyword, (select count(*) from Resource res inner join res.cultureKeywords rk where rk.id = keyword.id) as keywordCount from CultureKeyword keyword where keyword.approved = true order by keyword.index, keywordCount desc"
         ),
@@ -512,6 +517,9 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS,
                 query = "DELETE FROM DataTableRelationship dtr where dtr.id in :ids"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_BY_DOI,
+                query = "from InformationResource where lower(externalId)=trim(lower(:doi))"),
 })
 package org.tdar.core.dao;
 

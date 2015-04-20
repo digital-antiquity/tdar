@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,16 @@ public class InformationResourceService extends AbstractInformationResourceServi
     @Transactional(readOnly = true)
     public List<BrowseYearCountCache> findResourcesByYear(Status... statuses) {
         return getDao().findResourcesByYear(statuses);
+    }
+
+    @Transactional(readOnly = true)
+    public InformationResource findByDoi(String doi) {
+        return getDao().findByDoi(doi);
+    }
+
+    @Transactional(readOnly = true)
+    public List<InformationResource> findResourcesWithDois(Date fromDate, Date toDate) {
+        return getDao().findUpdatedResourcesWithDOIs(fromDate,toDate);
     }
 
 }
