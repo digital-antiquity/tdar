@@ -1,11 +1,18 @@
 package org.tdar.dataone.service;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +21,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.dataone.ore.ResourceMapFactory;
+import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.Agent;
 import org.dspace.foresite.AggregatedResource;
 import org.dspace.foresite.Aggregation;
@@ -25,6 +34,12 @@ import org.dspace.foresite.ORESerialiserFactory;
 import org.dspace.foresite.Predicate;
 import org.dspace.foresite.ResourceMap;
 import org.dspace.foresite.ResourceMapDocument;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -53,8 +68,6 @@ import org.tdar.dataone.bean.Subject;
 import org.tdar.dataone.bean.Synchronization;
 import org.tdar.dataone.bean.SystemMetadata;
 
-import com.sun.tools.doclets.internal.toolkit.resources.doclets;
-
 @org.springframework.stereotype.Service
 public class DataOneService {
 
@@ -72,16 +85,93 @@ public class DataOneService {
     private static final String DATAONE = "/dataone/";
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
+    
+    
+    public void createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
+        Identifier id = new Identifier();
+        id.setValue(ir.getExternalId() + "?format=d1rem" + ir.getDateUpdated().toString());
+
+        Identifier packageId = new Identifier();
+        packageId.setValue(ir.getExternalId() + "?" + ir.getDateUpdated().toString());
+        List<Identifier> dataIds = new ArrayList<>();
+        for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
+            Identifier fileId = new Identifier();
+            fileId.setValue(ir.getExternalId() + "?" + irf.getId() + "&v=" + irf.getLatestVersion());
+            dataIds.add(fileId);
+        }
+        Map<Identifier, List<Identifier>> idMap = new HashMap<Identifier, List<Identifier>>();
+        idMap.put(packageId, dataIds);
+        // generate the resource map
+        ResourceMapFactory rmf = ResourceMapFactory.getInstance();
+        ResourceMap resourceMap = rmf.createResourceMap(id, idMap);
+        Date itemModDate = ir.getDateUpdated();
+        resourceMap.setModified(itemModDate);
+        String rdfXml = ResourceMapFactory.getInstance().serializeResourceMap(resourceMap);
+        SAXBuilder builder = new SAXBuilder();
+        Document d = builder.build(new StringReader(rdfXml));
+        Iterator it = d.getRootElement().getChildren().iterator();
+        List<Element> children = new ArrayList<Element>();
+        while(it.hasNext()) {
+            Element element = (Element)it.next();
+            children.add(element);
+        }
+        d.getRootElement().removeContent();
+        Collections.sort(children, new Comparator<Element> () {
+            @Override
+            public int compare(Element t, Element t1) {
+                return t.getAttributes().toString().compareTo(t1.getAttributes().toString());
+            }
+        });
+        for(Element el : children) {
+            d.getRootElement().addContent(el);
+        }
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+        rdfXml = outputter.outputString(d);
+        logger.debug(rdfXml);
+        /*
+        
+        // associate the metadata and data identifiers
+
+        // serialize it as RDF/XML
+        String rdfXml = ResourceMapFactory.getInstance().serializeResourceMap(resourceMap);
+            // Reorder the RDF/XML to a predictable order
+            SAXBuilder builder = new SAXBuilder();
+            try {
+                Document d = builder.build(new StringReader(rdfXml));
+                Iterator it = d.getRootElement().getChildren().iterator();
+                List<Element> children = new ArrayList<Element>();
+                while(it.hasNext()) {
+                    Element element = (Element)it.next();
+                    children.add(element);
+                }
+                d.getRootElement().removeContent();
+                Collections.sort(children, new Comparator<Element> () {
+                    @Override
+                    public int compare(Element t, Element t1) {
+                        return t.getAttributes().toString().compareTo(t1.getAttributes().toString());
+                    }
+                });
+                for(Element el : children) {
+                    d.getRootElement().addContent(el);
+                }
+                XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+                rdfXml = outputter.outputString(d);
+            } catch (JDOMException ex) {
+                log.error("Exception parsing rdfXml", ex);
+            }
+*/
+    }
+    
     public ResourceMapDocument createAggregationForResource(InformationResource resource) throws OREException, URISyntaxException, ORESerialiserException {
         String idref = "/doi/" + resource.getExternalId();
-        Aggregation agg = OREFactory.createAggregation(new URI(CONFIG.getBaseSecureUrl() + idref + "/agg"));
-        ResourceMap rem = agg.createResourceMap(new URI(CONFIG.getBaseSecureUrl() + idref + "/map"));
+        Aggregation agg = OREFactory.createAggregation(new URI(CONFIG.getBaseSecureUrl() + idref + "#agg"));
+        ResourceMap rem = agg.createResourceMap(new URI(CONFIG.getBaseSecureUrl() + idref + "#map"));
 
-        AggregatedResource ar = agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "/meta"));
+        AggregatedResource ar = agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "#meta"));
         String literal = "scimeta_id";
         ar.addIdentifier(literal);
         for (InformationResourceFile irf : resource.getActiveInformationResourceFiles()) {
-            agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "/" + irf.getId() + "/" + irf.getLatestVersion()));
+            agg.createAggregatedResource(new URI(CONFIG.getBaseSecureUrl() + idref + "/" + irf.getId() + "#" + irf.getLatestVersion()));
         }
 
         for (ResourceCreator rc : resource.getPrimaryCreators()) {
