@@ -572,6 +572,7 @@ public class Resource implements Persistable,
 
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS)
     @IndexedEmbedded
+    @XmlTransient
     public List<Long> getDirectSharedResourceIds() {
         Set<Long> collectionIds = new HashSet<>();
         for(ResourceCollection rc: getSharedResourceCollections() ) {
