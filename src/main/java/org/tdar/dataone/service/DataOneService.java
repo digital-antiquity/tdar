@@ -113,7 +113,7 @@ public class DataOneService {
 
     public String createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         Identifier id = new Identifier();
-        id.setValue(ir.getExternalId() + D1_SEP + D1_FORMAT + ir.getDateUpdated().toString());
+        id.setValue(ir.getExternalId().replace("/", ":") + D1_SEP + D1_FORMAT + ir.getDateUpdated().toString());
 
         Identifier packageId = new Identifier();
         packageId.setValue(ir.getExternalId() + D1_SEP + ir.getDateUpdated().toString());
@@ -357,11 +357,12 @@ public class DataOneService {
         return subject;
     }
 
-    public ObjectResponseContainer getObject(String id, HttpServletRequest request) {
+    public ObjectResponseContainer getObject(final String id, HttpServletRequest request) {
+        String id_ = id.replace("doi:10.6067:", "doi:10.6067/");
         ObjectResponseContainer resp = null;
         try {
-            String doi = StringUtils.substringBefore(id, D1_SEP);
-            String partIdentifier = StringUtils.substringAfter(id, D1_SEP);
+            String doi = StringUtils.substringBefore(id_, D1_SEP);
+            String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
             InformationResource ir = informationResourceService.findByDoi(doi);
             obfuscationService.obfuscate(ir, null);
             resp = new ObjectResponseContainer();

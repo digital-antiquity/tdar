@@ -19391,4 +19391,10 @@
             <column name="id" valueNumeric="4290" />
         </insert>
     </changeSet>
+    <changeSet id="dataone-doi-setup" author="abrin">
+    	<update tableName="resource">
+    	<column name="external_id" value="doi:10.6067/XCV8SN0B29"/>
+    	<where>id=4230</where>
+    	</update>
+    </changeSet>
 </databaseChangeLog>

@@ -221,7 +221,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI,
-                query = "from InformationResource res where (res.dateUpdated is between :startDate and :endDate or res.dateCreated is between :startDate  and :endDate) and externalId != '' and externalId is not NULL"
+                query = "from InformationResource res where (res.dateUpdated between :startDate and :endDate or res.dateCreated between :startDate  and :endDate) and externalId != '' and externalId is not NULL"
         ),
 
         @org.hibernate.annotations.NamedQuery(

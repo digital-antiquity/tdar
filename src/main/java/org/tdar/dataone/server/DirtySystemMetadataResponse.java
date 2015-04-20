@@ -3,6 +3,7 @@ package org.tdar.dataone.server;
 import java.util.Date;
 
 import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,6 +30,9 @@ public class DirtySystemMetadataResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletResponse response;
 
+    @Context
+    private HttpServletRequest request;
+
     @Autowired
     DataOneService service;
     
@@ -36,7 +40,7 @@ public class DirtySystemMetadataResponse extends AbstractDataOneResponse {
     @Produces("text/plain")
     public Response synchronizationFailed(@QueryParam("id") String id,@QueryParam("serialVersion") long serialVersion, @QueryParam("dateSysMetaLastModified") Date dateSysMetaLastModified) {
         setupResponseContext(response);
-        service.synchronizationFailed(id, serialVersion, dateSysMetaLastModified);
+        service.synchronizationFailed(id, serialVersion, dateSysMetaLastModified, request);
         return Response.ok().build();
     }
 

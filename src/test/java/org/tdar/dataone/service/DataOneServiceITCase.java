@@ -24,7 +24,7 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testOaiORE() throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
-        Document doc = genericService.find(Document.class, 4287L);
+        Document doc = genericService.find(Document.class, 4230L);
         String mapDocument = service.createResourceMap(doc);
         logger.debug(mapDocument.toString());
     }
