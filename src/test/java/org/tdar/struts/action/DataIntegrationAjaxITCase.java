@@ -119,8 +119,9 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
             proxiesPresent++;
         }
         logger.debug("nodesPresent:{}", nodesPresent);
-        // NOTE: this was 184 prior to the change to the filter node logic (reversion to older logic) in r6881. 
-        Assert.assertEquals(184, nodesPresent);
+        // NOTE: this was 184 prior to the change to the filter node logic (reversion to older logic) in r6881.
+        // 20-04-15 -- changed nodes in database, so, changing logic to match
+        Assert.assertEquals(177, nodesPresent);
         Assert.assertEquals(4, proxiesPresent);
 
     }

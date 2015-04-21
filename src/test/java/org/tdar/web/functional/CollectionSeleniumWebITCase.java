@@ -11,10 +11,8 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.SortOption;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.functional.util.WebElementSelection;
 
@@ -154,24 +152,24 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     @Test
     public void testCollectionOrientiationOptions() {
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
-                TAG_FAUNAL_WORKSHOP,
-                _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, false);
-        for (DisplayOrientation orient : DisplayOrientation.values()) {
-            gotoEdit(url);
-            logger.debug("{} {}", url, orient);
-            setFieldByName("resourceCollection.orientation", orient.name());
-            submitForm();
-            assertPageViewable(titles);
-        }
+        // test display orientation
+        List<String> titles = Arrays.asList("this is a test");
+        String url = "/collection/1000";
+        gotoPage(url);
+        assertTitlesSeen(titles);
+        gotoPage("/collection/1001");
+        assertTitlesSeen(titles);
+        gotoPage("/collection/1002");
+        assertTitlesSeen(titles);
+        gotoPage("/collection/1003");
+        assertTitlesSeen(titles);
 
-        for (SortOption option : SortOption.getOptionsForResourceCollectionPage()) {
-            gotoEdit(url);
-            setFieldByName("resourceCollection.sortBy", option.name());
-            submitForm();
-            assertPageViewable(titles);
-        }
+//        for (SortOption option : SortOption.getOptionsForResourceCollectionPage()) {
+//            gotoEdit(url);
+//            setFieldByName("resourceCollection.sortBy", option.name());
+//            submitForm();
+//            assertPageViewable(titles);
+//        }
 
         List<String> urls = new ArrayList<>();
         for (WebElement el : find(".media-body a")) {
@@ -181,17 +179,20 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         for (String link : urls) {
             gotoPage(url);
             gotoPage(link);
-            String text = getText();
-            int seen = 0;
-            for (String title : titles) {
-                if (text.contains(title)) {
-                    seen++;
-                }
-            }
-            logger.debug("seen:{} total:{}", seen, titles.size());
-            Assert.assertTrue("Should see at least one title on page", seen > 0);
-            Assert.assertNotEquals("should not see every title on each page", seen, titles.size());
+            assertTitlesSeen(titles);
         }
+    }
+
+    private void assertTitlesSeen(List<String> titles) {
+        String text = getText();
+        int seen = 0;
+        for (String title : titles) {
+            if (text.contains(title)) {
+                seen++;
+            }
+        }
+        logger.debug("seen:{} total:{}", seen, titles.size());
+        Assert.assertEquals("should see every title on each page", seen, titles.size());
     }
 
     private String setupCollectionForTest(List<String> titles, Boolean visible) {

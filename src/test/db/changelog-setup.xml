@@ -19391,10 +19391,87 @@
             <column name="id" valueNumeric="4290" />
         </insert>
     </changeSet>
+
     <changeSet id="dataone-doi-setup" author="abrin">
     	<update tableName="resource">
     	<column name="external_id" value="doi:10.6067/XCV8SN0B29"/>
     	<where>id=4230</where>
     	</update>
     </changeSet>
+    
+  <changeSet author="abrin" id="collection-test-setup">
+      <insert tableName="collection">
+          <column name="id" valueNumeric="1000"/>
+          <column name="name" value="display_orientationLIST"/>
+          <column name="description" value="display_orientationLIST"/>
+          <column name="date_created" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="owner_id" valueNumeric="8092"/>
+          <column name="updater_id" valueNumeric="8092"/>
+          <column name="collection_type" value="SHARED"/>
+          <column name="sort_order" value="TITLE"/>
+          <column name="orientation" value="LIST"/>
+          <column name="visible" valueBoolean="=true" />
+      </insert>
+
+      <insert tableName="collection">
+          <column name="id" valueNumeric="1001"/>
+          <column name="name" value="display_orientationLIST_FULL"/>
+          <column name="description" value="display_orientationLIST_FULL"/>
+          <column name="date_created" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="owner_id" valueNumeric="8092"/>
+          <column name="updater_id" valueNumeric="8092"/>
+          <column name="collection_type" value="SHARED"/>
+          <column name="sort_order" value="TITLE"/>
+          <column name="orientation" value="LIST_FULL"/>
+          <column name="visible" valueBoolean="=true" />
+      </insert>
+
+      <insert tableName="collection">
+          <column name="id" valueNumeric="1002"/>
+          <column name="name" value="display_orientationGRID"/>
+          <column name="description" value="display_orientationGRID"/>
+          <column name="date_created" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="owner_id" valueNumeric="8092"/>
+          <column name="updater_id" valueNumeric="8092"/>
+          <column name="collection_type" value="SHARED"/>
+          <column name="sort_order" value="TITLE"/>
+          <column name="orientation" value="GRID"/>
+          <column name="visible" valueBoolean="=true" />
+      </insert>
+
+      <insert tableName="collection">
+          <column name="id" valueNumeric="1003"/>
+          <column name="name" value="display_orientationMAP"/>
+          <column name="description" value="display_orientationMAP"/>
+          <column name="date_created" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="owner_id" valueNumeric="8092"/>
+          <column name="updater_id" valueNumeric="8092"/>
+          <column name="collection_type" value="SHARED"/>
+          <column name="sort_order" value="TITLE"/>
+          <column name="orientation" value="MAP"/>
+          <column name="visible" valueBoolean="=true" />
+      </insert>
+
+      <insert tableName="collection_resource">
+          <column name="collection_id" valueNumeric="1000"/>
+          <column name="resource_id" valueNumeric="4292"/>
+      </insert>
+      <insert tableName="collection_resource">
+          <column name="collection_id" valueNumeric="1001"/>
+          <column name="resource_id" valueNumeric="4292"/>
+      </insert>
+      <insert tableName="collection_resource">
+          <column name="collection_id" valueNumeric="1002"/>
+          <column name="resource_id" valueNumeric="4292"/>
+      </insert>
+      <insert tableName="collection_resource">
+          <column name="collection_id" valueNumeric="1003"/>
+          <column name="resource_id" valueNumeric="4292"/>
+      </insert>
+  </changeSet>
+  
 </databaseChangeLog>
