@@ -11,18 +11,6 @@
     <@view.canonical resourceCollection />
     <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl />
-
-    <style>
-        i.search-list-checkbox-grey {
-            background-image: none !important;
-        }
-
-        li.media {
-            display: inline-block
-        }
-    </style>
-
-
 </head>
 <body>
 
@@ -95,6 +83,7 @@ ${resourceCollection.name!"untitled collection"}</h1>
         </div>
 
 
+        <div class="collection-facets">
             <#assign mapSize="450" />
             <#if (totalRecords > 10)>
                 <#assign mapSize="700" />
@@ -124,6 +113,8 @@ ${resourceCollection.name!"untitled collection"}</h1>
             </#if>
             </h4>
             </#if>
+        </div>
+
         <div class="tdarresults">
             <#assign itemsPerRow = 4/>
 		<#assign mapPosition="top"/>

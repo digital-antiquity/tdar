@@ -114,7 +114,7 @@
             </div>
         </div>
 
-
+        <div class="collection-facets">
             <#assign mapSize="450" />
             <#if (totalRecords > 10)>
                 <#assign mapSize="700" />
@@ -143,6 +143,7 @@
 			</@s.url>">[remove this filter]</a></sup>
             </#if>
             </h4>
+        </div>
             </#if>
         <div class="tdarresults">
             <#assign itemsPerRow = 4/>

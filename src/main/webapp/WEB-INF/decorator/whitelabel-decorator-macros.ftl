@@ -52,7 +52,7 @@
 
 <#macro searchHeader>
 <#if !searchHeaderEnabled><#return></#if>
-<#assign subtitle = (resourceCollection.subtitle!resourceCollection.institution.name!'')>
+<#assign subtitle = (resourceCollection.subtitle!(resourceCollection.institution.name)!'')>
 <div class="searchheader">
     <div class="hero">
         <div class="container">
