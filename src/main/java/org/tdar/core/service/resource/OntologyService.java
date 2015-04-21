@@ -210,6 +210,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
      */
     public List<OntologyNode> getChildren(List<OntologyNode> allNodes, OntologyNode parent) {
         List<OntologyNode> toReturn = new ArrayList<>();
+        if (parent == null) {
+            throw new TdarRecoverableRuntimeException("ontologyService.parent_node_not_defined");
+        }
         for (OntologyNode currentNode : allNodes) {
             if (currentNode.getIndex().equals(parent.getIndex() + "." + currentNode.getIntervalStart())) {
                 toReturn.add(currentNode);
