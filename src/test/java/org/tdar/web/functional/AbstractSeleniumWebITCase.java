@@ -1182,7 +1182,7 @@ public abstract class AbstractSeleniumWebITCase {
         logger.info("match: {} ", firstMatch);
         if (wasFound) {
             (firstMatch.findElement(By.tagName("a"))).click();
-            waitFor(TestConfiguration.getInstance().getWaitInt());
+            //waitFor(TestConfiguration.getInstance().getWaitInt());
             waitFor(invisibilityOf(find(autocompletePopup)));
         }
         return wasFound;
