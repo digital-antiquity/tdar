@@ -1,25 +1,27 @@
 package org.tdar.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.TdarConfiguration;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
- * Very basic servlet for serving static content outside of application path.  This is temporary and you should not use this.
- * Instead,  you should configure your static web server to handle static content, as it does a much better job.
+ * Very basic servlet for serving static content outside of application path. This is temporary and you should not use this.
+ * Instead, you should configure your static web server to handle static content, as it does a much better job.
  */
 @WebServlet("/hosted/*")
 public class StaticContentServlet extends HttpServlet {
 
+    private static final long serialVersionUID = -4676094228284733556L;
     String basepath = TdarConfiguration.getInstance().getHostedFileStoreLocation();
     Logger logger = LoggerFactory.getLogger(getClass());
 

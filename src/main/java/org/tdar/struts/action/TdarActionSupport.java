@@ -838,7 +838,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected boolean checkLogoAvailable(ObjectType type, Long id, VersionType version) {
         try {
             FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
-            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
+            File file = getTdarConfiguration().getFilestore().retrieveFile(type, proxy);
             if (file.exists()) {
                 return true;
             }
@@ -855,7 +855,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     protected boolean checkHostedFileAvailable(String filename) {
         //TODO: add an override in AbstractPersistableController that utilzes pairtree to resolve path for named file for current persistable
-        String basepath = TdarConfiguration.getInstance().getHostedFileStoreLocation();
+        String basepath = getTdarConfiguration().getHostedFileStoreLocation();
         File file = new File(basepath, filename);
         boolean exists = file.exists();
         getLogger().debug("checkPublicFile({})\t -> {}", filename, exists);

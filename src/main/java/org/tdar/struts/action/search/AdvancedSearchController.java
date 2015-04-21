@@ -210,7 +210,9 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
     private void processWhitelabelSearch() {
         ResourceCollection rc = getGenericService().find(ResourceCollection.class, getCollectionId());
-        if(rc == null) return;
+        if(rc == null) {
+            return;
+        }
 
         SearchParameters sp = new SearchParameters();
         getGroups().add(sp);

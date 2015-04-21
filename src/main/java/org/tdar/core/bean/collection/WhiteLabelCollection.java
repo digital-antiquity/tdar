@@ -1,26 +1,38 @@
 package org.tdar.core.bean.collection;
 
-import org.hibernate.annotations.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
-
-import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jimdevos on 3/17/15.
  */
 @Entity
-@Table(name="whitelabel_collection")
+@Table(name = "whitelabel_collection")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Indexed(index = "Collection")
-public class WhiteLabelCollection extends ResourceCollection{
+@Indexed
+@XmlRootElement(name = "whiteLabelCollection")
+public class WhiteLabelCollection extends ResourceCollection {
+
+    private static final long serialVersionUID = -7436222082273438465L;
 
     @Column(name = "custom_header_enabled")
     private boolean customHeaderEnabled;
@@ -42,20 +54,21 @@ public class WhiteLabelCollection extends ResourceCollection{
     private String subtitle;
 
     @ManyToMany
-    @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "collection_id") }, inverseJoinColumns = { @JoinColumn(
-            nullable = false, name = "resource_id") })
+    @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "collection_id") },
+            inverseJoinColumns = { @JoinColumn(
+                    nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
 
-    //Cascaded saves of transient references don't work for this declaration (using javasx annotations)
+    // Cascaded saves of transient references don't work for this declaration (using javasx annotations)
 
-
-    @OneToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REFRESH})
+    @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinColumn(nullable = false)
-
-    //Hibernate will not cascade saveOrUpdate()  if object is transient and relation is also transient. (see http://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/)
-    //This is probably not a big deal, as it's unlikely we will be saving a new institution and a new WhiteLabelCollection in the same session in real-world conditions.
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
-    Institution institution;
+    // Hibernate will not cascade saveOrUpdate() if object is transient and relation is also transient. (see
+    // http://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/)
+    // This is probably not a big deal, as it's unlikely we will be saving a new institution and a new WhiteLabelCollection in the same session in real-world
+    // conditions.
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+    private Institution institution;
 
     public WhiteLabelCollection() {
         super(CollectionType.SHARED);

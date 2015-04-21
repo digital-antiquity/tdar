@@ -182,14 +182,14 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         } catch (Exception e) {
             getLogger().error("error converting scholar tag for resource:", getId(), e);
         }
-        
+
         try {
             SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
             setSchemaOrgJsonLD(transformer.convert(serializationService, getResource()));
         } catch (Exception e) {
             getLogger().error("error converting to json-ld", e);
         }
-        
+
         return sw.toString();
     }
 
@@ -225,7 +225,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
             if (getPersistableClass().equals(Project.class)) {
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatisticsForProject(getId(), null));
             } else {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()),null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()), null));
             }
         }
 
@@ -499,16 +499,19 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
      * @return
      */
     public WhiteLabelCollection getWhiteLabelCollection() {
-        //java 8 can't come soon enough
-        for(ResourceCollection rc: resourceCollections) {
-            if(rc.isWhiteLabelCollection()) return (WhiteLabelCollection)rc;
+        // java 8 can't come soon enough
+        for (ResourceCollection rc : resourceCollections) {
+            if (rc.isWhiteLabelCollection()) {
+                return (WhiteLabelCollection) rc;
+            }
         }
         return null;
     }
 
     public boolean isWhiteLabelLogoAvailable() {
         WhiteLabelCollection wlc = getWhiteLabelCollection();
-        if(wlc == null) return false;
+        if (wlc == null)
+            return false;
         return checkLogoAvailable(Filestore.ObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 

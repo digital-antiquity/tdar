@@ -46,9 +46,8 @@ import static org.tdar.struts.action.collection.CollectionViewAction.SUCCESS_WHI
         @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
         @Result(name = SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
-                location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,keywordPath,slug" }),
-        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
-        @Result(name = TdarActionSupport.DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+                location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), //removed ,keywordPath
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
 public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction, ResourceFacetedAction {
 
