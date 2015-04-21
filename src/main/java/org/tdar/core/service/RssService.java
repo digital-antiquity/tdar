@@ -114,7 +114,8 @@ public class RssService implements Serializable {
      * @return
      */
     public static String cleanStringForXML(String input) {
-        return INVALID_XML_CHARS.matcher(input).replaceAll("");
+        String result = INVALID_XML_CHARS.matcher(input).replaceAll("");
+        return StringUtils.replace(result, "\u000B", "");
     }
 
     /**
