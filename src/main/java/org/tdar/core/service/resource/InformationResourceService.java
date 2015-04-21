@@ -122,9 +122,4 @@ public class InformationResourceService extends AbstractInformationResourceServi
         return getDao().findByDoi(doi);
     }
 
-    @Transactional(readOnly = true)
-    public List<InformationResource> findResourcesWithDois(Date fromDate, Date toDate) {
-        return getDao().findUpdatedResourcesWithDOIs(fromDate,toDate);
-    }
-
 }

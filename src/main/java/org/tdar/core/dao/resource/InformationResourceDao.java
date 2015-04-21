@@ -74,12 +74,4 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
         return (InformationResource) query.uniqueResult();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<InformationResource> findUpdatedResourcesWithDOIs(Date start, Date end) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI);
-        query.setDate("start", start);
-        query.setDate("end", end);
-        return query.list();
-    }
-
 }

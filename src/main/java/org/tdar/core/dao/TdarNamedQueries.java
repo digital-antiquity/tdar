@@ -151,7 +151,7 @@ public interface TdarNamedQueries {
     
     String QUERY_BY_DOI = "query.by_doi";
     String QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI = "query.recent_ir_with_doi";
-
+    String QUERY_DATAONE_LIST_OBJECTS = "query.d1_list_objects";
     // raw SQL/HQL queries
 
     /**

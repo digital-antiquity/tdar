@@ -3,6 +3,7 @@ package org.tdar.dataone.service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -27,6 +28,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.dataone.ore.ResourceMapFactory;
+import org.dataone.service.cn.v1.CNCore;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
@@ -52,6 +54,7 @@ import org.tdar.dataone.bean.AccessPolicy;
 import org.tdar.dataone.bean.AccessRule;
 import org.tdar.dataone.bean.Checksum;
 import org.tdar.dataone.bean.Event;
+import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.Log;
 import org.tdar.dataone.bean.LogEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
@@ -69,8 +72,11 @@ import org.tdar.dataone.bean.Services;
 import org.tdar.dataone.bean.Subject;
 import org.tdar.dataone.bean.Synchronization;
 import org.tdar.dataone.bean.SystemMetadata;
+import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.PersistableUtils;
+
+import com.google.inject.util.Types;
 
 import edu.asu.lib.mods.ModsDocument;
 
@@ -105,6 +111,10 @@ public class DataOneService {
 
     @Autowired
     private GenericService genericService;
+
+    @Autowired
+    private DataOneDao dataOneDao;
+
     @Autowired
     private ObfuscationService obfuscationService;
 
@@ -295,17 +305,30 @@ public class DataOneService {
         // list.setCount(value);
         // list.setStart(value);
         // list.setTotal(value);
-        List<ObjectInfo> objectInfoList = list.getObjectInfo();
-        List<InformationResource> resources = informationResourceService.findResourcesWithDois(fromDate, toDate);
-        for (InformationResource resource : resources) {
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, start, count);
+        for (ListObjectEntry resource : resources) {
             ObjectInfo info = new ObjectInfo();
-            // info.setChecksum(value);
-            // info.setDateSysMetadataModified(value);
-            // info.setFormatId(value);
-            // info.setIdentifier(value);
-            // info.setSize(value);
+            info.setChecksum(createChecksum(resource.getChecksum()));
+            info.setDateSysMetadataModified(dateToGregorianCalendar(resource.getDateUpdated()));
+//            info.setFormatId(org.dataone.);
+            info.setIdentifier(createIdentifier(resource.getFormattedIdentifier()));
+            info.setSize(BigInteger.valueOf(resource.getSize()));
+            list.getObjectInfo().add(info);
         }
         return list;
+    }
+
+    private org.tdar.dataone.bean.Identifier createIdentifier(String formattedIdentifier) {
+        org.tdar.dataone.bean.Identifier id = new org.tdar.dataone.bean.Identifier();
+        id.setValue(formattedIdentifier);
+        return id;
+    }
+
+    private Checksum createChecksum(String checksum) {
+        Checksum cs = new Checksum();
+        cs.setAlgorithm("MD5");
+        cs.setValue(checksum);
+        return cs;
     }
 
     public void synchronizationFailed(String id, long serialVersion, Date dateSysMetaLastModified, HttpServletRequest request) {

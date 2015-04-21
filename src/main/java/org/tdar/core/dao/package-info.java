@@ -520,6 +520,7 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_BY_DOI,
                 query = "from InformationResource where lower(externalId)=trim(lower(:doi))"),
+
 })
 package org.tdar.core.dao;
 
