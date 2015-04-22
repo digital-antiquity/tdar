@@ -217,6 +217,17 @@ public class TestConfiguration {
         return (OS.CURRENT == OS.UNIX || OS.CURRENT == OS.LINUX);
     }
 
+    public static StackTraceElement getCallerInfo() {
+        StackTraceElement stackTraceElement = null;
+        try {
+            stackTraceElement = Thread.currentThread().getStackTrace()[3];
+
+        } catch (SecurityException ex) {
+            stackTraceElement = new StackTraceElement("Nice ", "try, ", "buddy. ", 42);
+        }
+        return stackTraceElement;
+    }
+
     /**
      * Convenience wrapper for SystemUtils, which is a convenience wrapper for system.os.name.
      *
