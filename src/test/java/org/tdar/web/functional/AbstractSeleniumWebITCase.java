@@ -75,6 +75,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.functional.util.LoggingStopWatch;
 import org.tdar.web.functional.util.WebElementSelection;
 
 import com.google.common.base.Predicate;
@@ -107,6 +108,9 @@ public abstract class AbstractSeleniumWebITCase {
     private WebDriver driver;
     private Browser currentBrowser;
 
+    private LoggingStopWatch findTimer;
+    private LoggingStopWatch waitTimer;
+
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
@@ -126,16 +130,9 @@ public abstract class AbstractSeleniumWebITCase {
     // predicate that returns true if document.readystate != "complete" (use with FluentWait)
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
-    /**
-     * Custom "By" criteria for use with {@link #find(By)} - matches all elements that are referred by a label with the specified label text. e.g. <br>
-     * <code>find(withLabel("First Name")).val("Bob")</code>
-     * 
-     * @param labelText
-     *            text of the label associated with the element.
-     * @return By locator instance
-     */
-
     public AbstractSeleniumWebITCase() {
+        findTimer = new LoggingStopWatch(getClass(), "findTimer", 0, 2 * 1000);
+        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, (DEFAULT_WAITFOR_TIMEOUT * 1000) / 4);
     }
 
     public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
@@ -591,9 +588,12 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @Deprecated
     public void waitFor(int timeInSeconds) {
+        waitTimer.start();
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
         } catch (InterruptedException ignored) {
+        } finally {
+            waitTimer.stop();
         }
     }
 
@@ -626,8 +626,10 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public<T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
+        waitTimer.start();
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         T value = wait.until(expectedCondition);
+        waitTimer.stop();
         return value;
     }
 
@@ -639,7 +641,10 @@ public abstract class AbstractSeleniumWebITCase {
      * @return WebElementSelection containing zero-or-more elments
      */
     public WebElementSelection find(String selector) {
-        return find(By.cssSelector(selector));
+        findTimer.start();
+        WebElementSelection wes = find(By.cssSelector(selector));
+        findTimer.stop();
+        return wes;
     }
 
     /**
