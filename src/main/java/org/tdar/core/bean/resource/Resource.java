@@ -559,7 +559,6 @@ public class Resource implements Persistable,
 
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
     @IndexedEmbedded
-    @ElementCollection
     @XmlTransient
     public List<Long> getSharedCollectionsContaining() {
         Set<Long> collectionIds = new HashSet<Long>();
@@ -571,7 +570,21 @@ public class Resource implements Persistable,
         }
         logger.trace("partOfPublicResourceCollection:" + collectionIds);
         return new ArrayList<Long>(collectionIds);
+    }
 
+
+    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS)
+    @IndexedEmbedded
+    @XmlTransient
+    public List<Long> getDirectSharedResourceIds() {
+        Set<Long> collectionIds = new HashSet<>();
+        for(ResourceCollection rc: getSharedResourceCollections() ) {
+            collectionIds.add(rc.getId());
+        }
+        //probably pointless
+        List<Long> idList = new ArrayList<Long>(collectionIds);
+        Collections.sort(idList);
+        return idList;
     }
 
     @IndexedEmbedded
