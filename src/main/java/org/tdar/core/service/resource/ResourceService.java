@@ -774,11 +774,11 @@ public class ResourceService extends GenericService {
         DeleteIssue issue = new DeleteIssue();
         switch (persistable.getResourceType()) {
             case PROJECT:
-                 ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
-                 Set<InformationResource> inProject = new HashSet<>();
-                 for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
-                     inProject.add(ir);
-                 }
+                ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                Set<InformationResource> inProject = new HashSet<>();
+                for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
+                    inProject.add(ir);
+                }
                 if (CollectionUtils.isNotEmpty(inProject)) {
                     issue.getRelatedItems().addAll(inProject);
                     issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
@@ -816,21 +816,20 @@ public class ResourceService extends GenericService {
         logResourceModification(resource, authUser, logMessage);
         delete(resource);
 
-        Collection<Resource> toEvaluate = Arrays.asList(resource);
-        accountDao.updateTransientAccountOnResources(toEvaluate);
-        BillingAccount account = resource.getAccount();
-        account = markWritableOnExistingSession(account);
-        accountDao.updateQuota(account, toEvaluate);
-        saveOrUpdate(account);
-
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            Collection<Resource> toEvaluate = Arrays.asList(resource);
+            accountDao.updateTransientAccountOnResources(toEvaluate);
+            BillingAccount account = resource.getAccount();
+            account = markWritableOnExistingSession(account);
+            accountDao.updateQuota(account, toEvaluate);
+            saveOrUpdate(account);
+        }
 
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ScrollableResults findAllActiveScrollableForSitemap() {
         return datasetDao.findAllActiveScrollableForSitemap();
     }
-
-
 
 }
