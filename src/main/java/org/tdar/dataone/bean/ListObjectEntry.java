@@ -18,6 +18,7 @@ public class ListObjectEntry implements Serializable {
     private Date dateUpdated;
     private String checksum;
     private Integer version;
+    private String contentType;
 
     // externalId, 'file', irf.id , dateUpdated, fileLength, checksum, latestVersion
     public ListObjectEntry(String exId, String type, Long id, Date updated) {
@@ -27,7 +28,7 @@ public class ListObjectEntry implements Serializable {
         this.dateUpdated = updated;
     }
 
-    public ListObjectEntry(String exId, String type, Long id, Date updated, Long size, String sum, Integer version) {
+    public ListObjectEntry(String exId, String type, Long id, Date updated, Long size, String sum, Integer version, String contentType) {
         this.identifier = exId;
         this.type = Type.valueOf(type);
         this.persistableId = id;
@@ -35,6 +36,7 @@ public class ListObjectEntry implements Serializable {
         this.size = size;
         this.checksum = sum;
         this.version = version;
+        this.setContentType(contentType);
     }
 
     public String getIdentifier() {
@@ -96,6 +98,14 @@ public class ListObjectEntry implements Serializable {
     public String getFormattedIdentifier() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
 }

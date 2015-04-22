@@ -28,7 +28,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.dataone.ore.ResourceMapFactory;
-import org.dataone.service.cn.v1.CNCore;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
@@ -42,6 +41,7 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -67,7 +67,6 @@ import org.tdar.dataone.bean.ObjectList;
 import org.tdar.dataone.bean.Permission;
 import org.tdar.dataone.bean.Ping;
 import org.tdar.dataone.bean.Schedule;
-import org.tdar.dataone.bean.Service;
 import org.tdar.dataone.bean.Services;
 import org.tdar.dataone.bean.Subject;
 import org.tdar.dataone.bean.Synchronization;
@@ -76,11 +75,9 @@ import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.PersistableUtils;
 
-import com.google.inject.util.Types;
-
 import edu.asu.lib.mods.ModsDocument;
 
-@org.springframework.stereotype.Service
+@Service
 public class DataOneService {
 
     private static final String META = "meta";
@@ -251,7 +248,7 @@ public class DataOneService {
     }
 
     private void addService(String name, String version, Boolean available, Services services) {
-        Service service = new Service();
+        org.tdar.dataone.bean.Service service = new org.tdar.dataone.bean.Service();
         service.setName(name);
         service.setVersion(version);
         service.setAvailable(available);
@@ -271,10 +268,10 @@ public class DataOneService {
 
     public Log getLogResponse(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, HttpServletRequest request) {
         Log log = new Log();
-        // LogEntryImpl from LogEntryImpl where logDate is between :fromDate and :toDate and (useEventType=true and eventType=:eventType) and (useIdFilter=true and idFilter startsWith(idFilter)
+        // LogEntryImpl from LogEntryImpl where logDate is between :fromDate and :toDate and (useEventType=true and eventType=:eventType) and (useIdFilter=true
+        // and idFilter startsWith(idFilter)
         // log.setCount...
-        
-        
+
         List<LogEntry> logEntries = log.getLogEntry();
         for (LogEntryImpl impl : new ArrayList<LogEntryImpl>()) {
             LogEntry entry = new LogEntry();
@@ -302,15 +299,15 @@ public class DataOneService {
 
     public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count) {
         ObjectList list = new ObjectList();
-        // list.setCount(value);
-        // list.setStart(value);
-        // list.setTotal(value);
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, start, count);
+        list.setCount(count);
+        list.setStart(start);
+
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, list);
         for (ListObjectEntry resource : resources) {
             ObjectInfo info = new ObjectInfo();
             info.setChecksum(createChecksum(resource.getChecksum()));
             info.setDateSysMetadataModified(dateToGregorianCalendar(resource.getDateUpdated()));
-//            info.setFormatId(org.dataone.);
+            info.setFormatId(contentTypeToD1Format(resource, resource.getContentType()));
             info.setIdentifier(createIdentifier(resource.getFormattedIdentifier()));
             info.setSize(BigInteger.valueOf(resource.getSize()));
             list.getObjectInfo().add(info);
@@ -346,11 +343,12 @@ public class DataOneService {
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(dateToGregorianCalendar(resource.getDateUpdated()));
         metadata.setDateUploaded(dateToGregorianCalendar(resource.getDateCreated()));
-
+        ObjectResponseContainer object = getObjectFromTdar(id);
         // metadata.setArchived(value);
-        // metadata.setChecksum(value);
-        // metadata.setFormatId(value);
-        // metadata.setIdentifier(value);
+        metadata.setChecksum(createChecksum(object.getChecksum()));
+        metadata.setFormatId(contentTypeToD1Format(object, object.getContentType()));
+        metadata.setSize(BigInteger.valueOf(object.getSize()));
+        metadata.setIdentifier(createIdentifier(object.getIdentifier()));
         // metadata.setObsoletedBy(value);
         // metadata.setObsoletes(value);
 
@@ -360,11 +358,20 @@ public class DataOneService {
         // FIXME: who should this be?
         metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
         // metadata.setSerialVersion(value);
-        // metadata.setSize(value);
 
         // FIXME: should we be exposing emails here?
         metadata.setSubmitter(createSubject(resource.getSubmitter().getEmail()));
         return metadata;
+    }
+
+    private String contentTypeToD1Format(ObjectResponseContainer object, String contentType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private String contentTypeToD1Format(ListObjectEntry resource, String objectFormat) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     private AccessRule createAccessRule(Permission permission, String name) {
@@ -381,10 +388,19 @@ public class DataOneService {
     }
 
     public ObjectResponseContainer getObject(final String id, HttpServletRequest request) {
-        String id_ = id.replace("doi:10.6067:", "doi:10.6067/");
+        ObjectResponseContainer resp = getObjectFromTdar(id);
+        if (request != null && resp != null) {
+            LogEntryImpl entry = new LogEntryImpl(id, request, Event.READ);
+            genericService.save(entry);
+        }
+        return resp;
+    }
+
+    private ObjectResponseContainer getObjectFromTdar(String id_) {
         ObjectResponseContainer resp = null;
         try {
             String doi = StringUtils.substringBefore(id_, D1_SEP);
+            doi.replace("doi:10.6067:", "doi:10.6067/");
             String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
             InformationResource ir = informationResourceService.findByDoi(doi);
             obfuscationService.obfuscate(ir, null);
@@ -393,11 +409,11 @@ public class DataOneService {
                 return null;
             }
 
-            resp.setIdentifier(id);
+            resp.setIdentifier(id_);
             if (partIdentifier.equals(D1_FORMAT)) {
                 resp.setContentType(RDF_CONTENT_TYPE);
                 String map = createResourceMap(ir);
-                resp.setSize( map.getBytes("UTF-8").length);
+                resp.setSize(map.getBytes("UTF-8").length);
                 resp.setReader(new StringReader(map));
                 resp.setChecksum(checksumString(map));
             } else if (partIdentifier.equals(META)) {
@@ -407,29 +423,26 @@ public class DataOneService {
                 StringWriter sw = new StringWriter();
                 jaxbContext.createMarshaller().marshal(modsDoc, sw);
                 String metaXml = sw.toString();
-                resp.setSize( metaXml.getBytes("UTF-8").length);
+                resp.setSize(metaXml.getBytes("UTF-8").length);
                 resp.setReader(new StringReader(metaXml));
                 resp.setChecksum(checksumString(metaXml));
             } else if (partIdentifier.contains(D1_VERS_SEP)) {
                 Long irfid = Long.parseLong(StringUtils.substringBefore(partIdentifier, D1_VERS_SEP));
                 Integer versionNumber = Integer.parseInt(StringUtils.substringAfter(partIdentifier, D1_VERS_SEP));
-                
+
                 for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
                     if (irf.getId().equals(irfid)) {
                         InformationResourceFileVersion version = irf.getUploadedVersion(versionNumber);
                         resp.setContentType(version.getMimeType());
                         resp.setSize(version.getFileLength().intValue());
                         resp.setChecksum(version.getChecksum());
+                        break;
                     }
                 }
             }
-            
+
         } catch (Exception e) {
             logger.error("error in DataOneObjectRequest", e);
-        }
-        if (request != null && resp != null) {
-            LogEntryImpl entry = new LogEntryImpl(id, request, Event.READ);
-            genericService.save(entry);
         }
         return resp;
     }
