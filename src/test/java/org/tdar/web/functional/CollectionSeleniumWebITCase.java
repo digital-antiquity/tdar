@@ -272,7 +272,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
         //get the checkbox of the matching row
         WebElementSelection checkbox = find("#resource_datatable tbody tr")
-                .findOne(new Bool() {
+                .any(new Bool() {
                     public boolean apply(WebElement tr) {
                         return tr.getText().contains(title);
                     }
