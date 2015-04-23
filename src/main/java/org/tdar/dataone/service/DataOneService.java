@@ -81,7 +81,7 @@ public class DataOneService {
 
     static final String META = "meta";
     static final String D1_VERS_SEP = "&v=";
-    static final String D1_SEP = "___";
+    static final String D1_SEP = "/";
     static final String D1_FORMAT = "format=d1rem";
     static final String MN_REPLICATION = "MNREplication";
     static final String MN_STORAGE = "MNStorage";

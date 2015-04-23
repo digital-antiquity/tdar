@@ -58,7 +58,7 @@ public class ObjectResponseContainer {
     }
 
     public Long getSerialVersionId() {
-        return serialVersionId;
+        return getLastModified().getTime();
     }
 
     public void setSerialVersionId(Long serialVersionId) {

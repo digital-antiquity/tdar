@@ -80,7 +80,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
     private HttpServletRequest request;
 
     @GET
-    @Path("{id}")
+    @Path("{id:.*}")
     public Response object(@PathParam("id") String id) {
         setupResponseContext(response);
         logger.debug("object full request: {}", request);
@@ -102,7 +102,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
     }
 
     @HEAD
-    @Path("{id}")
+    @Path("{id:.*}")
     @Produces(APPLICATION_XML)
     public Response describe(@PathParam("id") String id) {
         logger.debug("object head request: {}", request);

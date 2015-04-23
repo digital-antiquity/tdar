@@ -45,7 +45,7 @@ public class SystemMetadataResponse extends AbstractDataOneResponse {
     private HttpServletResponse response;
     
     @GET
-    @Path("{id}")
+    @Path("{id:.*}")
     @Produces(APPLICATION_XML)
     public Response meta(@PathParam("id") String id) {
         setupResponseContext(response);
