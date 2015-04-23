@@ -116,25 +116,7 @@ public class APIController extends AuthenticationAware.Base {
                 fileProxies.addAll(((InformationResource) incoming).getFileProxies());
             }
             getLogger().debug("File Proxies: {}", fileProxies);
-            for (int i = 0; i < uploadFile.size(); i++) {
-                boolean seen = false;
-                String name = uploadFileFileName.get(i);
-                File file = uploadFile.get(i);
-                for (FileProxy proxy : fileProxies) {
-                    if (Objects.equals(proxy.getFilename(), name)) {
-                        getLogger().debug("{} -- {}", proxy, name);
-                        proxy.setFile(file);
-                        seen = true;
-                    }
-                }
-                if (seen == false) {
-                    FileProxy proxy = new FileProxy(name, file, VersionType.UPLOADED);
-                    proxy.setAction(FileAction.ADD);
-                    fileProxies.add(proxy);
-                    getLogger().debug("{} -- {}", proxy, name);
-                }
-
-            }
+            processIncomingFileProxies(fileProxies);
 
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, fileProxies, projectId, true);
             updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
@@ -200,6 +182,28 @@ public class APIController extends AuthenticationAware.Base {
         return ERROR;
 
     }
+
+    private void processIncomingFileProxies(List<FileProxy> fileProxies) {
+        for (int i = 0; i < uploadFile.size(); i++) {
+            boolean seen = false;
+            String name = uploadFileFileName.get(i);
+            File file = uploadFile.get(i);
+            for (FileProxy proxy : fileProxies) {
+                if (Objects.equals(proxy.getFilename(), name)) {
+                    getLogger().debug("{} -- {}", proxy, name);
+                    proxy.setFile(file);
+                    seen = true;
+                }
+            }
+            if (seen == false) {
+                FileProxy proxy = new FileProxy(name, file, VersionType.UPLOADED);
+                proxy.setAction(FileAction.ADD);
+                fileProxies.add(proxy);
+                getLogger().debug("{} -- {}", proxy, name);
+            }
+
+        }
+    }
     
     
     @Action(value = "updateFiles",
@@ -217,35 +221,22 @@ public class APIController extends AuthenticationAware.Base {
             return ERROR;
         }
 
+        
         try {
             InformationResource incoming = getGenericService().find(InformationResource.class, id); 
+            if (!authorizationService.canUploadFiles(getAuthenticatedUser(), incoming)) {
+                errorResponse(StatusCode.FORBIDDEN);
+                return ERROR;                
+            }
             // I don't know that this is "right"
             xmlResultObject.setRecordId(getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             FileProxies fileProxies = (FileProxies) serializationService.parseXml(FileProxies.class, new StringReader(getRecord()));
-            getLogger().debug("File Proxies: {}", fileProxies);
-            List<FileProxy> fileProxyList = new ArrayList();
-            for (int i = 0; i < uploadFile.size(); i++) {
-                boolean seen = false;
-                String name = uploadFileFileName.get(i);
-                File file = uploadFile.get(i);
-                for (FileProxy proxy : fileProxies.getFileProxies()) {
-                    if (Objects.equals(proxy.getFilename(), name)) {
-                        getLogger().debug("{} -- {}", proxy, name);
-                        proxy.setFile(file);
-                        seen = true;
-                    }
-                }
-                if (seen == false) {
-                    FileProxy proxy = new FileProxy(name, file, VersionType.UPLOADED);
-                    proxy.setAction(FileAction.ADD);
-                    fileProxyList.add(proxy);
-                    getLogger().debug("{} -- {}", proxy, name);
-                }
+            List<FileProxy> incomingList = fileProxies.getFileProxies();
+            getLogger().debug("File Proxies: {}", incomingList);
+            processIncomingFileProxies(incomingList);
 
-            }
-
-            Resource loadedRecord = importService.processFileProxies(incoming, fileProxyList, getAuthenticatedUser());
+            Resource loadedRecord = importService.processFileProxies(incoming, incomingList, getAuthenticatedUser());
             updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
