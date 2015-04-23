@@ -228,6 +228,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
 
+        processCollectionProjectLimit();
+        
         topLevelQueryPart = new QueryPartGroup(topLevelOperator);
 
         for (SearchParameters group : groups) {
@@ -250,7 +252,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
         reservedQueryPart = processReservedTerms(this);
         queryBuilder.append(reservedQueryPart);
-
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
             searchService.handleSearch(queryBuilder, this, this);
@@ -281,35 +282,51 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     // this is a no-op if basic search not detected
     protected void processBasicSearchParameters() {
+        SearchParameters terms = new SearchParameters();
+        boolean valid = false;
         if (StringUtils.isNotBlank(query)) {
-            SearchParameters terms = new SearchParameters();
             terms.setOperator(Operator.AND);
             terms.getAllFields().add(query);
             terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
+            valid = true;
+        }
+        processCollectionProjectLimit();
 
-            // contextual search: resource collection
-            if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-                getLogger().debug("contextual search: collection {}", collectionId);
-                ResourceCollection rc = new ResourceCollection();
-                rc.setId(collectionId);
-                terms.getFieldTypes().add(0, SearchFieldType.COLLECTION);
-                terms.getCollections().add(rc);
-                terms.getAllFields().add(0, null);
-
-                // contextual search: project
-            } else if (PersistableUtils.isNotNullOrTransient(projectId)) {
-                getLogger().debug("contextual search: project {}", projectId);
-                Project project = new Project();
-                project.setId(projectId);
-                terms.getFieldTypes().add(0, SearchFieldType.PROJECT);
-                terms.getProjects().add(project);
-                terms.getAllFields().add(0, null);
-            }
-
+        if (valid) {
             groups.add(terms);
         }
     }
 
+    public void processCollectionProjectLimit() {
+        SearchParameters terms = new SearchParameters();
+        boolean valid = false;
+
+        // contextual search: resource collection
+        if (PersistableUtils.isNotNullOrTransient(collectionId)) {
+            getLogger().debug("contextual search: collection {}", collectionId);
+            ResourceCollection rc = new ResourceCollection();
+            rc.setId(collectionId);
+            terms.getFieldTypes().add(0, SearchFieldType.COLLECTION);
+            terms.getCollections().add(rc);
+            terms.getAllFields().add(0, null);
+            valid = true;
+
+            // contextual search: project
+        } else if (PersistableUtils.isNotNullOrTransient(projectId)) {
+            getLogger().debug("contextual search: project {}", projectId);
+            Project project = new Project();
+            project.setId(projectId);
+            terms.getFieldTypes().add(0, SearchFieldType.PROJECT);
+            terms.getProjects().add(project);
+            terms.getAllFields().add(0, null);
+            valid = true;
+        }
+
+        if (valid) {
+            groups.add(terms);
+        }   
+    }
+    
     private String basicSearch() throws TdarActionException {
         // translate basic search field(s) so that they can be processed by advancedSearch()
         processBasicSearchParameters();
@@ -707,23 +724,17 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
-//        try {
-            if (explore) {
-                return exploreSearch();
-            }
-            boolean resetSearch = processLegacySearchParameters();
+        if (explore) {
+            return exploreSearch();
+        }
+        boolean resetSearch = processLegacySearchParameters();
 
-            if (StringUtils.isNotBlank(query) && !resetSearch) {
-                getLogger().trace("running basic search");
-                return basicSearch();
-            } else {
-                return advancedSearch();
-            }
-//        } catch (TdarRecoverableRuntimeException trex) {
-//            getLogger().error("an error happened", trex);
-//            addActionError(trex.getMessage());
-//            return INPUT;
-//        }
+        if (StringUtils.isNotBlank(query) && !resetSearch) {
+            getLogger().trace("running basic search");
+            return basicSearch();
+        } else {
+            return advancedSearch();
+        }
 
     }
     

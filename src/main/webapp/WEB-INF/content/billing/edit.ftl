@@ -22,6 +22,13 @@
         <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
         <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"  cols="80"  />
 
+<#--
+        <#if billingManager>
+            <label class="">Status</label>
+            <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
+            list='%{statuses}' cssClass="input-block-level"/>
+        </#if>
+-->
         <@s.hidden name="id" value="${account.id?c!-1}" />
         <@accountcommon.accountInfoForm />
     </@s.form>

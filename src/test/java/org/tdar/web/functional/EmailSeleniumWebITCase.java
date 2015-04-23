@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * Date: 7/1/13
  */
 public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
-    private static final String EMAIL_LING = "Submit Correction";
+    private static final String EMAIL_LINK = "Submit Correction";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
@@ -26,8 +26,9 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         gotoPage(url);
         waitFor("body");
         logger.debug("on page: {}", url);
-        find(By.partialLinkText(EMAIL_LING)).first().click();
-        waitFor(visibilityOf(find("#messageBody").first())).sendKeys("This is a test email");
+        find(By.partialLinkText(EMAIL_LINK)).click();
+        waitFor("div.modal.hide.fade.in");  //modal adds .in  after animation complete (maybe?)
+        find("#messageBody").sendKeys("This is a test email");
         find(By.name("send")).click();
 
         WebElement statusModal = waitFor(visibilityOf(find("#emailStatusModal").first()));
@@ -43,7 +44,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         gotoPage(url);
         waitFor("body");
         logger.debug("on page: {}", url);
-        find(By.partialLinkText(EMAIL_LING)).first().click();
+        find(By.partialLinkText(EMAIL_LINK)).first().click();
         waitFor(By.name("send")).click();
         waitFor( visibilityOf( find("#emailErrorContainer").first()));
         assertTrue(getText().contains("An error occurred"));
@@ -58,7 +59,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         gotoPage(url);
         waitFor("body");
         logger.debug("on page: {}", url);
-        find(By.partialLinkText(EMAIL_LING)).first().click();
+        find(By.partialLinkText(EMAIL_LINK)).first().click();
         find(By.name("messageBody")).sendKeys("This is a test email");
         find(By.name("send")).click();
         Thread.sleep(2000);

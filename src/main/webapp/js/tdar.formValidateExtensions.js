@@ -58,6 +58,10 @@
         }// skip validation if not showing
         return value.match(/^((\d{4})-?(\d{3})(\d|X|x)|)$/);
     }, "you must include a valid 8 Digit ISSN");
+    
+    $.validator.addMethod("couponFilesOrSpace", function(value, element) {
+            return !(parseInt($("#create-code_numberOfMb").val())  > 0) && (parseInt($("#create-code_numberOfFiles").val()) > 0);
+    });
 
     $.validator.addMethod("doi", function (value, element) {
     	var $e = $(element);
