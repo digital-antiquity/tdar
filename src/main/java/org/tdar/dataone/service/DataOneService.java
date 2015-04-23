@@ -45,7 +45,6 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
@@ -80,30 +79,29 @@ import edu.asu.lib.mods.ModsDocument;
 @Service
 public class DataOneService {
 
-    private static final String META = "meta";
+    static final String META = "meta";
+    static final String D1_VERS_SEP = "&v=";
+    static final String D1_SEP = "___";
+    static final String D1_FORMAT = "format=d1rem";
+    static final String MN_REPLICATION = "MNREplication";
+    static final String MN_STORAGE = "MNStorage";
+    static final String MN_AUTHORIZATION = "MNAuthorization";
+    static final String MN_READ = "MNRead";
+    static final String MN_CORE = "MNCore";
+    static final String VERSION = "v1";
+    static final String DATAONE = "/dataone/";
 
-    private static final String D1_VERS_SEP = "&v=";
+    static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=UTF-8";
+    static final String XML_CONTENT_TYPE = "application/xml; charset=UTF-8";
 
-    private static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=UTF-8";
 
-    private static final String D1_SEP = "#";
 
-    private static final String D1_FORMAT = "format=d1rem";
-
-    private static final String PUBLIC = "public";
+    static final String PUBLIC = "public";
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final String MN_REPLICATION = "MNREplication";
-    private static final String MN_STORAGE = "MNStorage";
-    private static final String MN_AUTHORIZATION = "MNAuthorization";
-    private static final String MN_READ = "MNRead";
-    private static final String MN_CORE = "MNCore";
-    private static final String VERSION = "v1";
-    private static final String DATAONE = "/dataone/";
 
-    private static final String XML_CONTENT_TYPE = "application/xml; charset=UTF-8";
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
     @Autowired
@@ -291,10 +289,8 @@ public class DataOneService {
     }
 
     public Checksum getChecksumResponse(String pid, String checksum_) {
-        Checksum checksum = new Checksum();
-        // checksum.setAlgorithm(value);
-        // checksum.setValue(value);
-        return checksum;
+        ObjectResponseContainer object = getObject(pid, null, false);
+        return createChecksum(object.getChecksum());
     }
 
     public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count) {
@@ -337,13 +333,14 @@ public class DataOneService {
     public SystemMetadata metadataRequest(String id) {
         SystemMetadata metadata = new SystemMetadata();
         AccessPolicy policy = new AccessPolicy();
-        Resource resource = new Resource();
+
+        ObjectResponseContainer object = getObjectFromTdar(id);
+        InformationResource resource = object.getTdarResource();
         policy.getAllow().add(createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(dateToGregorianCalendar(resource.getDateUpdated()));
         metadata.setDateUploaded(dateToGregorianCalendar(resource.getDateCreated()));
-        ObjectResponseContainer object = getObjectFromTdar(id);
         // metadata.setArchived(value);
         metadata.setChecksum(createChecksum(object.getChecksum()));
         metadata.setFormatId(contentTypeToD1Format(object, object.getContentType()));
@@ -356,28 +353,32 @@ public class DataOneService {
         // metadata.setReplicationPolicy(rpolicy );
 
         // FIXME: who should this be?
-        metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
+        if (StringUtils.isNotBlank(CONFIG.getSystemAdminEmail())) {
+            metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
+        }
         // metadata.setSerialVersion(value);
 
         // FIXME: should we be exposing emails here?
-        metadata.setSubmitter(createSubject(resource.getSubmitter().getEmail()));
+        if (StringUtils.isNotBlank(resource.getSubmitter().getEmail())) {
+            metadata.setSubmitter(createSubject(resource.getSubmitter().getEmail()));
+        }
         return metadata;
     }
 
     private String contentTypeToD1Format(ObjectResponseContainer object, String contentType) {
-        // TODO Auto-generated method stub
-        return null;
+        return "BAD-FORMAT";
     }
 
     private String contentTypeToD1Format(ListObjectEntry resource, String objectFormat) {
-        // TODO Auto-generated method stub
-        return null;
+        return "BAD-FORMAT";
     }
 
     private AccessRule createAccessRule(Permission permission, String name) {
         AccessRule rule = new AccessRule();
         rule.getPermission().add(permission);
-        rule.getSubject().add(createSubject(name));
+        if (StringUtils.isNotBlank(name)) {
+            rule.getSubject().add(createSubject(name));
+        }
         return rule;
     }
 
@@ -387,12 +388,15 @@ public class DataOneService {
         return subject;
     }
 
-    public ObjectResponseContainer getObject(final String id, HttpServletRequest request) {
+    public ObjectResponseContainer getObject(final String id, HttpServletRequest request, boolean log) {
         ObjectResponseContainer resp = getObjectFromTdar(id);
-        if (request != null && resp != null) {
+        if (request != null && resp != null && !log) {
             LogEntryImpl entry = new LogEntryImpl(id, request, Event.READ);
             genericService.save(entry);
+        } else {
+            logger.debug("req: {} , resp: {}, id {}", request, resp, id);
         }
+        logger.debug("response: {}", resp);
         return resp;
     }
 
@@ -400,15 +404,16 @@ public class DataOneService {
         ObjectResponseContainer resp = null;
         try {
             String doi = StringUtils.substringBefore(id_, D1_SEP);
-            doi.replace("doi:10.6067:", "doi:10.6067/");
+            doi = doi.replace("doi:10.6067:", "doi:10.6067/");
             String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
             InformationResource ir = informationResourceService.findByDoi(doi);
             obfuscationService.obfuscate(ir, null);
             resp = new ObjectResponseContainer();
             if (PersistableUtils.isNullOrTransient(ir)) {
+                logger.debug("resource not foound: {}", doi);
                 return null;
             }
-
+            resp.setTdarResource(ir);
             resp.setIdentifier(id_);
             if (partIdentifier.equals(D1_FORMAT)) {
                 resp.setContentType(RDF_CONTENT_TYPE);

@@ -51,7 +51,6 @@ public class ObjectResponse extends AbstractDataOneResponse {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    
     @Autowired
     private DataOneService service;
     /*
@@ -84,8 +83,9 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @Path("{id}")
     public Response object(@PathParam("id") String id) {
         setupResponseContext(response);
+        logger.debug("object full request: {}", request);
         try {
-            ObjectResponseContainer container = service.getObject(id, request);
+            ObjectResponseContainer container = service.getObject(id, request, true);
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream os) throws IOException, WebApplicationException {
@@ -95,7 +95,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
             };
             return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
         } catch (Exception e) {
-            logger.error("error in DataOne getObject:",e);
+            logger.error("error in DataOne getObject:", e);
         }
         return Response.serverError().status(Status.NOT_FOUND).build();
 
@@ -105,21 +105,27 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @Path("{id}")
     @Produces(APPLICATION_XML)
     public Response describe(@PathParam("id") String id) {
+        logger.debug("object head request: {}", request);
         setupResponseContext(response);
 
-        ObjectResponseContainer container = service.getObject(id, null);
-        if (container != null) {
-            return Response.ok().header(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat()).
-                    header(DATA_ONE_CHECKSUM, container.getChecksum()).
-                    header(LAST_MODIFIED, container.getLastModified()).
-                    header(DATA_ONE_SERIAL_VERSION, container.getSerialVersionId()).build();
-        }
+        try {
+            ObjectResponseContainer container = service.getObject(id, request, false);
+            logger.debug("returning OK");
+            response.setHeader(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat());
+            response.setHeader(DATA_ONE_CHECKSUM, "MD5," +container.getChecksum());
+            response.setHeader(LAST_MODIFIED, toIso822(container.getLastModified()));
+            response.setHeader(HttpHeaders.CONTENT_LENGTH, Integer.toString(container.getSize()));
+            response.setHeader(DATA_ONE_SERIAL_VERSION, container.getSerialVersionId().toString());
+            return Response.ok().build();
 
-        return Response.serverError().header(DATA_ONE_EXCEPTION_NAME, NOT_FOUND).
-                header(DATA_ONE_EXCEPTION_DETAIL_CODE, "1380").
-                header(DATA_ONE_EXCEPTION_DESCRIPTION, SPECIFIED_OBJECT_DOES_NOT_EXIST_ON_THIS_NODE).
-                header(DATA_ONE_EXCEPTION_PID, IDONTEXIST).
-                status(Status.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("execption in DataOne object head request", e);
+        }
+        response.setHeader(DATA_ONE_EXCEPTION_NAME, NOT_FOUND);
+        response.setHeader(DATA_ONE_EXCEPTION_DETAIL_CODE, "1380");
+        response.setHeader(DATA_ONE_EXCEPTION_DESCRIPTION, SPECIFIED_OBJECT_DOES_NOT_EXIST_ON_THIS_NODE);
+        response.setHeader(DATA_ONE_EXCEPTION_PID, IDONTEXIST);
+        return Response.serverError().status(Status.NOT_FOUND).build();
     }
 
     @GET

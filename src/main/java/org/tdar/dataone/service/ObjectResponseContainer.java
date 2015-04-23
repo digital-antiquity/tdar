@@ -3,6 +3,8 @@ package org.tdar.dataone.service;
 import java.io.Reader;
 import java.util.Date;
 
+import org.tdar.core.bean.resource.InformationResource;
+
 public class ObjectResponseContainer {
 
     private String objectFormat = "eml://ecoinformatics.org/eml-2.0.1";
@@ -13,6 +15,7 @@ public class ObjectResponseContainer {
     private Long serialVersionId = 1234L;
     private int size;
     private Reader reader;
+    private InformationResource tdarResource;
     
     public String getObjectFormat() {
         return objectFormat;
@@ -78,5 +81,12 @@ public class ObjectResponseContainer {
         this.reader = reader;
     }
 
+    public void setTdarResource(InformationResource ir) {
+        this.tdarResource = ir;
+    }
+
+    public InformationResource getTdarResource() {
+        return this.tdarResource;
+    }
 
 }
