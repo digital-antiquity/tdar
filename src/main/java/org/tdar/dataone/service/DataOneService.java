@@ -54,6 +54,7 @@ import org.tdar.dataone.bean.AccessRule;
 import org.tdar.dataone.bean.Checksum;
 import org.tdar.dataone.bean.Event;
 import org.tdar.dataone.bean.ListObjectEntry;
+import org.tdar.dataone.bean.ListObjectEntry.Type;
 import org.tdar.dataone.bean.Log;
 import org.tdar.dataone.bean.LogEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
@@ -270,6 +271,7 @@ public class DataOneService {
         // and idFilter startsWith(idFilter)
         // log.setCount...
 
+        dataOneDao.findLogFiles(fromDate, toDate, event, idFilter, start, count, log);
         List<LogEntry> logEntries = log.getLogEntry();
         for (LogEntryImpl impl : new ArrayList<LogEntryImpl>()) {
             LogEntry entry = new LogEntry();
@@ -298,7 +300,10 @@ public class DataOneService {
         list.setCount(count);
         list.setStart(start);
 
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, list);
+        // FIXME: CONVERT IDENTIFIER to TDAR QUERY
+        // FIXME: CONVERT FORMAT to TDAR FORMAT
+        ListObjectEntry.Type type = Type.D1; 
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type , list);
         for (ListObjectEntry resource : resources) {
             ObjectInfo info = new ObjectInfo();
             info.setChecksum(createChecksum(resource.getChecksum()));
