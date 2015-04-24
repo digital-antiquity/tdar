@@ -3,10 +3,7 @@ package org.tdar.dataone.server;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
 
 public class AbstractDataOneResponse {
 
