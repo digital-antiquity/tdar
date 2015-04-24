@@ -24,6 +24,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.FileProxies;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
@@ -68,6 +70,16 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         logger.info(xml);
     }
 
+    @Test
+    public void testFileProxyConversion() throws Exception {
+        FileProxies fp = new FileProxies();
+        fp.getFileProxies().add(new FileProxy());
+        String xml = serializationService.convertToXML(fp);
+        logger.info(xml);
+        serializationService.parseXml(FileProxies.class, new StringReader(xml));
+        
+    }
+    
     @Test
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);

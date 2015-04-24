@@ -17,6 +17,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -115,25 +116,7 @@ public class APIController extends AuthenticationAware.Base {
                 fileProxies.addAll(((InformationResource) incoming).getFileProxies());
             }
             getLogger().debug("File Proxies: {}", fileProxies);
-            for (int i = 0; i < uploadFile.size(); i++) {
-                boolean seen = false;
-                String name = uploadFileFileName.get(i);
-                File file = uploadFile.get(i);
-                for (FileProxy proxy : fileProxies) {
-                    if (Objects.equals(proxy.getFilename(), name)) {
-                        getLogger().debug("{} -- {}", proxy, name);
-                        proxy.setFile(file);
-                        seen = true;
-                    }
-                }
-                if (seen == false) {
-                    FileProxy proxy = new FileProxy(name, file, VersionType.UPLOADED);
-                    proxy.setAction(FileAction.ADD);
-                    fileProxies.add(proxy);
-                    getLogger().debug("{} -- {}", proxy, name);
-                }
-
-            }
+            processIncomingFileProxies(fileProxies);
 
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, fileProxies, projectId, true);
             updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
@@ -152,6 +135,116 @@ public class APIController extends AuthenticationAware.Base {
                 getXmlResultObject().setRecordId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
+
+            logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+
+            getXmlResultObject().setStatusCode(statuscode);
+            getXmlResultObject().setStatus(code.toString());
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
+            xmlResultObject.setMessage(message);
+            if (getLogger().isTraceEnabled()) {
+                getLogger().trace(serializationService.convertToXML(loadedRecord));
+            }
+            return SUCCESS;
+        } catch (Exception e) {
+            message = "";
+            if (e instanceof JaxbParsingException) {
+                getLogger().debug("Could not parse the xml import", e);
+                final List<JaxbValidationEvent> events = ((JaxbParsingException) e).getEvents();
+                List<String> errors = new ArrayList<>();
+                for (JaxbValidationEvent event : events) {
+                    errors.add(event.toString());
+                }
+
+                errorResponse(StatusCode.BAD_REQUEST);
+                getXmlResultObject().setMessage(message);
+                getXmlResultObject().setErrors(errors);
+                return ERROR;
+            }
+            getLogger().debug("an exception occured when processing the xml import", e);
+            Throwable exp = e;
+            List<String> stackTraces = new ArrayList<>();
+            List<String> errors = new ArrayList<>();
+            do {
+                errors.add(((exp.getMessage() == null) ? " ? " : exp.getMessage()));
+                exp = exp.getCause();
+                stackTraces.add(ExceptionUtils.getFullStackTrace(exp));
+            } while (exp != null);
+            if (e instanceof APIException) {
+                getXmlResultObject().setMessage(e.getMessage());
+                getXmlResultObject().setStackTraces(stackTraces);
+                getXmlResultObject().setErrors(errors);
+                errorResponse(((APIException) e).getCode());
+                return ERROR;
+            }
+        }
+        errorResponse(StatusCode.UNKNOWN_ERROR);
+        return ERROR;
+
+    }
+
+    private void processIncomingFileProxies(List<FileProxy> fileProxies) {
+        for (int i = 0; i < uploadFile.size(); i++) {
+            boolean seen = false;
+            String name = uploadFileFileName.get(i);
+            File file = uploadFile.get(i);
+            for (FileProxy proxy : fileProxies) {
+                if (Objects.equals(proxy.getFilename(), name)) {
+                    getLogger().debug("{} -- {}", proxy, name);
+                    proxy.setFile(file);
+                    seen = true;
+                }
+            }
+            if (seen == false) {
+                FileProxy proxy = new FileProxy(name, file, VersionType.UPLOADED);
+                proxy.setAction(FileAction.ADD);
+                fileProxies.add(proxy);
+                getLogger().debug("{} -- {}", proxy, name);
+            }
+
+        }
+    }
+    
+    
+    @Action(value = "updateFiles",
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+            })
+    @PostOnly
+    public String updateFiles() {
+
+        if (StringUtils.isEmpty(getRecord())) {
+            getLogger().info("no record defined");
+            errorResponse(StatusCode.BAD_REQUEST);
+            return ERROR;
+        }
+
+        
+        try {
+            InformationResource incoming = getGenericService().find(InformationResource.class, id); 
+            if (!authorizationService.canUploadFiles(getAuthenticatedUser(), incoming)) {
+                errorResponse(StatusCode.FORBIDDEN);
+                return ERROR;                
+            }
+            // I don't know that this is "right"
+            xmlResultObject.setRecordId(getId());
+            TdarUser authenticatedUser = getAuthenticatedUser();
+            FileProxies fileProxies = (FileProxies) serializationService.parseXml(FileProxies.class, new StringReader(getRecord()));
+            List<FileProxy> incomingList = fileProxies.getFileProxies();
+            getLogger().debug("File Proxies: {}", incomingList);
+            processIncomingFileProxies(incomingList);
+
+            Resource loadedRecord = importService.processFileProxies(incoming, incomingList, getAuthenticatedUser());
+            updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
+
+            setImportedRecord(loadedRecord);
+
+            message = "updated:" + loadedRecord.getId();
+            StatusCode code = StatusCode.UPDATED;
+            status = StatusCode.UPDATED;
+            int statuscode = StatusCode.UPDATED.getHttpStatusCode();
 
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
