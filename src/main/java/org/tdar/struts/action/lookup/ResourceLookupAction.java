@@ -52,6 +52,8 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private boolean includeCompleteRecord = false;
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
 
+    private boolean parentCollectionsIncluded = true;
+
     private Long selectResourcesFromCollectionid;
 
 
@@ -74,7 +76,10 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             q.append(new ProjectIdLookupQueryPart(getProjectId()));
         }
 
-        appendIf(PersistableUtils.isNotNullOrTransient(getCollectionId()), q, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, getCollectionId());
+        String colQueryField = isParentCollectionsIncluded() ?
+                QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS : QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
+
+        appendIf(PersistableUtils.isNotNullOrTransient(getCollectionId()), q, colQueryField, getCollectionId());
 
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
@@ -164,4 +169,11 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         this.title = title;
     }
 
+    public boolean isParentCollectionsIncluded() {
+        return parentCollectionsIncluded;
+    }
+
+    public void setParentCollectionsIncluded(boolean parentCollectionsIncluded) {
+        this.parentCollectionsIncluded = parentCollectionsIncluded;
+    }
 }

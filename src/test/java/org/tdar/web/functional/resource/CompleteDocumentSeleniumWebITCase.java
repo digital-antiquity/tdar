@@ -44,6 +44,7 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
 import org.tdar.web.functional.AbstractBasicSeleniumWebITCase;
+import org.tdar.web.functional.util.WebElementSelection;
 
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -178,12 +179,13 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertTrue(getText().contains("Conference Location"));
         setFieldByName("document.date", "1923");
         setFieldByName("projectId", "-1");
-        find("#accessRightsRecordsAddAnotherButton").click();
-        find("#accessRightsRecordsAddAnotherButton").click();
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@dsu.edu",
+        WebElementSelection find = find("#accessRightsRecordsAddAnotherButton");
+        find.click();
+        find.click();
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle elliott , arizona state",
                 "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@dsu.edu", "person-5349",
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
                 VIEW_ALL);
         submitForm();
     }
@@ -299,13 +301,14 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         }
 
         // add some authusers
-        find("#accessRightsRecordsAddAnotherButton").click();
-        find("#accessRightsRecordsAddAnotherButton").click();
+        WebElementSelection accessRightsAddAnother = find("#accessRightsRecordsAddAnotherButton");
+        accessRightsAddAnother.click();
+        accessRightsAddAnother.click();
 
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@dsu.edu",
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle elliott , arizona state",
                 "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@dsu.edu", "person-5349",
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
                 VIEW_ALL);
 
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");

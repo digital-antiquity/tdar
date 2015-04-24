@@ -139,8 +139,8 @@
 		        <@s.textfield name="exipres" cssClass="date  input-small datepicker" label="Date Expires" />
             </div>
             <div class="span4">
-                <@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"  value=""/>
-		        <@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB" value="" />
+                <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
+		        <@s.textfield name="numberOfMb" cssClass="integer couponFilesOrSpace" label="Number of MB" value="" />
             </div>
         </div>
         <div class="row">
@@ -232,7 +232,11 @@
                     messages: {
                         numberOfFiles: {
                             required:"Specify a value for Files or MB",
-                        }
+                        	couponFilesOrSpace : "choose files or space"
+                        },
+                        numberOfMb: {
+                        	couponFilesOrSpace : "choose files or space"
+                    	}
                     }
         });
     });
