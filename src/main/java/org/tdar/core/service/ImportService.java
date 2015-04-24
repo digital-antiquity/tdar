@@ -159,6 +159,14 @@ public class ImportService {
         return incomingResource;
     }
 
+    public <R extends InformationResource> R processFileProxies(R incoming_, Collection<FileProxy> proxies, TdarUser authorizedUser) throws APIException, IOException {
+        processFiles(authorizedUser, proxies, incoming_);
+        incoming_.markUpdated(authorizedUser);
+        genericService.saveOrUpdate(incoming_);
+        return incoming_;
+
+    }
+    
     /**
      * Iterate through the @link FileProxy objects and Files and import them setting metadata and permissions as needed.
      * 

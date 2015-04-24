@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DisplayOrientation;
@@ -16,7 +17,13 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.functional.util.Bool;
 import org.tdar.web.functional.util.WebElementSelection;
+
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNot.not;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
@@ -251,27 +258,28 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(text.contains(DESCRIPTION));
     }
 
-    public void addResourceToCollection(String title) {
-        setFieldByName("_tdar.query", title);
-        waitFor(TestConfiguration.getInstance().getWaitInt());
-        for (int i = 0; i < 20; i++) {
-            String text = find("#resource_datatable").getText();
-            logger.debug(text);
-            if (text.contains(title)) {
-                break;
-            } else {
-                waitFor(TestConfiguration.getInstance().getWaitInt());
-            }
-        }
-        boolean found = false;
-        for (WebElement tr : find("#resource_datatable tbody tr")) {
-            if (tr.getText().contains(title)) {
-                tr.findElement(By.cssSelector(".datatable-checkbox")).click();
-                found = true;
-                break;
-            }
-        }
-        Assert.assertTrue("should have found at least one checkbox with matching title: " + title, found);
+    public void addResourceToCollection(final String title) {
+        //wait until datatable loads new content
+        WebElement origRow = findFirst("#resource_datatable tbody tr");
+        find(By.name("_tdar.query")).val(title);
+        waitFor(ExpectedConditions.stalenessOf(origRow));
+
+        //wait for new results to appear
+        waitFor(ExpectedConditions.textToBePresentInElement(
+                find("#resource_datatable").first(),
+                title
+        ));
+
+        //get the checkbox of the matching row
+        WebElementSelection checkbox = find("#resource_datatable tbody tr")
+                .any(new Bool() {
+                    public boolean apply(WebElement tr) {
+                        return tr.getText().contains(title);
+                    }
+                })
+                .find(".datatable-checkbox");
+        assertThat(checkbox.size(), is( 1));
+        checkbox.click();
     }
 
     private void removeResourceFromCollection(String title) {

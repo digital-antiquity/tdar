@@ -282,9 +282,9 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         logAccountAndHelperState(account, helper);
 
         boolean overdrawn = isOverdrawn(account, getResourceEvaluator());
-        logger.info("overdrawn: {} hasUpdates: {}", overdrawn, hasUpdates);
+        logger.info("overdrawn: {} hasUpdates: {} hasDeletedStatusChange: {}", overdrawn, hasUpdates, resourceEvaluator.isHasDeletedResources());
 
-        if (!hasUpdates || overdrawn) {
+        if (!hasUpdates || overdrawn || resourceEvaluator.isHasDeletedResources()) {
             /*
              * If we don't have anything to update (no resource has been marked as "changed" or the account has been overdrawn, then we need to start from
              * scratch with this account. We set it back to the normal state, and we re-evaluate ALL of the resources in the account
@@ -510,7 +510,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
             return true;
         }
         logger.trace("mode: {}", mode);
-        logger.debug("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})",
+        logger.trace("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})",
                 helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(),
                 helper.getAvailableNumberOfFiles(), space, files, resource.getId(), resource.getStatus());
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes

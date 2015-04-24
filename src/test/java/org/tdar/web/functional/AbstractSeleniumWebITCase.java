@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openqa.selenium.By.id;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,20 +42,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -87,6 +75,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.functional.util.LoggingStopWatch;
 import org.tdar.web.functional.util.WebElementSelection;
 
 import com.google.common.base.Predicate;
@@ -119,10 +108,13 @@ public abstract class AbstractSeleniumWebITCase {
     private WebDriver driver;
     private Browser currentBrowser;
 
+    private LoggingStopWatch findTimer;
+    private LoggingStopWatch waitTimer;
+
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected static Logger logger = LoggerFactory.getLogger(AbstractSeleniumWebITCase.class);
 
     private boolean ignorePageErrorChecks;
 
@@ -138,16 +130,9 @@ public abstract class AbstractSeleniumWebITCase {
     // predicate that returns true if document.readystate != "complete" (use with FluentWait)
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
-    /**
-     * Custom "By" criteria for use with {@link #find(By)} - matches all elements that are referred by a label with the specified label text. e.g. <br>
-     * <code>find(withLabel("First Name")).val("Bob")</code>
-     * 
-     * @param labelText
-     *            text of the label associated with the element.
-     * @return By locator instance
-     */
-
     public AbstractSeleniumWebITCase() {
+        findTimer = new LoggingStopWatch(getClass(), "findTimer", 0, 2 * 1000);
+        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, (DEFAULT_WAITFOR_TIMEOUT * 1000) / 4);
     }
 
     public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
@@ -603,9 +588,12 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @Deprecated
     public void waitFor(int timeInSeconds) {
+        waitTimer.start();
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
         } catch (InterruptedException ignored) {
+        } finally {
+            waitTimer.stop();
         }
     }
 
@@ -638,8 +626,10 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public<T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
+        waitTimer.start();
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         T value = wait.until(expectedCondition);
+        waitTimer.stop();
         return value;
     }
 
@@ -651,7 +641,10 @@ public abstract class AbstractSeleniumWebITCase {
      * @return WebElementSelection containing zero-or-more elments
      */
     public WebElementSelection find(String selector) {
-        return find(By.cssSelector(selector));
+        findTimer.start();
+        WebElementSelection wes = find(By.cssSelector(selector));
+        findTimer.stop();
+        return wes;
     }
 
     /**
@@ -1106,8 +1099,10 @@ public abstract class AbstractSeleniumWebITCase {
     protected void expandAllTreeviews() {
         int giveupCount = 0;
         // yes, you really have to do this. the api has no "expand all" method.
-        while (!find(".expandable-hitarea").visibleElements().isEmpty() && (giveupCount++ < 10)) {
-            find(".expandable-hitarea").visibleElements().click();
+        WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
+        while (!visibleElements.isEmpty() && (giveupCount++ < 10)) {
+            visibleElements.click();
+            visibleElements = find(".expandable-hitarea").visibleElements();
         }
         assertTrue("trying to expand all listview subtrees", giveupCount < 10);
     }
@@ -1159,44 +1154,43 @@ public abstract class AbstractSeleniumWebITCase {
      * 
      */
     public boolean selectAutocompleteValue(WebElement field, String textEntry, String partialMenuItemTest, String idSelector) {
-        field.sendKeys(textEntry);
-        waitFor(TestConfiguration.getInstance().getWaitInt()); // kludge
-        field.sendKeys(Keys.ARROW_DOWN);
-        WebElementSelection menuItems = null;
-
-        //fixme: this  should be unnecessary -- WebDriverWait repeatedly executes predicate at set interval before timing out
-        for (int i = 0; i < 30; i++) {
-            if ((menuItems == null) || menuItems.isEmpty()) {
-                try {
-                    menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", TestConfiguration.getInstance().getWaitInt());
-                } catch (TimeoutException tex) {
-                    // ignore
-                }
-            }
-        }
-        if ((menuItems == null) || menuItems.isEmpty()) {
-            fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
-        }
-
-        logger.trace("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
+        field.sendKeys(textEntry);
+        WebElement autocompletePopup = waitForAutocompletePopup().first();
+        field.sendKeys(Keys.ARROW_DOWN);
+        WebElementSelection menuItems = find(autocompletePopup).find("li.ui-menu-item");
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
+        }
+        logger.debug("menu size:{}", menuItems.size());
+
         WebElement firstMatch = null;
-        for (WebElement menuItem : menuItems) {
-            String text = menuItem.getText().toLowerCase();
-            WebElementSelection wes = new WebElementSelection(menuItem, getDriver());
-            String html = wes.getHtml();
-            if (text.contains(partialText) || (StringUtils.isNotBlank(idSelector) && StringUtils.containsIgnoreCase(html, idSelector))) {
-                firstMatch = menuItem;
-                break;
+        logger.debug("idSelector:{}", idSelector);
+        if(StringUtils.isNotBlank(idSelector)) {
+            if(!find(By.id(idSelector)).isEmpty()) {
+                firstMatch = autocompletePopup.findElement(By.id(idSelector));
             }
-            logger.info(text);
+        }
+
+        if(firstMatch == null ){
+            for (WebElement menuItem : menuItems) {
+                String text = menuItem.getText().toLowerCase();
+                logger.debug("looking in [{}] for [{}]", text, partialText);
+                if (text.contains(partialText)) {
+                    firstMatch = menuItem;
+                    break;
+                }
+                logger.info(text);
+            }
         }
 
         boolean wasFound = firstMatch != null;
         logger.info("match: {} ", firstMatch);
         if (wasFound) {
             (firstMatch.findElement(By.tagName("a"))).click();
-            waitFor(TestConfiguration.getInstance().getWaitInt());
+            //waitFor(TestConfiguration.getInstance().getWaitInt());
+            waitFor(invisibilityOf(find(autocompletePopup)));
         }
         return wasFound;
     }
@@ -1422,6 +1416,72 @@ public abstract class AbstractSeleniumWebITCase {
         logger.debug(getCurrentUrl());
         assertThat("login button is missing", selection, is(not(empty())));
     }
+
+    /**
+     * Wait for a jquery UI autocomplete window to become visible.
+     *
+     * @return the first visible autocomplete results window found by this method.
+     */
+    public WebElementSelection waitForAutocompletePopup() {
+        //due to how jquery caches autocomplete results, we can't predict which autocomplete that there is only one.  So, we wait until any autocompplete
+        //window becomes visible.
+        List<WebElement> elements = waitFor(visibilityOfAnyElementsLocatedBy(By.cssSelector("ul.ui-autocomplete")));
+        return new WebElementSelection(elements, getDriver());
+    }
+
+    /**
+     *
+     * Waits for at least one of the elements located by the specified locator are visible.
+     *
+     * @param locator
+     * @return
+     */
+    public static ExpectedCondition<List<WebElement>> visibilityOfAnyElementsLocatedBy(
+            final By locator) {
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(WebDriver driver) {
+                List<WebElement> elements = driver.findElements(locator);
+                List<WebElement> visibleElements = new ArrayList<>();
+                for(WebElement element : elements){
+                    if(element.isDisplayed()){
+                        visibleElements.add(element);
+                    }
+                }
+                if(visibleElements.isEmpty()) {
+                    return null;
+                } else {
+                    logger.debug("found visible elements:{}", visibleElements);
+                    return visibleElements;
+                }
+            }
+        };
+    }
+
+    /**
+     * Wait until the specified elements are no longer visible.
+     * @param selection
+     * @return
+     */
+    public static ExpectedCondition<Boolean> invisibilityOf(final WebElementSelection selection) {
+
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(@Nullable WebDriver ignored) {
+                for( WebElement element : selection) {
+                    if(element.isDisplayed()) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        };
+
+    }
+
+
+
+
 
 
 }

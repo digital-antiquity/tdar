@@ -189,6 +189,9 @@ public class Resource implements Persistable,
     private transient Boolean obfuscatedObjectDifferent = false;
 
     @Transient
+    private transient Boolean statusChanged = Boolean.FALSE;
+    
+    @Transient
     private transient boolean viewable;
     @Transient
     private transient Long transientAccessCount;
@@ -556,7 +559,6 @@ public class Resource implements Persistable,
 
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
     @IndexedEmbedded
-    @ElementCollection
     @XmlTransient
     public List<Long> getSharedCollectionsContaining() {
         Set<Long> collectionIds = new HashSet<Long>();
@@ -568,7 +570,21 @@ public class Resource implements Persistable,
         }
         logger.trace("partOfPublicResourceCollection:" + collectionIds);
         return new ArrayList<Long>(collectionIds);
+    }
 
+
+    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS)
+    @IndexedEmbedded
+    @XmlTransient
+    public List<Long> getDirectSharedResourceIds() {
+        Set<Long> collectionIds = new HashSet<>();
+        for(ResourceCollection rc: getSharedResourceCollections() ) {
+            collectionIds.add(rc.getId());
+        }
+        //probably pointless
+        List<Long> idList = new ArrayList<Long>(collectionIds);
+        Collections.sort(idList);
+        return idList;
     }
 
     @IndexedEmbedded
@@ -1141,6 +1157,7 @@ public class Resource implements Persistable,
     public void setStatus(Status status) {
         if (this.status != status) {
             setPreviousStatus(this.status);
+            setStatusChanged(Boolean.TRUE);
         }
         this.status = status;
     }
@@ -2000,5 +2017,13 @@ public class Resource implements Persistable,
 
     public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
         this.bookmarkedResources = bookmarkedResources;
+    }
+
+    public Boolean getStatusChanged() {
+        return statusChanged;
+    }
+
+    private void setStatusChanged(Boolean statusChanged) {
+        this.statusChanged = statusChanged;
     }
 }

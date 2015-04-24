@@ -242,6 +242,35 @@ public class WebElementSelection implements Iterable<WebElement> {
     }
 
     /**
+     * Return a selection of elements filtered by specified lambda
+     * @param predicate
+     * @return
+     */
+    public WebElementSelection filter(Bool predicate) {
+        return filter(predicate, true);
+    }
+
+    /**
+     * Return the first element that matches the specified lambda
+     * @param predicate
+     * @return
+     */
+    public WebElementSelection any(Bool predicate) {
+        return filter(predicate, false);
+    }
+
+    private WebElementSelection filter(Bool filter, boolean multi) {
+        WebElementSelection selection = new WebElementSelection(driver);
+        for(WebElement w : this) {
+            if(filter.apply(w)) {
+                selection.add(w);
+                if(!multi) break;
+            }
+        }
+        return selection;
+    }
+
+    /**
      * @return true if first element of selection is displayed, otherwise false
      */
     public boolean isDisplayed() {
