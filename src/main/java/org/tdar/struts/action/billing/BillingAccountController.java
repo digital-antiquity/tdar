@@ -1,6 +1,7 @@
 package org.tdar.struts.action.billing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -178,7 +179,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @SkipValidation
     @WriteableSession
     @Action(value = UPDATE_QUOTAS, results = {
-            @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
+            @Result(name = SUCCESS, location = "${id}", type = REDIRECT)
     })
     public String updateQuotas() {
         accountService.updateQuota(getAccount(), getAccount().getResources());
@@ -193,7 +194,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
      */
     @SkipValidation
     @Action(value = FIX_FOR_DELETE_ISSUE, results = {
-            @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
+            @Result(name = SUCCESS, location = "${id}", type = REDIRECT)
     })
     public String fix() {
         accountService.resetAccountTotalsToHaveOneFileLeft(getAccount());
@@ -347,4 +348,9 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             getAuthorizedUsersFullNames().add(user.getProperName());
         }
     }
+    
+    public List<Status> getStatuses() {
+        return Arrays.asList(Status.ACTIVE, Status.FLAGGED,Status.FLAGGED_ACCOUNT_BALANCE, Status.DELETED);
+    }
+
 }

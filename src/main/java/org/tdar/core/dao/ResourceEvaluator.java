@@ -33,6 +33,7 @@ public class ResourceEvaluator implements Serializable {
     private static final long serialVersionUID = 3621509880429873050L;
 
     private boolean includeDeletedFilesInCounts = false;
+    private boolean hasDeletedResources = false;
     private boolean includeAllVersionsInCounts = false;
     private List<ResourceType> uncountedResourceTypes = Arrays.asList(ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.PROJECT);
     private List<Status> uncountedResourceStatuses = Arrays.asList(Status.DELETED);
@@ -114,6 +115,11 @@ public class ResourceEvaluator implements Serializable {
                 status = resource.getStatus();
             }
 
+            if (uncountedResourceStatuses.contains(status) && resource.getStatusChanged()) {
+                logger.debug("{} {}", resource.getId(), status);
+                setHasDeletedResources(true);
+            }
+            
             // esacape if we're dealing with an uncounted status or resource type
             if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(status)) {
                 logger.trace("skipping because of status {} or type: {}", status, resource.getResourceType());
@@ -256,6 +262,14 @@ public class ResourceEvaluator implements Serializable {
 
     public Set<Long> getResourceIds() {
         return resourceIds;
+    }
+
+    public boolean isHasDeletedResources() {
+        return hasDeletedResources;
+    }
+
+    public void setHasDeletedResources(boolean hasDeletedResources) {
+        this.hasDeletedResources = hasDeletedResources;
     }
 
 }

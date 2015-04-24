@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -26,8 +25,6 @@ import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
-
-import com.github.jsonldjava.utils.Obj;
 
 @Component
 @Scope("prototype")
@@ -168,9 +165,9 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
     protected void handleSlug() {
         if (!Objects.equals(getSlug(), getPersistable().getSlug())) {
             String normalizeIri = OntologyNode.normalizeIri(getIri());
-            getLogger().debug("iri:{} --> {}", getIri(), normalizeIri);
+            getLogger().trace("iri:{} --> {}", getIri(), normalizeIri);
             OntologyNode node_ = getOntology().getNodeByIri(normalizeIri);
-            getLogger().debug("nodel:{}", node_);
+            getLogger().trace("node:{}", node_);
             if (node_ == null) {
                 node_ = fallbackCheckForIri(normalizeIri);
             }
@@ -192,7 +189,7 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
      */
     private OntologyNode fallbackCheckForIri(String normalizeIri) {
         for (OntologyNode node : getOntology().getOntologyNodes()) {
-            String iri_ = node.getNormalizedIri().replaceAll("[\\(\\)]", "");
+            String iri_ = node.getNormalizedIri().replaceAll("[\\(\\)\\']", "");
             getLogger().trace("|{}|<--{}-->|{}|", iri_, Objects.equals(iri_, normalizeIri), normalizeIri);
             if (Objects.equals(normalizeIri, iri_)) {
                 return node;

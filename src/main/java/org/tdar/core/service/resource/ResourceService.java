@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
@@ -50,6 +51,7 @@ import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
@@ -95,6 +97,8 @@ public class ResourceService extends GenericService {
     private ProjectDao projectDao;
     @Autowired
     private DataTableDao dataTableDao;
+    @Autowired
+    private BillingAccountDao accountDao;
 
     @Autowired
     private AuthorizationService authenticationAndAuthorizationService;
@@ -770,11 +774,11 @@ public class ResourceService extends GenericService {
         DeleteIssue issue = new DeleteIssue();
         switch (persistable.getResourceType()) {
             case PROJECT:
-                 ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
-                 Set<InformationResource> inProject = new HashSet<>();
-                 for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
-                     inProject.add(ir);
-                 }
+                ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) persistable, Status.ACTIVE, Status.DRAFT);
+                Set<InformationResource> inProject = new HashSet<>();
+                for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
+                    inProject.add(ir);
+                }
                 if (CollectionUtils.isNotEmpty(inProject)) {
                     issue.getRelatedItems().addAll(inProject);
                     issue.setIssue(provider.getText("resourceDeleteController.delete_project"));
@@ -811,13 +815,21 @@ public class ResourceService extends GenericService {
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
         logResourceModification(resource, authUser, logMessage);
         delete(resource);
+
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            Collection<Resource> toEvaluate = Arrays.asList(resource);
+            accountDao.updateTransientAccountOnResources(toEvaluate);
+            BillingAccount account = resource.getAccount();
+            account = markWritableOnExistingSession(account);
+            accountDao.updateQuota(account, toEvaluate);
+            saveOrUpdate(account);
+        }
+
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ScrollableResults findAllActiveScrollableForSitemap() {
         return datasetDao.findAllActiveScrollableForSitemap();
     }
-
-
 
 }
