@@ -189,30 +189,30 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
 
-        Double numOne = (num1 != null) ? num1 : num2;
+        Double numOne = ObjectUtils.firstNonNull(num1 , num2);
 
         if (num1 == null) {
             throw new TdarRecoverableRuntimeException("latLong.one_null");
         }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
-        Double numTwo = (num2 != null) ? num2 : numOne + salt / 2;
-        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) < salt) {
-            add += salt / 2;
+        Double numTwo = ObjectUtils.firstNonNull(num2 , numOne + salt / 2d);
+        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) <= salt) {
+            add += salt / 2d;
         } else {
             return numOne;
         }
 
         if (numOne < numTwo) { // -5 < -3
-            add *= -1;
-            salt *= -1;
+            add *= -1d;
+            salt *= -1d;
         }
         // -5 - .05 - .02
         double ret = numOne.doubleValue() + add + salt * r.nextDouble();
         if (type == LONGITUDE) {
             if (ret > MAX_LONGITUDE)
-                ret -= 360;
+                ret -= 360d;
             if (ret < MIN_LONGITUDE)
-                ret += 360;
+                ret += 360d;
         }
 
         // NOTE: Ideally, this should do something different, but in reality, how
