@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @XmlRootElement

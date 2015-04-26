@@ -14,7 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.Persistable;
 
 /**
