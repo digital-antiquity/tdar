@@ -7,5 +7,4 @@
 
   <include file="src/main/db/lithic.xml"/> 
   <include file="src/main/db/munsell.xml"/> 
-  <include file="src/main/db/neolithic.xml"/> 
 </databaseChangeLog>
