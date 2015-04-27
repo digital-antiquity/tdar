@@ -1,7 +1,9 @@
 package org.tdar.core.bean.coverage;
 
 import static java.lang.Math.abs;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.tdar.core.bean.coverage.LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
 
@@ -27,25 +29,19 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(llb.isObfuscatedObjectDifferent());
     }
 
-    @SuppressWarnings("static-method")
-    @Ignore
     @Test
     public void testExactLLB() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(10), Double.valueOf(10), Double.valueOf(10), Double.valueOf(10));
-        // FIXME: when enabled why does next assertion fail?
-        // llb.obfuscate();
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(10d, 10d, 10d, 10d);
 
-        Assert.assertNotEquals(llb.getMaximumLatitude().doubleValue(), llb.getMaxObfuscatedLatitude().doubleValue());
-        Assert.assertNotEquals(llb.getMaximumLongitude().doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
-        Assert.assertNotEquals(llb.getMinimumLatitude().doubleValue(), llb.getMinObfuscatedLatitude().doubleValue());
-        Assert.assertNotEquals(llb.getMinimumLongitude().doubleValue(), llb.getMinObfuscatedLongitude().doubleValue());
-        // Assert that the minimum distance in any direction for an obfuscated value should be one Mile
-        assertTrue(abs(abs(llb.getMaxObfuscatedLatitude()) - abs(llb.getMinObfuscatedLatitude())) > ONE_MILE_IN_DEGREE_MINUTES);
-        assertTrue(abs(abs(llb.getMaxObfuscatedLongitude()) - abs(llb.getMinObfuscatedLongitude())) > ONE_MILE_IN_DEGREE_MINUTES);
+        assertThat( distance( llb.getMaxObfuscatedLatitude(), llb.getMinObfuscatedLatitude()), greaterThan( ONE_MILE_IN_DEGREE_MINUTES));
+        assertThat( distance( llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLongitude()), greaterThan (ONE_MILE_IN_DEGREE_MINUTES));
+    }
+
+    private double distance(double lht, double rht) {
+        return abs(lht - rht);
     }
 
     @Test
-    @Ignore
     public void testPoint() {
         Double lat = 45.954992d;
         Double lng = -71.392991d;
@@ -105,10 +101,10 @@ public class LatitudeLongitudeBoxTest {
     public void doesNotObfuscateAboveOneMile() {
         Double slightlyMoreThanOneMile = ONE_MILE_IN_DEGREE_MINUTES + 0.00001d;
         Double zero = 0.0;
-        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LATITUDE)));
-        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE)));
-        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LATITUDE)));
-        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LONGITUDE)));
+        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LATITUDE, true)));
+        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE, true)));
+        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LATITUDE, true)));
+        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LONGITUDE, true)));
     }
 
     @SuppressWarnings("static-method")
@@ -116,10 +112,10 @@ public class LatitudeLongitudeBoxTest {
     public void doesObfuscateAtLessThanOneMile() {
         Double slightlyLessThanOneMile = ONE_MILE_IN_DEGREE_MINUTES - 0.00001d;
         Double zero = 0.0;
-        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LATITUDE)));
-        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE)));
-        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LATITUDE)));
-        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LONGITUDE)));
+        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LATITUDE, true)));
+        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE, true)));
+        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LATITUDE, true)));
+        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LONGITUDE, true)));
     }
 
     /**

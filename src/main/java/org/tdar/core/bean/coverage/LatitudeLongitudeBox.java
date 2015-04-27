@@ -180,7 +180,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * 
      * http://www.movable-type.co.uk/scripts/html
      */
-    protected static Double randomizeIfNeedBe(final Double num1, final Double num2, int type) {
+    protected static Double randomizeIfNeedBe(final Double num1, final Double num2, int type, boolean isMin) {
         if ((num1 == null) && (num2 == null)) {
             return null;
         }
@@ -205,6 +205,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (numOne < numTwo) { // -5 < -3
             add *= -1d;
             salt *= -1d;
+        } else {
+            // If two points are the same, we want to always scoot the maximum long/lat higher, and the minimum long/lat lower, such that the minimum distance
+            // exceeds the salt distance.
+            if( numOne.equals(numTwo) && isMin) {
+                add *= -1d;
+                salt *= -1d;
+            }
         }
         // -5 - .05 - .02
         double ret = numOne.doubleValue() + add + salt * r.nextDouble();
@@ -244,7 +251,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMinObfuscatedLatitude() {
-        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
+        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE, true);
     }
 
     /**
@@ -259,7 +266,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMaxObfuscatedLatitude() {
-        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
+        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE, false);
     }
 
     /**
@@ -274,7 +281,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMinObfuscatedLongitude() {
-        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
+        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE, true);
     }
 
     /**
@@ -289,7 +296,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMaxObfuscatedLongitude() {
-        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
+        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE, false);
     }
 
     /**
