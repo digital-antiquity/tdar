@@ -79,7 +79,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     /** if true, then the location does not need to be hidden */
     @Column(nullable = false, name = "is_ok_to_show_exact_location", columnDefinition = "boolean default false")
-    private boolean isOkayToShowExactLocation;
+    private boolean isOkayToShowExactLocation = false;
 
     @Column(name = "min_obfuscated_lat")
     private Double minObfuscatedLatitude = null;
@@ -180,7 +180,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * 
      * http://www.movable-type.co.uk/scripts/html
      */
-    protected static Double randomizeIfNeedBe(Double num1, Double num2, int type) {
+    protected static Double randomizeIfNeedBe(final Double num1, final Double num2, int type) {
         if ((num1 == null) && (num2 == null)) {
             return null;
         }
@@ -237,7 +237,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (isOkayToShowExactLocation) {
             result = actualValue;
         }
-        if (!Objects.equals(actualValue, obfuscatedValue)) {
+        if (!Objects.equals(actualValue.doubleValue(), obfuscatedValue.doubleValue())) {
             setObfuscatedObjectDifferent(true);
         }
         return result;
@@ -542,23 +542,23 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         obfuscatedObjectDifferent = false;
         logger.trace("obfuscating latLong");
         Double val = getMaxObfuscatedLatitude();
-        if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
+        if (ObjectUtils.notEqual(val.doubleValue(), getMaximumLatitude().doubleValue())) {
             setMaximumLatitude(val);
             obfuscatedObjectDifferent = true;
         }
         val = getMinObfuscatedLatitude();
-        if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
+        if (ObjectUtils.notEqual(val.doubleValue(), getMinimumLatitude().doubleValue())) {
             setMinimumLatitude(val);
             obfuscatedObjectDifferent = true;
         }
 
         val = getMaxObfuscatedLongitude();
-        if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
+        if (ObjectUtils.notEqual(val.doubleValue(), getMaximumLongitude().doubleValue())) {
             setMaximumLongitude(val);
             obfuscatedObjectDifferent = true;
         }
         val = getMinObfuscatedLongitude();
-        if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
+        if (ObjectUtils.notEqual(val.doubleValue(), getMinimumLongitude().doubleValue())) {
             setMinimumLongitude(val);
             obfuscatedObjectDifferent = true;
         }

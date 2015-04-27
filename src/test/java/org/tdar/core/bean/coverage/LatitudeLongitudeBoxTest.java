@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,42 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(llb.isObfuscatedObjectDifferent());
     }
 
+    @SuppressWarnings("static-method")
+    @Ignore
+    @Test
+    public void testExactLLB() {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(10), Double.valueOf(10), Double.valueOf(10), Double.valueOf(10));
+        // FIXME: when enabled why does next assertion fail?
+        // llb.obfuscate();
+
+        Assert.assertNotEquals(llb.getMaximumLatitude().doubleValue(), llb.getMaxObfuscatedLatitude().doubleValue());
+        Assert.assertNotEquals(llb.getMaximumLongitude().doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
+        Assert.assertNotEquals(llb.getMinimumLatitude().doubleValue(), llb.getMinObfuscatedLatitude().doubleValue());
+        Assert.assertNotEquals(llb.getMinimumLongitude().doubleValue(), llb.getMinObfuscatedLongitude().doubleValue());
+        // Assert that the minimum distance in any direction for an obfuscated value should be one Mile
+        assertTrue(Math.abs(Math.abs(llb.getMaxObfuscatedLatitude()) - Math.abs(llb.getMinObfuscatedLatitude())) > LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
+        assertTrue(Math.abs(Math.abs(llb.getMaxObfuscatedLongitude()) - Math.abs(llb.getMinObfuscatedLongitude())) > LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
+    }
+
+    @Test
+    @Ignore
+    public void testPoint() {
+        Double lat = 45.954992d;
+        Double lng = -71.392991d;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(lng, lat, lng, lat);
+        double min = llb.getMinObfuscatedLatitude().doubleValue();
+        double max = llb.getMaxObfuscatedLatitude().doubleValue();
+        Assert.assertNotEquals(llb.getMinimumLatitude().doubleValue(), min);
+        Assert.assertNotEquals(lat.doubleValue(), max);
+        Assert.assertNotEquals(lat.doubleValue(), llb.getMinObfuscatedLongitude().doubleValue());
+        Assert.assertNotEquals(lat.doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
+        Assert.assertNotEquals(max, min);
+        Assert.assertNotEquals(llb.getMinObfuscatedLongitude().doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
+        logger.debug("{} <-> {}", max, min);
+        logger.debug("{} <--> {}", max - min, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
+        Assert.assertFalse(Math.abs(Math.abs(max) - Math.abs(min)) < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
+    }
+    
     @SuppressWarnings("static-method")
     @Test
     public void exactLocationCanBeShown() {
