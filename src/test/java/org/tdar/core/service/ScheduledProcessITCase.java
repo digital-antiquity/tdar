@@ -241,8 +241,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     public void testLLB() {
 //        llbprocess.execute();
         while (!llbprocess.isCompleted()) {
-            logger.debug("::{} -- {}",llbprocess.getLastId(), llbprocess.isCompleted());
             llbprocess.execute();
+            logger.debug("::{} -- {}",llbprocess.getLastId(), llbprocess.isCompleted());
         }
     }
 
