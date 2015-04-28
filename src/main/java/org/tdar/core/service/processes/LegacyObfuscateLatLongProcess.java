@@ -67,19 +67,19 @@ public class LegacyObfuscateLatLongProcess extends ScheduledBatchProcess<Latitud
         if (!Objects.equal(llb.getMaximumLongitude().doubleValue(), maxObfuscatedLongitude)) {
             changed = true;
         }
-        if (Math.abs(Math.abs(maxObfuscatedLatitude) - Math.abs(minObfuscatedLatitude)) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES  ||
-                Math.abs(Math.abs(maxObfuscatedLongitude) - Math.abs(minObfuscatedLongitude)) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES ) {
+        if (Math.abs(maxObfuscatedLatitude- minObfuscatedLatitude) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES  ||
+                Math.abs(maxObfuscatedLongitude - minObfuscatedLongitude) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES ) {
             logger.error("HUH: {}|{}| {}", maxObfuscatedLatitude, minObfuscatedLongitude,llb);
         }
         
         if (changed) {
-//            logger.debug("changed: {}", llb);
+//            llb.setOkayToShowExactLocation(true);
             genericDao.saveOrUpdate(llb);
         }
     }
 
     @Override
     public int getBatchSize() {
-        return 30;
+        return 500;
     }
 }
