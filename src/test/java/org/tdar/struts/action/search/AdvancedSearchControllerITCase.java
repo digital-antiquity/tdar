@@ -159,7 +159,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         updateAndIndex(lowerCase);
         updateAndIndex(upperCase);
         updateAndIndex(usafLowerCase);
-        
+
         // search lowercase one word
         controller.setQuery("usaf");
         doSearch();
@@ -169,7 +169,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doc.setTitle("usaf");
         resetController();
         updateAndIndex(doc);
-        
+
         // search uppercase one word
         controller.setQuery("USAF");
         doSearch();
@@ -198,7 +198,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(controller.getCollectionResults().contains(titleCase));
         assertTrue(controller.getCollectionResults().contains(lowerCase));
 
-    
         // search lowercase middle word
         controller.setQuery("force");
         doSearch();
@@ -210,7 +209,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doSearch();
         assertTrue(controller.getCollectionResults().contains(titleCase));
         assertTrue(controller.getCollectionResults().contains(lowerCase));
-}
+    }
 
     @Test
     public void testTitleCaseSensitivity() {
@@ -347,7 +346,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     }
 
-    
     @Test
     @Rollback
     public void testApprovedSiteTypeKeywords() {
@@ -1401,6 +1399,69 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         genericService.save(latLong);
         Long imgId = img.getId();
         return imgId;
+    }
+
+    @Test
+    @Rollback(true)
+    public void testSynonymPersonSearch() {
+        // setup test
+        // create image
+        Image image = new Image();
+        image.setTitle("precambrian Test");
+        image.setDescription("image description");
+        image.markUpdated(getBasicUser());
+        image.setStatus(Status.ACTIVE);
+
+        // create primary creator
+        TdarUser person = createAndSaveNewPerson("adelphi@tdar.org", "delphi");
+
+        // create dup
+        Person dup = new Person("Delphi", "Person", "d@aoracl.adb");
+        dup.setInstitution(new Institution("a test 13asd as"));
+        genericService.saveOrUpdate(person.getInstitution());
+        dup.setStatus(Status.DUPLICATE);
+        dup.setInstitution(new Institution("test 123ad as"));
+        genericService.saveOrUpdate(dup.getInstitution());
+        genericService.saveOrUpdate(dup);
+        person.getSynonyms().add(dup);
+        genericService.saveOrUpdate(person);
+        genericService.saveOrUpdate(dup);
+        ResourceCreator rc = new ResourceCreator(dup, ResourceCreatorRole.CREATOR);
+        image.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(image);
+
+        genericService.synchronize();
+        // flush, detach (important for test), setup
+        searchIndexService.flushToIndexes();
+        searchIndexService.index(image);
+        genericService.detachFromSession(person);
+        genericService.detachFromSession(dup);
+        SearchParameters sp = new SearchParameters();
+
+        // transient version of person
+        Person p = new Person(person.getFirstName(),person.getLastName(),person.getEmail());
+        p.setInstitution(person.getInstitution());
+        genericService.detachFromSession(p);
+        p.setId(person.getId());
+        
+        
+        // test finding dup from parent
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(p, ResourceCreatorRole.CREATOR));
+        controller.getGroups().add(sp);
+        doSearch();
+        logger.debug("resutls: {}", controller.getResults());
+        assertTrue(controller.getResults().contains(image));
+        
+        resetController();
+        // test finding parent from dup
+        sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(dup, ResourceCreatorRole.CREATOR));
+        controller.getGroups().add(sp);
+        doSearch();
+        logger.debug("resutls: {}", controller.getResults());
+        assertTrue(controller.getResults().contains(image));
+        
+        
     }
 
 }
