@@ -79,7 +79,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     /** if true, then the location does not need to be hidden */
     @Column(nullable = false, name = "is_ok_to_show_exact_location", columnDefinition = "boolean default false")
-    private boolean isOkayToShowExactLocation;
+    private boolean isOkayToShowExactLocation = false;
 
     @Column(name = "min_obfuscated_lat")
     private Double minObfuscatedLatitude = null;
@@ -180,7 +180,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * 
      * http://www.movable-type.co.uk/scripts/html
      */
-    protected static Double randomizeIfNeedBe(Double num1, Double num2, int type) {
+    protected static Double randomizeIfNeedBe(final Double num1, final Double num2, int type, boolean isMin) {
         if ((num1 == null) && (num2 == null)) {
             return null;
         }
@@ -189,30 +189,37 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
 
-        Double numOne = (num1 != null) ? num1 : num2;
+        Double numOne = ObjectUtils.firstNonNull(num1 , num2);
 
         if (num1 == null) {
             throw new TdarRecoverableRuntimeException("latLong.one_null");
         }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
-        Double numTwo = (num2 != null) ? num2 : numOne + salt / 2;
-        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) < salt) {
-            add += salt / 2;
+        Double numTwo = ObjectUtils.firstNonNull(num2 , numOne + salt / 2d);
+        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) <= salt) {
+            add += salt / 2d;
         } else {
             return numOne;
         }
 
         if (numOne < numTwo) { // -5 < -3
-            add *= -1;
-            salt *= -1;
+            add *= -1d;
+            salt *= -1d;
+        } else {
+            // If two points are the same, we want to always scoot the maximum long/lat higher, and the minimum long/lat lower, such that the minimum distance
+            // exceeds the salt distance.
+            if( numOne.equals(numTwo) && isMin) {
+                add *= -1d;
+                salt *= -1d;
+            }
         }
         // -5 - .05 - .02
         double ret = numOne.doubleValue() + add + salt * r.nextDouble();
         if (type == LONGITUDE) {
             if (ret > MAX_LONGITUDE)
-                ret -= 360;
+                ret -= 360d;
             if (ret < MIN_LONGITUDE)
-                ret += 360;
+                ret += 360d;
         }
 
         // NOTE: Ideally, this should do something different, but in reality, how
@@ -244,7 +251,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMinObfuscatedLatitude() {
-        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
+        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE, true);
     }
 
     /**
@@ -259,7 +266,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMaxObfuscatedLatitude() {
-        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
+        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE, false);
     }
 
     /**
@@ -274,7 +281,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMinObfuscatedLongitude() {
-        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
+        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE, true);
     }
 
     /**
@@ -289,7 +296,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     private void setMaxObfuscatedLongitude() {
-        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
+        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE, false);
     }
 
     /**

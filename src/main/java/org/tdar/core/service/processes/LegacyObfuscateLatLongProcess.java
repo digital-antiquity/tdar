@@ -50,25 +50,30 @@ public class LegacyObfuscateLatLongProcess extends ScheduledBatchProcess<Latitud
 
     @Override
     public void process(LatitudeLongitudeBox llb) {
-        Double minObfuscatedLatitude = llb.getMinObfuscatedLatitude();
-        Double minObfuscatedLongitude = llb.getMinObfuscatedLongitude();
-        Double maxObfuscatedLatitude = llb.getMaxObfuscatedLatitude();
-        Double maxObfuscatedLongitude = llb.getMaxObfuscatedLongitude();
+        double minObfuscatedLatitude = llb.getMinObfuscatedLatitude().doubleValue();
+        double minObfuscatedLongitude = llb.getMinObfuscatedLongitude().doubleValue();
+        double maxObfuscatedLatitude = llb.getMaxObfuscatedLatitude().doubleValue();
+        double maxObfuscatedLongitude = llb.getMaxObfuscatedLongitude().doubleValue();
         boolean changed = false;
-        if (!Objects.equal(llb.getMinimumLatitude(), minObfuscatedLatitude)) {
+        if (!Objects.equal(llb.getMinimumLatitude().doubleValue(), minObfuscatedLatitude)) {
             changed = true;
         }
-        if (!Objects.equal(llb.getMaximumLatitude(), maxObfuscatedLatitude)) {
+        if (!Objects.equal(llb.getMaximumLatitude().doubleValue(), maxObfuscatedLatitude)) {
             changed = true;
         }
-        if (!Objects.equal(llb.getMinimumLongitude(), minObfuscatedLongitude)) {
+        if (!Objects.equal(llb.getMinimumLongitude().doubleValue(), minObfuscatedLongitude)) {
             changed = true;
         }
-        if (!Objects.equal(llb.getMaximumLongitude(), maxObfuscatedLongitude)) {
+        if (!Objects.equal(llb.getMaximumLongitude().doubleValue(), maxObfuscatedLongitude)) {
             changed = true;
         }
+        if (Math.abs(Math.abs(maxObfuscatedLatitude) - Math.abs(minObfuscatedLatitude)) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES  ||
+                Math.abs(Math.abs(maxObfuscatedLongitude) - Math.abs(minObfuscatedLongitude)) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES ) {
+            logger.error("HUH: {}|{}| {}", maxObfuscatedLatitude, minObfuscatedLongitude,llb);
+        }
+        
         if (changed) {
-            logger.debug("changed: {}", llb);
+//            logger.debug("changed: {}", llb);
             genericDao.saveOrUpdate(llb);
         }
     }

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.tdar.core.bean.resource.Dataset;
@@ -84,10 +83,16 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             if (ic_.getType() == ColumnType.INTEGRATION) {
                 col.getFilteredOntologyNodes().addAll(service.findAll(OntologyNode.class, PersistableUtils.extractIds(ic_.getNodeSelection())));
                 col.setSharedOntology(service.find(Ontology.class, ic_.getOntology().getId()));
+                // if empty --add all
+                if (CollectionUtils.isEmpty(col.getFilteredOntologyNodes())) {
+                    col.getFilteredOntologyNodes().addAll(col.getSharedOntology().getOntologyNodes());
+                }
             }
             integrationContext.getIntegrationColumns().add(col);
         }
         integrationContext.setDataTables(service.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));
+        integrationContext.setTitle(title);
+        integrationContext.setDescription(description);
         return integrationContext;
     }
 

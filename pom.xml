@@ -2185,7 +2185,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <targetGroups>default</targetGroups>
+                            <targetGroups>default,ng-integrate</targetGroups>
                             <minimize>true</minimize>
                             <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}</destinationFolder>
                             <contextFolder>${basedir}/src/main/webapp/</contextFolder>
