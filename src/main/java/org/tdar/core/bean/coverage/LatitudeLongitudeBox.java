@@ -549,23 +549,23 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         obfuscatedObjectDifferent = false;
         logger.trace("obfuscating latLong");
         Double val = getMaxObfuscatedLatitude();
-        if (ObjectUtils.notEqual(val.doubleValue(), getMaximumLatitude().doubleValue())) {
+        if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
             setMaximumLatitude(val);
             obfuscatedObjectDifferent = true;
         }
         val = getMinObfuscatedLatitude();
-        if (ObjectUtils.notEqual(val.doubleValue(), getMinimumLatitude().doubleValue())) {
+        if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
             setMinimumLatitude(val);
             obfuscatedObjectDifferent = true;
         }
 
         val = getMaxObfuscatedLongitude();
-        if (ObjectUtils.notEqual(val.doubleValue(), getMaximumLongitude().doubleValue())) {
+        if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
             setMaximumLongitude(val);
             obfuscatedObjectDifferent = true;
         }
         val = getMinObfuscatedLongitude();
-        if (ObjectUtils.notEqual(val.doubleValue(), getMinimumLongitude().doubleValue())) {
+        if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
             setMinimumLongitude(val);
             obfuscatedObjectDifferent = true;
         }
