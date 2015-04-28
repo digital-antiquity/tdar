@@ -107,26 +107,6 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         genericService.save(wlc);
     }
 
-    @Test(expected = Exception.class)
-    @Rollback
-    public void testAddFeaturedResourceFailure() {
-        WhiteLabelCollection wlc = createAndSaveWhiteLabelCollection();
-        Document document1 = createAndSaveNewResource(Document.class);
-        Document document2 = createAndSaveNewResource(Document.class);
-        document2.setTitle("my featured document");
-        genericService.saveOrUpdate(document2);
-        wlc.getResources().add(document1);
-        genericService.saveOrUpdate(wlc);
-
-        //note that document2 does not exist in the list of resource,  so we shouldn't be able to make it a featured
-        //collection.
-
-        Document featuredDocument = document2;
-        wlc.getFeaturedResources().add(featuredDocument);
-        genericService.saveOrUpdate(wlc);
-        flush();
-    }
-
     private WhiteLabelCollection createAndSaveWhiteLabelCollection() {
         WhiteLabelCollection rc = new WhiteLabelCollection();
         rc.setName("default white label collection");

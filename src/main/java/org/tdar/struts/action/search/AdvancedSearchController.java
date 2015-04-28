@@ -215,8 +215,10 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         }
 
         SearchParameters sp = new SearchParameters();
+        if(getGroups() != null) {
+            getGroups().clear();
+        }
         getGroups().add(sp);
-
         sp.getFieldTypes().addAll(Arrays.asList(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
         sp.getCollections().addAll(Arrays.asList(rc, null));
         sp.getAllFields().addAll(Arrays.asList(null, ""));

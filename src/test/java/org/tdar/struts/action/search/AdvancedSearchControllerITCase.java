@@ -31,6 +31,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -1335,9 +1336,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testWhitelabelAdvancedSearch() {
         String collectionTitle = "The History Channel Presents: Ancient Ceramic Bowls That Resemble Elvis";
-        ResourceCollection rc = createAndSaveNewResourceCollection(collectionTitle);
+        WhiteLabelCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
 
+        getLogger().debug("collection saved. Id:{}  obj:{}", rc.getId(), rc);
         controller.setCollectionId(rc.getId());
+        getLogger().debug("controller collectionId:{}", controller.getCollectionId());
         controller.advanced();
 
         //We should now have two terms:  within-collection, and all-fields
