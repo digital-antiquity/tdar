@@ -67,7 +67,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Transient
     private transient String wildcardName;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval=true)
     @JoinColumn(name = "merge_creator_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Person> synonyms = new HashSet<>();
