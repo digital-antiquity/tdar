@@ -698,7 +698,7 @@ public class TdarConfiguration {
      * @return true if tdar.properties has the property "switchable.map.obfuscation" set to true, false in all other cases.
      */
     public boolean isSwitchableMapObfuscation() {
-        return assistant.getBooleanProperty("switchable.map.obfuscation");
+        return assistant.getBooleanProperty("switchable.map.obfuscation", false);
     }
 
     public boolean obfuscationInterceptorDisabled() {

@@ -12,7 +12,6 @@ import org.apache.solr.analysis.PatternTokenizer;
 import org.apache.solr.analysis.TrimFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public final class SiteCodeTokenizingAnalyzer extends Analyzer {
 

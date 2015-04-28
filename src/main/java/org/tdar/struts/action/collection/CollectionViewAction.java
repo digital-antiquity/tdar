@@ -1,6 +1,13 @@
 package org.tdar.struts.action.collection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +43,13 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
 
-import static org.tdar.struts.action.collection.CollectionViewAction.SUCCESS_WHITELABEL;
-
 @Component
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/collection")
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
-        @Result(name = SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
+        @Result(name = CollectionViewAction.SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), //removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
@@ -199,7 +204,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public String view() throws TdarActionException {
         String result = super.view();
         if(SUCCESS.equals(result) && getPersistable().isWhiteLabelCollection()) {
-            result =  SUCCESS_WHITELABEL;
+            result =  CollectionViewAction.SUCCESS_WHITELABEL;
         }
         return result;
     }
