@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
@@ -64,7 +65,7 @@ import com.opensymphony.xwork2.Action;
 
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
-    private static final String TEST_TITLE = "test unique lookup";
+    private static final String TEST_TITLE = "Brookville Reservoir Survey 1991-1992";
 
     @Autowired
     private GenericService genericService;
@@ -99,7 +100,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
         c1.setName(" TEST ");
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), c1);
+        boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, getAdminUser());
+        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1);
         assertEquals(withName, test);
     }
 
@@ -111,7 +113,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         image.setTitle("test");
         image.setDescription("test");
         image.setDate(2014);
-        image.markUpdated(getAdminUser());
+        image.markUpdated(getBasicUser());
         genericService.saveOrUpdate(image);
 
         ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
@@ -121,10 +123,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(test);
         genericService.synchronize();
         List<ResourceCollection> list = new ArrayList<ResourceCollection>();
-        ResourceCollection trns = new ResourceCollection(CollectionType.SHARED);
+        ResourceCollection trns = new ResourceCollection();
         trns.setName(TEST_TITLE);
+        trns.setId(-1L);
         list.add(trns);
-        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getAdminUser(), true,
+        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS);
+        logger.debug("collections: {}", image.getResourceCollections());
+        assertNotEquals(test.getId(), image.getSharedCollectionsContaining().get(0));
+        image.getResourceCollections().clear();
+        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS);
         logger.debug("collections: {}", image.getResourceCollections());
         assertEquals(test.getId(), image.getSharedCollectionsContaining().get(0));
@@ -143,10 +151,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
         c1.setName(" TEST ");
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), c1);
+        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1);
         assertEquals(withName, test);
 
-        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), c1);
+        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(),false,  c1);
         assertNotEquals(withName, test);
     }
 
