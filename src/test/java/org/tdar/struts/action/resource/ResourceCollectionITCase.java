@@ -37,6 +37,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -46,6 +47,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -61,6 +63,8 @@ import org.tdar.utils.PersistableUtils;
 import com.opensymphony.xwork2.Action;
 
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
+
+    private static final String TEST_TITLE = "test unique lookup";
 
     @Autowired
     private GenericService genericService;
@@ -97,6 +101,33 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         c1.setName(" TEST ");
         ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), c1);
         assertEquals(withName, test);
+    }
+
+    @Test
+    @Rollback
+    public void testFindInSaveForResource() {
+        Image image = new Image();
+        image.setStatus(Status.ACTIVE);
+        image.setTitle("test");
+        image.setDescription("test");
+        image.setDate(2014);
+        image.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(image);
+
+        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
+        test.setName(TEST_TITLE);
+        test.markUpdated(getAdminUser());
+        test.setSortBy(SortOption.COLLECTION_TITLE);
+        genericService.saveOrUpdate(test);
+        genericService.synchronize();
+        List<ResourceCollection> list = new ArrayList<ResourceCollection>();
+        ResourceCollection trns = new ResourceCollection(CollectionType.SHARED);
+        trns.setName(TEST_TITLE);
+        list.add(trns);
+        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getAdminUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS);
+        logger.debug("collections: {}", image.getResourceCollections());
+        assertEquals(test.getId(), image.getSharedCollectionsContaining().get(0));
     }
 
     @Test
@@ -249,7 +280,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         String save = dcontroller.save();
         assertEquals(Action.SUCCESS, save);
     }
-
 
     @Test
     @Rollback
@@ -542,7 +572,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 new ArrayList<Resource>(), id);
         ResourceCollection childCollectionHidden = generateResourceCollection("test 5", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
-//        genericService.saveOrUpdate(parentCollection);
+        // genericService.saveOrUpdate(parentCollection);
         parentCollection = null;
         BrowseCollectionController controller_ = generateNewInitializedController(BrowseCollectionController.class);
         Long fileId = testFile.getId();
@@ -666,8 +696,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(controller.getCandidateParentResourceCollections().contains(collectionWithUserAsOwner));
         assertTrue(controller.getCandidateParentResourceCollections().contains(collectionWithUserAsAdministrator));
     }
-
-
 
     @Test
     @Rollback
