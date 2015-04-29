@@ -65,7 +65,7 @@
                     href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
 
             <div class="viewpage-section">
-                <#if logoAvailable>
+                <#if logoAvailable && resourceCollection.subCollection>
                     <div class="pull-right"><img class="img-rounded whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
                 </#if>
                 <@common.description resourceCollection.description />
@@ -143,7 +143,6 @@
 			</@s.url>">[remove this filter]</a></sup>
             </#if>
             </h4>
-        </div>
             </#if>
         <div class="tdarresults">
             <#assign itemsPerRow = 4/>
