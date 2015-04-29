@@ -64,7 +64,6 @@ import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
 
 import com.opensymphony.xwork2.Preparable;
 

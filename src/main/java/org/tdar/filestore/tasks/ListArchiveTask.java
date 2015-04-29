@@ -24,7 +24,6 @@ import org.apache.commons.io.IOUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.NonFatalWorkflowException;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
 /**

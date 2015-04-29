@@ -1,8 +1,6 @@
 package org.tdar.core.dao.resource;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Query;
@@ -12,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;

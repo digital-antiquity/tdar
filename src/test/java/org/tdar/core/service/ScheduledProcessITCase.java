@@ -237,10 +237,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback()
     public void testLLB() {
-        while (CollectionUtils.isNotEmpty(llbprocess.getNextBatch())) {
+//        llbprocess.execute();
+        while (!llbprocess.isCompleted()) {
             llbprocess.execute();
+            logger.debug("::{} -- {}",llbprocess.getLastId(), llbprocess.isCompleted());
         }
     }
 

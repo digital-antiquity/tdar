@@ -28,8 +28,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.ImmutableScrollableCollection;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**

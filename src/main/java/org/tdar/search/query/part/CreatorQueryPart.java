@@ -19,15 +19,13 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
-public class CreatorQueryPart<C extends Creator> extends
-        AbstractHydrateableQueryPart<C> {
+public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQueryPart<C> {
 
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("unchecked")
-    public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator,
-            List<ResourceCreatorProxy> proxyList) {
+    public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {
         // set default of "or"
         setOperator(Operator.OR);
         setActualClass(creatorClass);
@@ -40,17 +38,13 @@ public class CreatorQueryPart<C extends Creator> extends
                 if (proxy.isValid()) {
                     List<Creator> creators = new ArrayList<Creator>();
                     if (rc.getCreator() instanceof Dedupable<?>) {
-                        creators.addAll(((Dedupable<Creator>) rc.getCreator())
-                                .getSynonyms());
+                        creators.addAll(((Dedupable<Creator>) rc.getCreator()).getSynonyms());
                     }
                     creators.add(rc.getCreator());
                     for (Creator creator_ : creators) {
                         if (PersistableUtils.isTransient(creator_)) {
-                            // user entered a complete-ish creator record but
-                            // autocomplete callback did fire successfully
-                            throw new TdarRecoverableRuntimeException(
-                                    "creatorQueryPart.use_autocomplete",
-                                    Arrays.asList(creator_.toString()));
+                            // user entered a complete-ish creator record but autocomplete callback did fire successfully
+                            throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", Arrays.asList(creator_.toString()));
                         }
                         this.roles.add(rc.getRole());
                         this.getFieldValues().add((C) creator_);

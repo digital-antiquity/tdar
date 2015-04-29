@@ -87,10 +87,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
     }
 
-    public ResourceCollection findCollectionWithName(Person user, ResourceCollection collection) {
+    public ResourceCollection findCollectionWithName(Person user, boolean isAdmin, ResourceCollection collection) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
+        query.setBoolean("isAdmin", isAdmin);
         query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
         @SuppressWarnings("unchecked")
         List<ResourceCollection> list = query.list();

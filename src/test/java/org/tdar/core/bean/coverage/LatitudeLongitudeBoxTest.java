@@ -1,9 +1,14 @@
 package org.tdar.core.bean.coverage;
 
+import static java.lang.Math.abs;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.tdar.core.bean.coverage.LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +27,52 @@ public class LatitudeLongitudeBoxTest {
         assertFalse(llb.isOkayToShowExactLocation());
         llb.obfuscate();
         assertTrue(llb.isObfuscatedObjectDifferent());
+    }
+
+    @Test
+    public void testExactLLB() {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(10d, 10d, 10d, 10d);
+
+        assertGreaterThanOneMile(llb);
+    }
+
+    @Test
+    public void testExactLLB2() {
+        //not 100% necessary, but attempting to get at the randomness
+        for (int i = 0; i < 100; i++) {
+            LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-36.845703125d, -3.64903402157866d, -36.845703125d, 3.64903402157866d);
+
+            assertGreaterThanOneMile(llb);
+            llb = new LatitudeLongitudeBox(-9.667d, 25.35d, -9.66666666666667d, 25.35d);
+            assertGreaterThanOneMile(llb);
+        }
+    }
+
+    private void assertGreaterThanOneMile(LatitudeLongitudeBox llb) {
+        assertThat(distance(llb.getMaxObfuscatedLatitude(), llb.getMinObfuscatedLatitude()), greaterThan(ONE_MILE_IN_DEGREE_MINUTES));
+        assertThat(distance(llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLongitude()), greaterThan(ONE_MILE_IN_DEGREE_MINUTES));
+    }
+
+    private double distance(double lht, double rht) {
+        return abs(lht - rht);
+    }
+
+    @Test
+    public void testPoint() {
+        Double lat = 45.954992d;
+        Double lng = -71.392991d;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(lng, lat, lng, lat);
+        double min = llb.getMinObfuscatedLatitude().doubleValue();
+        double max = llb.getMaxObfuscatedLatitude().doubleValue();
+        Assert.assertNotEquals(llb.getMinimumLatitude().doubleValue(), min);
+        Assert.assertNotEquals(lat.doubleValue(), max);
+        Assert.assertNotEquals(lat.doubleValue(), llb.getMinObfuscatedLongitude().doubleValue());
+        Assert.assertNotEquals(lat.doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
+        Assert.assertNotEquals(max, min);
+        Assert.assertNotEquals(llb.getMinObfuscatedLongitude().doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
+        logger.debug("{} <-> {}", max, min);
+        logger.debug("{} <--> {}", max - min, ONE_MILE_IN_DEGREE_MINUTES);
+        Assert.assertFalse(abs(abs(max) - abs(min)) < ONE_MILE_IN_DEGREE_MINUTES);
     }
 
     @SuppressWarnings("static-method")
@@ -64,23 +115,23 @@ public class LatitudeLongitudeBoxTest {
     @SuppressWarnings("static-method")
     @Test
     public void doesNotObfuscateAboveOneMile() {
-        Double slightlyMoreThanOneMile = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00001d;
+        Double slightlyMoreThanOneMile = ONE_MILE_IN_DEGREE_MINUTES + 0.00001d;
         Double zero = 0.0;
-        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LATITUDE)));
-        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE)));
-        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LATITUDE)));
-        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LONGITUDE)));
+        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LATITUDE, true)));
+        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE, true)));
+        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LATITUDE, true)));
+        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LONGITUDE, true)));
     }
 
     @SuppressWarnings("static-method")
     @Test
     public void doesObfuscateAtLessThanOneMile() {
-        Double slightlyLessThanOneMile = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES - 0.00001d;
+        Double slightlyLessThanOneMile = ONE_MILE_IN_DEGREE_MINUTES - 0.00001d;
         Double zero = 0.0;
-        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LATITUDE)));
-        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE)));
-        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LATITUDE)));
-        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LONGITUDE)));
+        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LATITUDE, true)));
+        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE, true)));
+        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LATITUDE, true)));
+        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LONGITUDE, true)));
     }
 
     /**
@@ -163,8 +214,8 @@ public class LatitudeLongitudeBoxTest {
     @SuppressWarnings({ "static-method" })
     @Test
     public void doesReturnCenterIfBoxGreaterThanOneMileByDefault() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
-                LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
+                ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitudeIfNotObfuscated()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitudeIfNotObfuscated()));
     }
@@ -172,8 +223,8 @@ public class LatitudeLongitudeBoxTest {
     @SuppressWarnings({ "static-method" })
     @Test
     public void doesReturnCenterIfBoxGreaterThanOneMileEvenIfObfuscated() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
-                LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
+                ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
         llb.setOkayToShowExactLocation(false);
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitudeIfNotObfuscated()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitudeIfNotObfuscated()));
@@ -182,8 +233,8 @@ public class LatitudeLongitudeBoxTest {
     @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotReturnCenterIfLessThanOneMileByDefault() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES - 0.00005,
-                LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES - 0.00005);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES - 0.00005,
+                ONE_MILE_IN_DEGREE_MINUTES - 0.00005);
         llb.obfuscate();
         assertTrue(null == llb.getCenterLatitudeIfNotObfuscated());
         assertTrue(null == llb.getCenterLongitudeIfNotObfuscated());
@@ -192,8 +243,8 @@ public class LatitudeLongitudeBoxTest {
     @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotReturnCenterIfLessThanOneMileIfObfuscated() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES - 0.00001,
-                LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00001);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES - 0.00001,
+                ONE_MILE_IN_DEGREE_MINUTES + 0.00001);
         llb.setOkayToShowExactLocation(false);
         llb.obfuscate();
         assertTrue(null == llb.getCenterLatitudeIfNotObfuscated());
@@ -220,8 +271,8 @@ public class LatitudeLongitudeBoxTest {
     @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotObfuscateCenterIfBoxGreaterThanOneMile() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
-                LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
+                ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitude()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitude()));
     }
@@ -229,8 +280,8 @@ public class LatitudeLongitudeBoxTest {
     @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotObfuscateCenterIfBoxGreaterThanOneMileEvenIfNotOkToShowExactLocation() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
-                LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
+                ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
         llb.setOkayToShowExactLocation(false);
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitude()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitude()));
@@ -259,9 +310,9 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void doesReturnCoordsInRightPlaceIfBoxGreaterThanOneMile() {
         double minimumLongitude = 0.00001;
-        double maximumLongitude = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002;
+        double maximumLongitude = ONE_MILE_IN_DEGREE_MINUTES + 0.00002;
         double minimumLatitude = 0.00003;
-        double maximumLatitude = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00004;
+        double maximumLatitude = ONE_MILE_IN_DEGREE_MINUTES + 0.00004;
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
         assertTrue(Double.valueOf(minimumLongitude).equals(llb.getMinimumLongitude()));
         assertTrue(Double.valueOf(maximumLongitude).equals(llb.getMaximumLongitude()));
