@@ -838,7 +838,7 @@ with that datapoint -->
         </#if>
     
         <@s.hidden name="h.timeCheck"/>
-        <textarea name="h.comment" class="tdarCommentDescription"></textarea>
+        <textarea name="h.comment" class="tdarCommentDescription" style="display:none"></textarea>
 
         <#if h.reCaptchaText?has_content>
             ${h.reCaptchaText}
@@ -852,7 +852,7 @@ with that datapoint -->
         </#if>
     
         <@s.hidden name="${bean}.h.timeCheck"/>
-        <textarea name="${bean}.h.comment" class="tdarCommentDescription"></textarea>
+        <textarea name="${bean}.h.comment" class="tdarCommentDescription" style="display:none"></textarea>
 
         <#if actual.h.reCaptchaText?has_content>
             ${actual.h.reCaptchaText}
