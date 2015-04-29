@@ -1,5 +1,6 @@
 package org.tdar.struts.action.collection;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,6 +60,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private static final long serialVersionUID = 5126290300997389535L;
 
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
+
+    public static final String SEARCH_HEADER_FILENAME = "search-header.jpg";
 
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
@@ -457,7 +460,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     public boolean isSearchHeaderLogoAvailable() {
         //for now, we just look in hosted + collection ID
-        String filename =  getResourceCollection().getId() +  "/search-header.jpg";
+        String filename =  getResourceCollection().getId() + File.separator + SEARCH_HEADER_FILENAME;
         return checkHostedFileAvailable(filename);
     }
 

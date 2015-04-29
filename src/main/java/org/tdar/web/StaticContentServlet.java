@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.filestore.PairtreeFilestore;
 
 /**
  * Very basic servlet for serving static content outside of application path. This is temporary and you should not use this.
@@ -28,11 +29,27 @@ public class StaticContentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.trace("static content request: {}", request);
         String filename = request.getPathInfo().substring(1);
-        File file = new File(basepath, filename);
+        String[] idValues = request.getParameterValues("id");
+
+        File file = getRequestedFile(filename, idValues);
         response.setHeader("Content-Type", getServletContext().getMimeType(filename));
         response.setHeader("Content-Length", String.valueOf(file.length()));
         response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
         Files.copy(file.toPath(), response.getOutputStream());
+    }
+
+    /**
+     * Return the File object specified by the path.   If "id" specified in queryString, File path resolves to basepath+pairtreeRoot,  where pairtreeRoot
+     * is calculated from id value.  Otherwise, file path resolves to basepath.
+     * @return
+     */
+    public File getRequestedFile(String path, String[] parameterValues) {
+        File parentFolder = new File(basepath);
+        if(parameterValues != null) {
+            String id = parameterValues[0];
+            parentFolder = new File(parentFolder, PairtreeFilestore.toPairTree(id));
+        }
+        return new File(parentFolder, path);
     }
 
 }

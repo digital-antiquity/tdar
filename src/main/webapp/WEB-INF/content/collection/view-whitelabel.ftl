@@ -26,7 +26,7 @@
     <#if searchHeaderLogoAvailable>
     <style>
         div.searchheader {
-            background-image: url("/hosted/${resourceCollection.id?c}/search-header.jpg");
+            background-image: url("/hosted/search-header.jpg?id=${resourceCollection.id?c}");
         }
     </style>
     </#if>

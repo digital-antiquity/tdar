@@ -848,19 +848,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
 
-    /**
-     * Is the specified public file available for the current resource
-     * @param filename
-     * @return
-     */
-    protected boolean checkHostedFileAvailable(String filename) {
-        //TODO: add an override in AbstractPersistableController that utilzes pairtree to resolve path for named file for current persistable
-        String basepath = getTdarConfiguration().getHostedFileStoreLocation();
-        File file = new File(basepath, filename);
-        boolean exists = file.exists();
-        getLogger().debug("checkPublicFile({})\t -> {}", filename, exists);
-        return exists;
-    }
 
     public boolean isTest() {
         return getTdarConfiguration().isTest();
