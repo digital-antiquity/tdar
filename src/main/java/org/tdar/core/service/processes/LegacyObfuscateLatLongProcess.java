@@ -73,8 +73,8 @@ public class LegacyObfuscateLatLongProcess extends ScheduledBatchProcess<Latitud
         }
         
         if (changed) {
-//            llb.setOkayToShowExactLocation(true);
-            genericDao.saveOrUpdate(llb);
+            genericDao.detachFromSession(llb);
+            genericDao.update(llb);
         }
     }
 
