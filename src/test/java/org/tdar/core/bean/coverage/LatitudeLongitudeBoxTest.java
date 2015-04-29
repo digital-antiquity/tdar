@@ -33,8 +33,24 @@ public class LatitudeLongitudeBoxTest {
     public void testExactLLB() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(10d, 10d, 10d, 10d);
 
-        assertThat( distance( llb.getMaxObfuscatedLatitude(), llb.getMinObfuscatedLatitude()), greaterThan( ONE_MILE_IN_DEGREE_MINUTES));
-        assertThat( distance( llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLongitude()), greaterThan (ONE_MILE_IN_DEGREE_MINUTES));
+        assertGreaterThanOneMile(llb);
+    }
+
+    @Test
+    public void testExactLLB2() {
+        //not 100% necessary, but attempting to get at the randomness
+        for (int i = 0; i < 100; i++) {
+            LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-36.845703125d, -3.64903402157866d, -36.845703125d, 3.64903402157866d);
+
+            assertGreaterThanOneMile(llb);
+            llb = new LatitudeLongitudeBox(-9.667d, 25.35d, -9.66666666666667d, 25.35d);
+            assertGreaterThanOneMile(llb);
+        }
+    }
+
+    private void assertGreaterThanOneMile(LatitudeLongitudeBox llb) {
+        assertThat(distance(llb.getMaxObfuscatedLatitude(), llb.getMinObfuscatedLatitude()), greaterThan(ONE_MILE_IN_DEGREE_MINUTES));
+        assertThat(distance(llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLongitude()), greaterThan(ONE_MILE_IN_DEGREE_MINUTES));
     }
 
     private double distance(double lht, double rht) {
@@ -58,7 +74,7 @@ public class LatitudeLongitudeBoxTest {
         logger.debug("{} <--> {}", max - min, ONE_MILE_IN_DEGREE_MINUTES);
         Assert.assertFalse(abs(abs(max) - abs(min)) < ONE_MILE_IN_DEGREE_MINUTES);
     }
-    
+
     @SuppressWarnings("static-method")
     @Test
     public void exactLocationCanBeShown() {
