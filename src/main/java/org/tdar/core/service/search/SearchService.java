@@ -51,6 +51,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -110,9 +111,10 @@ public class SearchService {
     private final DatasetDao datasetDao;
 
     private final AuthorizationService authorizationService;
-    
+
     @Autowired
-    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao, AuthorizationService authorizationService) {
+    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao,
+            AuthorizationService authorizationService) {
         this.sessionFactory = sessionFactory;
         this.obfuscationService = obfuscationService;
         this.genericService = genericService;
@@ -657,10 +659,14 @@ public class SearchService {
                 Creator creator = rc.getCreator();
                 if (PersistableUtils.isTransient(creator)) {
                     resolveCreator(maxToResolve, replacements, proxy, rc, values, creator);
+                } else {
+                    Creator find = genericService.find(Creator.class, creator.getId());
+                    rc.setCreator(find);
                 }
             } else {
                 replacements.put(proxy, null);
             }
+            logger.debug("{} -- {}", rc.getCreator(), rc.getCreator().getSynonyms());
         }
         for (ResourceCreatorProxy toReplace : replacements.keySet()) {
             proxies.remove(toReplace);

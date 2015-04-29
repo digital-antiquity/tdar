@@ -72,7 +72,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
             "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence", "browseOccurrence", "hidden" };
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval=true)
     @JoinColumn(name = "merge_creator_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Institution> synonyms = new HashSet<Institution>();

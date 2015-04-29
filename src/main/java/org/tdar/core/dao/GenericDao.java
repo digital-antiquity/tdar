@@ -115,7 +115,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass) {
-        return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
+        return getCurrentSession().createQuery(String.format("select id from %s order by id asc", persistentClass.getName())).list();
     }
 
     @SuppressWarnings("unchecked")
