@@ -152,16 +152,16 @@
     </outbound-rule>
 
 
-     <rule>
+<!--      <rule>
         <from>^/(dataset|sensory-data|geospatial)/columns/([0-9]+)$
         </from>
         <to>/dataset/columns?id=$2</to>
     </rule>
-
     <rule>
         <from>^/(sensory-data|geospatial)/view-row(.*)</from>
         <to>/dataset/view-row$2</to>
     </rule>
+ -->
 
 	<!-- managing searches, or basic URLs that could be searches -->
     <rule>
