@@ -359,14 +359,12 @@ public class DataOneService {
 
         // FIXME: who should this be?
         if (StringUtils.isNotBlank(CONFIG.getSystemAdminEmail())) {
+            // rights to change the permissions sitting on the object
             metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
         }
         // metadata.setSerialVersion(value);
 
-        // FIXME: should we be exposing emails here?
-        if (StringUtils.isNotBlank(resource.getSubmitter().getEmail())) {
-            metadata.setSubmitter(createSubject(resource.getSubmitter().getEmail()));
-        }
+        metadata.setSubmitter(createSubject(resource.getSubmitter().getProperName()));
         return metadata;
     }
 
