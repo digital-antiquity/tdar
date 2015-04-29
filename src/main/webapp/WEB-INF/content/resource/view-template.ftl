@@ -31,8 +31,8 @@
     <@nav.toolbar "${resource.urlNamespace}" "view">
         <#if resource.resourceType.dataTableSupported && editable>
             <#assign disabled = resource.dataTables?size==0 />
-            <@nav.makeLink "dataset" "columns" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
-            <@nav.makeLink "dataset" "columns" "metadata" "columns" current true disabled "hidden-desktop"/>
+            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
+            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
             <#if administrator && resource.project?? && resource.project.id != -1 >
             <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
             </#if>
