@@ -243,10 +243,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback()
     public void testLLB() {
-//        llbprocess.execute();
         while (!llbprocess.isCompleted()) {
             llbprocess.execute();
-            logger.debug("::{} -- {}",llbprocess.getLastId(), llbprocess.isCompleted());
+            logger.debug("::{} -- {}", llbprocess.getLastId(), llbprocess.isCompleted());
         }
     }
 
@@ -272,11 +271,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         ocur.execute();
     }
 
-    
     @Test
     @Ignore("useful for testing")
     public void testSalesforce() {
-        createAndSaveNewPerson("test-user@tdar.org","-tdar");
-        salesforce.execute();
+        if (salesforce.isEnabled()) {
+            createAndSaveNewPerson("test-user@tdar.org", "-tdar2");
+            salesforce.execute();
+        }
     }
 }

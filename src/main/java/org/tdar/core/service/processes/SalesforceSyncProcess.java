@@ -1,6 +1,5 @@
 package org.tdar.core.service.processes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +23,6 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.EntityService;
 
 /**
@@ -71,33 +69,32 @@ public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeograp
 
     @Override
     public void execute() {
-        assistant.loadProperties("salesforce.properties");
 
-        List<TdarUser> people = new ArrayList<>();
         Date yesterday = DateTime.now().minusDays(1).toDate();
         for (TdarUser user : entityService.findAllRegisteredUsers(100)) {
             if (user != null && user.getDateUpdated() != null && yesterday.before(user.getDateUpdated())) {
                 try {
                     logger.debug("sending ... {}", user);
                     CloseableHttpClient httpclient = HttpClients.createDefault();
-                        HttpPost post = new HttpPost(getPostUrl());
-                        List<NameValuePair> postNameValuePairs = new ArrayList<>();
-                        postNameValuePairs.add(new BasicNameValuePair("oid", getOid()));
-                        postNameValuePairs.add(new BasicNameValuePair("retURL", getReturnUrl()));
-                        postNameValuePairs.add(new BasicNameValuePair("first_name", user.getFirstName()));
-                        postNameValuePairs.add(new BasicNameValuePair("last_name", user.getLastName()));
-                        postNameValuePairs.add(new BasicNameValuePair("email", user.getEmail()));
-                        postNameValuePairs.add(new BasicNameValuePair("company", user.getInstitutionName()));
-                        postNameValuePairs.add(new BasicNameValuePair("phone", user.getPhone()));
+                    HttpPost post = new HttpPost(getPostUrl());
+                    List<NameValuePair> postNameValuePairs = new ArrayList<>();
+                    postNameValuePairs.add(new BasicNameValuePair("oid", getOid()));
+                    postNameValuePairs.add(new BasicNameValuePair("retURL", getReturnUrl()));
+                    postNameValuePairs.add(new BasicNameValuePair("first_name", user.getFirstName()));
+                    postNameValuePairs.add(new BasicNameValuePair("last_name", user.getLastName()));
+                    postNameValuePairs.add(new BasicNameValuePair("email", user.getEmail()));
+                    postNameValuePairs.add(new BasicNameValuePair("company", user.getInstitutionName()));
+                    postNameValuePairs.add(new BasicNameValuePair("phone", user.getPhone()));
+                    postNameValuePairs.add(new BasicNameValuePair("lead_source", "tdar-app"));
 
-                        post.setEntity(new UrlEncodedFormEntity(postNameValuePairs, "UTF-8"));
-                        HttpResponse response = httpclient.execute(post);
-                        HttpEntity entity = response.getEntity();
-                        logger.debug("response:[{}] {}", response, response.getStatusLine());
-                        String content = IOUtils.toString(entity.getContent());
-                        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                            logger.error("error processing: {} -- {}", user, content);
-                        }
+                    post.setEntity(new UrlEncodedFormEntity(postNameValuePairs, "UTF-8"));
+                    HttpResponse response = httpclient.execute(post);
+                    HttpEntity entity = response.getEntity();
+                    logger.debug("response:[{}] {}", response, response.getStatusLine());
+                    String content = IOUtils.toString(entity.getContent());
+                    if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                        logger.error("error processing: {} -- {}", user, content);
+                    }
                 } catch (Exception e) {
                     logger.error("exception in salesforce sync:{}", e, e);
                 }
@@ -128,6 +125,12 @@ public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeograp
 
     @Override
     public boolean isEnabled() {
+        try {
+            assistant.loadProperties("salesforce.properties");
+            return true;
+        } catch (Exception e) {
+            logger.warn("salesforce not configured properly");
+        }
         return false;
     }
 
