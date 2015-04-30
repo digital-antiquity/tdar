@@ -1976,6 +1976,7 @@
                 <plugin>
                     <groupId>com.atlassian.maven.plugins</groupId>
                     <artifactId>maven-clover2-plugin</artifactId>
+                    <version>${clover.version}</version>
                 </plugin>
 
                 <plugin>
@@ -2344,7 +2345,9 @@
                             <execution>
                                 <phase>generate-sources</phase>
                                 <goals>
-                                    <goal>setup</goal>
+                                  <goal>setup</goal>
+                                  <goal>optimize</goal>
+                                  <goal>snapshot</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -2355,7 +2358,6 @@
                 <dependency>
                     <groupId>com.atlassian.clover</groupId>
                     <artifactId>clover</artifactId>
-                    <version>${clover.version}</version>
                 </dependency>
             </dependencies>
         </profile>
