@@ -80,6 +80,7 @@ import edu.asu.lib.mods.ModsDocument;
 @Service
 public class DataOneService {
 
+    private static final String UTF_8 = "UTF-8";
     static final String META = "meta";
     static final String D1_VERS_SEP = "&v=";
     static final String D1_SEP = "/";
@@ -95,13 +96,13 @@ public class DataOneService {
     static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=UTF-8";
     static final String XML_CONTENT_TYPE = "application/xml; charset=UTF-8";
 
-
+    // this is for Tier 3 support
+    private boolean includeFiles = false;
 
     static final String PUBLIC = "public";
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
 
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
@@ -124,10 +125,12 @@ public class DataOneService {
         Identifier packageId = new Identifier();
         packageId.setValue(ir.getExternalId() + D1_SEP + ir.getDateUpdated().toString());
         List<Identifier> dataIds = new ArrayList<>();
-        for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
-            Identifier fileId = new Identifier();
-            fileId.setValue(ir.getExternalId() + D1_SEP + irf.getId() + D1_VERS_SEP + irf.getLatestVersion());
-            dataIds.add(fileId);
+        if (includeFiles) {
+            for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
+                Identifier fileId = new Identifier();
+                fileId.setValue(ir.getExternalId() + D1_SEP + irf.getId() + D1_VERS_SEP + irf.getLatestVersion());
+                dataIds.add(fileId);
+            }
         }
         Map<Identifier, List<Identifier>> idMap = new HashMap<Identifier, List<Identifier>>();
         idMap.put(packageId, dataIds);
@@ -159,39 +162,6 @@ public class DataOneService {
         rdfXml = outputter.outputString(d);
         logger.debug(rdfXml);
         return rdfXml;
-        /*
-         * 
-         * // associate the metadata and data identifiers
-         * 
-         * // serialize it as RDF/XML
-         * String rdfXml = ResourceMapFactory.getInstance().serializeResourceMap(resourceMap);
-         * // Reorder the RDF/XML to a predictable order
-         * SAXBuilder builder = new SAXBuilder();
-         * try {
-         * Document d = builder.build(new StringReader(rdfXml));
-         * Iterator it = d.getRootElement().getChildren().iterator();
-         * List<Element> children = new ArrayList<Element>();
-         * while(it.hasNext()) {
-         * Element element = (Element)it.next();
-         * children.add(element);
-         * }
-         * d.getRootElement().removeContent();
-         * Collections.sort(children, new Comparator<Element> () {
-         * 
-         * @Override
-         * public int compare(Element t, Element t1) {
-         * return t.getAttributes().toString().compareTo(t1.getAttributes().toString());
-         * }
-         * });
-         * for(Element el : children) {
-         * d.getRootElement().addContent(el);
-         * }
-         * XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-         * rdfXml = outputter.outputString(d);
-         * } catch (JDOMException ex) {
-         * log.error("Exception parsing rdfXml", ex);
-         * }
-         */
     }
 
     public Node getNodeResponse() {
@@ -210,14 +180,6 @@ public class DataOneService {
         node.setPing(ping);
         node.setReplicate(false);
         Services services = new Services();
-
-        /*
-         * <service name="MNRead" version="v1" available="true"/>
-         * <service name="MNCore" version="v1" available="true"/>
-         * <service name="MNAuthorization" version="v1" available="true"/>
-         * <service name="MNStorage" version="v1" available="true"/>
-         * <service name="MNReplication" version="v1" available="true"/>
-         */
 
         addService(MN_READ, VERSION, Boolean.TRUE, services);
         addService(MN_CORE, VERSION, Boolean.TRUE, services);
@@ -302,8 +264,8 @@ public class DataOneService {
 
         // FIXME: CONVERT IDENTIFIER to TDAR QUERY
         // FIXME: CONVERT FORMAT to TDAR FORMAT
-        ListObjectEntry.Type type = Type.D1; 
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type , list);
+        ListObjectEntry.Type type = Type.D1;
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type, list);
         for (ListObjectEntry resource : resources) {
             ObjectInfo info = new ObjectInfo();
             info.setChecksum(createChecksum(resource.getChecksum()));
@@ -421,7 +383,7 @@ public class DataOneService {
             if (partIdentifier.equals(D1_FORMAT)) {
                 resp.setContentType(RDF_CONTENT_TYPE);
                 String map = createResourceMap(ir);
-                resp.setSize(map.getBytes("UTF-8").length);
+                resp.setSize(map.getBytes(UTF_8).length);
                 resp.setReader(new StringReader(map));
                 resp.setChecksum(checksumString(map));
             } else if (partIdentifier.equals(META)) {
@@ -431,7 +393,7 @@ public class DataOneService {
                 StringWriter sw = new StringWriter();
                 jaxbContext.createMarshaller().marshal(modsDoc, sw);
                 String metaXml = sw.toString();
-                resp.setSize(metaXml.getBytes("UTF-8").length);
+                resp.setSize(metaXml.getBytes(UTF_8).length);
                 resp.setReader(new StringReader(metaXml));
                 resp.setChecksum(checksumString(metaXml));
             } else if (partIdentifier.contains(D1_VERS_SEP)) {

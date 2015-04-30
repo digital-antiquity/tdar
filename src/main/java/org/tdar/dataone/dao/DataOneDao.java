@@ -22,14 +22,15 @@ public class DataOneDao {
 
     @SuppressWarnings("unchecked")
     public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, ObjectList list) {
-        Query query = genericDao.getNamedQuery("query.dataone_list_objects");
+        Query query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
+        // if Tier3, use "query.dataone_list_objects_t3"
         query.setDate("start", start);
         query.setDate("end", end);
         
         //FIXME: find better way to handle pagination
         list.setTotal(query.list().size());
         
-        query = genericDao.getNamedQuery("query.dataone_list_objects");
+        query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
         query.setDate("start", start);
         query.setDate("end", end);
 
