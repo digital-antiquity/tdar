@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
@@ -98,7 +99,7 @@ public class DataOneService {
 
     static final String MN_NAME = "urn:node:tdar";
     static final String MN_NAME_TEST = "urn:node:tdar_test";
-    
+
     // this is for Tier 3 support
     private boolean includeFiles = false;
 
@@ -311,7 +312,11 @@ public class DataOneService {
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(dateToGregorianCalendar(resource.getDateUpdated()));
         metadata.setDateUploaded(dateToGregorianCalendar(resource.getDateCreated()));
-        // metadata.setArchived(value);
+        if (resource.getStatus() != Status.ACTIVE) {
+            metadata.setArchived(true);
+        } else {
+            metadata.setArchived(false);
+        }
         metadata.setChecksum(createChecksum(object.getChecksum()));
         metadata.setFormatId(contentTypeToD1Format(object, object.getContentType()));
         metadata.setSize(BigInteger.valueOf(object.getSize()));
@@ -322,7 +327,6 @@ public class DataOneService {
         metadata.setOriginMemberNode(getTdarNodeReference());
         // metadata.setReplicationPolicy(rpolicy );
 
-        // FIXME: who should this be?
         if (StringUtils.isNotBlank(CONFIG.getSystemAdminEmail())) {
             // rights to change the permissions sitting on the object
             metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
