@@ -10,7 +10,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.tdar.TestConstants.TEST_IMAGE_DIR;
+import static org.tdar.TestConstants.TEST_IMAGE_NAME;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,10 +31,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -122,7 +127,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
         genericService.synchronize();
-        List<ResourceCollection> list = new ArrayList<ResourceCollection>();
+        List<ResourceCollection> list = new ArrayList<>();
         ResourceCollection trns = new ResourceCollection();
         trns.setName(TEST_TITLE);
         trns.setId(-1L);
@@ -180,7 +185,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     public void testSparseResource() throws Exception {
         ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
         collection.markUpdated(getAdminUser());
-        collection.setResources(new HashSet<Resource>(genericService.findRandom(Resource.class, 20)));
+        collection.setResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
@@ -208,7 +213,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, resources, null);
@@ -270,7 +275,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         InformationResource normal = generateDocumentWithFileAndUseDefaultUser();
         final Long normalId = normal.getId();
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_METADATA)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal));
         ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, resources, null);
@@ -296,7 +301,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
         resourceCollection.setName("a resource collection");
         resourceCollection.setDescription("testing add then remove resources");
-        List<Document> docList = new ArrayList<Document>();
+        List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
@@ -355,7 +360,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollectionParent.setName("parent collection");
         resourceCollection.setName("a resource collection");
         resourceCollection.setDescription("testing add then remove resources");
-        List<Document> docList = new ArrayList<Document>();
+        List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
@@ -441,7 +446,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection.setName("a resource collection");
         resourceCollection.setSortBy(SortOption.DATE);
         resourceCollection.setDescription("testing add then remove resources");
-        List<Document> docList = new ArrayList<Document>();
+        List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
@@ -530,7 +535,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertEquals("size should be 2", 2, rc2.getAuthorizedUsers().size());
 
         // if this list is truly normalized, each queue should be length 1
-        HashMap<Long, GeneralPermissions> map = new HashMap<Long, GeneralPermissions>();
+        HashMap<Long, GeneralPermissions> map = new HashMap<>();
         for (AuthorizedUser authuser : rc2.getAuthorizedUsers()) {
             map.put(authuser.getUser().getId(), authuser.getGeneralPermission());
         }
@@ -546,7 +551,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
         AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
-        List<AuthorizedUser> authusers = new ArrayList<AuthorizedUser>(Arrays.asList(user1Viewer, user1Modifier, user2));
+        List<AuthorizedUser> authusers = new ArrayList<>(Arrays.asList(user1Viewer, user1Modifier, user2));
         int origCount = authusers.size();
         ResourceCollection.normalizeAuthorizedUsers(authusers);
         int newCount = authusers.size();
@@ -567,13 +572,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     public void testBrowseControllerVisibleCollections() throws Exception
     {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
-        ResourceCollection collection1 = generateResourceCollection("test 1", "", CollectionType.INTERNAL, false, new ArrayList<AuthorizedUser>(users),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
+        ResourceCollection collection1 = generateResourceCollection("test 1", "", CollectionType.INTERNAL, false, new ArrayList<>(users),
                 new ArrayList<Resource>(), null);
-        ResourceCollection collection2 = generateResourceCollection("test 2", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(users),
+        ResourceCollection collection2 = generateResourceCollection("test 2", "", CollectionType.SHARED, false, new ArrayList<>(users),
                 new ArrayList<Resource>(), null);
         InformationResource testFile = generateDocumentWithUser();
-        ResourceCollection parentCollection = generateResourceCollection("test 3", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(users),
+        ResourceCollection parentCollection = generateResourceCollection("test 3", "", CollectionType.SHARED, true, new ArrayList<>(users),
                 Arrays.asList(testFile), null);
         Long id = parentCollection.getId();
         ResourceCollection childCollection = generateResourceCollection("test 4", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
@@ -663,7 +668,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     public void testNestedCollectionEdit() throws Exception
     {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, users, new ArrayList<Resource>(), null);
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
@@ -684,7 +689,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         Document generateInformationResourceWithFile = generateDocumentWithUser();
         Document generateInformationResourceWithFile2 = generateDocumentWithUser();
 
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         // use case 1 -- use owner
@@ -797,7 +802,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     public void testSharedResourceCollectionQuery() throws Exception
     {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        List<AuthorizedUser> authList = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.VIEW_ALL)));
+        List<AuthorizedUser> authList = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.VIEW_ALL)));
 
         ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", CollectionType.SHARED, true,
                 authList, null, null);
@@ -811,7 +816,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     public void testRemoveResourceCollectionButMaintainSome() throws Exception
     {
         Document doc = generateDocumentWithUser();
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(doc.getSubmitter(), GeneralPermissions.ADMINISTER_GROUP)));
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(doc.getSubmitter(), GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, users, Arrays.asList(doc), null);
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
                 Arrays.asList(doc), collection1.getId());
@@ -867,7 +872,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         controller.edit();
         assertEquals(1, controller.getAuthorizedUsers().size());
-        ArrayList<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
+        ArrayList<AuthorizedUser> authorizedUsers = new ArrayList<>();
         authorizedUsers.add(new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL));
         authorizedUsers.add(new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL));
         controller.setAuthorizedUsers(authorizedUsers);
@@ -876,7 +881,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         dataset = datasetService.find(datasetId);
         ResourceCollection internalResourceCollection = dataset.getInternalResourceCollection();
         assertEquals(2, internalResourceCollection.getAuthorizedUsers().size());
-        Set<Long> seen = new HashSet<Long>();
+        Set<Long> seen = new HashSet<>();
         for (AuthorizedUser r : internalResourceCollection.getAuthorizedUsers()) {
             seen.add(r.getUser().getId());
         }
@@ -1072,7 +1077,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid);
         controller.prepare();
         AuthorizedUser authUser = new AuthorizedUser(registeredUser, GeneralPermissions.MODIFY_RECORD);
-        List<AuthorizedUser> authList = new ArrayList<AuthorizedUser>(Arrays.asList(authUser));
+        List<AuthorizedUser> authList = new ArrayList<>(Arrays.asList(authUser));
         controller.setAuthorizedUsers(authList);
         controller.getToAdd().add(proxy.getId());
         controller.setServletRequest(getServletPostRequest());
@@ -1279,6 +1284,40 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 assertThat(sparseResource.getSubmitter(), is(resource.getSubmitter())); // here we assume ID equality
             }
         }
+    }
 
+    @Test
+    @Rollback
+    public void testWhitelabelCollectionLogoAvailable() throws TdarActionException {
+        WhiteLabelCollection parentCollection = createAndSaveNewWhiteLabelCollection("whitelabel colllection");
+        ResourceCollection childCollection = createAndSaveNewResourceCollection("child collection");
+        ResourceCollection grandChildCollection = createAndSaveNewResourceCollection("grandchild collection");
+
+        addLogo(parentCollection);
+
+        //confirm that view action has a logo
+        CollectionViewAction action =  generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        action.setId(parentCollection.getId());
+        action.prepare();
+        assertThat(action.isLogoAvailable(), is (true));
+
+        //now try the grandchild colleciton, which should also have a logo.
+        action =  generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        action.setId(grandChildCollection.getId());
+        action.prepare();
+        assertThat(action.isLogoAvailable(), is (true));
+        
+    }
+
+
+    private void addLogo(ResourceCollection persistedCollection) throws TdarActionException {
+        controller = generateNewInitializedController(CollectionController.class, getAdminUser());
+        controller.setId(persistedCollection.getId());
+        controller.prepare();
+        controller.setFile(new File(TEST_IMAGE_DIR, TEST_IMAGE_NAME));
+        controller.setFileFileName(TEST_IMAGE_NAME);
+        controller.setFileContentType("image/jpeg");
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
     }
 }

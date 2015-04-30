@@ -499,7 +499,8 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
      * @return
      */
     public WhiteLabelCollection getWhiteLabelCollection() {
-        // java 8 can't come soon enough
+        //if parent list defined, go up the chain (otherwise only use direct membership, since it's costly to compute)
+
         for (ResourceCollection rc : resourceCollections) {
             if (rc.isWhiteLabelCollection()) {
                 return (WhiteLabelCollection) rc;
@@ -510,9 +511,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
     public boolean isWhiteLabelLogoAvailable() {
         WhiteLabelCollection wlc = getWhiteLabelCollection();
-        if (wlc == null)
-            return false;
-        return checkLogoAvailable(Filestore.ObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
+        return wlc != null && checkLogoAvailable(Filestore.ObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 
     public String getWhiteLabelLogoUrl() {
