@@ -2341,7 +2341,6 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <phase>generate-sources</phase>
                                 <goals>
                                   <goal>setup</goal>
                                   <goal>optimize</goal>
