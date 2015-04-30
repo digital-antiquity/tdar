@@ -59,13 +59,13 @@ public class WhiteLabelCollection extends ResourceCollection {
                     nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
 
-//    @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REFRESH })
-//    @JoinColumn(nullable = false)
-//    // Hibernate will not cascade saveOrUpdate() if object is transient and relation is also transient. (see
-//    // http://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/)
-//    // This is probably not a big deal, as it's unlikely we will be saving a new institution and a new WhiteLabelCollection in the same session in real-world
-//    // conditions.
-//    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+    @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REFRESH })
+    @JoinColumn(nullable = false)
+    // Hibernate will not cascade saveOrUpdate() if object is transient and relation is also transient. (see
+    // http://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/)
+    // This is probably not a big deal, as it's unlikely we will be saving a new institution and a new WhiteLabelCollection in the same session in real-world
+    // conditions.
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
     private Institution institution;
 
     public WhiteLabelCollection() {

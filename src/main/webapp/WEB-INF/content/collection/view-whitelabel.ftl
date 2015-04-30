@@ -61,11 +61,13 @@
 
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
         <div>
+            <h2>Description</h2>
             <#if resourceCollection.parent??><p><b>Part of:</b> <a
                     href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
 
             <div class="viewpage-section">
-                <#if logoAvailable && resourceCollection.subCollection>
+                <#-- TODO: move this logic to logoAvailable() -->
+                <#if (logoAvailable && (resourceCollection.subCollection || !resourceCollection.whiteLabelCollection))>
                     <div class="pull-right"><img class="img-rounded whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
                 </#if>
                 <@common.description resourceCollection.description />
@@ -104,8 +106,9 @@
         </#if>
 
 
-        <#if  results?has_content && results?size !=0 >
+        <#if results?has_content>
         <div id="divResultsSortControl">
+            <h2>Resources Inside This Collection</h2>
             <div class="row">
                 <div class="span4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
@@ -113,7 +116,6 @@
                 <div class="span5"></div>
             </div>
         </div>
-
         <div class="collection-facets">
             <#assign mapSize="450" />
             <#if (totalRecords > 10)>
@@ -144,17 +146,13 @@
             </#if>
             </h4>
             </#if>
-        <div class="tdarresults">
-            <#assign itemsPerRow = 4/>
-		<#assign mapPosition="top"/>
-		<#if collections.empty>
-            <#assign itemsPerRow = 5 />
-            <#assign mapPosition="left"/>
-        </#if>
-		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
-        orientation=resourceCollection.orientation    mapPosition=mapPosition mapHeight=mapSize />
         </div>
 
+        <div class="tdarresults">
+            <#assign itemsPerRow = 5 />
+            <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
+                    orientation=resourceCollection.orientation    mapPosition="right" mapHeight=mapSize />
+        </div>
             <@search.basicPagination "Records" />
         <#else>
         <hr/>
@@ -166,7 +164,7 @@
             <@common.resourceUsageInfo />
         <div class="row">
             <div class="span4">
-                <@view.kvp key="Collection Type" val=resourceCollection.type.label />
+                <@view.kvp key="Collection Type" val="${resourceCollection.type.label} (white label)" />
             </div>
             <div class="span4">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />
