@@ -15,7 +15,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/collection")
+@Namespace("/collection/usage")
 @HttpsOnly
 public class CollectionStatisticsAction extends AbstractStatisticsAction implements Preparable {
 

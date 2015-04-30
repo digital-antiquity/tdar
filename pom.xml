@@ -2239,9 +2239,17 @@
                         </configuration>
                         <executions>
                             <execution>
+                                <id>generate</id>
                                 <phase>generate-sources</phase>
                                 <goals>
                                     <goal>setup</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>clover</goal>
                                 </goals>
                             </execution>
                         </executions>

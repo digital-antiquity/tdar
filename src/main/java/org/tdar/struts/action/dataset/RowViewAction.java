@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -30,8 +31,11 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/dataset")
-public class RowViewAction extends AuthenticationAware.Base implements Preparable {
+@Namespaces(value={
+        @Namespace("/dataset/row"),
+        @Namespace("/geospatial/row"),
+        @Namespace("/sensory-data/row")
+})public class RowViewAction extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -4346591781165839553L;
     @Autowired
@@ -50,13 +54,13 @@ public class RowViewAction extends AuthenticationAware.Base implements Preparabl
 
     /**
      * Used to render a row within a {@link Dataset}.
-     * The expected URL is of the form /datatable/view-row?dataTableId=5815&rowId=1 where dataTableId = data table id, and rowId is the tDAR row id within
+     * The expected URL is of the form /datatable/row/datasetId/dataTableId/rowId where dataTableId = data table id, and rowId is the tDAR row id within
      * the table.
      * 
      * @return com.opensymphony.xwork2.SUCCESS if able to find and display the row, com.opensymphony.xwork2.ERROR if not.
      */
-    @Action(value = "view-row", results = {
-            @Result(name = SUCCESS, location = "../dataset/view-row.ftl") })
+    @Action(value = "{id}/{dataTableId}/{rowId}", results = {
+            @Result(name = SUCCESS, location = "../../dataset/view-row.ftl") })
     @SkipValidation
     public String getDataResultsRow() {
         if (!isViewRowSupported()) {

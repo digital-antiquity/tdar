@@ -671,7 +671,7 @@ TDAR.datatable = function() {
                 "sName" : "id_row_tdar",
                 "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
                 "fnRender" : function(obj) {
-                    return '<a href="/' + namespace + '/view-row?id=' + resourceId + '&dataTableId=' + dataTableId + '&rowId=' + obj.aData[0] +
+                    return '<a href="/' + namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] +
                             '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                 }
             });

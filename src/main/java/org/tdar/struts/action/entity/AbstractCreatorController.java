@@ -47,7 +47,6 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
                     @Result(name = INPUT, location = "../address-info.ftl")
             })
     public String saveAddress() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Address address2 = getAddress();
         try {
             if (address2 == null) {
@@ -77,7 +76,6 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
                     @Result(name = SUCCESS, type = "redirect", location = "../../creator/browse?id=${id}")
             })
     public String deleteAddress() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Address toDelete = getAddress();
         getLogger().info("to delete: {} ", toDelete);
         boolean remove = getPersistable().getAddresses().remove(toDelete);
@@ -91,7 +89,6 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @SkipValidation
     @Action(value = "address", results = { @Result(name = SUCCESS, location = "../address-info.ftl") })
     public String editAddress() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         return SUCCESS;
     }
