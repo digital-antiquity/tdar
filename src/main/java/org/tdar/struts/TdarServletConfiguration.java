@@ -57,7 +57,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     }
 
     TdarConfiguration configuration = TdarConfiguration.getInstance();
-    private boolean enableServer = false;
+    private boolean enableServer = true;
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
