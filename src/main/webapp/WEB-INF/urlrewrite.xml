@@ -70,7 +70,7 @@
 
 
 	<!--  PROTECTION for TAG and WSDL endpoints -->
-
+<!-- 
     <rule>
         <from>^/services$</from>
         <to>/services/</to>
@@ -81,6 +81,7 @@
         <to>/services/$1</to>
     </rule>
 
+ -->
     <!-- fixme (TDAR-4419): I think this rule is meant to match anything besides "/services", but instead matches any url that doesn't start with (, ), s, e, r, v, i,  and c  -->
     <!-- I tried replacing with (?!services), but this ends up breaking "/", "/search", and probably others. -->
     <!--
