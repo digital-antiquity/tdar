@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/meta")
+@Path("/v1/meta")
 @Component
 @Scope("prototype")
 public class SystemMetadataResponse extends AbstractDataOneResponse {

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.dataone.bean.Event;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/log")
+@Path("/v1/log")
 @Component
 @Scope("prototype")
 public class LogResponse extends AbstractDataOneResponse {

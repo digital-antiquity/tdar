@@ -7,7 +7,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-@Path("/monitor")
+@Path("/v1/monitor")
 public class PingResponse extends AbstractDataOneResponse {
 
     /*

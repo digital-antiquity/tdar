@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Path("/error")
+@Path("/v1/error")
 @Component
 @Scope("prototype")
 public class SynchronizationFailedResponse extends AbstractDataOneResponse {

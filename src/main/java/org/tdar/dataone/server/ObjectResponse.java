@@ -34,7 +34,7 @@ import org.tdar.dataone.service.ObjectResponseContainer;
 
 @Component
 @Scope("prototype")
-@Path("/object")
+@Path("/v1/object")
 public class ObjectResponse extends AbstractDataOneResponse {
 
     private static final String DATA_ONE_OBJECT_FORMAT = "DataONE-ObjectFormat";

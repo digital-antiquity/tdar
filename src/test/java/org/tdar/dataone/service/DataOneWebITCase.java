@@ -21,19 +21,20 @@ public class DataOneWebITCase extends AbstractWebTestCase {
 
     @Test
     public void ping() {
-        Assert.assertEquals(gotoPage("/dataone/monitor/ping"), 200);
+        Assert.assertEquals(gotoPage("/dataone/v1/monitor/ping"), 200);
     }
 
     @Test
     public void systemInfo() {
-        Assert.assertEquals(gotoPage("/dataone/node/"), 200);
-        Assert.assertEquals(gotoPage("/dataone/"), 200);
+        Assert.assertEquals(200, gotoPage("/dataone/v1/"));
+        logger.debug(getPageCode());
+        Assert.assertEquals(200, gotoPage("/dataone/v1/node"));
         logger.debug(getPageCode());
     }
 
     @Test
     public void testObject() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-        String path = "/dataone/object/" + TEST_DOI;
+        String path = "/dataone/v1/object/" + TEST_DOI;
         
         HttpHead headMethod = null;                 
         headMethod = new HttpHead(TestConfiguration.getInstance().getBaseSecureUrl() + path);
@@ -52,12 +53,12 @@ public class DataOneWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testMeta() {
-        Assert.assertEquals(200, gotoPage("/dataone/meta/"+ TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/meta/"+ TEST_DOI));
         logger.debug(getPageCode());
     }
     @Test
     public void testMetaIvalid() {
-        Assert.assertEquals(404, gotoPage("/dataone/meta/a"+ TEST_DOI));
+        Assert.assertEquals(404, gotoPage("/dataone/v1/meta/a"+ TEST_DOI));
         logger.debug(getPageCode());
     }
 }

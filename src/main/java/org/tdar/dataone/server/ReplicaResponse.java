@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/replica")
+@Path("/v1/replica")
 @Component
 @Scope("prototype")
 public class ReplicaResponse extends AbstractDataOneResponse {

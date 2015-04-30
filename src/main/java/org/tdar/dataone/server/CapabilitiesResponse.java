@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.service.SerializationService;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/")
 @Component
 @Scope("prototype")
+@Path("/v1/")
 public class CapabilitiesResponse extends AbstractDataOneResponse {
 
     @Transient
@@ -49,7 +49,7 @@ public class CapabilitiesResponse extends AbstractDataOneResponse {
     }
 
     @GET
-    @Path("node")
+    @Path("/node")
     @Produces(APPLICATION_XML)
     public Response getNodeInfo() {
         return nodeinfo();
