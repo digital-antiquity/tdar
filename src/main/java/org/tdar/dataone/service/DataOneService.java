@@ -96,6 +96,9 @@ public class DataOneService {
     static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=UTF-8";
     static final String XML_CONTENT_TYPE = "application/xml; charset=UTF-8";
 
+    static final String MN_NAME = "urn:node:tdar";
+    static final String MN_NAME_TEST = "urn:node:tdar_test";
+    
     // this is for Tier 3 support
     private boolean includeFiles = false;
 
