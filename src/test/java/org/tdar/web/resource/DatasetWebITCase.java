@@ -144,7 +144,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String datasetUrl = "/dataset/" + datasetId;
         Dataset dataset = datasetService.find(datasetId);
         DataTable datatable = dataset.getDataTables().iterator().next();
-        String browseDataUrl = String.format("/dataset/view-row?id=%s&dataTableId=%s&rowId=1", datasetId, datatable.getId());
+        String browseDataUrl = String.format("/dataset/row/%s/%s/1", datasetId, datatable.getId());
         gotoPage(browseDataUrl);
         assertTextNotPresent("Expression dataset is undefined");
         if (TdarConfiguration.getInstance().isViewRowSupported()) {

@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -50,7 +51,11 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/dataset")
+@Namespaces(value={
+        @Namespace("/dataset/columns"),
+        @Namespace("/geospatial/columns"),
+        @Namespace("/sensory-data/columns")
+})
 @HttpsOnly
 public class ColumnMetadataController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Dataset> {
 
@@ -145,7 +150,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     }
 
     @SkipValidation
-    @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl"),
+    @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "../../dataset/edit-column-metadata.ftl"),
             })
     public String editColumnMetadata() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);

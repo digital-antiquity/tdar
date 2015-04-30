@@ -13,7 +13,7 @@ public interface URLConstants {
     String PAGE_NOT_FOUND = "/page-not-found";
     String BOOKMARKS = DASHBOARD + "#bookmarks";
     String ENTITY_NAMESPACE = "browse/creators";
-    String COLUMNS_RESOURCE_ID = "columns?id=${resource.id}&startRecord=${startRecord}&recordsPerPage=${recordsPerPage}";
+    String COLUMNS_RESOURCE_ID = "${resource.id}?startRecord=${startRecord}&recordsPerPage=${recordsPerPage}";
     String VIEW_RESOURCE_ID = "${resource.id}";
     String VIEW_RESOURCE_ID_AS_ID = "${resource.detailUrl}";
     String MY_PROFILE = "/entity/user/myprofile";

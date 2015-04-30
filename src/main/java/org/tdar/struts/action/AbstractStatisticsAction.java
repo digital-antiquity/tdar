@@ -28,7 +28,7 @@ public abstract class AbstractStatisticsAction extends AuthenticationAware.Base 
     @Autowired
     protected StatisticService statisticsService;
 
-    @Action(value = "usage", results = { @Result(name = SUCCESS, location = "stats.ftl") })
+    @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "../stats.ftl") })
     @Override
     public String execute() throws Exception {
         // TODO Auto-generated method stub

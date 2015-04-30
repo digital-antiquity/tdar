@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -39,6 +40,7 @@ import org.tdar.core.service.processes.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.SalesforceSyncProcess;
 import org.tdar.core.service.processes.ScheduledBatchProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
@@ -65,6 +67,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private CreatorAnalysisProcess pap;
+    @Autowired
+    private SalesforceSyncProcess salesforce;
 
     @Autowired
     private LegacyObfuscateLatLongProcess llbprocess;
@@ -239,10 +243,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback()
     public void testLLB() {
-//        llbprocess.execute();
         while (!llbprocess.isCompleted()) {
             llbprocess.execute();
-            logger.debug("::{} -- {}",llbprocess.getLastId(), llbprocess.isCompleted());
+            logger.debug("::{} -- {}", llbprocess.getLastId(), llbprocess.isCompleted());
         }
     }
 
@@ -268,4 +271,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         ocur.execute();
     }
 
+    @Test
+    @Ignore("useful for testing")
+    public void testSalesforce() {
+        if (salesforce.isEnabled()) {
+            createAndSaveNewPerson("test-user@tdar.org", "-tdar2");
+            salesforce.execute();
+        }
+    }
 }

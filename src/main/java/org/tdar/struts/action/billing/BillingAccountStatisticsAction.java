@@ -15,7 +15,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/billing")
+@Namespace("/billing/usage")
 @HttpsOnly
 public class BillingAccountStatisticsAction extends AbstractStatisticsAction implements Preparable {
 
