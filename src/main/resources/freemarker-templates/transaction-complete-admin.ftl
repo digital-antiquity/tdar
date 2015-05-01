@@ -7,5 +7,6 @@ Transacted by: ${invoice.transactedBy}
 Files Requested: ${invoice.numberOfFiles!0}
 Space Requested: ${invoice.numberOfMb!0} MB
 Cost: $${invoice.total}
+<#if invoice.coupon?has_content>Coupon: ${invoice.coupon.code}</#if>
 
 Transaction Status ${invoice.transactionStatus}
