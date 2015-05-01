@@ -16,6 +16,9 @@ import org.jibx.runtime.IBindingFactory;
 import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.JiBXException;
 
+// http://www.javacodegeeks.com/2014/04/jibx-jersey2-integration.html
+// https://xpapad.wordpress.com/2010/11/25/using-jibx-with-jersey/
+
 @Provider
 public class JIBXBodyWriter implements MessageBodyWriter<Object> {
     public long getSize(Object obj, Class<?> type, Type genericType,

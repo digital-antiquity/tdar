@@ -45,6 +45,7 @@ public class CapabilitiesResponse extends AbstractDataOneResponse {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
         return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
     }
 
