@@ -255,32 +255,6 @@
             <!-- LICENSE: MIT -->
         </dependency>
         <dependency>
-            <groupId>org.dataone</groupId>
-            <artifactId>d1_libclient_java</artifactId>
-            <version>1.3.1</version>
-            <type>jar</type>
-            <scope>test</scope>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpcore</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>foresite</artifactId>
-                    <groupId>com.googlecode.foresite-toolkit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jcs</artifactId>
-                    <groupId>jcs</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <!-- declared dependency with excludes for DataOne and maven 
                 version management -->
             <artifactId>jcs</artifactId>
@@ -2330,7 +2304,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>/tmp/clover/</clover.dir>
+                <clover.dir>/home/bamboo/clover/</clover.dir>
             </properties>
             <build>
                 <plugins>
