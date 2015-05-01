@@ -24,6 +24,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.UrlService;
 
 /**
  * $Id$
@@ -83,6 +84,9 @@ public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeograp
                     postNameValuePairs.add(new BasicNameValuePair("first_name", user.getFirstName()));
                     postNameValuePairs.add(new BasicNameValuePair("last_name", user.getLastName()));
                     postNameValuePairs.add(new BasicNameValuePair("email", user.getEmail()));
+                    postNameValuePairs.add(new BasicNameValuePair("description", String.format(
+                            "Tdar Link: %s\nAffiliation: %s\nContributor: %s\nContributor Reason: %s",
+                            UrlService.absoluteUrl(user), user.getAffiliation().getLabel(), user.isContributor(), user.getContributorReason())));
                     postNameValuePairs.add(new BasicNameValuePair("company", user.getInstitutionName()));
                     postNameValuePairs.add(new BasicNameValuePair("phone", user.getPhone()));
                     postNameValuePairs.add(new BasicNameValuePair("lead_source", "tdar-app"));
