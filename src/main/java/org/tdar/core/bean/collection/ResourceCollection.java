@@ -543,7 +543,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @XmlTransient
     // infinite loop because parentTree[0]==self
     public List<ResourceCollection> getHierarchicalResourceCollections() {
-        ArrayList<ResourceCollection> parentTree = new ArrayList<ResourceCollection>();
+        ArrayList<ResourceCollection> parentTree = new ArrayList<>();
         parentTree.add(this);
         ResourceCollection collection = this;
         while (collection.getParent() != null) {

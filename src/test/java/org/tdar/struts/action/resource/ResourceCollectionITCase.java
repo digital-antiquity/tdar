@@ -26,9 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -1287,12 +1285,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
+    @Ignore("remove this ignore if we decide to support 'inherted' collection logos")
     @Rollback
     public void testWhitelabelCollectionLogoAvailable() throws TdarActionException {
         WhiteLabelCollection parentCollection = createAndSaveNewWhiteLabelCollection("whitelabel colllection");
         ResourceCollection childCollection = createAndSaveNewResourceCollection("child collection");
         ResourceCollection grandChildCollection = createAndSaveNewResourceCollection("grandchild collection");
 
+        childCollection.setParent(parentCollection);
+        grandChildCollection.setParent(childCollection);
+        genericService.saveOrUpdate(grandChildCollection);
         addLogo(parentCollection);
 
         //confirm that view action has a logo
@@ -1306,7 +1308,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         action.setId(grandChildCollection.getId());
         action.prepare();
         assertThat(action.isLogoAvailable(), is (true));
-        
     }
 
 

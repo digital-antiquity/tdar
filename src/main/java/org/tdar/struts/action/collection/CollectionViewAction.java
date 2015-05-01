@@ -464,7 +464,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return checkHostedFileAvailable(filename);
     }
 
-
     /**
      * Indicate to view layer that we should display a search header.
      * @return

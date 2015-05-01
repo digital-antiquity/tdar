@@ -47,7 +47,7 @@ public class WhiteLabelCollection extends ResourceCollection {
     private boolean subCollectionsEnabled;
 
     @Lob
-    @Type(type = "org.hibernate.type.TextType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String css;
 
     @Column
@@ -58,6 +58,7 @@ public class WhiteLabelCollection extends ResourceCollection {
             inverseJoinColumns = { @JoinColumn(
                     nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
+
 
     @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinColumn(nullable = false)

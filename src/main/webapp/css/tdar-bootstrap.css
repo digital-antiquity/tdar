@@ -1724,3 +1724,8 @@ option.emptyoption {
 .collection-facets li.media {
     display: inline-block
 }
+
+img.collection-logo {
+    padding:1em;
+    max-width: 20em; /*if we decide to use hi-res images*/
+}

@@ -501,7 +501,7 @@
     <#if whiteLabelLogoAvailable>
         <@s.a href="/collection/${whiteLabelCollection.id?c}/${whiteLabelCollection.slug}"
             title="${whiteLabelCollection.title}"
-            ><img src="${whiteLabelLogoUrl}" class="img-rounded whitelabel-logo"></@s.a>
+            ><img src="${whiteLabelLogoUrl}" class="whitelabel-logo"></@s.a>
     </#if>
     <#if !resource.resourceType.project>
         <@view.uploadedFileInfo />
