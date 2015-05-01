@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,14 +20,31 @@ import java.util.Map;
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.dataone.ore.ResourceMapFactory;
+import org.dataone.service.types.v1.AccessPolicy;
+import org.dataone.service.types.v1.AccessRule;
+import org.dataone.service.types.v1.Checksum;
+import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Identifier;
+import org.dataone.service.types.v1.Log;
+import org.dataone.service.types.v1.LogEntry;
+import org.dataone.service.types.v1.Node;
+import org.dataone.service.types.v1.NodeReference;
+import org.dataone.service.types.v1.NodeState;
+import org.dataone.service.types.v1.NodeType;
+import org.dataone.service.types.v1.ObjectFormatIdentifier;
+import org.dataone.service.types.v1.ObjectInfo;
+import org.dataone.service.types.v1.ObjectList;
+import org.dataone.service.types.v1.Permission;
+import org.dataone.service.types.v1.Ping;
+import org.dataone.service.types.v1.Schedule;
+import org.dataone.service.types.v1.Services;
+import org.dataone.service.types.v1.Subject;
+import org.dataone.service.types.v1.Synchronization;
+import org.dataone.service.types.v1.SystemMetadata;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.dspace.foresite.ResourceMap;
@@ -50,28 +66,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.InformationResourceService;
-import org.tdar.dataone.bean.AccessPolicy;
-import org.tdar.dataone.bean.AccessRule;
-import org.tdar.dataone.bean.Checksum;
-import org.tdar.dataone.bean.Event;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.ListObjectEntry.Type;
-import org.tdar.dataone.bean.Log;
-import org.tdar.dataone.bean.LogEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
-import org.tdar.dataone.bean.Node;
-import org.tdar.dataone.bean.NodeReference;
-import org.tdar.dataone.bean.NodeState;
-import org.tdar.dataone.bean.NodeType;
-import org.tdar.dataone.bean.ObjectInfo;
-import org.tdar.dataone.bean.ObjectList;
-import org.tdar.dataone.bean.Permission;
-import org.tdar.dataone.bean.Ping;
-import org.tdar.dataone.bean.Schedule;
-import org.tdar.dataone.bean.Services;
-import org.tdar.dataone.bean.Subject;
-import org.tdar.dataone.bean.Synchronization;
-import org.tdar.dataone.bean.SystemMetadata;
 import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.PersistableUtils;
@@ -169,12 +166,10 @@ public class DataOneService {
     }
 
     public Node getNodeResponse() {
-
-        Node node = new Node();
+        org.dataone.service.types.v1.Node  node = new Node();
         node.setBaseURL(CONFIG.getBaseSecureUrl() + DATAONE);
         node.setDescription(CONFIG.getSystemDescription());
-        NodeReference nodeReference = getTdarNodeReference();
-        node.setIdentifier(nodeReference);
+        node.setIdentifier(getTdarNodeReference());
         node.setName(CONFIG.getRepositoryName());
 
         // v2?
@@ -194,10 +189,16 @@ public class DataOneService {
         node.setServices(services);
         node.setState(NodeState.UP);
         Synchronization sync = new Synchronization();
-        sync.setLastCompleteHarvest(dateToGregorianCalendar(new Date(0)));
-        sync.setLastHarvested(dateToGregorianCalendar(new Date()));
+        sync.setLastCompleteHarvest(new Date(0));
+        sync.setLastHarvested(new Date());
         Schedule schedule = new Schedule();
         schedule.setHour("2");
+        schedule.setMday("*");
+        schedule.setMin("*");
+        schedule.setMon("*");
+        schedule.setSec("*");
+        schedule.setWday("*");
+        schedule.setYear("*");
         schedule.setWday("6");
         sync.setSchedule(schedule);
         node.setSynchronization(sync);
@@ -208,27 +209,16 @@ public class DataOneService {
 
     private NodeReference getTdarNodeReference() {
         NodeReference nodeReference = new NodeReference();
-        nodeReference.setValue("urn:node:tdar");
+        nodeReference.setValue(getMemberNodeName());
         return nodeReference;
     }
 
     private void addService(String name, String version, Boolean available, Services services) {
-        org.tdar.dataone.bean.Service service = new org.tdar.dataone.bean.Service();
+        org.dataone.service.types.v1.Service service = new org.dataone.service.types.v1.Service();
         service.setName(name);
         service.setVersion(version);
         service.setAvailable(available);
-        services.getService().add(service);
-    }
-
-    private XMLGregorianCalendar dateToGregorianCalendar(Date date) {
-        try {
-            GregorianCalendar c = new GregorianCalendar();
-            c.setTime(date);
-            XMLGregorianCalendar xmlDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-            return xmlDate;
-        } catch (DatatypeConfigurationException dce) {
-            return null;
-        }
+        services.getServiceList().add(service);
     }
 
     public Log getLogResponse(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, HttpServletRequest request) {
@@ -238,13 +228,13 @@ public class DataOneService {
         // log.setCount...
 
         dataOneDao.findLogFiles(fromDate, toDate, event, idFilter, start, count, log);
-        List<LogEntry> logEntries = log.getLogEntry();
+        List<LogEntry> logEntries = log.getLogEntryList();
         for (LogEntryImpl impl : new ArrayList<LogEntryImpl>()) {
             LogEntry entry = new LogEntry();
-            entry.setDateLogged(dateToGregorianCalendar(impl.getDateLogged()));
+            entry.setDateLogged(impl.getDateLogged());
             entry.setEntryId(impl.getId().toString());
             entry.setEvent(impl.getEvent());
-            org.tdar.dataone.bean.Identifier identifier = new org.tdar.dataone.bean.Identifier();
+            Identifier identifier = new Identifier();
             identifier.setValue(impl.getIdentifier());
             entry.setIdentifier(identifier);
             entry.setNodeIdentifier(entry.getNodeIdentifier());
@@ -273,17 +263,17 @@ public class DataOneService {
         for (ListObjectEntry resource : resources) {
             ObjectInfo info = new ObjectInfo();
             info.setChecksum(createChecksum(resource.getChecksum()));
-            info.setDateSysMetadataModified(dateToGregorianCalendar(resource.getDateUpdated()));
+            info.setDateSysMetadataModified(resource.getDateUpdated());
             info.setFormatId(contentTypeToD1Format(resource, resource.getContentType()));
             info.setIdentifier(createIdentifier(resource.getFormattedIdentifier()));
             info.setSize(BigInteger.valueOf(resource.getSize()));
-            list.getObjectInfo().add(info);
+            list.getObjectInfoList().add(info);
         }
         return list;
     }
 
-    private org.tdar.dataone.bean.Identifier createIdentifier(String formattedIdentifier) {
-        org.tdar.dataone.bean.Identifier id = new org.tdar.dataone.bean.Identifier();
+    private Identifier createIdentifier(String formattedIdentifier) {
+        Identifier id = new Identifier();
         id.setValue(formattedIdentifier);
         return id;
     }
@@ -307,11 +297,11 @@ public class DataOneService {
 
         ObjectResponseContainer object = getObjectFromTdar(id);
         InformationResource resource = object.getTdarResource();
-        policy.getAllow().add(createAccessRule(Permission.READ, PUBLIC));
+        policy.getAllowList().add(createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
-        metadata.setDateSysMetadataModified(dateToGregorianCalendar(resource.getDateUpdated()));
-        metadata.setDateUploaded(dateToGregorianCalendar(resource.getDateCreated()));
+        metadata.setDateSysMetadataModified(resource.getDateUpdated());
+        metadata.setDateUploaded(resource.getDateCreated());
         if (resource.getStatus() != Status.ACTIVE) {
             metadata.setArchived(true);
         } else {
@@ -337,19 +327,23 @@ public class DataOneService {
         return metadata;
     }
 
-    private String contentTypeToD1Format(ObjectResponseContainer object, String contentType) {
-        return "BAD-FORMAT";
+    private ObjectFormatIdentifier contentTypeToD1Format(ObjectResponseContainer object, String contentType) {
+        ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
+        identifier.setValue("BAD-FORMAT");
+        return identifier;
     }
 
-    private String contentTypeToD1Format(ListObjectEntry resource, String objectFormat) {
-        return "BAD-FORMAT";
+    private ObjectFormatIdentifier contentTypeToD1Format(ListObjectEntry resource, String objectFormat) {
+        ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
+        identifier.setValue("BAD-FORMAT");
+        return identifier;
     }
 
     private AccessRule createAccessRule(Permission permission, String name) {
         AccessRule rule = new AccessRule();
-        rule.getPermission().add(permission);
+        rule.getPermissionList().add(permission);
         if (StringUtils.isNotBlank(name)) {
-            rule.getSubject().add(createSubject(name));
+            rule.getSubjectList().add(createSubject(name));
         }
         return rule;
     }
@@ -439,4 +433,7 @@ public class DataOneService {
 
     }
 
+    public String getMemberNodeName() {
+        return MN_NAME_TEST;
+    }
 }

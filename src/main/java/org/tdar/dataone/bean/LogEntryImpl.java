@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 
+import org.dataone.service.types.v1.Event;
 import org.tdar.core.bean.FieldLength;
 
 @Entity()

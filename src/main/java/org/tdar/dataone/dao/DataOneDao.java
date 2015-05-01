@@ -3,16 +3,16 @@ package org.tdar.dataone.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.dataone.service.types.v1.Event;
+import org.dataone.service.types.v1.Log;
+import org.dataone.service.types.v1.ObjectList;
 import org.hibernate.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.dataone.bean.Event;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.ListObjectEntry.Type;
-import org.tdar.dataone.bean.Log;
 import org.tdar.dataone.bean.LogEntryImpl;
-import org.tdar.dataone.bean.ObjectList;
 
 @Component
 public class DataOneDao {
