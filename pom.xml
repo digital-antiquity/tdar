@@ -2321,7 +2321,9 @@
                                 <goals>
                                   <goal>setup</goal>
                                   <goal>optimize</goal>
+                                  <goal>optimizeIntegration</goal>
                                   <goal>snapshot</goal>
+                                  <goal>clover</goal>
                                 </goals>
                             </execution>
                         </executions>
