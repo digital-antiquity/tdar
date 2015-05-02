@@ -2314,6 +2314,7 @@
                         <configuration>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
+                            <snapshot>${clover.dir}/snapshot/</snapshot>
                         </configuration>
                         <executions>
                             <execution>
