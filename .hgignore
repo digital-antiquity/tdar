@@ -35,6 +35,7 @@ import.log
 
 node
 node_modules
+clover.snapshot
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 

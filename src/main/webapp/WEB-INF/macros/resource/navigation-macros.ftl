@@ -61,7 +61,7 @@ navigation freemarker macros
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-                    <@makeLink namespace "usage?id=${persistable.id?c}" "usage" "stats" current />
+                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current />
         </#if>
         <#nested>
 			</ul>
@@ -88,7 +88,7 @@ navigation freemarker macros
     		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
 		        </#if>
     		    <#if editable || administrator>
-	                <@makeLink namespace "usage?id=${persistable.id?c}" "usage" "stats" current />
+	                <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current />
 		        </#if>
 			</ul>
 		</div>
@@ -197,7 +197,13 @@ navigation freemarker macros
         <#elseif keyword?? >
             <#local _id = keyword.id />
         </#if>
-		<#if action == 'view' || action == "creators" || action == 'stats' || action=='usage'>
+
+        <#if action?contains('columns') || action?contains("usage/") >
+            <#local includeResourceId = false/>
+        </#if>
+
+
+		<#if action == 'view' || action == "creators" || action == 'stats' >
 			<#local includeResourceId = false/>
 			<#local localAction="/${_id?c}"/>
             <#if action == "creators">

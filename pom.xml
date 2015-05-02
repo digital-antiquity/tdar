@@ -2009,6 +2009,23 @@
                                         <ignore></ignore>
                                     </action>
                                 </pluginExecution>
+                                <pluginExecution>
+                                	<pluginExecutionFilter>
+                                		<groupId>org.liquibase</groupId>
+                                		<artifactId>
+                                			liquibase-maven-plugin
+                                		</artifactId>
+                                		<versionRange>
+                                			[3.2.2,)
+                                		</versionRange>
+                                		<goals>
+                                			<goal>update</goal>
+                                		</goals>
+                                	</pluginExecutionFilter>
+                                	<action>
+                                		<ignore></ignore>
+                                	</action>
+                                </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
@@ -2318,12 +2335,21 @@
                         </configuration>
                         <executions>
                             <execution>
+                                <id>generate</id>
+                                <phase>generate-sources</phase>
                                 <goals>
                                   <goal>setup</goal>
                                   <goal>optimize</goal>
                                   <goal>optimizeIntegration</goal>
                                   <goal>snapshot</goal>
                                   <goal>clover</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>clover</goal>
                                 </goals>
                             </execution>
                         </executions>
