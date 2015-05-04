@@ -34,13 +34,13 @@
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <geotools.version>13.0</geotools.version>
-        <tika.version>1.7</tika.version>
+        <tika.version>1.8</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
         <jersey.version>1.19</jersey.version>
-        <jackson.version>2.5.2</jackson.version>
+        <jackson.version>2.5.3</jackson.version>
         <slf4j.version>1.7.12</slf4j.version>
-        <http-components.version>4.3.3</http-components.version>
+        <http-components.version>4.4.1</http-components.version>
         <display.port></display.port>
         <warfile.name>ROOT</warfile.name>
         <!--
@@ -202,7 +202,7 @@
         <dependency>
             <groupId>com.joestelmach</groupId>
             <artifactId>natty</artifactId>
-            <version>0.9</version>
+            <version>0.10.1</version>
             <!-- LICENSE: MIT -->
         </dependency>
         <dependency>
@@ -896,11 +896,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- jackcess -->
+        <!-- compress -->
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
             <artifactId>jackcess</artifactId>
-            <version>2.0.9</version>
+            <version>2.1.0</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <!-- OpenCSV -->
