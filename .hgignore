@@ -53,3 +53,5 @@ syntax: regexp
 
 syntax: regexp
 ^src/main/resources/hibernate-ehcache\.xml$
+syntax: regexp
+^src/main/webapp/components$
