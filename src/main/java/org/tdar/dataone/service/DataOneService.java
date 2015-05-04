@@ -370,7 +370,7 @@ public class DataOneService {
         ObjectResponseContainer resp = null;
         try {
             String doi = StringUtils.substringBefore(id_, D1_SEP);
-            doi = doi.replaceAll("doi:10.6067_", "doi:10.6067/");
+            doi = doi.replace("doi:10.6067:", "doi:10.6067/");
             String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
             InformationResource ir = informationResourceService.findByDoi(doi);
             obfuscationService.obfuscate(ir, null);
