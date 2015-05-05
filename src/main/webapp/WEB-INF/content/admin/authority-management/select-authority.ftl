@@ -88,11 +88,19 @@
             <@renderKeywordTable />
     </#switch>
 
-    <@s.select labelposition='top' label='De-Dupe Mode' name='mode'
-    list='%{allDupModes}' title="De-Dupe Modes" />
+    <h3> Choose Mode</h3>
+    <p><label for='MARK_DUPS_ONLY'><input type="radio" name="mode" value='MARK_DUPS_ONLY' id='MARK_DUPS_ONLY' checked="checked" /><span>&nbsp;Mark Dups Only</span></label>
+        <blockquote>Use this for almost every case.  In this case, the duplicate is marked as a duplicate, and records that refereced it are discoverable by the original and the dup.  This is useful if someone moves organizations to keep track of what they did where.</blockquote>
+    </p>
+    <p><label for='MARK_DUPS_AND_CONSOLDIATE'><input type="radio" name="mode" value='MARK_DUPS_AND_CONSOLDIATE' id='MARK_DUPS_AND_CONSOLDIATE' /><span>&nbsp;Mark Dups and consolidate on master</span></label>
+    <blockquote>Use this for cases where there's a common misspelling that we want to keep for searching, but all of the records really should point at the same person.</blockquote>
+    </p>
+    <p><label for='DELETE_DUPLICATES'><input type="radio" name="mode" value='DELETE_DUPLICATES' id='DELETE_DUPLICATES' /><span>&nbsp;Merge &amp; Delete Duplicates</span></label>
+    <blockquote>Use this extremely sparingly. This will consolidate resources on the "master" and then delete the duplicates.  This is useful in cases where there's a one-time mistake.</blockquote>
+    </p>
 
     <br/>
-    <@s.submit value="Merge selected duplicates" />
-    <a href="index" class="button">Go back to duplicate selection page</a>
+    <@s.submit value="Merge selected duplicates" cssClass="btn-primary btn" />
+    <a href="index" class="btn">Go back to duplicate selection page</a>
 </@s.form>
 

@@ -92,7 +92,7 @@
         item(s) selected. <span class="button">Clear</span>
     </p>
     <input type="hidden" name="entityType" id="hdnEntityType"/>
-    <@s.submit />
+    <@s.submit cssClass="btn btn-primary" />
 </@s.form>
 </div>
 
