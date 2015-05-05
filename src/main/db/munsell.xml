@@ -221,5 +221,12 @@
             <column name="document_subtype" type="varchar(50)" />
         </addColumn>
     </changeSet>
+    
+    <changeSet id="munsell-16" author="abrin">
+        <update tableName="ontology_node">
+            <column name="iri" value=" replace(iri,'.','_');"></column>
+            <where>iri like '%\.'</where>
+        </update>
+    </changeSet>
 
 </databaseChangeLog>
