@@ -193,8 +193,8 @@ public class BulkManifestProxy implements Serializable {
         }
         logger.debug("{}", allFilenames);
         if (CollectionUtils.isNotEmpty(allFilenames)) {
-            asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.tooManyFiles",
-                    Arrays.asList(StringUtils.join(allFilenames.toArray(), ", "))));
+            String names = StringUtils.join(allFilenames.toArray(), ", ");
+            asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.tooManyFiles", Arrays.asList(names)));
         }
     }
 
