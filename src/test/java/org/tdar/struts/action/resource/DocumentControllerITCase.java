@@ -722,4 +722,14 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     }
 
+
+    @Test(expected = TdarActionException.class)
+    @Rollback
+    public void testDocumentReplaceWithInvalidfile() throws TdarActionException {
+        Document document = setupAndLoadResource(TestConstants.TEST_DOCUMENT, Document.class);
+        Long documentId = document.getId();
+        String filename = "dataset_with_floats_to_varchar.xls";
+        Document document2 = replaceFile(TestConstants.TEST_IMAGE, TestConstants.TEST_DOCUMENT, Document.class, documentId);
+    }
+
 }
