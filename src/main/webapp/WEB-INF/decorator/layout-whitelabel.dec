@@ -11,7 +11,7 @@
 <#global jquery_ui_css_version="1.9.2">
 
 <#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
-	 This is a less-than ideal solution, but seems to be the best that we have. -->
+     This is a less-than ideal solution, but seems to be the best that we have. -->
 <#if !(protocol?has_content)>
     <#include "/500.html" />
 <#else>
@@ -49,7 +49,8 @@
 
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
     <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
-    <#if qunit><link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css"></#if>
+    <#if qunit>
+        <link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css"></#if>
     <@header.css (webFilePreprocessingEnabled ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
@@ -73,10 +74,12 @@ ${head}
     <#if schemaOrgJsonLD?has_content>
         <script type="application/ld+json">
     ${schemaOrgJsonLD}
-    </script>
+
+        </script>
     </#if>
 </head>
-<body data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>" <#if ngApplicationName?has_content>ng-cloak</#if>>
+<body data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
+      <#if ngApplicationName?has_content>ng-cloak</#if>>
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
