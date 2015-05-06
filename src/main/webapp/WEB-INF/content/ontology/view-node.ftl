@@ -1,4 +1,7 @@
 <#escape _untrusted as _untrusted?html>
+<head>
+<title>${ontology.title} &mdash; ${node.displayName}</title>
+</head>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
 <h1>${ontology.title} &mdash; <span>${node.displayName}</span></h1>
