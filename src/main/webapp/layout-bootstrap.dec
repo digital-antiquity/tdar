@@ -9,10 +9,10 @@
 <#global jquery_ui_version="1.8.23">
 <#global jquery_ui_css_version="1.9.2">
 
-<#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error. 
+<#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
      This is a less-than ideal solution, but seems to be the best that we have. -->
 <#if !(protocol?has_content)>
-    <#include "500.html" />
+    <#include "/500.html" />
 <#else>
     <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
     <#import "/WEB-INF/macros/header.ftl" as header>
@@ -22,7 +22,6 @@
     <#if (uri != '' && uri != '/about')>
         <#assign bodyid = "alt" />
     </#if>
-
 
 <#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
 <head>
@@ -65,7 +64,7 @@
         <script src="/includes/jquery-ui-${jquery_ui_version}/ui/minified/jquery-ui.min.js"></script>
     </#if>
     <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
-    <#include "${themeDir}/head.dec" />
+    <#include "/${themeDir}/head.dec" />
 ${head}
 
     <@common.globalJavascript />
@@ -76,7 +75,6 @@ ${head}
 
         </script>
     </#if>
-
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
       <#if ngApplicationName?has_content>ng-cloak</#if>>
@@ -278,7 +276,7 @@ ${head}
     <!-- BEGIN-TDAR-FOOTER -->
     <footer>
         <div class="container">
-            <#include "${themeDir}/footer.dec" />
+            <#include "/${themeDir}/footer.dec" />
             <div>
                 <p>
                     <small>
