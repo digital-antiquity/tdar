@@ -176,6 +176,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceAnnotation> resourceAnnotations;
 
     private List<ResourceCollection> viewableResourceCollections;
+    private long epochTimeUpdated = 0L;
 
     private void initializeResourceCreatorProxyLists(boolean isViewPage) {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
@@ -226,6 +227,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(getResource())) {
             setSubmitter(getResource().getSubmitter());
+            setEpochTimeUpdated(getResource().getDateUpdated().getTime());
+            getLogger().trace("setting epoch time {}", getEpochTimeUpdated());
         } else {
             setSubmitter(getAuthenticatedUser());
         }
@@ -241,6 +244,29 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             }
         }
         return SUCCESS;
+    }
+
+    @Override
+    public void validate() {
+        super.validate();
+        getLogger().trace("form is obsolete: {}", isFormObsolete());
+
+        //if form is obsolete, add an error so that struts returns INPUT and reset the epoch tie.
+        // There are more rubust ways to handle this (either force the user to re-do work, or give user choice of
+        // over-writing previous changes) but given the rarity of the occurrance I think that this is sufficient.
+        if(isFormObsolete()) {
+            getLogger().info("save rejected because form was obsolete. formtime:{}  lastUpdate:{}",
+                    getEpochTimeUpdated(), getResource().getDateUpdated().getTime());
+            addActionError(getText("resourceController.submission_obsolete"));
+            setEpochTimeUpdated(getResource().getDateUpdated().getTime());
+        }
+    }
+
+
+    protected boolean isFormObsolete() {
+        if(epochTimeUpdated == 0) {return false;}
+        if(getResource().getDateUpdated() == null) {return false;}
+        return getEpochTimeUpdated() != getResource().getDateUpdated().getTime();
     }
 
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
@@ -1123,6 +1149,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setSubmitterProperName(String submitterProperName) {
         this.submitterProperName = submitterProperName;
+    }
+
+    public long getEpochTimeUpdated() {
+        return epochTimeUpdated;
+    }
+
+    public void setEpochTimeUpdated(long epochTimeUpdated) {
+        this.epochTimeUpdated = epochTimeUpdated;
     }
 
 }

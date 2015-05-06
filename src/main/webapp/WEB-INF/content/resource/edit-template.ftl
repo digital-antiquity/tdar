@@ -62,6 +62,7 @@
             >
         <@common.jsErrorLog />
         <@s.token name='struts.csrf.token' />
+        <@s.hidden name="epochTimeUpdated" />
 
 
 
