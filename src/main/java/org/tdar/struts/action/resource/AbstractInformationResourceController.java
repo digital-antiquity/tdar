@@ -536,7 +536,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public List<Resource> getPotentialParents() {
         getLogger().trace("get potential parents");
         if (potentialParents == null) {
-            Person submitter = getAuthenticatedUser();
+            TdarUser submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
             boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             potentialParents.addAll(projectService.findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
