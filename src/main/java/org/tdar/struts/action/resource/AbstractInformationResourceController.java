@@ -188,6 +188,25 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private boolean hasFileProxyChanges = false;
 
     /**
+     * Throw an extension if any of the provided proxies describe a file that is not contained in the list of accepted file types.
+     * @param proxies
+     * @throws TdarActionException
+     */
+    private void validateFileExtensions(List<FileProxy> proxies) throws TdarActionException {
+        List<FileProxy> invalidFiles = new ArrayList<>();
+        for(FileProxy proxy : proxies) {
+            if(!getValidFileExtensions().contains(proxy.getExtension())) {
+                getLogger().info("Rejecting file:{} - extension not allowed.  Allowed types:{}", proxy.getExtension(), getValidFileExtensions());
+                invalidFiles.add(proxy);
+            }
+        }
+        if(!invalidFiles.isEmpty()) {
+            throw new TdarActionException(StatusCode.FORBIDDEN, "File extension not accepted");
+        }
+    }
+
+
+    /**
      * One-size-fits-all method for handling uploaded InformationResource files.
      * 
      * Handles text input files for coding sheets and ontologies,
@@ -201,6 +220,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getLogger().debug("handling uploaded files for {}", getPersistable());
             proxies = getFileProxiesToProcess();
+            validateFileExtensions(proxies);
             getLogger().debug("Final proxy set: {}", proxies);
 
             for (FileProxy proxy : proxies) {
