@@ -53,11 +53,12 @@ import com.opensymphony.xwork2.Preparable;
  * @author Adam Brin, <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<P> {
+public abstract class AbstractPersistableController<P extends Persistable & Updatable> extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<P> {
 
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
+    protected long epochTimeUpdated = 0L;
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -136,6 +137,19 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String list() {
         loadListData();
         return SUCCESS;
+    }
+
+    /**
+     * Returns true if form is considered 'obsolete', otherwise false.  By default, this method considers a form obsolete if it refers to a persistable
+     * that has an updateDate() that is older than the age of the form.
+     * @return
+     */
+    protected boolean isFormObsolete() {
+        if(PersistableUtils.isNullOrTransient(getPersistable())) {return false;}
+        long now = System.currentTimeMillis();
+        long formAge = now - getStartTime();
+        long persistableAge = now - getEpochTimeUpdated();
+        return formAge < persistableAge;
     }
 
     @Action(value = SAVE,
@@ -336,6 +350,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public abstract String loadEditMetadata() throws TdarActionException;
 
+    public long getEpochTimeUpdated() {
+        return epochTimeUpdated;
+    }
+
+    protected void setEpochTimeUpdated(long epochTimeUpdated) {
+        this.epochTimeUpdated = epochTimeUpdated;
+    }
+
     public enum RequestType {
         EDIT,
         CREATE,
@@ -395,7 +417,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             type = RequestType.CREATE;
         }
         prepareAndLoad(this, type);
-    }
+        if(PersistableUtils.isNotNullOrTransient(getId())) {
+            setEpochTimeUpdated(getPersistable().getDateUpdated().getTime());
+        }
+     }
 
     protected boolean isPersistableIdSet() {
         return PersistableUtils.isNotNullOrTransient(getPersistable());
@@ -507,7 +532,16 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 addActionError(e.getMessage());
             }
         }
+
+        if(isFormObsolete()) {
+            getLogger().info("save rejected because form was obsolete. formtime:{}  lastUpdate:{}",
+                    getEpochTimeUpdated(), getPersistable().getDateUpdated().getTime());
+            addActionError(getText("resourceController.submission_obsolete"));
+            setEpochTimeUpdated(getPersistable().getDateUpdated().getTime());
+        }
+
     }
+
 
     /*
      * This method returns the base URL for where a save should go, in 99% of the cases,
