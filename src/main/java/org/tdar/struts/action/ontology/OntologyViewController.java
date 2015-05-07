@@ -191,7 +191,7 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
         getLogger().debug("normalizedIri:{}", normalizeIri);
         for (OntologyNode node : getOntology().getOntologyNodes()) {
             String iri_ = node.getNormalizedIri().replaceAll("[\\(\\)\\\\.']", "");
-            getLogger().debug("|{}|<--{}-->|{}|", iri_, Objects.equals(iri_, normalizeIri), normalizeIri);
+            getLogger().trace("|{}|<--{}-->|{}|", iri_, Objects.equals(iri_, normalizeIri), normalizeIri);
             if (Objects.equals(normalizeIri, iri_)) {
                 return node;
             }
