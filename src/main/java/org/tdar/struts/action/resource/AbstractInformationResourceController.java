@@ -15,7 +15,6 @@ import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -188,6 +187,25 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private boolean hasFileProxyChanges = false;
 
     /**
+     * Throw an extension if any of the provided proxies describe a file that is not contained in the list of accepted file types.
+     * @param proxies
+     * @throws TdarActionException
+     */
+    private void validateFileExtensions(List<FileProxy> proxies) throws TdarActionException {
+        List<FileProxy> invalidFiles = new ArrayList<>();
+        for(FileProxy proxy : proxies) {
+            if(!getValidFileExtensions().contains(proxy.getExtension()) && proxy.getAction() != FileAction.DELETE) {
+                getLogger().info("Rejecting file:{} - extension not allowed.  Allowed types:{}", proxy.getExtension(), getValidFileExtensions());
+                invalidFiles.add(proxy);
+            }
+        }
+        if(!invalidFiles.isEmpty()) {
+            throw new TdarRecoverableRuntimeException(getText("abstractResourceController.bad_extension"));
+        }
+    }
+
+
+    /**
      * One-size-fits-all method for handling uploaded InformationResource files.
      * 
      * Handles text input files for coding sheets and ontologies,
@@ -201,6 +219,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getLogger().debug("handling uploaded files for {}", getPersistable());
             proxies = getFileProxiesToProcess();
+            validateFileExtensions(proxies);
             getLogger().debug("Final proxy set: {}", proxies);
 
             for (FileProxy proxy : proxies) {
@@ -516,7 +535,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public List<Resource> getPotentialParents() {
         getLogger().trace("get potential parents");
         if (potentialParents == null) {
-            Person submitter = getAuthenticatedUser();
+            TdarUser submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
             boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             potentialParents.addAll(projectService.findSparseTitleIdProjectListByPerson(submitter, canEditAnything));

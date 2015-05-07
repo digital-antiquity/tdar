@@ -56,71 +56,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testUserLookupWithrelevancy() {
-        TdarUser person = new TdarUser();
-        person.setLastName("Savala");
-        person.setFirstName("M");
-        person.setEmail("savala@coxasdsad.net");
-        person.setUsername("savala@coxasdsad.net");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Gomez");
-        person.setFirstName("m");
-        person.setEmail("gomez@hotmaadsasdil.com");
-        person.setUsername("gomez@hotmaadsasdil.com");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("R");
-        person.setFirstName("M");
-        person.setEmail("mr@gmasdasdail.com");
-        person.setUsername("mr@gmasdasdail.com");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("W");
-        person.setFirstName("M");
-        person.setEmail("wm@gmaiadssadl.com");
-        person.setUsername("wm@gmaiadssadl.com");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Ron");
-        person.setEmail("scott@coasdsadx.net");
-        person.setUsername("scott@coasdsadx.net");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Frederick");
-        person.setEmail("fredrerick@hotasdasdmail.com");
-        person.setUsername("fredrerick@hotasdasdmail.com");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Anne");
-        person.setEmail("anne@mchasdasdsi.com");
-        person.setUsername("anne@mchasdasdsi.com");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Susan");
-        person.setEmail("susan@gmailasda.com");
-        person.setUsername("susan@gmailasda.com");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Scott");
-        person.setFirstName("Kathleen");
-        person.setEmail("katheen@designworkasdasds-tn.com");
-        person.setUsername("katheen@designworkasdasds-tn.com");
-        genericService.saveOrUpdate(person);
-        person = new TdarUser();
-        person.setLastName("Ortman");
-        person.setFirstName("Scott");
-        person.setEmail("ortman@coloradoasd.edu");
-        person.setUsername("ortman@coloradoasd.edu");
-        person = new TdarUser();
-        person.setLastName("Scott Thompson");
-        person.setFirstName("M");
-        person.setEmail("mscottthompson@sua.edu");
-        person.setUsername("mscottthompson@sua.edu");
-        genericService.saveOrUpdate(person);
+        TdarUser person = setupMScottPeople();
 
         // searching by name
         controller.setTerm("M Scott Thompson");
@@ -152,6 +88,48 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         people = controller.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
+    }
+
+    @Test
+    @Rollback
+    public void testUserLastNameSpaceWithRelevancy() {
+        TdarUser person = setupMScottPeople();
+        controller = generateNewInitializedController(PersonLookupAction.class, getAdminUser());
+        controller.setLastName("Scott Th");
+        controller.setSortField(SortOption.RELEVANCE);
+        String result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        List<Person> people = controller.getResults();
+        logger.debug("results:{} ", people);
+        assertEquals(person, people.get(0));
+
+    }
+
+    private TdarUser setupMScottPeople() {
+        TdarUser person = new TdarUser("M", "Savala", "savala@coxasdsad.net", "savala@coxasdsad.net");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("m", "Gomez", "gomez@hotmaadsasdil.com", "gomez@hotmaadsasdil.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("M", "R", "mr@gmasdasdail.com", "mr@gmasdasdail.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("M", "W", "wm@gmaiadssadl.com", "wm@gmaiadssadl.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("Scott", "Ron", "scott@coasdsadx.net", "scott@coasdsadx.net");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("Frederick", "Scott", "fredrerick@hotasdasdmail.com", "fredrerick@hotasdasdmail.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("Anne", "Scott", "anne@mchasdasdsi.com", "anne@mchasdasdsi.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("Susan", "Scott", "susan@gmailasda.com", "susan@gmailasda.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("Kathleen", "Scott", "katheen@designworkasdasds-tn.com", "katheen@designworkasdasds-tn.com");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("Scott", "Ortman", "ortman@coloradoasd.edu", "ortman@coloradoasd.edu");
+        genericService.saveOrUpdate(person);
+        person = new TdarUser("M", "Scott Thompson", "mscottthompson@sua.edu", "mscottthompson@sua.edu");
+        genericService.saveOrUpdate(person);
+        searchIndexService.indexAll(getAdminUser(), Person.class, TdarUser.class);
+        return person;
     }
 
     @Test

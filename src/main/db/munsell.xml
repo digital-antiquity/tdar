@@ -250,7 +250,7 @@
 
     <changeSet id="munsell-15" author="abrin">
         <addColumn tableName="document">
-            <column name="document_subtype" type="varchar(50)" />
+            <column name="document_subtype" type="varchar(50)"/>
         </addColumn>
     </changeSet>
 
@@ -302,4 +302,14 @@
                 referencedColumnNames="id" />
     </changeSet>
 
+    
+<!--
+    DO NOT RUN - FIXED ON CORE, but VALUE should probably be VALUE_COMPUTED
+     <changeSet id="munsell-16" author="abrin">
+        <update tableName="ontology_node">
+            <column name="iri" value=" replace(iri,'.','_');"></column>
+            <where>iri like '%\.'</where>
+        </update>
+    </changeSet>
+ -->
 </databaseChangeLog>

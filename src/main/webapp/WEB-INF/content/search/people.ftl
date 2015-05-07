@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist />
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search />
 <head>
-    <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
+    <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}<#else>${query?html}</#if></title>
 </head>
 <body>
 

@@ -229,6 +229,7 @@ public class APIController extends AuthenticationAware.Base {
                 return ERROR;                
             }
             // I don't know that this is "right"
+            incoming = getGenericService().markWritableOnExistingSession(incoming);
             xmlResultObject.setRecordId(getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             FileProxies fileProxies = (FileProxies) serializationService.parseXml(FileProxies.class, new StringReader(getRecord()));

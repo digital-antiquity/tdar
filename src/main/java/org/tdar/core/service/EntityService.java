@@ -185,7 +185,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param person
      * @return
      */
-    public Set<Resource> findFullUserResources(Person person, boolean isAdmin) {
+    public Set<Resource> findFullUserResources(TdarUser person, boolean isAdmin) {
         return authorizedUserDao.findSparseEditableResources(person, isAdmin);
     }
 
@@ -348,7 +348,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findAccessibleResourceCollections(Person user) {
+    public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user) {
         return authorizedUserDao.findAccessibleResourceCollections(user);
     }
 

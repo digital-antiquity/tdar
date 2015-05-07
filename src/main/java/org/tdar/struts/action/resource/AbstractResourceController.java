@@ -243,6 +243,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
+    
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
@@ -250,7 +251,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
         if (getResource() != null) {
             BillingAccount resourceAccount = getResource().getAccount();
-            if ((resourceAccount != null) && !accounts.contains(resourceAccount)) {
+            if ((resourceAccount != null) && !accounts.contains(resourceAccount) && (
+                    isEditor() || authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource()))) {
                 accounts.add(0, resourceAccount);
             }
         }
