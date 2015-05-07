@@ -100,7 +100,7 @@ public interface AsyncUpdateReceiver {
         public List<String> getHtmlAsyncErrors() {
             List<String> messages = new ArrayList<>();
             for (Throwable throwable : getThrowables()) {
-                messages.add("<li>" + throwable.getLocalizedMessage() + "</li>");
+                messages.add(throwable.getLocalizedMessage());
             }
             return messages;
         }

@@ -190,11 +190,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser(), null, null);
 
             List<String> htmlAsyncErrors = manifestProxy.getAsyncUpdateReceiver().getHtmlAsyncErrors();
-            if (CollectionUtils.isNotEmpty(htmlAsyncErrors)) {
-                for (String error : htmlAsyncErrors) {
-                    addActionError(error);
-                }
-            }
+            addAsyncHtmlErrors(htmlAsyncErrors);
             PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
             setTicketId(ticket.getId());
             PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
@@ -216,6 +212,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS;
     }
 
+    private void addAsyncHtmlErrors(List<String> htmlAsyncErrors) {
+        if (CollectionUtils.isNotEmpty(htmlAsyncErrors)) {
+            for (String error : htmlAsyncErrors) {
+                addActionError(error);
+            }
+        }
+    }
+
     @SkipValidation
     @Action(value = "checkstatus",
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
@@ -226,10 +230,15 @@ public class BulkUploadController extends AbstractInformationResourceController<
             phase = reciever.getStatus();
             percentDone = reciever.getPercentComplete();
             getLogger().debug("{} {}%", phase, percentDone);
+            StringBuffer sb = new StringBuffer();
             if (CollectionUtils.isNotEmpty(reciever.getAsyncErrors())) {
                 getLogger().warn("bulkUploadErrors: {}", reciever.getAsyncErrors());
-                setAsyncErrors(StringUtils.join(reciever.getHtmlAsyncErrors(), ""));
+                for (String err : reciever.getHtmlAsyncErrors()) {
+                    sb.append("<li>").append(err).append("</li>");
+                }
+                setAsyncErrors(sb.toString());
             }
+            
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);
