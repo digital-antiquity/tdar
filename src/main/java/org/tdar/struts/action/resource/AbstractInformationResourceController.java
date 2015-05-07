@@ -15,7 +15,6 @@ import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
