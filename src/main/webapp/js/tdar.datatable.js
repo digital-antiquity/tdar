@@ -312,7 +312,7 @@ TDAR.datatable = function() {
             "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
             sAjaxDataProp : 'resources',
             requestCallback : function(searchBoxContents) {
-                return {
+                var parms =  {
                     title : searchBoxContents,
                     'resourceTypes' : $("#resourceTypes").val() == undefined ? "" : $("#resourceTypes").val(),
                     'includedStatuses' : $("#statuses").val() == undefined ? "" : $("#statuses").val(),
@@ -322,7 +322,11 @@ TDAR.datatable = function() {
                     'collectionId' : $("#collection-selector").val(),
                     useSubmitterContext : !_options.isAdministrator,
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
+                };
+                if($("#parentCollectionsIncluded").length) {
+                    parms.parentCollectionsIncluded = (!$("#parentCollectionsIncluded").prop("checked")).toString();
                 }
+                return parms;
             },
             selectableRows : _options.isSelectable,
             rowSelectionCallback : function(id, obj, isAdded) {
@@ -341,8 +345,8 @@ TDAR.datatable = function() {
         });
 
         $("#collection-selector").change(function() {
-            var projId = $(this).val();
-            $.cookie("tdar_datatable_selected_collection", projId);
+            var colId = $(this).val();
+            $.cookie("tdar_datatable_selected_collection", colId);
             $("#resource_datatable").dataTable().fnDraw();
         });
 
@@ -369,6 +373,18 @@ TDAR.datatable = function() {
         $("#query").bindWithDelay("keyup", function() {
             $("#resource_datatable").dataTable().fnDraw();
         }, 500);
+
+        $("#parentCollectionsIncluded").change(function(){
+            var $elem = $(this);
+            var collectionId = $("#metadataForm_id").val();
+            if($elem.prop("checked")) {
+                $("#collection-selector").val(collectionId);
+            } else {
+                //select the first option (all collections)
+                $("#collection-selector").val("");
+            }
+            $("#resource_datatable").dataTable().fnDraw();
+        });
 
         _scrollOnPagination();
     }

@@ -997,7 +997,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         as the first column in each row of the data table
 -->
 
-    <#macro resourceDataTable showDescription=true selectable=false>
+    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false>
     <div class="well tdar-widget"> <#--you are in a span9, but assume span8 so we fit inside well -->
         <div class="row">
             <div class="span8">
@@ -1078,7 +1078,14 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     value="ID_REVERSE" cssClass="input-block-level"/>
                 </div>
             </div>
-            <p class="span4">&nbsp;</p>
+            <div class="span4">
+                <#if limitToCollection>
+                    <label class="checkbox" style="margin-top:2em">
+                        <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded">
+                        Show only selected resources
+                    </label>
+                </#if>
+            </div>
         </div>
 
     </div>
