@@ -36,6 +36,7 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
@@ -67,22 +68,24 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Transient
     private transient String wildcardName;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval=true)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, orphanRemoval = true)
     @JoinColumn(name = "merge_creator_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Person> synonyms = new HashSet<>();
 
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
-    @BulkImportField(key="CREATOR_LNAME", order = 2)
+    @BulkImportField(key = "CREATOR_LNAME", order = 2)
     @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            @Field(name = QueryFieldNames.LAST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
-    @BulkImportField(key="CREATOR_FNAME", order = 1)
+    @BulkImportField(key = "CREATOR_FNAME", order = 1)
     @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            @Field(name = QueryFieldNames.FIRST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
@@ -104,7 +107,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
-    @BulkImportField(key="CREATOR_PERSON_INSTITUTION", order = 50)
+    @BulkImportField(key = "CREATOR_PERSON_INSTITUTION", order = 50)
     @JsonView(JsonLookupFilter.class)
     private Institution institution;
 
@@ -398,9 +401,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     public static Person fromName(String properName) {
         String[] split = split(properName);
         if (split.length > 1) {
-            return new Person(split[0], split[1],null);
+            return new Person(split[0], split[1], null);
         } else {
-            return new Person("",properName, null);
+            return new Person("", properName, null);
         }
     }
 
