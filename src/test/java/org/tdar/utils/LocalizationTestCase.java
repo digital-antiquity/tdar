@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -111,6 +112,52 @@ public class LocalizationTestCase {
     @Test
     public void testStringFormatErrors() throws IOException, ClassNotFoundException {
         Pattern pattern = Pattern.compile((".*\\%(\\w|\\$).*"));
+        searchPropsFileForPattern(pattern);
+
+        List<String> results = new ArrayList<>();
+        for (Entry<String, List<String>> key : matchingMap.entrySet()) {
+            String msg = String.format("Locale key using wrong format: %s %s", key.getKey(), key.getValue());
+            logger.error(msg);
+            results.add(msg);
+        }
+        if (results.size() > 0) {
+            fail(StringUtils.join(results, "\n"));
+        }
+    }
+
+    @Test
+    public void testNonEscapedApostrophes() throws IOException, ClassNotFoundException {
+
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] { "properties" }, true);
+        while (iterateFiles.hasNext()) {
+            File file = iterateFiles.next();
+            LineIterator it = FileUtils.lineIterator(file, "UTF-8");
+            try {
+                int lineNum = 0;
+                while (it.hasNext()) {
+                    lineNum++;
+                    String line = it.nextLine();
+                    if (line.contains("'") && !line.contains("''")) {
+                        matchingMap.put(line, Arrays.asList(Integer.toString(lineNum)));
+                    }
+                }
+            } catch (Throwable t) {
+                LineIterator.closeQuietly(it);
+            }
+        }
+        List<String> results = new ArrayList<>();
+        for (Entry<String, List<String>> key : matchingMap.entrySet()) {
+            String msg = String.format("Locale key using wrong format: %s line: %s", key.getKey(), key.getValue());
+            logger.error(msg);
+            results.add(msg);
+        }
+        
+        if (results.size() > 0) {
+            fail("Use two '' instead of ' to escape\n" + StringUtils.join(results, "\n"));
+        }
+    }
+
+    private void searchPropsFileForPattern(Pattern pattern) throws IOException {
         Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] { "properties" }, true);
         while (iterateFiles.hasNext()) {
             File file = iterateFiles.next();
@@ -134,16 +181,6 @@ public class LocalizationTestCase {
             } finally {
                 LineIterator.closeQuietly(it);
             }
-        }
-
-        List<String> results = new ArrayList<>();
-        for (Entry<String, List<String>> key : matchingMap.entrySet()) {
-            String msg = String.format("Locale key using wrong format: %s %s", key.getKey(), key.getValue());
-            logger.error(msg);
-            results.add(msg);
-        }
-        if (results.size() > 0) {
-            fail(StringUtils.join(results, "\n"));
         }
     }
 
