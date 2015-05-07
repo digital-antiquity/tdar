@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,12 +18,15 @@ import org.tdar.filestore.PairtreeFilestore;
  * Very basic servlet for serving static content outside of application path. This is temporary and you should not use this.
  * Instead, you should configure your static web server to handle static content, as it does a much better job.
  */
-@WebServlet("/hosted/*")
 public class StaticContentServlet extends HttpServlet {
 
     private static final long serialVersionUID = -4676094228284733556L;
     String basepath = TdarConfiguration.getInstance().getHostedFileStoreLocation();
     Logger logger = LoggerFactory.getLogger(getClass());
+
+    public StaticContentServlet() {
+        logger.debug("starting static content servlet");
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.trace("static content request: {}", request);
@@ -39,13 +41,14 @@ public class StaticContentServlet extends HttpServlet {
     }
 
     /**
-     * Return the File object specified by the path.   If "id" specified in queryString, File path resolves to basepath+pairtreeRoot,  where pairtreeRoot
-     * is calculated from id value.  Otherwise, file path resolves to basepath.
+     * Return the File object specified by the path. If "id" specified in queryString, File path resolves to basepath+pairtreeRoot, where pairtreeRoot
+     * is calculated from id value. Otherwise, file path resolves to basepath.
+     * 
      * @return
      */
     public File getRequestedFile(String path, String[] parameterValues) {
         File parentFolder = new File(basepath);
-        if(parameterValues != null) {
+        if (parameterValues != null) {
             String id = parameterValues[0];
             parentFolder = new File(parentFolder, PairtreeFilestore.toPairTree(id));
         }

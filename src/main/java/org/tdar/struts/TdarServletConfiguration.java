@@ -27,6 +27,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.web.StaticContentServlet;
 import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
@@ -86,6 +87,13 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
 
         configureStrutsAndSiteMeshFilters(container);
+        
+        if (!configuration.isStaticContentEnabled()) {
+            ServletRegistration.Dynamic staticContent = container.addServlet("static-content", StaticContentServlet.class);
+            staticContent.setInitParameter("default_encoding", "UTF-8");
+            staticContent.setLoadOnStartup(1);
+            staticContent.addMapping("/hosted/*");
+        }
 
     }
 
