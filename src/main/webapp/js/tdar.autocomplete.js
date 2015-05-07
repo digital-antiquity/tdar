@@ -568,7 +568,7 @@ TDAR.autocomplete = (function () {
 
         //FIXME: this was in stable but not default, make sure this should be here
         if (!usersOnly) {
-            options.sortField = 'CREATOR_NAME';
+//            options.sortField = 'CREATOR_NAME';
         }
 
         _applyGenericAutocomplete($elements, options);
