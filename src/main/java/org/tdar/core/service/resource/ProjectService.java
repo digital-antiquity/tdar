@@ -154,7 +154,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     //FIXME: isAdmin should not be an argument.  It's not the controller's job to know what the user can/can't see.
     @Transactional(readOnly = true)
-    public List<Resource> findSparseTitleIdProjectListByPerson(Person person, boolean isAdmin) {
+    public List<Resource> findSparseTitleIdProjectListByPerson(TdarUser person, boolean isAdmin) {
         // get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
         Set<ResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
 

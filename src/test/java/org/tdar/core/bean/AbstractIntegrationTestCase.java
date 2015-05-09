@@ -188,6 +188,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
     @Autowired
+    private
     AuthorizedUserDao authorizedUserDao;
 
     @Autowired
@@ -473,7 +474,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected <T> T generateNewController(Class<T> controllerClass) {
-        authorizedUserDao.clearUserPermissionsCache();
+        getAuthorizedUserDao().clearUserPermissionsCache();
         // evictCache();
 
         T controller = applicationContext.getBean(controllerClass);
@@ -1015,5 +1016,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         String msg = MessageHelper.getMessage(msgKey);
         assertThat("key should not be same as getText(key) (did you forget to add it to tdar-messages?)", msgKey, is( not( msg )));
         return msg;
+    }
+
+    public AuthorizedUserDao getAuthorizedUserDao() {
+        return authorizedUserDao;
+    }
+
+    public void setAuthorizedUserDao(AuthorizedUserDao authorizedUserDao) {
+        this.authorizedUserDao = authorizedUserDao;
     }
 }
