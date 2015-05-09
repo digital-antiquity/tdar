@@ -180,6 +180,12 @@ public class BulkManifestProxy implements Serializable {
                 asyncUpdateReceiver.addError(t);
             }
         }
+        
+        HashSet<String> filenames = new HashSet<String>(allFilenames);
+        if (filenames.size() != allFilenames.size()) {
+            asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.duplicate_filenames"));
+            return;
+        }
 
         // report on missing files that are not in the excel template, or missing files that are not being uploaded
         for (String filename : getResourcesCreated().keySet()) {
@@ -191,10 +197,10 @@ public class BulkManifestProxy implements Serializable {
             }
             logger.debug("removing: {}", filename);
         }
-        logger.debug("{}", allFilenames);
         if (CollectionUtils.isNotEmpty(allFilenames)) {
-            asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.tooManyFiles",
-                    Arrays.asList(StringUtils.join(allFilenames.toArray(), ", "))));
+            List<Object> list = new ArrayList<>();
+            list.add(StringUtils.join(allFilenames.toArray(), ", "));
+            asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.tooManyFiles", list));
         }
     }
 

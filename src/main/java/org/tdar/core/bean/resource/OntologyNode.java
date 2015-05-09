@@ -249,6 +249,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public static String normalizeIri(String iriInput) {
         String iri_ = StringUtils.trim(iriInput);
+        iri_ = StringUtils.replace(iri_, ".", "_");
         // backwards compatibility to help with mappings which start with digests
         if ((iri_ != null) && iri_.matches("^\\_\\d.*")) {
             return StringUtils.substring(iri_, 1);

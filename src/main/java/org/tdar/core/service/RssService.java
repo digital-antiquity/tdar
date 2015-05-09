@@ -250,8 +250,11 @@ public class RssService implements Serializable {
                 Resource resource = (Resource) resource_;
                 for (ResourceCreator creator : resource.getPrimaryCreators()) {
                     SyndPerson person = new SyndPersonImpl();
-                    person.setName(cleanStringForXML(creator.getCreator().getProperName()));
-                    authors.add(person);
+                    String name = cleanStringForXML(creator.getCreator().getProperName());
+                    if (StringUtils.isNotBlank(name)) {
+                        person.setName(name);
+                        authors.add(person);
+                    }
                 }
                 if (authors.size() > 0) {
                     entry.setAuthors(authors);
@@ -331,8 +334,8 @@ public class RssService implements Serializable {
         if ((latLong != null) && latLong.isObfuscatedObjectDifferent() == false && hasRestrictions == false) {
             GeoRSSModule geoRss = new SimpleModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
-                geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), 
-                                                latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
+                geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(),
+                        latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
             }
             if (mode == GeoRssMode.POINT) {
                 geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));

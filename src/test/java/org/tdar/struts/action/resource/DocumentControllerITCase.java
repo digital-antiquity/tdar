@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.velocity.runtime.parser.node.SetExecutor;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import org.tdar.struts.action.UploadController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
@@ -363,8 +365,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         rva.setId(newId);
         rva.prepare();
         rva.view();
-        
-        
+
         ResourceDeleteAction deleteAction = generateNewInitializedController(ResourceDeleteAction.class);
         deleteAction.setId(newId);
         deleteAction.prepare();
@@ -426,7 +427,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertTrue(actualCreator.getCreator().getName().contains("newLast"));
         Assert.assertEquals(ResourceCreatorRole.AUTHOR, actualCreator.getRole());
         String deletionReason = "because";
-        DocumentViewAction rva = deleteResource(d.getId(), deletionReason );
+        DocumentViewAction rva = deleteResource(d.getId(), deletionReason);
     }
 
     // return a populated "new" resource creator person (i.e. all person fields
@@ -720,6 +721,18 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // assertNotEmpty(dc.getActionErrors());
         // setIgnoreActionErrors(true);
 
+    }
+
+    @Test
+    @Rollback
+    public void testDocumentReplaceWithInvalidfile() throws TdarActionException {
+        setIgnoreActionErrors(true);
+        Document document = setupAndLoadResource(TestConstants.TEST_DOCUMENT, Document.class);
+        Long documentId = document.getId();
+        String filename = "dataset_with_floats_to_varchar.xls";
+        Document document2 = replaceFile(TestConstants.TEST_IMAGE, TestConstants.TEST_DOCUMENT, Document.class, documentId);
+        assertTrue(getActionErrors().size() > 0);
+        assertTrue(getActionErrors().contains(MessageHelper.getMessage("abstractResourceController.bad_extension")));
     }
 
 }

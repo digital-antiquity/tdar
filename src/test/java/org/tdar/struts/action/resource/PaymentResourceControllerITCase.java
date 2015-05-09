@@ -1,8 +1,6 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,13 +18,20 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
@@ -64,7 +69,101 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
             return getSecond();
         }
     }
+    
+    @Test
+    @Rollback
+    public void testSubmitterWithoutAccountRightsAndNoAccount() throws TdarActionException {
+        BillingAccount account = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), getEditorUser());
+        Dataset dataset = createAndSaveNewDataset();
+        dataset.setSubmitter(getBasicUser());
+        account.getResources().add(dataset);
+        genericService.saveOrUpdate(account);
+        genericService.saveOrUpdate(dataset);
+        Long id = dataset.getId();
+        dataset = null;
+        genericService.synchronize();
+        DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        assertEquals(TdarActionSupport.SUCCESS, dc.edit());
+        logger.debug("active accounts:{}", dc.getActiveAccounts());
+        logger.debug("accountId:{}", dc.getAccountId());
+    }
 
+    @Test
+    @Rollback
+    public void testSubmitterWithInheritedRights() throws Exception {
+        BillingAccount account = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), getEditorUser());
+        Dataset dataset = createAndSaveNewDataset();
+        account.getResources().add(dataset);
+        genericService.saveOrUpdate(account);
+        genericService.saveOrUpdate(dataset);
+        genericService.synchronize();
+        ResourceCollection rCollection = generateResourceCollection("test", "test", CollectionType.SHARED, true, Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)), 
+                getAdminUser(), Arrays.asList(dataset), null);
+        dataset.getResourceCollections().add(rCollection);
+        dataset.setSubmitter(getBasicUser());
+        genericService.saveOrUpdate(rCollection);
+        
+        Long id = dataset.getId();
+        dataset = null;
+        genericService.synchronize();
+        Dataset ds = genericService.find(Dataset.class, id);
+        genericService.refresh(ds);
+        accountService.updateTransientAccountInfo(ds);
+        logger.debug("accnt:{}", ds.getAccount());
+        assertNotEmpty(ds.getResourceCollections());
+        ds = null;
+        DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        assertEquals(TdarActionSupport.SUCCESS, dc.edit());
+        getAuthorizedUserDao().clearUserPermissionsCache();
+
+        logger.debug("active accounts:{}", dc.getActiveAccounts());
+        logger.debug("accountId:{}", dc.getAccountId());
+        assertEquals(account.getId(), dc.getAccountId());
+        dc.setServletRequest(getServletPostRequest());
+        dc.save();
+        assertFalse(getActionErrors().size() > 0);
+        genericService.synchronize();
+        ds = genericService.find(Dataset.class, id);
+        accountService.updateTransientAccountInfo(ds);
+        assertEquals(account, ds.getAccount());
+
+    }
+
+    @Test
+    @Rollback
+    public void testSubmitterWithoutAccountRightsAndSeparateAccount() throws TdarActionException {
+        BillingAccount adminAccount = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), getEditorUser());
+        BillingAccount basicAccount = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), getBasicUser());
+        Dataset dataset = createAndSaveNewDataset();
+        dataset.setSubmitter(getBasicUser());
+        adminAccount.getResources().add(dataset);
+        genericService.saveOrUpdate(adminAccount);
+        genericService.saveOrUpdate(dataset);
+        Long id = dataset.getId();
+        dataset = null;
+        genericService.synchronize();
+        DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        assertEquals(TdarActionSupport.SUCCESS, dc.edit());
+        logger.debug("active accounts:{}", dc.getActiveAccounts());
+        logger.debug("accountId:{}", dc.getAccountId());
+        assertTrue(dc.getActiveAccounts().contains(basicAccount));
+        assertEquals(adminAccount.getId(), dc.getAccountId());
+        dc.setServletRequest(getServletPostRequest());
+        dc.save();
+        assertFalse(getActionErrors().size() > 0);
+        genericService.synchronize();
+        Dataset ds = genericService.find(Dataset.class, id);
+        accountService.updateTransientAccountInfo(ds);
+        assertEquals(basicAccount, ds.getAccount());
+    }
+
+    
     @Test
     @Rollback()
     public void testCreateWithoutValidAccount() throws Exception {
@@ -86,7 +185,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertNotNull(tdae);
         Assert.assertNull(result, result);
     }
-
+    
     @Test
     @Rollback()
     public void testResourceControllerWithoutValidAccount() throws Exception {

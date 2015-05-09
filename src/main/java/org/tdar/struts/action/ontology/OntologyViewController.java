@@ -188,8 +188,9 @@ public class OntologyViewController extends AbstractResourceViewAction<Ontology>
      * @return
      */
     private OntologyNode fallbackCheckForIri(String normalizeIri) {
+        getLogger().debug("normalizedIri:{}", normalizeIri);
         for (OntologyNode node : getOntology().getOntologyNodes()) {
-            String iri_ = node.getNormalizedIri().replaceAll("[\\(\\)\\']", "");
+            String iri_ = node.getNormalizedIri().replaceAll("[\\(\\)\\\\.']", "");
             getLogger().trace("|{}|<--{}-->|{}|", iri_, Objects.equals(iri_, normalizeIri), normalizeIri);
             if (Objects.equals(normalizeIri, iri_)) {
                 return node;
