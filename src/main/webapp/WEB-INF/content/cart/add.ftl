@@ -82,13 +82,13 @@
                             <h2>Cost Calculator</h2>
 
                             <div class="well">
-                                <@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2" maxlength=9  />
+                                <@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2 orderinfo" maxlength=9  />
 
                                 <div class="control-group">
                                     <label class="control-label">Number of Mb</label>
 
                                     <div class="controls">
-                                        <@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2" maxlength=9 />
+                                        <@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2 orderinfo" maxlength=9 />
                                         <span id="convert"></span>
                                     </div>
                                 </div>
@@ -163,7 +163,7 @@
                 <#if !act.production >
                     <tr>
                         <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
-                        <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2" theme="simple"/></td>
+                        <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2 orderinfo" theme="simple"/></td>
                     </tr>
                 </#if>
             </#list>
@@ -197,8 +197,6 @@
 
 <script>
     $(document).ready(function () {
-// FIXME: removed because of IE8 validation error
-//    TDAR.common.initEditPage($('#MetadataForm')[0]);
         TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
         TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete"), true, false);
     });

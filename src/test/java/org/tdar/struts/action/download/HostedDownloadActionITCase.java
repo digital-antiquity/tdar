@@ -79,7 +79,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
 
-    @Test(expected = TdarRecoverableRuntimeException.class)
+    @Test()
     @Rollback
     public void testMissingHostedDownloadReferrer() throws Exception {
         setIgnoreActionErrors(true);
