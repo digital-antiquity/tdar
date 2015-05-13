@@ -145,7 +145,11 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
      * @return
      */
     protected boolean isFormObsolete() {
+        //a 'new' resource wont ever be obsolete
         if(PersistableUtils.isNullOrTransient(getPersistable())) {return false;}
+        //if dateUpdated is null, we can't (easily) determine obsolescence
+        if(getPersistable().getDateUpdated() == null) {return false;}
+
         long now = System.currentTimeMillis();
         long formAge = now - getStartTime();
         long persistableAge = now - getEpochTimeUpdated();
@@ -417,7 +421,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
             type = RequestType.CREATE;
         }
         prepareAndLoad(this, type);
-        if(PersistableUtils.isNotNullOrTransient(getId())) {
+        if(PersistableUtils.isNotNullOrTransient(getId()) && getPersistable().getDateUpdated() != null) {
             setEpochTimeUpdated(getPersistable().getDateUpdated().getTime());
         }
      }
