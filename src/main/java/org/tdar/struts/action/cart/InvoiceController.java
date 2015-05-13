@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -223,8 +224,8 @@ public class InvoiceController extends AbstractCartController {
 
     void setupActivities() {
         // we only care about the production+active activities
-        for(BillingActivity act : invoiceService.getActiveBillingActivities()) {
-            if(act.isProduction() || isEditor()) {
+        for (BillingActivity act : invoiceService.getActiveBillingActivities()) {
+            if (act.isProduction() || isEditor()) {
                 getActivities().add(act);
             }
         }
@@ -249,12 +250,6 @@ public class InvoiceController extends AbstractCartController {
             files = 0L;
         }
 
-        if (isPostRequest() && mb == 0L && files == 0L) {
-            if(StringUtils.isBlank(getCode())) {
-                addActionError(getText("cartController.specify_mb_or_files"));
-            }
-        }
-
         // rule: invoice must not be finalized
         if (!getInvoice().isModifiable()) {
             addActionError(getText("cartController.cannot_modify"));
@@ -263,6 +258,16 @@ public class InvoiceController extends AbstractCartController {
         // rule: invoice.paymentMethod required (prepare() should set automatically if only one option exists)
         if (getInvoice().getPaymentMethod() == null) {
             addActionError(getText("cartController.valid_payment_method_is_required"));
+        }
+
+        // if we're an admin and there are extra billing items, don't validate files and MB
+        if (isBillingManager() && CollectionUtils.isNotEmpty(extraBillingItems)) {
+            return;
+        }
+        if (isPostRequest() && mb == 0L && files == 0L) {
+            if (StringUtils.isBlank(getCode())) {
+                addActionError(getText("cartController.specify_mb_or_files"));
+            }
         }
     }
 
