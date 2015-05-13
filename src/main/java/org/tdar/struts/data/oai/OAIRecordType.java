@@ -5,10 +5,14 @@ package org.tdar.struts.data.oai;
 
 import java.util.Arrays;
 
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
 import org.tdar.core.exception.OaiErrorCode;
 import org.tdar.utils.MessageHelper;
+
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.rometools.modules.activitystreams.types.Person;
 
 /**
  * @author ctuohy
@@ -32,6 +36,18 @@ public enum OAIRecordType {
         return name;
     }
 
+    public Class<?> getActualClass() {
+        switch (this) {
+            case INSTITUTION:
+                return Institution.class;
+            case PERSON:
+                return Person.class;
+            case RESOURCE:
+                return Resource.class;
+        }
+        return null;
+    }
+    
     public OAIMetadataFormat[] getMetadataFormats() {
         return metadataFormats;
     }
