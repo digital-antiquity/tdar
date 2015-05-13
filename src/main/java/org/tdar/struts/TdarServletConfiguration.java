@@ -39,6 +39,8 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
     private static final long serialVersionUID = -6063648713073283277L;
 
+    public static final String HOSTED_CONTENT_BASE_URL = "/hosted";
+
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     public final String BAR = "\r\n*************************************************************************\r\n";
     // NOTE: when changing these, you must test both TOMCAT and JETTY as they behave differently
@@ -92,7 +94,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
             ServletRegistration.Dynamic staticContent = container.addServlet("static-content", StaticContentServlet.class);
             staticContent.setInitParameter("default_encoding", "UTF-8");
             staticContent.setLoadOnStartup(1);
-            staticContent.addMapping("/hosted/*");
+            staticContent.addMapping(HOSTED_CONTENT_BASE_URL + "/*");
         }
 
     }

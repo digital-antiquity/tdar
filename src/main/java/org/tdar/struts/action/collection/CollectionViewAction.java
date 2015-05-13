@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,6 +23,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -30,11 +32,13 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.TdarServletConfiguration;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -460,8 +464,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     public boolean isSearchHeaderLogoAvailable() {
         //for now, we just look in hosted + collection ID
-        String filename =  getResourceCollection().getId() + File.separator + SEARCH_HEADER_FILENAME;
-        return checkHostedFileAvailable(filename);
+        return checkHostedFileAvailable(SEARCH_HEADER_FILENAME);
     }
 
     /**
@@ -481,5 +484,19 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return !isSearchHeaderEnabled();
     }
 
+    /**
+     * Return the default/suggested base url for static content (trailing slash removed, if present)
+     * @return
+     */
+    public String getHostedContentBaseUrl() {
+        String baseUrl = TdarServletConfiguration.HOSTED_CONTENT_BASE_URL;
+        if (PersistableUtils.isNotNullOrTransient(getResourceCollection())) {
+            baseUrl += PairtreeFilestore.toPairTree(getResourceCollection().getId());
+        }
+        if(baseUrl.endsWith("/")) {
+            baseUrl = StringUtils.chop(baseUrl);
+        }
+        return baseUrl;
+    }
 
 }

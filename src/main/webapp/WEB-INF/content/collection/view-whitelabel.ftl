@@ -26,10 +26,11 @@
     <#if searchHeaderLogoAvailable>
     <style>
         div.searchheader {
-            background-image: url("/hosted/search-header.jpg?id=${resourceCollection.id?c}");
+            background-image: url("${hostedContentBaseUrl}/search-header.jpg");
         }
     </style>
     </#if>
+    <!-- search header url: "${hostedContentBaseUrl}/search-header.jpg" -->
     <#if editable>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
