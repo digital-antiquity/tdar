@@ -33,7 +33,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 })
 public class OntologyNodeViewAction extends AbstractOntologyViewAction {
 
-    private static final long serialVersionUID = -826507251116794622L;
+    private static final long serialVersionUID = -172190399789767787L;
     @Autowired
     private transient OntologyNodeService ontologyNodeService;
     @Autowired
