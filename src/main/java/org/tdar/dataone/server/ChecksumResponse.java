@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/checksum")
+@Path("/v1/checksum")
 @Component
 @Scope("prototype")
 public class ChecksumResponse extends AbstractDataOneResponse {
