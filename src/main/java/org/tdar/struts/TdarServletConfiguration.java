@@ -1,6 +1,7 @@
 package org.tdar.struts;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -63,6 +64,10 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         if (StringUtils.isNotBlank(failureMessage)) {
             throw new ServletException(failureMessage);
         }
+        if(!configuration.isProductionEnvironment()) {
+            onDevStartup(container);
+        }
+
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(TdarAppConfiguration.class);
         container.addListener(new ContextLoaderListener(rootContext));
@@ -88,6 +93,24 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         configureStrutsAndSiteMeshFilters(container);
 
     }
+
+    private void onDevStartup(ServletContext container) {
+        if(configuration.isProductionEnvironment()) {throw new IllegalStateException("dev startup tasks not allowed in production");}
+        logServerInfo(container);
+    }
+
+    /**
+     * Logs out basic server information for the specified condtainer
+     */
+    private void logServerInfo(ServletContext container) {
+        logger.info(BAR);
+        logger.info("SERVER INFO");
+        logger.info("\t       server:{}", container.getServerInfo());
+        logger.info("\t servlet spec:{}.{}", container.getMajorVersion(), container.getMinorVersion());
+        logger.info("\t context name:{}", container.getServletContextName());
+        logger.info(BAR);
+    }
+
 
     private void configureFreemarker(ServletContext container) {
         ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker", FreemarkerDecoratorServlet.class);
