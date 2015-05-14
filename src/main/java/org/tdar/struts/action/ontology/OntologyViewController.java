@@ -1,7 +1,9 @@
 package org.tdar.struts.action.ontology;
 
+import java.util.Arrays;
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -17,6 +19,7 @@ import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @Component
@@ -24,10 +27,11 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @ParentPackage("default")
 @Namespace("/ontology")
 @Results(value = {
-        @Result(name = "redirect_iri", location = "${redirectIri}")
+        @Result(name = OntologyViewController.REDIRECT_IRI, type = TdarActionSupport.REDIRECT, location = "${redirectIri}",params = { "ignoreParams", "id,slug" })
 })
 public class OntologyViewController extends AbstractOntologyViewAction {
 
+    public static final String REDIRECT_IRI = "redirect_iri";
     private static final long serialVersionUID = -826507251116794622L;
     @Autowired
     private transient OntologyNodeService ontologyNodeService;
@@ -40,13 +44,10 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     public void prepare() throws TdarActionException {
         super.prepare();
         if (getRedirectIri() != null) {
-            setNode(getNodeByIri());
-            getLogger().debug("NODE: {}", getNode());
             if (getNode() == null) {
-                abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
+                abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", Arrays.asList(getIri())));
             }
         }
-        getLogger().debug("slug:{} , node:{}, iri: {}", getSlug(), getNode(), getIri());
     }
 
     @Override
@@ -56,51 +57,49 @@ public class OntologyViewController extends AbstractOntologyViewAction {
             @Action(value = "{id}")
     })
     public String view() throws TdarActionException {
+        getLogger().trace("redirect iri: {}", getRedirectIri());
+        if (isRedirectBadSlug() && StringUtils.isBlank(getRedirectIri())) {
+            return BAD_SLUG;
+        }
+
         if (getRedirectIri() != null) {
-            return "redirect_iri";
+            return REDIRECT_IRI;
         }
         return super.view();
     }
 
-    // public List<OntologyNode> getChildren() {
-    // return children;
-    // }
-    //
-    // public void setChildren(List<OntologyNode> children) {
-    // this.children = children;
-    // }
-
-    // public List<OntologyNode> getChildElements(OntologyNode node_) {
-    // getLogger().trace("get children:" + node_);
-    // return ontologyService.getChildren(getOntology().getOntologyNodes(), node_);
-    // }
-
-    // public List<OntologyNode> getChildElements(String index) {
-    // getLogger().trace("get children: {}", index);
-    // for (OntologyNode node : getOntology().getOntologyNodes()) {
-    // if (node.getIndex().equals(index)) {
-    // return ontologyService.getChildren(getOntology().getOntologyNodes(), node);
-    // }
-    // }
-    // return null;
-    // }
-
+    /**
+     * History -- the following URLs need to be managed:
+     * http://localhost:8080/ontology/3656 --> redirect to slug (or just work)
+     * http://localhost:8080/ontology/3656/taxon --> just work
+     * http://localhost:8080/ontology/3656/Kangaroo_Rat_or_Dipodomys_sp
+     * http://localhost:8080/ontology/3656/node/Kangaroo_Rat_or_Dipodomys_sp
+     */
     @Override
     protected void handleSlug() {
         if (!Objects.equals(getSlug(), getPersistable().getSlug())) {
-            String normalizeIri = OntologyNode.normalizeIri(getIri());
+            getLogger().trace("processing slug request: {}", getSlug());
+            if (StringUtils.isBlank(getSlug())) {
+                getLogger().trace("passing upward: {}", getSlug());
+                super.handleSlug();
+                return;
+            }
+            
+            String normalizeIri = OntologyNode.normalizeIri(getSlug());
             getLogger().trace("iri:{} --> {}", getIri(), normalizeIri);
             OntologyNode node_ = getOntology().getNodeByIri(normalizeIri);
-            getLogger().trace("node:{}", node_);
             if (node_ == null) {
                 node_ = fallbackCheckForIri(normalizeIri);
             }
 
             if (node_ != null) {
-                setRedirectIri(String.format("/ontology/%s/node/%s", getId(), normalizeIri));
+                setIri(node_.getIri());
+                getLogger().trace("redirecting by iri: {}", node_.getIri());
+                setNode(node_);
+                setRedirectIri(String.format("/ontology/%s/node/%s", getId(), node_.getIri()));
+                return;
             }
-        } else {
-            super.handleSlug();
         }
+        super.handleSlug();
     }
 }
