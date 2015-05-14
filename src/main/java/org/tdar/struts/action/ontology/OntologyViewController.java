@@ -43,10 +43,11 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        if (getRedirectIri() != null) {
-            if (getNode() == null) {
-                abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", Arrays.asList(getIri())));
-            }
+        // prepare calls handleSlug
+        // handle slug will check if there's an IRI that's in a slug (fallback from older behavior)
+        getLogger().trace("{} -- {}", getNode(), getRedirectIri());
+        if (getRedirectIri() != null && getNode() == null) {
+            abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", Arrays.asList(getIri())));
         }
     }
 
@@ -54,14 +55,17 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     @HttpOnlyIfUnauthenticated
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
+            @Action(value = "{id}/"),
             @Action(value = "{id}")
     })
     public String view() throws TdarActionException {
         getLogger().trace("redirect iri: {}", getRedirectIri());
+        // redirect if we don't have an IRI and have a bad slug
         if (isRedirectBadSlug() && StringUtils.isBlank(getRedirectIri())) {
             return BAD_SLUG;
         }
 
+        // redirect if we have a IRI
         if (getRedirectIri() != null) {
             return REDIRECT_IRI;
         }
@@ -77,21 +81,26 @@ public class OntologyViewController extends AbstractOntologyViewAction {
      */
     @Override
     protected void handleSlug() {
+        // if slug != actual
         if (!Objects.equals(getSlug(), getPersistable().getSlug())) {
             getLogger().trace("processing slug request: {}", getSlug());
+            // if completely blank, then redirect the slug
             if (StringUtils.isBlank(getSlug())) {
                 getLogger().trace("passing upward: {}", getSlug());
                 super.handleSlug();
                 return;
             }
             
+            // otherwise, try to see if the slug is an IRI
             String normalizeIri = OntologyNode.normalizeIri(getSlug());
             getLogger().trace("iri:{} --> {}", getIri(), normalizeIri);
             OntologyNode node_ = getOntology().getNodeByIri(normalizeIri);
+            // handle struts differences /\\'\\,\\./ ...
             if (node_ == null) {
                 node_ = fallbackCheckForIri(normalizeIri);
             }
 
+            // redirect if we have an actual node match to the new home
             if (node_ != null) {
                 setIri(node_.getIri());
                 getLogger().trace("redirecting by iri: {}", node_.getIri());
@@ -100,6 +109,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
                 return;
             }
         }
+        // handle slug
         super.handleSlug();
     }
 }
