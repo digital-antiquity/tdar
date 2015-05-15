@@ -151,9 +151,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         if(getPersistable().getDateUpdated() == null) {return false;}
 
         long now = System.currentTimeMillis();
-        long formAge = now - getStartTime();
-        long persistableAge = now - getEpochTimeUpdated();
-        return formAge < persistableAge;
+        long formAge = now - getStartTime(); 
+        long persistableAge = now - getEpochTimeUpdated(); 
+        getLogger().debug("now:{} startTime:{} epochTimeUpdated:{}", now, getStartTime(), getEpochTimeUpdated());
+        return formAge > persistableAge;
     }
 
     @Action(value = SAVE,
