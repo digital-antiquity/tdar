@@ -167,9 +167,9 @@
 
 			<p><b>Try searching for:</b>
 				<ul>
-					<li><a href="<@s.url value="/search/people?query=${query?url}"/>">People named ${query}</li>
-					<li><a href="<@s.url value="/search/institutions?query=${query?url}"/>">Institutions named ${query}</li>
-					<li><a href="<@s.url value="/search/collections?query=${query?url}"/>">Collections named ${query}</li>
+					<li><a href="<@s.url value="/search/people?query=${query?url}"/>">People named ${query}</a></li>
+					<li><a href="<@s.url value="/search/institutions?query=${query?url}"/>">Institutions named ${query}</a></li>
+					<li><a href="<@s.url value="/search/collections?query=${query?url}"/>">Collections named ${query}</a></li>
 				</ul>
 	
 		</#if>
