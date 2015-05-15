@@ -1,7 +1,6 @@
 package org.tdar.struts;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -40,7 +39,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     private static final long serialVersionUID = -6063648713073283277L;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    public final String BAR = "\r\n*************************************************************************\r\n";
+    public final String BAR = "*************************************************************************";
     // NOTE: when changing these, you must test both TOMCAT and JETTY as they behave differently
     EnumSet<DispatcherType> allDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
     EnumSet<DispatcherType> strutsDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR);
@@ -53,7 +52,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {
             failureMessage = t.getMessage() + " (see initial exception for details)";
-            logger.error("\r\n\r\n" + BAR + t.getMessage() + BAR, t);
+            logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR +"\r\n", t);
         }
     }
 
