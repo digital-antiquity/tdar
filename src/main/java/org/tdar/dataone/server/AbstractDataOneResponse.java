@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AbstractDataOneResponse {
 
+    public static final String BASE_PATH = "/v1/";
     private static final String ISO_822 = "EEE, dd MMM yyyy HH:mm:ss Z";
     private static final String HEADER_DATE = "Date";
     public static final String APPLICATION_XML = "application/xml";

@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/v1/checksum")
+@Path(AbstractDataOneResponse.BASE_PATH + "checksum")
 @Component
 @Scope("prototype")
 public class ChecksumResponse extends AbstractDataOneResponse {
@@ -34,7 +34,7 @@ public class ChecksumResponse extends AbstractDataOneResponse {
     private HttpServletResponse response;
 
     @GET
-    @Path("{pid}")
+    @Path("{pid:.*}")
     @Produces(APPLICATION_XML)
     public Response checksum(@PathParam("pid") String pid,
             @QueryParam("checksumAlgorithm") String checksum) {

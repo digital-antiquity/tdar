@@ -19,8 +19,9 @@ import org.tdar.dataone.service.DataOneService;
 
 @Component
 @Scope("prototype")
-@Path("/v1/")
+@Path(AbstractDataOneResponse.BASE_PATH)
 public class CapabilitiesResponse extends AbstractDataOneResponse {
+
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

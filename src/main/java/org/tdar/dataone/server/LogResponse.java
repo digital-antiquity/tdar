@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/v1/log")
+@Path(AbstractDataOneResponse.BASE_PATH + "log")
 @Component
 @Scope("prototype")
 public class LogResponse extends AbstractDataOneResponse {

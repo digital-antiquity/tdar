@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
 
-@Path("/v1/dirtySystemMetadata")
+@Path(AbstractDataOneResponse.BASE_PATH + "/dirtySystemMetadata")
 @Component
 @Scope(value="prototype")
 public class DirtySystemMetadataResponse extends AbstractDataOneResponse {

@@ -65,6 +65,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.ListObjectEntry.Type;
@@ -73,6 +74,7 @@ import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.PersistableUtils;
 
+import edu.asu.lib.jaxb.JaxbDocumentWriter;
 import edu.asu.lib.mods.ModsDocument;
 
 @Service
@@ -109,6 +111,9 @@ public class DataOneService {
 
     @Autowired
     private GenericService genericService;
+
+    @Autowired
+    private SerializationService serializationService;
 
     @Autowired
     private DataOneDao dataOneDao;
@@ -166,7 +171,7 @@ public class DataOneService {
     }
 
     public Node getNodeResponse() {
-        org.dataone.service.types.v1.Node  node = new Node();
+        org.dataone.service.types.v1.Node node = new Node();
         node.setBaseURL(CONFIG.getBaseSecureUrl() + DATAONE);
         node.setDescription(CONFIG.getSystemDescription());
         node.setIdentifier(getTdarNodeReference());
@@ -291,6 +296,12 @@ public class DataOneService {
 
     }
 
+    /**
+     * Gets DataOne System metadata for a given id. The ID will be a tDAR DOI with a suffix that specifies a metadata object, a resource, or a file
+     * 
+     * @param id
+     * @return
+     */
     public SystemMetadata metadataRequest(String id) {
         SystemMetadata metadata = new SystemMetadata();
         AccessPolicy policy = new AccessPolicy();
@@ -317,13 +328,11 @@ public class DataOneService {
         metadata.setOriginMemberNode(getTdarNodeReference());
         // metadata.setReplicationPolicy(rpolicy );
 
-        if (StringUtils.isNotBlank(CONFIG.getSystemAdminEmail())) {
-            // rights to change the permissions sitting on the object
-            metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
-        }
+        // rights to change the permissions sitting on the object
+        metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
         // metadata.setSerialVersion(value);
-
         metadata.setSubmitter(createSubject(resource.getSubmitter().getProperName()));
+        logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
     }
 
@@ -366,9 +375,16 @@ public class DataOneService {
         return resp;
     }
 
-    private ObjectResponseContainer getObjectFromTdar(String id_) {
+    /**
+     * For a given DataOne Identifier (tDAR DOI + additional suffix)
+     * 
+     * @param id_
+     * @return
+     */
+    public ObjectResponseContainer getObjectFromTdar(String id_) {
         ObjectResponseContainer resp = null;
         try {
+            logger.debug("looking for Id: {}", id_);
             String doi = StringUtils.substringBefore(id_, D1_SEP);
             doi = doi.replace("doi:10.6067:", "doi:10.6067/");
             String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
@@ -381,7 +397,7 @@ public class DataOneService {
             }
             resp.setTdarResource(ir);
             resp.setIdentifier(id_);
-            if (partIdentifier.equals(D1_FORMAT)) {
+            if (partIdentifier.equals(D1_FORMAT) || partIdentifier == null) {
                 resp.setContentType(RDF_CONTENT_TYPE);
                 String map = createResourceMap(ir);
                 resp.setSize(map.getBytes(UTF_8).length);
@@ -390,10 +406,11 @@ public class DataOneService {
             } else if (partIdentifier.equals(META)) {
                 resp.setContentType(XML_CONTENT_TYPE);
                 ModsDocument modsDoc = ModsTransformer.transformAny(ir);
-                JAXBContext jaxbContext = JAXBContext.newInstance(ModsDocument.class);
+
                 StringWriter sw = new StringWriter();
-                jaxbContext.createMarshaller().marshal(modsDoc, sw);
+                JaxbDocumentWriter.write(modsDoc, sw, true);
                 String metaXml = sw.toString();
+                logger.debug(metaXml);
                 resp.setSize(metaXml.getBytes(UTF_8).length);
                 resp.setReader(new StringReader(metaXml));
                 resp.setChecksum(checksumString(metaXml));
@@ -410,6 +427,9 @@ public class DataOneService {
                         break;
                     }
                 }
+            } else {
+                resp = null;
+                logger.error("bad format");
             }
 
         } catch (Exception e) {
