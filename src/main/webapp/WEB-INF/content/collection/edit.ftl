@@ -52,7 +52,7 @@
             <#if resourceCollection.id?? &&  resourceCollection.id != -1>
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
-            <@s.hidden name="startTime" value="${currentTime?c}" />
+            <@edit.hiddenStartTime />
             <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="255" />
 
             <div id="parentIdContainer" class="control-group">

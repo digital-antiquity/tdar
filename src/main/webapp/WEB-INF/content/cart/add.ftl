@@ -21,6 +21,7 @@
 <body>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='process-choice'>
         <@s.token name='struts.csrf.token' />
+        <@edit.hiddenStartTime />
         <@common.jsErrorLog />
         <h1>What would you like to put into tDAR?</h1>
 

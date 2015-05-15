@@ -1527,4 +1527,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </script>
     </#macro>
 
+    <#macro hiddenStartTime value=.now?long>
+        <@s.hidden name="startTime" value="${value?c}" />
+    </#macro>
+
 </#escape>
