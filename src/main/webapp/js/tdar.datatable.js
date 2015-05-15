@@ -30,13 +30,17 @@ TDAR.datatable = function() {
             "bJQueryUI" : false,
             "sScrollY" : "350px",
             "sScrollX" : "100%",
-            fnDrawCallback : function() {
+            fnDrawCallback : function(settings) {
+                var $dt = this; //this-object is the current datatable object (assumption based on observation)
                 // if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
                 if ($(":checkbox:not(:checked)", $dataTable).length == 0) {
                     $('#cbCheckAllToggle').prop('checked', true);
                 } else {
                     $('#cbCheckAllToggle').prop('checked', false);
                 }
+                //console.log("settings", settings);
+                //console.log("self", self);
+                $dt.trigger("data", [$dt.fnSettings().aoData]);
             }
         };
 
@@ -325,6 +329,26 @@ TDAR.datatable = function() {
                 };
                 if($("#parentCollectionsIncluded").length) {
                     parms.parentCollectionsIncluded = (!$("#parentCollectionsIncluded").prop("checked")).toString();
+
+
+                    //if no data received when and "show only selected resources checked", uncheck it
+                    //$("#resource_datatable").on("data", function(event, rows) {
+                    //    if(rows.length === 0) {
+                    //        if($("#parentCollectionsIncluded").prop("checked")) {
+                    //            //send updated query to server.  this is tricky because we can't just call .fnDraw() directly because at the time the "data" event fires we are still servicing the previous fnDraw() call.  So, we need to wrap it in a timeout and call fnDraw() a few ms in the future.
+                    //
+                    //            $("#collection-selector").val("");
+                    //            setTimeout(function(){
+                    //            $("#parentCollectionsIncluded").prop("checked", false);
+                    //                $("#collection-selector").change()
+                    //
+                    //            }, 100);
+                    //
+                    //
+                    //        }
+                    //
+                    //    }
+                    //});
                 }
                 return parms;
             },

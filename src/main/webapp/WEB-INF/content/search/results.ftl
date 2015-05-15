@@ -162,7 +162,17 @@
         <@search.pagination ""/>
 
     <#else>
-    <h2>No records match the query.</h2>
+	    <h2>No records match the query.</h2>
+	    <#if query?has_content><br/>
+
+			<p><b>Try searching for:</b>
+				<ul>
+					<li><a href="<@s.url value="/search/people?query=${query?url}"/>">People named ${query}</a></li>
+					<li><a href="<@s.url value="/search/institutions?query=${query?url}"/>">Institutions named ${query}</a></li>
+					<li><a href="<@s.url value="/search/collections?query=${query?url}"/>">Collections named ${query}</a></li>
+				</ul>
+	
+		</#if>
     </#if>
 
 <script type="text/javascript">

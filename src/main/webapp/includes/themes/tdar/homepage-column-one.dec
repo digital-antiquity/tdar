@@ -1,6 +1,6 @@
 <div class="row">
     <div class="span3 bucket">
-        <img src="/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
+        <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
 
         <h3>Access &amp; Use</h3>
 
@@ -11,7 +11,7 @@
         </p>
     </div>
     <div class="span3 bucket">
-        <img src="/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
+        <img src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
 
         <h3>Preservation</h3>
 
@@ -22,7 +22,7 @@
         </p>
     </div>
     <div class="span3 bucket">
-        <img src="/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
+        <img src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
 
         <h3>Upload Resources</h3>
 
@@ -33,7 +33,7 @@
         </p>
     </div>
     <div class="span3 bucket">
-        <img src="/images/r4/icn-uses.png" alt="Use" title="Use" />
+        <img src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
 
         <h3>Who Uses tDAR</h3>
 

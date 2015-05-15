@@ -40,10 +40,10 @@
         <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
         <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
     <#else>
-        <link href="/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link rel="stylesheet" type="text/css" href='${staticHost}/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
     </#if>
 
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
@@ -59,8 +59,8 @@
         <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
         <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
     <#else>
-        <script src="/includes/jquery-${jquery_version}.js"></script>
-        <script src="/includes/jquery-ui-${jquery_ui_version}/ui/minified/jquery-ui.min.js"></script>
+        <script src="${staticHost}/includes/jquery-${jquery_version}.js"></script>
+        <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}/ui/minified/jquery-ui.min.js"></script>
     </#if>
     <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
     <#include "${themeDir}/head.dec" />
@@ -295,9 +295,9 @@
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js"></script>
         <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <#else>
-        <script src="/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
-        <script src="/includes/jquery.validate-1.13.1/additional-methods.js"></script>
-        <script src="/includes/bootstrap-2.32/js/bootstrap.js"></script>
+        <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
+        <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
+        <script src="${staticHost}/includes/bootstrap-2.32/js/bootstrap.js"></script>
     </#if>
 
 

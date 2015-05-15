@@ -999,93 +999,106 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
     <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false>
     <div class="well tdar-widget"> <#--you are in a span9, but assume span8 so we fit inside well -->
+
         <div class="row">
             <div class="span8">
-                <label for="query">Title</label>
                 <@s.textfield theme="tdar" name="_tdar.query" id="query" cssClass='span8'
-                placeholder="Enter a full or partial title to filter results" />
+                    placeholder="Enter a full or partial title to filter results" />
+                <div>
+                    <button type="button" class="btn btn-mini pull-left" data-toggle="collapse" data-target="#divAdvancedFilters">
+                        More/Less filters...
+                    </button>
+                    <div class="pull-right">
+
+                        <#if limitToCollection>
+                            <label class="checkbox" style="font-weight:normal; ">
+                                <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded">
+                                Show only selected resources
+                            </label>
+                        </#if>
+                    </div>
+
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="span4">
-                <label class="" for="project-selector">Project</label>
-                <select id="project-selector" name="_tdar.project" class="input-block-level">
-                    <option value="" selected='selected'>All Editable Projects</option>
-                    <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
-                        <optgroup label="Projects">
-                            <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
-                                <option value="${submittedProject.id?c}"
-                                        title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>
-                            </#list>
-                        </optgroup>
-                    </#if>
+        <div id="divAdvancedFilters" class="collapse">
 
-                    <#if fullUserProjects??>
-                        <optgroup label="Projects you have been given access to">
-                            <#list fullUserProjects?sort_by("titleSort") as editableProject>
-                                <option value="${editableProject.id?c}"
-                                    title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
-                            </#list>
-                        </optgroup>
-                    </#if>
-                </select>
-            </div>
+            <div class="row">
+                <div class="span4">
+                    <label class="" for="project-selector">Project</label>
+                    <select id="project-selector" name="_tdar.project" class="input-block-level">
+                        <option value="" selected='selected'>All Editable Projects</option>
+                        <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
+                            <optgroup label="Projects">
+                                <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
+                                    <option value="${submittedProject.id?c}"
+                                            title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>
+                                </#list>
+                            </optgroup>
+                        </#if>
 
-            <div class="span4">
-                <label class="" for="collection-selector">Collection</label>
-                <#local selectedId=-1/>
-                <#-- limit to just this collection
-                <#if namespace=='/collection' && (id!-1) != -1>
-                    <#local selectedId=id/>
-                </#if>
-                -->
-                <div class="">
-                    <select name="_tdar.collection" id="collection-selector" class="input-block-level">
-                        <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
-                        <@s.iterator value='allResourceCollections' var='rc'>
-                            <option value="${rc.id?c}" title="${rc.name!""?html}"
-                            <#if (selectedId!-1) != -1 && rc.id == selectedId>selected="selected"</#if>
-                            ><@common.truncate rc.name!"(No Name)" 70 /></option>
-                        </@s.iterator>
+                        <#if fullUserProjects??>
+                            <optgroup label="Projects you have been given access to">
+                                <#list fullUserProjects?sort_by("titleSort") as editableProject>
+                                    <option value="${editableProject.id?c}"
+                                        title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
+                                </#list>
+                            </optgroup>
+                        </#if>
                     </select>
                 </div>
-            </div>
-        </div>
 
-        <div class="row">
-
-            <div class="span4">
-                <label class="">Status</label>
-                <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
-                list='%{statuses}' cssClass="input-block-level"/>
-            </div>
-
-            <div class="span4">
-                <label class="">Resource Type</label>
-                <@s.select theme="tdar" id="resourceTypes" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
-                listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
-            </div>
-
-        </div>
-
-        <div class="row">
-            <div class="span4">
-                <label class="">Sort by</label>
-
-                <div class="">
-                    <@s.select theme="tdar" emptyOption='false' name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
-                    value="ID_REVERSE" cssClass="input-block-level"/>
+                <div class="span4">
+                    <label class="" for="collection-selector">Collection</label>
+                    <#local selectedId=-1/>
+                    <#-- limit to just this collection
+                    <#if namespace=='/collection' && (id!-1) != -1>
+                        <#local selectedId=id/>
+                    </#if>
+                    -->
+                    <div class="">
+                        <select name="_tdar.collection" id="collection-selector" class="input-block-level">
+                            <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
+                            <@s.iterator value='allResourceCollections' var='rc'>
+                                <option value="${rc.id?c}" title="${rc.name!""?html}"
+                                <#if (selectedId!-1) != -1 && rc.id == selectedId>selected="selected"</#if>
+                                ><@common.truncate rc.name!"(No Name)" 70 /></option>
+                            </@s.iterator>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="span4">
-                <#if limitToCollection>
-                    <label class="checkbox" style="margin-top:2em">
-                        <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded">
-                        Show only selected resources
-                    </label>
-                </#if>
+
+            <div class="row">
+
+                <div class="span4">
+                    <label class="">Status</label>
+                    <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
+                    list='%{statuses}' cssClass="input-block-level"/>
+                </div>
+
+                <div class="span4">
+                    <label class="">Resource Type</label>
+                    <@s.select theme="tdar" id="resourceTypes" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
+                    listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
+                </div>
+
             </div>
+
+            <div class="row">
+                <div class="span4">
+                    <label class="">Sort by</label>
+
+                    <div class="">
+                        <@s.select theme="tdar" emptyOption='false' name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
+                        value="ID_REVERSE" cssClass="input-block-level"/>
+                    </div>
+                </div>
+                <div class="span4">
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -1135,6 +1148,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <#nested>
     </script>
     </#macro>
+
 
 <#-- emit the copyright holders section -->
     <#macro copyrightHolders sectionTitle copyrightHolderProxies >

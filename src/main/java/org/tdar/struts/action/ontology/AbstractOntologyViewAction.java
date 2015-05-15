@@ -17,10 +17,11 @@ public abstract class AbstractOntologyViewAction extends AbstractResourceViewAct
     private List<Dataset> datasetsWithMappingsToNode;
     
     protected OntologyNode getNodeByIri() {
-        getLogger().trace("id: {} iri: {} slug: {}", getId(), getIri(), getSlug());
-        OntologyNode node_ = getOntology().getNodeByIri(OntologyNode.normalizeIri(getIri()));
+        String iri_ = getIri();
+        getLogger().trace("id: {} iri: {} slug: {}", getId(), iri_, getSlug());
+        OntologyNode node_ = getOntology().getNodeByIri(OntologyNode.normalizeIri(iri_));
         if (node_ == null) {
-            node_ = fallbackCheckForIri(getIri());
+            node_ = fallbackCheckForIri(iri_);
         }
         getLogger().trace("iri: {} node: {}", getIri(), node_);
         return node_;
