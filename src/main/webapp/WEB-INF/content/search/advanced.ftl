@@ -239,7 +239,7 @@
     </#macro>
 
     <#macro searchTypeSelect id="0" init="" groupid="0" >
-    <select id="group${groupid}searchType_${id}_" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType" style="font-size:smaller">
+    <select id="group${groupid}searchType_${id}_" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType repeatrow-noreset" style="font-size:smaller">
         <#assign groupName = ""/>
         <#list allSearchFieldTypes as fieldType>
             <#if !fieldType.hidden>

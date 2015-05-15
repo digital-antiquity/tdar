@@ -268,4 +268,19 @@ public class DownloadService {
         dto.setResult(DownloadResult.SUCCESS);
         return dto;
     }
+
+    @Transactional(readOnly = false)
+    /**
+     * Validate, filter, and setup download for latest uploaded version of the specified InformationResourceFile.
+     */
+    public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFile fileToDownload,
+                                                                 boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization,
+                                                                 boolean countDownload) {
+
+        InformationResourceFileVersion fileVersion = fileToDownload.getLatestUploadedVersion();
+
+        return validateFilterAndSetupDownload(authenticatedUser, fileVersion, null, includeCoverPage, textProvider,
+                authorization, countDownload);
+    }
+
 }
