@@ -5,6 +5,7 @@ package org.tdar.struts.data.oai;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.tdar.core.exception.OAIException;
 import org.tdar.core.exception.OaiErrorCode;
@@ -38,6 +39,14 @@ public class OAIResumptionToken {
      */
     public OAIResumptionToken(String token) throws OAIException {
         setToken(token);
+    }
+
+    public OAIResumptionToken(int cursor2, Date effectiveFrom, Date effectiveUntil, String effectiveMetadataPrefix, Long collectionId) throws OAIException {
+        setCursor(cursor2);
+        setFromDate(effectiveFrom);
+        setUntilDate(effectiveUntil);
+        setMetadataPrefix(effectiveMetadataPrefix);
+        setSet(collectionId);
     }
 
     /**
@@ -181,5 +190,34 @@ public class OAIResumptionToken {
 
     public void setSet(Long id) {
         this.set = id;
+    }
+
+    public Date getEffectiveFrom(String from) {
+        if (fromDate != null) {
+            return fromDate;
+        }
+
+        if (StringUtils.isBlank(from)) {
+            return new DateTime("1900").toDate();
+        }
+        return new DateTime(from).toDate();
+    }
+
+    public Date getEffectiveUntil(String until) {
+        if (untilDate != null) {
+            return untilDate;
+        }
+
+        if (StringUtils.isBlank(until)) {
+            return new DateTime("3000").toDate();
+        }
+        return new DateTime(until).toDate();
+    }
+
+    public OAIMetadataFormat getEffectiveMetadataPrefix(String metadataPrefix2) throws OAIException {
+        if (StringUtils.isNotBlank(metadataPrefix)) {
+            return OAIMetadataFormat.fromString(metadataPrefix);
+        }
+        return OAIMetadataFormat.fromString(metadataPrefix2);
     }
 }
