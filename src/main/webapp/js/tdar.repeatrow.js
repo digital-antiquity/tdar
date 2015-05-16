@@ -205,14 +205,11 @@ TDAR.repeatrow = function (TDAR, $) {
         // uncheck any checkboxes/radios
         $element.find("input[type=checkbox],input[type=radio]").not(noresetClass).prop("checked", false);
 
-        // remove "selected" from options that were already selected
-        $element.find("option[selected=selected]").not(noresetClass).removeAttr("selected");
+        // revert all select dropdowns to first option.
+        $($element).find("select").not(noresetClass).prop("selectedIndex", 0);
 
-        // revert all select inputs to first option.
-        $($element).find("select").not(noresetClass).find('option:first').attr("selected", "selected");
-
-        // allow html5 polyfills for watermarks to be added.
-        TDAR.common.applyWatermarks($element);
+        // allow html5 polyfills for watermarks to be added.  (//fixme: I think this is a bug/copypasta - watermarks shouldn't need to be re-applied)
+        //TDAR.common.applyWatermarks($element);
     };
 
     /**
@@ -253,7 +250,9 @@ TDAR.repeatrow = function (TDAR, $) {
         registerRepeatable: registerRepeatable,
         registerDeleteButtons: registerDeleteButtons,
         cloneSection: cloneSection,
-        deleteRow: deleteRow
+        deleteRow: deleteRow,
+        clearInputs: _clearInputs,
+        taco: "tuesday"
     };
 
 }(TDAR, jQuery);
