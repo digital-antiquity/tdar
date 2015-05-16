@@ -998,15 +998,15 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
 
     <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false>
-    <div class="well tdar-widget"> <#--you are in a span9, but assume span8 so we fit inside well -->
+    <div class="well tdar-widget" id="divSearchFilters"> <#--you are in a span9, but assume span8 so we fit inside well -->
 
-        <div class="row">
-            <div class="span8">
+        <div class="row" >
+            <div class="span8" >
                 <@s.textfield theme="tdar" name="_tdar.query" id="query" cssClass='span8'
                     placeholder="Enter a full or partial title to filter results" />
                 <div>
-                    <button type="button" class="btn btn-mini pull-left" data-toggle="collapse" data-target="#divAdvancedFilters">
-                        More/Less filters...
+                    <button type="button" class="btn btn-mini pull-left" id="btnToggleFilters" data-toggle="collapse" data-target="#divAdvancedFilters">
+                        More/Less options...
                     </button>
                     <div class="pull-right">
 

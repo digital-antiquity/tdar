@@ -256,34 +256,10 @@ TDAR.datatable = function() {
         var _options = $.extend({}, options);
         _extendSorting();
 
-        // set the project selector to the last project viewed from this page
-        // if not found, then select the first item
-        var prevSelected = $.cookie("tdar_datatable_selected_project");
-        if (prevSelected != null) {
-            var elem = $('#project-selector option[value=' + prevSelected + ']');
-            if (elem.length) {
-                elem.attr("selected", "selected");
-            } else {
-                $("#project-selector").find("option :first").attr("selected", "selected");
-            }
-
-        }
-        var prevSelected = $.cookie("tdar_datatable_selected_collection");
-        if (prevSelected != null) {
-            var elem = $('#collection-selector option[value=' + prevSelected + ']');
-            if (elem.length) {
-                elem.attr("selected", "selected");
-            } else {
-                $("#collection-selector").find("option :first").attr("selected", "selected");
-            }
-
-        }
-
         jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
         $.extend($.fn.dataTableExt.oStdClasses, {
             "sWrapper" : "dataTables_wrapper form-inline"
         });
-        // sDom:'<"datatabletop"ilrp>t<>', //omit the search box
 
         var _fnRenderTitle = _options.showDescription ? fnRenderTitleAndDescription : fnRenderTitle;
 
@@ -315,6 +291,8 @@ TDAR.datatable = function() {
             // "sDom": "<'row'<'span9'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
             sAjaxDataProp : 'resources',
+            "oLanguage": {
+                "sZeroRecords": "No records found. Consider <a class='lnkResetFilters' href='javascript:void(0)'>expanding your search</a>"},
             requestCallback : function(searchBoxContents) {
                 var parms =  {
                     title : searchBoxContents,
@@ -329,26 +307,6 @@ TDAR.datatable = function() {
                 };
                 if($("#parentCollectionsIncluded").length) {
                     parms.parentCollectionsIncluded = (!$("#parentCollectionsIncluded").prop("checked")).toString();
-
-
-                    //if no data received when and "show only selected resources checked", uncheck it
-                    //$("#resource_datatable").on("data", function(event, rows) {
-                    //    if(rows.length === 0) {
-                    //        if($("#parentCollectionsIncluded").prop("checked")) {
-                    //            //send updated query to server.  this is tricky because we can't just call .fnDraw() directly because at the time the "data" event fires we are still servicing the previous fnDraw() call.  So, we need to wrap it in a timeout and call fnDraw() a few ms in the future.
-                    //
-                    //            $("#collection-selector").val("");
-                    //            setTimeout(function(){
-                    //            $("#parentCollectionsIncluded").prop("checked", false);
-                    //                $("#collection-selector").change()
-                    //
-                    //            }, 100);
-                    //
-                    //
-                    //        }
-                    //
-                    //    }
-                    //});
                 }
                 return parms;
             },
@@ -362,36 +320,34 @@ TDAR.datatable = function() {
             }
         });
 
+        $("#resource_datatable").on("click", ".lnkResetFilters", function(){_resetAllFilters()});
+
+        //if the user modifies any of the filter controls, execute a new search and update the results
+        //fixme: refactor these event bindings. lots of duplication here
         $("#project-selector").change(function() {
             var projId = $(this).val();
-            $.cookie("tdar_datatable_selected_project", projId);
             $("#resource_datatable").dataTable().fnDraw();
         });
 
         $("#collection-selector").change(function() {
             var colId = $(this).val();
-            $.cookie("tdar_datatable_selected_collection", colId);
             $("#resource_datatable").dataTable().fnDraw();
         });
 
         $("#resourceTypes").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
-            $.cookie($(this).attr("id"), $(this).val());
         });
 
         $("#statuses").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
-            $.cookie($(this).attr("id"), $(this).val());
         });
 
         $("#sortBy").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
-            $.cookie($(this).attr("id"), $(this).val());
         });
 
         $("#query").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
-            $.cookie($(this).attr("id"), $(this).val());
         });
 
         $("#query").bindWithDelay("keyup", function() {
@@ -411,6 +367,18 @@ TDAR.datatable = function() {
         });
 
         _scrollOnPagination();
+    }
+
+    /**
+     * Reset all filters, then trigger a 'change' so that we build a new query and render the results
+     * @private
+     */
+    function _resetAllFilters() {
+        //reset all dropdowns, but only trigger change for one of them (otherwise datatable may try to re-render N times)
+        var $divSearchFilters = $("#divSearchFilters");
+        $divSearchFilters.find("input[type=checkbox]").prop("checked", false);
+        $divSearchFilters.find("select").prop("selectedIndex", 0).last().change();
+
     }
 
     //
@@ -436,7 +404,6 @@ TDAR.datatable = function() {
                 title : 'n/a',
                 description : 'n/a'
             };
-            // console.debug('adding id to preselected rows:' + elem.value);
         });
         $dataTable.data('selectedRows', selectedRows);
 
