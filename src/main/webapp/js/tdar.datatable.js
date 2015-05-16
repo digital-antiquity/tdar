@@ -292,7 +292,7 @@ TDAR.datatable = function() {
             "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
             sAjaxDataProp : 'resources',
             "oLanguage": {
-                "sZeroRecords": "No records found. Consider <a class='lnkResetFilters' href='javascript:void(0)'>expanding your search</a>"},
+                "sZeroRecords": "No records found. Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a>"},
             requestCallback : function(searchBoxContents) {
                 var parms =  {
                     title : searchBoxContents,
@@ -320,7 +320,7 @@ TDAR.datatable = function() {
             }
         });
 
-        $("#resource_datatable").on("click", ".lnkResetFilters", function(){_resetAllFilters()});
+        $("#resource_datatable").on("click", "#lnkResetFilters", function(){_resetAllFilters()});
 
         //if the user modifies any of the filter controls, execute a new search and update the results
         //fixme: refactor these event bindings. lots of duplication here
