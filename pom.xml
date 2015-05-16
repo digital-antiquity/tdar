@@ -416,7 +416,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<<<<<<< mine
         <dependency>
             <groupId>org.dataone</groupId>
             <artifactId>d1_libclient_java</artifactId>
