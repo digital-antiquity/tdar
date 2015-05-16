@@ -102,6 +102,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     @HttpOnlyIfUnauthenticated
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
+            @Action(value = "{id}/"),
             @Action(value = "{id}")
     })
     public String view() throws TdarActionException {

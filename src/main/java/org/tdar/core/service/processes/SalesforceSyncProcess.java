@@ -86,7 +86,7 @@ public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeograp
                     postNameValuePairs.add(new BasicNameValuePair("email", user.getEmail()));
                     postNameValuePairs.add(new BasicNameValuePair("description", String.format(
                             "Tdar Link: %s\nAffiliation: %s\nContributor: %s\nContributor Reason: %s",
-                            UrlService.absoluteUrl(user), user.getAffiliation().getLabel(), user.isContributor(), user.getContributorReason())));
+                            UrlService.absoluteUrl(user), user.getAffiliation(), user.isContributor(), user.getContributorReason())));
                     postNameValuePairs.add(new BasicNameValuePair("company", user.getInstitutionName()));
                     postNameValuePairs.add(new BasicNameValuePair("phone", user.getPhone()));
                     postNameValuePairs.add(new BasicNameValuePair("lead_source", "tdar-app"));
@@ -112,11 +112,11 @@ public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeograp
     }
 
     private String getOid() {
-        return assistant.getStringProperty("form.oid", "00D19000000DRze");
+        return assistant.getStringProperty("form.oid");
     }
 
     private String getPostUrl() {
-        return assistant.getStringProperty("form.url", "https://cs24.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8");
+        return assistant.getStringProperty("form.url");
     }
 
     /**

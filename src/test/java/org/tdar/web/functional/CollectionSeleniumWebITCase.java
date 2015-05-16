@@ -100,6 +100,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String id = url.substring(0,url.lastIndexOf("/edit"));
         id = id.substring(id.lastIndexOf("/") + 1);
         logger.debug("id: {}, url: {}", id, url);
+        find("#btnToggleFilters").click();
+        waitFor(ExpectedConditions.visibilityOf(select.first()));
         select.val(id);
         clearPageCache();
         Assert.assertTrue(getText().contains(TAG_FAUNAL_WORKSHOP));

@@ -31,6 +31,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -50,6 +51,8 @@ import com.rometools.modules.opensearch.OpenSearchModule;
 import com.rometools.modules.opensearch.impl.OpenSearchModuleImpl;
 import com.rometools.rome.feed.atom.Link;
 import com.rometools.rome.feed.module.Module;
+import com.rometools.rome.feed.synd.SyndCategory;
+import com.rometools.rome.feed.synd.SyndCategoryImpl;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndContentImpl;
 import com.rometools.rome.feed.synd.SyndEnclosure;
@@ -247,8 +250,11 @@ public class RssService implements Serializable {
                 Resource resource = (Resource) resource_;
                 for (ResourceCreator creator : resource.getPrimaryCreators()) {
                     SyndPerson person = new SyndPersonImpl();
-                    person.setName(cleanStringForXML(creator.getCreator().getProperName()));
-                    authors.add(person);
+                    String name = cleanStringForXML(creator.getCreator().getProperName());
+                    if (StringUtils.isNotBlank(name)) {
+                        person.setName(name);
+                        authors.add(person);
+                    }
                 }
                 if (authors.size() > 0) {
                     entry.setAuthors(authors);
@@ -318,8 +324,8 @@ public class RssService implements Serializable {
         if ((latLong != null) && latLong.isObfuscatedObjectDifferent() == false && hasRestrictions == false) {
             GeoRSSModule geoRss = new SimpleModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
-                geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), 
-                                                latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
+                geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(),
+                        latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
             }
             if (mode == GeoRssMode.POINT) {
                 geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));

@@ -5,6 +5,16 @@
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
 <h1>${ontology.title} &mdash; <span>${node.displayName}</span></h1>
+<p><strong>Ontology:</strong> <a href="<@s.url value="${ontology.detailUrl}" />">${ontology.title}</a></p>
+
+<p><strong>Parent:</strong>
+    <#if parentNode?has_content>
+        <a href="<@s.url value="${parentNode.iri}"/>">${parentNode.displayName}</a></p>
+    <#else>
+        <a href="<@s.url value="${ontology.detailUrl}"/>">${ontology.title} (ontology root)</a></p>
+	</#if>
+
+
     <#if node.synonyms?has_content>
     <p><strong>Synonyms:</strong>
         <#list node.synonyms as synonym>
@@ -13,13 +23,6 @@
     </p>
     </#if>
 
-<p><strong>Parent:</strong>
-    <#if parentNode?has_content>
-        <a href="<@s.url value="${parentNode.iri}"/>">${parentNode.displayName}</a></p>
-    <#else>
-    <a href="<@s.url value="${ontology.detailUrl}"/>">${ontology.title} (ontology root)</a></p>
-
-    </#if>
 
     <#if children?has_content>
     <p><strong>Children:</strong>
