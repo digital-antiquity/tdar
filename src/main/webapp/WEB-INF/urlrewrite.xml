@@ -6,13 +6,8 @@
     <rule>
         <name>XML Namespace Document</name>
         <note>
-            The XML namespace URI for tDAR is
-            "http://www.tdar.org/namespace". This namespace URI should
-            never change. The following rule redirects from the
-            namespace
-            URI to a page where the namespace is currently
-            documented. If location of the documentation changes, the
-            &lt;to&gt; element below should be updated to follow it.
+            The XML namespace URI for tDAR is "http://www.tdar.org/namespace". This namespace URI should never change. The following rule redirects from the namespace
+            URI to a page where the namespace is currently documented. If location of the documentation changes, the &lt;to&gt; element below should be updated to follow it.
         </note>
         <from>/namespace</from>
         <to type="temporary-redirect">http://dev.tdar.org/confluence/display/TDAR/tDAR+XML+namespace
@@ -74,32 +69,36 @@
     </outbound-rule>
 
 
-    <!-- PROTECTION for TAG and WSDL endpoints -->
-    <!-- <rule> <from>^/services$</from> <to>/services/</to> </rule> <rule> 
-        <from>^/services//(.*)</from> <to>/services/$1</to> </rule> -->
-    <!-- fixme (TDAR-4419): I think this rule is meant to match anything 
-        besides "/services", but instead matches any url that doesn't start with 
-        (, ), s, e, r, v, i, and c -->
-    <!-- I tried replacing with (?!services), but this ends up breaking "/", 
-        "/search", and probably others. -->
-    <!-- <rule> <condition type="request-uri" operator="equal">^/[^(services)].*$ 
-        </condition> <from>^/(.+)/$</from> <to>/$1</to> </rule> -->
+	<!--  PROTECTION for TAG and WSDL endpoints -->
+<!-- 
+    <rule>
+        <from>^/services$</from>
+        <to>/services/</to>
+    </rule>
+
+    <rule>
+        <from>^/services//(.*)</from>
+        <to>/services/$1</to>
+    </rule>
+
+ -->
+    <!-- fixme (TDAR-4419): I think this rule is meant to match anything besides "/services", but instead matches any url that doesn't start with (, ), s, e, r, v, i,  and c  -->
+    <!-- I tried replacing with (?!services), but this ends up breaking "/", "/search", and probably others. -->
+    <!--
+    <rule>
+        <condition type="request-uri" operator="equal">^/[^(services)].*$
+        </condition>
+        <from>^/(.+)/$</from>
+        <to>/$1</to>
+    </rule>
+    -->
 
     <rule>
         <from>^/search/search(.*)</from>
         <to>/search/results$1</to>
     </rule>
 
-    <!-- when run at the root context; the struts2 freemarker setup does 
-        not seem to properly route requests through the servlet; hence requests from 
-        http://localhost/ are routed to /about -->
-    <rule>
-        <from>^/$</from>
-        <to>/about</to>
-    </rule>
-
-    <!-- ACTIONS with periods are not allowed, so we must use URLRewrite 
-        to change the paths -->
+	<!--  ACTIONS with periods are not allowed, so we must use URLRewrite to change the paths -->
     <rule>
         <from>^/opensearch.xml$</from>
         <to>/opensearch</to>
@@ -109,7 +108,7 @@
         <to>/robots</to>
     </rule>
 
-    <!-- cleanup for sitemaps -->
+	<!--  cleanup for sitemaps -->
 
     <rule>
         <from>^/sitemap/(.+)(\.(gz|xml))$</from>
@@ -121,9 +120,7 @@
         <to>/sitemap/sitemap?filename=sitemap$1</to>
     </rule>
 
-    <!-- The following rules are designed to TRUMP the Struts URL Routing 
-        - they allow an action to be placed after the ID, but not be treated as a 
-        SLUG -->
+	<!--  The following rules are designed to TRUMP the Struts URL Routing - they allow an action to be placed after the ID, but not be treated as a SLUG -->
     <rule>
         <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(edit|mapping)$
         </from>
@@ -138,15 +135,6 @@
     </outbound-rule>
 
     <rule>
-        <from>^/ontology/([0-9+]+)/node/(.*)</from>
-        <to>/ontology_node/$1/node/$2</to>
-    </rule>
-    <outbound-rule>
-        <from>^/ontology_node/(.*)$</from>
-        <to>/ontology/$1</to>
-    </outbound-rule>
-
-    <rule>
         <from>^/entity/(person|user|institution)/([0-9]+)/(edit|address)$</from>
         <to>/entity/$1/$3?id=$2</to>
     </rule>
@@ -157,11 +145,18 @@
     </outbound-rule>
 
 
-    <!-- <rule> <from>^/(dataset|sensory-data|geospatial)/columns/([0-9]+)$ 
-        </from> <to>/dataset/columns?id=$2</to> </rule> <rule> <from>^/(sensory-data|geospatial)/view-row(.*)</from> 
-        <to>/dataset/view-row$2</to> </rule> -->
+<!--      <rule>
+        <from>^/(dataset|sensory-data|geospatial)/columns/([0-9]+)$
+        </from>
+        <to>/dataset/columns?id=$2</to>
+    </rule>
+    <rule>
+        <from>^/(sensory-data|geospatial)/view-row(.*)</from>
+        <to>/dataset/view-row$2</to>
+    </rule>
+ -->
 
-    <!-- managing searches, or basic URLs that could be searches -->
+	<!-- managing searches, or basic URLs that could be searches -->
     <rule>
         <from>^/search$</from>
         <to>/search/basic</to>
@@ -183,7 +178,7 @@
         <to type="redirect">/search/results?resourceTypes=CODING_SHEET&amp;startRecord=0
         </to>
     </rule>
-
+    
     <rule>
         <from>^/(ontology)s?/?$</from>
         <to type="redirect">/search/results?resourceTypes=ONTOLOGY&amp;startRecord=0
@@ -210,7 +205,7 @@
         <from>^/(audio)s?/?$</from>
         <to type="redirect">/search/results?resourceTypes=AUDIO&amp;startRecord=0</to>
     </rule>
-
+    
     <rule>
         <from>^/account$</from>
         <to>/account/new</to>
