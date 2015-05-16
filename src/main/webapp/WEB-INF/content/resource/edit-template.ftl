@@ -78,7 +78,7 @@
             <@s.hidden name="id"  value="${resource.id?c}" />
         </#if>
 
-        <@s.hidden name="startTime" value="${currentTime?c}" />
+        <@edit.hiddenStartTime />
 
         <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
             <#if editor && !administrator>

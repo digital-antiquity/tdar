@@ -52,7 +52,7 @@
             <#if resourceCollection.id?? &&  resourceCollection.id != -1>
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
-            <@s.hidden name="startTime" value="${currentTime?c}" />
+            <@edit.hiddenStartTime />
             <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="255" />
 
             <div id="parentIdContainer" class="control-group">
@@ -147,15 +147,7 @@
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName='edit')>
             <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection>
-        <div class="btn-group">
-            <button class="button btn" name="showAll" id="showAll" type="button">Show All Resources</button>
-            <button class="button btn" name="limitToCollection" id="limitToCollection" type="button">Show Only resources in this collection</button>
-        </div>
-        <br><br>
-        -->
             </@edit.resourceDataTable>
-
-
 
             <div id="divNoticeContainer" style="display:none">
                 <div id="divAddProjectToCollectionNotice" class="alert">

@@ -7,7 +7,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- managed versions -->
-        <struts2.version>2.3.20.1</struts2.version>
+        <struts2.version>2.3.24</struts2.version>
         <hibernate.version>4.3.9.Final</hibernate.version>
         <hibernate.search.version>4.5.3.Final</hibernate.search.version>
         <spring.framework.version>4.1.6.RELEASE</spring.framework.version>
@@ -67,6 +67,7 @@
 		                        umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
 		                        mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
 		                        bZloaUUnmm]]></clover.license>
+        <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath>-->
     </properties>
     <prerequisites>
         <maven>3.0.5</maven>
@@ -187,6 +188,9 @@
             <id>Laughing Panda</id>
             <url>http://maven.laughingpanda.org/maven2</url>
         </repository>
+        <!-- <repository> <id>dataone.org</id> <url>http://dev-testing.dataone.org/maven</url>
+            <releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled>
+            </snapshots> </repository> -->
     </repositories>
 
     <modelVersion>4.0.0</modelVersion>
@@ -412,6 +416,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+<<<<<<< mine
         <dependency>
             <groupId>org.dataone</groupId>
             <artifactId>d1_libclient_java</artifactId>
@@ -442,6 +447,12 @@
                 
             </exclusions>
         </dependency>
+        <!-- <dependency> <groupId>org.dataone</groupId> <artifactId>d1_libclient_java</artifactId>
+            <version>1.2.5</version> <type>jar</type> <!- LICENSE: APACHE 2.0 -> <exclusions>
+            <exclusion> <artifactId>httpclient</artifactId> <groupId>org.apache.httpcomponents</groupId>
+            </exclusion> <exclusion> <artifactId>httpmime</artifactId> <groupId>org.apache.httpcomponents</groupId>
+            </exclusion> <exclusion> <artifactId>httpcore</artifactId> <groupId>org.apache.httpcomponents</groupId>
+            </exclusion> </exclusions> </dependency> -->
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
@@ -476,7 +487,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- <dependency> <groupId>javax.measure</groupId> <artifactId>jsr-275</artifactId> 
+        <!-- <dependency> <groupId>javax.measure</groupId> <artifactId>jsr-275</artifactId>
             <version>1.0.0</version> </dependency> -->
         <dependency>
             <groupId>com.rometools</groupId>
@@ -594,7 +605,7 @@
             <version>${geotools.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
-        <!-- <dependency> <groupId>org.geotools</groupId> <artifactId>gt-epsg-wkt</artifactId> 
+        <!-- <dependency> <groupId>org.geotools</groupId> <artifactId>gt-epsg-wkt</artifactId>
             <version>${geotools.version}</version> </dependency> -->
         <dependency>
             <groupId>org.geotools</groupId>
@@ -808,7 +819,7 @@
             <artifactId>liquibase-slf4j</artifactId>
             <version>1.2.1</version>
         </dependency>
-        <!-- SPRING DEPENDENCIES (we're not listing them all individually, 
+        <!-- SPRING DEPENDENCIES (we're not listing them all individually,
             but includes orm, jdbc, aop, tx, -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -1127,9 +1138,9 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate4</artifactId>
-            <version>${jackson.version}</version>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-hibernate4</artifactId>
+          <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -1195,7 +1206,7 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <!-- OData REST Infrastructure -->
-        <!-- REMOVED: GPL 2.0 <dependency> <groupId>com.sun.net.httpserver</groupId> 
+        <!-- REMOVED: GPL 2.0 <dependency> <groupId>com.sun.net.httpserver</groupId>
             <artifactId>http</artifactId> <version>20070405</version> </dependency> -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -1284,7 +1295,7 @@
             <artifactId>yuicompressor</artifactId>
             <version>2.4.8</version>
         </dependency>
-        <!-- <dependency> <groupId>ro.isdc.wro4j</groupId> <artifactId>wro4j-extensions</artifactId> 
+        <!-- <dependency> <groupId>ro.isdc.wro4j</groupId> <artifactId>wro4j-extensions</artifactId>
             <version>${wro4j.version}</version> </dependency> -->
     </dependencies>
 
@@ -1415,12 +1426,14 @@
     <build>
         <finalName>${warfile.name}</finalName>
         <resources>
-            <!-- We only want a small set of files to be filtered. NOTE: 
-                These files are NOT read into maven properties for interpolation, they are 
-                just the set of files where any interpolated variables will be rewritten 
-                according to the currently loaded set of maven properties. To define interpolated 
-                variables, the file or variable has to be added to <filters></filters> XXX: 
-                only files that need to be rewritten should be included here -->
+            <!-- We only want a small set of files to be filtered.
+                 NOTE: These files are NOT read into maven properties for interpolation, they are just the set of files
+                 where any interpolated variables will be rewritten according to the currently loaded set of maven
+                 properties. To define interpolated variables, the file or variable has to be added to <filters></filters>
+
+
+                XXX: only files that need to be rewritten should be included here
+                 -->
             <resource>
                 <!-- switch filtering off for all but the desired set -->
                 <filtering>false</filtering>
@@ -1438,8 +1451,8 @@
             </resource>
             <resource>
                 <!-- And on for the set of files -->
-                <!-- Having to do it as mutually exclusive but that's how 
-                    Maven works -->
+                <!-- Having to do it as mutually exclusive
+                    but that's how Maven works -->
                 <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
                 <filtering>true</filtering>
                 <directory>${basedir}/src/main/resources</directory>
@@ -1467,7 +1480,7 @@
                     <include>WEB-INF/*.xml</include>
                 </includes>
             </testResource>
-            <!-- <testResource> <directory>src/main/resources</directory> 
+            <!-- <testResource> <directory>src/main/resources</directory>
                 <filtering>true</filtering> </testResource> -->
             <testResource>
                 <directory>src/test/resources</directory>
@@ -1552,6 +1565,7 @@
                             <filtering>false</filtering>
                         </resource>
                     </webResources>
+                    <!--<webXml>${webXmlPath}</webXml>-->
                 </configuration>
             </plugin>
             <plugin>
@@ -1679,7 +1693,7 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, 
                     like in README.md -->
-                <version>0.0.22</version>
+                <version>0.0.23</version>
                 <executions>
                     <execution>
                         <id>install node and npm</id>

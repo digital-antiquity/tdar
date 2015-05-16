@@ -7,12 +7,15 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 import com.opensymphony.xwork2.Preparable;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Created by jimdevos on 9/23/14. This action is designed to facilitate un-authenticated downloads if resources are part of a given collection and the host
@@ -37,12 +40,14 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
     @Autowired
     private transient DownloadService downloadService;
 
-    @Action(value = "{informationResourceFileVersionId}/{apiKey}")
+    private Long informationResourceFileId;
+    private InformationResourceFile informationResourceFile;
+
+    @Action(value = "{informationResourceFileId}/{apiKey}")
     public String execute() {
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null, true));
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(),
+                informationResourceFile, isCoverPageIncluded(), this, null, true));
         
-        // SEE NOTE ABOVE
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }
@@ -60,12 +65,35 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
     @Override
     public void prepare() {
         super.prepare();
+        informationResourceFile = getGenericService().find(InformationResourceFile.class, informationResourceFileId);
         if (StringUtils.isBlank(apiKey)) {
             addActionError("hostedDownloadController.api_key_required");
         }
-        if (!authorzationService.checkValidUnauthenticatedDownload(getInformationResourceFileVersion(), getApiKey(), getServletRequest())) {
-            addActionError("hostedDownloadController.invalid_request");
+
+        if(PersistableUtils.isNotNullOrTransient(informationResourceFile)) {
+            InformationResourceFileVersion fileVersion = informationResourceFile.getLatestUploadedVersion();
+
+            if (!authorzationService.checkValidUnauthenticatedDownload(fileVersion, getApiKey(), getServletRequest())) {
+                addActionError("hostedDownloadController.invalid_request");
+            }
+            getAuthorizationService().applyTransientViewableFlag(fileVersion, getAuthenticatedUser());
         }
     }
 
+    @Override
+    public void validate() {
+        //Note: we specifically do not want to call parent.validate()
+        if (PersistableUtils.isNullOrTransient(informationResourceFile)) {
+            addActionError(getText("downloadController.specify_what_to_download"));
+        }
+    }
+
+
+    public Long getInformationResourceFileId() {
+        return informationResourceFileId;
+    }
+
+    public void setInformationResourceFileId(Long informationResourceFileId) {
+        this.informationResourceFileId = informationResourceFileId;
+    }
 }

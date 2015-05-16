@@ -9,10 +9,7 @@
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>
     <meta name="lastModifiedDate" content="$Date$"/>
-
-
     <@edit.resourceDataTableJavascript />
-
 </head>
 
 <div id="titlebar" parse="true">

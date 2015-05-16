@@ -17,6 +17,7 @@
 </div>
 <h1>Review Your Purchase</h1>
 <@s.form name='change-account' id='change-account'  method='post' cssClass="billing-account-choice form-condensed" enctype='multipart/form-data' action='process-billing-account-choice'>
+<@edit.hiddenStartTime />
 <div class="row">
     <#if accounts?has_content>
     <div class="span7" >
@@ -34,6 +35,7 @@
             <div class="" >
                 <@s.token name='struts.csrf.token' />
                 <@s.hidden name="invoiceId" value="${invoice.id?c}" />
+
                 <#if accounts?has_content>
 
                 <div class="alert">

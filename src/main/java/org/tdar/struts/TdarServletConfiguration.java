@@ -39,7 +39,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     private static final long serialVersionUID = -6063648713073283277L;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    public final String BAR = "\r\n*************************************************************************\r\n";
+    public final String BAR = "*************************************************************************";
     // NOTE: when changing these, you must test both TOMCAT and JETTY as they behave differently
     EnumSet<DispatcherType> allDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
     EnumSet<DispatcherType> strutsDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR);
@@ -52,7 +52,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {
             failureMessage = t.getMessage() + " (see initial exception for details)";
-            logger.error("\r\n\r\n" + BAR + t.getMessage() + BAR, t);
+            logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR +"\r\n", t);
         }
     }
 
@@ -64,6 +64,10 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         if (StringUtils.isNotBlank(failureMessage)) {
             throw new ServletException(failureMessage);
         }
+        if(!configuration.isProductionEnvironment()) {
+            onDevStartup(container);
+        }
+
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(TdarAppConfiguration.class);
         container.addListener(new ContextLoaderListener(rootContext));
@@ -101,6 +105,24 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
 
     }
+
+    private void onDevStartup(ServletContext container) {
+        if(configuration.isProductionEnvironment()) {throw new IllegalStateException("dev startup tasks not allowed in production");}
+        logServerInfo(container);
+    }
+
+    /**
+     * Logs out basic server information for the specified condtainer
+     */
+    private void logServerInfo(ServletContext container) {
+        logger.info(BAR);
+        logger.info("SERVER INFO");
+        logger.info("\t       server:{}", container.getServerInfo());
+        logger.info("\t servlet spec:{}.{}", container.getMajorVersion(), container.getMinorVersion());
+        logger.info("\t context name:{}", container.getServletContextName());
+        logger.info(BAR);
+    }
+
 
     private void configureFreemarker(ServletContext container) {
         ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker", FreemarkerDecoratorServlet.class);

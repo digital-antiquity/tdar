@@ -36,6 +36,7 @@ import org.tdar.core.service.processes.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.SalesforceSyncProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
@@ -108,6 +109,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void cronDailyEmail() {
         logger.info("updating Daily Emails");
         queue(scheduledProcessMap.get(DailyEmailProcess.class));
+        queue(scheduledProcessMap.get(SalesforceSyncProcess.class));
     }
 
     /**

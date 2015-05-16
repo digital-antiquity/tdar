@@ -37,13 +37,10 @@
             var numMb = _parse($("#MetadataForm_invoice_numberOfMb").val());
 
             $("#MetadataForm_invoice_numberOfFiles, #MetadataForm_invoice_numberOfMb").each(function () {
-                this.value = _parse(this.value).toFixed(0);
+                if(this.value.length) {
+                    this.value = _parse(this.value).toFixed(0);
+                }
             });
-
-            if (numFiles == numMb && numMb == 0 && $("#MetadataForm_code").val() == '') {
-                alert('please enter space or files');
-                return false;
-            }
             return true;
         });
 
@@ -132,6 +129,7 @@
 
         _setupPaymentMethodPivot();
 
+        console.log("appying rules");
         var validator = $(form).validate({
             rules: {
                 "invoice.otherReason": {
@@ -140,7 +138,19 @@
                 "invoice.invoiceNumber": {
                     required: "#MetadataForm_invoice_paymentMethodINVOICE:checked"
                 },
-                "invoice.paymentMethod": "required"
+                "invoice.paymentMethod":  {
+                    required:true
+                },
+
+                "invoice.numberOfFiles": {
+                    min:1,
+                    require_from_group: [1, ".orderinfo"]
+                },
+
+                "invoice.numberOfMb" : {
+                    min:1,
+                    require_from_group: [1, ".orderinfo"]
+                }
             },
             messages: {
                 "invoice.invoiceNumber": "Specify the customer invoice/work-order number.",
@@ -148,9 +158,7 @@
             },
             errorClass: "text-error",
             errorPlacement: function($error, $element) {
-//                if($element.is("type[radio]")) {
                     $error.appendTo($element.closest(".controls"));
-//                }
             }
         });
         console.log("validtor:", validator);

@@ -185,28 +185,31 @@ TDAR.repeatrow = function (TDAR, $) {
      * - for radio elements & checkboxes, uncheck any checked elements
      * - for SELECT elements,  select the first OPTION
      *
+     * Opting out: add the .repeatrow-noreset class to any input elements that you want to opt-out of this reset behavior.
+     *
      * @param $element container element (a jqselection)
      * @private
      */
     var _clearInputs = function ($element) {
 
+        var noresetClass = ".repeatrow-noreset"
+
         // enable any inputs in the row
-        $(":input", $element).removeAttr("readonly").removeAttr("disabled").prop("readonly", false).prop("disabled", false);
+        $element.find(":input").not(noresetClass)
+            .removeAttr("readonly").removeAttr("disabled").prop("readonly", false).prop("disabled", false);
 
         // most input elements should have value attribute cleared (but not radiobuttons, checkboxes, or buttons)
-        $("input[type!=button],textarea", $element).not('input[type=checkbox],input[type=radio]').val("");
+        $element.find("input[type!=button],textarea").not(noresetClass).not('input[type=checkbox],input[type=radio]')
+            .val("");
 
         // uncheck any checkboxes/radios
-        $("input[type=checkbox],input[type=radio]", $element).prop("checked", false);
+        $element.find("input[type=checkbox],input[type=radio]").not(noresetClass).prop("checked", false);
 
-        // remove "selected" from options that were already selected
-        $("option[selected=selected]", $element).removeAttr("selected");
+        // revert all select dropdowns to first option.
+        $($element).find("select").not(noresetClass).prop("selectedIndex", 0);
 
-        // revert all select inputs to first option. 
-        $("select", $element).find('option:first').attr("selected", "selected");
-
-        // allow html5 polyfills for watermarks to be added.
-        TDAR.common.applyWatermarks($element);
+        // allow html5 polyfills for watermarks to be added.  (//fixme: I think this is a bug/copypasta - watermarks shouldn't need to be re-applied)
+        //TDAR.common.applyWatermarks($element);
     };
 
     /**
@@ -247,7 +250,9 @@ TDAR.repeatrow = function (TDAR, $) {
         registerRepeatable: registerRepeatable,
         registerDeleteButtons: registerDeleteButtons,
         cloneSection: cloneSection,
-        deleteRow: deleteRow
+        deleteRow: deleteRow,
+        clearInputs: _clearInputs,
+        taco: "tuesday"
     };
 
 }(TDAR, jQuery);

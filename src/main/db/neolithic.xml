@@ -16,7 +16,12 @@
         <update tableName="geographic_keyword">
             <column name="level" value="COUNTRY" />
             <where>level='ISO_COUNTRY'</where>
-
+        </update>
+    </changeSet>
+    <changeSet id="neolithic-3" author="jtdevos">
+        <update tableName="homepage_cache_geographic_keyword">
+            <column name="level" value="COUNTRY" />
+            <where>level='ISO_COUNTRY'</where>
         </update>
     </changeSet>
 
