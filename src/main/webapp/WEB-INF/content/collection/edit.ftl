@@ -143,9 +143,8 @@
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
             <h2>Add/Remove Resources</h2>
-
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
-            <#assign showLimitToCollection = (actionName='edit')>
+            <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.resources?size > 0)>
             <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection>
             </@edit.resourceDataTable>
 
