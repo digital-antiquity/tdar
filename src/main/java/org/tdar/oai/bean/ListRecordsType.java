@@ -10,10 +10,16 @@ package org.tdar.oai.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
+import edu.asu.lib.dc.DublinCoreDocument;
+import edu.asu.lib.mods.ModsDocument;
 
 
 /**
@@ -41,6 +47,7 @@ import javax.xml.bind.annotation.XmlType;
     "record",
     "resumptionToken"
 })
+@XmlRootElement
 public class ListRecordsType implements ListResponse {
 
     @XmlElement(required = true)

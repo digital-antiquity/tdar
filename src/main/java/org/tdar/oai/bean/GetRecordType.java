@@ -11,7 +11,12 @@ package org.tdar.oai.bean;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
+import edu.asu.lib.dc.DublinCoreDocument;
+import edu.asu.lib.mods.ModsDocument;
 
 
 /**
@@ -37,6 +42,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "GetRecordType", propOrder = {
     "record"
 })
+@XmlRootElement
+@XmlSeeAlso(value={DublinCoreDocument.class,ModsDocument.class})
 public class GetRecordType {
 
     @XmlElement(required = true)

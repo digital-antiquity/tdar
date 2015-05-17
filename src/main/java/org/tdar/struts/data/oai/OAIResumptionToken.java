@@ -41,11 +41,13 @@ public class OAIResumptionToken {
         setToken(token);
     }
 
-    public OAIResumptionToken(int cursor2, Date effectiveFrom, Date effectiveUntil, String effectiveMetadataPrefix, Long collectionId) throws OAIException {
+    public OAIResumptionToken(int cursor2, Date effectiveFrom, Date effectiveUntil, OAIMetadataFormat metadataFormat, Long collectionId) throws OAIException {
         setCursor(cursor2);
         setFromDate(effectiveFrom);
         setUntilDate(effectiveUntil);
-        setMetadataPrefix(effectiveMetadataPrefix);
+        if (metadataFormat != null) {
+            setMetadataPrefix(metadataFormat.name());
+        }
         setSet(collectionId);
     }
 
@@ -192,32 +194,25 @@ public class OAIResumptionToken {
         this.set = id;
     }
 
-    public Date getEffectiveFrom(String from) {
+    public Date getEffectiveFrom(Date from) {
         if (fromDate != null) {
             return fromDate;
         }
 
-        if (StringUtils.isBlank(from)) {
-            return new DateTime("1900").toDate();
-        }
-        return new DateTime(from).toDate();
+        return from;
     }
 
-    public Date getEffectiveUntil(String until) {
+    public Date getEffectiveUntil(Date until) {
         if (untilDate != null) {
             return untilDate;
         }
-
-        if (StringUtils.isBlank(until)) {
-            return new DateTime("3000").toDate();
-        }
-        return new DateTime(until).toDate();
+        return until;
     }
 
-    public OAIMetadataFormat getEffectiveMetadataPrefix(String metadataPrefix2) throws OAIException {
+    public OAIMetadataFormat getEffectiveMetadataPrefix(OAIMetadataFormat metadataPrefix2) throws OAIException {
         if (StringUtils.isNotBlank(metadataPrefix)) {
             return OAIMetadataFormat.fromString(metadataPrefix);
         }
-        return OAIMetadataFormat.fromString(metadataPrefix2);
+        return metadataPrefix2;
     }
 }

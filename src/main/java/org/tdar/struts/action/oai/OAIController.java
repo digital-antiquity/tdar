@@ -78,7 +78,7 @@ import freemarker.ext.dom.NodeModel;
  * @author Conal Tuohy
  * 
  */
-@Namespace("/oai-pmh")
+//@Namespace("/oai-pmh")
 @ParentPackage("default")
 @Component
 @Scope("prototype")

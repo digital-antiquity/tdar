@@ -11,7 +11,14 @@ package org.tdar.oai.bean;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
+import org.apache.tools.ant.IntrospectionHelper.Creator;
+import org.tdar.core.bean.resource.Resource;
+
+import edu.asu.lib.dc.DublinCoreDocument;
+import edu.asu.lib.mods.ModsDocument;
 
 
 /**
@@ -41,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "metadataType", propOrder = {
     "any"
 })
+@XmlSeeAlso(value={Resource.class, Creator.class, DublinCoreDocument.class, ModsDocument.class})
 public class MetadataType {
 
     @XmlAnyElement(lax = true)

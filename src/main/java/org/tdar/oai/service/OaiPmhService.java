@@ -12,6 +12,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
@@ -29,6 +30,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.oai.bean.DeletedRecordType;
+import org.tdar.oai.bean.Description;
 import org.tdar.oai.bean.DescriptionType;
 import org.tdar.oai.bean.GetRecordType;
 import org.tdar.oai.bean.GranularityType;
@@ -63,11 +65,13 @@ import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
 
+import com.google.common.base.Objects;
+
+@Service
 public class OaiPmhService {
 
     TdarConfiguration config = TdarConfiguration.getInstance();
 
-    private String repositoryNamespaceIdentifier = config.getRepositoryNamespaceIdentifier();
     private boolean enableEntities = config.getEnableEntityOai();
 
     @Autowired
@@ -91,29 +95,32 @@ public class OaiPmhService {
         ident.setProtocolVersion("2.0");
         ident.setRepositoryName(config.getRepositoryName());
         DescriptionType descr = new DescriptionType();
-        descr.setAny(config.getSystemDescription());
+        descr.setAny(new Description(config.getSystemDescription()));
         ident.getDescription().add(descr);
         return ident;
     }
 
-    public ResumptionTokenType listIdentifiersOrRecords(String from, String until, String metadataPrefix, String resumptionToken_, ListResponse response)
+    public ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, OAIMetadataFormat metadataPrefix, OAIResumptionToken resumptionToken,
+            ListResponse response)
             throws OAIException, ParseException {
         ResumptionTokenType token = null;
         Long collectionId = null;
         // start record number (cursor)
-        OAIResumptionToken resumptionToken = new OAIResumptionToken(resumptionToken_);
         SearchResult search = new SearchResult();
         search.setSortField(SortOption.DATE_UPDATED);
+        Date effectiveFrom = from;
+        Date effectiveUntil = until;
+        OAIMetadataFormat metadataFormat = metadataPrefix;
         if (resumptionToken != null) {
             // ... then this is the second or subsequent page of results.
             // In this case there are no separate "from" and "until" parameters passed by the client;
             // instead all the parameters come packed into a resumption token.
             collectionId = resumptionToken.getSet();
             search.setStartRecord(resumptionToken.getCursor());
+            effectiveFrom = resumptionToken.getEffectiveFrom(from);
+            effectiveUntil = resumptionToken.getEffectiveUntil(until);
+            metadataFormat = resumptionToken.getEffectiveMetadataPrefix(metadataPrefix);
         }
-        Date effectiveFrom = resumptionToken.getEffectiveFrom(from);
-        Date effectiveUntil = resumptionToken.getEffectiveUntil(until);
-        OAIMetadataFormat metadataFormat = resumptionToken.getEffectiveMetadataPrefix(metadataPrefix);
 
         // now actually build the queries and execute them
         ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
@@ -130,7 +137,7 @@ public class OaiPmhService {
         int totalInstitutions = 0;
         int totalResources = 0;
 
-        if (enableEntities && !metadataFormat.equals(OAIMetadataFormat.MODS)) {
+        if (enableEntities && !Objects.equal(metadataFormat, OAIMetadataFormat.MODS)) {
             // list people
             totalPersons = populateResult(OAIRecordType.PERSON, personQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, search, response);
             totalInstitutions = populateResult(OAIRecordType.INSTITUTION, institutionQueryBuilder, metadataFormat, effectiveFrom,
@@ -152,7 +159,7 @@ public class OaiPmhService {
                 OAIResumptionToken newResumptionToken = new OAIResumptionToken();
                 // ... populate the resumptionToken so the harvester can continue harvesting from the next page
                 token = new ResumptionTokenType();
-                newResumptionToken = new OAIResumptionToken(cursor, effectiveFrom, effectiveUntil, metadataFormat.name(), collectionId);
+                newResumptionToken = new OAIResumptionToken(cursor, effectiveFrom, effectiveUntil, metadataFormat, collectionId);
                 token.setValue(newResumptionToken.getToken());
                 if (response instanceof ListIdentifiersType) {
                     response.setResumptionToken(token);
@@ -181,17 +188,14 @@ public class OaiPmhService {
             switchProjectionModel(search, queryBuilder);
             searchService.handleSearch(queryBuilder, search, MessageHelper.getInstance());
             total = search.getTotalRecords();
-            List<Long> ids = new ArrayList<>();
             for (Indexable i : search.getResults()) {
                 if ((i instanceof Viewable) && !((Viewable) i).isViewable()) {
                     continue;
                 }
                 OaiDcProvider resource = (OaiDcProvider) i;
-                ids.add(resource.getId());
                 // create OAI metadata for the record
                 records.add(createRecord(resource, recordType, metadataFormat, includeRecords));
             }
-            logger.info("ALL IDS: {}", ids);
         } catch (SearchPaginationException spe) {
             logger.debug("an pagination exception happened .. {} ", spe.getMessage());
         } catch (TdarRecoverableRuntimeException e) {
@@ -219,7 +223,7 @@ public class OaiPmhService {
         HeaderType header = new HeaderType();
 
         obfuscationService.obfuscate((Obfuscatable) resource, null);
-        header.setIdentifier(constructIdentifier(recordType, resource.getId()));
+        header.setIdentifier(new OaiIdentifier(recordType, resource.getId()).getOaiId());
         Date updatedDate = resource.getDateUpdated();
         if (updatedDate == null) {
             updatedDate = resource.getDateCreated();
@@ -247,16 +251,16 @@ public class OaiPmhService {
             }
             record.setMetadata(metadata);
         }
-        return null;
+        return record;
     }
 
-    public ListMetadataFormatsType listMetadataFormats(String identifier) throws OAIException {
+    public ListMetadataFormatsType listMetadataFormats(OaiIdentifier identifier) throws OAIException {
         ListMetadataFormatsType formats = new ListMetadataFormatsType();
 
         OAIMetadataFormat[] formatList = OAIMetadataFormat.values();
         if (identifier != null) {
             // an identifier was specified, so return a list of the metadata formats which that record can be disseminated in
-            formatList = extractTypeFromIdentifier(identifier).getMetadataFormats();
+            formatList = identifier.getRecordType().getMetadataFormats();
         }
         if (!config.enableTdarFormatInOAI()) {
             ArrayUtils.removeElement(formatList, OAIMetadataFormat.TDAR);
@@ -273,62 +277,18 @@ public class OaiPmhService {
         return formats;
     }
 
-    public OAIRecordType extractTypeFromIdentifier(String identifier) throws OAIException {
-        String[] token = identifier.split(":", 4);
-        // First token must = "oai"
-        // Second token must = the repository namespace identifier
-        if (!token[0].equals("oai") || !token[1].equals(repositoryNamespaceIdentifier)) {
-            throw new OAIException(MessageHelper.getInstance().getText("oaiController.identifier_not_part"), OaiErrorCode.ID_DOES_NOT_EXIST);
-        }
-        // the third token is the type of the record, i.e. "Resource", "Person" or "Institution"
-        return OAIRecordType.fromString(token[2]);
-        // // the final token is the record number
-        // setIdentifierRecordNumber(Long.valueOf(token[3]));
-
-    }
-
-    public Long extractIdFromIdentifier(String identifier) throws OAIException {
-        String[] token = identifier.split(":", 4);
-        // First token must = "oai"
-        // Second token must = the repository namespace identifier
-        if (!token[0].equals("oai") || !token[1].equals(repositoryNamespaceIdentifier)) {
-            throw new OAIException(MessageHelper.getInstance().getText("oaiController.identifier_not_part"), OaiErrorCode.ID_DOES_NOT_EXIST);
-        }
-        // the third token is the type of the record, i.e. "Resource", "Person" or "Institution"
-        // // the final token is the record number
-        return Long.valueOf(token[3]);
-
-    }
-
-    public GetRecordType getGetRecordResponse(String identifier, OAIMetadataFormat requestedFormat) throws OAIException {
+    public GetRecordType getGetRecordResponse(OaiIdentifier identifier, OAIMetadataFormat requestedFormat) throws OAIException {
         // check that this kind of record can be disseminated in the requested format
         GetRecordType get = new GetRecordType();
-        OAIRecordType type = extractTypeFromIdentifier(identifier);
+        OAIRecordType type = identifier.getRecordType();
         type.checkCanDisseminateFormat(requestedFormat);
 
-        RecordType record = new RecordType();
-        get.setRecord(record);
-        MetadataType metadata = new MetadataType();
-        HeaderType header = new HeaderType();
-        Long id = extractIdFromIdentifier(identifier);
+        Long id = identifier.getTdarId();
         OaiDcProvider oaiDcObject = (OaiDcProvider) genericDao.find(type.getActualClass(), id);
-        obfuscationService.obfuscate((Obfuscatable) oaiDcObject, null);
-        header.setIdentifier(identifier);
-        Date updatedDate = oaiDcObject.getDateUpdated();
-        if (updatedDate == null) {
-            updatedDate = oaiDcObject.getDateCreated();
-        }
-        // iso_utc
-        header.setDatestamp(updatedDate.toString());
-        record.setHeader(header);
-        metadata.setAny(oaiDcObject);
-        record.setMetadata(metadata);
+        RecordType record = createRecord(oaiDcObject, identifier.getRecordType(), requestedFormat, true);
+        get.setRecord(record);
 
         return get;
-    }
-
-    public String constructIdentifier(OAIRecordType type, Long numericIdentifier) {
-        return "oai:" + repositoryNamespaceIdentifier + ":" + type.getName() + ":" + String.valueOf(numericIdentifier);
     }
 
     private void switchProjectionModel(SearchResult search, QueryBuilder queryBuilder) {
@@ -338,21 +298,23 @@ public class OaiPmhService {
         }
     }
 
-    public ListRecordsType listRecords(String from, String until, String metadataPrefix, String resumptionToken) throws OAIException, ParseException {
+    public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException,
+            ParseException {
         ListRecordsType response = new ListRecordsType();
-        ResumptionTokenType token = listIdentifiersOrRecords(from, until, metadataPrefix, resumptionToken, response);
+        ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
         response.setResumptionToken(token);
         return response;
     }
 
-    public ListIdentifiersType listIdentifiers(String from, String until, String metadataPrefix, String resumptionToken) throws OAIException, ParseException {
+    public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken)
+            throws OAIException, ParseException {
         ListIdentifiersType response = new ListIdentifiersType();
-        ResumptionTokenType token = listIdentifiersOrRecords(from, until, metadataPrefix, resumptionToken, response);
+        ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
         response.setResumptionToken(token);
         return response;
     }
 
-    public ListSetsType listSets(String from, String until, String metadataPrefix, String resumptionToken_) throws OAIException {
+    public ListSetsType listSets(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException {
         // Sort results by dateUpdated ascending and filter
         // by dates, either supplied in OAI-PMH 'from' and 'to' parameters,
         // or encoded as parts of the 'resumptionToken'
@@ -362,16 +324,17 @@ public class OaiPmhService {
         // but in OAI-PMH, date parameters are ISO8601 dates, so we must remove the punctuation.
         SearchResult search = new SearchResult();
         ListSetsType response = new ListSetsType();
-        OAIResumptionToken resumptionToken = new OAIResumptionToken(resumptionToken_);
+        Date effectiveFrom = from;
+        Date effectiveUntil = until;
         if (resumptionToken != null) {
             // ... then this is the second or subsequent page of results.
             // In this case there are no separate "from" and "until" parameters passed by the client;
             // instead all the parameters come packed into a resumption token.
             search.setStartRecord(resumptionToken.getCursor());
+            effectiveFrom = resumptionToken.getEffectiveFrom(from);
+            effectiveUntil = resumptionToken.getEffectiveUntil(until);
         }
-        Date effectiveFrom = resumptionToken.getEffectiveFrom(from);
-        Date effectiveUntil = resumptionToken.getEffectiveUntil(until);
-        OAIMetadataFormat metadataFormat = resumptionToken.getEffectiveMetadataPrefix(metadataPrefix);
+        OAIMetadataFormat metadataFormat = resumptionToken.getEffectiveMetadataPrefix(requestedFormat);
 
         search.setSortField(SortOption.DATE_UPDATED);
 
@@ -396,7 +359,7 @@ public class OaiPmhService {
                 ResourceCollection coll = (ResourceCollection) i;
                 set.setSetName(coll.getName());
                 DescriptionType descr = new DescriptionType();
-                descr.setAny(coll.getDescription());
+                descr.setAny(new Description(coll.getDescription()));
                 set.getSetDescription().add(descr);
                 set.setSetSpec(Long.toString(coll.getId()));
                 setList.add(set);
@@ -427,7 +390,7 @@ public class OaiPmhService {
                 // ... populate the resumptionToken so the harvester can continue harvesting from the next page
                 OAIResumptionToken newResumptionToken = new OAIResumptionToken();
                 ResumptionTokenType token = new ResumptionTokenType();
-                newResumptionToken = new OAIResumptionToken(cursor, effectiveFrom, effectiveUntil, metadataFormat.name(), null);
+                newResumptionToken = new OAIResumptionToken(cursor, effectiveFrom, effectiveUntil, metadataFormat, null);
                 token.setValue(newResumptionToken.getToken());
                 response.setResumptionToken(token);
             }

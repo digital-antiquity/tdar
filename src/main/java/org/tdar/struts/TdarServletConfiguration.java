@@ -87,6 +87,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
 
         configureDataOneServlet(container);
+        configureOaiServlet(container);
 
         if (enableServer) {
             configureUrlRewriteRule(container);
@@ -137,6 +138,14 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         dataOne.setLoadOnStartup(1);
         dataOne.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.dataone.server");
         dataOne.addMapping("/dataone/*");
+    }
+
+    private void configureOaiServlet(ServletContext container) {
+        // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
+        ServletRegistration.Dynamic oaiPmh = container.addServlet("oaipmh", SpringServlet.class);
+        oaiPmh.setLoadOnStartup(1);
+        oaiPmh.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.oai.server");
+        oaiPmh.addMapping("/oai-pmh/*");
     }
 
     private void configureCxfForTag(ServletContext container) {

@@ -19,7 +19,6 @@ import java.util.Map;
 
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
