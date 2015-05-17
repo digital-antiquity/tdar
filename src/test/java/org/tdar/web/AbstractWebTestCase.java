@@ -193,6 +193,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         } catch (Exception e) {
             logger.trace("{}", e);
         }
+        
+        if (prefix.endsWith("/")) {
+            prefix = prefix.substring(0,prefix.length() - 1);
+        }
+        
+        if (localPath.startsWith("//")) {
+            localPath = localPath.substring(1);
+        }
+        
         String url = prefix + localPath;
         return url;
     }

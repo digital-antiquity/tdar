@@ -28,7 +28,7 @@ import org.tdar.struts.data.oai.OAIResumptionToken;
 import org.tdar.struts.data.oai.OAIVerb;
 import org.tdar.utils.MessageHelper;
 
-@Path("/")
+@Path("/oai")
 @Component
 @Scope("prototype")
 public class OaiPmhServer {
@@ -50,7 +50,6 @@ public class OaiPmhServer {
     private Date from = new DateTime("1900").toDate();
     private Date until = new DateTime("3000").toDate();
 
-    @Path("oai")
     @Produces("application/xml")
     @GET
     public Response execute(@QueryParam("verb") String verb_,
