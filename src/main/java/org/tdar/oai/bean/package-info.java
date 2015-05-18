@@ -6,9 +6,10 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(
-        namespace = "http://www.tdar.org/oai", 
-                xmlns = {
+        namespace = org.tdar.URLConstants.TDAR_NAMESPACE_URL,
+        xmlns = {
                 @javax.xml.bind.annotation.XmlNs(prefix = "tdar-oai",
-                        namespaceURI = "http://www.tdar.org/oai")
-        },elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+                        namespaceURI = org.tdar.URLConstants.TDAR_NAMESPACE_URL)
+        },location="http://www.tdar.org/schema",
+        elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.tdar.oai.bean;

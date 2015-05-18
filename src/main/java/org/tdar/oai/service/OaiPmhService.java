@@ -95,9 +95,9 @@ public class OaiPmhService {
         ident.setGranularity(GranularityType.YYYY_MM_DD);
         ident.setProtocolVersion("2.0");
         ident.setRepositoryName(config.getRepositoryName());
-        DescriptionType descr = new DescriptionType();
-        descr.setAny(new Description(config.getSystemDescription()));
-        ident.getDescription().add(descr);
+        // DescriptionType descr = new DescriptionType();
+        // descr.setAny(new Description(config.getSystemDescription()));
+        // ident.getDescription().add(descr);
         return ident;
     }
 
@@ -107,9 +107,8 @@ public class OaiPmhService {
         ResumptionTokenType token = null;
         Long collectionId = null;
         // start record number (cursor)
-        SearchResult search = new SearchResult();
-        search.setSortField(SortOption.DATE_UPDATED);
         Date effectiveFrom = from;
+        int startRecord = 0;
         Date effectiveUntil = until;
         OAIMetadataFormat metadataFormat = metadataPrefix;
         if (resumptionToken != null) {
@@ -117,7 +116,7 @@ public class OaiPmhService {
             // In this case there are no separate "from" and "until" parameters passed by the client;
             // instead all the parameters come packed into a resumption token.
             collectionId = resumptionToken.getSet();
-            search.setStartRecord(resumptionToken.getCursor());
+            startRecord = resumptionToken.getCursor();
             effectiveFrom = resumptionToken.getEffectiveFrom(from);
             effectiveUntil = resumptionToken.getEffectiveUntil(until);
             metadataFormat = resumptionToken.getEffectiveMetadataPrefix(metadataPrefix);
@@ -134,61 +133,69 @@ public class OaiPmhService {
         InstitutionQueryBuilder institutionQueryBuilder = new InstitutionQueryBuilder();
         institutionQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
 
-        int totalPersons = 0;
-        int totalInstitutions = 0;
-        int totalResources = 0;
-
+        SearchResult persons = null;
+        SearchResult institutions = null;
+        int maxResults = 0;
         if (enableEntities && !Objects.equal(metadataFormat, OAIMetadataFormat.MODS)) {
             // list people
-            totalPersons = populateResult(OAIRecordType.PERSON, personQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, search, response);
-            totalInstitutions = populateResult(OAIRecordType.INSTITUTION, institutionQueryBuilder, metadataFormat, effectiveFrom,
-                    effectiveUntil, search, response);
+            persons = populateResult(OAIRecordType.PERSON, personQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response);
+            if (persons.getTotalRecords() > maxResults) {
+                maxResults = persons.getTotalRecords();
+            }
+            institutions = populateResult(OAIRecordType.INSTITUTION, institutionQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord,
+                    response);
+            if (institutions.getTotalRecords() > maxResults) {
+                maxResults = institutions.getTotalRecords();
+            }
         }
 
         // list the resources
-        totalResources = populateResult(OAIRecordType.RESOURCE, resourceQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, search, response);
+        SearchResult resources = populateResult(OAIRecordType.RESOURCE, resourceQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord,
+                response);
+        if (resources.getTotalRecords() > maxResults) {
+            maxResults = resources.getTotalRecords();
+        }
 
         // if any of the queries returned more than a page of search results, create a resumptionToken to allow
         // the client to continue harvesting from that point
-        if ((totalResources > search.getRecordsPerPage()) || (totalPersons > search.getRecordsPerPage()) || (totalInstitutions > search.getRecordsPerPage())) {
+        if (resources.getNextPageStartRecord() < maxResults) {
             // ... then this is a partial response, and should be terminated with a ResumptionToken
             // which may be empty if this is the last page of results
             // advance the cursor by one page
-            int cursor = search.getNextPageStartRecord();
-            // check if there would be any resources, persons or institutions in that hypothetical next page
-            if ((totalResources > cursor) || (totalPersons > cursor) || (totalInstitutions > cursor)) {
-                OAIResumptionToken newResumptionToken = new OAIResumptionToken();
-                // ... populate the resumptionToken so the harvester can continue harvesting from the next page
-                token = new ResumptionTokenType();
-                newResumptionToken = new OAIResumptionToken(cursor, effectiveFrom, effectiveUntil, metadataFormat, collectionId);
-                token.setValue(newResumptionToken.getToken());
-                if (response instanceof ListIdentifiersType) {
-                    response.setResumptionToken(token);
-                }
+            OAIResumptionToken newResumptionToken = new OAIResumptionToken();
+            // ... populate the resumptionToken so the harvester can continue harvesting from the next page
+            token = new ResumptionTokenType();
+            newResumptionToken = new OAIResumptionToken(resources.getNextPageStartRecord(), effectiveFrom, effectiveUntil, metadataFormat, collectionId);
+            logger.debug("newToken: {}", newResumptionToken.getToken());
+            token.setValue(newResumptionToken.getToken());
+            if (response instanceof ListIdentifiersType) {
+                response.setResumptionToken(token);
             }
         }
 
         // if there were no records found, then throw an exception
-        if ((totalResources + totalPersons + totalInstitutions) == 0) {
+        if ((maxResults) == 0) {
             throw new OAIException(MessageHelper.getInstance().getText("oaiController.no_matches"), OaiErrorCode.NO_RECORDS_MATCH);
         }
         return token;
     }
 
-    private int populateResult(OAIRecordType recordType, QueryBuilder queryBuilder, OAIMetadataFormat metadataFormat, Date effectiveFrom,
-            Date effectiveUntil, SearchResult search, ListResponse response) throws ParseException {
+    private SearchResult populateResult(OAIRecordType recordType, QueryBuilder queryBuilder, OAIMetadataFormat metadataFormat, Date effectiveFrom,
+            Date effectiveUntil, int startRecord, ListResponse response) throws ParseException {
         boolean includeRecords = false;
         if (response instanceof ListRecordsType) {
             includeRecords = true;
         }
+        SearchResult search = new SearchResult();
+        search.setMode("OAI");
+        search.setStartRecord(startRecord);
+        search.setSortField(SortOption.DATE_UPDATED);
 
         List<RecordType> records = new ArrayList<>();
         queryBuilder.append(new RangeQueryPart<Date>(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
-        int total = 0;
         try {
             switchProjectionModel(search, queryBuilder);
             searchService.handleSearch(queryBuilder, search, MessageHelper.getInstance());
-            total = search.getTotalRecords();
             for (Indexable i : search.getResults()) {
                 if ((i instanceof Viewable) && !((Viewable) i).isViewable()) {
                     continue;
@@ -216,7 +223,7 @@ public class OaiPmhService {
             }
         }
 
-        return total;
+        return search;
     }
 
     protected RecordType createRecord(OaiDcProvider resource, OAIRecordType recordType, OAIMetadataFormat metadataFormat, boolean includeRecords) {
@@ -335,7 +342,7 @@ public class OaiPmhService {
             effectiveFrom = resumptionToken.getEffectiveFrom(from);
             effectiveUntil = resumptionToken.getEffectiveUntil(until);
         }
-        OAIMetadataFormat metadataFormat = resumptionToken.getEffectiveMetadataPrefix(requestedFormat);
+        OAIMetadataFormat metadataFormat = null;
 
         search.setSortField(SortOption.DATE_UPDATED);
 
@@ -359,9 +366,9 @@ public class OaiPmhService {
                 SetType set = new SetType();
                 ResourceCollection coll = (ResourceCollection) i;
                 set.setSetName(coll.getName());
-                DescriptionType descr = new DescriptionType();
-                descr.setAny(new Description(coll.getDescription()));
-                set.getSetDescription().add(descr);
+                // DescriptionType descr = new DescriptionType();
+                // descr.setAny(new Description(coll.getDescription()));
+                // set.getSetDescription().add(descr);
                 set.setSetSpec(Long.toString(coll.getId()));
                 setList.add(set);
             }

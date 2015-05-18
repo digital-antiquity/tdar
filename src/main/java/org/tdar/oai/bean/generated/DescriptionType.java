@@ -11,7 +11,10 @@ package org.tdar.oai.bean.generated;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
+import org.tdar.oai.bean.Description;
 
 
 /**
@@ -39,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso(Description.class)
 @XmlType(name = "descriptionType", propOrder = {
     "any"
 })

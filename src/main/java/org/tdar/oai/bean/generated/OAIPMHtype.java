@@ -10,12 +10,19 @@ package org.tdar.oai.bean.generated;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.tdar.oai.bean.Description;
+
+import edu.asu.lib.dc.DublinCoreDocument;
+import edu.asu.lib.mods.ModsDocument;
 
 
 /**
@@ -59,6 +66,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "listIdentifiers",
     "listRecords"
 })
+@XmlSeeAlso(value={Description.class,ModsDocument.class, DublinCoreDocument.class})
 public class OAIPMHtype {
 
     @XmlElement(required = true)
