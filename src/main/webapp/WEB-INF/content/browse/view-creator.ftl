@@ -105,7 +105,14 @@
         <@common.description creator.description />
 
         <#if creator.synonyms?has_content>
-            <p class="small"><b>Alternate Names:</b> <#list creator.synonyms as syn> <#if syn_index !=0>,</#if><a href="${syn.detailUrl}">${syn.properName}</a></#list>
+            <p class="small"><b>Alternate Names:</b> 
+			<#list creator.synonyms as syn> <#if syn_index !=0>,</#if>
+			<#if syn.browsePageVisible || editor >
+			  <a href="${syn.detailUrl}">${syn.properName}</a>
+			<#else>
+			  ${syn.properName}
+			</#if>
+			</#list>
             </p>
         </#if>
         <br/>
