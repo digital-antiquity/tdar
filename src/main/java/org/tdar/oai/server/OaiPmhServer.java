@@ -2,6 +2,7 @@ package org.tdar.oai.server;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.persistence.Transient;
 import javax.ws.rs.GET;
@@ -10,6 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
@@ -21,6 +24,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.exception.OAIException;
 import org.tdar.core.exception.OaiErrorCode;
+import org.tdar.oai.bean.generated.OAIPMHtype;
+import org.tdar.oai.bean.generated.ObjectFactory;
+import org.tdar.oai.bean.generated.RequestType;
+import org.tdar.oai.bean.generated.VerbType;
 import org.tdar.oai.service.OaiIdentifier;
 import org.tdar.oai.service.OaiPmhService;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
@@ -59,10 +66,21 @@ public class OaiPmhServer {
             @QueryParam("from") String from_,
             @QueryParam("until") String until_,
             @QueryParam("resumptionToken") String resumptionToken_) throws ParseException {
-        Object entity = null;
+        OAIPMHtype response = new OAIPMHtype();
         String message;
         try {
+            response.setResponseDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
+            RequestType request = new RequestType();
+            request.setFrom(from_);
+            request.setIdentifier(identifier_);
+            request.setMetadataPrefix(metadataPrefix_);
+            request.setResumptionToken(resumptionToken_);
+            request.setSet(set);
+            request.setUntil(until_);
+            request.setVerb(VerbType.fromValue(verb_));
+//            request.setValue(value);
+            response.setRequest(request);
             switch (verb) {
                 case GET_RECORD:
                     message = getText("oaiController.not_allowed_with_get");
@@ -79,7 +97,7 @@ public class OaiPmhServer {
                         throw new OAIException(getText("oaiController.invalid_metadata_param"), OaiErrorCode.BAD_ARGUMENT);
                     }
 
-                    entity = service.getGetRecordResponse(identifier, requestedFormat);
+                    response.setGetRecord(service.getGetRecordResponse(identifier, requestedFormat));
                     break;
                 case IDENTIFY:
                     message = getText("oaiController.not_allowed_with_identity");
@@ -89,10 +107,10 @@ public class OaiPmhServer {
                     assertParameterIsNull(resumptionToken, "resumptionToken", message);
                     assertParameterIsNull(from_, "from", message);
                     assertParameterIsNull(until_, "until", message);
-                    entity = service.getIdentifyResponse();
+                    response.setIdentify(service.getIdentifyResponse());
                     break;
                 case LIST_IDENTIFIERS:
-                    entity = service.listIdentifiers(from, until, requestedFormat, resumptionToken);
+                    response.setListIdentifiers(service.listIdentifiers(from, until, requestedFormat, resumptionToken));
                     break;
                 case LIST_METADATA_FORMATS:
                     message = "Not allowed with ListMetadataFormats verb";
@@ -101,26 +119,31 @@ public class OaiPmhServer {
                     assertParameterIsNull(resumptionToken, "resumptionToken", message);
                     assertParameterIsNull(from_, "from", message);
                     assertParameterIsNull(until_, "until", message);
-                    entity = service.listMetadataFormats(identifier);
+                    response.setListMetadataFormats(service.listMetadataFormats(identifier));
                     break;
                 case LIST_RECORDS:
-                    entity = service.listRecords(from, until, requestedFormat, resumptionToken);
+                    response.setListRecords(service.listRecords(from, until, requestedFormat, resumptionToken));
                     break;
                 case LIST_SETS:
-                    entity = service.listSets(from, until, requestedFormat, resumptionToken);
+                    response.setListSets(service.listSets(from, until, requestedFormat, resumptionToken));
                     break;
             }
         } catch (OAIException oaie) {
+            logger.error("OaiException", oaie);
             return Response.serverError().status(Status.BAD_REQUEST).build();
+        } catch (DatatypeConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            logger.error("OaiException", e);
         }
-
-        return Response.ok(entity).build();
+        ObjectFactory factory = new ObjectFactory();
+        return Response.ok(factory.createOAIPMH(response)).build();
     }
 
     private void prepare(String verb_, String identifier_, String metadataPrefix_, String from_, String until_, String resumptionToken_) throws OAIException {
         if (verb_ == null) {
             throw new OAIException(getText("oaiController.bad_verb"), OaiErrorCode.BAD_VERB);
-        } 
+        }
         verb = OAIVerb.fromString(verb_);
         if (StringUtils.isNotBlank(metadataPrefix_)) {
             requestedFormat = OAIMetadataFormat.fromString(metadataPrefix_);

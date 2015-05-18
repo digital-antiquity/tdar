@@ -6,7 +6,7 @@
 //
 
 
-package org.tdar.oai.bean;
+package org.tdar.oai.bean.generated;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;

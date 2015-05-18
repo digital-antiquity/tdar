@@ -116,7 +116,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
-            "problems with this submission", "TDAR:500", "TDAR:404","TDAR:509");
+            "problems with this submission", "TDAR:500", "TDAR:404", "TDAR:509");
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -193,15 +193,17 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         } catch (Exception e) {
             logger.trace("{}", e);
         }
-        
-        if (prefix.endsWith("/")) {
-            prefix = prefix.substring(0,prefix.length() - 1);
-        }
-        
+
         if (localPath.startsWith("//")) {
             localPath = localPath.substring(1);
         }
-        
+
+        if (prefix.endsWith("/")) {
+            while (localPath.startsWith("/")) {
+                localPath = localPath.substring(1);
+            }
+        }
+
         String url = prefix + localPath;
         return url;
     }

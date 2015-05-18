@@ -1,4 +1,4 @@
-package org.tdar.oai.bean;
+package org.tdar.oai.bean.generated;
 
 
 public interface ListResponse {

@@ -6,7 +6,7 @@
 //
 
 
-package org.tdar.oai.bean;
+package org.tdar.oai.bean.generated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
+import org.tdar.oai.bean.Description;
 
 
 /**

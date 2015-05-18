@@ -6,7 +6,7 @@
 //
 
 
-package org.tdar.oai.bean;
+package org.tdar.oai.bean.generated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +15,23 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
+import org.tdar.oai.bean.Description;
 
 
 /**
- * <p>Java class for ListIdentifiersType complex type.
+ * <p>Java class for ListSetsType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ListIdentifiersType">
+ * &lt;complexType name="ListSetsType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="header" type="{http://www.openarchives.org/OAI/2.0/}headerType" maxOccurs="unbounded"/>
+ *         &lt;element name="set" type="{http://www.openarchives.org/OAI/2.0/}setType" maxOccurs="unbounded"/>
  *         &lt;element name="resumptionToken" type="{http://www.openarchives.org/OAI/2.0/}resumptionTokenType" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -39,44 +42,45 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ListIdentifiersType", propOrder = {
-    "header",
+@XmlType(name = "ListSetsType", propOrder = {
+    "set",
     "resumptionToken"
 })
 @XmlRootElement
-public class ListIdentifiersType implements ListResponse {
+@XmlSeeAlso(Description.class)
+public class ListSetsType {
 
     @XmlElement(required = true)
-    protected List<HeaderType> header;
+    protected List<SetType> set;
     protected ResumptionTokenType resumptionToken;
 
     /**
-     * Gets the value of the header property.
+     * Gets the value of the set property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the header property.
+     * This is why there is not a <CODE>set</CODE> method for the set property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getHeader().add(newItem);
+     *    getSet().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link HeaderType }
+     * {@link SetType }
      * 
      * 
      */
-    public List<HeaderType> getHeader() {
-        if (header == null) {
-            header = new ArrayList<HeaderType>();
+    public List<SetType> getSet() {
+        if (set == null) {
+            set = new ArrayList<SetType>();
         }
-        return this.header;
+        return this.set;
     }
 
     /**
@@ -99,7 +103,6 @@ public class ListIdentifiersType implements ListResponse {
      *     {@link ResumptionTokenType }
      *     
      */
-    @Override
     public void setResumptionToken(ResumptionTokenType value) {
         this.resumptionToken = value;
     }

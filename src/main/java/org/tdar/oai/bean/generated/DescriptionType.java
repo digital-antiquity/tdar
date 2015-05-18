@@ -6,7 +6,7 @@
 //
 
 
-package org.tdar.oai.bean;
+package org.tdar.oai.bean.generated;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

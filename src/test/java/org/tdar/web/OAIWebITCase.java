@@ -77,6 +77,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // institutions, and the next 10 resources).
         gotoPage(getBase() + "ListIdentifiers&metadataPrefix=tdar");
         response = getPageDOM();
+        logger.debug(getPageCode());
         firstPersonIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Person')][1]", response);
         Assert.assertTrue("First page of ListIdentifier results includes a Person", (firstPersonIdentifier.contains("Person")));
         firstInstitutionIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Institution')][1]", response);
@@ -174,7 +175,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     public String getBase() {
-        return getBaseUrl() + "/oai-pmh/oai?verb=";
+        return getBaseUrl() + "oai-pmh/oai?verb=";
     }
 
     // http://xmlunit.sourceforge.net/userguide/html/
@@ -186,6 +187,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testIdentify() throws ConfigurationException, SAXException {
         gotoPage(getBase() + "Identify");
+        logger.debug(getPageCode());
         testValidOAIResponse();
 
         assertTextPresentInCode(TdarConfiguration.getInstance().getSystemAdminEmail());
