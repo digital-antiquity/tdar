@@ -144,6 +144,15 @@
         <to>/entity/$1/$3/$2</to>
     </outbound-rule>
 
+    <rule>
+        <from>^/ontology/([0-9+]+)/node/(.*)</from>
+        <to>/ontology_node/$1/node/$2</to>
+    </rule>
+    <outbound-rule>
+        <from>^/ontology_node/(.*)$</from>
+        <to>/ontology/$1</to>
+    </outbound-rule>
+
 
 <!--      <rule>
         <from>^/(dataset|sensory-data|geospatial)/columns/([0-9]+)$
