@@ -63,8 +63,14 @@
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
         <div>
             <h2>Description</h2>
-            <#if resourceCollection.parent??><p><b>Part of:</b> <a
-                    href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+            <#if resourceCollection.parent??><p><b>Part of:</b>
+            	<#if resourceCollection.parent.hidden && !authenticated >
+					${resourceCollection.parent.name!"(n/a)"}
+				<#else>
+				 <a
+                    href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a>
+               	</#if>
+			</p></#if>
 
             <div class="viewpage-section">
                 <#-- TODO: move this logic to logoAvailable() -->
