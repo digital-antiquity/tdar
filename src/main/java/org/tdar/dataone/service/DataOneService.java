@@ -231,9 +231,11 @@ public class DataOneService {
         // and idFilter startsWith(idFilter)
         // log.setCount...
 
-        dataOneDao.findLogFiles(fromDate, toDate, event, idFilter, start, count, log);
-        List<LogEntry> logEntries = log.getLogEntryList();
-        for (LogEntryImpl impl : new ArrayList<LogEntryImpl>()) {
+        logger.debug("logResponse: {} {} {} {} {} {} {}", fromDate, toDate, event, idFilter, start, count);
+        List<LogEntryImpl> findLogFiles = dataOneDao.findLogFiles(fromDate, toDate, event, idFilter, start, count, log);
+        log.setStart(start);
+        log.setCount(count);
+        for (LogEntryImpl impl : findLogFiles) {
             LogEntry entry = new LogEntry();
             entry.setDateLogged(impl.getDateLogged());
             entry.setEntryId(impl.getId().toString());
@@ -241,11 +243,17 @@ public class DataOneService {
             Identifier identifier = new Identifier();
             identifier.setValue(impl.getIdentifier());
             entry.setIdentifier(identifier);
-            entry.setNodeIdentifier(entry.getNodeIdentifier());
-            entry.setSubject(createSubject(impl.getSubject()));
+            NodeReference nodeRef = new NodeReference();
+            if (impl.getNodeReference() == null) {
+                nodeRef.setValue("");
+            } else {
+                nodeRef.setValue(impl.getNodeReference());
+            }
+            entry.setNodeIdentifier(nodeRef);
             entry.setIpAddress(impl.getIpAddress());
             entry.setUserAgent(impl.getUserAgent());
-            logEntries.add(entry);
+            entry.setSubject(createSubject(impl.getSubject()));
+            log.addLogEntry(entry);
         }
         return log;
     }
@@ -364,13 +372,11 @@ public class DataOneService {
 
     public ObjectResponseContainer getObject(final String id, HttpServletRequest request, boolean log) {
         ObjectResponseContainer resp = getObjectFromTdar(id);
-        if (request != null && resp != null && !log) {
+        if (request != null && resp != null && log == true) {
             LogEntryImpl entry = new LogEntryImpl(id, request, Event.READ);
+            genericService.markWritable(entry);
             genericService.save(entry);
-        } else {
-            logger.debug("req: {} , resp: {}, id {}", request, resp, id);
         }
-        logger.debug("response: {}", resp);
         return resp;
     }
 
@@ -396,6 +402,7 @@ public class DataOneService {
             }
             resp.setTdarResource(ir);
             resp.setIdentifier(id_);
+            logger.debug("{} --> {} (id: {} {})", doi, ir.getId(), partIdentifier);
             if (partIdentifier.equals(D1_FORMAT) || partIdentifier == null) {
                 resp.setContentType(RDF_CONTENT_TYPE);
                 String map = createResourceMap(ir);
@@ -448,6 +455,7 @@ public class DataOneService {
 
     public void replicate(String pid, HttpServletRequest request) {
         LogEntryImpl entry = new LogEntryImpl(pid, request, Event.REPLICATE);
+        genericService.markWritable(entry);
         genericService.save(entry);
 
     }

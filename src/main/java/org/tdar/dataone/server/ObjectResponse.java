@@ -85,12 +85,14 @@ public class ObjectResponse extends AbstractDataOneResponse {
         setupResponseContext(response);
         logger.debug("object full request: {}", request);
         try {
-            ObjectResponseContainer container = service.getObject(id, request, true);
+            final ObjectResponseContainer container = service.getObject(id, request, true);
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream os) throws IOException, WebApplicationException {
-                    Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                    IOUtils.copyLarge(container.getReader(), writer);
+                    logger.debug("{} - {}", os, container.getReader());
+                    OutputStreamWriter output = new OutputStreamWriter(os);
+                    IOUtils.copyLarge(container.getReader(), output);
+                    IOUtils.closeQuietly(output);
                 };
             };
             return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
@@ -112,7 +114,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
             ObjectResponseContainer container = service.getObject(id, request, false);
             logger.debug("returning OK");
             response.setHeader(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat());
-            response.setHeader(DATA_ONE_CHECKSUM, "MD5," +container.getChecksum());
+            response.setHeader(DATA_ONE_CHECKSUM, "MD5," + container.getChecksum());
             response.setHeader(LAST_MODIFIED, toIso822(container.getLastModified()));
             response.setHeader(HttpHeaders.CONTENT_LENGTH, Integer.toString(container.getSize()));
             response.setHeader(DATA_ONE_SERIAL_VERSION, container.getSerialVersionId().toString());

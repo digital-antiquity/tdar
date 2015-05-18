@@ -36,7 +36,7 @@ public class ReplicaResponse extends AbstractDataOneResponse {
 
     @GET
     @Produces(APPLICATION_XML)
-    @Path("{pid}")
+    @Path("{pid:.*}")
     public Response replica(@PathParam("pid") String pid) {
         setupResponseContext(response);
         service.replicate(pid, request);

@@ -41,24 +41,28 @@ public class LogEntryImpl implements Serializable {
     @Column(name = "event", length = FieldLength.FIELD_LENGTH_50)
     @Enumerated(EnumType.STRING)
     private Event event;
+    
     @Column(name = "subject", length = FieldLength.FIELD_LENGTH_255)
     private String subject = DATAONE_UNAUTHENTICATED_SUBJECT;
 
-    @Column(name = "date_logged")
+    @Column(name = "date_logged", nullable =false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateLogged;
+
     @Column(name = "node_reference", length = FieldLength.FIELD_LENGTH_255)
     private String nodeReference;
 
-    
+    public LogEntryImpl() {
+    }
+
     public LogEntryImpl(String id2, HttpServletRequest request, Event eventName) {
         this.identifier = id2;
         this.ipAddress = request.getRemoteAddr();
         this.userAgent = request.getHeader(HttpHeaders.USER_AGENT);
         this.event = eventName;
+        this.dateLogged = new Date();
     }
 
-    
     public Long getId() {
         return id;
     }

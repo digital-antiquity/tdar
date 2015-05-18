@@ -3,10 +3,15 @@ package org.tdar.dataone.dao;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Log;
 import org.dataone.service.types.v1.ObjectList;
 import org.hibernate.Query;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.GenericDao;
@@ -17,48 +22,66 @@ import org.tdar.dataone.bean.LogEntryImpl;
 @Component
 public class DataOneDao {
 
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private GenericDao genericDao;
 
     @SuppressWarnings("unchecked")
     public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, ObjectList list) {
-        Query query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
-        // if Tier3, use "query.dataone_list_objects_t3"
-        query.setDate("start", start);
-        query.setDate("end", end);
-        
-        //FIXME: find better way to handle pagination
-        list.setTotal(query.list().size());
-        
-        query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
-        query.setDate("start", start);
-        query.setDate("end", end);
+        Query query = setupListObjectQuery(start, end);
 
+        // FIXME: find better way to handle pagination
+        list.setTotal(query.list().size());
+
+        query = setupListObjectQuery(start, end);
         query.setMaxResults(list.getCount());
         query.setFirstResult(list.getStart());
         return query.list();
     }
 
+    private Query setupListObjectQuery(Date start, Date end) {
+        Query query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
+        // if Tier3, use "query.dataone_list_objects_t3"
+        query.setParameter("start", start);
+        query.setParameter("end", end);
+        return query;
+    }
+
     @SuppressWarnings("unchecked")
     public List<LogEntryImpl> findLogFiles(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, Log log) {
-        Query query = genericDao.getNamedQuery("query.dataone_list_logs");
-        query.setDate("start", fromDate);
-        query.setDate("end", toDate);
-        query.setString("event", event.name());
-        query.setString("idFilter", idFilter);
-        //FIXME: find better way to handle pagination
+        Query query = setupQuery(fromDate, toDate, event, idFilter);
+        // FIXME: find better way to handle pagination
         log.setTotal(query.list().size());
-        
-        query = genericDao.getNamedQuery("query.dataone_list_logs");
-        query.setDate("start", fromDate);
-        query.setDate("end", toDate);
-        query.setString("event", event.name());
-        query.setString("idFilter", idFilter);
+
+        query = setupQuery(fromDate, toDate, event, idFilter);
 
         query.setMaxResults(log.getCount());
         query.setFirstResult(log.getStart());
         return query.list();
-        
+
+    }
+
+    private Query setupQuery(Date fromDate, Date toDate, Event event, String idFilter) {
+        Query query = genericDao.getNamedQuery("query.dataone_list_logs");
+        Date to = DateTime.now().toDate();
+        Date from = new DateTime(1900).toDate();
+        if (fromDate != null) {
+            from = fromDate;
+        }
+        if (toDate != null) {
+            toDate = to;
+        }
+        query.setParameter("start", from);
+        query.setParameter("end", to);
+        if (event != null) {
+            query.setString("event", event.name());
+        } else {
+            query.setString("event", null);
+        }
+        query.setString("idFilter", idFilter);
+        return query;
     }
 
 }
