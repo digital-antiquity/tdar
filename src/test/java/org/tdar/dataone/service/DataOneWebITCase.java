@@ -58,6 +58,16 @@ public class DataOneWebITCase extends AbstractWebTestCase {
         }
         
     }
+    
+    @Test
+    public void testGetObjects() {
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?idFilter=" + TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?"));
+        //YYYY-MM-DDTHH:MM:SS.mmm
+        Assert.assertEquals(500, gotoPage("/dataone/v1/object?fromDate=2010-01-01"));
+        //formatId??
+    }
+    
     @Test
     public void testObjectHead() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
         String path = "/dataone/v1/object/" + TEST_DOI;
@@ -77,7 +87,7 @@ public class DataOneWebITCase extends AbstractWebTestCase {
         testObject();
         Assert.assertEquals(200, gotoPage("/dataone/v1/log?idFilter=" + TEST_DOI));
         Assert.assertEquals(200, gotoPage("/dataone/v1/log?event=READ"));
-        
+        //test with date ... YYYY-MM-DDTHH:MM:SS.mmm
         
     }
 

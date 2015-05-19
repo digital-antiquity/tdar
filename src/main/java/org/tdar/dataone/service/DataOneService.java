@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -108,8 +109,8 @@ public class DataOneService {
 
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
-    @Autowired
-    private GenericService genericService;
+     @Autowired
+     private GenericService genericService;
 
     @Autowired
     private SerializationService serializationService;
@@ -123,6 +124,7 @@ public class DataOneService {
     @Autowired
     private InformationResourceService informationResourceService;
 
+    @Transactional(readOnly=true)
     public String createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         Identifier id = new Identifier();
         id.setValue(ir.getExternalId().replace("/", ":") + D1_SEP + D1_FORMAT + ir.getDateUpdated().toString());
@@ -169,6 +171,7 @@ public class DataOneService {
         return rdfXml;
     }
 
+    @Transactional(readOnly=true)
     public Node getNodeResponse() {
         org.dataone.service.types.v1.Node node = new Node();
         node.setBaseURL(CONFIG.getBaseSecureUrl() + DATAONE);
@@ -225,6 +228,7 @@ public class DataOneService {
         services.getServiceList().add(service);
     }
 
+    @Transactional(readOnly=true)
     public Log getLogResponse(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, HttpServletRequest request) {
         Log log = new Log();
         // LogEntryImpl from LogEntryImpl where logDate is between :fromDate and :toDate and (useEventType=true and eventType=:eventType) and (useIdFilter=true
@@ -258,11 +262,13 @@ public class DataOneService {
         return log;
     }
 
+    @Transactional(readOnly = true)
     public Checksum getChecksumResponse(String pid, String checksum_) {
         ObjectResponseContainer object = getObject(pid, null, false);
         return createChecksum(object.getChecksum());
     }
 
+    @Transactional(readOnly = true)
     public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count) {
         ObjectList list = new ObjectList();
         list.setCount(count);
@@ -276,7 +282,7 @@ public class DataOneService {
             ObjectInfo info = new ObjectInfo();
             info.setChecksum(createChecksum(resource.getChecksum()));
             info.setDateSysMetadataModified(resource.getDateUpdated());
-            info.setFormatId(contentTypeToD1Format(resource, resource.getContentType()));
+            info.setFormatId(contentTypeToD1Format(formatid, resource.getContentType()));
             info.setIdentifier(createIdentifier(resource.getFormattedIdentifier()));
             info.setSize(BigInteger.valueOf(resource.getSize()));
             list.getObjectInfoList().add(info);
@@ -297,18 +303,13 @@ public class DataOneService {
         return cs;
     }
 
-    public void synchronizationFailed(String id, long serialVersion, Date dateSysMetaLastModified, HttpServletRequest request) {
-        LogEntryImpl entry = new LogEntryImpl(id, request, Event.REPLICATION_FAILED);
-        genericService.save(entry);
-
-    }
-
     /**
      * Gets DataOne System metadata for a given id. The ID will be a tDAR DOI with a suffix that specifies a metadata object, a resource, or a file
      * 
      * @param id
      * @return
      */
+    @Transactional(readOnly = true)
     public SystemMetadata metadataRequest(String id) {
         SystemMetadata metadata = new SystemMetadata();
         AccessPolicy policy = new AccessPolicy();
@@ -326,7 +327,7 @@ public class DataOneService {
             metadata.setArchived(false);
         }
         metadata.setChecksum(createChecksum(object.getChecksum()));
-        metadata.setFormatId(contentTypeToD1Format(object, object.getContentType()));
+        metadata.setFormatId(contentTypeToD1Format(object.getObjectFormat(), object.getContentType()));
         metadata.setSize(BigInteger.valueOf(object.getSize()));
         metadata.setIdentifier(createIdentifier(object.getIdentifier()));
         // metadata.setObsoletedBy(value);
@@ -343,15 +344,15 @@ public class DataOneService {
         return metadata;
     }
 
-    private ObjectFormatIdentifier contentTypeToD1Format(ObjectResponseContainer object, String contentType) {
+    private ObjectFormatIdentifier contentTypeToD1Format(String objectFormat, String contentType) {
         ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
-        identifier.setValue("BAD-FORMAT");
-        return identifier;
-    }
-
-    private ObjectFormatIdentifier contentTypeToD1Format(ListObjectEntry resource, String objectFormat) {
-        ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
-        identifier.setValue("BAD-FORMAT");
+        if (objectFormat.equals(D1_FORMAT)) {
+            identifier.setValue("http://www.openarchives.org/ore/terms");
+        } else if (objectFormat.equals(META)) {
+            identifier.setValue("http://loc.gov/mods/v3");
+        } else {
+            identifier.setValue("BAD-FORMAT");
+        }
         return identifier;
     }
 
@@ -370,6 +371,7 @@ public class DataOneService {
         return subject;
     }
 
+    @Transactional(readOnly = false)
     public ObjectResponseContainer getObject(final String id, HttpServletRequest request, boolean log) {
         ObjectResponseContainer resp = getObjectFromTdar(id);
         if (request != null && resp != null && log == true) {
@@ -386,6 +388,7 @@ public class DataOneService {
      * @param id_
      * @return
      */
+    @Transactional(readOnly = true)
     public ObjectResponseContainer getObjectFromTdar(String id_) {
         ObjectResponseContainer resp = null;
         try {
@@ -406,13 +409,14 @@ public class DataOneService {
             if (partIdentifier.equals(D1_FORMAT) || partIdentifier == null) {
                 resp.setContentType(RDF_CONTENT_TYPE);
                 String map = createResourceMap(ir);
+                resp.setObjectFormat(D1_FORMAT);
                 resp.setSize(map.getBytes(UTF_8).length);
                 resp.setReader(new StringReader(map));
                 resp.setChecksum(checksumString(map));
             } else if (partIdentifier.equals(META)) {
                 resp.setContentType(XML_CONTENT_TYPE);
                 ModsDocument modsDoc = ModsTransformer.transformAny(ir);
-
+                resp.setObjectFormat(META);
                 StringWriter sw = new StringWriter();
                 JaxbDocumentWriter.write(modsDoc, sw, true);
                 String metaXml = sw.toString();
@@ -453,6 +457,7 @@ public class DataOneService {
         return result;
     }
 
+    @Transactional(readOnly = false)
     public void replicate(String pid, HttpServletRequest request) {
         LogEntryImpl entry = new LogEntryImpl(pid, request, Event.REPLICATE);
         genericService.markWritable(entry);
