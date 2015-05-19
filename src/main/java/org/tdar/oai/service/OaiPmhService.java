@@ -6,32 +6,33 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Transient;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.OAIException;
-import org.tdar.core.exception.OaiErrorCode;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.oai.bean.generated.DeletedRecordType;
 import org.tdar.oai.bean.generated.GetRecordType;
@@ -68,6 +69,7 @@ import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.google.common.base.Objects;
 
@@ -83,6 +85,9 @@ public class OaiPmhService {
 
     @Autowired
     private SearchService searchService;
+
+    @Autowired
+    private SerializationService serializationService;
 
     @Autowired
     private ObfuscationService obfuscationService;
@@ -116,7 +121,6 @@ public class OaiPmhService {
         int startRecord = 0;
         Date effectiveUntil = until;
         OAIMetadataFormat metadataFormat = metadataPrefix;
-        logger.debug("list id 2");
         if (resumptionToken != null) {
             // ... then this is the second or subsequent page of results.
             // In this case there are no separate "from" and "until" parameters passed by the client;
@@ -134,7 +138,6 @@ public class OaiPmhService {
         if (collectionId != null) {
             resourceQueryBuilder.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionId));
         }
-        logger.debug("list id 3");
 
         QueryBuilder personQueryBuilder = new PersonQueryBuilder();
         personQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
@@ -147,7 +150,6 @@ public class OaiPmhService {
         if (enableEntities && !Objects.equal(metadataFormat, OAIMetadataFormat.MODS)) {
             // list people
             persons = populateResult(OAIRecordType.PERSON, personQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response);
-            logger.debug("list id 4");
 
             if (persons.getTotalRecords() > maxResults) {
                 maxResults = persons.getTotalRecords();
@@ -155,7 +157,6 @@ public class OaiPmhService {
 
             institutions = populateResult(OAIRecordType.INSTITUTION, institutionQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord,
                     response);
-            logger.debug("list id 5");
 
             if (institutions.getTotalRecords() > maxResults) {
                 maxResults = institutions.getTotalRecords();
@@ -196,7 +197,7 @@ public class OaiPmhService {
     }
 
     private SearchResult populateResult(OAIRecordType recordType, QueryBuilder queryBuilder, OAIMetadataFormat metadataFormat, Date effectiveFrom,
-            Date effectiveUntil, int startRecord, ListResponse response) throws ParseException {
+            Date effectiveUntil, int startRecord, ListResponse response) throws ParseException, OAIException {
         boolean includeRecords = false;
         if (response instanceof ListRecordsType) {
             includeRecords = true;
@@ -241,7 +242,8 @@ public class OaiPmhService {
         return search;
     }
 
-    protected RecordType createRecord(OaiDcProvider resource, OAIRecordType recordType, OAIMetadataFormat metadataFormat, boolean includeRecords) {
+    protected RecordType createRecord(OaiDcProvider resource, OAIRecordType recordType, OAIMetadataFormat metadataFormat, boolean includeRecords)
+            throws OAIException {
         RecordType record = new RecordType();
         HeaderType header = new HeaderType();
 
@@ -261,19 +263,45 @@ public class OaiPmhService {
         }
         if (includeRecords) {
             MetadataType metadata = new MetadataType();
-            Object meta = null;
-            switch (metadataFormat) {
-                case DC:
-                    meta = DcTransformer.transformAny((Resource) resource);
-                    break;
-                case MODS:
-                    meta = ModsTransformer.transformAny((Resource) resource);
-                    break;
-                case TDAR:
-                    meta = resource;
-                    break;
+            try {
+                Object meta = null;
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document document = db.newDocument();
+                switch (metadataFormat) {
+                    case DC:
+                        if (resource instanceof Creator) {
+                            Creator creator = (Creator) resource;
+                            populateStubDcRecord(document, creator.getName(), creator.getClass().getSimpleName(), creator.getId());
+                            meta = document.getDocumentElement();
+                        } else {
+                            meta = DcTransformer.transformAny((Resource) resource);
+                        }
+                        break;
+                    case MODS:
+                        if (resource instanceof Creator) {
+                            throw new OAIException(MessageHelper.getInstance().getText("oaiController.cannot_disseminate"),
+                                    OAIPMHerrorcodeType.CANNOT_DISSEMINATE_FORMAT);
+                        }
+
+                        meta = ModsTransformer.transformAny((Resource) resource);
+                        break;
+                    case TDAR:
+                        try {
+                            // FIXME: this is less than ideal, but we seem to have an issue with this throwing LazyIntializationExceptions when the response
+                            // serializes this after the servlet controller method is called
+                            serializationService.convertToXML(resource, document);
+                            meta = document.getDocumentElement();
+                        } catch (Exception e) {
+                            logger.error("cannot serialize:", e);
+                        }
+                        break;
+                }
+                metadata.setAny(meta);
+
+            } catch (ParserConfigurationException pe) {
+                logger.error("ParserConfigException", pe);
             }
-            metadata.setAny(meta);
             record.setMetadata(metadata);
         }
         return record;
@@ -336,14 +364,8 @@ public class OaiPmhService {
     public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken)
             throws OAIException, ParseException {
         ListIdentifiersType response = new ListIdentifiersType();
-        try {
-            logger.debug("list id 1");
-            ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
-            response.setResumptionToken(token);
-            logger.debug("list id done");
-        } catch (Throwable t) {
-            logger.error("T:", t);
-        }
+        ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
+        response.setResumptionToken(token);
         return response;
     }
 
@@ -431,6 +453,30 @@ public class OaiPmhService {
         }
         response.getSet().addAll(setList);
         return response;
+    }
+
+    // For strict compliance with the OAI-PMH specification, it's necessary to be able to disseminate oai_dc for every record
+    // In the case of Person and Institution records, the oai_dc metadata format is quite inappropriate and not very useful,
+    // so this method exists to create a "stub" record for the sake of compliance. In real life these records generally won't be harvested.
+    // The method populates an empty DOM document with an oai_dc record containing a title, a type, and an identifier.
+    private void populateStubDcRecord(Document document, String title, String type, long identifier) {
+        String dc = "http://purl.org/dc/elements/1.1/";
+        Element rootElement = document.createElementNS("http://www.openarchives.org/OAI/2.0/oai_dc/", "dc");
+        Element titleElement = document.createElementNS(dc, "title");
+        Element identifierElement = document.createElementNS(dc, "identifier");
+        Element typeElement = document.createElementNS(dc, "type");
+        document.appendChild(rootElement);
+        rootElement.setAttributeNS(
+                XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
+                "xsi:schemaLocation",
+                OAIMetadataFormat.DC.getNamespace() + " " + OAIMetadataFormat.DC.getSchemaLocation()
+                );
+        rootElement.appendChild(titleElement);
+        rootElement.appendChild(typeElement);
+        rootElement.appendChild(identifierElement);
+        titleElement.setTextContent(title);
+        identifierElement.setTextContent(Long.toString(identifier));
+        typeElement.setTextContent(type);
     }
 
 }

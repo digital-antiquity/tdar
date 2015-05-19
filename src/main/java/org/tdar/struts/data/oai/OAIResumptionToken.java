@@ -48,7 +48,7 @@ public class OAIResumptionToken {
         setFromDate(effectiveFrom);
         setUntilDate(effectiveUntil);
         if (metadataFormat != null) {
-            setMetadataPrefix(metadataFormat.name());
+            setMetadataPrefix(metadataFormat.getPrefix());
         }
         setSet(collectionId);
         } catch (Exception e) {

@@ -6,6 +6,7 @@
  */
 package org.tdar.struts.data.oai;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.exception.OAIException;
 import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
 
@@ -31,7 +32,7 @@ public enum OAIMetadataFormat {
 
     public static OAIMetadataFormat fromString(String val) throws OAIException {
         for (OAIMetadataFormat prefix_ : OAIMetadataFormat.values()) {
-            if (prefix_.getPrefix().equalsIgnoreCase(val)) {
+            if (StringUtils.equalsIgnoreCase(prefix_.getPrefix(),val) || StringUtils.equalsIgnoreCase(prefix_.name(), val)) {
                 return prefix_;
             }
         }

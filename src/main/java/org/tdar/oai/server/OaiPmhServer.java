@@ -9,7 +9,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -47,10 +49,13 @@ public class OaiPmhServer {
 
     @Autowired
     private OaiPmhService service;
-    
+
     @Autowired
     private GenericService genericService;
 
+    @Context 
+    UriInfo uriInfo;
+    
     private OAIVerb verb;
 
     private OAIMetadataFormat requestedFormat;
@@ -96,17 +101,31 @@ public class OaiPmhServer {
 
     private RequestType createRequest(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_) {
         RequestType request = new RequestType();
-        request.setFrom(from_);
-        request.setIdentifier(identifier_);
-        request.setMetadataPrefix(metadataPrefix_);
-        request.setResumptionToken(resumptionToken_);
-        request.setSet(set);
-        request.setUntil(until_);
+        if (identifier_ != null) {
+            request.setIdentifier(identifier_);
+        }
+        if (metadataPrefix_ != null) {
+            request.setMetadataPrefix(metadataPrefix_);
+        }
+        if (resumptionToken_ != null) {
+            request.setResumptionToken(resumptionToken_);
+        }
+        if (set != null) {
+            request.setSet(set);
+        }
+        if (until_ != null) {
+            request.setUntil(until_);
+        }
+        if (from_ != null) {
+            request.setFrom(from_);
+        }
+        request.setValue(uriInfo.getRequestUri().toString());
+        logger.debug(request.getValue());
         request.setVerb(VerbType.fromValue(verb_));
         return request;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void execute(String set, String from_, String until_, OAIPMHtype response) throws OAIException, ParseException {
         String message;
         switch (verb) {
