@@ -86,8 +86,6 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
             configureOdata(container);
         }
 
-        configureDataOneServlet(container);
-        configureOaiServlet(container);
 
         if (enableServer) {
             configureUrlRewriteRule(container);
@@ -100,6 +98,9 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
+
+        configureDataOneServlet(container);
+        configureOaiServlet(container);
 
         if (enableServer) {
             configureStrutsAndSiteMeshFilters(container);

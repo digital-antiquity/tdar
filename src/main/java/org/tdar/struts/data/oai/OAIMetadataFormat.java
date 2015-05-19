@@ -7,7 +7,7 @@
 package org.tdar.struts.data.oai;
 
 import org.tdar.core.exception.OAIException;
-import org.tdar.core.exception.OaiErrorCode;
+import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
 
 /**
  * @author Adam Brin
@@ -35,7 +35,7 @@ public enum OAIMetadataFormat {
                 return prefix_;
             }
         }
-        throw new OAIException("Unknown or missing metadata format", OaiErrorCode.BAD_ARGUMENT);
+        throw new OAIException("Unknown or missing metadata format", OAIPMHerrorcodeType.BAD_ARGUMENT);
     }
 
     /**

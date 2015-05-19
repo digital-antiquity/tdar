@@ -2,7 +2,7 @@ package org.tdar.oai.service;
 
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
-import org.tdar.core.exception.OaiErrorCode;
+import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
 import org.tdar.struts.data.oai.OAIRecordType;
 import org.tdar.utils.MessageHelper;
 
@@ -19,7 +19,7 @@ public class OaiIdentifier {
         // First token must = "oai"
         // Second token must = the repository namespace identifier
         if (!token[0].equals("oai") || !token[1].equals(repositoryNamespaceIdentifier)) {
-            throw new OAIException(MessageHelper.getInstance().getText("oaiController.identifier_not_part"), OaiErrorCode.ID_DOES_NOT_EXIST);
+            throw new OAIException(MessageHelper.getInstance().getText("oaiController.identifier_not_part"), OAIPMHerrorcodeType.ID_DOES_NOT_EXIST);
         }
         // the third token is the type of the record, i.e. "Resource", "Person" or "Institution"
         recordType = OAIRecordType.fromString(token[2]);

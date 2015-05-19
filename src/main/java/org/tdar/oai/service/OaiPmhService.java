@@ -6,13 +6,17 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Transient;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.queryParser.ParseException;
+import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
@@ -29,9 +33,7 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.search.SearchService;
-import org.tdar.oai.bean.Description;
 import org.tdar.oai.bean.generated.DeletedRecordType;
-import org.tdar.oai.bean.generated.DescriptionType;
 import org.tdar.oai.bean.generated.GetRecordType;
 import org.tdar.oai.bean.generated.GranularityType;
 import org.tdar.oai.bean.generated.HeaderType;
@@ -43,6 +45,7 @@ import org.tdar.oai.bean.generated.ListResponse;
 import org.tdar.oai.bean.generated.ListSetsType;
 import org.tdar.oai.bean.generated.MetadataFormatType;
 import org.tdar.oai.bean.generated.MetadataType;
+import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
 import org.tdar.oai.bean.generated.RecordType;
 import org.tdar.oai.bean.generated.ResumptionTokenType;
 import org.tdar.oai.bean.generated.SetType;
@@ -64,6 +67,7 @@ import org.tdar.struts.data.oai.OAIResumptionToken;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
+import org.w3c.dom.Document;
 
 import com.google.common.base.Objects;
 
@@ -86,6 +90,7 @@ public class OaiPmhService {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    // @Transactional(readOnly = true)
     public IdentifyType getIdentifyResponse() {
         IdentifyType ident = new IdentifyType();
         ident.setBaseURL(config.getBaseUrl() + "/oai-pmh/oai");
@@ -111,6 +116,7 @@ public class OaiPmhService {
         int startRecord = 0;
         Date effectiveUntil = until;
         OAIMetadataFormat metadataFormat = metadataPrefix;
+        logger.debug("list id 2");
         if (resumptionToken != null) {
             // ... then this is the second or subsequent page of results.
             // In this case there are no separate "from" and "until" parameters passed by the client;
@@ -128,6 +134,8 @@ public class OaiPmhService {
         if (collectionId != null) {
             resourceQueryBuilder.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionId));
         }
+        logger.debug("list id 3");
+
         QueryBuilder personQueryBuilder = new PersonQueryBuilder();
         personQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
         InstitutionQueryBuilder institutionQueryBuilder = new InstitutionQueryBuilder();
@@ -139,11 +147,16 @@ public class OaiPmhService {
         if (enableEntities && !Objects.equal(metadataFormat, OAIMetadataFormat.MODS)) {
             // list people
             persons = populateResult(OAIRecordType.PERSON, personQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response);
+            logger.debug("list id 4");
+
             if (persons.getTotalRecords() > maxResults) {
                 maxResults = persons.getTotalRecords();
             }
+
             institutions = populateResult(OAIRecordType.INSTITUTION, institutionQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord,
                     response);
+            logger.debug("list id 5");
+
             if (institutions.getTotalRecords() > maxResults) {
                 maxResults = institutions.getTotalRecords();
             }
@@ -152,10 +165,12 @@ public class OaiPmhService {
         // list the resources
         SearchResult resources = populateResult(OAIRecordType.RESOURCE, resourceQueryBuilder, metadataFormat, effectiveFrom, effectiveUntil, startRecord,
                 response);
+
         if (resources.getTotalRecords() > maxResults) {
             maxResults = resources.getTotalRecords();
         }
 
+        token = new ResumptionTokenType();
         // if any of the queries returned more than a page of search results, create a resumptionToken to allow
         // the client to continue harvesting from that point
         if (resources.getNextPageStartRecord() < maxResults) {
@@ -164,18 +179,18 @@ public class OaiPmhService {
             // advance the cursor by one page
             OAIResumptionToken newResumptionToken = new OAIResumptionToken();
             // ... populate the resumptionToken so the harvester can continue harvesting from the next page
-            token = new ResumptionTokenType();
             newResumptionToken = new OAIResumptionToken(resources.getNextPageStartRecord(), effectiveFrom, effectiveUntil, metadataFormat, collectionId);
             logger.debug("newToken: {}", newResumptionToken.getToken());
             token.setValue(newResumptionToken.getToken());
             if (response instanceof ListIdentifiersType) {
                 response.setResumptionToken(token);
             }
+
         }
 
         // if there were no records found, then throw an exception
         if ((maxResults) == 0) {
-            throw new OAIException(MessageHelper.getInstance().getText("oaiController.no_matches"), OaiErrorCode.NO_RECORDS_MATCH);
+            throw new OAIException(MessageHelper.getInstance().getText("oaiController.no_matches"), OAIPMHerrorcodeType.NO_RECORDS_MATCH);
         }
         return token;
     }
@@ -246,22 +261,25 @@ public class OaiPmhService {
         }
         if (includeRecords) {
             MetadataType metadata = new MetadataType();
+            Object meta = null;
             switch (metadataFormat) {
                 case DC:
-                    metadata.setAny(DcTransformer.transformAny((Resource) resource));
+                    meta = DcTransformer.transformAny((Resource) resource);
                     break;
                 case MODS:
-                    metadata.setAny(ModsTransformer.transformAny((Resource) resource));
+                    meta = ModsTransformer.transformAny((Resource) resource);
                     break;
                 case TDAR:
-                    metadata.setAny(resource);
+                    meta = resource;
                     break;
             }
+            metadata.setAny(meta);
             record.setMetadata(metadata);
         }
         return record;
     }
 
+    // @Transactional(readOnly = true)
     public ListMetadataFormatsType listMetadataFormats(OaiIdentifier identifier) throws OAIException {
         ListMetadataFormatsType formats = new ListMetadataFormatsType();
 
@@ -280,11 +298,10 @@ public class OaiPmhService {
             type.setSchema(f.getSchemaLocation());
             formats.getMetadataFormat().add(type);
         }
-
-        // TODO Auto-generated method stub
         return formats;
     }
 
+    // @Transactional(readOnly = true)
     public GetRecordType getGetRecordResponse(OaiIdentifier identifier, OAIMetadataFormat requestedFormat) throws OAIException {
         // check that this kind of record can be disseminated in the requested format
         GetRecordType get = new GetRecordType();
@@ -306,6 +323,7 @@ public class OaiPmhService {
         }
     }
 
+    // @Transactional(readOnly = true)
     public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException,
             ParseException {
         ListRecordsType response = new ListRecordsType();
@@ -314,14 +332,22 @@ public class OaiPmhService {
         return response;
     }
 
+    // @Transactional(readOnly = true, noRollbackFor = Throwable.class)
     public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken)
             throws OAIException, ParseException {
         ListIdentifiersType response = new ListIdentifiersType();
-        ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
-        response.setResumptionToken(token);
+        try {
+            logger.debug("list id 1");
+            ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
+            response.setResumptionToken(token);
+            logger.debug("list id done");
+        } catch (Throwable t) {
+            logger.error("T:", t);
+        }
         return response;
     }
 
+    // @Transactional(readOnly = true)
     public ListSetsType listSets(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException {
         // Sort results by dateUpdated ascending and filter
         // by dates, either supplied in OAI-PMH 'from' and 'to' parameters,

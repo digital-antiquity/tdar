@@ -134,7 +134,7 @@
                 <enabled>false</enabled>
             </snapshots>
             <id>jcenter</id>
-            <url>http://jcenter.bintray.com</url>
+            <url>http://dl.bintray.com/abrin/maven/</url>
         </repository>
         <repository>
             <id>repository.springframework.milestone</id>

@@ -10,7 +10,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -22,8 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.exception.OAIException;
-import org.tdar.core.exception.OaiErrorCode;
+import org.tdar.core.service.GenericService;
+import org.tdar.oai.bean.generated.OAIPMHerrorType;
+import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
 import org.tdar.oai.bean.generated.OAIPMHtype;
 import org.tdar.oai.bean.generated.ObjectFactory;
 import org.tdar.oai.bean.generated.RequestType;
@@ -45,6 +47,9 @@ public class OaiPmhServer {
 
     @Autowired
     private OaiPmhService service;
+    
+    @Autowired
+    private GenericService genericService;
 
     private OAIVerb verb;
 
@@ -67,82 +72,96 @@ public class OaiPmhServer {
             @QueryParam("until") String until_,
             @QueryParam("resumptionToken") String resumptionToken_) throws ParseException {
         OAIPMHtype response = new OAIPMHtype();
-        String message;
+        ObjectFactory factory = new ObjectFactory();
+        genericService.markReadOnly();
         try {
             response.setResponseDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
-            RequestType request = new RequestType();
-            request.setFrom(from_);
-            request.setIdentifier(identifier_);
-            request.setMetadataPrefix(metadataPrefix_);
-            request.setResumptionToken(resumptionToken_);
-            request.setSet(set);
-            request.setUntil(until_);
-            request.setVerb(VerbType.fromValue(verb_));
-//            request.setValue(value);
+            RequestType request = extracted(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
+            // request.setValue(value);
             response.setRequest(request);
-            switch (verb) {
-                case GET_RECORD:
-                    message = getText("oaiController.not_allowed_with_get");
-
-                    assertParameterIsNull(resumptionToken, "resumptionToken", message);
-                    assertParameterIsNull(from_, "from", message);
-                    assertParameterIsNull(until_, "until", message);
-
-                    if (identifier == null) {
-                        throw new OAIException(getText("oaiController.missing_identifer"), OaiErrorCode.BAD_ARGUMENT);
-                    }
-
-                    if (requestedFormat == null) {
-                        throw new OAIException(getText("oaiController.invalid_metadata_param"), OaiErrorCode.BAD_ARGUMENT);
-                    }
-
-                    response.setGetRecord(service.getGetRecordResponse(identifier, requestedFormat));
-                    break;
-                case IDENTIFY:
-                    message = getText("oaiController.not_allowed_with_identity");
-                    assertParameterIsNull(requestedFormat, "metadataPrefix", message);
-                    assertParameterIsNull(identifier, "identifier", message);
-                    assertParameterIsNull(set, "set", message);
-                    assertParameterIsNull(resumptionToken, "resumptionToken", message);
-                    assertParameterIsNull(from_, "from", message);
-                    assertParameterIsNull(until_, "until", message);
-                    response.setIdentify(service.getIdentifyResponse());
-                    break;
-                case LIST_IDENTIFIERS:
-                    response.setListIdentifiers(service.listIdentifiers(from, until, requestedFormat, resumptionToken));
-                    break;
-                case LIST_METADATA_FORMATS:
-                    message = "Not allowed with ListMetadataFormats verb";
-                    assertParameterIsNull(requestedFormat, "metadataPrefix", message);
-                    assertParameterIsNull(set, "set", message);
-                    assertParameterIsNull(resumptionToken, "resumptionToken", message);
-                    assertParameterIsNull(from_, "from", message);
-                    assertParameterIsNull(until_, "until", message);
-                    response.setListMetadataFormats(service.listMetadataFormats(identifier));
-                    break;
-                case LIST_RECORDS:
-                    response.setListRecords(service.listRecords(from, until, requestedFormat, resumptionToken));
-                    break;
-                case LIST_SETS:
-                    response.setListSets(service.listSets(from, until, requestedFormat, resumptionToken));
-                    break;
-            }
+            execute(set, from_, until_, response);
         } catch (OAIException oaie) {
             logger.error("OaiException", oaie);
-            return Response.serverError().status(Status.BAD_REQUEST).build();
+            OAIPMHerrorType error = new OAIPMHerrorType();
+            error.setCode(oaie.getCode());
+            error.setValue(oaie.getMessage());
+            response.getError().add(error);
         } catch (DatatypeConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            logger.error("OaiException", e);
+            logger.error("DatatypeConfigurationException", e);
+        } catch (Throwable e) {
+            logger.error("Thrownable: {} {}", e.getClass(), e, e);
         }
-        ObjectFactory factory = new ObjectFactory();
         return Response.ok(factory.createOAIPMH(response)).build();
+    }
+
+    private RequestType extracted(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_) {
+        RequestType request = new RequestType();
+        request.setFrom(from_);
+        request.setIdentifier(identifier_);
+        request.setMetadataPrefix(metadataPrefix_);
+        request.setResumptionToken(resumptionToken_);
+        request.setSet(set);
+        request.setUntil(until_);
+        request.setVerb(VerbType.fromValue(verb_));
+        return request;
+    }
+
+    @Transactional(readOnly=true)
+    public void execute(String set, String from_, String until_, OAIPMHtype response) throws OAIException, ParseException {
+        String message;
+        switch (verb) {
+            case GET_RECORD:
+                message = getText("oaiController.not_allowed_with_get");
+
+                assertParameterIsNull(resumptionToken, "resumptionToken", message);
+                assertParameterIsNull(from_, "from", message);
+                assertParameterIsNull(until_, "until", message);
+
+                if (identifier == null) {
+                    throw new OAIException(getText("oaiController.missing_identifer"), OAIPMHerrorcodeType.BAD_ARGUMENT);
+                }
+
+                if (requestedFormat == null) {
+                    throw new OAIException(getText("oaiController.invalid_metadata_param"), OAIPMHerrorcodeType.BAD_ARGUMENT);
+                }
+
+                response.setGetRecord(service.getGetRecordResponse(identifier, requestedFormat));
+                break;
+            case IDENTIFY:
+                message = getText("oaiController.not_allowed_with_identity");
+                assertParameterIsNull(requestedFormat, "metadataPrefix", message);
+                assertParameterIsNull(identifier, "identifier", message);
+                assertParameterIsNull(set, "set", message);
+                assertParameterIsNull(resumptionToken, "resumptionToken", message);
+                assertParameterIsNull(from_, "from", message);
+                assertParameterIsNull(until_, "until", message);
+                response.setIdentify(service.getIdentifyResponse());
+                break;
+            case LIST_IDENTIFIERS:
+                response.setListIdentifiers(service.listIdentifiers(from, until, requestedFormat, resumptionToken));
+                break;
+            case LIST_METADATA_FORMATS:
+                message = "Not allowed with ListMetadataFormats verb";
+                assertParameterIsNull(requestedFormat, "metadataPrefix", message);
+                assertParameterIsNull(set, "set", message);
+                assertParameterIsNull(resumptionToken, "resumptionToken", message);
+                assertParameterIsNull(from_, "from", message);
+                assertParameterIsNull(until_, "until", message);
+                response.setListMetadataFormats(service.listMetadataFormats(identifier));
+                break;
+            case LIST_RECORDS:
+                response.setListRecords(service.listRecords(from, until, requestedFormat, resumptionToken));
+                break;
+            case LIST_SETS:
+                response.setListSets(service.listSets(from, until, requestedFormat, resumptionToken));
+                break;
+        }
     }
 
     private void prepare(String verb_, String identifier_, String metadataPrefix_, String from_, String until_, String resumptionToken_) throws OAIException {
         if (verb_ == null) {
-            throw new OAIException(getText("oaiController.bad_verb"), OaiErrorCode.BAD_VERB);
+            throw new OAIException(getText("oaiController.bad_verb"), OAIPMHerrorcodeType.BAD_VERB);
         }
         verb = OAIVerb.fromString(verb_);
         if (StringUtils.isNotBlank(metadataPrefix_)) {
@@ -167,7 +186,7 @@ public class OaiPmhServer {
 
     private void assertParameterIsNull(Object parameter, String parameterName, String message) throws OAIException {
         if (parameter != null) {
-            throw new OAIException(getText("oaiController.bad_arguement", parameterName, message), OaiErrorCode.BAD_ARGUMENT);
+            throw new OAIException(getText("oaiController.bad_arguement", parameterName, message), OAIPMHerrorcodeType.BAD_ARGUMENT);
         }
     }
 

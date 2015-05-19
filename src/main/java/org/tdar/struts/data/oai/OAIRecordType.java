@@ -11,6 +11,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
 import org.tdar.core.exception.OaiErrorCode;
+import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
 import org.tdar.utils.MessageHelper;
 
 
@@ -63,7 +64,7 @@ public enum OAIRecordType {
         }
 
         throw new OAIException("Metadata format '" + format.getPrefix() + "' cannot be disseminated for records of type '" + name + "'",
-                OaiErrorCode.CANNOT_DISSEMINATE_FORMAT);
+                OAIPMHerrorcodeType.CANNOT_DISSEMINATE_FORMAT);
     }
 
     public static OAIRecordType fromString(String val) throws OAIException {
@@ -72,7 +73,7 @@ public enum OAIRecordType {
                 return type;
             }
         }
-        throw new OAIException(MessageHelper.getMessage("oaiRecordType.metadata_format_unknown", Arrays.asList(val)), OaiErrorCode.ID_DOES_NOT_EXIST);
+        throw new OAIException(MessageHelper.getMessage("oaiRecordType.metadata_format_unknown", Arrays.asList(val)), OAIPMHerrorcodeType.ID_DOES_NOT_EXIST);
     }
 
 }
