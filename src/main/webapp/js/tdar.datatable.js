@@ -33,13 +33,28 @@ TDAR.datatable = function() {
             fnDrawCallback : function(settings) {
                 var $dt = this; //this-object is the current datatable object (assumption based on observation)
                 // if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
+                
+                var $toggle =  $('#cbCheckAllToggle');
+                
                 if ($(":checkbox:not(:checked)", $dataTable).length == 0) {
-                    $('#cbCheckAllToggle').prop('checked', true);
+                   $toggle.prop('checked', true);
                 } else {
-                    $('#cbCheckAllToggle').prop('checked', false);
+                    $toggle.prop('checked', false);
                 }
-                //console.log("settings", settings);
-                //console.log("self", self);
+                
+                // show a different message for the "un-filter" message if we have 0 records and the filter checkbox exists
+                // show the unfilter message if "checked"
+                var $fltr = $("#fltrTxt");
+                var $cbx = $("#parentCollectionsIncluded");
+                if ($dt.fnSettings()._iRecordsTotal < 1 && $cbx != undefined) {
+                    if ($cbx.is(':checked')) {
+                        $fltr.show();
+                    } else {
+                        $fltr.hide();
+                    }
+                } else {
+                    $fltr.hide();
+                }
                 $dt.trigger("data", [$dt.fnSettings().aoData]);
             }
         };
@@ -292,7 +307,7 @@ TDAR.datatable = function() {
             "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
             sAjaxDataProp : 'resources',
             "oLanguage": {
-                "sZeroRecords": "No records found. Consider <a class='lnkResetFilters' href='javascript:void(0)'>expanding your search</a>"},
+                "sZeroRecords": "No records found. <span id='fltrTxt'>Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a></span>"},
             requestCallback : function(searchBoxContents) {
                 var parms =  {
                     title : searchBoxContents,
@@ -320,7 +335,7 @@ TDAR.datatable = function() {
             }
         });
 
-        $("#resource_datatable").on("click", ".lnkResetFilters", function(){_resetAllFilters()});
+        $("#resource_datatable").on("click", "#lnkResetFilters", function(){_resetAllFilters()});
 
         //if the user modifies any of the filter controls, execute a new search and update the results
         //fixme: refactor these event bindings. lots of duplication here

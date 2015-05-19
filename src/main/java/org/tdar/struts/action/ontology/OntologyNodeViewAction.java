@@ -27,7 +27,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@Namespace("/ontology")
+@Namespace("/ontology_node")
 @Results(value = {
         @Result(name = "redirect_iri", location = "${redirectIri}")
 })
@@ -51,7 +51,7 @@ public class OntologyNodeViewAction extends AbstractOntologyViewAction {
     @Action(value = "{id}/node/{iri}",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, location = "view-node.ftl")
+                    @Result(name = SUCCESS, location = "../ontology/view-node.ftl")
             })
     public String node() throws TdarActionException {
         try {
