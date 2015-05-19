@@ -28,7 +28,7 @@ public class DataOneWebITCase extends AbstractWebTestCase {
     }
     @Test
     public void replica() {
-        Assert.assertEquals(501,gotoPage("/dataone/v1/replica/"));
+        Assert.assertEquals(501,gotoPage("/dataone/v1/replica/" + TEST_DOI));
     }
     
     @Test
