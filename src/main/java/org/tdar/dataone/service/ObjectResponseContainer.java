@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.util.Date;
 
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.dataone.bean.ListObjectEntry.Type;
 
 public class ObjectResponseContainer {
 
@@ -16,6 +17,7 @@ public class ObjectResponseContainer {
     private int size;
     private Reader reader;
     private InformationResource tdarResource;
+    private Type type;
     
     public String getObjectFormat() {
         return objectFormat;
@@ -87,6 +89,14 @@ public class ObjectResponseContainer {
 
     public InformationResource getTdarResource() {
         return this.tdarResource;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
 }

@@ -3,6 +3,7 @@ package org.tdar.dataone.service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
@@ -81,10 +83,10 @@ import edu.asu.lib.mods.ModsDocument;
 public class DataOneService {
 
     private static final String UTF_8 = "UTF-8";
-    static final String META = "meta";
-    static final String D1_VERS_SEP = "&v=";
-    static final String D1_SEP = "_";
-    static final String D1_FORMAT = "format=d1rem";
+    public static final String META = "meta";
+    public static final String D1_VERS_SEP = "&v=";
+    public static final String D1_SEP = "_";
+    public static final String D1_FORMAT = "format=d1rem";
     static final String MN_REPLICATION = "MNREplication";
     static final String MN_STORAGE = "MNStorage";
     static final String MN_AUTHORIZATION = "MNAuthorization";
@@ -127,7 +129,7 @@ public class DataOneService {
     @Transactional(readOnly=true)
     public String createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         Identifier id = new Identifier();
-        id.setValue(ir.getExternalId().replace("/", ":") + D1_SEP + D1_FORMAT + ir.getDateUpdated().toString());
+        id.setValue(ListObjectEntry.formatIdentifier(ir.getExternalId(), ir.getDateUpdated(), Type.D1, null));
 
         Identifier packageId = new Identifier();
         packageId.setValue(ir.getExternalId() + D1_SEP + ir.getDateUpdated().toString());
@@ -135,7 +137,7 @@ public class DataOneService {
         if (includeFiles) {
             for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
                 Identifier fileId = new Identifier();
-                fileId.setValue(ir.getExternalId() + D1_SEP + irf.getId() + D1_VERS_SEP + irf.getLatestVersion());
+                fileId.setValue(ListObjectEntry.formatIdentifier(ir.getExternalId(), ir.getDateUpdated(), Type.FILE, irf));
                 dataIds.add(fileId);
             }
         }
@@ -167,7 +169,7 @@ public class DataOneService {
         }
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
         rdfXml = outputter.outputString(d);
-        logger.debug(rdfXml);
+        logger.trace(rdfXml);
         return rdfXml;
     }
 
@@ -269,22 +271,30 @@ public class DataOneService {
     }
 
     @Transactional(readOnly = true)
-    public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count) {
+    public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count) throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
         ObjectList list = new ObjectList();
         list.setCount(count);
         list.setStart(start);
 
-        // FIXME: CONVERT IDENTIFIER to TDAR QUERY
-        // FIXME: CONVERT FORMAT to TDAR FORMAT
         ListObjectEntry.Type type = Type.D1;
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type, list);
-        for (ListObjectEntry resource : resources) {
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type, identifier, list);
+        for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();
-            info.setChecksum(createChecksum(resource.getChecksum()));
-            info.setDateSysMetadataModified(resource.getDateUpdated());
-            info.setFormatId(contentTypeToD1Format(formatid, resource.getContentType()));
-            info.setIdentifier(createIdentifier(resource.getFormattedIdentifier()));
-            info.setSize(BigInteger.valueOf(resource.getSize()));
+            ObjectResponseContainer object = null;
+            if (entry.getType() != Type.FILE) {
+                InformationResource resource = genericService.find(InformationResource.class, entry.getPersistableId());
+                if (entry.getType() == Type.D1) {
+                    object = constructD1FormatObject(resource);
+                }
+                if (entry.getType() == Type.TDAR) {
+                    object = constructMetadataFormatObject(resource);
+                }
+            }
+            info.setChecksum(createChecksum(object.getChecksum()));
+            info.setDateSysMetadataModified(entry.getDateUpdated());
+            info.setFormatId(contentTypeToD1Format(entry.getType(), entry.getContentType()));
+            info.setIdentifier(createIdentifier(entry.getFormattedIdentifier()));
+            info.setSize(BigInteger.valueOf(object.getSize()));
             list.getObjectInfoList().add(info);
         }
         return list;
@@ -327,7 +337,7 @@ public class DataOneService {
             metadata.setArchived(false);
         }
         metadata.setChecksum(createChecksum(object.getChecksum()));
-        metadata.setFormatId(contentTypeToD1Format(object.getObjectFormat(), object.getContentType()));
+        metadata.setFormatId(contentTypeToD1Format(object.getType(), object.getContentType()));
         metadata.setSize(BigInteger.valueOf(object.getSize()));
         metadata.setIdentifier(createIdentifier(object.getIdentifier()));
         // metadata.setObsoletedBy(value);
@@ -344,14 +354,20 @@ public class DataOneService {
         return metadata;
     }
 
-    private ObjectFormatIdentifier contentTypeToD1Format(String objectFormat, String contentType) {
+    private ObjectFormatIdentifier contentTypeToD1Format(Type type, String contentType) {
         ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
-        if (objectFormat.equals(D1_FORMAT)) {
-            identifier.setValue("http://www.openarchives.org/ore/terms");
-        } else if (objectFormat.equals(META)) {
-            identifier.setValue("http://loc.gov/mods/v3");
-        } else {
-            identifier.setValue("BAD-FORMAT");
+        switch (type) {
+            case D1:
+                identifier.setValue("http://www.openarchives.org/ore/terms");
+                break;
+//            case FILE:
+//                break;
+            case TDAR:
+                identifier.setValue("http://loc.gov/mods/v3");
+                break;
+            default:
+                identifier.setValue("BAD-FORMAT");
+                break;
         }
         return identifier;
     }
@@ -397,54 +413,81 @@ public class DataOneService {
             doi = doi.replace("doi:10.6067:", "doi:10.6067/");
             String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
             InformationResource ir = informationResourceService.findByDoi(doi);
-            obfuscationService.obfuscate(ir, null);
-            resp = new ObjectResponseContainer();
             if (PersistableUtils.isNullOrTransient(ir)) {
                 logger.debug("resource not foound: {}", doi);
                 return null;
             }
-            resp.setTdarResource(ir);
-            resp.setIdentifier(id_);
             logger.debug("{} --> {} (id: {} {})", doi, ir.getId(), partIdentifier);
             if (partIdentifier.equals(D1_FORMAT) || partIdentifier == null) {
-                resp.setContentType(RDF_CONTENT_TYPE);
-                String map = createResourceMap(ir);
-                resp.setObjectFormat(D1_FORMAT);
-                resp.setSize(map.getBytes(UTF_8).length);
-                resp.setReader(new StringReader(map));
-                resp.setChecksum(checksumString(map));
+                resp = constructD1FormatObject(ir);
             } else if (partIdentifier.equals(META)) {
-                resp.setContentType(XML_CONTENT_TYPE);
-                ModsDocument modsDoc = ModsTransformer.transformAny(ir);
-                resp.setObjectFormat(META);
-                StringWriter sw = new StringWriter();
-                JaxbDocumentWriter.write(modsDoc, sw, true);
-                String metaXml = sw.toString();
-                logger.debug(metaXml);
-                resp.setSize(metaXml.getBytes(UTF_8).length);
-                resp.setReader(new StringReader(metaXml));
-                resp.setChecksum(checksumString(metaXml));
+                resp = constructMetadataFormatObject(ir);
             } else if (partIdentifier.contains(D1_VERS_SEP)) {
-                Long irfid = Long.parseLong(StringUtils.substringBefore(partIdentifier, D1_VERS_SEP));
-                Integer versionNumber = Integer.parseInt(StringUtils.substringAfter(partIdentifier, D1_VERS_SEP));
-
-                for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
-                    if (irf.getId().equals(irfid)) {
-                        InformationResourceFileVersion version = irf.getUploadedVersion(versionNumber);
-                        resp.setContentType(version.getMimeType());
-                        resp.setSize(version.getFileLength().intValue());
-                        resp.setChecksum(version.getChecksum());
-                        break;
-                    }
-                }
+                resp = constructFileFormatObject(partIdentifier, ir);
             } else {
                 resp = null;
                 logger.error("bad format");
             }
+            resp.setIdentifier(id_);
 
         } catch (Exception e) {
             logger.error("error in DataOneObjectRequest", e);
         }
+        return resp;
+    }
+
+    private ObjectResponseContainer constructFileFormatObject(String partIdentifier, InformationResource ir) {
+        ObjectResponseContainer resp = setupResponse(ir);
+        resp.setType(Type.FILE);
+        Long irfid = Long.parseLong(StringUtils.substringBefore(partIdentifier, D1_VERS_SEP));
+        Integer versionNumber = Integer.parseInt(StringUtils.substringAfter(partIdentifier, D1_VERS_SEP));
+
+        for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
+            if (irf.getId().equals(irfid)) {
+                InformationResourceFileVersion version = irf.getUploadedVersion(versionNumber);
+                resp.setContentType(version.getMimeType());
+                resp.setSize(version.getFileLength().intValue());
+                resp.setChecksum(version.getChecksum());
+                break;
+            }
+        }
+        return resp;
+    }
+
+    private ObjectResponseContainer constructMetadataFormatObject(InformationResource ir) throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException {
+        ObjectResponseContainer resp = setupResponse(ir);
+        resp.setContentType(XML_CONTENT_TYPE);
+        resp.setType(Type.TDAR);
+        ModsDocument modsDoc = ModsTransformer.transformAny(ir);
+        resp.setObjectFormat(META);
+        StringWriter sw = new StringWriter();
+        JaxbDocumentWriter.write(modsDoc, sw, true);
+        String metaXml = sw.toString();
+        logger.debug(metaXml);
+        resp.setSize(metaXml.getBytes(UTF_8).length);
+        resp.setReader(new StringReader(metaXml));
+        resp.setChecksum(checksumString(metaXml));
+        return resp;
+    }
+
+    private ObjectResponseContainer constructD1FormatObject(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException,
+            JDOMException, IOException, UnsupportedEncodingException, NoSuchAlgorithmException {
+        ObjectResponseContainer resp = setupResponse(ir);
+        resp.setType(Type.D1);
+        resp.setContentType(RDF_CONTENT_TYPE);
+        String map = createResourceMap(ir);
+        resp.setObjectFormat(D1_FORMAT);
+        resp.setSize(map.getBytes(UTF_8).length);
+        resp.setReader(new StringReader(map));
+        resp.setChecksum(checksumString(map));
+        return resp;
+    }
+
+    private ObjectResponseContainer setupResponse(InformationResource ir) {
+        obfuscationService.obfuscate(ir, null);
+        ObjectResponseContainer resp = new ObjectResponseContainer();
+
+        resp.setTdarResource(ir);
         return resp;
     }
 

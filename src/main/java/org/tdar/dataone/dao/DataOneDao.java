@@ -29,23 +29,28 @@ public class DataOneDao {
     private GenericDao genericDao;
 
     @SuppressWarnings("unchecked")
-    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, ObjectList list) {
-        Query query = setupListObjectQuery(start, end);
+    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, String identifier, ObjectList list) {
+        Query query = setupListObjectQuery(start, end, type, identifier);
 
         // FIXME: find better way to handle pagination
         list.setTotal(query.list().size());
 
-        query = setupListObjectQuery(start, end);
+        query = setupListObjectQuery(start, end, type, identifier);
         query.setMaxResults(list.getCount());
         query.setFirstResult(list.getStart());
         return query.list();
     }
 
-    private Query setupListObjectQuery(Date start, Date end) {
+    private Query setupListObjectQuery(Date fromDate, Date toDate, Type type, String identifier) {
         Query query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
         // if Tier3, use "query.dataone_list_objects_t3"
-        query.setParameter("start", start);
-        query.setParameter("end", end);
+        initStartEnd(fromDate, toDate, query);
+        if (type != null) {
+        query.setString("type", type.name());
+        } else {
+            query.setString("type", null);
+        }
+        query.setString("identifier", identifier);
         return query;
     }
 
@@ -65,6 +70,17 @@ public class DataOneDao {
 
     private Query setupQuery(Date fromDate, Date toDate, Event event, String idFilter) {
         Query query = genericDao.getNamedQuery("query.dataone_list_logs");
+        initStartEnd(fromDate, toDate, query);
+        if (event != null) {
+            query.setString("event", event.name());
+        } else {
+            query.setString("event", null);
+        }
+        query.setString("idFilter", idFilter);
+        return query;
+    }
+
+    private void initStartEnd(Date fromDate, Date toDate, Query query) {
         Date to = DateTime.now().toDate();
         Date from = new DateTime(1900).toDate();
         if (fromDate != null) {
@@ -75,13 +91,6 @@ public class DataOneDao {
         }
         query.setParameter("start", from);
         query.setParameter("end", to);
-        if (event != null) {
-            query.setString("event", event.name());
-        } else {
-            query.setString("event", null);
-        }
-        query.setString("idFilter", idFilter);
-        return query;
     }
 
 }

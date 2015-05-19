@@ -64,7 +64,7 @@ public class DataOneWebITCase extends AbstractWebTestCase {
         Assert.assertEquals(200, gotoPage("/dataone/v1/object?idFilter=" + TEST_DOI));
         Assert.assertEquals(200, gotoPage("/dataone/v1/object?"));
         //YYYY-MM-DDTHH:MM:SS.mmm
-        Assert.assertEquals(500, gotoPage("/dataone/v1/object?fromDate=2010-01-01"));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?fromDate=2010-01-01T01:01:00.000"));
         //formatId??
     }
     
@@ -87,6 +87,7 @@ public class DataOneWebITCase extends AbstractWebTestCase {
         testObject();
         Assert.assertEquals(200, gotoPage("/dataone/v1/log?idFilter=" + TEST_DOI));
         Assert.assertEquals(200, gotoPage("/dataone/v1/log?event=READ"));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/log?fromDate=2010-01-01T01:01:00.000"));
         //test with date ... YYYY-MM-DDTHH:MM:SS.mmm
         
     }

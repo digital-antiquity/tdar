@@ -1,10 +1,8 @@
 package org.tdar.dataone.server;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +22,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,16 +133,24 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @GET
     @Produces(APPLICATION_XML)
     public Response listObjects(
-            @QueryParam(FROM_DATE) Date fromDate,
-            @QueryParam(TO_DATE) Date toDate,
+            @QueryParam(FROM_DATE) String fromDate_,
+            @QueryParam(TO_DATE) String toDate_,
             @QueryParam(FORMAT_ID) String formatid,
             @QueryParam(IDENTIFIER) String identifier,
             @QueryParam(START) @DefaultValue("0") int start,
-            @QueryParam(COUNT) @DefaultValue("1000") int count
+            @QueryParam(COUNT) @DefaultValue("10") int count
 
             ) {
         setupResponseContext(response);
         try {
+            Date fromDate = null;
+            Date toDate = null;
+            if (StringUtils.isNotBlank(fromDate_)) {
+                fromDate = DateTime.parse(fromDate_).toDate();
+            }
+            if (StringUtils.isNotBlank(toDate_)) {
+                toDate = DateTime.parse(toDate_).toDate();
+            }
             return Response.ok().entity(service.getListObjectsResponse(fromDate, toDate, formatid, identifier, start, count)).build();
         } catch (Exception e) {
             e.printStackTrace();

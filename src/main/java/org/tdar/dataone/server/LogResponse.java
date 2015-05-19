@@ -14,7 +14,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dataone.service.types.v1.Event;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,14 +64,23 @@ public class LogResponse extends AbstractDataOneResponse {
 
     @GET
     @Produces(APPLICATION_XML)
-    public Response log(@QueryParam(FROM_DATE) Date fromDate,
-            @QueryParam(TO_DATE) Date toDate,
+    public Response log(@QueryParam(FROM_DATE) String fromDate_,
+            @QueryParam(TO_DATE) String toDate_,
             @QueryParam(EVENT) Event event,
             @QueryParam(ID_FILTER) String idFilter,
             @QueryParam(START) @DefaultValue("0") int start,
             @QueryParam(COUNT) @DefaultValue("1000") int count) {
         setupResponseContext(response);
         try {
+            Date fromDate = null;
+            Date toDate = null;
+            if (StringUtils.isNotBlank(fromDate_)) {
+                fromDate = DateTime.parse(fromDate_).toDate();
+            }
+            if (StringUtils.isNotBlank(toDate_)) {
+                toDate = DateTime.parse(toDate_).toDate();
+            }
+
             return Response.ok().entity(service.getLogResponse(fromDate, toDate, event, idFilter, start, count, request)).build();
         } catch (Exception e) {
             e.printStackTrace();

@@ -72,14 +72,13 @@ public class OaiPmhServer {
             @QueryParam("until") String until_,
             @QueryParam("resumptionToken") String resumptionToken_) throws ParseException {
         OAIPMHtype response = new OAIPMHtype();
+        RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
+        response.setRequest(request);
         ObjectFactory factory = new ObjectFactory();
         genericService.markReadOnly();
         try {
             response.setResponseDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
-            RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
-            // request.setValue(value);
-            response.setRequest(request);
             execute(set, from_, until_, response);
         } catch (OAIException oaie) {
             logger.error("OaiException", oaie);
