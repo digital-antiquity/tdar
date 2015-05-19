@@ -77,7 +77,7 @@ public class OaiPmhServer {
         try {
             response.setResponseDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
-            RequestType request = extracted(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
+            RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
             // request.setValue(value);
             response.setRequest(request);
             execute(set, from_, until_, response);
@@ -95,7 +95,7 @@ public class OaiPmhServer {
         return Response.ok(factory.createOAIPMH(response)).build();
     }
 
-    private RequestType extracted(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_) {
+    private RequestType createRequest(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_) {
         RequestType request = new RequestType();
         request.setFrom(from_);
         request.setIdentifier(identifier_);
