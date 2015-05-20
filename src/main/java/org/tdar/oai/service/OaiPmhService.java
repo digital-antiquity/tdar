@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
@@ -38,6 +39,7 @@ import org.tdar.core.service.search.SearchService;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.bean.OAIRecordType;
 import org.tdar.oai.bean.OAIResumptionToken;
+import org.tdar.oai.bean.OaiIdentifier;
 import org.tdar.oai.bean.generated.oai._2_0.DeletedRecordType;
 import org.tdar.oai.bean.generated.oai._2_0.DescriptionType;
 import org.tdar.oai.bean.generated.oai._2_0.GetRecordType;
@@ -100,7 +102,12 @@ public class OaiPmhService {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    // @Transactional(readOnly = true)
+    /**
+     * Sets up and returns the "Identify" Verb for an OAI-PMH Response
+     * 
+     * @return
+     */
+    @Transactional(readOnly = true)
     public IdentifyType getIdentifyResponse() {
         IdentifyType ident = new IdentifyType();
         ident.setBaseURL(config.getBaseUrl() + "/oai-pmh/oai");
@@ -122,6 +129,18 @@ public class OaiPmhService {
         return ident;
     }
 
+    /**
+     * Sets up a "ListIdentifiers" Verb for an OAI-PMH Response. Finds all resources in tDAR based on the date/time info
+     * 
+     * @param from
+     * @param until
+     * @param metadataPrefix
+     * @param resumptionToken
+     * @param response
+     * @return
+     * @throws OAIException
+     * @throws ParseException
+     */
     public ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, OAIMetadataFormat metadataPrefix, OAIResumptionToken resumptionToken,
             ListResponse response)
             throws OAIException, ParseException {
@@ -133,9 +152,10 @@ public class OaiPmhService {
         Date effectiveUntil = until;
         OAIMetadataFormat metadataFormat = metadataPrefix;
         if (resumptionToken != null) {
-            // ... then this is the second or subsequent page of results.
-            // In this case there are no separate "from" and "until" parameters passed by the client;
-            // instead all the parameters come packed into a resumption token.
+            /*
+             * ... then this is the second or subsequent page of results. In this case there are no separate "from" and
+             * "until" parameters passed by the client; instead all the parameters come packed into a resumption token.
+             */
             collectionId = resumptionToken.getSet();
             startRecord = resumptionToken.getCursor();
             effectiveFrom = resumptionToken.getEffectiveFrom(from);
@@ -187,8 +207,7 @@ public class OaiPmhService {
         // the client to continue harvesting from that point
         if (resources.getNextPageStartRecord() < maxResults) {
             // ... then this is a partial response, and should be terminated with a ResumptionToken
-            // which may be empty if this is the last page of results
-            // advance the cursor by one page
+            // which may be empty if this is the last page of results advance the cursor by one page
             OAIResumptionToken newResumptionToken = new OAIResumptionToken();
             // ... populate the resumptionToken so the harvester can continue harvesting from the next page
             newResumptionToken = new OAIResumptionToken(resources.getNextPageStartRecord(), effectiveFrom, effectiveUntil, metadataFormat, collectionId);
@@ -207,6 +226,21 @@ public class OaiPmhService {
         return token;
     }
 
+    /**
+     * Takes the query and performs the search, it then fills out the response with the results based on whether
+     * this is a "ListIdentifiers" or "ListRecords" Verb
+     * 
+     * @param recordType
+     * @param queryBuilder
+     * @param metadataFormat
+     * @param effectiveFrom
+     * @param effectiveUntil
+     * @param startRecord
+     * @param response
+     * @return
+     * @throws ParseException
+     * @throws OAIException
+     */
     private SearchResult populateResult(OAIRecordType recordType, QueryBuilder queryBuilder, OAIMetadataFormat metadataFormat, Date effectiveFrom,
             Date effectiveUntil, int startRecord, ListResponse response) throws ParseException, OAIException {
         boolean includeRecords = false;
@@ -243,6 +277,7 @@ public class OaiPmhService {
             ((ListRecordsType) response).getRecord().addAll(records);
         }
 
+        // if we're listing identifiers, we just use the "header"
         if (response instanceof ListIdentifiersType) {
             ListIdentifiersType listIdentifiersType = (ListIdentifiersType) response;
             for (RecordType record : records) {
@@ -253,7 +288,17 @@ public class OaiPmhService {
         return search;
     }
 
-    protected RecordType createRecord(OaiDcProvider resource, OAIRecordType recordType, OAIMetadataFormat metadataFormat, boolean includeRecords)
+    /**
+     * Creates the XML Record object that gets fed into "GetRecord" and "ListRecord"
+     * 
+     * @param resource
+     * @param recordType
+     * @param metadataFormat
+     * @param includeRecords
+     * @return
+     * @throws OAIException
+     */
+    private RecordType createRecord(OaiDcProvider resource, OAIRecordType recordType, OAIMetadataFormat metadataFormat, boolean includeRecords)
             throws OAIException {
         RecordType record = new RecordType();
         HeaderType header = new HeaderType();
@@ -285,6 +330,7 @@ public class OaiPmhService {
                     case DC:
                         if (resource instanceof Creator) {
                             Creator creator = (Creator) resource;
+                            // create a "mock" DC record for the creator?
                             DublinCoreDocument dcdoc = new DublinCoreDocument();
                             dcdoc.getTitle().add(creator.getProperName());
                             if (StringUtils.isNotBlank(creator.getDescription())) {
@@ -298,6 +344,7 @@ public class OaiPmhService {
                         }
                         break;
                     case MODS:
+                        // mods not supported by creators
                         if (resource instanceof Creator) {
                             throw new OAIException(MessageHelper.getInstance().getText("oaiController.cannot_disseminate"),
                                     OAIPMHerrorcodeType.CANNOT_DISSEMINATE_FORMAT);
@@ -327,7 +374,14 @@ public class OaiPmhService {
         return record;
     }
 
-    // @Transactional(readOnly = true)
+    /**
+     * Lists the metadata formats for the given identifier. Response to "ListIdentifiers" verbs
+     * 
+     * @param identifier
+     * @return
+     * @throws OAIException
+     */
+    @Transactional(readOnly = true)
     public ListMetadataFormatsType listMetadataFormats(OaiIdentifier identifier) throws OAIException {
         ListMetadataFormatsType formats = new ListMetadataFormatsType();
 
@@ -349,7 +403,15 @@ public class OaiPmhService {
         return formats;
     }
 
-    // @Transactional(readOnly = true)
+    /**
+     * Returns the result of the "GetRecord" verb, it looks up the identifier and returns the recod.
+     * 
+     * @param identifier
+     * @param requestedFormat
+     * @return
+     * @throws OAIException
+     */
+    @Transactional(readOnly = true)
     public GetRecordType getGetRecordResponse(OaiIdentifier identifier, OAIMetadataFormat requestedFormat) throws OAIException {
         // check that this kind of record can be disseminated in the requested format
         GetRecordType get = new GetRecordType();
@@ -371,7 +433,18 @@ public class OaiPmhService {
         }
     }
 
-    // @Transactional(readOnly = true)
+    /**
+     * Lists records in tDAR based on the number of tDAR IDs called by "ListRecords" verb
+     * 
+     * @param from
+     * @param until
+     * @param requestedFormat
+     * @param resumptionToken
+     * @return
+     * @throws OAIException
+     * @throws ParseException
+     */
+    @Transactional(readOnly = true)
     public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException,
             ParseException {
         ListRecordsType response = new ListRecordsType();
@@ -380,7 +453,18 @@ public class OaiPmhService {
         return response;
     }
 
-    // @Transactional(readOnly = true, noRollbackFor = Throwable.class)
+    /**
+     * Lists identifiers in tDAR based on the number of tDAR IDs called by "ListIdentifiers" verb
+     * 
+     * @param from
+     * @param until
+     * @param requestedFormat
+     * @param resumptionToken
+     * @return
+     * @throws OAIException
+     * @throws ParseException
+     */
+    @Transactional(readOnly = true)
     public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken)
             throws OAIException, ParseException {
         ListIdentifiersType response = new ListIdentifiersType();
@@ -389,22 +473,27 @@ public class OaiPmhService {
         return response;
     }
 
-    // @Transactional(readOnly = true)
+    /**
+     * List collections in tDAR which are mapped to OAI as "sets." response to ListSets verb.
+     * @param from
+     * @param until
+     * @param requestedFormat
+     * @param resumptionToken
+     * @return
+     * @throws OAIException
+     */
+    @Transactional(readOnly = true)
     public ListSetsType listSets(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException {
-        // Sort results by dateUpdated ascending and filter
-        // by dates, either supplied in OAI-PMH 'from' and 'to' parameters,
-        // or encoded as parts of the 'resumptionToken'
-        // Optionally filter results by date range
-        // In Lucene, dates are stored as "yyyyMMddHHmmssSSS" in UTC time zone
-        // see http://docs.jboss.org/hibernate/search/3.4/reference/en-US/html_single/#d0e3510
-        // but in OAI-PMH, date parameters are ISO8601 dates, so we must remove the punctuation.
+        // Sort results by dateUpdated ascending and filter by dates, either supplied in OAI-PMH 'from' and 'to' parameters, or encoded as parts of the
+        // 'resumptionToken' Optionally filter results by date range In Lucene, dates are stored as "yyyyMMddHHmmssSSS" in UTC time zone see
+        // http://docs.jboss.org/hibernate/search/3.4/reference/en-US/html_single/#d0e3510 but in OAI-PMH, date parameters are ISO8601 dates, so we must remove
+        // the punctuation.
         SearchResult search = new SearchResult();
         ListSetsType response = new ListSetsType();
         Date effectiveFrom = from;
         Date effectiveUntil = until;
         if (resumptionToken != null) {
-            // ... then this is the second or subsequent page of results.
-            // In this case there are no separate "from" and "until" parameters passed by the client;
+            // ... then this is the second or subsequent page of results. In this case there are no separate "from" and "until" parameters passed by the client;
             // instead all the parameters come packed into a resumption token.
             search.setStartRecord(resumptionToken.getCursor());
             effectiveFrom = resumptionToken.getEffectiveFrom(from);

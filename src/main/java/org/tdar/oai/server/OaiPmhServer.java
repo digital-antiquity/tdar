@@ -29,13 +29,13 @@ import org.tdar.core.service.GenericService;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.bean.OAIResumptionToken;
 import org.tdar.oai.bean.OAIVerb;
+import org.tdar.oai.bean.OaiIdentifier;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorType;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHtype;
 import org.tdar.oai.bean.generated.oai._2_0.ObjectFactory;
 import org.tdar.oai.bean.generated.oai._2_0.RequestType;
 import org.tdar.oai.bean.generated.oai._2_0.VerbType;
-import org.tdar.oai.service.OaiIdentifier;
 import org.tdar.oai.service.OaiPmhService;
 import org.tdar.utils.MessageHelper;
 
@@ -53,9 +53,9 @@ public class OaiPmhServer {
     @Autowired
     private GenericService genericService;
 
-    @Context 
+    @Context
     UriInfo uriInfo;
-    
+
     private OAIVerb verb;
 
     private OAIMetadataFormat requestedFormat;
@@ -64,12 +64,26 @@ public class OaiPmhServer {
 
     private OAIResumptionToken resumptionToken;
 
+    // Set up default dates
     private Date from = new DateTime("1900").toDate();
     private Date until = new DateTime("3000").toDate();
 
+    /**
+     * All OAI-PMH calls go through the same /oai? method...
+     * 
+     * @param verb_
+     * @param identifier_
+     * @param metadataPrefix_
+     * @param set
+     * @param from_
+     * @param until_
+     * @param resumptionToken_
+     * @return
+     * @throws ParseException
+     */
     @Produces("application/xml")
     @GET
-    public Response execute(@QueryParam("verb") String verb_,
+    public Response executeOaiPmhRequest(@QueryParam("verb") String verb_,
             @QueryParam("identifier") String identifier_,
             @QueryParam("metadataPrefix") String metadataPrefix_,
             @QueryParam("set") String set,
@@ -78,6 +92,7 @@ public class OaiPmhServer {
             @QueryParam("resumptionToken") String resumptionToken_) throws ParseException {
         genericService.markReadOnly();
         OAIPMHtype response = new OAIPMHtype();
+
         RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
         response.setRequest(request);
         ObjectFactory factory = new ObjectFactory();
@@ -89,6 +104,7 @@ public class OaiPmhServer {
         }
 
         try {
+            // pseudo modeling of struts workflow, just for management of all the moving parts..
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
             execute(set, from_, until_, response);
         } catch (OAIException oaie) {
@@ -101,6 +117,18 @@ public class OaiPmhServer {
         return Response.ok(factory.createOAIPMH(response)).build();
     }
 
+    /**
+     * setup the OAI-PMH "request" which models the request that came in and is mirrored back
+     * 
+     * @param verb_
+     * @param identifier_
+     * @param metadataPrefix_
+     * @param set
+     * @param from_
+     * @param until_
+     * @param resumptionToken_
+     * @return
+     */
     private RequestType createRequest(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_) {
         RequestType request = new RequestType();
         if (identifier_ != null) {
@@ -127,6 +155,16 @@ public class OaiPmhServer {
         return request;
     }
 
+    /**
+     * Execute the actual request by validating and dispatching to the service layer
+     * 
+     * @param set
+     * @param from_
+     * @param until_
+     * @param response
+     * @throws OAIException
+     * @throws ParseException
+     */
     @Transactional(readOnly = true)
     public void execute(String set, String from_, String until_, OAIPMHtype response) throws OAIException, ParseException {
         String message;
@@ -180,6 +218,17 @@ public class OaiPmhServer {
         }
     }
 
+    /**
+     * setup the parameters for execution based on the input strings
+     * 
+     * @param verb_
+     * @param identifier_
+     * @param metadataPrefix_
+     * @param from_
+     * @param until_
+     * @param resumptionToken_
+     * @throws OAIException
+     */
     private void prepare(String verb_, String identifier_, String metadataPrefix_, String from_, String until_, String resumptionToken_) throws OAIException {
         if (verb_ == null) {
             throw new OAIException(getText("oaiController.bad_verb"), OAIPMHerrorcodeType.BAD_VERB);

@@ -1,8 +1,7 @@
-package org.tdar.oai.service;
+package org.tdar.oai.bean;
 
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
-import org.tdar.oai.bean.OAIRecordType;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 import org.tdar.utils.MessageHelper;
 
@@ -14,6 +13,11 @@ public class OaiIdentifier {
     private OAIRecordType recordType;
     private Long id;
 
+    /**
+     * Simple bean model to help manage the creation of and validation of identifiers.
+     * @param identifier
+     * @throws OAIException
+     */
     public OaiIdentifier(String identifier) throws OAIException {
         String[] token = identifier.split(SEPARATOR, 4);
         // First token must = "oai"
