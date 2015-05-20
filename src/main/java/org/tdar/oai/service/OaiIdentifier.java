@@ -2,8 +2,8 @@ package org.tdar.oai.service;
 
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
-import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
-import org.tdar.struts.data.oai.OAIRecordType;
+import org.tdar.oai.bean.OAIRecordType;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 import org.tdar.utils.MessageHelper;
 
 public class OaiIdentifier {

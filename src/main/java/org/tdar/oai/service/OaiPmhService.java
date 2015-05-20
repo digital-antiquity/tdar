@@ -1,18 +1,20 @@
 package org.tdar.oai.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Transient;
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.queryParser.ParseException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,22 +36,28 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.search.SearchService;
-import org.tdar.oai.bean.generated.DeletedRecordType;
-import org.tdar.oai.bean.generated.GetRecordType;
-import org.tdar.oai.bean.generated.GranularityType;
-import org.tdar.oai.bean.generated.HeaderType;
-import org.tdar.oai.bean.generated.IdentifyType;
-import org.tdar.oai.bean.generated.ListIdentifiersType;
-import org.tdar.oai.bean.generated.ListMetadataFormatsType;
-import org.tdar.oai.bean.generated.ListRecordsType;
-import org.tdar.oai.bean.generated.ListResponse;
-import org.tdar.oai.bean.generated.ListSetsType;
-import org.tdar.oai.bean.generated.MetadataFormatType;
-import org.tdar.oai.bean.generated.MetadataType;
-import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
-import org.tdar.oai.bean.generated.RecordType;
-import org.tdar.oai.bean.generated.ResumptionTokenType;
-import org.tdar.oai.bean.generated.SetType;
+import org.tdar.oai.bean.OAIMetadataFormat;
+import org.tdar.oai.bean.OAIRecordType;
+import org.tdar.oai.bean.OAIResumptionToken;
+import org.tdar.oai.bean.generated.oai._2_0.DeletedRecordType;
+import org.tdar.oai.bean.generated.oai._2_0.DescriptionType;
+import org.tdar.oai.bean.generated.oai._2_0.GetRecordType;
+import org.tdar.oai.bean.generated.oai._2_0.GranularityType;
+import org.tdar.oai.bean.generated.oai._2_0.HeaderType;
+import org.tdar.oai.bean.generated.oai._2_0.IdentifyType;
+import org.tdar.oai.bean.generated.oai._2_0.ListIdentifiersType;
+import org.tdar.oai.bean.generated.oai._2_0.ListMetadataFormatsType;
+import org.tdar.oai.bean.generated.oai._2_0.ListRecordsType;
+import org.tdar.oai.bean.generated.oai._2_0.ListResponse;
+import org.tdar.oai.bean.generated.oai._2_0.ListSetsType;
+import org.tdar.oai.bean.generated.oai._2_0.MetadataFormatType;
+import org.tdar.oai.bean.generated.oai._2_0.MetadataType;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
+import org.tdar.oai.bean.generated.oai._2_0.RecordType;
+import org.tdar.oai.bean.generated.oai._2_0.ResumptionTokenType;
+import org.tdar.oai.bean.generated.oai._2_0.SetType;
+import org.tdar.oai.bean.generated.oai_identifier._2_0.OaiIdentifierType;
+import org.tdar.oai.bean.generated.oai_identifier._2_0.ObjectFactory;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
@@ -62,16 +70,14 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.RangeQueryPart;
 import org.tdar.struts.data.DateRange;
-import org.tdar.struts.data.oai.OAIMetadataFormat;
-import org.tdar.struts.data.oai.OAIRecordType;
-import org.tdar.struts.data.oai.OAIResumptionToken;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.google.common.base.Objects;
+
+import edu.asu.lib.dc.DublinCoreDocument;
 
 @Service
 public class OaiPmhService {
@@ -105,9 +111,15 @@ public class OaiPmhService {
         ident.setGranularity(GranularityType.YYYY_MM_DD);
         ident.setProtocolVersion("2.0");
         ident.setRepositoryName(config.getRepositoryName());
-        // DescriptionType descr = new DescriptionType();
-        // descr.setAny(new Description(config.getSystemDescription()));
-        // ident.getDescription().add(descr);
+        OaiIdentifierType identifier = new OaiIdentifierType();
+        identifier.setDelimiter(":");
+        identifier.setRepositoryIdentifier(config.getRepositoryNamespaceIdentifier());
+        identifier.setSampleIdentifier("oai:" + config.getRepositoryNamespaceIdentifier() + ":Record:1");
+        identifier.setScheme("oai");
+        ObjectFactory factory = new ObjectFactory();
+        DescriptionType description = new DescriptionType();
+        description.setAny(factory.createOaiIdentifier(identifier));
+        ident.getDescription().add(description);
         return ident;
     }
 
@@ -253,7 +265,9 @@ public class OaiPmhService {
         if (updatedDate == null) {
             updatedDate = resource.getDateCreated();
         }
-        header.setDatestamp(updatedDate.toString());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        header.setDatestamp(formatter.format(updatedDate));
         // iso_utc
         record.setHeader(header);
         if (resource instanceof Resource) {
@@ -272,8 +286,14 @@ public class OaiPmhService {
                     case DC:
                         if (resource instanceof Creator) {
                             Creator creator = (Creator) resource;
-                            populateStubDcRecord(document, creator.getName(), creator.getClass().getSimpleName(), creator.getId());
-                            meta = document.getDocumentElement();
+                            DublinCoreDocument dcdoc = new DublinCoreDocument();
+                            dcdoc.getTitle().add(creator.getProperName());
+                            if (StringUtils.isNotBlank(creator.getDescription())) {
+                            dcdoc.getDescription().add(creator.getDescription());
+                            }
+                            dcdoc.getIdentifier().add(creator.getId().toString());
+                            dcdoc.getType().add(creator.getClass().getSimpleName());
+                            meta = dcdoc;
                         } else {
                             meta = DcTransformer.transformAny((Resource) resource);
                         }
@@ -414,13 +434,14 @@ public class OaiPmhService {
                 SetType set = new SetType();
                 ResourceCollection coll = (ResourceCollection) i;
                 set.setSetName(coll.getName());
-                // DescriptionType descr = new DescriptionType();
-                // descr.setAny(new Description(coll.getDescription()));
-                // set.getSetDescription().add(descr);
+                 DescriptionType descr = new DescriptionType();
+                 DublinCoreDocument dcdoc = new DublinCoreDocument();
+                 dcdoc.getDescription().add(coll.getDescription());
+                 descr.setAny(dcdoc);
+                 set.getSetDescription().add(descr);
                 set.setSetSpec(Long.toString(coll.getId()));
                 setList.add(set);
             }
-            logger.info("ALL IDS: {}", ids);
         } catch (SearchPaginationException spe) {
             logger.debug("an pagination exception happened .. {} ", spe.getMessage());
         } catch (TdarRecoverableRuntimeException e) {
@@ -453,30 +474,6 @@ public class OaiPmhService {
         }
         response.getSet().addAll(setList);
         return response;
-    }
-
-    // For strict compliance with the OAI-PMH specification, it's necessary to be able to disseminate oai_dc for every record
-    // In the case of Person and Institution records, the oai_dc metadata format is quite inappropriate and not very useful,
-    // so this method exists to create a "stub" record for the sake of compliance. In real life these records generally won't be harvested.
-    // The method populates an empty DOM document with an oai_dc record containing a title, a type, and an identifier.
-    private void populateStubDcRecord(Document document, String title, String type, long identifier) {
-        String dc = "http://purl.org/dc/elements/1.1/";
-        Element rootElement = document.createElementNS("http://www.openarchives.org/OAI/2.0/oai_dc/", "dc");
-        Element titleElement = document.createElementNS(dc, "title");
-        Element identifierElement = document.createElementNS(dc, "identifier");
-        Element typeElement = document.createElementNS(dc, "type");
-        document.appendChild(rootElement);
-        rootElement.setAttributeNS(
-                XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-                "xsi:schemaLocation",
-                OAIMetadataFormat.DC.getNamespace() + " " + OAIMetadataFormat.DC.getSchemaLocation()
-                );
-        rootElement.appendChild(titleElement);
-        rootElement.appendChild(typeElement);
-        rootElement.appendChild(identifierElement);
-        titleElement.setTextContent(title);
-        identifierElement.setTextContent(Long.toString(identifier));
-        typeElement.setTextContent(type);
     }
 
 }

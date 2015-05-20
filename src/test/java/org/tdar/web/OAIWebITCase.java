@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.struts.data.oai.OAIMetadataFormat;
+import org.tdar.oai.bean.OAIMetadataFormat;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -44,7 +44,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
 
-    private boolean indexed = false;
+    static boolean indexed = false;
 
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {

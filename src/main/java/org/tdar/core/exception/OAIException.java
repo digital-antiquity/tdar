@@ -1,6 +1,6 @@
 package org.tdar.core.exception;
 
-import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 
 
 /**

@@ -26,17 +26,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.exception.OAIException;
 import org.tdar.core.service.GenericService;
-import org.tdar.oai.bean.generated.OAIPMHerrorType;
-import org.tdar.oai.bean.generated.OAIPMHerrorcodeType;
-import org.tdar.oai.bean.generated.OAIPMHtype;
-import org.tdar.oai.bean.generated.ObjectFactory;
-import org.tdar.oai.bean.generated.RequestType;
-import org.tdar.oai.bean.generated.VerbType;
+import org.tdar.oai.bean.OAIMetadataFormat;
+import org.tdar.oai.bean.OAIResumptionToken;
+import org.tdar.oai.bean.OAIVerb;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorType;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHtype;
+import org.tdar.oai.bean.generated.oai._2_0.ObjectFactory;
+import org.tdar.oai.bean.generated.oai._2_0.RequestType;
+import org.tdar.oai.bean.generated.oai._2_0.VerbType;
 import org.tdar.oai.service.OaiIdentifier;
 import org.tdar.oai.service.OaiPmhService;
-import org.tdar.struts.data.oai.OAIMetadataFormat;
-import org.tdar.struts.data.oai.OAIResumptionToken;
-import org.tdar.struts.data.oai.OAIVerb;
 import org.tdar.utils.MessageHelper;
 
 @Path("/oai")
@@ -76,13 +76,19 @@ public class OaiPmhServer {
             @QueryParam("from") String from_,
             @QueryParam("until") String until_,
             @QueryParam("resumptionToken") String resumptionToken_) throws ParseException {
+        genericService.markReadOnly();
         OAIPMHtype response = new OAIPMHtype();
         RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
         response.setRequest(request);
         ObjectFactory factory = new ObjectFactory();
-        genericService.markReadOnly();
+
         try {
             response.setResponseDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        } catch (DatatypeConfigurationException e) {
+            logger.error("DatatypeConfigurationException", e);
+        }
+
+        try {
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
             execute(set, from_, until_, response);
         } catch (OAIException oaie) {
@@ -91,10 +97,6 @@ public class OaiPmhServer {
             error.setCode(oaie.getCode());
             error.setValue(oaie.getMessage());
             response.getError().add(error);
-        } catch (DatatypeConfigurationException e) {
-            logger.error("DatatypeConfigurationException", e);
-        } catch (Throwable e) {
-            logger.error("Thrownable: {} {}", e.getClass(), e, e);
         }
         return Response.ok(factory.createOAIPMH(response)).build();
     }
@@ -120,7 +122,6 @@ public class OaiPmhServer {
             request.setFrom(from_);
         }
         request.setValue(uriInfo.getRequestUri().toString());
-        logger.debug(request.getValue());
         request.setVerb(VerbType.fromValue(verb_));
         return request;
     }
@@ -128,6 +129,7 @@ public class OaiPmhServer {
     @Transactional(readOnly = true)
     public void execute(String set, String from_, String until_, OAIPMHtype response) throws OAIException, ParseException {
         String message;
+
         switch (verb) {
             case GET_RECORD:
                 message = getText("oaiController.not_allowed_with_get");

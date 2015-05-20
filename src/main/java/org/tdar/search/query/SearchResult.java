@@ -185,7 +185,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
 
     @Override
     public int getDefaultRecordsPerPage() {
-        return 20;
+        return DEFAULT_RESULT_SIZE;
     }
 
     public boolean hasMore() {
