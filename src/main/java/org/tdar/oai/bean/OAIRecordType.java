@@ -10,7 +10,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
-import org.tdar.core.exception.OaiErrorCode;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 import org.tdar.utils.MessageHelper;
 

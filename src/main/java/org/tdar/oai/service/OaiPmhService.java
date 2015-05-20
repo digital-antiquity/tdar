@@ -425,7 +425,6 @@ public class OaiPmhService {
             switchProjectionModel(search, collectionQueryBuilder);
             searchService.handleSearch(collectionQueryBuilder, search, MessageHelper.getInstance());
             total = search.getTotalRecords();
-            List<Long> ids = new ArrayList<>();
             for (Indexable i : search.getResults()) {
                 logger.debug("{}, {}", i, ((Viewable) i).isViewable());
                 if ((i instanceof Viewable) && !((Viewable) i).isViewable()) {

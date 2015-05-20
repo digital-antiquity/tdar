@@ -6,7 +6,6 @@ package org.tdar.oai.bean;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.tomcat.logging.Logger;
 import org.joda.time.DateTime;
 import org.tdar.core.exception.OAIException;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
