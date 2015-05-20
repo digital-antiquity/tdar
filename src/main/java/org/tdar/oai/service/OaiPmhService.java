@@ -120,7 +120,8 @@ public class OaiPmhService {
         OaiIdentifierType identifier = new OaiIdentifierType();
         identifier.setDelimiter(":");
         identifier.setRepositoryIdentifier(config.getRepositoryNamespaceIdentifier());
-        identifier.setSampleIdentifier("oai:" + config.getRepositoryNamespaceIdentifier() + ":Record:1");
+        OaiIdentifier id = new OaiIdentifier(OAIRecordType.RESOURCE, 1L);
+        identifier.setSampleIdentifier(id.getOaiId());
         identifier.setScheme("oai");
         ObjectFactory factory = new ObjectFactory();
         DescriptionType description = new DescriptionType();
