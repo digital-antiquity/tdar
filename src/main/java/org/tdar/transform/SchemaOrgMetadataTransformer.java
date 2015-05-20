@@ -34,7 +34,7 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
     private static final long serialVersionUID = -5903659479081408357L;
 
-    public String convert(SerializationService ss, Creator creator, String imageUrl) throws IOException {
+    public String convert(SerializationService ss, Creator<?> creator, String imageUrl) throws IOException {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
         jsonLd.put(CONTEXT, SCHEMA_ORG);
         jsonLd.put(TYPE, "Organization");

@@ -1,7 +1,6 @@
 package org.tdar.core.bean.entity;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,13 +11,10 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -62,7 +58,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
 @Check(constraints = "email <> ''")
-public class Institution extends Creator implements Comparable<Institution>, Dedupable<Institution>, Validatable {
+public class Institution extends Creator<Institution> implements Comparable<Institution>, Dedupable<Institution>, Validatable {
 
     private static final long serialVersionUID = 892315581573902067L;
 
@@ -71,11 +67,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
             "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence", "browseOccurrence", "hidden" };
-
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval=true)
-    @JoinColumn(name = "merge_creator_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
     @BulkImportField(key="CREATOR_INSTITUTION", order = 10)
@@ -178,18 +169,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Override
     public boolean isValid() {
         return isValidForController() && (getId() != null);
-    }
-
-    @Override
-    @XmlElementWrapper(name = "synonyms")
-    @XmlElement(name = "synonymRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Set<Institution> getSynonyms() {
-        return synonyms;
-    }
-
-    public void setSynonyms(Set<Institution> synonyms) {
-        this.synonyms = synonyms;
     }
 
     @Override
