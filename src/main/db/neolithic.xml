@@ -49,6 +49,9 @@
     <changeSet id="neolithic-5" author="abrin">
         <!-- these were moved in knap ... time to remove from the production 
             database -->
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="person" columnName="proxyinstitution_id" />
+        </preConditions>
         <dropColumn tableName="person" columnName="proxyinstitution_id" />
         <dropColumn tableName="person" columnName="username" />
         <dropColumn tableName="person" columnName="proxy_note" />
@@ -58,7 +61,8 @@
         <dropColumn tableName="person" columnName="total_login" />
         <dropColumn tableName="person" columnName="penultimate_login" />
         <dropColumn tableName="person" columnName="tos_version" />
-        <dropColumn tableName="person" columnName="proxyinstitution_id" />
+        <dropColumn tableName="person" columnName="tos_level" />
+        <dropColumn tableName="person" columnName="creator_agreement_versionl" />
     </changeSet>
 
 </databaseChangeLog>
