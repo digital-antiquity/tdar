@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
+import gov.loc.mods.v3.ModsType;
 
 
 /**
@@ -48,7 +49,7 @@ import edu.asu.lib.mods.ModsDocument;
 @XmlType(name = "metadataType", propOrder = {
     "any"
 })
-@XmlSeeAlso(value={Resource.class, Creator.class, DublinCoreDocument.class, ModsDocument.class})
+@XmlSeeAlso(value={Resource.class, Creator.class, DublinCoreDocument.class, ModsDocument.class, ModsType.class})
 public class MetadataType {
 
     @XmlAnyElement(lax = true)

@@ -123,6 +123,7 @@ public class OaiPmhServer {
         }
         request.setValue(uriInfo.getRequestUri().toString());
         request.setVerb(VerbType.fromValue(verb_));
+        logger.debug(">>> {}", uriInfo.getRequestUri().toString());
         return request;
     }
 

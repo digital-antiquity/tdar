@@ -14,7 +14,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -289,7 +288,7 @@ public class OaiPmhService {
                             DublinCoreDocument dcdoc = new DublinCoreDocument();
                             dcdoc.getTitle().add(creator.getProperName());
                             if (StringUtils.isNotBlank(creator.getDescription())) {
-                            dcdoc.getDescription().add(creator.getDescription());
+                                dcdoc.getDescription().add(creator.getDescription());
                             }
                             dcdoc.getIdentifier().add(creator.getId().toString());
                             dcdoc.getType().add(creator.getClass().getSimpleName());
@@ -304,7 +303,8 @@ public class OaiPmhService {
                                     OAIPMHerrorcodeType.CANNOT_DISSEMINATE_FORMAT);
                         }
 
-                        meta = ModsTransformer.transformAny((Resource) resource);
+                        meta = ModsTransformer.transformAny((Resource) resource).getRootElement();
+                        logger.debug("{}", meta);
                         break;
                     case TDAR:
                         try {
@@ -434,11 +434,11 @@ public class OaiPmhService {
                 SetType set = new SetType();
                 ResourceCollection coll = (ResourceCollection) i;
                 set.setSetName(coll.getName());
-                 DescriptionType descr = new DescriptionType();
-                 DublinCoreDocument dcdoc = new DublinCoreDocument();
-                 dcdoc.getDescription().add(coll.getDescription());
-                 descr.setAny(dcdoc);
-                 set.getSetDescription().add(descr);
+                DescriptionType descr = new DescriptionType();
+                DublinCoreDocument dcdoc = new DublinCoreDocument();
+                dcdoc.getDescription().add(coll.getDescription());
+                descr.setAny(dcdoc);
+                set.getSetDescription().add(descr);
                 set.setSetSpec(Long.toString(coll.getId()));
                 setList.add(set);
             }
