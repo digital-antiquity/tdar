@@ -136,7 +136,7 @@ public class TdarExpectedConditions {
             public Boolean apply(WebDriver driver) {
                 for(WebElement element : driver.findElements(locator)) {
                     if(!isStale(element)) {
-                        if(element.getText().toLowerCase().contains(text)) {
+                        if(element.getText().contains(text)) {
                             return true;
                         }
                     }

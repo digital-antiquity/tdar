@@ -61,9 +61,9 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // re-check
         find(name("searchFilter.integrationCompatible")).click();
         // note that IDs are dataTable ids
-        findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
+        findAndClickDataset("Spitalf", SPITALFIELD_CHECKBOX);
         // note that IDs are dataTable ids
-        findAndClickDataset("alexandria", ALEXANDRIA_CHECKBOX);
+        findAndClickDataset("Alexandria", ALEXANDRIA_CHECKBOX);
         // add selected items
         find(className("btn-primary")).click();
         waitFor(bootstrapModalGone());
@@ -236,7 +236,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // add one back
         openDatasetsModal();
-        findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
+        findAndClickDataset("Spitalf", SPITALFIELD_CHECKBOX);
 
         find(id("btnModalAdd")).click();
 
@@ -254,9 +254,9 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setFieldByName("integration.title", TEST_INTEGRATION);
         // assert save enabled
         openDatasetsModal();
-        findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
+        findAndClickDataset("Spitalf", SPITALFIELD_CHECKBOX);
         // note that IDs are dataTable ids
-        findAndClickDataset("alexandria", ALEXANDRIA_CHECKBOX);
+        findAndClickDataset("Alexandria", ALEXANDRIA_CHECKBOX);
         // add selected items
         find(className("btn-primary")).click();
 
