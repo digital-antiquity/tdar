@@ -135,8 +135,10 @@ public class TdarExpectedConditions {
             @Override
             public Boolean apply(WebDriver driver) {
                 for(WebElement element : driver.findElements(locator)) {
-                    if(element.getText().contains(text)) {
-                        return true;
+                    if(!isStale(element)) {
+                        if(element.getText().toLowerCase().contains(text)) {
+                            return true;
+                        }
                     }
                 }
                 return false;
@@ -148,5 +150,21 @@ public class TdarExpectedConditions {
                         text, locator);
             }
         };
+    }
+
+    /**
+     * Return true if element is "stale" (i.e. is deleted or no longer part of the DOM)
+     * @param element
+     * @return
+     */
+    private static boolean isStale(WebElement element) {
+        //Beleive it or not, this is how selenium advises checking for staleness (see ExpectedConditions.stalenessOf)
+        try {
+            //will throw exception if stale
+            element.isEnabled();
+        } catch (StaleElementReferenceException ex) {
+            return true;
+        }
+        return false;
     }
 }

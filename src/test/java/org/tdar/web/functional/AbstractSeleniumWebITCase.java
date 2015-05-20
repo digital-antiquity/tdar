@@ -626,10 +626,19 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public<T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
+        T value = null;
         waitTimer.start();
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-        T value = wait.until(expectedCondition);
-        waitTimer.stop();
+        try {
+            value = wait.until(expectedCondition);
+        } catch(TimeoutException tex) {
+
+            takeScreenshot("timeout exception " + tex.hashCode());
+            logger.error("Wait timeout.  Screenshot saved as timeout-exception-" + tex.hashCode());
+            throw tex;
+        } finally {
+            waitTimer.stop();
+        }
         return value;
     }
 

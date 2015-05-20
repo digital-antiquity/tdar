@@ -12,9 +12,7 @@ import static org.openqa.selenium.By.*;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
-import static org.tdar.web.functional.util.TdarExpectedConditions.bootstrapModalGone;
-import static org.tdar.web.functional.util.TdarExpectedConditions.locatedElementCountEquals;
-import static org.tdar.web.functional.util.TdarExpectedConditions.locatedElementCountGreaterThan;
+import static org.tdar.web.functional.util.TdarExpectedConditions.*;
 
 import java.util.List;
 
@@ -24,8 +22,7 @@ import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.tdar.web.functional.util.ByLabelText;
-import org.tdar.web.functional.util.TdarExpectedConditions;
+import org.tdar.web.functional.util.*;
 
 public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
@@ -289,15 +286,19 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
      * @param cbid
      */
     private void findAndClickDataset(String text, String cbid) {
+        WebElementSelection currentResults = find("#modalResults tbody tr");
         find(name("searchFilter.title")).val(text);
+        if(!currentResults.isEmpty()) {
+            waitFor(ExpectedConditions.stalenessOf(currentResults.last()));
+        }
         // wait for response ... would be nice to not use this, but we could already have the checkbox, and have issues when the ajax cycles back
         //fixme: this wait seems to be necessary for some reason
 //        waitFor(2);
         //wait until the one of the rows contains the specified text in the 'title' column
-        waitFor(TdarExpectedConditions.textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
+        waitFor(textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
         By checkbox = id(cbid);
-        waitFor(ExpectedConditions.elementToBeClickable(checkbox));
+        waitFor(elementToBeClickable(checkbox));
         find(checkbox).click();
     }
 
