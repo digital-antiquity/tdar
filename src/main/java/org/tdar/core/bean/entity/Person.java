@@ -8,19 +8,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
@@ -61,17 +55,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
 @Check(constraints = "email <> ''")
-public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
+public class Person extends Creator<Person> implements Comparable<Person>, Dedupable<Person>, Validatable {
 
     private static final long serialVersionUID = -3863573773250268081L;
 
     @Transient
     private transient String wildcardName;
-
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, orphanRemoval = true)
-    @JoinColumn(name = "merge_creator_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<Person> synonyms = new HashSet<>();
 
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
@@ -356,17 +345,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Override
     public boolean isValid() {
         return isValidForController() && (getId() != null);
-    }
-
-    @Override
-    @XmlElementWrapper(name = "synonyms")
-    @XmlElement(name = "synonymRef")
-    public Set<Person> getSynonyms() {
-        return synonyms;
-    }
-
-    public void setSynonyms(Set<Person> synonyms) {
-        this.synonyms = synonyms;
     }
 
     @XmlTransient

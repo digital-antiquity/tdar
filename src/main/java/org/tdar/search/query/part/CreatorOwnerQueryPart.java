@@ -17,15 +17,16 @@ import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;
 
-public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
+public class CreatorOwnerQueryPart<C extends Creator<?>> extends FieldQueryPart<C> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Creator term;
+    private Creator<C> term;
 
-    public CreatorOwnerQueryPart(Creator term) {
+    @SuppressWarnings("unchecked")
+    public CreatorOwnerQueryPart(Creator<C> term) {
         this.setTerm(term);
         setAllowInvalid(true);
-        add(term);
+        add((C) term);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
         QueryPartGroup parent = new QueryPartGroup(Operator.OR);
         parent.append(generateGroupForCreator(term));
         if (CollectionUtils.isNotEmpty(term.getSynonyms())) {
-            for (Creator creator : term.getSynonyms()) {
+            for (C creator : term.getSynonyms()) {
                 parent.append(generateGroupForCreator(creator));
             }
         }
@@ -42,6 +43,7 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
         return generateQueryString;
     }
 
+    @SuppressWarnings("rawtypes")
     private QueryPartGroup generateGroupForCreator(Creator creator) {
         QueryPartGroup notGroup = new QueryPartGroup();
         notGroup.setOperator(Operator.AND);
@@ -79,11 +81,11 @@ public class CreatorOwnerQueryPart extends FieldQueryPart<Creator> {
         return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
-    public Creator getTerm() {
+    public Creator<C> getTerm() {
         return term;
     }
 
-    public void setTerm(Creator term) {
+    public void setTerm(Creator<C> term) {
         this.term = term;
     }
 
