@@ -49,7 +49,7 @@
             </div>
         </div>
 
-    <div>
+    <div id="divStatusMessage">
     {{statusMessage}} {{$scope.statusMessage}}
     </div>
 

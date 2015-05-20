@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openqa.selenium.By.id;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
-import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,6 +75,7 @@ import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
 import org.tdar.web.functional.util.LoggingStopWatch;
+import org.tdar.web.functional.util.TdarExpectedConditions;
 import org.tdar.web.functional.util.WebElementSelection;
 
 import com.google.common.base.Predicate;
@@ -1190,7 +1190,7 @@ public abstract class AbstractSeleniumWebITCase {
         if (wasFound) {
             (firstMatch.findElement(By.tagName("a"))).click();
             //waitFor(TestConfiguration.getInstance().getWaitInt());
-            waitFor(invisibilityOf(find(autocompletePopup)));
+            waitFor(TdarExpectedConditions.invisibilityOf(find(autocompletePopup)));
         }
         return wasFound;
     }
@@ -1425,63 +1425,8 @@ public abstract class AbstractSeleniumWebITCase {
     public WebElementSelection waitForAutocompletePopup() {
         //due to how jquery caches autocomplete results, we can't predict which autocomplete that there is only one.  So, we wait until any autocompplete
         //window becomes visible.
-        List<WebElement> elements = waitFor(visibilityOfAnyElementsLocatedBy(By.cssSelector("ul.ui-autocomplete")));
+        List<WebElement> elements = waitFor(TdarExpectedConditions.visibilityOfAnyElementsLocatedBy(By.cssSelector("ul.ui-autocomplete")));
         return new WebElementSelection(elements, getDriver());
     }
-
-    /**
-     *
-     * Waits for at least one of the elements located by the specified locator are visible.
-     *
-     * @param locator
-     * @return
-     */
-    public static ExpectedCondition<List<WebElement>> visibilityOfAnyElementsLocatedBy(
-            final By locator) {
-        return new ExpectedCondition<List<WebElement>>() {
-            @Override
-            public List<WebElement> apply(WebDriver driver) {
-                List<WebElement> elements = driver.findElements(locator);
-                List<WebElement> visibleElements = new ArrayList<>();
-                for(WebElement element : elements){
-                    if(element.isDisplayed()){
-                        visibleElements.add(element);
-                    }
-                }
-                if(visibleElements.isEmpty()) {
-                    return null;
-                } else {
-                    logger.debug("found visible elements:{}", visibleElements);
-                    return visibleElements;
-                }
-            }
-        };
-    }
-
-    /**
-     * Wait until the specified elements are no longer visible.
-     * @param selection
-     * @return
-     */
-    public static ExpectedCondition<Boolean> invisibilityOf(final WebElementSelection selection) {
-
-        return new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(@Nullable WebDriver ignored) {
-                for( WebElement element : selection) {
-                    if(element.isDisplayed()) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
-
-    }
-
-
-
-
-
 
 }

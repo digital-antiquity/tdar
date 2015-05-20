@@ -1,17 +1,20 @@
 package org.tdar.web.functional;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.openqa.selenium.By.*;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
+import static org.tdar.web.functional.util.TdarExpectedConditions.bootstrapModalGone;
+import static org.tdar.web.functional.util.TdarExpectedConditions.locatedElementCountEquals;
+import static org.tdar.web.functional.util.TdarExpectedConditions.locatedElementCountGreaterThan;
 
 import java.util.List;
 
@@ -22,9 +25,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tdar.web.functional.util.ByLabelText;
-import org.tdar.web.functional.util.WebElementSelection;
-
-import javax.annotation.Nullable;
+import org.tdar.web.functional.util.TdarExpectedConditions;
 
 public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
@@ -45,7 +46,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(By.partialLinkText("Integrate")).click();
         Assert.assertTrue(getText().contains("Data Integration"));
         Assert.assertTrue(getCurrentUrl().contains("/workspace/list"));
-        find(By.linkText("Start Now")).click();
+        find(linkText("Start Now")).click();
         Assert.assertTrue(getCurrentUrl().contains("/workspace/integrate"));
     }
     
@@ -68,17 +69,11 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         findAndClickDataset("alexandria", ALEXANDRIA_CHECKBOX);
         // add selected items
         find(className("btn-primary")).click();
+        waitFor(bootstrapModalGone());
 
-        waitFor(new ExpectedCondition<Boolean>() {
-            public String toString() {return "modal to disappear and dataset list to populate";}
-            public Boolean  apply(WebDriver driver) {
-                return  driver.findElements(By.cssSelector("#selDatasets option")).size() > 0
-                        && driver.findElements(By.className("sharedOntologies")).size() == 0
-
-                        //fixme:  this could be pulled out into a more generic expected condition  (e.g. waitFor(modalToDisappear))
-                        && driver.findElements(By.className("modal-backdrop")).size() == 0;
-            }
-        }, 4);
+        //wait for modal to disappear and dataset list to populate
+        waitFor(locatedElementCountEquals(className("sharedOntologies"), 0));
+        waitFor(locatedElementCountGreaterThan(cssSelector("#selDatasets option"), 1));
 
         removeDatasetByPartialName("Knowth");
         assertThat(find(".sharedOntologies").toList(), hasSize(2));
@@ -103,8 +98,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         By alex_select = id("dt_0_" + ALEX_DT_ID);
         chooseSelectByName("LOCATION", alex_select);
         takeScreenshot();
-        find(By.linkText("Add Integration Column")).click();
-        find(By.linkText("Fauna Taxon Ontology")).click();
+        find(linkText("Add Integration Column")).click();
+        find(linkText("Fauna Taxon Ontology")).click();
         // wait for tab visible
         waitFor(id("tabtab1")).isDisplayed();
         // wait for tab contents is visible
@@ -127,7 +122,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         takeScreenshot();
         clearPageCache();
         String pivotTableText = find("#divResultContainer tbody").first().getText();
-        find(By.linkText("Preview")).click();
+        find(linkText("Preview")).click();
 
         //Capture the contents of the preview table body.
         String previewTableText = find("#divResultContainer tbody").last().getText();
@@ -174,16 +169,16 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         logger.debug(getText());
 
         find(aves).click();
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(id("cbont_64870"), true).apply(getDriver()).booleanValue());
-
+        assertThat(find(aves).isSelected(), is(true));
         find(rabbit).click();
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
+        assertThat(find(rabbit).isSelected(), is(true));
         find(sheep).click();
         waitFor(elementToBeClickable(saveButton));
 
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+        assertThat(find(sheep).isSelected(), is(true));
         waitFor(saveButton).click();
-        waitFor(4);
+        waitFor(textToBePresentInElementLocated(id("divStatusMessage"), "success"));
+        //waitFor(4);
         gotoPage("/workspace/list");
         logger.debug(getText());
         clearPageCache();
@@ -192,25 +187,25 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         
         waitFor(partialLinkText("Fauna Taxon Ontology")).click();
         waitFor(".nodechild1");
-        logger.debug(getText());
+        logger.trace(getText());
         takeScreenshot("expecting populated fauna taxon pane");
 
         assertEquals(find(name("integration.title")).val(), TEST_INTEGRATION);
-        String ontologyPaneText = getText().toLowerCase();
-        
-        assertTrue(ontologyPaneText.contains("aves"));
-        assertTrue(ontologyPaneText.contains("rabbit"));
-        assertTrue(ontologyPaneText.contains("taxon"));
-        assertTrue(ontologyPaneText.contains("element"));
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
-        assertTrue(ontologyPaneText.contains("spitalfield"));
-        assertTrue(ontologyPaneText.contains("alexandria"));
+
+        assertThat("the ontology pane should contain these words", getText().toLowerCase(), allOf(
+                containsString("aves"),
+                containsString("rabbit"),
+                containsString("taxon"),
+                containsString("element"),
+                containsString("spitalfield"),
+                containsString("alexandria")
+        ));
+
+        assertThat(find(aves).isSelected(), is(true));
+        assertThat(find(rabbit).isSelected(), is(true));
+        assertThat(find(sheep).isSelected(), is(true));
     }
 
-    
-    
     @Test
     public void testIntegrateRetainCheckboxOnClearAll() throws InterruptedException {
         // add two datasets that work, assert that we get back to an integratable state
@@ -220,8 +215,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // add integration column with a few check boxes
         takeScreenshot();
-        find(By.linkText("Add Integration Column")).click();
-        find(By.linkText("Fauna Taxon Ontology")).click();
+        find(linkText("Add Integration Column")).click();
+        find(linkText("Fauna Taxon Ontology")).click();
         // wait for tab visible
         waitFor(id("tabtab0")).isDisplayed();
         // wait for tab contents is visible
@@ -268,32 +263,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // add selected items
         find(className("btn-primary")).click();
 
-        waitFor(elementCountLocatedBy(className("sharedOntologies"), 2));
-    }
-
-
-
-    //todo jtd:
-    /**
-     * Same as ExpecteConditions.elementCountLocatedBy(), with additional condition that the number of located
-     * elements must equal or exceed the specified minSize
-     *
-     * @param by
-     * @param minSize
-     * @return
-     */
-    private ExpectedCondition<List<WebElement>> elementCountLocatedBy(final By by, final int minSize) {
-        return new ExpectedCondition<List<WebElement>>() {
-            public List<WebElement> apply(WebDriver driver) {
-                List<WebElement> elements = driver.findElements(by);
-                if(elements.size() >= minSize) {
-                    return elements;
-
-                } else {
-                    return null;
-                }
-            }
-        };
+        waitFor(locatedElementCountGreaterThan(className("sharedOntologies"), 2));
     }
 
     private void removeDatasetByPartialName(String name) {
@@ -303,7 +273,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     private void chooseSelectByName(String name, By selector) {
-        List<WebElement> findElements = find(selector).first().findElements(By.tagName("option"));
+        List<WebElement> findElements = find(selector).first().findElements(tagName("option"));
         for (WebElement el : findElements) {
             if (el.getText().contains(name)) {
                 el.click();
@@ -322,9 +292,11 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(name("searchFilter.title")).val(text);
         // wait for response ... would be nice to not use this, but we could already have the checkbox, and have issues when the ajax cycles back
         //fixme: this wait seems to be necessary for some reason
-        waitFor(2);
+//        waitFor(2);
+        //wait until the one of the rows contains the specified text in the 'title' column
+        waitFor(TdarExpectedConditions.textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
-        By checkbox = By.id(cbid);
+        By checkbox = id(cbid);
         waitFor(ExpectedConditions.elementToBeClickable(checkbox));
         find(checkbox).click();
     }
