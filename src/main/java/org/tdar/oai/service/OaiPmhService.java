@@ -107,7 +107,7 @@ public class OaiPmhService {
      * 
      * @return
      */
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public IdentifyType getIdentifyResponse() {
         IdentifyType ident = new IdentifyType();
         ident.setBaseURL(config.getBaseUrl() + "/oai-pmh/oai");
@@ -330,7 +330,7 @@ public class OaiPmhService {
                 switch (metadataFormat) {
                     case DC:
                         if (resource instanceof Creator) {
-                            Creator creator = (Creator) resource;
+                            Creator<?> creator = (Creator<?>) resource;
                             // create a "mock" DC record for the creator?
                             DublinCoreDocument dcdoc = new DublinCoreDocument();
                             dcdoc.getTitle().add(creator.getProperName());
@@ -352,7 +352,6 @@ public class OaiPmhService {
                         }
 
                         meta = ModsTransformer.transformAny((Resource) resource).getRootElement();
-                        logger.debug("{}", meta);
                         break;
                     case TDAR:
                         try {
@@ -382,7 +381,7 @@ public class OaiPmhService {
      * @return
      * @throws OAIException
      */
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public ListMetadataFormatsType listMetadataFormats(OaiIdentifier identifier) throws OAIException {
         ListMetadataFormatsType formats = new ListMetadataFormatsType();
 
@@ -412,7 +411,7 @@ public class OaiPmhService {
      * @return
      * @throws OAIException
      */
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public GetRecordType getGetRecordResponse(OaiIdentifier identifier, OAIMetadataFormat requestedFormat) throws OAIException {
         // check that this kind of record can be disseminated in the requested format
         GetRecordType get = new GetRecordType();
@@ -445,7 +444,7 @@ public class OaiPmhService {
      * @throws OAIException
      * @throws ParseException
      */
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException,
             ParseException {
         ListRecordsType response = new ListRecordsType();
@@ -465,7 +464,7 @@ public class OaiPmhService {
      * @throws OAIException
      * @throws ParseException
      */
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken)
             throws OAIException, ParseException {
         ListIdentifiersType response = new ListIdentifiersType();
@@ -483,7 +482,7 @@ public class OaiPmhService {
      * @return
      * @throws OAIException
      */
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public ListSetsType listSets(Date from, Date until, OAIMetadataFormat requestedFormat, OAIResumptionToken resumptionToken) throws OAIException {
         // Sort results by dateUpdated ascending and filter by dates, either supplied in OAI-PMH 'from' and 'to' parameters, or encoded as parts of the
         // 'resumptionToken' Optionally filter results by date range In Lucene, dates are stored as "yyyyMMddHHmmssSSS" in UTC time zone see
