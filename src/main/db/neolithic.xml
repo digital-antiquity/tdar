@@ -74,832 +74,832 @@
 	<changeSet id="neolithic-6" author="abrin">
 	<comment>setting the iso country code on the country</comment>
 		<update tableName="geographic_keyword"><column name="code" value="FLK"/>
-			<where> level='COUNTRY' and label like 'Falkland Islands (Islas Malvinas)%</where>
+			<where> level='COUNTRY' and label like 'Falkland Islands (Islas Malvinas)%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GUF"/>
-			<where> level='COUNTRY' and label like 'Department of Guiana%</where>
+			<where> level='COUNTRY' and label like 'Department of Guiana%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GUY"/>
-			<where> level='COUNTRY' and label like 'Co-operative Republic of Guyana%</where>
+			<where> level='COUNTRY' and label like 'Co-operative Republic of Guyana%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PCN"/>
-			<where> level='COUNTRY' and label like 'Pitcairn, Henderson, Ducie, and Oeno Isl%</where>
+			<where> level='COUNTRY' and label like 'Pitcairn, Henderson, Ducie, and Oeno Isl%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SGS"/>
-			<where> level='COUNTRY' and label like 'South Georgia and the South Sandwich Is%</where>
+			<where> level='COUNTRY' and label like 'South Georgia and the South Sandwich Is%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SHN"/>
-			<where> level='COUNTRY' and label like 'St. Helena%</where>
+			<where> level='COUNTRY' and label like 'St. Helena%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SUR"/>
-			<where> level='COUNTRY' and label like 'Republic of Suriname%</where>
+			<where> level='COUNTRY' and label like 'Republic of Suriname%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TTO"/>
-			<where> level='COUNTRY' and label like 'Republic of Trinidad and Tobago%</where>
+			<where> level='COUNTRY' and label like 'Republic of Trinidad and Tobago%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="VEN"/>
-			<where> level='COUNTRY' and label like 'Bolivarian Republic of Venezuela%</where>
+			<where> level='COUNTRY' and label like 'Bolivarian Republic of Venezuela%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ASM"/>
-			<where> level='COUNTRY' and label like 'Territory of American Samoa%</where>
+			<where> level='COUNTRY' and label like 'Territory of American Samoa%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="COK"/>
-			<where> level='COUNTRY' and label like 'Cook Islands%</where>
+			<where> level='COUNTRY' and label like 'Cook Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PYF"/>
-			<where> level='COUNTRY' and label like 'Territory of French Polynesia%</where>
+			<where> level='COUNTRY' and label like 'Territory of French Polynesia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NIU"/>
-			<where> level='COUNTRY' and label like 'Niue%</where>
+			<where> level='COUNTRY' and label like 'Niue%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="WSM"/>
-			<where> level='COUNTRY' and label like 'Independent State of Samoa%</where>
+			<where> level='COUNTRY' and label like 'Independent State of Samoa%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TKL"/>
-			<where> level='COUNTRY' and label like 'Tokelau%</where>
+			<where> level='COUNTRY' and label like 'Tokelau%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TON"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Tonga%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Tonga%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="WLF"/>
-			<where> level='COUNTRY' and label like 'Territory of the Wallis and Futuna Islan%</where>
+			<where> level='COUNTRY' and label like 'Territory of the Wallis and Futuna Islan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ARG"/>
-			<where> level='COUNTRY' and label like 'Argentine Republic%</where>
+			<where> level='COUNTRY' and label like 'Argentine Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BOL"/>
-			<where> level='COUNTRY' and label like 'Republic of Bolivia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Bolivia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ECU"/>
-			<where> level='COUNTRY' and label like 'Republic of Ecuador%</where>
+			<where> level='COUNTRY' and label like 'Republic of Ecuador%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CPV"/>
-			<where> level='COUNTRY' and label like 'Republic of Cape Verde%</where>
+			<where> level='COUNTRY' and label like 'Republic of Cape Verde%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PRY"/>
-			<where> level='COUNTRY' and label like 'Republic of Paraguay%</where>
+			<where> level='COUNTRY' and label like 'Republic of Paraguay%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BRA"/>
-			<where> level='COUNTRY' and label like 'Federative Republic of Brazil%</where>
+			<where> level='COUNTRY' and label like 'Federative Republic of Brazil%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CHL"/>
-			<where> level='COUNTRY' and label like 'Republic of Chile%</where>
+			<where> level='COUNTRY' and label like 'Republic of Chile%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BHS"/>
-			<where> level='COUNTRY' and label like 'Commonwealth of The Bahamas%</where>
+			<where> level='COUNTRY' and label like 'Commonwealth of The Bahamas%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PER"/>
-			<where> level='COUNTRY' and label like 'Republic of Peru%</where>
+			<where> level='COUNTRY' and label like 'Republic of Peru%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="URY"/>
-			<where> level='COUNTRY' and label like 'Oriental Republic of Uruguay%</where>
+			<where> level='COUNTRY' and label like 'Oriental Republic of Uruguay%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AIA"/>
-			<where> level='COUNTRY' and label like 'Anguilla%</where>
+			<where> level='COUNTRY' and label like 'Anguilla%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ATG"/>
-			<where> level='COUNTRY' and label like 'Antigua and Barbuda%</where>
+			<where> level='COUNTRY' and label like 'Antigua and Barbuda%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="VGB"/>
-			<where> level='COUNTRY' and label like 'British Virgin Islands%</where>
+			<where> level='COUNTRY' and label like 'British Virgin Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MSR"/>
-			<where> level='COUNTRY' and label like 'Montserrat%</where>
+			<where> level='COUNTRY' and label like 'Montserrat%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PRI"/>
-			<where> level='COUNTRY' and label like 'Commonwealth of Puerto Rico%</where>
+			<where> level='COUNTRY' and label like 'Commonwealth of Puerto Rico%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KNA"/>
-			<where> level='COUNTRY' and label like 'Federation of Saint Kitts and Nevis%</where>
+			<where> level='COUNTRY' and label like 'Federation of Saint Kitts and Nevis%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="VIR"/>
-			<where> level='COUNTRY' and label like 'United States Virgin Islands%</where>
+			<where> level='COUNTRY' and label like 'United States Virgin Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CAN"/>
-			<where> level='COUNTRY' and label like 'Canada%</where>
+			<where> level='COUNTRY' and label like 'Canada%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GTM"/>
-			<where> level='COUNTRY' and label like 'Republic of Guatemala%</where>
+			<where> level='COUNTRY' and label like 'Republic of Guatemala%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KIR"/>
-			<where> level='COUNTRY' and label like 'Republic of Kiribati%</where>
+			<where> level='COUNTRY' and label like 'Republic of Kiribati%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TCA"/>
-			<where> level='COUNTRY' and label like 'Turks and Caicos Islands%</where>
+			<where> level='COUNTRY' and label like 'Turks and Caicos Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BLZ"/>
-			<where> level='COUNTRY' and label like 'Belize%</where>
+			<where> level='COUNTRY' and label like 'Belize%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CYM"/>
-			<where> level='COUNTRY' and label like 'Cayman Islands%</where>
+			<where> level='COUNTRY' and label like 'Cayman Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PRT"/>
-			<where> level='COUNTRY' and label like 'Portuguese Republic%</where>
+			<where> level='COUNTRY' and label like 'Portuguese Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SVN"/>
-			<where> level='COUNTRY' and label like 'Republic of Slovenia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Slovenia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MEX"/>
-			<where> level='COUNTRY' and label like 'United Mexican States%</where>
+			<where> level='COUNTRY' and label like 'United Mexican States%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BRB"/>
-			<where> level='COUNTRY' and label like 'Barbados%</where>
+			<where> level='COUNTRY' and label like 'Barbados%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="DMA"/>
-			<where> level='COUNTRY' and label like 'Commonwealth of Dominica%</where>
+			<where> level='COUNTRY' and label like 'Commonwealth of Dominica%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GRD"/>
-			<where> level='COUNTRY' and label like 'Grenada%</where>
+			<where> level='COUNTRY' and label like 'Grenada%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GLP"/>
-			<where> level='COUNTRY' and label like 'Department of Guadeloupe%</where>
+			<where> level='COUNTRY' and label like 'Department of Guadeloupe%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MTQ"/>
-			<where> level='COUNTRY' and label like 'Department of Martinique%</where>
+			<where> level='COUNTRY' and label like 'Department of Martinique%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LCA"/>
-			<where> level='COUNTRY' and label like 'St. Lucia%</where>
+			<where> level='COUNTRY' and label like 'St. Lucia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SPM"/>
-			<where> level='COUNTRY' and label like 'Territorial Collectivity of Saint Pierre%</where>
+			<where> level='COUNTRY' and label like 'Territorial Collectivity of Saint Pierre%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="VCT"/>
-			<where> level='COUNTRY' and label like 'St. Vincent and the Grenadines%</where>
+			<where> level='COUNTRY' and label like 'St. Vincent and the Grenadines%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ABW"/>
-			<where> level='COUNTRY' and label like 'Aruba%</where>
+			<where> level='COUNTRY' and label like 'Aruba%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BMU"/>
-			<where> level='COUNTRY' and label like 'Bermuda%</where>
+			<where> level='COUNTRY' and label like 'Bermuda%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="DOM"/>
-			<where> level='COUNTRY' and label like 'Dominican Republic%</where>
+			<where> level='COUNTRY' and label like 'Dominican Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="HTI"/>
-			<where> level='COUNTRY' and label like 'Republic of Haiti%</where>
+			<where> level='COUNTRY' and label like 'Republic of Haiti%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="JAM"/>
-			<where> level='COUNTRY' and label like 'Jamaica%</where>
+			<where> level='COUNTRY' and label like 'Jamaica%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ANT"/>
-			<where> level='COUNTRY' and label like 'Netherlands Antilles%</where>
+			<where> level='COUNTRY' and label like 'Netherlands Antilles%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LIE"/>
-			<where> level='COUNTRY' and label like 'Principality of Liechtenstein%</where>
+			<where> level='COUNTRY' and label like 'Principality of Liechtenstein%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ESP"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Spain%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Spain%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="COL"/>
-			<where> level='COUNTRY' and label like 'Republic of Colombia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Colombia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CRI"/>
-			<where> level='COUNTRY' and label like 'Republic of Costa Rica%</where>
+			<where> level='COUNTRY' and label like 'Republic of Costa Rica%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MRT"/>
-			<where> level='COUNTRY' and label like 'Islamic Republic of Mauritania%</where>
+			<where> level='COUNTRY' and label like 'Islamic Republic of Mauritania%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CUB"/>
-			<where> level='COUNTRY' and label like 'Republic of Cuba%</where>
+			<where> level='COUNTRY' and label like 'Republic of Cuba%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SLV"/>
-			<where> level='COUNTRY' and label like 'Republic of El Salvador%</where>
+			<where> level='COUNTRY' and label like 'Republic of El Salvador%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="HND"/>
-			<where> level='COUNTRY' and label like 'Republic of Honduras%</where>
+			<where> level='COUNTRY' and label like 'Republic of Honduras%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LUX"/>
-			<where> level='COUNTRY' and label like 'Grand Duchy of Luxembourg%</where>
+			<where> level='COUNTRY' and label like 'Grand Duchy of Luxembourg%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NIC"/>
-			<where> level='COUNTRY' and label like 'Republic of Nicaragua%</where>
+			<where> level='COUNTRY' and label like 'Republic of Nicaragua%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PAN"/>
-			<where> level='COUNTRY' and label like 'Republic of Panama%</where>
+			<where> level='COUNTRY' and label like 'Republic of Panama%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="FRO"/>
-			<where> level='COUNTRY' and label like 'Faroe Islands%</where>
+			<where> level='COUNTRY' and label like 'Faroe Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GRL"/>
-			<where> level='COUNTRY' and label like 'Greenland%</where>
+			<where> level='COUNTRY' and label like 'Greenland%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="DJI"/>
-			<where> level='COUNTRY' and label like 'Republic of Djibouti%</where>
+			<where> level='COUNTRY' and label like 'Republic of Djibouti%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ISL"/>
-			<where> level='COUNTRY' and label like 'Republic of Iceland%</where>
+			<where> level='COUNTRY' and label like 'Republic of Iceland%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GNQ"/>
-			<where> level='COUNTRY' and label like 'Republic of Equatorial Guinea%</where>
+			<where> level='COUNTRY' and label like 'Republic of Equatorial Guinea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IRL"/>
-			<where> level='COUNTRY' and label like 'Ireland%</where>
+			<where> level='COUNTRY' and label like 'Ireland%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IMY"/>
-			<where> level='COUNTRY' and label like 'Isle of Man%</where>
+			<where> level='COUNTRY' and label like 'Isle of Man%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SJM"/>
-			<where> level='COUNTRY' and label like 'Jan Mayen%</where>
+			<where> level='COUNTRY' and label like 'Jan Mayen%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MAR"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Morocco%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Morocco%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ESH"/>
-			<where> level='COUNTRY' and label like 'Western Sahara%</where>
+			<where> level='COUNTRY' and label like 'Western Sahara%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GBR"/>
-			<where> level='COUNTRY' and label like 'United Kingdom of Great Britain and Nort%</where>
+			<where> level='COUNTRY' and label like 'United Kingdom of Great Britain and Nort%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BRN"/>
-			<where> level='COUNTRY' and label like 'Negara Brunei Darussalam%</where>
+			<where> level='COUNTRY' and label like 'Negara Brunei Darussalam%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CIV"/>
-			<where> level='COUNTRY' and label like 'Republic of Cote d'Ivoire%</where>
+			<where> level='COUNTRY' and label like 'Republic of Cote d''Ivoire%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GHA"/>
-			<where> level='COUNTRY' and label like 'Republic of Ghana%</where>
+			<where> level='COUNTRY' and label like 'Republic of Ghana%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GIB"/>
-			<where> level='COUNTRY' and label like 'Gibraltar%</where>
+			<where> level='COUNTRY' and label like 'Gibraltar%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LBR"/>
-			<where> level='COUNTRY' and label like 'Republic of Liberia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Liberia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ERI"/>
-			<where> level='COUNTRY' and label like 'State of Eritrea%</where>
+			<where> level='COUNTRY' and label like 'State of Eritrea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BFA"/>
-			<where> level='COUNTRY' and label like 'Burkina Faso%</where>
+			<where> level='COUNTRY' and label like 'Burkina Faso%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GIN"/>
-			<where> level='COUNTRY' and label like 'Republic of Guinea%</where>
+			<where> level='COUNTRY' and label like 'Republic of Guinea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GNB"/>
-			<where> level='COUNTRY' and label like 'Republic of Guinea-Bissau%</where>
+			<where> level='COUNTRY' and label like 'Republic of Guinea-Bissau%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MLI"/>
-			<where> level='COUNTRY' and label like 'Republic of Mali%</where>
+			<where> level='COUNTRY' and label like 'Republic of Mali%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CHN"/>
-			<where> level='COUNTRY' and label like 'People's Republic of China%</where>
+			<where> level='COUNTRY' and label like 'People''s Republic of China%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SEN"/>
-			<where> level='COUNTRY' and label like 'Republic of Senegal%</where>
+			<where> level='COUNTRY' and label like 'Republic of Senegal%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SLE"/>
-			<where> level='COUNTRY' and label like 'Republic of Sierra Leone%</where>
+			<where> level='COUNTRY' and label like 'Republic of Sierra Leone%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GMB"/>
-			<where> level='COUNTRY' and label like 'Republic of The Gambia%</where>
+			<where> level='COUNTRY' and label like 'Republic of The Gambia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ETH"/>
-			<where> level='COUNTRY' and label like 'Federal Democratic Republic of Ethiopia%</where>
+			<where> level='COUNTRY' and label like 'Federal Democratic Republic of Ethiopia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SDN"/>
-			<where> level='COUNTRY' and label like 'Republic of the Sudan%</where>
+			<where> level='COUNTRY' and label like 'Republic of the Sudan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="UGA"/>
-			<where> level='COUNTRY' and label like 'Republic of Uganda%</where>
+			<where> level='COUNTRY' and label like 'Republic of Uganda%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PSE"/>
-			<where> level='COUNTRY' and label like 'Gaza Strip%</where>
+			<where> level='COUNTRY' and label like 'Gaza Strip%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IRQ"/>
-			<where> level='COUNTRY' and label like 'Republic of Iraq%</where>
+			<where> level='COUNTRY' and label like 'Republic of Iraq%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ISR"/>
-			<where> level='COUNTRY' and label like 'State of Israel%</where>
+			<where> level='COUNTRY' and label like 'State of Israel%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="JOR"/>
-			<where> level='COUNTRY' and label like 'Hashemite Kingdom of Jordan%</where>
+			<where> level='COUNTRY' and label like 'Hashemite Kingdom of Jordan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MHL"/>
-			<where> level='COUNTRY' and label like 'Republic of the Marshall Islands%</where>
+			<where> level='COUNTRY' and label like 'Republic of the Marshall Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TCD"/>
-			<where> level='COUNTRY' and label like 'Republic of Chad%</where>
+			<where> level='COUNTRY' and label like 'Republic of Chad%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="DZA"/>
-			<where> level='COUNTRY' and label like 'People's Democratic Republic of Algeria%</where>
+			<where> level='COUNTRY' and label like 'People''s Democratic Republic of Algeria%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KAZ"/>
-			<where> level='COUNTRY' and label like 'Republic of Kazakhstan%</where>
+			<where> level='COUNTRY' and label like 'Republic of Kazakhstan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NOR"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Norway%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Norway%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="RUS"/>
-			<where> level='COUNTRY' and label like 'Russian Federation%</where>
+			<where> level='COUNTRY' and label like 'Russian Federation%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CAF"/>
-			<where> level='COUNTRY' and label like 'Central African Republic%</where>
+			<where> level='COUNTRY' and label like 'Central African Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="FSM"/>
-			<where> level='COUNTRY' and label like 'Federated States of Micronesia%</where>
+			<where> level='COUNTRY' and label like 'Federated States of Micronesia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SWE"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Sweden%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Sweden%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AND"/>
-			<where> level='COUNTRY' and label like 'Principality of Andorra%</where>
+			<where> level='COUNTRY' and label like 'Principality of Andorra%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LBY"/>
-			<where> level='COUNTRY' and label like 'Great Socialist People's Libyan Arab Jam%</where>
+			<where> level='COUNTRY' and label like 'Great Socialist People''s Libyan Arab Jam%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MCO"/>
-			<where> level='COUNTRY' and label like 'Principality of Monaco%</where>
+			<where> level='COUNTRY' and label like 'Principality of Monaco%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TUN"/>
-			<where> level='COUNTRY' and label like 'Tunisian Republic%</where>
+			<where> level='COUNTRY' and label like 'Tunisian Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BEN"/>
-			<where> level='COUNTRY' and label like 'Republic of Benin%</where>
+			<where> level='COUNTRY' and label like 'Republic of Benin%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CMR"/>
-			<where> level='COUNTRY' and label like 'Republic of Cameroon%</where>
+			<where> level='COUNTRY' and label like 'Republic of Cameroon%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MDA"/>
-			<where> level='COUNTRY' and label like 'Republic of Moldova%</where>
+			<where> level='COUNTRY' and label like 'Republic of Moldova%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NER"/>
-			<where> level='COUNTRY' and label like 'Republic of Niger%</where>
+			<where> level='COUNTRY' and label like 'Republic of Niger%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NGA"/>
-			<where> level='COUNTRY' and label like 'Federal Republic of Nigeria%</where>
+			<where> level='COUNTRY' and label like 'Federal Republic of Nigeria%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="STP"/>
-			<where> level='COUNTRY' and label like 'Sao Tome and Principe%</where>
+			<where> level='COUNTRY' and label like 'Sao Tome and Principe%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TGO"/>
-			<where> level='COUNTRY' and label like 'Togolese Republic%</where>
+			<where> level='COUNTRY' and label like 'Togolese Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ALB"/>
-			<where> level='COUNTRY' and label like 'Republic of Albania%</where>
+			<where> level='COUNTRY' and label like 'Republic of Albania%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BIH"/>
-			<where> level='COUNTRY' and label like 'Bosnia and Herzegovina%</where>
+			<where> level='COUNTRY' and label like 'Bosnia and Herzegovina%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="HRV"/>
-			<where> level='COUNTRY' and label like 'Republic of Croatia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Croatia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AUT"/>
-			<where> level='COUNTRY' and label like 'Republic of Austria%</where>
+			<where> level='COUNTRY' and label like 'Republic of Austria%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MNP"/>
-			<where> level='COUNTRY' and label like 'Commonwealth of the Northern Mariana Isl%</where>
+			<where> level='COUNTRY' and label like 'Commonwealth of the Northern Mariana Isl%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ITA"/>
-			<where> level='COUNTRY' and label like 'Italian Republic%</where>
+			<where> level='COUNTRY' and label like 'Italian Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MKD"/>
-			<where> level='COUNTRY' and label like 'The Former Yugoslav Republic of Macedoni%</where>
+			<where> level='COUNTRY' and label like 'The Former Yugoslav Republic of Macedoni%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MLT"/>
-			<where> level='COUNTRY' and label like 'Republic of Malta%</where>
+			<where> level='COUNTRY' and label like 'Republic of Malta%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SMR"/>
-			<where> level='COUNTRY' and label like 'Republic of San Marino%</where>
+			<where> level='COUNTRY' and label like 'Republic of San Marino%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BGR"/>
-			<where> level='COUNTRY' and label like 'Republic of Bulgaria%</where>
+			<where> level='COUNTRY' and label like 'Republic of Bulgaria%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CYP"/>
-			<where> level='COUNTRY' and label like 'Republic of Cyprus%</where>
+			<where> level='COUNTRY' and label like 'Republic of Cyprus%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="EGY"/>
-			<where> level='COUNTRY' and label like 'Arab Republic of Egypt%</where>
+			<where> level='COUNTRY' and label like 'Arab Republic of Egypt%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GEO"/>
-			<where> level='COUNTRY' and label like 'Georgia%</where>
+			<where> level='COUNTRY' and label like 'Georgia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CZE"/>
-			<where> level='COUNTRY' and label like 'Czech Republic%</where>
+			<where> level='COUNTRY' and label like 'Czech Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SAU"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Saudi Arabia%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Saudi Arabia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GRC"/>
-			<where> level='COUNTRY' and label like 'Hellenic Republic%</where>
+			<where> level='COUNTRY' and label like 'Hellenic Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LBN"/>
-			<where> level='COUNTRY' and label like 'Lebanese Republic%</where>
+			<where> level='COUNTRY' and label like 'Lebanese Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SYR"/>
-			<where> level='COUNTRY' and label like 'Syrian Arab Republic%</where>
+			<where> level='COUNTRY' and label like 'Syrian Arab Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SVK"/>
-			<where> level='COUNTRY' and label like 'Slovak Republic%</where>
+			<where> level='COUNTRY' and label like 'Slovak Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TUR"/>
-			<where> level='COUNTRY' and label like 'Republic of Turkey%</where>
+			<where> level='COUNTRY' and label like 'Republic of Turkey%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="QAT"/>
-			<where> level='COUNTRY' and label like 'State of Qatar%</where>
+			<where> level='COUNTRY' and label like 'State of Qatar%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="DNK"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Denmark%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Denmark%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="HUN"/>
-			<where> level='COUNTRY' and label like 'Republic of Hungary%</where>
+			<where> level='COUNTRY' and label like 'Republic of Hungary%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="POL"/>
-			<where> level='COUNTRY' and label like 'Republic of Poland%</where>
+			<where> level='COUNTRY' and label like 'Republic of Poland%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SJM"/>
-			<where> level='COUNTRY' and label like 'Svalbard%</where>
+			<where> level='COUNTRY' and label like 'Svalbard%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BEL"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Belgium%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Belgium%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="FRA"/>
-			<where> level='COUNTRY' and label like 'French Republic%</where>
+			<where> level='COUNTRY' and label like 'French Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="DEU"/>
-			<where> level='COUNTRY' and label like 'Federal Republic of Germany%</where>
+			<where> level='COUNTRY' and label like 'Federal Republic of Germany%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CHE"/>
-			<where> level='COUNTRY' and label like 'Swiss Confederation%</where>
+			<where> level='COUNTRY' and label like 'Swiss Confederation%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="USA"/>
-			<where> level='COUNTRY' and label like 'United States of America%</where>
+			<where> level='COUNTRY' and label like 'United States of America%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BLR"/>
-			<where> level='COUNTRY' and label like 'Republic of Belarus%</where>
+			<where> level='COUNTRY' and label like 'Republic of Belarus%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="EST"/>
-			<where> level='COUNTRY' and label like 'Republic of Estonia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Estonia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ARE"/>
-			<where> level='COUNTRY' and label like 'United Arab Emirates%</where>
+			<where> level='COUNTRY' and label like 'United Arab Emirates%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="FIN"/>
-			<where> level='COUNTRY' and label like 'Republic of Finland%</where>
+			<where> level='COUNTRY' and label like 'Republic of Finland%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LVA"/>
-			<where> level='COUNTRY' and label like 'Republic of Latvia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Latvia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LTU"/>
-			<where> level='COUNTRY' and label like 'Republic of Lithuania%</where>
+			<where> level='COUNTRY' and label like 'Republic of Lithuania%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ROU"/>
-			<where> level='COUNTRY' and label like 'Romania%</where>
+			<where> level='COUNTRY' and label like 'Romania%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="OMN"/>
-			<where> level='COUNTRY' and label like 'Sultanate of Oman%</where>
+			<where> level='COUNTRY' and label like 'Sultanate of Oman%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="UKR"/>
-			<where> level='COUNTRY' and label like 'Ukraine%</where>
+			<where> level='COUNTRY' and label like 'Ukraine%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BTN"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Bhutan%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Bhutan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IND"/>
-			<where> level='COUNTRY' and label like 'Republic of India%</where>
+			<where> level='COUNTRY' and label like 'Republic of India%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MDV"/>
-			<where> level='COUNTRY' and label like 'Republic of Maldives%</where>
+			<where> level='COUNTRY' and label like 'Republic of Maldives%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SOM"/>
-			<where> level='COUNTRY' and label like 'Somalia%</where>
+			<where> level='COUNTRY' and label like 'Somalia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LKA"/>
-			<where> level='COUNTRY' and label like 'Democratic Socialist Republic of Sri Lan%</where>
+			<where> level='COUNTRY' and label like 'Democratic Socialist Republic of Sri Lan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TKM"/>
-			<where> level='COUNTRY' and label like 'Turkmenistan%</where>
+			<where> level='COUNTRY' and label like 'Turkmenistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="UZB"/>
-			<where> level='COUNTRY' and label like 'Republic of Uzbekistan%</where>
+			<where> level='COUNTRY' and label like 'Republic of Uzbekistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="YEM"/>
-			<where> level='COUNTRY' and label like 'Republic of Yemen%</where>
+			<where> level='COUNTRY' and label like 'Republic of Yemen%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ARM"/>
-			<where> level='COUNTRY' and label like 'Republic of Armenia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Armenia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AZE"/>
-			<where> level='COUNTRY' and label like 'Republic of Azerbaijan%</where>
+			<where> level='COUNTRY' and label like 'Republic of Azerbaijan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BHR"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Bahrain%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Bahrain%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NPL"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Nepal%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Nepal%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IRN"/>
-			<where> level='COUNTRY' and label like 'Islamic Republic of Iran%</where>
+			<where> level='COUNTRY' and label like 'Islamic Republic of Iran%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KWT"/>
-			<where> level='COUNTRY' and label like 'State of Kuwait%</where>
+			<where> level='COUNTRY' and label like 'State of Kuwait%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AFG"/>
-			<where> level='COUNTRY' and label like 'Islamic Republic of Afghanistan%</where>
+			<where> level='COUNTRY' and label like 'Islamic Republic of Afghanistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TLS"/>
-			<where> level='COUNTRY' and label like 'Democratic Republic of Timor-Leste%</where>
+			<where> level='COUNTRY' and label like 'Democratic Republic of Timor-Leste%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KGZ"/>
-			<where> level='COUNTRY' and label like 'Kyrgyz Republic%</where>
+			<where> level='COUNTRY' and label like 'Kyrgyz Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PAK"/>
-			<where> level='COUNTRY' and label like 'Islamic Republic of Pakistan%</where>
+			<where> level='COUNTRY' and label like 'Islamic Republic of Pakistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TJK"/>
-			<where> level='COUNTRY' and label like 'Republic of Tajikistan%</where>
+			<where> level='COUNTRY' and label like 'Republic of Tajikistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BGD"/>
-			<where> level='COUNTRY' and label like 'People's Republic of Bangladesh%</where>
+			<where> level='COUNTRY' and label like 'People''s Republic of Bangladesh%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MNG"/>
-			<where> level='COUNTRY' and label like 'Mongolia%</where>
+			<where> level='COUNTRY' and label like 'Mongolia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PLW"/>
-			<where> level='COUNTRY' and label like 'Republic of Palau%</where>
+			<where> level='COUNTRY' and label like 'Republic of Palau%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PHL"/>
-			<where> level='COUNTRY' and label like 'Republic of the Philippines%</where>
+			<where> level='COUNTRY' and label like 'Republic of the Philippines%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KHM"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Cambodia%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Cambodia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LAO"/>
-			<where> level='COUNTRY' and label like 'Lao People's Democratic Republic%</where>
+			<where> level='COUNTRY' and label like 'Lao People''s Democratic Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="FJI"/>
-			<where> level='COUNTRY' and label like 'Republic of the Fiji Islands%</where>
+			<where> level='COUNTRY' and label like 'Republic of the Fiji Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MYS"/>
-			<where> level='COUNTRY' and label like 'Malaysia%</where>
+			<where> level='COUNTRY' and label like 'Malaysia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MMR"/>
-			<where> level='COUNTRY' and label like 'Union of Myanmar%</where>
+			<where> level='COUNTRY' and label like 'Union of Myanmar%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BWA"/>
-			<where> level='COUNTRY' and label like 'Republic of Botswana%</where>
+			<where> level='COUNTRY' and label like 'Republic of Botswana%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PRK"/>
-			<where> level='COUNTRY' and label like 'Democratic People's Republic of Korea%</where>
+			<where> level='COUNTRY' and label like 'Democratic People''s Republic of Korea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SGP"/>
-			<where> level='COUNTRY' and label like 'Republic of Singapore%</where>
+			<where> level='COUNTRY' and label like 'Republic of Singapore%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KOR"/>
-			<where> level='COUNTRY' and label like 'Republic of Korea%</where>
+			<where> level='COUNTRY' and label like 'Republic of Korea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="THA"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Thailand%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Thailand%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="VNM"/>
-			<where> level='COUNTRY' and label like 'Socialist Republic of Vietnam%</where>
+			<where> level='COUNTRY' and label like 'Socialist Republic of Vietnam%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GUM"/>
-			<where> level='COUNTRY' and label like 'Territory of Guam%</where>
+			<where> level='COUNTRY' and label like 'Territory of Guam%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BDI"/>
-			<where> level='COUNTRY' and label like 'Republic of Burundi%</where>
+			<where> level='COUNTRY' and label like 'Republic of Burundi%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TZA"/>
-			<where> level='COUNTRY' and label like 'United Republic of Tanzania%</where>
+			<where> level='COUNTRY' and label like 'United Republic of Tanzania%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ZMB"/>
-			<where> level='COUNTRY' and label like 'Republic of Zambia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Zambia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NRU"/>
-			<where> level='COUNTRY' and label like 'Republic of Nauru%</where>
+			<where> level='COUNTRY' and label like 'Republic of Nauru%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ZWE"/>
-			<where> level='COUNTRY' and label like 'Republic of Zimbabwe%</where>
+			<where> level='COUNTRY' and label like 'Republic of Zimbabwe%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ATA"/>
-			<where> level='COUNTRY' and label like 'Antarctica%</where>
+			<where> level='COUNTRY' and label like 'Antarctica%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BVT"/>
-			<where> level='COUNTRY' and label like 'Bouvet Island%</where>
+			<where> level='COUNTRY' and label like 'Bouvet Island%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="JPN"/>
-			<where> level='COUNTRY' and label like 'Japan%</where>
+			<where> level='COUNTRY' and label like 'Japan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KEN"/>
-			<where> level='COUNTRY' and label like 'Republic of Kenya%</where>
+			<where> level='COUNTRY' and label like 'Republic of Kenya%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="RWA"/>
-			<where> level='COUNTRY' and label like 'Republic of Rwanda%</where>
+			<where> level='COUNTRY' and label like 'Republic of Rwanda%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="COM"/>
-			<where> level='COUNTRY' and label like 'Union of the Comoros%</where>
+			<where> level='COUNTRY' and label like 'Union of the Comoros%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ATF"/>
-			<where> level='COUNTRY' and label like 'Territory of the French Southern and Ant%</where>
+			<where> level='COUNTRY' and label like 'Territory of the French Southern and Ant%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="HMD"/>
-			<where> level='COUNTRY' and label like 'Territory of Heard Island and McDonald I%</where>
+			<where> level='COUNTRY' and label like 'Territory of Heard Island and McDonald I%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MWI"/>
-			<where> level='COUNTRY' and label like 'Republic of Malawi%</where>
+			<where> level='COUNTRY' and label like 'Republic of Malawi%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BHR"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Bahrain%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Bahrain%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NPL"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Nepal%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Nepal%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IRN"/>
-			<where> level='COUNTRY' and label like 'Islamic Republic of Iran%</where>
+			<where> level='COUNTRY' and label like 'Islamic Republic of Iran%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KWT"/>
-			<where> level='COUNTRY' and label like 'State of Kuwait%</where>
+			<where> level='COUNTRY' and label like 'State of Kuwait%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AFG"/>
-			<where> level='COUNTRY' and label like 'Islamic Republic of Afghanistan%</where>
+			<where> level='COUNTRY' and label like 'Islamic Republic of Afghanistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TLS"/>
-			<where> level='COUNTRY' and label like 'Democratic Republic of Timor-Leste%</where>
+			<where> level='COUNTRY' and label like 'Democratic Republic of Timor-Leste%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KGZ"/>
-			<where> level='COUNTRY' and label like 'Kyrgyz Republic%</where>
+			<where> level='COUNTRY' and label like 'Kyrgyz Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PAK"/>
-			<where> level='COUNTRY' and label like 'Islamic Republic of Pakistan%</where>
+			<where> level='COUNTRY' and label like 'Islamic Republic of Pakistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TJK"/>
-			<where> level='COUNTRY' and label like 'Republic of Tajikistan%</where>
+			<where> level='COUNTRY' and label like 'Republic of Tajikistan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BGD"/>
-			<where> level='COUNTRY' and label like 'People's Republic of Bangladesh%</where>
+			<where> level='COUNTRY' and label like 'People''s Republic of Bangladesh%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MNG"/>
-			<where> level='COUNTRY' and label like 'Mongolia%</where>
+			<where> level='COUNTRY' and label like 'Mongolia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PLW"/>
-			<where> level='COUNTRY' and label like 'Republic of Palau%</where>
+			<where> level='COUNTRY' and label like 'Republic of Palau%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PHL"/>
-			<where> level='COUNTRY' and label like 'Republic of the Philippines%</where>
+			<where> level='COUNTRY' and label like 'Republic of the Philippines%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KHM"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Cambodia%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Cambodia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LAO"/>
-			<where> level='COUNTRY' and label like 'Lao People's Democratic Republic%</where>
+			<where> level='COUNTRY' and label like 'Lao People''s Democratic Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="FJI"/>
-			<where> level='COUNTRY' and label like 'Republic of the Fiji Islands%</where>
+			<where> level='COUNTRY' and label like 'Republic of the Fiji Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MYS"/>
-			<where> level='COUNTRY' and label like 'Malaysia%</where>
+			<where> level='COUNTRY' and label like 'Malaysia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MMR"/>
-			<where> level='COUNTRY' and label like 'Union of Myanmar%</where>
+			<where> level='COUNTRY' and label like 'Union of Myanmar%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BWA"/>
-			<where> level='COUNTRY' and label like 'Republic of Botswana%</where>
+			<where> level='COUNTRY' and label like 'Republic of Botswana%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PRK"/>
-			<where> level='COUNTRY' and label like 'Democratic People's Republic of Korea%</where>
+			<where> level='COUNTRY' and label like 'Democratic People''s Republic of Korea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SGP"/>
-			<where> level='COUNTRY' and label like 'Republic of Singapore%</where>
+			<where> level='COUNTRY' and label like 'Republic of Singapore%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KOR"/>
-			<where> level='COUNTRY' and label like 'Republic of Korea%</where>
+			<where> level='COUNTRY' and label like 'Republic of Korea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="THA"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Thailand%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Thailand%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="VNM"/>
-			<where> level='COUNTRY' and label like 'Socialist Republic of Vietnam%</where>
+			<where> level='COUNTRY' and label like 'Socialist Republic of Vietnam%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GUM"/>
-			<where> level='COUNTRY' and label like 'Territory of Guam%</where>
+			<where> level='COUNTRY' and label like 'Territory of Guam%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BDI"/>
-			<where> level='COUNTRY' and label like 'Republic of Burundi%</where>
+			<where> level='COUNTRY' and label like 'Republic of Burundi%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TZA"/>
-			<where> level='COUNTRY' and label like 'United Republic of Tanzania%</where>
+			<where> level='COUNTRY' and label like 'United Republic of Tanzania%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ZMB"/>
-			<where> level='COUNTRY' and label like 'Republic of Zambia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Zambia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NRU"/>
-			<where> level='COUNTRY' and label like 'Republic of Nauru%</where>
+			<where> level='COUNTRY' and label like 'Republic of Nauru%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ZWE"/>
-			<where> level='COUNTRY' and label like 'Republic of Zimbabwe%</where>
+			<where> level='COUNTRY' and label like 'Republic of Zimbabwe%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ATA"/>
-			<where> level='COUNTRY' and label like 'Antarctica%</where>
+			<where> level='COUNTRY' and label like 'Antarctica%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="BVT"/>
-			<where> level='COUNTRY' and label like 'Bouvet Island%</where>
+			<where> level='COUNTRY' and label like 'Bouvet Island%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="JPN"/>
-			<where> level='COUNTRY' and label like 'Japan%</where>
+			<where> level='COUNTRY' and label like 'Japan%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="KEN"/>
-			<where> level='COUNTRY' and label like 'Republic of Kenya%</where>
+			<where> level='COUNTRY' and label like 'Republic of Kenya%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="RWA"/>
-			<where> level='COUNTRY' and label like 'Republic of Rwanda%</where>
+			<where> level='COUNTRY' and label like 'Republic of Rwanda%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="COM"/>
-			<where> level='COUNTRY' and label like 'Union of the Comoros%</where>
+			<where> level='COUNTRY' and label like 'Union of the Comoros%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ATF"/>
-			<where> level='COUNTRY' and label like 'Territory of the French Southern and Ant%</where>
+			<where> level='COUNTRY' and label like 'Territory of the French Southern and Ant%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="HMD"/>
-			<where> level='COUNTRY' and label like 'Territory of Heard Island and McDonald I%</where>
+			<where> level='COUNTRY' and label like 'Territory of Heard Island and McDonald I%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MWI"/>
-			<where> level='COUNTRY' and label like 'Republic of Malawi%</where>
+			<where> level='COUNTRY' and label like 'Republic of Malawi%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MOZ"/>
-			<where> level='COUNTRY' and label like 'Republic of Mozambique%</where>
+			<where> level='COUNTRY' and label like 'Republic of Mozambique%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AGO"/>
-			<where> level='COUNTRY' and label like 'Republic of Angola%</where>
+			<where> level='COUNTRY' and label like 'Republic of Angola%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="COG"/>
-			<where> level='COUNTRY' and label like 'Republic of the Congo%</where>
+			<where> level='COUNTRY' and label like 'Republic of the Congo%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="ZAF"/>
-			<where> level='COUNTRY' and label like 'Republic of South Africa%</where>
+			<where> level='COUNTRY' and label like 'Republic of South Africa%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SWZ"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Swaziland%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Swaziland%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="COD"/>
-			<where> level='COUNTRY' and label like 'Democratic Republic of the Congo%</where>
+			<where> level='COUNTRY' and label like 'Democratic Republic of the Congo%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="GAB"/>
-			<where> level='COUNTRY' and label like 'Gabonese Republic%</where>
+			<where> level='COUNTRY' and label like 'Gabonese Republic%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="LSO"/>
-			<where> level='COUNTRY' and label like 'Kingdom of Lesotho%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of Lesotho%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NAM"/>
-			<where> level='COUNTRY' and label like 'Republic of Namibia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Namibia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="VUT"/>
-			<where> level='COUNTRY' and label like 'Republic of Vanuatu%</where>
+			<where> level='COUNTRY' and label like 'Republic of Vanuatu%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SRB"/>
-			<where> level='COUNTRY' and label like 'Republic of Serbia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Serbia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NZL"/>
-			<where> level='COUNTRY' and label like 'New Zealand%</where>
+			<where> level='COUNTRY' and label like 'New Zealand%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IOT"/>
-			<where> level='COUNTRY' and label like 'British Indian Ocean Territory%</where>
+			<where> level='COUNTRY' and label like 'British Indian Ocean Territory%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MDG"/>
-			<where> level='COUNTRY' and label like 'Republic of Madagascar%</where>
+			<where> level='COUNTRY' and label like 'Republic of Madagascar%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MUS"/>
-			<where> level='COUNTRY' and label like 'Republic of Mauritius%</where>
+			<where> level='COUNTRY' and label like 'Republic of Mauritius%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MYT"/>
-			<where> level='COUNTRY' and label like 'Territorial Collectivity of Mayotte%</where>
+			<where> level='COUNTRY' and label like 'Territorial Collectivity of Mayotte%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="REU"/>
-			<where> level='COUNTRY' and label like 'Department of Reunion%</where>
+			<where> level='COUNTRY' and label like 'Department of Reunion%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SYC"/>
-			<where> level='COUNTRY' and label like 'Republic of Seychelles%</where>
+			<where> level='COUNTRY' and label like 'Republic of Seychelles%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CCK"/>
-			<where> level='COUNTRY' and label like 'Territory of Cocos (Keeling) Islands%</where>
+			<where> level='COUNTRY' and label like 'Territory of Cocos (Keeling) Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="IDN"/>
-			<where> level='COUNTRY' and label like 'Republic of Indonesia%</where>
+			<where> level='COUNTRY' and label like 'Republic of Indonesia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NCL"/>
-			<where> level='COUNTRY' and label like 'Territory of New Caledonia and Dependenc%</where>
+			<where> level='COUNTRY' and label like 'Territory of New Caledonia and Dependenc%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NFK"/>
-			<where> level='COUNTRY' and label like 'Territory of Norfolk Island%</where>
+			<where> level='COUNTRY' and label like 'Territory of Norfolk Island%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="MNE"/>
-			<where> level='COUNTRY' and label like 'Republic of Montenegro%</where>
+			<where> level='COUNTRY' and label like 'Republic of Montenegro%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="PNG"/>
-			<where> level='COUNTRY' and label like 'Independent State of Papua New Guinea%</where>
+			<where> level='COUNTRY' and label like 'Independent State of Papua New Guinea%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="SLB"/>
-			<where> level='COUNTRY' and label like 'Solomon Islands%</where>
+			<where> level='COUNTRY' and label like 'Solomon Islands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="TUV"/>
-			<where> level='COUNTRY' and label like 'Tuvalu%</where>
+			<where> level='COUNTRY' and label like 'Tuvalu%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="NLD"/>
-			<where> level='COUNTRY' and label like 'Kingdom of the Netherlands%</where>
+			<where> level='COUNTRY' and label like 'Kingdom of the Netherlands%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="AUS"/>
-			<where> level='COUNTRY' and label like 'Commonwealth of Australia%</where>
+			<where> level='COUNTRY' and label like 'Commonwealth of Australia%'</where>
 		</update>
 		<update tableName="geographic_keyword"><column name="code" value="CXR"/>
-			<where> level='COUNTRY' and label like 'Territory of Christmas Island%</where>
+			<where> level='COUNTRY' and label like 'Territory of Christmas Island%'</where>
 		</update>
 	</changeSet>
 </databaseChangeLog>
