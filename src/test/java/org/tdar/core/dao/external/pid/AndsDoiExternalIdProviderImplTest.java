@@ -3,10 +3,12 @@ package org.tdar.core.dao.external.pid;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.dao.external.pid.AndsDoiExternalIdProviderImpl.IdentityFactory;
 
+@Ignore
 public class AndsDoiExternalIdProviderImplTest {
 
     private static final String MINIMAL_PROPERTIES = "ands.doi.minimal.properties";
