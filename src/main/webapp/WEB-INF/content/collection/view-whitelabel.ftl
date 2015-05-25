@@ -4,21 +4,33 @@
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+    <#import "/WEB-INF/macros/whitelabel-macros.ftl" as whitelabel>
 
+<#--This is just an alias to help illustrate when we are using fields exclusive to whitelabel collections -->
+    <#assign whitelabelCollection = resourceCollection>
 <head>
+    <meta name="decorator" content="whitelabel">
     <@search.headerLinks includeRss=false />
     <title>${resourceCollection.name!"untitled collection"}</title>
     <@view.canonical resourceCollection />
     <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl />
+
+    <style>
+    <#noescape>${whitelabelCollection.css!''}</#noescape>
+    </style>
+
 </head>
 <body>
-
-<div id="divSearchContext" parse="true">
-    <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
-    <label for="cbctxid">Search within this collection</label>
-</div>
-
+<#-- todo: move these to .css and use collection-specific css classes -->
+    <#if searchHeaderLogoAvailable>
+    <style>
+        div.searchheader {
+            background-image: url("${hostedContentBaseUrl}/search-header.jpg");
+        }
+    </style>
+    </#if>
+    <!-- search header url: "${hostedContentBaseUrl}/search-header.jpg" -->
     <#if editable>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
@@ -34,28 +46,23 @@
     </#if>
 
     <@view.pageStatusCallout />
-<h1>
-    <#if logoAvailable>
-        <img class="pull-right collection-logo" src="/files/collection/sm/${id?c}/logo"
-        alt="logo" title="logo" /> 
-    </#if>
 
-${resourceCollection.name!"untitled collection"}</h1>
 
+    <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
+
+<#-- FIXME: have the controller handle isVisible via separate result name -->
     <#if !visible>
     This collection is not accessible
     <#else>
 
-        <#if !collections.empty>
-        <!-- Don't show header if header doesn't exist -->
-        <div id="sidebar-right" parse="true">
-            <h3 class="sidebar-spacer">Child Collections</h3>
-            <@common.listCollections collections=collections showOnlyVisible=true />
-        </div>
+
+        <#if resourceCollection.parent??>
+        <@whitelabel.subcollectionSidebar />
         </#if>
 
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
-        <div class="glide">
+        <div>
+            <h2>Description</h2>
             <#if resourceCollection.parent??><p><b>Part of:</b>
             	<#if resourceCollection.parent.hidden && !authenticated >
 					${resourceCollection.parent.name!"(n/a)"}
@@ -64,22 +71,52 @@ ${resourceCollection.name!"untitled collection"}</h1>
                     href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a>
                	</#if>
 			</p></#if>
-            <@common.description resourceCollection.description />
 
-            <#if resourceCollection.adminDescription??>
-                <p>
-                    <#noescape>
-			    ${resourceCollection.adminDescription}
-			  </#noescape>
-                </p>
-            </#if>
+            <div class="viewpage-section">
+                <#-- TODO: move this logic to logoAvailable() -->
+                <#if (logoAvailable && (resourceCollection.subCollection || !resourceCollection.whiteLabelCollection))>
+                    <div class="pull-right"><img class="img-rounded whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
+                </#if>
+                <@common.description resourceCollection.description />
 
+                <#if resourceCollection.adminDescription??>
+                    <p>
+                        <#noescape>
+                        ${resourceCollection.adminDescription}
+                    </#noescape>
+                    </p>
+                </#if>
+            </div>
         </div>
         </#if>
-        <#if  results?has_content && results?size !=0 >
-        <br/>
 
+        <#if whitelabelCollection.featuredResourcesEnabled>
+            <div class="viewpage-section">
+                <div class="row">
+                    <@view.featured resourceList=whitelabelCollection.featuredResources />
+                </div>
+            </div>
+        </#if>
+
+        <#if whitelabelCollection.subCollectionsEnabled>
+            <div class="viewpage-section">
+                <h2>Collections</h2>
+                <#list whitelabelCollection.transientChildren as childCollection>
+                    <p>
+                        <@s.a href="/collection/${childCollection.id?c}/${childCollection.slug}" cssClass="title"
+                            >${childCollection.name}</@s.a>
+
+                        ${common.fnTruncate(childCollection.description, 500)}
+                    </p>
+                </#list>
+            </div>
+
+        </#if>
+
+
+        <#if results?has_content>
         <div id="divResultsSortControl">
+            <h2>Resources Inside This Collection</h2>
             <div class="row">
                 <div class="span4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
@@ -87,8 +124,6 @@ ${resourceCollection.name!"untitled collection"}</h1>
                 <div class="span5"></div>
             </div>
         </div>
-
-
         <div class="collection-facets">
             <#assign mapSize="450" />
             <#if (totalRecords > 10)>
@@ -101,18 +136,18 @@ ${resourceCollection.name!"untitled collection"}</h1>
                 <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
             <#else>
             <h4>
-               There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
+                There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
-            <#if selectedResourceTypes?has_content>
-                <#if paginationHelper.totalNumberOfItems == 1>
-                    <@s.text name="${resourceTypeFacets[0].key}" />
+                <#if selectedResourceTypes?has_content>
+                    <#if paginationHelper.totalNumberOfItems == 1>
+                        <@s.text name="${resourceTypeFacets[0].key}" />
+                    <#else>
+                        <@s.text name="${resourceTypeFacets[0].pluralKey}" />
+                    </#if>
                 <#else>
-                    <@s.text name="${resourceTypeFacets[0].pluralKey}" />
-                </#if>
-            <#else>
-                <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
-            </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
-                                                                                                      href="<@s.url includeParams="all">
+                    <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
+                </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
+                                                                                                             href="<@s.url includeParams="all">
 			            <@s.param name="selectedResourceTypes"value="" />
 			            <@s.param name="startRecord" value=""/>
 			</@s.url>">[remove this filter]</a></sup>
@@ -122,16 +157,10 @@ ${resourceCollection.name!"untitled collection"}</h1>
         </div>
 
         <div class="tdarresults">
-            <#assign itemsPerRow = 4/>
-		<#assign mapPosition="top"/>
-		<#if collections.empty>
             <#assign itemsPerRow = 5 />
-            <#assign mapPosition="left"/>
-        </#if>
-		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
-        orientation=resourceCollection.orientation    mapPosition=mapPosition mapHeight=mapSize />
+            <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
+                    orientation=resourceCollection.orientation    mapPosition="right" mapHeight=mapSize />
         </div>
-
             <@search.basicPagination "Records" />
         <#else>
         <hr/>
@@ -143,7 +172,7 @@ ${resourceCollection.name!"untitled collection"}</h1>
             <@common.resourceUsageInfo />
         <div class="row">
             <div class="span4">
-                <@view.kvp key="Collection Type" val=resourceCollection.type.label />
+                <@view.kvp key="Collection Type" val="${resourceCollection.type.label} (white label)" />
             </div>
             <div class="span4">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />

@@ -597,11 +597,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<String> getJavascriptFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.JS);
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
     }
 
     public List<String> getCssFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.CSS);
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.CSS);
     }
 
     public String getWroProfile() {
@@ -846,7 +846,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected boolean checkLogoAvailable(ObjectType type, Long id, VersionType version) {
         try {
             FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
-            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
+            File file = getTdarConfiguration().getFilestore().retrieveFile(type, proxy);
             if (file.exists()) {
                 return true;
             }
@@ -856,7 +856,25 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
 
+
     public boolean isTest() {
         return getTdarConfiguration().isTest();
+    }
+
+
+    /**
+     * Indicates to view layer whether it should show the login menu  (e.g.  "Welcome Back, Walter Kurtz").
+     * @return
+     */
+    public boolean isLoginMenuEnabled() {
+        return false;
+    }
+
+    /**
+     * Indicates whether the view layer should show sub-navigation elements (usually true while logged in, but some actions may wish to disable).
+     *
+     * */
+    public boolean isSubnavEnabled() {
+        return true;
     }
 }

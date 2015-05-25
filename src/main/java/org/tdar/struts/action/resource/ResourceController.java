@@ -156,4 +156,6 @@ public class ResourceController extends AuthenticationAware.Base {
     public void setResource(Resource resource) {
         this.resource = resource;
     }
+
+
 }

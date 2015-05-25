@@ -16,9 +16,10 @@ vim:sts=2:sw=2:
         <pattern>/config-browser/*</pattern>
         <pattern>/services/*</pattern>
     </excludes>
-    <!--  FIXME:// http://stackoverflow.com/questions/5329693/is-it-possible-to-decorate-more-than-once-in-sitemesh -->
     <decorator name="main" page="layout-bootstrap.dec">
         <pattern>/*</pattern>
     </decorator>
+    <!--whitelabel has no lookup pattern; to use, explicitly declare in request attributes or in META tag on to-be-decorated page -->
+    <decorator name="whitelabel" page="WEB-INF/decorator/layout-whitelabel.dec" />
 </decorators>
 
