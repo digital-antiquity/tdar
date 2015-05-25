@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="neolithic-1" author="abrin">
+        <addColumn tableName="geographic_keyword">
+            <column name="code" type="varchar(5)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="neolithic-2" author="abrin">
+        <update tableName="geographic_keyword">
+            <column name="level" value="COUNTRY" />
+            <where>level='ISO_COUNTRY'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="neolithic-3" author="jtdevos">
+        <update tableName="homepage_cache_geographic_keyword">
+            <column name="level" value="COUNTRY" />
+            <where>level='ISO_COUNTRY'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id='neolithic-4' author="abrin">
+        <addColumn tableName="creator">
+            <column name="merge_creator_id" type='bigint'>
+            </column>
+        </addColumn>
+        <comment>there's no easy way to do an update with joined tables...</comment>
+        <sql>
+            update creator set merge_creator_id=p.merge_creator_id from
+            creator c, person p where c.id=p.id and creator.id=c.id and
+            p.merge_creator_id is not null;
+        </sql>
+        <sql>
+            update creator set merge_creator_id=i.merge_creator_id from
+            creator c, institution i where c.id=i.id and creator.id=c.id
+            and
+            i.merge_creator_id is not null;
+        </sql>
+
+    </changeSet>
+    <changeSet id="neolithic-4.5" author="abrin">
+    <!--  alter table creator add constraint creator_merge_creator_id foreign key (merge_creator_id) references creator -->
+        <addForeignKeyConstraint constraintName="fk_creator_merge_creator_id" referencedTableName="creator" baseColumnNames="merge_creator_id" 
+        baseTableName="creator" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="neolithic-5" author="abrin">
+        <!-- these were moved in knap ... time to remove from the production 
+            database -->
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="person" columnName="proxyinstitution_id" />
+        </preConditions>
+        <dropColumn tableName="person" columnName="proxyinstitution_id" />
+        <dropColumn tableName="person" columnName="username" />
+        <dropColumn tableName="person" columnName="proxy_note" />
+        <dropColumn tableName="person" columnName="contributor" />
+        <dropColumn tableName="person" columnName="contributor_reason" />
+        <dropColumn tableName="person" columnName="last_login" />
+        <dropColumn tableName="person" columnName="total_login" />
+        <dropColumn tableName="person" columnName="penultimate_login" />
+        <dropColumn tableName="person" columnName="tos_version" />
+        <dropColumn tableName="person" columnName="tos_level" />
+        <dropColumn tableName="person" columnName="creator_agreement_version" />
+    </changeSet>
+
+</databaseChangeLog>
