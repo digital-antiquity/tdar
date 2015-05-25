@@ -83,6 +83,8 @@
         <js>/js/tdar.contexthelp.js</js>
         <js>/js/tdar.formValidateExtensions.js</js>
         <js>/includes/bindWithDelay.js</js>
+        <js>/components/leaflet/dist/leaflet.js</js>
+        <css>/components/leaflet/dist/leaflet.css</css>
         <!-- LICENSE: MIT -->
     </group>
     <group name="ng-integrate">

@@ -37,7 +37,7 @@ public class GeoSearchService {
     // country
     private static final String COL_COUNTRY_LONG_NAME = "long_name";
     // country code
-    private static final String COL_ISO_2DIGITS = "iso_2digit";
+    private static final String COL_ISO_3DIGITS = "iso_3digit";
 
     // admin (state)
     private static final String COL_ADMIN_NAME = "admin_name";
@@ -79,7 +79,7 @@ public class GeoSearchService {
         for (Map<String, Object> result : countryResults) {
             if (result.containsKey(COL_COUNTRY_LONG_NAME)) {
                 GeographicKeyword entityToFind = createGeoKeyword((String) result.get(COL_COUNTRY_LONG_NAME), Level.COUNTRY);
-                entityToFind.setCode((String) result.get(COL_ISO_2DIGITS));
+                entityToFind.setCode((String) result.get(COL_ISO_3DIGITS));
                 if (entityToFind != null) {
                     geoSet.add(entityToFind);
                 }

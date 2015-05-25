@@ -111,7 +111,7 @@ public class GeoSearchDao {
             " xmlelement(name path, xmlattributes(ST_asSVG(ST_transform(the_geom, 2163), 0, 5) as d))) ) from %6$s where %1$s is not null";
 
     public enum SpatialTables {
-        COUNTRY("country_wgs84", "long_name", "iso_2digit"),
+        COUNTRY("country_wgs84", "long_name", "iso_3digit"),
         COUNTY("us_counties_wgs84", "cnty_name", "state_name"),
         ADMIN("admin1_wgs84", "admin_name", "type_eng"),
         CONTINENT("continents_wgs84", "continent");
