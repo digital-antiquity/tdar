@@ -159,8 +159,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
             if (doiDTO.getCreators().isEmpty()) {
                 logger.error("NB ====> This resource {} has no creators, so can't mint doi", r.toString());
             } else {
-//                AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
-                AndsDoiResponse response = null;
+                AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
                 validateResponse("create", response);
                 result.put(DoiProcess.DOI_KEY, response.getDoi());
             }
@@ -183,14 +182,14 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     @Override
     public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws IOException {
-        AndsDoiResponse response = null;//doiClient.updateDOI(identifier, resourceUrl, populateDTO(r), debug);
+        AndsDoiResponse response = doiClient.updateDOI(identifier, resourceUrl, populateDTO(r), debug);
         validateResponse("modify", response);
         return new HashMap<>();
     }
 
     @Override
     public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws IOException {
-        AndsDoiResponse response = null;//doiClient.deActivateDOI(identifier, debug);
+        AndsDoiResponse response = doiClient.deActivateDOI(identifier, debug);
         validateResponse("deactive", response);
         return new HashMap<>();
     }

@@ -584,6 +584,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- needed for ANDSPidClient -->
+        <dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
         <!-- these are required for htmlunit 2.10 -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
