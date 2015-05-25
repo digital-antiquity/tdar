@@ -67,7 +67,7 @@
         <dropColumn tableName="person" columnName="penultimate_login" />
         <dropColumn tableName="person" columnName="tos_version" />
         <dropColumn tableName="person" columnName="tos_level" />
-        <dropColumn tableName="person" columnName="creator_agreement_versionl" />
+        <dropColumn tableName="person" columnName="creator_agreement_version" />
     </changeSet>
 
 </databaseChangeLog>
