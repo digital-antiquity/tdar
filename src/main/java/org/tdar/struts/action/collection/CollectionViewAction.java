@@ -1,5 +1,6 @@
 package org.tdar.struts.action.collection;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -30,15 +32,19 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.TdarServletConfiguration;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
 
@@ -46,9 +52,20 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/collection")
+@Results(value = {
+        @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
+        @Result(name = CollectionViewAction.SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+                location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), //removed ,keywordPath
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
+})
 public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction, ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
+
+    public static final String SUCCESS_WHITELABEL = "success_whitelabel";
+
+    public static final String SEARCH_HEADER_FILENAME = "search-header.jpg";
 
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
@@ -184,6 +201,22 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
         getLogger().trace("lucene: end");
     }
+
+
+    @HttpOnlyIfUnauthenticated
+    @Actions(value = {
+            @Action(value = "{id}/{slug}"),
+            @Action(value = "{id}")
+    })
+    public String view() throws TdarActionException {
+        String result = super.view();
+        if(SUCCESS.equals(result) && getPersistable().isWhiteLabelCollection()) {
+            result =  CollectionViewAction.SUCCESS_WHITELABEL;
+        }
+        return result;
+    }
+
+
 
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
@@ -427,6 +460,43 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     public boolean isLogoAvailable() {
         return checkLogoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
+    }
+
+    public boolean isSearchHeaderLogoAvailable() {
+        //for now, we just look in hosted + collection ID
+        return checkHostedFileAvailable(SEARCH_HEADER_FILENAME);
+    }
+
+    /**
+     * Indicate to view layer that we should display a search header.
+     * @return
+     */
+    public boolean isSearchHeaderEnabled() {
+        return getResourceCollection().isSearchEnabled();
+    }
+
+    /**
+     * Indicates whether the view layer should show sub-navigation elements.  We turn this off when the 'search header' is enabled.
+     *
+     */
+    @Override
+    public boolean isSubnavEnabled() {
+        return !isSearchHeaderEnabled();
+    }
+
+    /**
+     * Return the default/suggested base url for static content (trailing slash removed, if present)
+     * @return
+     */
+    public String getHostedContentBaseUrl() {
+        String baseUrl = TdarServletConfiguration.HOSTED_CONTENT_BASE_URL;
+        if (PersistableUtils.isNotNullOrTransient(getResourceCollection())) {
+            baseUrl += PairtreeFilestore.toPairTree(getResourceCollection().getId());
+        }
+        if(baseUrl.endsWith("/")) {
+            baseUrl = StringUtils.chop(baseUrl);
+        }
+        return baseUrl;
     }
 
 }

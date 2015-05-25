@@ -3,10 +3,9 @@
  */
 package org.tdar.core.filestore;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import static org.tdar.TestConstants.TEST_IMAGE;
@@ -17,14 +16,20 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockRequestDispatcher;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
 import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.filestore.Filestore.ObjectType;
@@ -32,6 +37,7 @@ import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
+import org.tdar.web.StaticContentServlet;
 
 /**
  * @author Adam Brin
@@ -46,7 +52,8 @@ public class FilestoreTest {
     public static String baseIrPath = File.separator + "12" + File.separator + "34" + File.separator + "5" + File.separator + PairtreeFilestore.CONTAINER_NAME
             + File.separator;
 
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    private TdarConfiguration tdarConfig = TdarConfiguration.getInstance();
 
     @Before
     public void cleanup() {
@@ -58,8 +65,7 @@ public class FilestoreTest {
             f.mkdirs();
             System.out.println(f.getAbsolutePath());
         } catch (IOException e) {
-            Logger.getLogger(getClass()).info("Couldn't cleanup filestore, perhaps you're on windows...");
-            e.printStackTrace();
+            logger.info("Couldn't cleanup filestore, perhaps you're on windows...", e);
         }
     }
 
@@ -97,7 +103,7 @@ public class FilestoreTest {
         assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         version.setFileVersionType(VersionType.WEB_LARGE);
         assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
-        Logger.getLogger(getClass()).info(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
+        logger.info(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
     }
 
     @Test
@@ -248,5 +254,21 @@ public class FilestoreTest {
         // logger.info(f.getAbsolutePath());
         assertTrue("deleted folder does not exist", new File(expectedDeletedPath).exists());
     }
+
+    @Test
+    public void testStaticRequestedFile() {
+        StaticContentServlet servlet = new StaticContentServlet();
+        File file = servlet.getRequestedFile("search-header.jpg", null);
+        assertThat(file.getParent(), is(tdarConfig.getHostedFileStoreLocation()));
+    }
+
+    @Test
+    public void testStaticRequestedPairtreeFile() {
+        StaticContentServlet servlet = new StaticContentServlet();
+        File file = servlet.getRequestedFile("search-header.jpg", new String[]{"123456"});
+        assertThat(file.getParent(), endsWith( "/12/34/56/rec"));
+
+    }
+
 
 }

@@ -193,6 +193,16 @@ public interface AuthenticationAware extends SessionDataAware {
             return authorizationService;
         }
 
+        /**
+         * Indicates to view layer whether it should show the login menu  (e.g.  "Welcome Back, Walter Kurtz").
+         * @return
+         */
+        @Override
+        public boolean isLoginMenuEnabled() {
+            return getAuthenticatedUser() != null;
+        }
     }
+
+
 
 }

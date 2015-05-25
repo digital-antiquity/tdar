@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
@@ -354,4 +356,20 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
             });
         }
     }
+    /**
+     * Is the specified public file available for the current resource
+     * @param filename
+     * @return
+     */
+    protected boolean checkHostedFileAvailable(String filename) {
+        File baseFolder = new File(getTdarConfiguration().getHostedFileStoreLocation());
+        File pairTreeRoot = new File(baseFolder, PairtreeFilestore.toPairTree(getId()));
+        File file = new File(pairTreeRoot, filename);
+        boolean exists = file.exists();
+        getLogger().debug("checkPublicFile({})\t -> {}", filename, exists);
+        return exists;
+    }
+
+
+
 }
