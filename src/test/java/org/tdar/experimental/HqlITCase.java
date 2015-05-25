@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -233,31 +232,28 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
     }
 
-
     @SuppressWarnings("rawtypes")
     @Test
     public void testInitDataset() {
-        //notice, no "distinct" in query.
+        // notice, no "distinct" in query.
         String hql = "from DataTable as dt left join fetch dt.dataTableColumns where dt.displayName = 'qryBone'";
         Query query = session.createQuery(hql);
-//        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-//        query.setRecordsPerPage(10);  //implicitly applies "distinct" functionality
-        query.setFirstResult(0); //implicitly applies "distinct"
+        // query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        // query.setRecordsPerPage(10); //implicitly applies "distinct" functionality
+        query.setFirstResult(0); // implicitly applies "distinct"
         List results = query.list();
         getLogger().debug("result size:{}", results.size());
-        for(Object item : results) {
+        for (Object item : results) {
             getLogger().debug("result[{}] ihc:{}", item, System.identityHashCode(item));
         }
-        DataTable dt = (DataTable)results.get(0);
+        DataTable dt = (DataTable) results.get(0);
         getLogger().debug("number of columns:{}", dt.getDataTableColumns().size());
 
     }
-
 
     @Test
     public void testCriteriaBuilder() {
 
     }
-
 
 }

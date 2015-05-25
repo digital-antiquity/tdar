@@ -69,12 +69,13 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         }
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     /**
      * Perform a hosted download request with valid key, referrer, and file ID.
      */
     public void testHostedDownloadSuccess() throws URISyntaxException, IOException {
-        //sanity check: make sure the file exists
+        // sanity check: make sure the file exists
         InformationResourceFileVersion irfv = genericService.find(InformationResourceFileVersion.class, IRFV_ID);
         assertNotNull(irfv);
 
@@ -88,18 +89,16 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         httpget.addHeader(REFERER, REFERER_URL);
 
         try (CloseableHttpResponse response = httpclient.execute(httpget)) {
-            //make sure that the server gave us a successful response
+            // make sure that the server gave us a successful response
             assertThat(response.getStatusLine().getStatusCode(), is(SC_OK));
 
             HttpEntity entity = response.getEntity();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            //assert that a download actually occurred
-            assertThat( entity.getContentLength(), greaterThan(0L));
+            // assert that a download actually occurred
+            assertThat(entity.getContentLength(), greaterThan(0L));
             entity.writeTo(baos);
-            assertThat("filesize matches response.entity.contentLength", (long)baos.size(), is(entity.getContentLength()));
+            assertThat("filesize matches response.entity.contentLength", (long) baos.size(), is(entity.getContentLength()));
         }
     }
 }
-
-

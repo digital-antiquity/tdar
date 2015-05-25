@@ -61,7 +61,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     int getTotalRecords();
 
-
     boolean isDebug();
 
     boolean isShowAll();

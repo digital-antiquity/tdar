@@ -54,12 +54,12 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testSelectedResourceLookup() {
-        ResourceCollection collection = new ResourceCollection("test","test",SortOption.TITLE,CollectionType.SHARED, true, getUser());
+        ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getUser());
         collection.markUpdated(getUser());
         Ontology ont = createAndSaveNewInformationResource(Ontology.class);
         genericService.saveOrUpdate(collection);
         collection.getResources().add(ont);
-        //babysitting bidirectional relationshi[
+        // babysitting bidirectional relationshi[
         genericService.saveOrUpdate(collection);
         ont.getResourceCollections().add(collection);
         genericService.saveOrUpdate(ont);
@@ -68,9 +68,9 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setResourceTypes(Arrays.asList(ResourceType.ONTOLOGY));
         controller.lookupResource();
         assertFalse(controller.getResults().isEmpty());
-        assertTrue(((Collection<Long>)controller.getResult().get(ResourceLookupAction.SELECTED_RESULTS)).contains(ont.getId()));
+        assertTrue(((Collection<Long>) controller.getResult().get(ResourceLookupAction.SELECTED_RESULTS)).contains(ont.getId()));
     }
-    
+
     @Test
     @Rollback(true)
     public void testModifyEditor() {
@@ -313,7 +313,6 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         List<Resource> resources = controller.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
-
 
     @Test
     @Rollback(value = true)

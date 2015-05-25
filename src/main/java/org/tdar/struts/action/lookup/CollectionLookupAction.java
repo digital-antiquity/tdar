@@ -26,6 +26,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 /**
  * $Id$
  * <p>
+ * 
  * @version $Rev$
  */
 @Namespace("/lookup")
@@ -33,7 +34,6 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Component
 @Scope("prototype")
 public class CollectionLookupAction extends AbstractLookupController<ResourceCollection> {
-
 
     private static final long serialVersionUID = -1785355137646480452L;
 
@@ -44,8 +44,8 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
     private GeneralPermissions permission;
 
     @Action(value = "collection", results = {
-                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
-            })
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
@@ -71,8 +71,9 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
 
         jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
-    }    @SuppressWarnings("rawtypes")
+    }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;

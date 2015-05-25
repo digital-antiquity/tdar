@@ -39,40 +39,46 @@ public class InstitutionManagementAuthorization extends Persistable.Base {
     @Type(type = "org.hibernate.type.StringClobType")
     @NotNull
     private String reason;
-    
+
     public InstitutionManagementAuthorization() {
-        
+
     }
-    
+
     public InstitutionManagementAuthorization(Institution institution, TdarUser user) {
         this.institution = institution;
         this.user = user;
     }
-    
+
     public TdarUser getUser() {
         return user;
     }
+
     public void setUser(TdarUser user) {
         this.user = user;
     }
+
     public Institution getInstitution() {
         return institution;
     }
+
     public void setInstitution(Institution institution) {
         this.institution = institution;
     }
+
     public boolean isAuthorized() {
         return authorized;
     }
+
     public void setAuthorized(boolean authorized) {
         this.authorized = authorized;
     }
+
     public String getReason() {
         return reason;
     }
+
     public void setReason(String reason) {
         this.reason = reason;
     }
 
-    
 }

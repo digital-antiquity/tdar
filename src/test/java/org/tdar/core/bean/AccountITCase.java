@@ -47,7 +47,6 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Autowired
     BillingAccountService accountService;
 
-
     @Test
     @Rollback
     public void testUnassignedInvoice() {
@@ -98,14 +97,14 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         updateModel(model, true, false, false);
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_RESOURCES, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_RESOURCES, accountService.canAddResource(account, re));
         updateModel(model, false, true, false);
         logger.info("af: {} , ref: {}", account.getAvailableNumberOfFiles(), re.getFilesUsed());
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, accountService.canAddResource(account, re));
         updateModel(model, false, false, true);
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, accountService.canAddResource(account, re));
         updateModel(model, false, false, false);
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account, re));
         // model.setCountingResources(true);
         // assertFalse(re.accountHasMinimumForNewResource(new Account()));
         // model.setCountingResources(false);
@@ -122,20 +121,20 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
         BillingAccount account = setupAccountWithInvoiceForOneResource(model, getUser());
         updateModel(model, true, false, false);
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account, re));
         updateModel(model, false, true, false);
 
         /* add one file */
         logger.info("af: {} , ref: {}", account.getAvailableNumberOfFiles(), re.getFilesUsed());
         account = setupAccountWithInvoiceForOneFile(model, getUser());
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account, re));
 
         /* add 5 MB */
         updateModel(model, false, false, true);
         account = setupAccountWithInvoiceFor6Mb(model, getUser());
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account, re));
         updateModel(model, false, false, false);
-        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account ,re));
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, accountService.canAddResource(account, re));
     }
 
     @Test

@@ -17,6 +17,7 @@ import org.tdar.struts.data.FacetGroup;
 /**
  * $Id$
  * <p>
+ * 
  * @version $Rev$
  */
 @Namespace("/lookup")
@@ -28,14 +29,13 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
     private static final long serialVersionUID = -6332785137761675803L;
 
     private String institution;
-    
+
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    
     @Action(value = "institution", results = {
-                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
-            })
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String lookupInstitution() {
         setMode("institutionLookup");
         return findInstitution(getInstitution());

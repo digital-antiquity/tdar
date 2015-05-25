@@ -55,7 +55,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {
             failureMessage = t.getMessage() + " (see initial exception for details)";
-            logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR +"\r\n", t);
+            logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR + "\r\n", t);
         }
     }
 
@@ -66,7 +66,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         if (StringUtils.isNotBlank(failureMessage)) {
             throw new ServletException(failureMessage);
         }
-        if(!configuration.isProductionEnvironment()) {
+        if (!configuration.isProductionEnvironment()) {
             onDevStartup(container);
         }
 
@@ -93,7 +93,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
 
         configureStrutsAndSiteMeshFilters(container);
-        
+
         if (!configuration.isStaticContentEnabled()) {
             ServletRegistration.Dynamic staticContent = container.addServlet("static-content", StaticContentServlet.class);
             staticContent.setInitParameter("default_encoding", "UTF-8");
@@ -104,7 +104,9 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     }
 
     private void onDevStartup(ServletContext container) {
-        if(configuration.isProductionEnvironment()) {throw new IllegalStateException("dev startup tasks not allowed in production");}
+        if (configuration.isProductionEnvironment()) {
+            throw new IllegalStateException("dev startup tasks not allowed in production");
+        }
         logServerInfo(container);
     }
 
@@ -119,7 +121,6 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         logger.info("\t context name:{}", container.getServletContextName());
         logger.info(BAR);
     }
-
 
     private void configureFreemarker(ServletContext container) {
         ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker", FreemarkerDecoratorServlet.class);

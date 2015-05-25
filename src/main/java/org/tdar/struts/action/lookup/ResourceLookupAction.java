@@ -41,9 +41,9 @@ import org.tdar.utils.json.JsonLookupFilter;
 public class ResourceLookupAction extends AbstractLookupController<Resource> {
 
     private static final long serialVersionUID = 1328807454084572934L;
-    
+
     public static final String SELECTED_RESULTS = "selectedResults";
-    
+
     private Long projectId;
     private Long collectionId;
     private String term;
@@ -56,10 +56,9 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
 
     private Long selectResourcesFromCollectionid;
 
-
     @Action(value = "resource", results = {
-                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
-            })
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
         setLookupSource(LookupSource.RESOURCE);
@@ -115,56 +114,73 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         }
         return SUCCESS;
     }
+
     @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
+
     public String getTerm() {
         return term;
     }
+
     public void setTerm(String term) {
         this.term = term;
     }
+
     public Long getProjectId() {
         return projectId;
     }
+
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
+
     public Long getCollectionId() {
         return collectionId;
     }
+
     public void setCollectionId(Long collectionId) {
         this.collectionId = collectionId;
     }
+
     public Long getSortCategoryId() {
         return sortCategoryId;
     }
+
     public void setSortCategoryId(Long sortCategoryId) {
         this.sortCategoryId = sortCategoryId;
     }
+
     public boolean isIncludeCompleteRecord() {
         return includeCompleteRecord;
     }
+
     public void setIncludeCompleteRecord(boolean includeCompleteRecord) {
         this.includeCompleteRecord = includeCompleteRecord;
     }
+
     public GeneralPermissions getPermission() {
         return permission;
     }
+
     public void setPermission(GeneralPermissions permission) {
         this.permission = permission;
     }
+
     public Long getSelectResourcesFromCollectionid() {
         return selectResourcesFromCollectionid;
     }
+
     public void setSelectResourcesFromCollectionid(Long selectResourcesFromCollectionid) {
         this.selectResourcesFromCollectionid = selectResourcesFromCollectionid;
     }
+
     public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }

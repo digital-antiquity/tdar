@@ -48,7 +48,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @ParentPackage("default")
 @HttpOnlyIfUnauthenticated
 public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchController {
-    
+
     private static final long serialVersionUID = 7426286742246468225L;
 
     @Autowired
@@ -67,7 +67,6 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
     private Long contentLength;
     private InputStream inputStream;
 
-    
     @Action(value = "download", results = { @Result(name = SUCCESS, type = "stream", params = {
             "contentType", "application/vnd.ms-excel", "inputName",
             "inputStream", "contentDisposition",
@@ -246,29 +245,28 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
         return resourceTypeFacets;
     }
 
+    public List<FacetValue> getIntegratableOptionFacets() {
+        return integratableOptionFacets;
+    }
 
- public List<FacetValue> getIntegratableOptionFacets() {
-      return integratableOptionFacets;
-  }
-
-  public List<FacetValue> getDocumentTypeFacets() {
-      return documentTypeFacets;
-  }
+    public List<FacetValue> getDocumentTypeFacets() {
+        return documentTypeFacets;
+    }
 
     public List<FacetValue> getFileAccessFacets() {
-      return fileAccessFacets;
-  }
+        return fileAccessFacets;
+    }
 
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
-       List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-      group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-      group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,
-              IntegratableOptions.YES));
-      group.add(new FacetGroup<ResourceAccessType>(ResourceAccessType.class, QueryFieldNames.RESOURCE_ACCESS_TYPE, fileAccessFacets,
-              ResourceAccessType.CITATION));
-      group.add(new FacetGroup<DocumentType>(DocumentType.class, QueryFieldNames.DOCUMENT_TYPE, documentTypeFacets, DocumentType.BOOK));
-      return group;
-  }
+        List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
+        group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,
+                IntegratableOptions.YES));
+        group.add(new FacetGroup<ResourceAccessType>(ResourceAccessType.class, QueryFieldNames.RESOURCE_ACCESS_TYPE, fileAccessFacets,
+                ResourceAccessType.CITATION));
+        group.add(new FacetGroup<DocumentType>(DocumentType.class, QueryFieldNames.DOCUMENT_TYPE, documentTypeFacets, DocumentType.BOOK));
+        return group;
+    }
 
 }

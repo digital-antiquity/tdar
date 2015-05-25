@@ -259,7 +259,7 @@ public class TdarConfiguration {
         }
     }
 
-    //FIXME: change to use + encorpearate sitemap (TDAR-4703)
+    // FIXME: change to use + encorpearate sitemap (TDAR-4703)
     private void initFilestorePath(String location) {
         if (personalFilestorePathInitialized) {
             return;

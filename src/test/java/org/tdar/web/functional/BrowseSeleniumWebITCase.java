@@ -16,7 +16,7 @@ public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public BrowseSeleniumWebITCase() {
-        //assumption: google quota errors are only expected on pages that show maps
+        // assumption: google quota errors are only expected on pages that show maps
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT);
     }
 

@@ -16,15 +16,15 @@ import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.utils.MessageHelper;
 
 public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCase {
-    
-    @Autowired  
+
+    @Autowired
     private IntegrationWorkflowService service;
 
-    @Autowired  
+    @Autowired
     private SerializationService serializationService;
 
     private String testJson = "src/test/resources/data_integration_tests/json/test-integration.json";
-    
+
     @Test
     public void testIntegrationWorkflowData() throws IOException, IntegrationDeserializationException {
         String json = FileUtils.readFileToString(new File(testJson));

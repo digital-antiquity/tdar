@@ -184,7 +184,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return new AsyncUncaughtExceptionHandler() {
-            
+
             @Override
             public void handleUncaughtException(Throwable ex, Method method, Object... params) {
                 logger.error("exception in async: {} {} ", method, params);

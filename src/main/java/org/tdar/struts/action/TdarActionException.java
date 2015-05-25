@@ -8,7 +8,7 @@ public class TdarActionException extends Exception {
 
     private final StatusCode responseStatusCode;
     private final String response;
-    
+
     public TdarActionException(StatusCode httpStatus, String message) {
         this(httpStatus, null, message, null);
     }

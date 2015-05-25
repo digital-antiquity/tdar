@@ -83,7 +83,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(Resource.class);
 
-
     private String latLongBox;
     // we plan to support some types of legacy requests. For example, the old
     // querystring format for id searches, basic search, and search by keyword
@@ -107,8 +106,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     private String letter;
 
     private boolean collectionSearchBoxVisible = false;
-
-
 
     // FIXME: "explore" results belong in a separate controller.
     public String exploreSearch() throws TdarActionException {
@@ -134,7 +131,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
         return allFields;
     }
-
 
     /**
      * There are certain types of requests that require special processing
@@ -229,7 +225,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         queryBuilder.setOperator(Operator.AND);
 
         processCollectionProjectLimit();
-        
+
         topLevelQueryPart = new QueryPartGroup(topLevelOperator);
 
         for (SearchParameters group : groups) {
@@ -257,7 +253,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             searchService.handleSearch(queryBuilder, this, this);
             updateDisplayOrientationBasedOnSearchResults();
         } catch (SearchPaginationException spe) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,TdarActionSupport.NOT_FOUND);
+            throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND, TdarActionSupport.NOT_FOUND);
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
@@ -275,9 +271,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     }
 
-
     protected void updateDisplayOrientationBasedOnSearchResults() {
-        
+
     }
 
     // this is a no-op if basic search not detected
@@ -324,9 +319,9 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
         if (valid) {
             groups.add(terms);
-        }   
+        }
     }
-    
+
     private String basicSearch() throws TdarActionException {
         // translate basic search field(s) so that they can be processed by advancedSearch()
         processBasicSearchParameters();
@@ -364,54 +359,55 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         this.sortOptions = sortOptions;
     }
 
-//    public List<ResourceCreatorRole> getRelevantPersonRoles() {
-//        return getRelevantRoles(CreatorType.PERSON);
-//    }
-//
-//    public List<ResourceCreatorRole> getRelevantInstitutionRoles() {
-//        return getRelevantRoles(CreatorType.INSTITUTION);
-//    }
-//
-//    private List<ResourceCreatorRole> getRelevantRoles(CreatorType creatorType) {
-//        List<ResourceCreatorRole> relevantRoles = new ArrayList<ResourceCreatorRole>();
-//        relevantRoles.addAll(ResourceCreatorRole.getRoles(creatorType));
-//        relevantRoles.addAll(getRelevantOtherRoles(creatorType));
-//        return relevantRoles;
-//    }
-//
-//    private List<ResourceCreatorRole> getRelevantOtherRoles(CreatorType creatorType) {
-//        if (creatorType == CreatorType.INSTITUTION) {
-//            return Arrays.asList(ResourceCreatorRole.RESOURCE_PROVIDER);
-//        } else if (creatorType == CreatorType.PERSON) {
-//            return Arrays.asList(ResourceCreatorRole.SUBMITTER, ResourceCreatorRole.UPDATER);
-//        }
-//        return Collections.emptyList();
-//    }
-//
-//    public List<InvestigationType> getAllInvestigationTypes() {
-//        return genericKeywordService.findAllWithCache(InvestigationType.class);
-//    }
-//
-//    public KeywordNode<CultureKeyword> getAllApprovedCultureKeywords() {
-//        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
-//    }
-//
-//    public KeywordNode<SiteTypeKeyword> getAllApprovedSiteTypeKeywords() {
-//        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
-//    }
+    // public List<ResourceCreatorRole> getRelevantPersonRoles() {
+    // return getRelevantRoles(CreatorType.PERSON);
+    // }
+    //
+    // public List<ResourceCreatorRole> getRelevantInstitutionRoles() {
+    // return getRelevantRoles(CreatorType.INSTITUTION);
+    // }
+    //
+    // private List<ResourceCreatorRole> getRelevantRoles(CreatorType creatorType) {
+    // List<ResourceCreatorRole> relevantRoles = new ArrayList<ResourceCreatorRole>();
+    // relevantRoles.addAll(ResourceCreatorRole.getRoles(creatorType));
+    // relevantRoles.addAll(getRelevantOtherRoles(creatorType));
+    // return relevantRoles;
+    // }
+    //
+    // private List<ResourceCreatorRole> getRelevantOtherRoles(CreatorType creatorType) {
+    // if (creatorType == CreatorType.INSTITUTION) {
+    // return Arrays.asList(ResourceCreatorRole.RESOURCE_PROVIDER);
+    // } else if (creatorType == CreatorType.PERSON) {
+    // return Arrays.asList(ResourceCreatorRole.SUBMITTER, ResourceCreatorRole.UPDATER);
+    // }
+    // return Collections.emptyList();
+    // }
+    //
+    // public List<InvestigationType> getAllInvestigationTypes() {
+    // return genericKeywordService.findAllWithCache(InvestigationType.class);
+    // }
+    //
+    // public KeywordNode<CultureKeyword> getAllApprovedCultureKeywords() {
+    // return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
+    // }
+    //
+    // public KeywordNode<SiteTypeKeyword> getAllApprovedSiteTypeKeywords() {
+    // return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
+    // }
 
-//    List<MaterialKeyword> allMaterialKeywords;
+    // List<MaterialKeyword> allMaterialKeywords;
 
     private Keyword exploreKeyword;
-//
-//    public List<MaterialKeyword> getAllMaterialKeywords() {
-//
-//        if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-//            allMaterialKeywords = genericKeywordService.findAllWithCache(MaterialKeyword.class);
-//            Collections.sort(allMaterialKeywords);
-//        }
-//        return allMaterialKeywords;
-//    }
+
+    //
+    // public List<MaterialKeyword> getAllMaterialKeywords() {
+    //
+    // if (CollectionUtils.isEmpty(allMaterialKeywords)) {
+    // allMaterialKeywords = genericKeywordService.findAllWithCache(MaterialKeyword.class);
+    // Collections.sort(allMaterialKeywords);
+    // }
+    // return allMaterialKeywords;
+    // }
 
     public List<SearchParameters> getGroups() {
         return groups;
@@ -569,6 +565,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
 
     }
+
     private boolean isKeywordSearch() {
         // FIXME: not always false...
         return false;
@@ -737,6 +734,5 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
 
     }
-    
 
 }

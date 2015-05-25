@@ -57,7 +57,8 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
 })
-public abstract class AbstractPersistableViewableAction<P extends Persistable> extends AuthenticationAware.Base implements Preparable, ViewableAction<P>, PersistableLoadingAction<P> {
+public abstract class AbstractPersistableViewableAction<P extends Persistable> extends AuthenticationAware.Base implements Preparable, ViewableAction<P>,
+        PersistableLoadingAction<P> {
 
     private static final long serialVersionUID = -5126488373034823160L;
 
@@ -85,7 +86,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     private boolean redirectBadSlug;
     private String slug;
     private String slugSuffix;
-
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
@@ -184,7 +184,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     protected void handleSlug() {
         if (!handleSlugRedirect(persistable, this)) {
             setRedirectBadSlug(true);
-        } 
+        }
     }
 
     protected boolean isPersistableIdSet() {
@@ -339,7 +339,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.VIEW_ANYTHING;
     }
-    
+
     protected void reSortFacets(ResourceFacetedAction handler, Sortable persistable) {
         // sort facets A-Z unless sortOption explicitly otherwise
         if (PersistableUtils.isNotNullOrTransient(getPersistable()) && CollectionUtils.isNotEmpty(handler.getResourceTypeFacets())) {
@@ -356,8 +356,10 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
             });
         }
     }
+
     /**
      * Is the specified public file available for the current resource
+     * 
      * @param filename
      * @return
      */
@@ -369,7 +371,5 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         getLogger().debug("checkPublicFile({})\t -> {}", filename, exists);
         return exists;
     }
-
-
 
 }

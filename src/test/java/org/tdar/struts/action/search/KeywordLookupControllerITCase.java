@@ -46,7 +46,7 @@ public class KeywordLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.lookupKeyword();
         List<Keyword> resources = controller.getResults();
         assertTrue("at least one document", resources.size() >= 1);
-        
+
         initController();
 
         controller.setKeywordType("SiteNameKeyword");

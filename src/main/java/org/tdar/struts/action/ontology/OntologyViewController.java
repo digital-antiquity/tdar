@@ -27,7 +27,8 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @ParentPackage("default")
 @Namespace("/ontology")
 @Results(value = {
-        @Result(name = OntologyViewController.REDIRECT_IRI, type = TdarActionSupport.REDIRECT, location = "${redirectIri}",params = { "ignoreParams", "id,slug" })
+        @Result(name = OntologyViewController.REDIRECT_IRI, type = TdarActionSupport.REDIRECT, location = "${redirectIri}", params = { "ignoreParams",
+                "id,slug" })
 })
 public class OntologyViewController extends AbstractOntologyViewAction {
 
@@ -90,7 +91,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
                 super.handleSlug();
                 return;
             }
-            
+
             // otherwise, try to see if the slug is an IRI
             String normalizeIri = OntologyNode.normalizeIri(getSlug());
             getLogger().trace("iri:{} --> {}", getIri(), normalizeIri);

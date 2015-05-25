@@ -269,10 +269,9 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(bulkUploadController.getAsyncErrors().contains("resource creator is not valid"));
     }
 
-    
     @Test
     @Rollback
-//    @Ignore
+    // @Ignore
     public void testDatasetBulkUpload() throws Exception {
         List<File> files = new ArrayList<>();
         File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
@@ -382,7 +381,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         init(bulkUploadController, user);
         bulkUploadController.prepare();
 
-
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
         bulkUploadController.setTicketId(ticketId);
@@ -403,7 +401,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         return setupBasicBulkUploadTest(manifestName, TdarActionSupport.SUCCESS_ASYNC);
     }
 
-    
     private BulkUploadController setupBasicBulkUploadTest(String manifestName, String successAsync) throws Exception {
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
@@ -411,7 +408,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
         return setupBasicBulkUploadTest(manifestName, successAsync, uploadFiles);
     }
-
 
     @Test
     @Rollback

@@ -276,7 +276,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             StringBuilder builder = new StringBuilder();
             if (Resource.class.isAssignableFrom(fieldValue.getClass())) {
                 fieldValue = ((Resource) fieldValue).getTitle();
-            }else if (ResourceCollection.class.isAssignableFrom(fieldValue.getClass())) {
+            } else if (ResourceCollection.class.isAssignableFrom(fieldValue.getClass())) {
                 fieldValue = ((ResourceCollection) fieldValue).getTitle();
             } else if (fieldValue instanceof Localizable) {
                 fieldValue = provider.getText(((Localizable) fieldValue).getLocaleKey());
@@ -409,7 +409,6 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return builder.toString();
     }
 
-
     public String getCleanedQueryString(String value) {
         String cleanedQueryString = value.trim();
         // if we have a leading and trailng quote, strip them
@@ -418,5 +417,5 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
         return PhraseFormatter.ESCAPE_QUOTED.format(cleanedQueryString);
     }
-    
+
 }

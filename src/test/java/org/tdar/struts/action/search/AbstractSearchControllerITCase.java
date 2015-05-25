@@ -171,16 +171,16 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         try {
             switch (resource) {
                 case COLLECTION:
-                    msg = ((CollectionSearchAction)controller).searchCollections();
+                    msg = ((CollectionSearchAction) controller).searchCollections();
                     break;
                 case PERSON:
-                    msg = ((PersonSearchAction)controller).searchPeople();
+                    msg = ((PersonSearchAction) controller).searchPeople();
                     break;
                 case INSTITUTION:
-                    msg = ((InstitutionSearchAction)controller).searchInstitutions();
+                    msg = ((InstitutionSearchAction) controller).searchInstitutions();
                     break;
                 case RESOURCE:
-                    msg = ((AdvancedSearchController)controller).search();
+                    msg = ((AdvancedSearchController) controller).search();
                     break;
                 default:
                     fail();

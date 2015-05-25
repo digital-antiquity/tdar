@@ -18,7 +18,7 @@ import org.tdar.web.AbstractWebTestCase;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 
-@ContextConfiguration(classes=TdarAppConfiguration.class)
+@ContextConfiguration(classes = TdarAppConfiguration.class)
 public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -43,8 +43,8 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         getLogger().debug("start table query");
         Query countQuery = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE_COUNT);
         countQuery.setProperties(searchFilter);
-        Number count = (Number)countQuery.uniqueResult();
-        getLogger().debug("done count: {}" , count );
+        Number count = (Number) countQuery.uniqueResult();
+        getLogger().debug("done count: {}", count);
         // FIXME: rewrite query to run twice, once for total count, and once for the paginated data
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE);
         query.setProperties(searchFilter);

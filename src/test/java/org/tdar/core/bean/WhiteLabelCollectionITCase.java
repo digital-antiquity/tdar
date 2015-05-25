@@ -1,7 +1,14 @@
 package org.tdar.core.bean;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-import org.junit.Ignore;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,15 +20,6 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.GenericService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-
 /**
  * Created by jimdevos on 3/23/15.
  */
@@ -31,8 +29,6 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     GenericService genericService;
-
-
 
     /**
      * Try to save a new 'white label' collection with all default values;
@@ -45,14 +41,14 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         rc.markUpdated(getAdminUser());
         Institution institution = new Institution("Bob's burgers");
 
-        //Note: if you remove @Cascade annotation from WhiteLabelCollection.institution, you must also uncomment the next line.
-        //genericService.save(institution);
+        // Note: if you remove @Cascade annotation from WhiteLabelCollection.institution, you must also uncomment the next line.
+        // genericService.save(institution);
 
         rc.setInstitution(institution);
         genericService.save(rc);
-        //todo: see if same is true for  genericService.saveOrUpdate()
+        // todo: see if same is true for genericService.saveOrUpdate()
         assertThat(rc.getId(), not(nullValue()));
-        assertThat(rc.getId(), not( -1L ));
+        assertThat(rc.getId(), not(-1L));
         logger.debug("collection: {}", rc);
     }
 
@@ -65,26 +61,26 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         testSave();
 
         List<ResourceCollection> rcs = new ArrayList<>();
-        //if configured correctly, hibernate should know to construct sql that includes both ResourceCollection & WhiteLabelCollection objects.
+        // if configured correctly, hibernate should know to construct sql that includes both ResourceCollection & WhiteLabelCollection objects.
         rcs.addAll(genericService.findAll(ResourceCollection.class));
 
-        //one of these will actually be a WhiteLabelCollection
+        // one of these will actually be a WhiteLabelCollection
         WhiteLabelCollection wlc = null;
         int count = 0;
-        for(ResourceCollection rc : rcs) {
-            if(rc instanceof WhiteLabelCollection) {
+        for (ResourceCollection rc : rcs) {
+            if (rc instanceof WhiteLabelCollection) {
                 count++;
-                wlc = (WhiteLabelCollection)rc;
+                wlc = (WhiteLabelCollection) rc;
             }
         }
-        assertThat(wlc, not( nullValue()));
+        assertThat(wlc, not(nullValue()));
         assertThat(count, is(1));
     }
 
     @Test
     @Rollback
     public void testAddFeaturedRsourceSuccessful() {
-        //fixme: stop being so lazy and just write a createWhiteLabelCollection() method.
+        // fixme: stop being so lazy and just write a createWhiteLabelCollection() method.
         testSave();
 
         WhiteLabelCollection wlc = genericService.findAll(WhiteLabelCollection.class).iterator().next();
@@ -116,6 +112,5 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         genericService.save(rc);
         return rc;
     }
-
 
 }

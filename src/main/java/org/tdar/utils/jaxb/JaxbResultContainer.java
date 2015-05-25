@@ -40,7 +40,7 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
     private int statusCode = StatusCode.OK.getHttpStatusCode();
     private String status;
     private Long recordId;
-    
+
     public void convert(Map<String, Object> object_, ActionInvocation invocation) {
 
         String username_ = (String) object_.get(ApiAuthenticationController.USERNAME);
@@ -48,9 +48,10 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
             username = username_;
         }
 
-        String message_ = (String)object_.get(ApiAuthenticationController.MESSAGE);
+        String message_ = (String) object_.get(ApiAuthenticationController.MESSAGE);
         if (StringUtils.isNotBlank(message_)) {
-            setMessage(message_);;
+            setMessage(message_);
+            ;
         }
         String apiKey_ = (String) object_.get(ApiAuthenticationController.API_TOKEN);
         if (StringUtils.isNotBlank(apiKey_)) {
@@ -61,7 +62,7 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
         if (StringUtils.isNotBlank(sessionKeyName_)) {
             sessionKeyName = sessionKeyName_;
         }
-        
+
         if (invocation.getAction() instanceof TdarActionSupport) {
             TdarActionSupport tas = (TdarActionSupport) invocation.getAction();
             if (tas.hasActionErrors()) {

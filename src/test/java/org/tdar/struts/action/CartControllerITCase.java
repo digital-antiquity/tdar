@@ -99,7 +99,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertFalse(result.contains("serializer"));
         logger.debug(result);
     }
-        
+
     @Test
     @Rollback
     public void testCartCouponExact() throws TdarActionException {

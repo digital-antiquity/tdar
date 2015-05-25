@@ -26,14 +26,14 @@ public class TDataSetFeedRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testFeedUrl() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.TDATASETS_FEED_URL);
+        HttpMethodBase exchange = setupExchange(Constant.TDATASETS_FEED_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.TDATASETS_FEED_URL);
+        HttpMethodBase exchange = setupExchange(Constant.TDATASETS_FEED_URL);
         String inXMLString = exchange.getResponseBodyAsString();
 
         // See: tdataset_feed_response.xml

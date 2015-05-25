@@ -163,7 +163,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     @JsonView(JsonIntegrationDetailsFilter.class)
-    @JsonProperty(value="nodes")
+    @JsonProperty(value = "nodes")
     public List<OntologyNode> getSortedOntologyNodesByImportOrder() {
         return getSortedOntologyNodes(IMPORT_ORDER_COMPARATOR);
     }

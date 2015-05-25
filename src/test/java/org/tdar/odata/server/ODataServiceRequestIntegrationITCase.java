@@ -37,14 +37,14 @@ public class ODataServiceRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testServiceUrl() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.SERVICE_URL);
+        HttpMethodBase exchange = setupExchange(Constant.SERVICE_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.SERVICE_URL);
+        HttpMethodBase exchange = setupExchange(Constant.SERVICE_URL);
         String inXMLString = exchange.getResponseBodyAsString();
 
         // See: odata_service_response.xml

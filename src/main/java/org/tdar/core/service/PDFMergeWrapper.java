@@ -13,7 +13,7 @@ public class PDFMergeWrapper implements Serializable {
     private boolean successful = false;
     private String failureReason;
     private File document;
-    
+
     public boolean isSuccessful() {
         return successful;
     }

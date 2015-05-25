@@ -21,7 +21,7 @@ public class IntegrationSaveResult implements Serializable {
 
     public IntegrationSaveResult(List<String> errors2) {
         this.errors = errors2;
-        this.status= ERROR;
+        this.status = ERROR;
     }
 
     public IntegrationSaveResult() {

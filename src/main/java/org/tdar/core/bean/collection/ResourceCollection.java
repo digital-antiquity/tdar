@@ -828,8 +828,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public String getSlug() {
         return UrlUtils.slugify(getName());
     }
-    
-    @Field(name=QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES)
+
+    @Field(name = QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES)
     @XmlTransient
     public boolean isVisibleInSearch() {
         if (hidden) {
@@ -846,7 +846,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
         return !contents;
     }
-
 
     @XmlTransient
     public boolean isWhiteLabelCollection() {

@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -29,7 +29,13 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotation;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -55,8 +61,6 @@ import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
-
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * $Id$
@@ -499,7 +503,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
      * @return
      */
     public WhiteLabelCollection getWhiteLabelCollection() {
-        //if parent list defined, go up the chain (otherwise only use direct membership, since it's costly to compute)
+        // if parent list defined, go up the chain (otherwise only use direct membership, since it's costly to compute)
 
         for (ResourceCollection rc : resourceCollections) {
             if (rc.isWhiteLabelCollection()) {

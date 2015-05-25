@@ -88,7 +88,6 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         return ontologyService.getRootElements(getPersistable().getOntologyNodes());
     }
 
-
     public void setOntology(Ontology ontology) {
         setPersistable(ontology);
     }
@@ -106,5 +105,4 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         this.codingSheetsWithMappings = codingSheetsWithMappings;
     }
 
-    
 }

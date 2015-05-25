@@ -85,7 +85,6 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         return getDao().findDataTablesUsingResource(resource);
     }
 
-
     @Transactional(readOnly = true)
     public IntegrationDataTableSearchResult findDataTables(DatasetSearchFilter searchFilter) throws IOException {
         return getDao().findDataTables(searchFilter);

@@ -25,8 +25,8 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testBookmarkedResource() throws Exception {
         Document document = createNewDocument();
-        bookmarkResource(document,getUser());
-        bookmarkResource(document,getUser());
+        bookmarkResource(document, getUser());
+        bookmarkResource(document, getUser());
         assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(getUser()).size() == 1);
     }
 
@@ -48,7 +48,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         bookmarkResource(document, true, getUser());
         bookmarkResource(document, getUser());
         assertTrue("something wrong, cannot bookmark item twice", entityService.getBookmarkedResourcesForUser(getUser()).size() == 1);
-   }
+    }
 
     @Test
     @Rollback

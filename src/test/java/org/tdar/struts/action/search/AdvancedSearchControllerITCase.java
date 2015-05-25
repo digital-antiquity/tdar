@@ -1,6 +1,8 @@
 package org.tdar.struts.action.search;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1331,7 +1333,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertThat(firstGroup().getCollections().get(0).getTitle(), is("Mega Collection"));
     }
 
-
     @Test
     @Rollback
     public void testWhitelabelAdvancedSearch() {
@@ -1343,7 +1344,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         getLogger().debug("controller collectionId:{}", controller.getCollectionId());
         controller.advanced();
 
-        //We should now have two terms:  within-collection, and all-fields
+        // We should now have two terms: within-collection, and all-fields
         assertThat(firstGroup().getFieldTypes(), contains(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
         assertThat(firstGroup().getCollections().get(0).getTitle(), is(collectionTitle));
     }
@@ -1457,19 +1458,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         SearchParameters sp = new SearchParameters();
 
         // transient version of person
-        Person p = new Person(person.getFirstName(),person.getLastName(),person.getEmail());
+        Person p = new Person(person.getFirstName(), person.getLastName(), person.getEmail());
         p.setInstitution(person.getInstitution());
         genericService.detachFromSession(p);
         p.setId(person.getId());
-        
-        
+
         // test finding dup from parent
         sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(p, ResourceCreatorRole.CREATOR));
         controller.getGroups().add(sp);
         doSearch();
         logger.debug("resutls: {}", controller.getResults());
         assertTrue(controller.getResults().contains(image));
-        
+
         resetController();
         // test finding parent from dup
         sp = new SearchParameters();
@@ -1478,8 +1478,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doSearch();
         logger.debug("resutls: {}", controller.getResults());
         assertTrue(controller.getResults().contains(image));
-        
-        
+
     }
 
 }

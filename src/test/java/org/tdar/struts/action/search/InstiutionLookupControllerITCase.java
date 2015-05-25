@@ -44,7 +44,6 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         assertTrue("inst list should contain acronym item", institutions.contains(inst));
     }
 
-
     @Test
     @Rollback(true)
     public void testInstitutionLookupWithNoResults() {

@@ -91,7 +91,6 @@ public class UrlService {
         return downloadUrl(version.getInformationResourceFile().getInformationResource(), version);
     }
 
-
     /**
      * Generate a download URL
      * 

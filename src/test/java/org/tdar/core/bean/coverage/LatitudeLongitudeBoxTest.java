@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import static org.tdar.core.bean.coverage.LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ public class LatitudeLongitudeBoxTest {
 
     @Test
     public void testExactLLB2() {
-        //not 100% necessary, but attempting to get at the randomness
+        // not 100% necessary, but attempting to get at the randomness
         for (int i = 0; i < 100; i++) {
             LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-36.845703125d, -3.64903402157866d, -36.845703125d, 3.64903402157866d);
 

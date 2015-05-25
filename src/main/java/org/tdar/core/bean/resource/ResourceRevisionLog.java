@@ -69,7 +69,7 @@ public class ResourceRevisionLog extends Persistable.Base {
 
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @XmlAttribute(name = "resourceRef")
-   public Resource getResource() {
+    public Resource getResource() {
         return resource;
     }
 

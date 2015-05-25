@@ -69,8 +69,8 @@ public class DatasetChangeLogger implements Serializable {
         }
     }
 
-    //col1text - VARCHAR -1, col2ints - BIGINT -1, col3ints - BIGINT -1, col4text - VARCHAR -1, col_mapping - VARCHAR -1
-    //col1text - VARCHAR 32818, col2ints - BIGINT 32819, col3ints - BIGINT 32820, col4text - VARCHAR 32821, mapping2 - VARCHAR 32823
+    // col1text - VARCHAR -1, col2ints - BIGINT -1, col3ints - BIGINT -1, col4text - VARCHAR -1, col_mapping - VARCHAR -1
+    // col1text - VARCHAR 32818, col2ints - BIGINT 32819, col3ints - BIGINT 32820, col4text - VARCHAR 32821, mapping2 - VARCHAR 32823
     private void logChange(Map<Long, String> tabkeys, Map<Long, String> tabkeys_, Collection<Long> disjunctTab) {
         for (Long dis : disjunctTab) {
             String chg = tabkeys.get(dis);
@@ -85,7 +85,7 @@ public class DatasetChangeLogger implements Serializable {
         for (DataTable table : dataset.getDataTables()) {
             dskeys.put(table.getId(), table.getName() + " | " + table.getDisplayName());
             for (DataTableColumn col : table.getDataTableColumns()) {
-                String value = col.getName() + " | " + col.getDisplayName() + "["+col.getColumnEncodingType() +"]";
+                String value = col.getName() + " | " + col.getDisplayName() + "[" + col.getColumnEncodingType() + "]";
                 if (col.getColumnEncodingType() == DataTableColumnEncodingType.CODED_VALUE) {
                     value += " : " + col.getDefaultCodingSheet();
                 }

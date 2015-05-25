@@ -180,7 +180,7 @@ public class BulkManifestProxy implements Serializable {
                 asyncUpdateReceiver.addError(t);
             }
         }
-        
+
         HashSet<String> filenames = new HashSet<String>(allFilenames);
         if (filenames.size() != allFilenames.size()) {
             asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.duplicate_filenames"));
@@ -554,7 +554,7 @@ public class BulkManifestProxy implements Serializable {
             if (StringUtils.isBlank(stringCellValue) || tableCellName.equals(stringCellValue) || stringCellValue.startsWith(tableCellName)) {
                 continue;
             }
-        FileProxy fp = new FileProxy();
+            FileProxy fp = new FileProxy();
             fp.setFilename(stringCellValue);
             fp.setAction(FileAction.ADD);
             logger.debug("creating validation proxy from {}", stringCellValue);

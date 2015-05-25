@@ -25,7 +25,8 @@ public class SimpleFileProcessingDao {
     private static final String LOGO = "logo.";
 
     /**
-     * Imports a file through our upload process and creates the various image sizes. 
+     * Imports a file through our upload process and creates the various image sizes.
+     * 
      * @param persistable
      * @param fileProxy
      */
@@ -34,25 +35,26 @@ public class SimpleFileProcessingDao {
             return;
         }
         // techincally this should use the proxy version of an IRFV, but it's easier here to hack it
-        String filename = LOGO + FilenameUtils.getExtension(fileProxy.getFilename()); 
+        String filename = LOGO + FilenameUtils.getExtension(fileProxy.getFilename());
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, filename, null);
         // this will be the "final" filename
         version.setFilename(filename);
-        
+
         WorkflowContext context = new WorkflowContext();
         context.getOriginalFiles().add(version);
         context.setOkToStoreInFilestore(false);
         context.setResourceType(ResourceType.IMAGE);
-        
+
         ObjectType type = ObjectType.CREATOR;
         if (persistable instanceof ResourceCollection) {
             type = ObjectType.COLLECTION;
         }
-        
+
         ImageThumbnailTask thumbnailTask = new ImageThumbnailTask();
         thumbnailTask.setWorkflowContext(context);
         try {
-            // copying the file into the temporary directory and renaming the file from the "temp" version that's specified by struts absaksjfasld.tmp --> uploadedFilename
+            // copying the file into the temporary directory and renaming the file from the "temp" version that's specified by struts absaksjfasld.tmp -->
+            // uploadedFilename
             File file = new File(context.getWorkingDirectory(), filename);
             version.setTransientFile(file);
             IOUtils.copyLarge(new FileInputStream(fileProxy.getFile()), new FileOutputStream(file));
@@ -64,7 +66,7 @@ public class SimpleFileProcessingDao {
                 v.setInformationResourceId(persistable.getId());
                 filestore.store(type, v.getTransientFile(), v);
             }
-            
+
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

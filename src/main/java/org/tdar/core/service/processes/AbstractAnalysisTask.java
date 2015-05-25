@@ -36,8 +36,6 @@ public abstract class AbstractAnalysisTask<P extends Persistable> extends Schedu
     @Autowired
     private transient SerializationService serializationService;
 
-
-
     protected void generateLogEntry(Set<Long> resourceIds, Persistable creator, int total, List<Long> idsToIgnoreInLargeTasks) {
 
         Map<Keyword, Integer> keywords = incrementKeywords(resourceIds);

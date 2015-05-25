@@ -120,7 +120,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
-            "problems with this submission","TDAR:500","TDAR:404");
+            "problems with this submission", "TDAR:500", "TDAR:404");
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -187,8 +187,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return CONFIG.getBaseSecureUrl();
     }
 
-    
-    
     public Page getPage(String localPath) {
         try {
             if (localPath.startsWith("http")) {
@@ -238,7 +236,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      */
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
+        assertThat(statusCode, not(anyOf(is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         assertNoAccessibilityErrors();
@@ -247,12 +245,13 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     /**
      * Request a page similar to gotoPage(), sans html validaton
+     * 
      * @param path
      * @return
      */
     public String gotoJson(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertThat(statusCode, not( anyOf( is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
+        assertThat(statusCode, not(anyOf(is(SC_INTERNAL_SERVER_ERROR), is(SC_BAD_REQUEST))));
         return internalPage.getWebResponse().getContentAsString();
     }
 
@@ -305,7 +304,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertPageValidHtml() {
-        if(skipHtmlValidation) return;
+        if (skipHtmlValidation)
+            return;
         if (internalPage.getWebResponse().getContentType().contains("json")) {
             try {
                 JSONObject.fromObject(getPageCode());
@@ -1482,7 +1482,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/buildIndex");
         try {
-            URL url = new URL(getBaseUrl() +"/admin/searchindex/checkstatus?userId=" + getAdminUserId());
+            URL url = new URL(getBaseUrl() + "/admin/searchindex/checkstatus?userId=" + getAdminUserId());
             internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
 
             logger.debug(getPageCode());

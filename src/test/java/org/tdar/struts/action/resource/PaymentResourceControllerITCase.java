@@ -1,6 +1,9 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,7 +72,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
             return getSecond();
         }
     }
-    
+
     @Test
     @Rollback
     public void testSubmitterWithoutAccountRightsAndNoAccount() throws TdarActionException {
@@ -99,12 +102,13 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(account);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
-        ResourceCollection rCollection = generateResourceCollection("test", "test", CollectionType.SHARED, true, Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)), 
+        ResourceCollection rCollection = generateResourceCollection("test", "test", CollectionType.SHARED, true,
+                Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
         dataset.getResourceCollections().add(rCollection);
         dataset.setSubmitter(getBasicUser());
         genericService.saveOrUpdate(rCollection);
-        
+
         Long id = dataset.getId();
         dataset = null;
         genericService.synchronize();
@@ -163,7 +167,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         assertEquals(basicAccount, ds.getAccount());
     }
 
-    
     @Test
     @Rollback()
     public void testCreateWithoutValidAccount() throws Exception {
@@ -185,7 +188,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertNotNull(tdae);
         Assert.assertNull(result, result);
     }
-    
+
     @Test
     @Rollback()
     public void testResourceControllerWithoutValidAccount() throws Exception {

@@ -30,7 +30,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
     }
 
     private void assertStatusCodeNotSuccess() {
-        logger.debug("{} {}",internalPage.getWebResponse().getStatusCode(),  getCurrentUrlPath());
+        logger.debug("{} {}", internalPage.getWebResponse().getStatusCode(), getCurrentUrlPath());
         assertNotEquals(200, internalPage.getWebResponse().getStatusCode());
     }
 

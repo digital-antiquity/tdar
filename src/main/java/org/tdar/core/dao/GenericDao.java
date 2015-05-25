@@ -131,11 +131,12 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public Number countActive(Class<? extends HasStatus> persistentClass) {
-        Class cls = persistentClass; 
+        Class cls = persistentClass;
         if (persistentClass.isAssignableFrom(Creator.class)) {
             cls = Creator.class;
-        } 
-            return (Number)getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).uniqueResult();
+        }
+        return (Number) getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName()))
+                .uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -351,7 +352,8 @@ public class GenericDao {
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass) {
-        return getCriteria(persistentClass).addOrder(Order.asc("id")).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
+        return getCriteria(persistentClass).addOrder(Order.asc("id")).setCacheMode(CacheMode.IGNORE)
+                .setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 

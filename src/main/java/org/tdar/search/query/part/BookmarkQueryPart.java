@@ -16,11 +16,10 @@ public class BookmarkQueryPart extends FieldQueryPart<Person> {
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(Operator.OR);
         for (Person person : getFieldValues()) {
-            group.append(new FieldQueryPart<Long>("bookmarkedResource.person.id",person.getId()));
+            group.append(new FieldQueryPart<Long>("bookmarkedResource.person.id", person.getId()));
         }
         return group.generateQueryString();
     }
-
 
     @Override
     public String getDescription(TextProvider provider) {

@@ -1,7 +1,8 @@
 package org.tdar.struts.action.download;
 
-import com.opensymphony.xwork2.Preparable;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,8 @@ import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.utils.PersistableUtils;
+
+import com.opensymphony.xwork2.Preparable;
 
 @Namespace("/filestore")
 @Component
@@ -54,7 +57,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     public static final String LOGIN_REGISTER_PROMPT = "../filestore/download-unauthenticated.ftl";
     public static final String DOWNLOAD_SUFFIX = "/${informationResourceId}/${informationResourceFileVersionId}";
     public static final String SUCCESS_REDIRECT_DOWNLOAD = "/filestore/confirm" + DOWNLOAD_SUFFIX;
-    public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get" +DOWNLOAD_SUFFIX;
+    public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get" + DOWNLOAD_SUFFIX;
     public static final String FORBIDDEN = "forbidden";
     public static final String DOWNLOAD_ALL_LANDING = "/filestore/confirm/${informationResourceId}";
     public static final String DOWNLOAD_ALL = "downloadAllAsZip";

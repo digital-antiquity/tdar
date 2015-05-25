@@ -76,9 +76,9 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         String xml = serializationService.convertToXML(fp);
         logger.info(xml);
         serializationService.parseXml(FileProxies.class, new StringReader(xml));
-        
+
     }
-    
+
     @Test
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
@@ -90,9 +90,9 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         assertTrue(sw.toString().contains(NABATAEAN));
         Project project = genericService.find(Project.class, 3805l);
         project.getCultureKeywords().add(new CultureKeyword(BEDOUIN));
-//        logger.error("{}", project.getActiveInvestigationTypes());
-//        logger.error("{}", project.getActiveMaterialKeywords().add(new MaterialKeyword()));
-//        project.getActiveOtherKeywords().add(new OtherKeyword(BEDOUIN));
+        // logger.error("{}", project.getActiveInvestigationTypes());
+        // logger.error("{}", project.getActiveMaterialKeywords().add(new MaterialKeyword()));
+        // project.getActiveOtherKeywords().add(new OtherKeyword(BEDOUIN));
         sw = new StringWriter();
         serializationService.convertToJson(project, sw, JsonProjectLookupFilter.class);
         logger.info(sw.toString());

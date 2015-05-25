@@ -147,7 +147,7 @@ public class CellMetadata implements Serializable {
             comment = MessageHelper.getMessage(keyC);
         }
         if (StringUtils.equals(MessageHelper.getMessage(keyL), keyL)) {
-            throw new TdarRecoverableRuntimeException("cellMetadata.key_not_stored",Arrays.asList(keyL));
+            throw new TdarRecoverableRuntimeException("cellMetadata.key_not_stored", Arrays.asList(keyL));
         }
         displayName = StringUtils.trim(prefix + " " + MessageHelper.getMessage(keyL));
 

@@ -1,6 +1,6 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
     public static final Long SPITAL_MAIN_ID = 3091L;
     public static final Long TAXON_ID = 42940L;
-    
+
     @Test
     public void testDatasetService() throws IOException {
         DatasetSearchFilter filter = new DatasetSearchFilter();
@@ -70,7 +70,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
     @Test
     public void testDataTableDetailsAction() throws IOException {
-        TableDetailsAction detailsAction = generateNewInitializedController(TableDetailsAction.class,getAdminUser());
+        TableDetailsAction detailsAction = generateNewInitializedController(TableDetailsAction.class, getAdminUser());
         detailsAction.setDataTableIds(Arrays.asList(SPITAL_MAIN_ID));
         detailsAction.dataTableDetails();
         logger.debug(IOUtils.toString(detailsAction.getJsonInputStream()));
@@ -78,7 +78,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
     @Test
     public void testIntegrationColumnDetailsAction() throws IOException {
-        IntegrationColumnDetailsAction detailsAction = generateNewInitializedController(IntegrationColumnDetailsAction.class,getAdminUser());
+        IntegrationColumnDetailsAction detailsAction = generateNewInitializedController(IntegrationColumnDetailsAction.class, getAdminUser());
         IntegrationColumn column = new IntegrationColumn(ColumnType.INTEGRATION);
         column.getColumns().add(dataTableService.find(SPITAL_MAIN_ID).getColumnByName("species_common_name"));
         column.setSharedOntology(ontologyService.find(TAXON_ID));
@@ -101,12 +101,12 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
     @Test
     public void testNodeParticipation() throws IOException {
         NodeParticipationByColumnAction action;
-        //get all the mapped dataTableColumns
+        // get all the mapped dataTableColumns
         action = generateNewController(NodeParticipationByColumnAction.class);
         List<DataTableColumn> dataTableColumns = new ArrayList<>(genericService.findAll(DataTableColumn.class));
         List<Long> dtcIds = new ArrayList<>();
-        for(DataTableColumn dtc : dataTableColumns) {
-            if(dtc.getMappedOntology() != null) {
+        for (DataTableColumn dtc : dataTableColumns) {
+            if (dtc.getMappedOntology() != null) {
                 dtcIds.add(dtc.getId());
             }
         }
@@ -116,15 +116,15 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         action.execute();
         logger.debug("results:{}", action.getIntegrationColumnPartProxies());
         logger.debug(IOUtils.toString(action.getJsonInputStream()));
-        //we expect to have at least one node value present
+        // we expect to have at least one node value present
         int nodesPresent = 0;
         int proxiesPresent = 0;
-        for(IntegrationColumnPartProxy proxy: action.getIntegrationColumnPartProxies()) {
+        for (IntegrationColumnPartProxy proxy : action.getIntegrationColumnPartProxies()) {
             nodesPresent += proxy.getFlattenedNodes().size();
             proxiesPresent++;
         }
         logger.debug("nodesPresent:{}", nodesPresent);
-        // NOTE: this was 184 prior to the change to the filter node logic (reversion to older logic) in r6881. 
+        // NOTE: this was 184 prior to the change to the filter node logic (reversion to older logic) in r6881.
         Assert.assertEquals(184, nodesPresent);
         Assert.assertEquals(4, proxiesPresent);
 
@@ -135,7 +135,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         StringWriter writer = runJson("src/test/resources/data_integration_tests/json/sample-valid-integration.json");
         logger.debug(writer.toString());
     }
-    
+
     private String testDupJson = "src/test/resources/data_integration_tests/json/test-integration-duplicate-display.json";
 
     @Test

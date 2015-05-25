@@ -93,7 +93,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.Creator")
 public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage,Slugable, HasEmail {
+        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage, Slugable, HasEmail {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
@@ -223,7 +223,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     private transient Integer maxHeight;
     private transient Integer maxWidth;
     private transient VersionType maxSize;
-    
+
     // @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
@@ -525,9 +525,9 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @JsonView(JsonLookupFilter.class)
     public String getDetailUrl() {
-        return String.format("/%s/%s/%s", getUrlNamespace(), getId(),getSlug());
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
-    
+
     @Override
     public String getSlug() {
         return UrlUtils.slugify(getProperName());
@@ -564,5 +564,5 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     public void setMaxSize(VersionType maxSize) {
         this.maxSize = maxSize;
     }
-    
+
 }

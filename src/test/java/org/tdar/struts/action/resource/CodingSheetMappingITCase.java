@@ -318,7 +318,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         // valid because not mapped to ontology
         assertFalse(codingSheet.isMappedImproperly());
         codingSheet.setDefaultOntology(ontology);
-        //invalid because ontology is mapped
+        // invalid because ontology is mapped
         assertTrue(codingSheet.isMappedImproperly());
         for (CodingRule rule : codingSheet.getCodingRules()) {
             ruleMap.put(rule.getCode(), rule);

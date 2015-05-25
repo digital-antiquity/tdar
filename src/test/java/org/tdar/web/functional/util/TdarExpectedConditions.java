@@ -1,5 +1,10 @@
 package org.tdar.web.functional.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -8,10 +13,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Handy expected conditions for tDAR-related workflows
  */
@@ -19,15 +20,13 @@ public class TdarExpectedConditions {
 
     private static final Logger logger = LoggerFactory.getLogger(TdarExpectedConditions.class);
 
-
     private TdarExpectedConditions() {
-        //static methods only
+        // static methods only
     }
-
 
     /**
      *
-     * Returns WebElement for first located element when  least one of the elements located by the specified locator are visible.
+     * Returns WebElement for first located element when least one of the elements located by the specified locator are visible.
      *
      * @param locator
      * @return
@@ -39,12 +38,12 @@ public class TdarExpectedConditions {
             public List<WebElement> apply(WebDriver driver) {
                 List<WebElement> elements = driver.findElements(locator);
                 List<WebElement> visibleElements = new ArrayList<>();
-                for(WebElement element : elements){
-                    if(element.isDisplayed()){
+                for (WebElement element : elements) {
+                    if (element.isDisplayed()) {
                         visibleElements.add(element);
                     }
                 }
-                if(visibleElements.isEmpty()) {
+                if (visibleElements.isEmpty()) {
                     return null;
                 } else {
                     logger.debug("found visible elements:{}", visibleElements);
@@ -56,6 +55,7 @@ public class TdarExpectedConditions {
 
     /**
      * True when any of the selected elements are no longer visible.
+     * 
      * @param selection
      * @return
      */
@@ -64,8 +64,8 @@ public class TdarExpectedConditions {
         return new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(@Nullable WebDriver ignored) {
-                for( WebElement element : selection) {
-                    if(element.isDisplayed()) {
+                for (WebElement element : selection) {
+                    if (element.isDisplayed()) {
                         return false;
                     }
                 }
@@ -76,6 +76,7 @@ public class TdarExpectedConditions {
 
     /**
      * Return true when bootstrap 'modal' window no longer present in DOM.
+     * 
      * @return
      */
     public static ExpectedCondition<Boolean> bootstrapModalGone() {
@@ -92,22 +93,21 @@ public class TdarExpectedConditions {
         };
     }
 
-
     public static ExpectedCondition<Boolean> locatedElementCountBetween(final By locator, final int minSizeInclusive, final int maxSizeInclusive) {
-       return new ExpectedCondition<Boolean>() {
-           @Nullable
-           @Override
-           public Boolean apply(@Nullable WebDriver driver) {
-               int size = driver.findElements(locator).size();
-               return (minSizeInclusive <= size || minSizeInclusive == -1)
-                       && (maxSizeInclusive >= size || maxSizeInclusive == -1);
-           }
+        return new ExpectedCondition<Boolean>() {
+            @Nullable
+            @Override
+            public Boolean apply(@Nullable WebDriver driver) {
+                int size = driver.findElements(locator).size();
+                return (minSizeInclusive <= size || minSizeInclusive == -1)
+                        && (maxSizeInclusive >= size || maxSizeInclusive == -1);
+            }
 
-           @Override
-           public String toString() {
-               return String.format("elements located by %s to be between %s and %s ", locator, minSizeInclusive, maxSizeInclusive);
-           }
-       };
+            @Override
+            public String toString() {
+                return String.format("elements located by %s to be between %s and %s ", locator, minSizeInclusive, maxSizeInclusive);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> locatedElementCountEquals(final By locator, final int size) {
@@ -123,7 +123,8 @@ public class TdarExpectedConditions {
     }
 
     /**
-     * Similar to  ExpectedConditions#textToBePresentInElementLocated, but will look for text in multiple items found by the specified locator
+     * Similar to ExpectedConditions#textToBePresentInElementLocated, but will look for text in multiple items found by the specified locator
+     * 
      * @param locator
      * @param text
      * @return true if any of the matched elements contain the specified text, otherwise false
@@ -134,9 +135,9 @@ public class TdarExpectedConditions {
         return new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                for(WebElement element : driver.findElements(locator)) {
-                    if(!isStale(element)) {
-                        if(element.getText().contains(text)) {
+                for (WebElement element : driver.findElements(locator)) {
+                    if (!isStale(element)) {
+                        if (element.getText().contains(text)) {
                             return true;
                         }
                     }
@@ -154,13 +155,14 @@ public class TdarExpectedConditions {
 
     /**
      * Return true if element is "stale" (i.e. is deleted or no longer part of the DOM)
+     * 
      * @param element
      * @return
      */
     private static boolean isStale(WebElement element) {
-        //Beleive it or not, this is how selenium advises checking for staleness (see ExpectedConditions.stalenessOf)
+        // Beleive it or not, this is how selenium advises checking for staleness (see ExpectedConditions.stalenessOf)
         try {
-            //will throw exception if stale
+            // will throw exception if stale
             element.isEnabled();
         } catch (StaleElementReferenceException ex) {
             return true;

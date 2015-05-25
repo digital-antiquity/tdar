@@ -30,9 +30,8 @@ public class SimpleHttpUtils {
 
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
 
-
     /**
-     * Return httpclient that trusts self-signed certs.  Wraps any checked exceptions in a runtime exception.
+     * Return httpclient that trusts self-signed certs. Wraps any checked exceptions in a runtime exception.
      *
      * @return
      * @throws java.lang.RuntimeException
@@ -41,19 +40,20 @@ public class SimpleHttpUtils {
         CloseableHttpClient client = null;
         try {
             client = createClientChecked();
-        } catch (KeyStoreException|NoSuchAlgorithmException|KeyManagementException e) {
+        } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException("failed to create http client", e);
         }
         return client;
     }
 
     /**
-     * send post request to specified  url with specified name/value pairs. Wraps any checked exceptions in a runtime exception.
+     * send post request to specified url with specified name/value pairs. Wraps any checked exceptions in a runtime exception.
+     * 
      * @param url
      * @param parms
      * @return
      */
-    public static CloseableHttpResponse post(String url, List<NameValuePair> parms ) {
+    public static CloseableHttpResponse post(String url, List<NameValuePair> parms) {
         HttpPost post = new HttpPost(url);
         post.setEntity(new UrlEncodedFormEntity(parms, Consts.UTF_8));
         CloseableHttpResponse httpResponse = null;
@@ -68,10 +68,11 @@ public class SimpleHttpUtils {
 
     /**
      * parse a closeable response and return a Pair containint the HttpStatus code and the response body. Swallows all exceptions and closes response object.
+     * 
      * @return
      */
     public static Pair<Integer, String> parseResponse(CloseableHttpResponse closeableResponse) {
-        try(BufferedReader rd = new BufferedReader(new InputStreamReader(closeableResponse.getEntity().getContent()))) {
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(closeableResponse.getEntity().getContent()))) {
             StringBuilder sb = new StringBuilder();
             for (String line : IOUtils.readLines(rd)) {
                 sb.append(line);
@@ -79,7 +80,8 @@ public class SimpleHttpUtils {
             String html = sb.toString();
             Pair<Integer, String> pair = new Pair<>(closeableResponse.getStatusLine().getStatusCode(), html);
             return pair;
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         return null;
     }
 
@@ -95,7 +97,5 @@ public class SimpleHttpUtils {
         CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
         return httpclient;
     }
-
-
 
 }

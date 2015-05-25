@@ -5,7 +5,11 @@ package org.tdar.core.filestore;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import static org.tdar.TestConstants.TEST_IMAGE;
@@ -19,10 +23,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockRequestDispatcher;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
@@ -35,9 +35,9 @@ import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.web.StaticContentServlet;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
-import org.tdar.web.StaticContentServlet;
 
 /**
  * @author Adam Brin
@@ -265,10 +265,9 @@ public class FilestoreTest {
     @Test
     public void testStaticRequestedPairtreeFile() {
         StaticContentServlet servlet = new StaticContentServlet();
-        File file = servlet.getRequestedFile("search-header.jpg", new String[]{"123456"});
-        assertThat(file.getParent(), endsWith( "/12/34/56/rec"));
+        File file = servlet.getRequestedFile("search-header.jpg", new String[] { "123456" });
+        assertThat(file.getParent(), endsWith("/12/34/56/rec"));
 
     }
-
 
 }

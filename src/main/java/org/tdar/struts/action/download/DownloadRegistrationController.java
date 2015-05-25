@@ -38,7 +38,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
             results = {
                     @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
-                    @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING)            })
+                    @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING) })
     @HttpsOnly
     @PostOnly
     @WriteableSession
@@ -56,7 +56,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
                 addActionMessage(getText("userAccountController.successful_registration_message"));
                 if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersionId())) {
                     return SUCCESS_DOWNLOAD_ALL;
-                }   
+                }
                 return TdarActionSupport.SUCCESS;
             }
         } catch (Throwable e) {

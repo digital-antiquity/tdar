@@ -42,7 +42,7 @@
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
-                name= TdarNamedQueries.SCROLLABLE_SITEMAP,
+                name = TdarNamedQueries.SCROLLABLE_SITEMAP,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, null, 'ACTIVE') from Resource as res where res.status='ACTIVE'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_BY_TDAR_YEAR,
@@ -163,7 +163,8 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS,
-                query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt " +
+                query = "select count(distinct ds.id) from Dataset as ds join ds.dataTables as dt "
+                        +
                         "join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code where code.defaultOntology <> null and ds.project.id in (:projectIdList)"
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -453,9 +454,11 @@
                 query = "select count(*) from CreatorViewStatistic  where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.COLLECTION_VIEW,
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
-        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES,
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES,
                 query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id order by res.id asc"),
-        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
                 query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
@@ -474,7 +477,8 @@
                 query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
-                query = "select distinct dt, ds.title " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX + " order by ds.title, dt.displayName"
+                query = "select distinct dt, ds.title " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
+                        + " order by ds.title, dt.displayName"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE_COUNT,

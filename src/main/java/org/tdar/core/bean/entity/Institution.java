@@ -72,13 +72,13 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
             "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence", "browseOccurrence", "hidden" };
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval=true)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, orphanRemoval = true)
     @JoinColumn(name = "merge_creator_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
-    @BulkImportField(key="CREATOR_INSTITUTION", order = 10)
+    @BulkImportField(key = "CREATOR_INSTITUTION", order = 10)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -96,7 +96,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
-
     public Institution() {
     }
 
@@ -110,7 +109,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Fields({
             @Field(name = "name_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name=QueryFieldNames.NAME_TOKEN),
+            @Field(name = QueryFieldNames.NAME_TOKEN),
             @Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
                     analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     })
@@ -207,7 +206,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return super.getDateUpdated();
     }
 
-
     public String getEmail() {
         return email;
     }
@@ -219,6 +217,5 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
             this.email = email;
         }
     }
-
 
 }

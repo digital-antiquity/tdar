@@ -20,13 +20,13 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         url = getCurrentUrlPath();
         logout();
     }
-    
+
     @Test
     public void testDownloadLoginFailed() {
         gotoPage(url);
         DomNodeList<DomNode> all = htmlPage.getDocumentElement().querySelectorAll(".download-file");
         clickLinkWithText(all.get(0).getTextContent().trim());
-        
+
         setInput("downloadUserLogin.loginUsername", getAdminUsername());
         // wrong on purpose
         setInput("downloadUserLogin.loginPassword", getAdminUsername());
@@ -51,7 +51,7 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(url);
         DomNodeList<DomNode> all = htmlPage.getDocumentElement().querySelectorAll(".download-file");
         clickLinkWithText(all.get(0).getTextContent().trim());
-        
+
         setInput(DOWNLOAD_REGISTRATION + ".person.username", getAdminUsername());
         // wrong on purpose
         setInput(DOWNLOAD_REGISTRATION + ".password", getAdminUsername());
@@ -61,10 +61,10 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent("find a user with this email");
         assertTextPresent("You must accept the Terms of Service");
         assertTextNotPresent("Could not authenticate at this time");
-        
+
         Map<String, String> personmap = new HashMap<>();
-        setupBasicUser(personmap , "downloadwebtest",DOWNLOAD_REGISTRATION);
-        personmap.put(DOWNLOAD_REGISTRATION +".acceptTermsOfUse", "true");
+        setupBasicUser(personmap, "downloadwebtest", DOWNLOAD_REGISTRATION);
+        personmap.put(DOWNLOAD_REGISTRATION + ".acceptTermsOfUse", "true");
         deleteUser(personmap.get(DOWNLOAD_REGISTRATION + ".person.username"));
         personmap.remove("downloadRegistration.contributorReason");
         personmap.remove("downloadRegistration.person.phone");
@@ -72,11 +72,11 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             setInput(key, personmap.get(key));
         }
         submitForm("submitAction");
-        
+
         // complete
 
         assertCurrentUrlContains("filestore/confirm");
-//        ("#manual-download");
+        // ("#manual-download");
     }
 
 }

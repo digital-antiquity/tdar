@@ -66,12 +66,12 @@ public class XMLDocumentResult implements Result {
         resp.setContentType(CONTENT_TYPE);
         JaxbResultContainer container = new JaxbResultContainer();
         if (object_ instanceof JaxbResultContainer) {
-            container  = (JaxbResultContainer) object_;
+            container = (JaxbResultContainer) object_;
             if (container.getStatusCode() != StatusCode.OK.getHttpStatusCode()) {
                 setStatusCode(container.getStatusCode());
             }
         }
-        
+
         if (object_ instanceof Map) {
             container.convert((Map<String, Object>) object_, invocation);
             object_ = container;
@@ -81,7 +81,7 @@ public class XMLDocumentResult implements Result {
             }
         }
 
-        logger.debug("StatusCode: {}",getStatusCode());
+        logger.debug("StatusCode: {}", getStatusCode());
         resp.setStatus(getStatusCode());
         serializationService.convertToXML(container, new OutputStreamWriter(resp.getOutputStream()));
     }

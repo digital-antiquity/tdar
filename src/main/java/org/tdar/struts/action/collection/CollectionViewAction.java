@@ -1,6 +1,5 @@
 package org.tdar.struts.action.collection;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,7 +27,6 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -56,10 +59,11 @@ import org.tdar.utils.PersistableUtils;
         @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
         @Result(name = CollectionViewAction.SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
-                location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), //removed ,keywordPath
+                location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction, ResourceFacetedAction {
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction,
+        ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
 
@@ -168,7 +172,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return SUCCESS;
     }
 
-
     @Override
     public void loadExtraViewMetadata() {
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
@@ -202,7 +205,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         getLogger().trace("lucene: end");
     }
 
-
     @HttpOnlyIfUnauthenticated
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
@@ -210,13 +212,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     })
     public String view() throws TdarActionException {
         String result = super.view();
-        if(SUCCESS.equals(result) && getPersistable().isWhiteLabelCollection()) {
-            result =  CollectionViewAction.SUCCESS_WHITELABEL;
+        if (SUCCESS.equals(result) && getPersistable().isWhiteLabelCollection()) {
+            result = CollectionViewAction.SUCCESS_WHITELABEL;
         }
         return result;
     }
-
-
 
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
@@ -463,12 +463,13 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     public boolean isSearchHeaderLogoAvailable() {
-        //for now, we just look in hosted + collection ID
+        // for now, we just look in hosted + collection ID
         return checkHostedFileAvailable(SEARCH_HEADER_FILENAME);
     }
 
     /**
      * Indicate to view layer that we should display a search header.
+     * 
      * @return
      */
     public boolean isSearchHeaderEnabled() {
@@ -476,7 +477,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     /**
-     * Indicates whether the view layer should show sub-navigation elements.  We turn this off when the 'search header' is enabled.
+     * Indicates whether the view layer should show sub-navigation elements. We turn this off when the 'search header' is enabled.
      *
      */
     @Override
@@ -486,6 +487,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     /**
      * Return the default/suggested base url for static content (trailing slash removed, if present)
+     * 
      * @return
      */
     public String getHostedContentBaseUrl() {
@@ -493,7 +495,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         if (PersistableUtils.isNotNullOrTransient(getResourceCollection())) {
             baseUrl += PairtreeFilestore.toPairTree(getResourceCollection().getId());
         }
-        if(baseUrl.endsWith("/")) {
+        if (baseUrl.endsWith("/")) {
             baseUrl = StringUtils.chop(baseUrl);
         }
         return baseUrl;

@@ -676,7 +676,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 CollectionUtils.isNotEmpty(internal.getAuthorizedUsers())) {
             tempSet.add(internal);
         }
-        
+
         Iterator<ResourceCollection> iter = tempSet.iterator();
         while (iter.hasNext()) {
             ResourceCollection next = iter.next();
@@ -684,7 +684,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 iter.remove();
             }
         }
-        
+
         return tempSet;
     }
 
@@ -749,9 +749,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return null;
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void saveCollectionForController(ResourceCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
-            List<AuthorizedUser> authorizedUsers, List<Resource> resourcesToAdd, List<Resource> resourcesToRemove, boolean shouldSaveResource, FileProxy fileProxy) {
+            List<AuthorizedUser> authorizedUsers, List<Resource> resourcesToAdd, List<Resource> resourcesToRemove, boolean shouldSaveResource,
+            FileProxy fileProxy) {
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }

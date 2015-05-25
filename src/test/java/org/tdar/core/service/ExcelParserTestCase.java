@@ -17,10 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.service.excel.SheetEvaluator;
-import org.tdar.utils.MathUtils;
 
 public class ExcelParserTestCase {
-    
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
@@ -33,16 +32,15 @@ public class ExcelParserTestCase {
         verifyGeneratedColumnNames(evaluator, false);
         fis.close();
     }
-    
 
     @Test
     public void testFormat() {
         String st = "-1.0";
-        logger.debug("{}",NumberUtils.isNumber(st));
+        logger.debug("{}", NumberUtils.isNumber(st));
         double d = NumberUtils.toDouble(st);
         logger.debug("{}", d);
     }
-    
+
     @Test
     public void testMissingHeaderColumnNames() throws Exception {
         FileInputStream fis = getDataIntegrationResource("no_first_column_name.xlsx");
@@ -80,7 +78,7 @@ public class ExcelParserTestCase {
     }
 
     @Test
-    public void testExcelFileWithHeaders() throws Exception {        
+    public void testExcelFileWithHeaders() throws Exception {
         FileInputStream fis = getDataIntegrationResource("Test_header_rows.xls");
         Workbook workbook = WorkbookFactory.create(fis);
         SheetEvaluator evaluator = new SheetEvaluator(workbook.getSheetAt(0));
@@ -120,7 +118,7 @@ public class ExcelParserTestCase {
         assertEquals(7, evaluator.getDataColumnEndIndex());
         fis.close();
     }
-    
+
     @Test
     public void testTooManyColumns() throws Exception {
         FileInputStream fis = getDataIntegrationResource("too-many-columns.xlsx");
@@ -137,7 +135,7 @@ public class ExcelParserTestCase {
         assertTrue(evaluator.isDegenerate());
         fis.close();
     }
-    
+
     private void verifyGeneratedColumnNames(SheetEvaluator evaluator, boolean generated) {
         List<String> headerColumnNames = evaluator.getHeaderColumnNames();
         for (int i = 0; i <= evaluator.getDataColumnEndIndex(); i++) {
@@ -150,7 +148,7 @@ public class ExcelParserTestCase {
             }
         }
     }
-    
+
     private FileInputStream getDataIntegrationResource(String filename) throws Exception {
         return new FileInputStream(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, filename));
     }

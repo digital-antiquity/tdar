@@ -75,7 +75,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         fns.addAll(wildcards);
         lns.addAll(wildcards);
         insts.addAll(wildcards);
-        
+
         group.append(whatever(fns, QueryFieldNames.FIRST_NAME, QueryFieldNames.FIRST_NAME_AUTO));
         group.append(whatever(lns, QueryFieldNames.LAST_NAME, QueryFieldNames.LAST_NAME_AUTO));
 

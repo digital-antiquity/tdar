@@ -27,7 +27,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/")
-public abstract class AbstractDeleteAction<P extends Persistable&Addressable> extends AuthenticationAware.Base implements Preparable {
+public abstract class AbstractDeleteAction<P extends Persistable & Addressable> extends AuthenticationAware.Base implements Preparable {
 
     public final static String msg = "%s is %s %s (%s): %s";
     private String delete;
@@ -35,7 +35,7 @@ public abstract class AbstractDeleteAction<P extends Persistable&Addressable> ex
     private Long id;
 
     private boolean async = true;
-    
+
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -72,7 +72,6 @@ public abstract class AbstractDeleteAction<P extends Persistable&Addressable> ex
         return CONFIRM;
     }
 
-    
     // FIXME: resolve duplcate with AbstractPersistableController and remove
     private void logAction(String action_) {
         String name_ = "";
@@ -136,7 +135,6 @@ public abstract class AbstractDeleteAction<P extends Persistable&Addressable> ex
         }
     }
 
-
     public Long getId() {
         return id;
     }
@@ -160,7 +158,7 @@ public abstract class AbstractDeleteAction<P extends Persistable&Addressable> ex
     public void setDeleteIssue(DeleteIssue deleteIssue) {
         this.deleteIssue = deleteIssue;
     }
-    
+
     public void checkValidRequest() throws TdarActionException {
         try {
             if (!getSessionData().isAuthenticated()) {
@@ -193,11 +191,9 @@ public abstract class AbstractDeleteAction<P extends Persistable&Addressable> ex
 
     abstract protected P loadPersistable();
 
-
     public boolean isAsync() {
         return async;
     }
-
 
     public void setAsync(boolean async) {
         this.async = async;

@@ -162,13 +162,13 @@ public abstract class InformationResource extends Resource {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
-    @BulkImportField(key="METADATA_LANGUAGE")
+    @BulkImportField(key = "METADATA_LANGUAGE")
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "metadata_language", length = FieldLength.FIELD_LENGTH_100)
     private Language metadataLanguage;
 
-    @BulkImportField(key="RESOURCE_LANGUAGE")
+    @BulkImportField(key = "RESOURCE_LANGUAGE")
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "resource_language", length = FieldLength.FIELD_LENGTH_100)
@@ -177,16 +177,16 @@ public abstract class InformationResource extends Resource {
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "license_type", length = FieldLength.FIELD_LENGTH_128)
-    @BulkImportField(key=LICENSE_TYPE, required = true)
+    @BulkImportField(key = LICENSE_TYPE, required = true)
     private LicenseType licenseType;
 
     @Column(name = "license_text")
-    @BulkImportField(key=LICENSE_TEXT)
+    @BulkImportField(key = LICENSE_TEXT)
     @Type(type = "org.hibernate.type.StringClobType")
     @Lob
     private String licenseText;
 
-    @BulkImportField(key="DOI")
+    @BulkImportField(key = "DOI")
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -197,7 +197,7 @@ public abstract class InformationResource extends Resource {
     @XmlTransient
     private boolean externalReference;
 
-    @BulkImportField(key="COPY_LOCATION")
+    @BulkImportField(key = "COPY_LOCATION")
     @Column(name = "copy_location")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String copyLocation;
@@ -208,7 +208,7 @@ public abstract class InformationResource extends Resource {
 
     // currently just a 4 digit year.
     @Column(name = "date_created")
-    @BulkImportField(key="YEAR", required = true, order = -10)
+    @BulkImportField(key = "YEAR", required = true, order = -10)
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @JsonView(JsonLookupFilter.class)
@@ -228,20 +228,20 @@ public abstract class InformationResource extends Resource {
     private Institution resourceProviderInstitution;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    @BulkImportField(key="PUBLISHER")
+    @BulkImportField(key = "PUBLISHER")
     @JoinColumn(name = "publisher_id")
     @IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution publisher;
 
-    @BulkImportField(key="PUBLISHER_LOCATION")
+    @BulkImportField(key = "PUBLISHER_LOCATION")
     @Column(name = "publisher_location")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    @BulkImportField(key=COPYRIGHT_HOLDER,required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
+    @BulkImportField(key = COPYRIGHT_HOLDER, required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Creator copyrightHolder;
 

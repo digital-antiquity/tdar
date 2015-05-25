@@ -40,7 +40,8 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     private transient OntologyNodeDao ontologyNodeDao;
 
     @Transactional
-    public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow, TextProvider provider) throws IOException, IntegrationDeserializationException {
+    public IntegrationContext toIntegrationContext(DataIntegrationWorkflow workflow, TextProvider provider) throws IOException,
+            IntegrationDeserializationException {
         IntegrationWorkflowData workflowData = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
         IntegrationContext context = workflowData.toIntegrationContext(ontologyNodeDao, provider);
         // perform validity checks?
@@ -48,7 +49,8 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     }
 
     @Transactional(readOnly = false)
-    public IntegrationSaveResult saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data,String json, TdarUser authUser, TextProvider provider) {
+    public IntegrationSaveResult saveForController(DataIntegrationWorkflow persistable, IntegrationWorkflowData data, String json, TdarUser authUser,
+            TextProvider provider) {
         IntegrationSaveResult result = new IntegrationSaveResult();
         result.setStatus(IntegrationSaveResult.ERROR);
         try {

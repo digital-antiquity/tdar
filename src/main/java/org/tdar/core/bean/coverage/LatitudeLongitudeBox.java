@@ -189,13 +189,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
 
-        Double numOne = ObjectUtils.firstNonNull(num1 , num2);
+        Double numOne = ObjectUtils.firstNonNull(num1, num2);
 
         if (num1 == null) {
             throw new TdarRecoverableRuntimeException("latLong.one_null");
         }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
-        Double numTwo = ObjectUtils.firstNonNull(num2 , numOne + salt / 2d);
+        Double numTwo = ObjectUtils.firstNonNull(num2, numOne + salt / 2d);
         if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) <= salt) {
             add += salt / 2d;
         } else {
@@ -208,7 +208,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         } else {
             // If two points are the same, we want to always scoot the maximum long/lat higher, and the minimum long/lat lower, such that the minimum distance
             // exceeds the salt distance.
-            if( numOne.equals(numTwo) && isMin) {
+            if (numOne.equals(numTwo) && isMin) {
                 add *= -1d;
                 salt *= -1d;
             }

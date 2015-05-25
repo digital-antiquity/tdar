@@ -27,7 +27,6 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
     private DataTable dataTable;
     private String dataTableColumnJson;
 
-    
     @Autowired
     private transient DatasetService datasetService;
 
@@ -37,7 +36,6 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
     @Autowired
     private transient SerializationService serializationService;
 
-
     /**
      * @return The output of the xml request to the database wrapped in a stream
      */
@@ -45,7 +43,6 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
         return xmlStream;
     }
 
-    
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomViewMetadata();
@@ -65,19 +62,17 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
         }
     }
 
-   
     public void setDataTable(DataTable dataTable) {
         this.dataTable = dataTable;
     }
 
-    
     public DataTable getDataTable() {
         getLogger().trace(dataTable + " dtID:" + dataTableId);
         if (dataTable == null) {
             if (dataTableId != null) {
                 this.dataTable = dataTableService.find(dataTableId);
             } else {
-                Set<DataTable> dataTables = ((Dataset)getResource()).getDataTables();
+                Set<DataTable> dataTables = ((Dataset) getResource()).getDataTables();
                 if (!CollectionUtils.isEmpty(dataTables)) {
                     dataTable = dataTables.iterator().next();
                 }
@@ -94,20 +89,18 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
         this.dataTableId = dataTableId;
         // this.dataTable = dataTableService.find(dataTableId);
     }
+
     public Long getDataTableId() {
         return dataTableId;
     }
-
 
     public void setXmlStream(InputStream xmlStream) {
         this.xmlStream = xmlStream;
     }
 
-
     public String getDataTableColumnJson() {
         return dataTableColumnJson;
     }
-
 
     public void setDataTableColumnJson(String dataTableColumnJson) {
         this.dataTableColumnJson = dataTableColumnJson;

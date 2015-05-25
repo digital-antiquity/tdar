@@ -104,7 +104,7 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             String minx = "MinX: ".concat(longLat.getMinObfuscatedLongitude().toString());
             dc.getCoverage().add(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
         }
-        
+
         dc.getIdentifier().add(UrlService.absoluteUrl(source));
 
         for (CoverageDate date : source.getCoverageDates()) {

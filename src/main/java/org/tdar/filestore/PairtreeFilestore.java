@@ -141,12 +141,10 @@ public class PairtreeFilestore extends BaseFilestore {
         return outFile;
     }
 
-
     public static String toPairTree(Number val) {
         String s = Long.toString(val.longValue());
         return toPairTree(s);
     }
-
 
     public static String toPairTree(String identifier) {
         String s = identifier;

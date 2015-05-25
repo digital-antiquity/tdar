@@ -96,8 +96,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     private String fileContentType;
     private String fileFileName;
 
-    
-    
     @Override
     public boolean authorize() {
         if (isNullOrNew()) {

@@ -153,7 +153,7 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     public void setOntologyNodes(List<OntologyNode> ontologyNodes) {
         this.ontologyNodes = ontologyNodes;
     }
-    
+
     public CodingSheet getResource() {
         return codingSheet;
     }
@@ -177,7 +177,7 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     public boolean authorize() throws TdarActionException {
         return authorizationService.canEdit(getAuthenticatedUser(), codingSheet);
     }
-    
+
     public boolean isEditable() {
         try {
             return authorize();
@@ -216,7 +216,5 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     public void setId(Long id) {
         this.id = id;
     }
-
-
 
 }

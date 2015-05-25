@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -15,5 +14,4 @@ public class DatasetViewAction extends AbstractDatasetViewAction<Dataset> {
 
     private static final long serialVersionUID = -6320076338548768011L;
 
-    
 }

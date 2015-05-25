@@ -100,7 +100,7 @@ public class PdfService {
                     int after = instance.following(MAX_DESCRIPTION_LENGTH);
                     description = description.substring(0, after) + "...";
                 }
-                template = createCoverPage(provider, submitter, template, document, description,coverPageLogo);
+                template = createCoverPage(provider, submitter, template, document, description, coverPageLogo);
 
                 // merge the two PDFs
                 logger.debug("calling merge on: {}", version);
@@ -148,12 +148,9 @@ public class PdfService {
         // FIXME: handle exceptions better
         Thread thread = new Thread(new PDFMergeTask(wrapper, pipedOutputStream));
         thread.start();
-        logger.trace("done with PDF Merge");  //fixme: technically the method is done, but really you've just started the merge operation.
+        logger.trace("done with PDF Merge"); // fixme: technically the method is done, but really you've just started the merge operation.
         return inputStream;
     }
-
-
-
 
     /**
      * Create the cover page from the template file and the @link resource provided
@@ -167,7 +164,8 @@ public class PdfService {
      * @throws FileNotFoundException
      * @throws URISyntaxException
      */
-    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description, File coverPageLogo) throws IOException,
+    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description, File coverPageLogo)
+            throws IOException,
             COSVisitorException, FileNotFoundException,
             URISyntaxException {
         PDDocument doc = PDDocument.load(template);
@@ -180,12 +178,12 @@ public class PdfService {
         }
 
         PDPageContentStream content = new PDPageContentStream(doc, page, true, false);
-        if (coverPageLogo != null && coverPageLogo.exists() ) {
+        if (coverPageLogo != null && coverPageLogo.exists()) {
             InputStream in = new FileInputStream(coverPageLogo);
-            
-            BufferedImage awtImage = ImageIO.read( in );
+
+            BufferedImage awtImage = ImageIO.read(in);
             PDXObjectImage img = new PDPixelMap(doc, awtImage);
-            
+
             int TOP = 639;
             int LEFT = 580 - img.getWidth();
             content.drawImage(img, LEFT, TOP);

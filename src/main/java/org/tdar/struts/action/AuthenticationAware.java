@@ -77,7 +77,7 @@ public interface AuthenticationAware extends SessionDataAware {
             if (PersistableUtils.isNullOrTransient(persistable) || PersistableUtils.isNullOrTransient(action.getId())) {
                 // deal with the case that we have a new or not found resource
                 getLogger().debug("Dealing with transient persistable {}", persistable);
-                    return true;
+                return true;
             }
             if (persistable == null) {
                 // persistable is null, so the lookup failed (aka not found)
@@ -194,7 +194,8 @@ public interface AuthenticationAware extends SessionDataAware {
         }
 
         /**
-         * Indicates to view layer whether it should show the login menu  (e.g.  "Welcome Back, Walter Kurtz").
+         * Indicates to view layer whether it should show the login menu (e.g. "Welcome Back, Walter Kurtz").
+         * 
          * @return
          */
         @Override
@@ -202,7 +203,5 @@ public interface AuthenticationAware extends SessionDataAware {
             return getAuthenticatedUser() != null;
         }
     }
-
-
 
 }

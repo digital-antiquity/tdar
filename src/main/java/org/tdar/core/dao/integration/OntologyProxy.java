@@ -11,7 +11,7 @@ import org.tdar.utils.json.JsonIntegrationFilter;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonView;
 
-@JsonAutoDetect 
+@JsonAutoDetect
 public class OntologyProxy implements Serializable {
 
     private static final long serialVersionUID = -7517599753972933585L;
@@ -19,7 +19,7 @@ public class OntologyProxy implements Serializable {
     private TdarUser submitter;
     private Ontology ontology;
     private List<OntologyNode> nodes;
-    
+
     public OntologyProxy(Ontology ontology) {
         this.ontology = ontology;
         this.submitter = ontology.getSubmitter();

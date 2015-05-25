@@ -13,7 +13,6 @@ import com.opensymphony.xwork2.ActionInvocation;
  */
 public class StreamHttpStatusResult extends StreamResult {
 
-
     private static final long serialVersionUID = 8090795034611811292L;
     Integer status;
 

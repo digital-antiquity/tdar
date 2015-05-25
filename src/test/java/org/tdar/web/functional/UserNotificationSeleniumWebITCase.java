@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 
 public class UserNotificationSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
-    
+
     private static final String RELEASE_ANNOUNCE = "lithic.announce";
 
     @Test

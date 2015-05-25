@@ -94,7 +94,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         public boolean isValid() {
             return true;
         };
-        
+
         @Override
         public Long getId() {
             return -1L;
@@ -176,7 +176,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.dataTable = dataTable;
     }
 
-    @JsonView({JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class})
+    @JsonView({ JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class })
     public String getName() {
         return name;
     }
@@ -208,7 +208,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @JsonView(JsonIntegrationDetailsFilter.class)
     public Long getCategoryVariableId() {
-        if(PersistableUtils.isTransient(categoryVariable)) return null;
+        if (PersistableUtils.isTransient(categoryVariable))
+            return null;
         return categoryVariable.getId();
     }
 
@@ -268,7 +269,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return String.format("%s - %s %s", name, columnDataType, getId());
     }
 
-    @JsonView(value={JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class})
+    @JsonView(value = { JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class })
     public String getDisplayName() {
         return displayName;
     }
@@ -325,6 +326,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         setDelimiterValue(column.getDelimiterValue());
         setIgnoreFileExtension(column.isIgnoreFileExtension());
     }
+
     public CategoryVariable getTempSubCategoryVariable() {
         return tempSubCategoryVariable;
     }
@@ -422,6 +424,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     /**
      * Return true if this column has a mapped ontology and has a mapped coding sheet that is not invalid.
+     * 
      * @return
      */
     public boolean isActuallyMapped() {
@@ -447,8 +450,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @JsonView(JsonIntegrationDetailsFilter.class)
-    public Long getMappedOntologyId(){
-        if(getMappedOntology() == null) {
+    public Long getMappedOntologyId() {
+        if (getMappedOntology() == null) {
             return null;
         }
         return getMappedOntology().getId();

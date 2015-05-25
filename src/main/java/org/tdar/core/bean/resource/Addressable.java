@@ -11,6 +11,6 @@ public interface Addressable {
     public abstract Long getId();
 
     public abstract String getUrlNamespace();
-    
+
     public abstract String getDetailUrl();
 }

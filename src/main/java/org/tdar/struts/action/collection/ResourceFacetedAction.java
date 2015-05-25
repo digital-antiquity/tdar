@@ -8,5 +8,4 @@ public interface ResourceFacetedAction {
 
     ArrayList<FacetValue> getResourceTypeFacets();
 
-    
 }

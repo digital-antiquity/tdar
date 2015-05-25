@@ -1,6 +1,15 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -22,7 +31,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DisplayOrientation;
@@ -40,7 +52,6 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -153,7 +164,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1);
         assertEquals(withName, test);
 
-        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(),false,  c1);
+        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1);
         assertNotEquals(withName, test);
     }
 
@@ -1292,8 +1303,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(grandChildCollection);
         uploadLogo(parentCollection);
 
-        //confirm that view action has a logo
-        CollectionViewAction action =  generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        // confirm that view action has a logo
+        CollectionViewAction action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
         action.setId(parentCollection.getId());
         action.prepare();
         assertThat(action.isLogoAvailable(), is(true));
@@ -1303,14 +1314,14 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testWhitelabelCollectionSearchHeaderPaths() throws TdarActionException {
         WhiteLabelCollection parentCollection = createAndSaveNewWhiteLabelCollection("whitelabel colllection");
-        CollectionViewAction action =  generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        CollectionViewAction action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
         action.setId(parentCollection.getId());
         action.prepare();
         assertThat(action.getHostedContentBaseUrl(), allOf(
                 startsWith("/hosted"),
-                not( endsWith("/")),
-                not( containsString("//"))
-        ));
+                not(endsWith("/")),
+                not(containsString("//"))
+                ));
     }
 
     @Test
@@ -1326,17 +1337,17 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(grandChildCollection);
         uploadLogo(parentCollection);
 
-        //confirm that view action has a logo
-        CollectionViewAction action =  generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        // confirm that view action has a logo
+        CollectionViewAction action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
         action.setId(parentCollection.getId());
         action.prepare();
-        assertThat(action.isLogoAvailable(), is (true));
+        assertThat(action.isLogoAvailable(), is(true));
 
-        //now try the grandchild colleciton, which should also have a logo.
-        action =  generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        // now try the grandchild colleciton, which should also have a logo.
+        action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
         action.setId(grandChildCollection.getId());
         action.prepare();
-        assertThat(action.isLogoAvailable(), is (true));
+        assertThat(action.isLogoAvailable(), is(true));
     }
 
     /**
@@ -1355,6 +1366,5 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         action.setServletRequest(getServletPostRequest());
         action.save();
     }
-
 
 }

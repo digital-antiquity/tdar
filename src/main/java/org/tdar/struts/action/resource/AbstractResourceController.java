@@ -243,7 +243,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
-    
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
@@ -278,7 +277,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String save() throws TdarActionException {
         setupSubmitterField();
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
-//        setSaveSuccessSuffix("/" + getResource().getSlug());
+        // setSaveSuccessSuffix("/" + getResource().getSlug());
         return super.save();
     }
 
@@ -375,7 +374,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      */
     @Override
     public boolean isAbleToCreateBillableItem() {
-        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), ResourceType.fromClass(getPersistableClass())));
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(),
+                ResourceType.fromClass(getPersistableClass())));
     }
 
     // return a persisted annotation based on incoming pojo
@@ -432,7 +432,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         cleanupKeywords(siteNameKeywords);
         cleanupKeywords(otherKeywords);
         cleanupKeywords(temporalKeywords);
-        
+
         Set<CultureKeyword> culKeys = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, uncontrolledCultureKeywords);
         culKeys.addAll(genericKeywordService.findAll(CultureKeyword.class, approvedCultureKeywordIds));
         Set<MaterialKeyword> matKeys = genericKeywordService.findOrCreateByLabels(MaterialKeyword.class, uncontrolledMaterialKeywords);
