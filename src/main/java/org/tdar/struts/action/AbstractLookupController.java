@@ -503,12 +503,16 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             actual.add(obj);
         }
         Map<String, Object> status = new HashMap<>();
-        getResult().put(getLookupSource().getCollectionName(), actual);
+        getResult().put(getResultsKey(), actual);
         getResult().put("status", status);
         status.put("recordsPerPage", getRecordsPerPage());
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
+    }
+
+    protected String getResultsKey() {
+        return getLookupSource().getCollectionName();
     }
 
     public String findInstitution(String institution) {
