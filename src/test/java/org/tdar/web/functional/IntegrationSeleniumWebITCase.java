@@ -2,25 +2,27 @@ package org.tdar.web.functional;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.openqa.selenium.By.id;
-import static org.openqa.selenium.By.linkText;
-import static org.openqa.selenium.By.partialLinkText;
+import static org.openqa.selenium.By.*;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElementLocated;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
+import static org.tdar.web.functional.util.TdarExpectedConditions.*;
 
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.tdar.web.functional.util.ByLabelText;
-import org.tdar.web.functional.util.WebElementSelection;
-
-
+import org.tdar.web.functional.util.*;
 
 public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
@@ -30,10 +32,10 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     private static final String SPITALFIELD_CHECKBOX = "cbResult" + SPITAL_DT_ID;
     private static final String ALEXANDRIA_CHECKBOX = "cbResult" + ALEX_DT_ID;
 
-    private static final By saveButton = By.id("btnSave");
-    By aves = By.id("cbont_64870");
-    By rabbit = By.id("cbont_63000");
-    By sheep = By.id("cbont_62580");
+    private static final By saveButton = id("btnSave");
+    By aves = id("cbont_64870");
+    By rabbit = id("cbont_63000");
+    By sheep = id("cbont_62580");
 
     @Before
     public void setupIntegration() {
@@ -41,7 +43,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(By.partialLinkText("Integrate")).click();
         Assert.assertTrue(getText().contains("Data Integration"));
         Assert.assertTrue(getCurrentUrl().contains("/workspace/list"));
-        find(By.linkText("Start Now")).click();
+        find(linkText("Start Now")).click();
         Assert.assertTrue(getCurrentUrl().contains("/workspace/integrate"));
     }
     
@@ -53,24 +55,27 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // assert save enabled
         openDatasetsModal();
         // uncheck
-        find(By.name("searchFilter.integrationCompatible")).click();
+        find(name("searchFilter.integrationCompatible")).click();
         // note that IDs are dataTable ids
         findAndClickDataset("Knowth", "cbResult3089");
         // re-check
-        find(By.name("searchFilter.integrationCompatible")).click();
+        find(name("searchFilter.integrationCompatible")).click();
         // note that IDs are dataTable ids
-        findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
+        findAndClickDataset("Spitalf", SPITALFIELD_CHECKBOX);
         // note that IDs are dataTable ids
-        findAndClickDataset("alexandria", ALEXANDRIA_CHECKBOX);
+        findAndClickDataset("Alexandria", ALEXANDRIA_CHECKBOX);
         // add selected items
-        find(By.className("btn-primary")).click();
-        waitFor(4);
-        Assert.assertEquals(0, find(By.className("sharedOntologies")).size());
-        
+        find(className("btn-primary")).click();
+        waitFor(bootstrapModalGone());
+
+        //wait for modal to disappear and dataset list to populate
+        waitFor(locatedElementCountEquals(className("sharedOntologies"), 0));
+        waitFor(locatedElementCountGreaterThan(cssSelector("#selDatasets option"), 1));
+
         removeDatasetByPartialName("Knowth");
-        Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
-        assertFalse(getText().contains("Knowth"));
-        waitFor(ExpectedConditions.elementToBeClickable(By.linkText("Add Integration Column")));
+        assertThat(find(".sharedOntologies").toList(), hasSize(2));
+        assertThat(getText(), not( containsString("Knowth")));
+        waitFor(elementToBeClickable(linkText("Add Integration Column")));
     }
 
 
@@ -79,42 +84,42 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // add two datasets that work, assert that we get back to an integrate-able state
         
         setupSpitalfieldsAlexandriaForTest();
-        Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
+        Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
-        find(By.id("btnAddDisplayColumn")).click();
-        By tab1 = By.id("tab0");
+        find(id("btnAddDisplayColumn")).click();
+        By tab1 = id("tab0");
         waitFor(tab1).isDisplayed();
         // dt_ + tabid + _ + data_table_id
-        By spital_select = By.id("dt_0_" + SPITAL_DT_ID);
+        By spital_select = id("dt_0_" + SPITAL_DT_ID);
         chooseSelectByName("Site Code", spital_select);
-        By alex_select = By.id("dt_0_" + ALEX_DT_ID);
+        By alex_select = id("dt_0_" + ALEX_DT_ID);
         chooseSelectByName("LOCATION", alex_select);
         takeScreenshot();
-        find(By.linkText("Add Integration Column")).click();
-        find(By.linkText("Fauna Taxon Ontology")).click();
+        find(linkText("Add Integration Column")).click();
+        find(linkText("Fauna Taxon Ontology")).click();
         // wait for tab visible
-        waitFor(By.id("tabtab1")).isDisplayed();
+        waitFor(id("tabtab1")).isDisplayed();
         // wait for tab contents is visible
-        waitFor(By.id("tab1")).isDisplayed();
+        waitFor(id("tab1")).isDisplayed();
         find(ByLabelText.byLabelText("Aves")).click();// this is really slow, so do it once
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(By.id("cbont_64870"), true).apply(getDriver()).booleanValue());
+        assertTrue(ExpectedConditions.elementSelectionStateToBe(id("cbont_64870"), true).apply(getDriver()).booleanValue());
 
         find(rabbit).click();
         assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
         find(sheep).click();
-        waitFor(ExpectedConditions.elementToBeClickable(saveButton));
+        waitFor(elementToBeClickable(saveButton));
 
-        assertTrue("Perca flavescens node should be visible for spitalfields", find(By.id("cbx-32450-60600")).isDisplayed());
-        assertTrue("Coding error should be visible for alexandria", find(By.id("cbx-31710-56490")).isDisplayed());
+        assertTrue("Perca flavescens node should be visible for spitalfields", find(id("cbx-32450-60600")).isDisplayed());
+        assertTrue("Coding error should be visible for alexandria", find(id("cbx-31710-56490")).isDisplayed());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
 
         //click the integrate button and wait for results
-        find(By.id("btnIntegrate")).click();
-        waitFor(ExpectedConditions.visibilityOfElementLocated(By.id("divResultContainer")));
+        find(id("btnIntegrate")).click();
+        waitFor(visibilityOfElementLocated(id("divResultContainer")));
         takeScreenshot();
         clearPageCache();
         String pivotTableText = find("#divResultContainer tbody").first().getText();
-        find(By.linkText("Preview")).click();
+        find(linkText("Preview")).click();
 
         //Capture the contents of the preview table body.
         String previewTableText = find("#divResultContainer tbody").last().getText();
@@ -140,7 +145,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // add two datasets that work, assert that we get back to an integratable state
         
         setupSpitalfieldsAlexandriaForTest();
-        Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
+        Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
         find(id("btnAddDisplayColumn")).click();
         By tab1 = id("tab0");
@@ -161,16 +166,16 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         logger.debug(getText());
 
         find(aves).click();
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(id("cbont_64870"), true).apply(getDriver()).booleanValue());
-
+        assertThat(find(aves).isSelected(), is(true));
         find(rabbit).click();
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
+        assertThat(find(rabbit).isSelected(), is(true));
         find(sheep).click();
-        waitFor(ExpectedConditions.elementToBeClickable(saveButton));
+        waitFor(elementToBeClickable(saveButton));
 
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+        assertThat(find(sheep).isSelected(), is(true));
         waitFor(saveButton).click();
-        waitFor(4);
+        waitFor(textToBePresentInElementLocated(id("divStatusMessage"), "success"));
+        //waitFor(4);
         gotoPage("/workspace/list");
         logger.debug(getText());
         clearPageCache();
@@ -179,91 +184,93 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         
         waitFor(partialLinkText("Fauna Taxon Ontology")).click();
         waitFor(".nodechild1");
-        logger.debug(getText());
+        logger.trace(getText());
         takeScreenshot("expecting populated fauna taxon pane");
 
-        assertEquals(find(By.name("integration.title")).val(),TEST_INTEGRATION);
-        String ontologyPaneText = getText().toLowerCase();
-        
-        assertTrue(ontologyPaneText.contains("aves"));
-        assertTrue(ontologyPaneText.contains("rabbit"));
-        assertTrue(ontologyPaneText.contains("taxon"));
-        assertTrue(ontologyPaneText.contains("element"));
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
-        assertTrue(ontologyPaneText.contains("spitalfield"));
-        assertTrue(ontologyPaneText.contains("alexandria"));
+        assertEquals(find(name("integration.title")).val(), TEST_INTEGRATION);
+
+        assertThat("the ontology pane should contain these words", getText().toLowerCase(), allOf(
+                containsString("aves"),
+                containsString("rabbit"),
+                containsString("taxon"),
+                containsString("element"),
+                containsString("spitalfield"),
+                containsString("alexandria")
+        ));
+
+        assertThat(find(aves).isSelected(), is(true));
+        assertThat(find(rabbit).isSelected(), is(true));
+        assertThat(find(sheep).isSelected(), is(true));
     }
 
-    
-    
     @Test
     public void testIntegrateRetainCheckboxOnClearAll() throws InterruptedException {
         // add two datasets that work, assert that we get back to an integratable state
         
         setupSpitalfieldsAlexandriaForTest();
-        Assert.assertEquals(2, find(By.className("sharedOntologies")).size());
+        Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
         // add integration column with a few check boxes
         takeScreenshot();
-        find(By.linkText("Add Integration Column")).click();
-        find(By.linkText("Fauna Taxon Ontology")).click();
+        find(linkText("Add Integration Column")).click();
+        find(linkText("Fauna Taxon Ontology")).click();
         // wait for tab visible
-        waitFor(By.id("tabtab0")).isDisplayed();
+        waitFor(id("tabtab0")).isDisplayed();
         // wait for tab contents is visible
-        waitFor(By.id("tab0")).isDisplayed();
+        waitFor(id("tab0")).isDisplayed();
 
-        //fixme: don't look for ID,  look for label with child text node containing desired ontologyNode name(xpath is your best bet, i think), then click on that text node
+        //click on aves, rabbit, and sheep in the 'Fauna Taxon Ontology' integration column
         find(aves).click();
         find(rabbit).click();
         find(sheep).click();
 
-        //fixme: using variables for  locators impacts readibility (in this call below you can't immediately discern value of the argument, nor whether it is a css selector, id, or elementLocator)
-        //  Consider saving the result instead, e.g.:
-        //      WebElement rabbitCheckbox = find("#cbont_1234").click().first();
-        //      assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbitCheckbox, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
-        waitFor(ExpectedConditions.elementToBeClickable(saveButton));
+        assertThat(find(aves).isSelected(), is(true));
+        assertThat(find(rabbit).isSelected(), is(true));
+        assertThat(find(sheep).isSelected(), is(true));
+
+        waitFor(elementToBeClickable(saveButton));
 
         // remove the datasets
         removeDatasetByPartialName("Spital");
         removeDatasetByPartialName("Alexandria");
-        
+
         // add one back
         openDatasetsModal();
-        findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
-        find(By.id("btnModalAdd")).click();
-        waitFor(4);
+        findAndClickDataset("Spitalf", SPITALFIELD_CHECKBOX);
+
+        find(id("btnModalAdd")).click();
+
+        //wait for the browser to render the checkboxes (as soon as 'aves' shows up, the rest should be found as well)
+        waitFor(aves);
 
         // make sure the checkboxes are still there
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(aves, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
+        assertThat(find(aves).isSelected(), is(true));
+        assertThat(find(rabbit).isSelected(), is(true));
+        assertThat(find(sheep).isSelected(), is(true));
+
     }
 
     private void setupSpitalfieldsAlexandriaForTest() throws InterruptedException {
         setFieldByName("integration.title", TEST_INTEGRATION);
         // assert save enabled
         openDatasetsModal();
-        findAndClickDataset("spitalf", SPITALFIELD_CHECKBOX);
+        findAndClickDataset("Spitalf", SPITALFIELD_CHECKBOX);
         // note that IDs are dataTable ids
-        findAndClickDataset("alexandria", ALEXANDRIA_CHECKBOX);
+        findAndClickDataset("Alexandria", ALEXANDRIA_CHECKBOX);
         // add selected items
-        find(By.className("btn-primary")).click();
-        waitFor(4);
+        find(className("btn-primary")).click();
+
+        waitFor(locatedElementCountGreaterThan(className("sharedOntologies"), 2));
     }
 
     private void removeDatasetByPartialName(String name) {
-        By selector = By.id("selDatasets");
+        By selector = id("selDatasets");
         chooseSelectByName(name, selector);
-        find(By.id("rmDatasetBtn")).click();
+        find(id("rmDatasetBtn")).click();
     }
 
     private void chooseSelectByName(String name, By selector) {
-        List<WebElement> findElements = find(selector).first().findElements(By.tagName("option"));
+        List<WebElement> findElements = find(selector).first().findElements(tagName("option"));
         for (WebElement el : findElements) {
             if (el.getText().contains(name)) {
                 el.click();
@@ -272,24 +279,34 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         }
     }
 
+    /**
+     * Enter specified text into "add datasets..." popup's search filter, and wait for element with specified
+     * ID to appear in results.
+     * @param text
+     * @param cbid
+     */
     private void findAndClickDataset(String text, String cbid) {
-        WebElementSelection textEl = find(By.name("searchFilter.title"));
-        textEl.val("");
-        textEl.sendKeys(text);
+        WebElementSelection currentResults = find("#modalResults tbody tr");
+        find(name("searchFilter.title")).val(text);
+        if(!currentResults.isEmpty()) {
+            waitFor(ExpectedConditions.stalenessOf(currentResults.last()));
+        }
         // wait for response ... would be nice to not use this, but we could already have the checkbox, and have issues when the ajax cycles back
-        waitFor(2);
+        //fixme: this wait seems to be necessary for some reason
+//        waitFor(2);
+        //wait until the one of the rows contains the specified text in the 'title' column
+        waitFor(textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
-        By checkbox = By.id(cbid);
-        waitFor(ExpectedConditions.elementToBeClickable(checkbox));
+        By checkbox = id(cbid);
+        waitFor(elementToBeClickable(checkbox));
         find(checkbox).click();
     }
 
 
     private void openDatasetsModal() throws InterruptedException {
         // wait for modal to load
-        find(By.id("btnAddDataset")).click();
-        waitFor(DEFAULT_WAITFOR_TIMEOUT / 2);
+        find(id("btnAddDataset")).click();
         // wait for results table
-        waitFor(By.className("table-striped"));
+        waitFor(visibilityOfElementLocated(className("table-striped")));
     }
 }

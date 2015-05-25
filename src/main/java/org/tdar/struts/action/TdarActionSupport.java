@@ -24,11 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.HasName;
-import org.tdar.core.bean.HasStatus;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Slugable;
+import org.tdar.core.bean.*;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.LocalizableException;
@@ -707,10 +703,22 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     }
 
+    /**
+     * Returns true if action's slug is valid, otherwise false.  Additionally, if redirect is necessary and provided
+     * actino immplements SlugViewAction, this method sets the action's slugSuffix based on the action's startRecord,
+     * endRecord, and recordsPerPage values.
+     * @param p
+     * @param action
+     * @return true if
+     */
+    //fixme: remove side-effects;  use method overrides in appropriate subclasses instead of unchecked casts
     public boolean handleSlugRedirect(Persistable p, TdarActionSupport action) {
         if (p instanceof Slugable && action instanceof SlugViewAction) {
             Slugable s = (Slugable) p;
             SlugViewAction a = (SlugViewAction) action;
+            if(StringUtils.isBlank(s.getSlug()) && StringUtils.isBlank(a.getSlug())) {
+                return true;
+            }
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
                 getLogger().trace("slug mismatch - wanted:{}   got:{}", s.getSlug(), a.getSlug());
                 if (action instanceof SearchResultHandler<?>) {

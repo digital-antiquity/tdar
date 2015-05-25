@@ -35,7 +35,7 @@ public class FileProxyService {
     @Autowired
     private PersonalFilestoreService filestoreService;
 
-    public static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}";
+    public static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {} (creating proxy w/ADD)";
 
     /**
      * build a priority-queue of proxies that expect files.

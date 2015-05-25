@@ -418,7 +418,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      */
     // TODO: implement convention that makes it easy choose SELECT option by index. for example, if val is "[0]" and tag is SELECT, extract number and
     // translate to Select.selectByIndex();
-    public WebElementSelection val(String val) {
+    public WebElementSelection  val(String val) {
         for (WebElement elem : this) {
             String tag = elem.getTagName();
             String type = elem.getAttribute("type");
