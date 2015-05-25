@@ -2,7 +2,7 @@ package org.tdar.odata.server;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.http.HttpResponse;
 
 public interface ITestingClient {
 
@@ -12,6 +12,6 @@ public interface ITestingClient {
 //
 //    void stopClient() throws Exception;
 
-    HttpMethodBase sendRequest(String url) throws IOException;
+HttpResponse sendRequest(String url) throws IOException;
 
 }

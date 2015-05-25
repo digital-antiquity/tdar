@@ -4,7 +4,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.Arrays;
 
-import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,15 +27,15 @@ public class TDataSetFeedRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testFeedUrl() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.TDATASETS_FEED_URL);
+        HttpResponse  exchange = setupExchange(Constant.TDATASETS_FEED_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.TDATASETS_FEED_URL);
-        String inXMLString = exchange.getResponseBodyAsString();
+        HttpResponse  exchange = setupExchange(Constant.TDATASETS_FEED_URL);
+        String inXMLString = IOUtils.toString(exchange.getEntity().getContent());
 
         // See: tdataset_feed_response.xml
 

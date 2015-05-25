@@ -9,7 +9,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.log4j.Logger;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -84,9 +87,9 @@ public abstract class AbstractFitTest {
         testingServer.stopServer();
     }
 
-    protected void verifyResponseIsReturned(HttpMethodBase exchange) throws InterruptedException, IOException {
-        Assert.assertEquals(HttpStatus.OK_200, exchange.getStatusCode());
-        Assert.assertTrue(exchange.getResponseBodyAsString().length() > 0);
+    protected void verifyResponseIsReturned(HttpResponse exchange) throws InterruptedException, IOException {
+        Assert.assertEquals(HttpStatus.OK_200, exchange.getStatusLine().getStatusCode());
+        Assert.assertTrue(IOUtils.toString(exchange.getEntity().getContent()).length() > 0);
     }
 
     protected void assertXmlElementByXPath(String xpathExpression, String inXMLString) throws SAXException, IOException, XpathException {
@@ -167,8 +170,8 @@ public abstract class AbstractFitTest {
         return dataset;
     }
 
-    public HttpMethodBase setupExchange(String url) throws IOException, InterruptedException {
-        HttpMethodBase exchange = getTestingClient().sendRequest(url);
+    public HttpResponse setupExchange(String url) throws IOException, InterruptedException {
+        HttpResponse exchange = getTestingClient().sendRequest(url);
         return exchange;
     }
 
