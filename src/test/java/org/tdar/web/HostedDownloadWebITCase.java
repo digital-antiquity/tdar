@@ -1,7 +1,5 @@
 package org.tdar.web;
 
-import static org.apache.commons.httpclient.HttpStatus.SC_OK;
-import static org.apache.http.HttpHeaders.REFERER;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -13,6 +11,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -85,11 +85,11 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
                 .setPath("/download/hosted/" + IRFV_ID)
                 .addParameter(API_KEY_KEY, API_KEY_VALUE)
                 .build());
-        httpget.addHeader(REFERER, REFERER_URL);
+        httpget.addHeader(HttpHeaders.REFERER, REFERER_URL);
 
         try (CloseableHttpResponse response = httpclient.execute(httpget)) {
             //make sure that the server gave us a successful response
-            assertThat(response.getStatusLine().getStatusCode(), is(SC_OK));
+            assertThat(response.getStatusLine().getStatusCode(), is(HttpStatus.SC_OK));
 
             HttpEntity entity = response.getEntity();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

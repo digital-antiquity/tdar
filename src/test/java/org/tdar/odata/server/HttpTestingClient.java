@@ -2,17 +2,23 @@ package org.tdar.odata.server;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.tdar.core.configuration.TdarConfiguration;
 
 public class HttpTestingClient implements ITestingClient {
 
-    private HttpClient client;
+    private CloseableHttpClient client;
 
     public HttpTestingClient() {
         super();
@@ -20,22 +26,26 @@ public class HttpTestingClient implements ITestingClient {
 
     @Override
     public void createClient() throws Exception {
-        client = new HttpClient();
+        client = HttpClientBuilder.create().build();
         // client.setConnectorType(HttpClient.CONNECTOR_SELECT_CHANNEL);
     }
 
     @Override
-    public HttpMethodBase sendRequest(String url) throws IOException {
-        client.getParams().setAuthenticationPreemptive(true);
+    public HttpResponse sendRequest(String url) throws IOException {
+//        client.getParams().setAuthenticationPreemptive(true);
         Credentials defaultcreds = new UsernamePasswordCredentials(Constant.TEST_USER_NAME, Constant.TEST_PASSWORD);
-        TdarConfiguration instance = TdarConfiguration.getInstance();
-        client.getState().setCredentials(new AuthScope("localhost", 8888, AuthScope.ANY_REALM), defaultcreds);
-        GetMethod get = new GetMethod(url);
-        get.setDoAuthentication(true);
-        client.executeMethod(get);
-        // String encoding = Base64.encodeBase64String((Constant.TEST_USER_NAME + ":" + Constant.TEST_PASSWORD).getBytes("UTF-8"));
+        HttpClientContext context = HttpClientContext.create();
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(new AuthScope("localhost", 8888, AuthScope.ANY_REALM), defaultcreds);
+        context.setCredentialsProvider(credsProvider);
+//        context.setAuthSchemeRegistry(authRegistry);
+//        context.setAuthCache(authCache);
+        HttpGet get = new HttpGet(url);
+//        get.setDoAuthentication(true);
+//        context.set
+        return client.execute(get, context);
+//         String encoding = Base64.encodeBase64String((Constant.TEST_USER_NAME + ":" + Constant.TEST_PASSWORD).getBytes("UTF-8"));
         // exchange.addRequestHeader("Authorization", "Basic " + encoding);
         // client.send(exchange);
-        return get;
     }
 }

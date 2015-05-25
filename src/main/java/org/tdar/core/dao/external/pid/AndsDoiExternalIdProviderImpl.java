@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +159,8 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
             if (doiDTO.getCreators().isEmpty()) {
                 logger.error("NB ====> This resource {} has no creators, so can't mint doi", r.toString());
             } else {
-                AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
+//                AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
+                AndsDoiResponse response = null;
                 validateResponse("create", response);
                 result.put(DoiProcess.DOI_KEY, response.getDoi());
             }
@@ -181,14 +183,14 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     @Override
     public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws IOException {
-        AndsDoiResponse response = doiClient.updateDOI(identifier, resourceUrl, populateDTO(r), debug);
+        AndsDoiResponse response = null;//doiClient.updateDOI(identifier, resourceUrl, populateDTO(r), debug);
         validateResponse("modify", response);
         return new HashMap<>();
     }
 
     @Override
     public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws IOException {
-        AndsDoiResponse response = doiClient.deActivateDOI(identifier, debug);
+        AndsDoiResponse response = null;//doiClient.deActivateDOI(identifier, debug);
         validateResponse("deactive", response);
         return new HashMap<>();
     }
@@ -205,6 +207,9 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
      */
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
+        if (response == null) {
+            throw new NotImplementedException();
+        }
         if (!response.isSuccess()) {
             throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete", Arrays.asList(operation, response.getMessage()));
         }

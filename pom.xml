@@ -353,6 +353,18 @@
                     <artifactId>commons-httpclient</artifactId>
                     <groupId>commons-httpclient</groupId>
                 </exclusion>
+                <exclusion>
+                	<artifactId>httpcore</artifactId>
+                	<groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>httpclient</artifactId>
+                	<groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>httpclient-cache</artifactId>
+                	<groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- <dependency> <groupId>org.dataone</groupId> <artifactId>d1_libclient_java</artifactId>
@@ -469,6 +481,10 @@
                     <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <exclusion>
+                	<artifactId>httpclient-cache</artifactId>
+                	<groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -575,6 +591,25 @@
             <version>${http-components.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${http-components.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient-cache</artifactId>
+            <version>${http-components.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${http-components.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+
         <!-- /these are required for htmlunit 2.10 -->
         <dependency>
             <groupId>org.apache.struts</groupId>
@@ -625,6 +660,12 @@
             <artifactId>antisamy</artifactId>
             <version>1.5.3</version>
             <!-- LICENSE: BSD -->
+            <exclusions>
+            	<exclusion>
+            		<artifactId>commons-httpclient</artifactId>
+            		<groupId>commons-httpclient</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -704,7 +745,17 @@
 		    <groupId>nu.validator</groupId>
 		    <artifactId>validator</artifactId>
 		    <version>15.4.12</version>
-		</dependency>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>httpcore</artifactId>
+		    		<groupId>org.apache.httpcomponents</groupId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<artifactId>httpclient</artifactId>
+		    		<groupId>org.apache.httpcomponents</groupId>
+		    	</exclusion>
+		    </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>javax.el</artifactId>
@@ -966,6 +1017,18 @@
                 <exclusion>
                     <artifactId>bcprov-jdk15on</artifactId>
                     <groupId>org.bouncycastle</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>httpcore</artifactId>
+                	<groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>httpclient</artifactId>
+                	<groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>httpmime</artifactId>
+                	<groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
