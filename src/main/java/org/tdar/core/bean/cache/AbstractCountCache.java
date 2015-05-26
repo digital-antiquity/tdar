@@ -31,7 +31,7 @@ public abstract class AbstractCountCache<C extends AbstractCountCache, D extends
     @SuppressWarnings("unchecked")
     @Override
     public int compareTo(C o) {
-        return ObjectUtils.compare((C)getKey(), (o.getKey()));
+        return ObjectUtils.compare((C) getKey(), (o.getKey()));
     }
 
     @Override

@@ -18,18 +18,21 @@ public class ResourceStatWrapper implements Serializable {
 
     private Resource resource;
     private List<Number> data;
-    
+
     public Resource getResource() {
         return resource;
     }
+
     public void setResource(Resource resource) {
         this.resource = resource;
     }
+
     public List<Number> getData() {
         return data;
     }
+
     public void setData(List<Number> data) {
         this.data = data;
     }
-    
+
 }

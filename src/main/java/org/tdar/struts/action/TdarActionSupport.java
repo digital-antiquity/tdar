@@ -74,7 +74,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     private static final long serialVersionUID = 7084489869489013998L;
 
-
     // result name constants
     private boolean hideExceptionArea = false;
     private Date freemarkerProcessingTime = null;
@@ -101,7 +100,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * The action could not execute because the request has invalid or insufficient information
      */
     public static final String UNKNOWN_ERROR = "exception"; // 500
-    public static final String BAD_REQUEST = "badrequest";  // 400
+    public static final String BAD_REQUEST = "badrequest"; // 400
 
     public static final String FORBIDDEN = "forbidden"; // 403
     public static final String NOT_FOUND = "not_found"; // 404
@@ -138,7 +137,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public static final String USER_AGREEMENT = "user_agreement";
     public static final String RESULT_REDIRECT_START = "redirect-start";
-
 
     private String javascriptErrorLog;
 
@@ -601,11 +599,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<String> getJavascriptFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.JS);
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
     }
 
     public List<String> getCssFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(),ResourceType.CSS);
+        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.CSS);
     }
 
     public String getWroProfile() {
@@ -707,10 +705,23 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     }
 
+    /**
+     * Returns true if action's slug is valid, otherwise false. Additionally, if redirect is necessary and provided
+     * actino immplements SlugViewAction, this method sets the action's slugSuffix based on the action's startRecord,
+     * endRecord, and recordsPerPage values.
+     * 
+     * @param p
+     * @param action
+     * @return true if
+     */
+    // fixme: remove side-effects; use method overrides in appropriate subclasses instead of unchecked casts
     public boolean handleSlugRedirect(Persistable p, TdarActionSupport action) {
         if (p instanceof Slugable && action instanceof SlugViewAction) {
             Slugable s = (Slugable) p;
             SlugViewAction a = (SlugViewAction) action;
+            if (StringUtils.isBlank(s.getSlug()) && StringUtils.isBlank(a.getSlug())) {
+                return true;
+            }
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
                 getLogger().trace("slug mismatch - wanted:{}   got:{}", s.getSlug(), a.getSlug());
                 if (action instanceof SearchResultHandler<?>) {
@@ -766,7 +777,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         } else {
             return;
         }
-        
+
         if (StringUtils.isBlank(name)) {
             name = "anonymous";
         }
@@ -816,7 +827,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
         // default is to be an error
         String errorMessage = getText("abstractPersistableController.no_permissions");
-        //addActionError(errorMessage);
+        // addActionError(errorMessage);
         abort(StatusCode.FORBIDDEN, FORBIDDEN, errorMessage);
     }
 
@@ -838,7 +849,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected boolean checkLogoAvailable(ObjectType type, Long id, VersionType version) {
         try {
             FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
-            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
+            File file = getTdarConfiguration().getFilestore().retrieveFile(type, proxy);
             if (file.exists()) {
                 return true;
             }
@@ -850,5 +861,22 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isTest() {
         return getTdarConfiguration().isTest();
+    }
+
+    /**
+     * Indicates to view layer whether it should show the login menu (e.g. "Welcome Back, Walter Kurtz").
+     * 
+     * @return
+     */
+    public boolean isLoginMenuEnabled() {
+        return false;
+    }
+
+    /**
+     * Indicates whether the view layer should show sub-navigation elements (usually true while logged in, but some actions may wish to disable).
+     *
+     * */
+    public boolean isSubnavEnabled() {
+        return true;
     }
 }

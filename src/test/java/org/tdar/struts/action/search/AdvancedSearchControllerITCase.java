@@ -1,8 +1,8 @@
 package org.tdar.struts.action.search;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,6 +33,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -1319,6 +1320,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testRefineSearchWithSparseCollection() {
+
         ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
         ResourceCollection sparseCollection = new ResourceCollection();
         evictCache();
@@ -1326,8 +1328,25 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertThat(collectionId, greaterThan(0L));
         sparseCollection.setId(collectionId);
         firstGroup().getCollections().add(sparseCollection);
+        controller.advanced();
 
-        assertThat(sparseCollection.getTitle(), equalTo(firstGroup().getCollections().get(0).getTitle()));
+        assertThat(firstGroup().getCollections().get(0).getTitle(), is("Mega Collection"));
+    }
+
+    @Test
+    @Rollback
+    public void testWhitelabelAdvancedSearch() {
+        String collectionTitle = "The History Channel Presents: Ancient Ceramic Bowls That Resemble Elvis";
+        WhiteLabelCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
+
+        getLogger().debug("collection saved. Id:{}  obj:{}", rc.getId(), rc);
+        controller.setCollectionId(rc.getId());
+        getLogger().debug("controller collectionId:{}", controller.getCollectionId());
+        controller.advanced();
+
+        // We should now have two terms: within-collection, and all-fields
+        assertThat(firstGroup().getFieldTypes(), contains(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
+        assertThat(firstGroup().getCollections().get(0).getTitle(), is(collectionTitle));
     }
 
     private void assertOnlyResultAndProject(InformationResource informationResource) {
@@ -1439,19 +1458,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         SearchParameters sp = new SearchParameters();
 
         // transient version of person
-        Person p = new Person(person.getFirstName(),person.getLastName(),person.getEmail());
+        Person p = new Person(person.getFirstName(), person.getLastName(), person.getEmail());
         p.setInstitution(person.getInstitution());
         genericService.detachFromSession(p);
         p.setId(person.getId());
-        
-        
+
         // test finding dup from parent
         sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(p, ResourceCreatorRole.CREATOR));
         controller.getGroups().add(sp);
         doSearch();
         logger.debug("resutls: {}", controller.getResults());
         assertTrue(controller.getResults().contains(image));
-        
+
         resetController();
         // test finding parent from dup
         sp = new SearchParameters();
@@ -1460,8 +1478,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doSearch();
         logger.debug("resutls: {}", controller.getResults());
         assertTrue(controller.getResults().contains(image));
-        
-        
+
     }
 
 }

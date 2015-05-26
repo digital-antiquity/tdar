@@ -373,13 +373,13 @@ public class ReflectionService {
         if (action != null) {
             method = action.getClass().getMethod(methodName);
         }
-        
+
         if (method != null) {
             Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
             Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
             found = ((class_ != null) || (method_ != null));
         }
-        
+
         Annotation parentClassAnnotation = AnnotationUtils.findAnnotation(action.getClass(), annotationClass);
         if (parentClassAnnotation != null) {
             found = true;

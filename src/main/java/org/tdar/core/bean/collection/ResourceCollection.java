@@ -27,6 +27,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
@@ -41,6 +43,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -121,8 +124,10 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "collection_updater_id_idx", columnList = "updater_id")
 })
 @XmlRootElement(name = "ResourceCollection")
+@XmlSeeAlso(WhiteLabelCollection.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable {
 
@@ -538,7 +543,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @XmlTransient
     // infinite loop because parentTree[0]==self
     public List<ResourceCollection> getHierarchicalResourceCollections() {
-        ArrayList<ResourceCollection> parentTree = new ArrayList<ResourceCollection>();
+        ArrayList<ResourceCollection> parentTree = new ArrayList<>();
         parentTree.add(this);
         ResourceCollection collection = this;
         while (collection.getParent() != null) {
@@ -823,8 +828,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public String getSlug() {
         return UrlUtils.slugify(getName());
     }
-    
-    @Field(name=QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES)
+
+    @Field(name = QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES)
     @XmlTransient
     public boolean isVisibleInSearch() {
         if (hidden) {
@@ -839,11 +844,27 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             }
         }
         // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
-        if (contents == false) {
-            return true;
-        }
-        
-        return false;
-        
+        return !contents;
     }
+
+    @XmlTransient
+    public boolean isWhiteLabelCollection() {
+        return false;
+    }
+
+    @XmlTransient
+    public boolean isSearchEnabled() {
+        return false;
+    }
+
+    @XmlTransient
+    public boolean isTopCollection() {
+        return parent == null;
+    }
+
+    @XmlTransient
+    public boolean isSubCollection() {
+        return parent != null;
+    }
+
 }

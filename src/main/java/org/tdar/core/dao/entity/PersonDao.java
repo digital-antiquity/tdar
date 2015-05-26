@@ -278,6 +278,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     /**
      * Creates a temporary table with creator IDs for all resources Ids in list. This is used by the creator analysis process for related creators. It was
      * initially designed to run in loops but it took too much memory, so using temp tables in the database to generate the logic
+     * 
      * @param resourceIds
      * @return
      */
@@ -289,7 +290,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         getCurrentSession().createSQLQuery(sql).executeUpdate();
         String sql1 = TdarNamedQueries.CREATOR_ANALYSIS_RESOURCE_CREATOR_INSERT;
         getCurrentSession().createSQLQuery(sql1).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
-        String sql11 =TdarNamedQueries.CREATOR_ANALYSIS_SUBMITTER_INSERT;
+        String sql11 = TdarNamedQueries.CREATOR_ANALYSIS_SUBMITTER_INSERT;
         getCurrentSession().createSQLQuery(sql11).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
         String sql12 = TdarNamedQueries.CREATOR_ANALYSIS_PUBLISHER_INSERT;
         getCurrentSession().createSQLQuery(sql12).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();

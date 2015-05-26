@@ -10,18 +10,18 @@ public class IntegrationDeserializationException extends Exception {
 
     private static final long serialVersionUID = -388002332387954296L;
     private List<String> errors;
-    private Map<String,List<String>> fieldErrors;
+    private Map<String, List<String>> fieldErrors;
 
     public IntegrationDeserializationException(List<String> errors, Map<String, List<String>> fieldErrors) {
         this.fieldErrors = fieldErrors;
         this.errors = errors;
     }
 
-    public Map<String,List<String>> getFieldErrors() {
+    public Map<String, List<String>> getFieldErrors() {
         return fieldErrors;
     }
 
-    public void setFieldErrors(Map<String,List<String>> fieldError) {
+    public void setFieldErrors(Map<String, List<String>> fieldError) {
         this.fieldErrors = fieldError;
     }
 
@@ -32,7 +32,7 @@ public class IntegrationDeserializationException extends Exception {
     public void setErrors(List<String> errors) {
         this.errors = errors;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -28,7 +28,6 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 
     private static final long serialVersionUID = 581887107336388520L;
 
-
     @Autowired
     private transient SearchService searchService;
 
@@ -104,7 +103,6 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
         }
         return new ArrayList<>(ids);
     }
-
 
     @Override
     public void execute() {

@@ -12,16 +12,19 @@ public class DeleteIssue implements Serializable {
 
     private String issue;
     private List<Persistable> relatedItems = new ArrayList<>();
-    
+
     public List<Persistable> getRelatedItems() {
         return relatedItems;
     }
+
     public void setRelatedItems(List<Persistable> relatedItems) {
         this.relatedItems = relatedItems;
     }
+
     public String getIssue() {
         return issue;
     }
+
     public void setIssue(String issue) {
         this.issue = issue;
     }

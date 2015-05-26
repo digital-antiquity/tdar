@@ -92,7 +92,8 @@ public class ObfuscationResultListener implements PreResultListener {
                     Class<?> actual = obj.getClass();
                     try {
                         // if the object is a collection, and the collection is empty, or the object is one of our static types, skip
-                        if (obj instanceof Collection && CollectionUtils.isEmpty((Collection<?>) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
+                        if (obj instanceof Collection && CollectionUtils.isEmpty((Collection<?>) obj) || obj == Project.NULL
+                                || obj == DataTableColumn.TDAR_ROW_ID) {
                             logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
                             continue;
                         }
@@ -184,7 +185,7 @@ public class ObfuscationResultListener implements PreResultListener {
     @Override
     public void beforeResult(ActionInvocation invocation, String resultCode) {
         Object action = invocation.getProxy().getAction();
-        if(action instanceof Action) {
+        if (action instanceof Action) {
             try {
                 prepareResult((Action) invocation.getProxy().getAction());
             } catch (Exception e) {
@@ -192,9 +193,9 @@ public class ObfuscationResultListener implements PreResultListener {
                 // if the session is not closed, then we probably have a real error here
                 if ((sessionSecurityInterceptor != null) && !sessionSecurityInterceptor.isSessionClosed()) {
                     logger.error("error durring obfuscation", e);
-//                    if (!invocation.getResultCode().equals(TdarActionSupport.INPUT)) {
-                        invocation.setResultCode(TdarActionSupport.ERROR);
-//                    }
+                    // if (!invocation.getResultCode().equals(TdarActionSupport.INPUT)) {
+                    invocation.setResultCode(TdarActionSupport.ERROR);
+                    // }
                 }
             }
         }

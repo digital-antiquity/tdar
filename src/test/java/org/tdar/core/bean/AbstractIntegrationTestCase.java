@@ -74,6 +74,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -445,7 +446,17 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     // create new, public, collection with the getUser() as the owner and no resources
     public ResourceCollection createAndSaveNewResourceCollection(String name) {
-        ResourceCollection resourceCollection = new ResourceCollection();
+        return init(new ResourceCollection(), name);
+    }
+
+    public WhiteLabelCollection createAndSaveNewWhiteLabelCollection(String name) {
+        WhiteLabelCollection wlc = new WhiteLabelCollection();
+        wlc.setSubtitle("This is a fancy whitelabel collection");
+        init(wlc, name);
+        return wlc;
+    }
+
+    ResourceCollection init(ResourceCollection resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setType(CollectionType.SHARED);

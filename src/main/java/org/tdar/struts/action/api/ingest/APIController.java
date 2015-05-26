@@ -204,8 +204,7 @@ public class APIController extends AuthenticationAware.Base {
 
         }
     }
-    
-    
+
     @Action(value = "updateFiles",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
@@ -221,12 +220,11 @@ public class APIController extends AuthenticationAware.Base {
             return ERROR;
         }
 
-        
         try {
-            InformationResource incoming = getGenericService().find(InformationResource.class, id); 
+            InformationResource incoming = getGenericService().find(InformationResource.class, id);
             if (!authorizationService.canUploadFiles(getAuthenticatedUser(), incoming)) {
                 errorResponse(StatusCode.FORBIDDEN);
-                return ERROR;                
+                return ERROR;
             }
             // I don't know that this is "right"
             incoming = getGenericService().markWritableOnExistingSession(incoming);

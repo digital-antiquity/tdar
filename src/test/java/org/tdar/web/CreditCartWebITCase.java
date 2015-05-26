@@ -121,8 +121,9 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
     }
 
     /**
-     * Create two invoices and assign them to the same billing account.  Verify that the billing account page contains line-items associated with the invoices
+     * Create two invoices and assign them to the same billing account. Verify that the billing account page contains line-items associated with the invoices
      * that we create in this test.
+     * 
      * @throws MalformedURLException
      */
     @Test
@@ -134,14 +135,14 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertCurrentUrlContains(CART_REVIEW2);
         loginAndSpecifyCC();
 
-        //expecting to be on the choose billing account page
+        // expecting to be on the choose billing account page
         assertCurrentUrlContains(CART_REVIEW2);
-//        submitForm("Next Step: Payment");
-//        assertCurrentUrlContains("/cart/choose-billing-account");
+        // submitForm("Next Step: Payment");
+        // assertCurrentUrlContains("/cart/choose-billing-account");
         selectAnyAccount();
         submitForm(NEXT_STEP_PAYMENT);
 
-        //remember the account we chose/created;  we will assign our next invoice to this account
+        // remember the account we chose/created; we will assign our next invoice to this account
         String accountId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         assertTrue(accountId != "-1");
         gotoPage(URLConstants.CART_ADD);
@@ -149,17 +150,17 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "12");
         submitForm();
 
-        //we should be on the 'review' page, just click through to the billing account page
+        // we should be on the 'review' page, just click through to the billing account page
         assertCurrentUrlContains(CART_REVIEW2);
 
-        //we should now be on the "choose billing account" page.  Specify the same account that we used for the previous invoice.
+        // we should now be on the "choose billing account" page. Specify the same account that we used for the previous invoice.
         setInput("id", accountId);
         submitForm(NEXT_STEP_PAYMENT);
 
-        //now we should be on the process-payment page... i think?
+        // now we should be on the process-payment page... i think?
         assertCurrentUrlContains(CART_PROCESS_PAYMENT_REQUEST);
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
-        gotoPage("/billing/"+ accountId);
+        gotoPage("/billing/" + accountId);
 
         assertTextPresent("10,020");
         assertTextPresent("2,000");
@@ -180,7 +181,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         loginAndSpecifyCC();
         selectAnyAccount();
         submitForm(NEXT_STEP_PAYMENT);
-//        assertCurrentUrlContains("/cart/choose-billing-account");
+        // assertCurrentUrlContains("/cart/choose-billing-account");
         String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         String accountName = "test account 1";
         String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
@@ -190,7 +191,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "12");
         submitForm();
         assertCurrentUrlContains(CART_REVIEW2);
-//        clickLinkWithText("Next Step: Choose Billing Account");
+        // clickLinkWithText("Next Step: Choose Billing Account");
         setInput("id", accountId);
         submitForm(NEXT_STEP_PAYMENT);
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
@@ -239,7 +240,6 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
     }
 
-
     private void setExtraItem(String name, String val) {
         for (int i = 0; i < 100; i++) {
             try {
@@ -278,13 +278,14 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
     }
 
     /**
-     * give the nelnet event notification endpoint totally bogus data.  We should get back non-200 status code and "failure" as the response body.
+     * give the nelnet event notification endpoint totally bogus data. We should get back non-200 status code and "failure" as the response body.
      */
     @Test
     public void testCompletelyBogusEndpointRequest() {
         String url = String.format("https://%s:%s/cart/process-external-payment-response", TestConfiguration.getInstance().getHostName(), TestConfiguration
                 .getInstance().getHttpsPort());
-        Pair<Integer, String> responsePair = SimpleHttpUtils.parseResponse(SimpleHttpUtils.post(url, asList(SimpleHttpUtils.nameValuePair("foo", "bar"), SimpleHttpUtils.nameValuePair("ping", "pong"))));
+        Pair<Integer, String> responsePair = SimpleHttpUtils.parseResponse(SimpleHttpUtils.post(url,
+                asList(SimpleHttpUtils.nameValuePair("foo", "bar"), SimpleHttpUtils.nameValuePair("ping", "pong"))));
         assertThat(responsePair.getFirst(), is(not(200)));
         assertThat(responsePair.getSecond(), is("failure"));
     }

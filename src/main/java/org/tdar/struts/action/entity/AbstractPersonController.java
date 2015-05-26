@@ -48,7 +48,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         }
     }
 
-    
     @Override
     public void validate() {
         validateUniqueEmail();
@@ -79,7 +78,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         }
         return SUCCESS;
     }
-
 
     @Override
     public boolean authorize() {

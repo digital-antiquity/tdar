@@ -42,7 +42,6 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
     private List<Long> authorizedUserIds = new ArrayList<Long>();
     private Long collectionId = null;
 
-    
     @Test
     public void testAOPInterceptor() throws TdarActionException {
         DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
@@ -54,9 +53,9 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         rva.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         rva.prepare();
         rva.view();
-        ((Document)rva.getResource()).getProject();
+        ((Document) rva.getResource()).getProject();
     }
-    
+
     @Test
     @Rollback(false)
     public void testObfuscationService() {

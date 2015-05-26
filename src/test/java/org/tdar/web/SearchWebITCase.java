@@ -118,7 +118,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String title = "testing uncontrolled site type keywords";
         String keyword = "uncontrolledsitetypeone";
         setInput("document.title", title);
-        setInput("document.date",2000);
+        setInput("document.date", 2000);
         setInput("document.description",
                 "testing uncontrolled site type keywords");
         setInput("status", "ACTIVE");
@@ -156,11 +156,12 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testIdSearch() {
         gotoPage(SEARCH_RESULTS_BASE_URL + "?query=&id=" + TestConstants.PROJECT_ID);
     }
-	
+
     @Test
     public void testInstitutionSearch() {
         gotoPage("/search/institutions?query=Arizona");
     }
+
     @Test
     public void testPeopleSearch() {
         gotoPage("/search/people?query=Kintigh");
@@ -168,14 +169,14 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testLatLongSearch() throws InterruptedException {
-        
+
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         latLong.setMaximumLatitude(45.336701909968106);
         latLong.setMinimumLatitude(32.175612478499325);
         latLong.setMaximumLongitude(-83.0126953125);
         latLong.setMinimumLongitude(-93.7412109375);
         Long draft = setupDocumentWithProject("Philadelphia 1", latLong, Status.ACTIVE, null, null);
-        
+
         gotoPage(SEARCH_RESULTS_BASE_URL
                 + "?groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B0%5D=ALL_FIELDS&groups%5B0%5D.allFields%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=-85.078125&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=38.341656192795924&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=-92.373046875&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=43.58039085560786&");
         assertTextPresent("Philadelphia");
@@ -280,7 +281,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             logger.warn("RESULTS REQUEST TOO HIGH: {}", url);
         }
     }
-    
+
     @Test
     public void testPerson() {
         reindex();
@@ -308,19 +309,18 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         testPaginationError("/search/people?query=test&startRecord=100000");
         testPaginationError("/search/institutions?query=test&startRecord=100000");
         testPaginationError("/search/results?query=test&startRecord=100000");
-       
+
     }
-    
+
     private void testPaginationError(String string) {
         int status = gotoPageWithoutErrorCheck(string);
-        logger.debug("status: "+ status);
+        logger.debug("status: " + status);
         logger.debug(getPageText());
-//        assertNotEquals(200, status);
+        // assertNotEquals(200, status);
         assertNoEscapeIssues();
-//        assertNoErrorTextPresent();
+        // assertNoErrorTextPresent();
         assertTrue(getPageText().contains("cannot be found") || getPageText().contains("greater than total number of"));
 
-        
     }
 
     @Test

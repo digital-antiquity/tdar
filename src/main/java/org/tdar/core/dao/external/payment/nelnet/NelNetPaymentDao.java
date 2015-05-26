@@ -18,7 +18,6 @@ import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 
-
 @Service
 public class NelNetPaymentDao implements PaymentTransactionProcessor {
 

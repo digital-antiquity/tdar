@@ -22,7 +22,6 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
         add(institution);
     }
 
-
     @Override
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(getOperator());

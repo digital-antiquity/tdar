@@ -1,5 +1,8 @@
 package org.tdar.web.functional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,11 +21,6 @@ import org.tdar.utils.TestConfiguration;
 import org.tdar.web.functional.util.Bool;
 import org.tdar.web.functional.util.WebElementSelection;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNot.not;
-
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
     private static final String _139 = "139";
@@ -33,7 +31,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     private static final String _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT = "2008 New Philadelphia Archaeology Report";
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
     private Logger logger = LoggerFactory.getLogger(getClass());
-
 
     @Test
     public void testCollectionPermissionsAndVisible() {
@@ -94,8 +91,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         WebElementSelection select = find(By.id("collection-selector"));
         url = getCurrentUrl();
         logger.debug("url:{}", url);
-        
-        String id = url.substring(0,url.lastIndexOf("/edit"));
+
+        String id = url.substring(0, url.lastIndexOf("/edit"));
         id = id.substring(id.lastIndexOf("/") + 1);
         logger.debug("id: {}, url: {}", id, url);
         find("#btnToggleFilters").click();
@@ -142,7 +139,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
     }
 
-
     @Test
     public void testCollectionInGeneralSearch() {
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
@@ -156,7 +152,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         clearPageCache();
         logger.debug(getText());
         Assert.assertTrue(getText().contains(TITLE));
-        
+
     }
 
     @Test
@@ -262,18 +258,18 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     public void addResourceToCollection(final String title) {
-        //wait until datatable loads new content
+        // wait until datatable loads new content
         WebElement origRow = findFirst("#resource_datatable tbody tr");
         find(By.name("_tdar.query")).val(title);
         waitFor(ExpectedConditions.stalenessOf(origRow));
 
-        //wait for new results to appear
+        // wait for new results to appear
         waitFor(ExpectedConditions.textToBePresentInElement(
                 find("#resource_datatable").first(),
                 title
-        ));
+                ));
 
-        //get the checkbox of the matching row
+        // get the checkbox of the matching row
         WebElementSelection checkbox = find("#resource_datatable tbody tr")
                 .any(new Bool() {
                     public boolean apply(WebElement tr) {
@@ -281,7 +277,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                     }
                 })
                 .find(".datatable-checkbox");
-        assertThat(checkbox.size(), is( 1));
+        assertThat(checkbox.size(), is(1));
         checkbox.click();
     }
 

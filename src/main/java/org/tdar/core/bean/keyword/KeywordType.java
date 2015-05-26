@@ -83,9 +83,9 @@ public enum KeywordType implements Localizable {
         }
         return null;
     }
-    
+
     public String getJoinTable() {
-        switch(this) {
+        switch (this) {
             case CULTURE_KEYWORD:
                 return "resource_culture_keyword";
             case GEOGRAPHIC_KEYWORD:
@@ -107,7 +107,7 @@ public enum KeywordType implements Localizable {
     }
 
     public String getJoinTableKey() {
-        switch(this) {
+        switch (this) {
             case CULTURE_KEYWORD:
                 return "culture_keyword_id";
             case GEOGRAPHIC_KEYWORD:
@@ -129,7 +129,7 @@ public enum KeywordType implements Localizable {
     }
 
     public String getTableName() {
-        switch(this) {
+        switch (this) {
             case CULTURE_KEYWORD:
                 return "culture_keyword";
             case GEOGRAPHIC_KEYWORD:
@@ -149,7 +149,6 @@ public enum KeywordType implements Localizable {
         }
         return null;
     }
-
 
     public String getUrlNamespace() {
         return "browse/" + urlSuffix;

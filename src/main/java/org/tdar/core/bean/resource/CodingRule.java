@@ -205,7 +205,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         if (StringUtils.equalsIgnoreCase(getCode(), getTerm())) {
             return getTerm();
         }
-            
+
         return String.format("%s (%s)", getTerm(), getCode());
     }
 }

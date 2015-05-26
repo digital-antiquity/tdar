@@ -156,7 +156,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
     
     public void resetColumnMappings(Project project) {
-        String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s" , project.getId());
+        String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s", project.getId());
         getCurrentSession().createSQLQuery(sql).executeUpdate();
     }
 
@@ -176,7 +176,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         SQLQuery create = getCurrentSession().createSQLQuery(sql);
         logger.debug(sql);
         create.executeUpdate();
-        int count =0;
+        int count = 0;
         for (String columnValue : distinctValues) {
             List<String> valuesToMatch = new ArrayList<String>();
 
@@ -198,7 +198,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     continue;
                 }
                 String format = String.format("insert into MATCH%s (key,actual) values('%s','%s')", timestamp,
-                        org.apache.commons.lang.StringEscapeUtils.escapeSql(match.toLowerCase()), org.apache.commons.lang.StringEscapeUtils.escapeSql(columnValue.toLowerCase()));
+                        org.apache.commons.lang.StringEscapeUtils.escapeSql(match.toLowerCase()),
+                        org.apache.commons.lang.StringEscapeUtils.escapeSql(columnValue.toLowerCase()));
                 SQLQuery insert = getCurrentSession().createSQLQuery(format);
                 insert.executeUpdate();
                 if (count % 250 == 0) {
@@ -386,6 +387,5 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query2.setParameterList("ids", ids);
         query2.executeUpdate();
     }
-
 
 }

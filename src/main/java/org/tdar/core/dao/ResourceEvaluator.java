@@ -119,7 +119,7 @@ public class ResourceEvaluator implements Serializable {
                 logger.debug("{} {}", resource.getId(), status);
                 setHasDeletedResources(true);
             }
-            
+
             // esacape if we're dealing with an uncounted status or resource type
             if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(status)) {
                 logger.trace("skipping because of status {} or type: {}", status, resource.getResourceType());

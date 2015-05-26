@@ -108,7 +108,6 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         assertEquals("Not Recorded", nodes.get(nodes.size() - 1).getDisplayName());
     }
 
-
     @Test
     public void testTimeFormat() {
         String timeString = AbstractPersistableController.formatTime((1000 * 60 * 60 * 1) + (1000 * 60 * 2) + (1000 * 3) + 456);

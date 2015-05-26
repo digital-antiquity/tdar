@@ -38,7 +38,7 @@ public class AggregateViewStatistic extends Base implements Serializable {
     private Resource resource;
 
     private Integer year;
-    
+
     private Integer month;
 
     @XmlElement(name = "date")

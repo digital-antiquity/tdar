@@ -9,7 +9,7 @@ import org.springframework.test.annotation.Rollback;
 /**
  * Created by jimdevos on 12/9/14.
  */
-public class DataIntegrationWorkflowITCase extends AbstractIntegrationTestCase{
+public class DataIntegrationWorkflowITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -18,14 +18,10 @@ public class DataIntegrationWorkflowITCase extends AbstractIntegrationTestCase{
         return sessionFactory.getCurrentSession();
     }
 
-
     @Test
     @Rollback
     public void testWorkflowCreate() {
         getLogger().debug("hello world!");
     }
-
-
-
 
 }

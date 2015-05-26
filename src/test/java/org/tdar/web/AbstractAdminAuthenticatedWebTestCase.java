@@ -29,7 +29,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
 
     public static final String LAT_LONG_SECURITY_TEST = "latLongSecurityTest";
     public static final String TEST_SECURITY_COLLECTION = "test security collection";
-    
+
     @Before
     @Override
     public void setUp() {

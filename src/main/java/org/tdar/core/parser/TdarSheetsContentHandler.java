@@ -38,7 +38,7 @@ public class TdarSheetsContentHandler implements SheetContentsHandler {
     }
 
     @Override
-    public void cell(String cellReference, String formattedValue,XSSFComment arg2) {
+    public void cell(String cellReference, String formattedValue, XSSFComment arg2) {
         int colNum = getColNum(cellReference);
 
         if (count <= toRead) {

@@ -19,7 +19,6 @@ import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 
 import com.opensymphony.xwork2.Validateable;
 
-
 @Namespace("/api/integration")
 @ParentPackage("secured")
 @Component
@@ -34,10 +33,10 @@ public class TableDetailsAction extends AbstractIntegrationAction implements Val
 
     @Autowired
     AuthorizationService authorizationService;
-    
+
     @Action(value = "table-details")
     public String dataTableDetails() throws IOException {
-        TableDetailsProxy proxy  = integrationService.getTableDetails(dataTableIds);
+        TableDetailsProxy proxy = integrationService.getTableDetails(dataTableIds);
         setJsonObject(proxy, JsonIntegrationDetailsFilter.class);
         return SUCCESS;
     }

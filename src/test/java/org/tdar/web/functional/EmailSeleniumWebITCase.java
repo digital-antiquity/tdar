@@ -27,7 +27,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LINK)).click();
-        waitFor("div.modal.hide.fade.in");  //modal adds .in  after animation complete (maybe?)
+        waitFor("div.modal.hide.fade.in"); // modal adds .in after animation complete (maybe?)
         find("#messageBody").sendKeys("This is a test email");
         find(By.name("send")).click();
 
@@ -46,7 +46,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LINK)).first().click();
         waitFor(By.name("send")).click();
-        waitFor( visibilityOf( find("#emailErrorContainer").first()));
+        waitFor(visibilityOf(find("#emailErrorContainer").first()));
         assertTrue(getText().contains("An error occurred"));
         find(By.id("email-close-button")).click();
         // we could do this implicitly by going to any other page but this makes the test faster

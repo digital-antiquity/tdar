@@ -177,7 +177,8 @@ public class DownloadService {
 
     @Transactional(readOnly = false)
     public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
-            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization, boolean countDownload) {
+            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization,
+            boolean countDownload) {
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
         if (PersistableUtils.isNotNullOrTransient(versionToDownload)) {
             versionsToDownload.add(versionToDownload);
@@ -234,7 +235,7 @@ public class DownloadService {
             }
 
             if ((resourceFile == null)) {
-                logger.error("FILE NOT FOUND: {} ({})", version, TdarConfiguration.getInstance().getServerEnvironmentStatus() );
+                logger.error("FILE NOT FOUND: {} ({})", version, TdarConfiguration.getInstance().getServerEnvironmentStatus());
                 dto.setResult(DownloadResult.NOT_FOUND);
                 return dto;
             }
@@ -244,7 +245,6 @@ public class DownloadService {
                 dto.setResult(DownloadResult.NOT_FOUND);
                 return dto;
             }
-            
 
         }
 
@@ -274,8 +274,8 @@ public class DownloadService {
      * Validate, filter, and setup download for latest uploaded version of the specified InformationResourceFile.
      */
     public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFile fileToDownload,
-                                                                 boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization,
-                                                                 boolean countDownload) {
+            boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization,
+            boolean countDownload) {
 
         InformationResourceFileVersion fileVersion = fileToDownload.getLatestUploadedVersion();
 

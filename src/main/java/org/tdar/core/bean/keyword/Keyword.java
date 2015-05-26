@@ -105,7 +105,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         public String getSlug() {
             return UrlUtils.slugify(getLabel());
         }
-        
+
         private transient Float score = -1f;
         private transient Explanation explanation;
         private transient boolean readyToIndex = true;

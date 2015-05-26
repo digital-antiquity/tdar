@@ -219,14 +219,14 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     @After
     public void turnIgnoresOff() {
-        //jtd: I don't think this is necessary - you get a new test class instance for each test
+        // jtd: I don't think this is necessary - you get a new test class instance for each test
         setIgnoreJavascriptErrors(false);
     }
 
     @Override
     public void login() {
         setScreenshotsAllowed(false);
-//        reindexOnce();
+        // reindexOnce();
         loginAdmin();
         setIgnoreModals(false);
         setScreenshotsAllowed(true);

@@ -61,6 +61,11 @@
         </sql>
 
     </changeSet>
+    <changeSet id="neolithic-4.5" author="abrin">
+    <!--  alter table creator add constraint creator_merge_creator_id foreign key (merge_creator_id) references creator -->
+        <addForeignKeyConstraint constraintName="fk_creator_merge_creator_id" referencedTableName="creator" baseColumnNames="merge_creator_id" 
+        baseTableName="creator" referencedColumnNames="id"/>
+    </changeSet>
     <changeSet id="neolithic-5" author="abrin">
         <!-- these were moved in knap ... time to remove from the production 
             database -->
@@ -77,7 +82,7 @@
         <dropColumn tableName="person" columnName="penultimate_login" />
         <dropColumn tableName="person" columnName="tos_version" />
         <dropColumn tableName="person" columnName="tos_level" />
-        <dropColumn tableName="person" columnName="creator_agreement_versionl" />
+        <dropColumn tableName="person" columnName="creator_agreement_version" />
     </changeSet>
 
 </databaseChangeLog>

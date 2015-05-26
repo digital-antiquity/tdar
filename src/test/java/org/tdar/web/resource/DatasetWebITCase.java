@@ -76,7 +76,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Rollback
     public void testReplaceWithLBNLTableIssue() {
         docValMap.put(PROJECT_ID_FIELDNAME, "3805");
-        docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + "replace_prob/" + "LBNL_CA.xlsx" );
+        docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + "replace_prob/" + "LBNL_CA.xlsx");
         uploadDataset();
         Long datasetId = extractTdarIdFromCurrentURL();
 
@@ -91,7 +91,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         addFileProxyFields(1, FileAccessRestriction.PUBLIC, filename, fileId, FileAction.REPLACE);
         submitForm();
         assertFalse(getCurrentUrlPath().contains("dataset/save"));
-        
+
     }
 
     @Test
@@ -114,9 +114,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         addFileProxyFields(1, FileAccessRestriction.PUBLIC, filename, fileId, FileAction.REPLACE);
         submitForm();
         assertFalse(getCurrentUrlPath().contains("dataset/save"));
-        
-    }
 
+    }
 
     @Test
     @Rollback
@@ -159,7 +158,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertNotEquals(datasetUrl, getCurrentUrlPath());
         assertNoErrorTextPresent();
     }
-    
 
     @Test
     @Rollback(true)
@@ -197,7 +195,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm("Save");
         assertFalse(internalPage.getUrl().toString().contains("save-column-metadata"));
 
-        assertTrue("url:" + internalPage.getUrl().toString() + "should have /dataset/",internalPage.getUrl().toString().contains("/dataset/" + datasetId));
+        assertTrue("url:" + internalPage.getUrl().toString() + "should have /dataset/", internalPage.getUrl().toString().contains("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
 
         // ensure that changing column metadata didn't implicitly change file access rights
@@ -442,8 +440,5 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         return tdarId;
     }
-
-
-
 
 }

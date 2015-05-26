@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
 import org.apache.struts2.convention.annotation.Action;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
@@ -182,7 +182,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    @Rollback(value=false)
+    @Rollback(value = false)
     /**
      * make sure that the column names are re-aligned
      * @throws TdarActionException

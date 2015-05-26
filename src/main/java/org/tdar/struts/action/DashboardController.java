@@ -121,7 +121,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     }
 
     @Override
-    @Action(value="dashboard", results={@Result(name=SUCCESS, location="dashboard/dashboard.ftl")})
+    @Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })
     public String execute() {
         setupRecentResources();
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));

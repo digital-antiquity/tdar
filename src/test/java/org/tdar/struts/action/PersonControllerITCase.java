@@ -84,7 +84,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         final String newLastName = oldLastName.concat(" updated");
         try {
             controller.prepare();
-            
+
             controller.getPerson().setLastName(newLastName);
             controller.setServletRequest(getServletPostRequest());
             code = null;

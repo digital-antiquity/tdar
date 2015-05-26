@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         bkc.view();
     }
 
-    private BrowseKeywordController setupController(long l, KeywordType cultureKeyword, String slug,boolean expectNotFound) {
+    private BrowseKeywordController setupController(long l, KeywordType cultureKeyword, String slug, boolean expectNotFound) {
         BrowseKeywordController bkc = generateNewController(BrowseKeywordController.class);
         init(bkc, null);
         bkc.setId(l);
@@ -30,7 +31,7 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
             bkc.prepare();
         } catch (Exception ex) {
             e = ex;
-            logger.error("ex",e);
+            logger.error("ex", e);
         }
         if (expectNotFound) {
             Assert.assertTrue(e != null);
@@ -53,8 +54,8 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
-//        String result = bkc.view();
-//        assertEquals(TdarActionSupport.NOT_FOUND, result);
+        // String result = bkc.view();
+        // assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test
@@ -67,8 +68,8 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         it.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(it);
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
-//        String result = bkc.view();
-//        assertEquals(TdarActionSupport.NOT_FOUND, result);
+        // String result = bkc.view();
+        // assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test
@@ -80,7 +81,7 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         // change to draft
         it.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(it);
-        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug,false);
+        BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, false);
         String result = bkc.view();
         assertEquals(TdarActionSupport.SUCCESS, result);
     }

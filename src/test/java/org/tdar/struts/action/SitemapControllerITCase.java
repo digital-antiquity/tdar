@@ -14,23 +14,23 @@ public class SitemapControllerITCase extends AbstractControllerITCase {
 
     @Autowired
     SitemapGeneratorProcess sitemapGeneratorProcess;
-    
+
     @Test
     // note this will fail on second run because the following test creates the file
     public void testSitemapControllerWithoutSitemaps() {
-        SitemapController controller =generateNewInitializedController(SitemapController.class);
+        SitemapController controller = generateNewInitializedController(SitemapController.class);
         String execute = controller.execute();
         Assert.assertEquals(TdarActionSupport.NOT_FOUND, execute);
     }
-    
+
     @Test
     public void testSitemapController() throws IOException {
         sitemapGeneratorProcess.execute();
-        SitemapController controller =generateNewInitializedController(SitemapController.class);
+        SitemapController controller = generateNewInitializedController(SitemapController.class);
         String execute = controller.execute();
         Assert.assertEquals(TdarActionSupport.SUCCESS, execute);
         String contents = IOUtils.getStringFromReader(new InputStreamReader(controller.getInputStream()));
         logger.debug(contents);
-        
+
     }
 }

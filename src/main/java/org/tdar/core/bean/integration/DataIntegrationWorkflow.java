@@ -123,12 +123,12 @@ public class DataIntegrationWorkflow extends Persistable.Base implements HasSubm
     public String getUrlNamespace() {
         return "workspace/integration";
     }
-    
-    //convenience for deletion
+
+    // convenience for deletion
     public String getName() {
         return title;
     }
-    
+
     @Override
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());

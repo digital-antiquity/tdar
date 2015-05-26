@@ -40,9 +40,9 @@ public class AggregateDownloadStatistic extends Base implements Serializable {
     private InformationResourceFile file;
 
     private Integer month;
-    
+
     private Integer year;
-    
+
     @Transient
     private String filename;
     @Transient

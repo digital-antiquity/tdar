@@ -191,7 +191,7 @@ public class Resource implements Persistable,
 
     @Transient
     private transient Boolean statusChanged = Boolean.FALSE;
-    
+
     @Transient
     private transient boolean viewable;
     @Transient
@@ -277,7 +277,7 @@ public class Resource implements Persistable,
     @NotNull
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
-    @JsonView({JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class})
+    @JsonView({ JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class })
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
@@ -573,16 +573,15 @@ public class Resource implements Persistable,
         return new ArrayList<Long>(collectionIds);
     }
 
-
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS)
     @IndexedEmbedded
     @XmlTransient
     public List<Long> getDirectSharedResourceIds() {
         Set<Long> collectionIds = new HashSet<>();
-        for(ResourceCollection rc: getSharedResourceCollections() ) {
+        for (ResourceCollection rc : getSharedResourceCollections()) {
             collectionIds.add(rc.getId());
         }
-        //probably pointless
+        // probably pointless
         List<Long> idList = new ArrayList<Long>(collectionIds);
         Collections.sort(idList);
         return idList;

@@ -29,7 +29,6 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
     Long personId;
     PersonController controller;
 
-
     @Test
     @Rollback(false)
     public void testEditingPersonByNonAdmin() throws Exception {

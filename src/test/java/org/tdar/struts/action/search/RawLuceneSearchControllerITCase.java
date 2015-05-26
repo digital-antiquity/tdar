@@ -23,7 +23,6 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
-
     @Autowired
     SearchIndexService searchIndexService;
     @Autowired

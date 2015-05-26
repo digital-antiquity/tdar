@@ -73,7 +73,8 @@ public class AdminActivityController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
     public String listActiveUsers() {
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getActivePeople(), JsonLookupFilter.class, null).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getActivePeople(), JsonLookupFilter.class, null)
+                .getBytes()));
         return SUCCESS;
     }
 

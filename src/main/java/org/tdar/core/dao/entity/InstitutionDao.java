@@ -42,10 +42,12 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
             return find(result.get(0).longValue());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<Institution> findInstitutionsWIthSpaces() {
-        return getCriteria().add(Restrictions.and(Restrictions.eq("status", Status.ACTIVE),Restrictions.or(Restrictions.like("name", " %"),Restrictions.like("name", "% ")))).list();
+        return getCriteria().add(
+                Restrictions.and(Restrictions.eq("status", Status.ACTIVE), Restrictions.or(Restrictions.like("name", " %"), Restrictions.like("name", "% "))))
+                .list();
     }
 
     public boolean canEditInstitution(TdarUser authenticatedUser, Institution item) {

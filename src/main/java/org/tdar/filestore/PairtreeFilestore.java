@@ -143,6 +143,11 @@ public class PairtreeFilestore extends BaseFilestore {
 
     public static String toPairTree(Number val) {
         String s = Long.toString(val.longValue());
+        return toPairTree(s);
+    }
+
+    public static String toPairTree(String identifier) {
+        String s = identifier;
         int i = 0;
         StringBuffer out = new StringBuffer(File.separator);
         while ((i + CHARACTERS_PER_LEVEL) < s.length()) {

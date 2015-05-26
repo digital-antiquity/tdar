@@ -25,7 +25,7 @@ public class EntityDeleteAction extends AbstractDeleteAction<Creator> implements
     private transient EntityService entityService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     @Override
     protected Creator loadPersistable() {
         return entityService.find(getId());
@@ -46,7 +46,7 @@ public class EntityDeleteAction extends AbstractDeleteAction<Creator> implements
         if (authorizationService.can(InternalTdarRights.DELETE_ANYTHING, getAuthenticatedUser())) {
             return true;
         }
-        
+
         return authorizationService.canEdit(getAuthenticatedUser(), getPersistable());
     }
 

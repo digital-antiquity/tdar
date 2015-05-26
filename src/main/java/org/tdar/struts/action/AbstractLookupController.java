@@ -455,7 +455,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         PersonQueryPart pqp = new PersonQueryPart();
         pqp.add(incomingPerson);
         q.append(pqp);
-        getLogger().debug("{}",pqp.toString());
+        getLogger().debug("{}", pqp.toString());
         q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
         if (valid || (getMinLookupLength() == 0)) {
             if (StringUtils.isNotBlank(registered)) {
@@ -503,12 +503,16 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             actual.add(obj);
         }
         Map<String, Object> status = new HashMap<>();
-        getResult().put(getLookupSource().getCollectionName(), actual);
+        getResult().put(getResultsKey(), actual);
         getResult().put("status", status);
         status.put("recordsPerPage", getRecordsPerPage());
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
+    }
+
+    protected String getResultsKey() {
+        return getLookupSource().getCollectionName();
     }
 
     public String findInstitution(String institution) {

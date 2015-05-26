@@ -79,7 +79,6 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
     // i.e., a cursor into ontologyMappedColumns
     private Long nextColumnId;
 
-
     @SkipValidation
     @Action(value = "resource-mapping", results = { @Result(name = SUCCESS, location = "../dataset/column-resource-mapping.ftl") })
     public String editColumnMetadata() throws TdarActionException {
@@ -119,7 +118,8 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         try {
-            columnsToRemap = datasetService.updateColumnResourceMappingMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            columnsToRemap = datasetService.updateColumnResourceMappingMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(),
+                    getAuthenticatedUser());
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);

@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.tools.ant.taskdefs.Javadoc.ResourceCollectionContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
@@ -29,14 +27,12 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.document.DocumentController;
-import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -136,19 +132,19 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         collection.setOwner(getAdminUser());
         genericService.saveOrUpdate(collection);
         authorizedUserDao.clearUserPermissionsCache();
-        
-        // create child collection with parent 
+
+        // create child collection with parent
         CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
         cc.setParentId(collection.getId());
         cc.prepare();
         assertEquals(TdarActionSupport.SUCCESS, cc.add());
         cc.getResourceCollection().setName("test child");
-        
-        //save
+
+        // save
         cc.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, cc.save());
         assertTrue(cc.getResourceCollection().getParent().equals(collection));
-        
+
         // save again
         Long id = cc.getResourceCollection().getId();
         cc = generateNewInitializedController(CollectionController.class, getBasicUser());

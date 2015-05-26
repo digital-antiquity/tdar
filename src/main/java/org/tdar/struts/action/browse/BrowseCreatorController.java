@@ -130,7 +130,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Autowired
     public transient SerializationService serializationService;
-    
+
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
 
@@ -216,7 +216,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         } else {
             prepareLuceneQuery();
         }
-        
+
         if (isLogoAvailable()) {
             setLogoUrl(UrlService.creatorLogoUrl(creator));
         }
@@ -535,5 +535,5 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
-    
+
 }

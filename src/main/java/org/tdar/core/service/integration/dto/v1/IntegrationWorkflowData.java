@@ -34,7 +34,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 @JsonInclude(Include.NON_NULL)
 @JsonAutoDetect
-//@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
+// @JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
 public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData implements Serializable, IntegrationWorkflowWrapper {
 
     // hash keys
@@ -97,11 +97,11 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
     }
 
     /**
-     * Validates the data object passing in a dao and a text provider.  Checks for:
-     *  ** NULLs or invalid Object References
-     *  ** Invalid hierarchical references DataTable <-> DataTableColumn
-     *  ** Changes in Ontology Mappings
-     *  ** Invalid Count columns 
+     * Validates the data object passing in a dao and a text provider. Checks for:
+     * ** NULLs or invalid Object References
+     * ** Invalid hierarchical references DataTable <-> DataTableColumn
+     * ** Changes in Ontology Mappings
+     * ** Invalid Count columns
      */
     @Override
     public void validate(GenericDao service, TextProvider provider) throws IntegrationDeserializationException {
@@ -138,6 +138,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
     /**
      * validate that the ontology node is valid:
      * check parent is right
+     * 
      * @param provider
      * @param col
      */
@@ -157,6 +158,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     /**
      * check that the DTC is valid - part of mapped table; ontology is valid and mapepd; is count column numeric
+     * 
      * @param provider
      * @param dataTableIds
      * @param col
@@ -190,13 +192,14 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         try {
             return dtc.getPersistable().getDefaultCodingSheet().getDefaultOntology().getId();
         } catch (NullPointerException npe) {
-            logger.debug("null pointer getting ontology id" , npe);
+            logger.debug("null pointer getting ontology id", npe);
         }
         return null;
     }
 
     /**
-     * make sure that we don't have NULLs in mappings (once hydrated, make sure that we still have valid refernces) 
+     * make sure that we don't have NULLs in mappings (once hydrated, make sure that we still have valid refernces)
+     * 
      * @param service
      * @param provider
      * @param fieldErrors
@@ -211,12 +214,12 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             super.validateForNulls(service, column.getNodeSelection(), fieldErrors, NODE, provider);
             super.validateForNulls(service, Arrays.asList(column.getOntology()), fieldErrors, ONTOLOGY, provider);
         }
-        
+
         if (CollectionUtils.isEmpty(datasetIds)) {
             // escape out if we have no datasets -- not immplemented
             return;
         }
-        
+
         for (DataTableDTO dt : getDataTables()) {
             if (PersistableUtils.isNotNullOrTransient(dt.getPersistable()) && !datasetIds.contains(dt.getPersistable().getDataset().getId())) {
                 checkAddKey(fieldErrors, DATA_TABLE).add(provider.getText("integrationWorkflowData.bad_datatable", Arrays.asList(dt)));
@@ -226,6 +229,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     /**
      * load database versions and set them as the "persistable"
+     * 
      * @param service
      * @throws IntegrationDeserializationException
      */
@@ -320,7 +324,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         if (CollectionUtils.isNotEmpty(errors)) {
             return true;
         }
-        
+
         if (MapUtils.isNotEmpty(fieldErrors)) {
             return true;
         }
@@ -329,7 +333,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
+    // @JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class DatasetDTO implements Serializable, IntegrationDTO<Dataset> {
 
         private static final long serialVersionUID = -7582567713165436710L;
@@ -376,7 +380,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
+    // @JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class DataTableColumnDTO implements Serializable, IntegrationDTO<DataTableColumn> {
         private static final long serialVersionUID = 1717839026465656147L;
 
@@ -423,7 +427,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
+    // @JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class DataTableDTO implements Serializable, IntegrationDTO<DataTable> {
 
         private static final long serialVersionUID = -3269819489102125775L;
@@ -470,7 +474,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
+    // @JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class IntegrationColumnDTO implements Serializable {
 
         private static final long serialVersionUID = 9061205188321045416L;
@@ -528,7 +532,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
+    // @JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class OntologyDTO implements Serializable, IntegrationDTO<Ontology> {
 
         private static final long serialVersionUID = -7234646396247780253L;
@@ -575,7 +579,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     @JsonAutoDetect
     @JsonInclude(Include.NON_NULL)
-    //@JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
+    // @JsonIgnoreProperties(ignoreUnknown = true) //allow superset objects
     static class OntologyNodeDTO implements Serializable, IntegrationDTO<OntologyNode> {
         private static final long serialVersionUID = 6020897284883456005L;
 
@@ -603,7 +607,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
         public String toString() {
             return String.format("%s [%s]", iri, id);
         }
-        
+
         @Override
         @JsonIgnore
         public List<?> getEqualityFields() {

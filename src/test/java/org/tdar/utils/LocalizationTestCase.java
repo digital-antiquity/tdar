@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -46,7 +45,7 @@ public class LocalizationTestCase {
                 Arrays.asList("abrin", "test", "test", 12340005, "test"));
         Assert.assertTrue(msg.contains("(12340005)"));
     }
-    
+
     @Test
     public void testLocalization() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(Localizable.class);
@@ -55,13 +54,13 @@ public class LocalizationTestCase {
             Class<?> cls = Class.forName(bean.getBeanClassName());
             logger.debug("{} {}", cls, cls.getEnumConstants());
             for (Object obj : cls.getEnumConstants()) {
-                String key = String.format("%s.%s",cls.getSimpleName(), obj);
+                String key = String.format("%s.%s", cls.getSimpleName(), obj);
                 logger.trace(key);
                 if (!MessageHelper.checkKey(key)) {
                     badKeys.add(key);
                 }
             }
-        }        
+        }
         if (!CollectionUtils.isEmpty(badKeys)) {
             for (String key : badKeys) {
                 logger.error("no localization: " + key);
@@ -69,7 +68,6 @@ public class LocalizationTestCase {
             fail("missing localization keys: " + badKeys);
         }
     }
-    
 
     @Test
     public void testJavaLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
@@ -86,7 +84,7 @@ public class LocalizationTestCase {
         Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/java"), new String[] { "java" }, true);
         Iterator<File> iterateFiles2 = FileUtils.iterateFiles(new File("src/main/java"), new String[] { "java" }, true);
         Pattern pattern2 = Pattern.compile("^.+(add(ActionError|ActionMessage)(\\w*))\\(\\s*\\\"([^\"]+)\\\"\\.*\\).+");
-        //FIXME: add support for addFieldError
+        // FIXME: add support for addFieldError
         List<String> results = new ArrayList<>();
         while (iterateFiles.hasNext()) {
             handleFile(pattern, iterateFiles.next());
@@ -151,7 +149,7 @@ public class LocalizationTestCase {
             logger.error(msg);
             results.add(msg);
         }
-        
+
         if (results.size() > 0) {
             fail("Use two '' instead of ' to escape\n" + StringUtils.join(results, "\n"));
         }
@@ -272,7 +270,7 @@ public class LocalizationTestCase {
                 if (m.matches()) {
                     String key = m.group(4);
                     if (key.contains(" ")) {
-                        String txt = String.format("%s(\"%s\") needs transalation prior to call %s", m.group(1), m.group(4) , messageResponse);
+                        String txt = String.format("%s(\"%s\") needs transalation prior to call %s", m.group(1), m.group(4), messageResponse);
                         results.add(txt);
                         logger.error(txt);
                     }

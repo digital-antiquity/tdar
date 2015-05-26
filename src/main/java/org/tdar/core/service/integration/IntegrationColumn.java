@@ -89,7 +89,8 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     @Override
     public String toString() {
-        return String.format("%s (ontology: %s | columns: %s | nodes: %s)", columnType, sharedOntology, PersistableUtils.extractIds(getColumns()), PersistableUtils.extractIds(getFilteredOntologyNodes()));
+        return String.format("%s (ontology: %s | columns: %s | nodes: %s)", columnType, sharedOntology, PersistableUtils.extractIds(getColumns()),
+                PersistableUtils.extractIds(getFilteredOntologyNodes()));
     }
 
     public void setColumns(List<DataTableColumn> columns) {
@@ -102,19 +103,19 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return columns;
     }
 
-//    @XmlElementWrapper(name = "mappingRules")
-//    @XmlElement(name = "mappingRule")
-//    public List<CodingRule> getCodingRules() {
-//        List<CodingRule> rules = new ArrayList<CodingRule>();
-//        columns.removeAll(Collections.singletonList(null));
-//        for (DataTableColumn column : columns) {
-//            if (column != null && column.getDefaultCodingSheet() == null) {
-//                continue;
-//            }
-//            rules.addAll(column.getDefaultCodingSheet().getCodingRules());
-//        }
-//        return rules;
-//    }
+    // @XmlElementWrapper(name = "mappingRules")
+    // @XmlElement(name = "mappingRule")
+    // public List<CodingRule> getCodingRules() {
+    // List<CodingRule> rules = new ArrayList<CodingRule>();
+    // columns.removeAll(Collections.singletonList(null));
+    // for (DataTableColumn column : columns) {
+    // if (column != null && column.getDefaultCodingSheet() == null) {
+    // continue;
+    // }
+    // rules.addAll(column.getDefaultCodingSheet().getCodingRules());
+    // }
+    // return rules;
+    // }
 
     @XmlElementWrapper(name = "filteredOntologyNodes")
     @XmlElement(name = "ontologyNode")

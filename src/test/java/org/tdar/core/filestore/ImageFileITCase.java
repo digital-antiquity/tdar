@@ -116,8 +116,8 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         proxy.setInformationResourceFile(originalVersion.getInformationResourceFile());
         WorkflowResult workflowResult = new WorkflowResult(Arrays.asList(proxy));
         ErrorTransferObject errorsAndMessages = workflowResult.getActionErrorsAndMessages();
-        logger.debug("ACTION ERRORS  : {}" , errorsAndMessages.getActionErrors());
-        logger.debug("ACTION Messages: {}" , errorsAndMessages.getActionMessages());
+        logger.debug("ACTION ERRORS  : {}", errorsAndMessages.getActionErrors());
+        logger.debug("ACTION Messages: {}", errorsAndMessages.getActionMessages());
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertEquals(successful, result);

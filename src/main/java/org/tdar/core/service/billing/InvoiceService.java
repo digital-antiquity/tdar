@@ -74,7 +74,6 @@ public class InvoiceService {
     @Autowired
     private transient UserNotificationService notificationService;
 
-    
     /**
      * Return defined @link BillingActivity entries that are enabled. A billing activity represents a type of charge (uses ASU Verbage)
      * 
@@ -86,7 +85,7 @@ public class InvoiceService {
 
         BillingActivityModel model = accountDao.getLatestActivityModel();
         for (BillingActivity activity : model.getActivities()) {
-            if (activity.getEnabled() ) {
+            if (activity.getEnabled()) {
                 toReturn.add(activity);
             }
         }

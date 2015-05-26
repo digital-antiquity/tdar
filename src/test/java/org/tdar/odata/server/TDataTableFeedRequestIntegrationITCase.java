@@ -2,7 +2,8 @@ package org.tdar.odata.server;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
-import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,15 +25,15 @@ public class TDataTableFeedRequestIntegrationITCase extends AbstractLightFitTest
     @Test
     @DirtiesContext
     public void testFeedUrl() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
+        HttpResponse  exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        HttpMethodBase  exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
-        String inXMLString = exchange.getResponseBodyAsString();
+        HttpResponse  exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
+        String inXMLString = IOUtils.toString(exchange.getEntity().getContent());
         // See: tdataset_feed_response.xml
 
         String xpathExpression = "//_atom:feed/_atom:title[@type='text']";

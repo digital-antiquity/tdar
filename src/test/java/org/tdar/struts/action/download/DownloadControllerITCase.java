@@ -53,7 +53,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
             logger.error("{} ", e);
         }
     }
-    
+
     @Test
     @Rollback
     public void testDownloadArchiveController() throws Exception {
@@ -75,11 +75,11 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         downloadTransferObject.setAuthenticatedUser(getBillingUser());
         logger.info(downloadTransferObject.getFileName());
         File file = File.createTempFile("test", ".zip");
-        
+
         FileOutputStream output = new FileOutputStream(file);
-         IOUtils.copy(downloadTransferObject.getInputStream(), output);
-         IOUtils.closeQuietly(output);
-         IOUtils.closeQuietly(downloadTransferObject.getInputStream());
+        IOUtils.copy(downloadTransferObject.getInputStream(), output);
+        IOUtils.closeQuietly(output);
+        IOUtils.closeQuietly(downloadTransferObject.getInputStream());
         assertTrue("file should have been created", file.exists());
         assertTrue("file should be non-empty", file.length() > 0);
 
@@ -130,7 +130,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getDownloadTransferObject().getFileName());
 
     }
-    
+
     @Test
     @Rollback
     public void testDownloadControllerWithDeleted() throws IOException, InstantiationException, IllegalAccessException {

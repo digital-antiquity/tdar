@@ -20,7 +20,6 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     private SensoryDataController controller;
 
-
     public void initControllerFields() throws TdarActionException {
         controller.prepare();
     }

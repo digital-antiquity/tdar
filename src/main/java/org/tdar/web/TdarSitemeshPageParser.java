@@ -13,6 +13,7 @@ import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
 
 /**
  * Custom page parser for tDAR by adam. designed to allow us to switch columnar layouts based on div properties.
+ * 
  * @author abrin
  *
  */

@@ -8,9 +8,9 @@ import com.opensymphony.xwork2.Preparable;
 public interface PersistableLoadingAction<P extends Persistable> extends ViewableAction<P>, Preparable {
 
     void setPersistable(P persistable);
-    
+
     Long getId();
-    
+
     InternalTdarRights getAdminRights();
 
 }

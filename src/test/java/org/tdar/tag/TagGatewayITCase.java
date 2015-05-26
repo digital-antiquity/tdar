@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 
 /**
  * NOTE THIS TEST NEEDS TO BE RUN VIA MAVEN and NOT THE JUNIT PLUGIN WITHIN ECLIPSE
+ * 
  * @author abrin
  *
  */
@@ -149,7 +150,6 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         }
         return false;
     }
-
 
     @Test
     @Rollback(true)

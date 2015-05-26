@@ -51,7 +51,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;

@@ -60,14 +60,14 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     @Action("confirm-action")
     @PostOnly
     public String confirmAction() {
-        
+
         return SUCCESS;
     }
 
     @Action("complete-action")
     @PostOnly
     public String completeAction() {
-        
+
         return SUCCESS;
     }
 

@@ -243,6 +243,7 @@ public class WebElementSelection implements Iterable<WebElement> {
 
     /**
      * Return a selection of elements filtered by specified lambda
+     * 
      * @param predicate
      * @return
      */
@@ -252,6 +253,7 @@ public class WebElementSelection implements Iterable<WebElement> {
 
     /**
      * Return the first element that matches the specified lambda
+     * 
      * @param predicate
      * @return
      */
@@ -261,10 +263,11 @@ public class WebElementSelection implements Iterable<WebElement> {
 
     private WebElementSelection filter(Bool filter, boolean multi) {
         WebElementSelection selection = new WebElementSelection(driver);
-        for(WebElement w : this) {
-            if(filter.apply(w)) {
+        for (WebElement w : this) {
+            if (filter.apply(w)) {
                 selection.add(w);
-                if(!multi) break;
+                if (!multi)
+                    break;
             }
         }
         return selection;
@@ -475,7 +478,6 @@ public class WebElementSelection implements Iterable<WebElement> {
         }
         return this;
     }
-
 
     /**
      * return first element of selection as Select object.

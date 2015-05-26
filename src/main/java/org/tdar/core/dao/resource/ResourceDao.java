@@ -365,7 +365,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     @SuppressWarnings("unchecked")
     public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
-        logger.trace("s:{} e: {} min:{}", start,end,minCount);
+        logger.trace("s:{} e: {} min:{}", start, end, minCount);
         return query.list();
     }
 
@@ -478,10 +478,10 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         }
         return null;
     }
-    
+
     public ScrollableResults findAllActiveScrollableForSitemap() {
         Query query = getCurrentSession().getNamedQuery(SCROLLABLE_SITEMAP);
         return query.setCacheMode(CacheMode.IGNORE).scroll(ScrollMode.FORWARD_ONLY);
-        
+
     }
 }

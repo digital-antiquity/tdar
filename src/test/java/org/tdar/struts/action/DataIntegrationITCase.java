@@ -262,7 +262,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             // logger.trace(" {} | {} | {} | {} | {}", row.getCell(0).getRichStringCellValue(), row.getCell(1).getRichStringCellValue(),
             // row.getCell(2).getRichStringCellValue(), row.getCell(3).getRichStringCellValue(), row.getCell(4).getRichStringCellValue());
             if (row.getCell(1) != null) {
-                //avoid note column
+                // avoid note column
                 if (row.getCell(1).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
                 }

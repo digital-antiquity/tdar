@@ -53,9 +53,10 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
         // aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa
         // aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a");
         originalVersion.getInformationResourceFile().setDescription(text);
-        InputStream merged = pdfService.mergeCoverPage(MessageHelper.getInstance(), getBasicUser(), originalVersion, document, new File("src/main/webapp/images/r4/bg-logo.png"));
+        InputStream merged = pdfService.mergeCoverPage(MessageHelper.getInstance(), getBasicUser(), originalVersion, document, new File(
+                "src/main/webapp/images/r4/bg-logo.png"));
         File tempFile = File.createTempFile("temp_merge", ".pdf");
         IOUtils.copy(merged, new FileOutputStream(tempFile));
-        logger.debug("{}",tempFile) ;
+        logger.debug("{}", tempFile);
     }
 }

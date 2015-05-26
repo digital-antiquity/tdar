@@ -34,7 +34,6 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 import org.tdar.utils.jaxb.JaxbParsingException;
@@ -77,16 +76,16 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         String xml = serializationService.convertToXML(fp);
         logger.info(xml);
         serializationService.parseXml(FileProxies.class, new StringReader(xml));
-        
+
     }
-    
+
     @Test
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
         StringWriter sw = new StringWriter();
         document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
         document.setInheritingCulturalInformation(true);
-        serializationService.convertToJson(document, sw, null, GeoRssMode.NONE);
+        serializationService.convertToJson(document, sw, null);
         logger.info(sw.toString());
         assertTrue(sw.toString().contains(NABATAEAN));
         Project project = genericService.find(Project.class, 3805l);
@@ -95,7 +94,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         // logger.error("{}", project.getActiveMaterialKeywords().add(new MaterialKeyword()));
         // project.getActiveOtherKeywords().add(new OtherKeyword(BEDOUIN));
         sw = new StringWriter();
-        serializationService.convertToJson(project, sw, JsonProjectLookupFilter.class, GeoRssMode.NONE);
+        serializationService.convertToJson(project, sw, JsonProjectLookupFilter.class);
         logger.info(sw.toString());
         assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
         assertTrue(sw.toString().contains(BEDOUIN));

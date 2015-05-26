@@ -177,7 +177,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     @Override
     public String toString() {
         return String.format("%s %s (confidential:%s size:%d fileId:%d InputStream:%s sequence:%d date:%s @desc:%h)",
-                action, filename, restriction, size,  fileId, file, sequenceNumber, fileCreatedDate, description);
+                action, filename, restriction, size, fileId, file, sequenceNumber, fileCreatedDate, description);
     }
 
     public FileAccessRestriction getRestriction() {

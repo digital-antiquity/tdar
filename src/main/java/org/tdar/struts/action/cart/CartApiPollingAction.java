@@ -85,7 +85,8 @@ public class CartApiPollingAction extends AbstractCartController {
     }
 
     public void setResultJson(Object resultObject) {
-        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(resultObject, JsonLookupFilter.class, getCallback()).getBytes()));
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(resultObject, JsonLookupFilter.class, getCallback())
+                .getBytes()));
     }
 
     public String getCallback() {

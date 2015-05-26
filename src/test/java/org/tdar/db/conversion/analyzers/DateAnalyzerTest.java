@@ -80,7 +80,7 @@ public class DateAnalyzerTest {
         logger.debug("result: {}", result);
         assertTrue(result);
     }
-    
+
     private void testLength(final String target, final int expectation) {
         da.analyze(target, null, 1);
         final int length = da.getLength();

@@ -43,23 +43,22 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         startWindow = getDriver().getWindowHandle();
         force1024x768();
     }
-    
+
     @After
     public void cleanup() {
         resetSize();
     }
 
-
     @Test
-    //ideal walk-through of purchase process for a visitor with no mistakes along the way.
+    // ideal walk-through of purchase process for a visitor with no mistakes along the way.
     public void testVisitorPurchase() throws InterruptedException {
-        //start at the cart page, and click one of the suggested packages
+        // start at the cart page, and click one of the suggested packages
         gotoPage(CART_ADD);
         assertLoggedOut();
         find("#divlarge button").click();
 
-        //now we are on the review form (w/ registration/login forms)
-        //fill out required user registration fields and submit form
+        // now we are on the review form (w/ registration/login forms)
+        // fill out required user registration fields and submit form
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
         UserRegistration reg = createUserRegistration("bob");
         fillOutRegistration(reg);
@@ -67,41 +66,39 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         Thread.sleep(5000);
         submitForm("#registrationForm .submitButton");
 
-
-        //now we are on the "choose billing account" page. just click through to next page
+        // now we are on the "choose billing account" page. just click through to next page
         waitForPageload();
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
 
         submitForm();
 
-        //now we are on the process payment page.  click on the button to fire up a new window
+        // now we are on the process payment page. click on the button to fire up a new window
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
         find("#btnOpenPaymentWindow").click();
 
-
-        //sanity check: assert that selenium didn't implicitly switch to popup window (this might be a osx-only thing)
+        // sanity check: assert that selenium didn't implicitly switch to popup window (this might be a osx-only thing)
         assertThat(startWindow, equalTo(getDriver().getWindowHandle()));
 
         switchToNextWindow();
-        //popup window is active now.  assuming it is the fake payment processor,  all we need to do is submit the form to "pay" for the invoice
+        // popup window is active now. assuming it is the fake payment processor, all we need to do is submit the form to "pay" for the invoice
         waitFor("[type=submit]");
         submitForm();
 
-        //close the popup window
+        // close the popup window
         find("#btnCloseWindow").click();
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
-        //even though the popup window is gone, we still need to switch back to the main window
+        // even though the popup window is gone, we still need to switch back to the main window
         getDriver().switchTo().window(startWindow);
 
-        //if successful, we are sent to the dashboard
+        // if successful, we are sent to the dashboard
         waitFor("body.dashboard");
     }
 
     @Test
-    //ideal walkthrough of purchase process for logged-out-user process with no mistakes
-    //todo: create By.buttonWithLabel (finds submit input with matching value -or- button with matching text node)
-    //todo: create By.inputWithLabel  (finds element referred by for-attribute or child elements)
+    // ideal walkthrough of purchase process for logged-out-user process with no mistakes
+    // todo: create By.buttonWithLabel (finds submit input with matching value -or- button with matching text node)
+    // todo: create By.inputWithLabel (finds element referred by for-attribute or child elements)
     public void testLoginPurchase() {
         // Starting page
         // go to the cart page and make sure we are logged out
@@ -110,16 +107,16 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // choose the large package
         find("#divlarge button").click();
 
-        // review  (note that we navigated here via javascript click handler instead of a link or a form submit, so we need to explicitly wait for pageload)
+        // review (note that we navigated here via javascript click handler instead of a link or a form submit, so we need to explicitly wait for pageload)
         waitForPageload();
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
         submitForm("#loginForm [type=submit]");
 
-        // choose 
+        // choose
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
-        // we aren't testing billing account customization,  so we just advance to the next step
+        // we aren't testing billing account customization, so we just advance to the next step
         submitForm();
 
         // process payment
@@ -130,7 +127,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         waitFor("[type=submit]");
         submitForm();
 
-        //close the popup window
+        // close the popup window
         waitFor("#btnCloseWindow").click();
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
@@ -139,13 +136,12 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         waitFor("body.dashboard");
     }
 
-
     /**
      * Confirm that the invoice-view page (/cart/view?id=123) works as well as inbound links from other pages
      */
     @Test
     public void testInvoiceView() {
-        //ensure that we have at least one valid invoice in the system
+        // ensure that we have at least one valid invoice in the system
         logout();
         testLoginPurchase();
         logout();
@@ -154,34 +150,33 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         assertThat(getDriver().getTitle(), is("All Invoices"));
 
-        //links to the invoices (we assume) are in column 1 of the table
+        // links to the invoices (we assume) are in column 1 of the table
         WebElementSelection invoiceLinks = find("#tblAllInvoices tr td:first-child a");
         logger.debug("invoice links:{}", invoiceLinks);
         List<WebElement> list = invoiceLinks.toList();
         assertThat(list, is(not(empty())));
 
-        List<Pair<String,String>> urls = new ArrayList<>();
-        //for each invoice page,  mak
-        for(WebElement element : list) {
+        List<Pair<String, String>> urls = new ArrayList<>();
+        // for each invoice page, mak
+        for (WebElement element : list) {
             String url = element.getAttribute("href");
             String path = url.substring(url.indexOf("/cart/"));
             urls.add(Pair.create(url, path));
         }
-        
-        for (Pair<String,String> pair : urls) {
+
+        for (Pair<String, String> pair : urls) {
             logger.debug("url: {}", pair.getFirst());
             gotoPage(pair.getFirst());
 
-            //assert that the this page seems like a legit invoice-view page
+            // assert that the this page seems like a legit invoice-view page
             assertThat(getSource(), stringContainsInOrder(asList("Invoice", "Account:", "Transaction Status:")));
 
-
-            //click on the link to the billing account for this invoice
+            // click on the link to the billing account for this invoice
             find("a.accountLink").first().click();
             waitForPageload();
             Assert.assertTrue(getCurrentUrl().contains("billing"));
-            //make sure billing account page also has a link back to the invoice-view page we just verified
-            assertThat(getSource(), stringContainsInOrder( asList( "Overall Usage", pair.getSecond())));
+            // make sure billing account page also has a link back to the invoice-view page we just verified
+            assertThat(getSource(), stringContainsInOrder(asList("Overall Usage", pair.getSecond())));
         }
 
     }
@@ -195,10 +190,10 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // choose the large package
         find("#divlarge button").click();
 
-        //try to log in with a blank username (javascript whould catch this,  but we want to make sure we handle server-side too
+        // try to log in with a blank username (javascript whould catch this, but we want to make sure we handle server-side too
         find(ByLabelText.byPartialLabelText("Username")).val("");
 
-        //bypass jquery validation by calling form.submit() vs. clicking the submit button
+        // bypass jquery validation by calling form.submit() vs. clicking the submit button
         executeJavascript("document.loginForm.submit()");
         waitForPageload();
 
@@ -215,16 +210,15 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // choose the large package
         find("#divlarge button").click();
 
-        //make sure at least one required field is blank before submitting form
+        // make sure at least one required field is blank before submitting form
         find("#username").val("");
 
-        //bypass jquery validation by calling form.submit() vs. clicking the submit button
+        // bypass jquery validation by calling form.submit() vs. clicking the submit button
         executeJavascript("document.registrationForm.submit()");
         waitForPageload();
 
         assertThat(getSource(), containsString("tDAR encountered the following problems with this submission"));
         assertThat(getCurrentUrl(), endsWith("/cart/process-registration"));
     }
-
 
 }

@@ -79,7 +79,7 @@ public class CartBillingAccountController extends AbstractCartController {
             addActionError(getText("cartController.valid_payment_method_is_required"));
         }
 
-        if(!getAuthenticatedUser().isContributor() && !acceptContributorAgreement) {
+        if (!getAuthenticatedUser().isContributor() && !acceptContributorAgreement) {
             addActionError(getText("cartController.please_accept_contributor_agreement"));
         }
 
@@ -91,7 +91,7 @@ public class CartBillingAccountController extends AbstractCartController {
      * @return
      */
     @Action(value = "process-billing-account-choice", results = {
-            @Result(name = INPUT, location = "review", type="redirect"),
+            @Result(name = INPUT, location = "review", type = "redirect"),
             @Result(name = SUCCESS, location = "process-payment-request", type = "redirect") })
     @PostOnly
     @WriteableSession

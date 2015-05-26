@@ -82,14 +82,12 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("code", code);
         submitForm();
 
-        //sanity check: after submitting the cart form we should wind up on the review page.
+        // sanity check: after submitting the cart form we should wind up on the review page.
         assertThat(getCurrentUrlPath(), containsString("/review"));
 
         accountId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         gotoPage("/logout");
     }
-
-
 
     @Test
     public void testAccountListWhenEditingAsAdmin() throws Exception {

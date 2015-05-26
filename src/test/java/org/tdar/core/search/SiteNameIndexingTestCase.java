@@ -67,8 +67,6 @@ public class SiteNameIndexingTestCase {
         tokenizer.close();
     }
 
-        
-    
     public void assertMatches(Pattern pattern, String text) {
         logger.debug("\"{}\" --> {}", text, pattern.pattern());
         assertTrue("String matches:" + text, pattern.matcher(text).matches());

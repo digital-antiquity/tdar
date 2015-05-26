@@ -164,7 +164,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         PreparedStatement statement = statementPair.getFirst();
         int batchNum = statementPair.getSecond().intValue() + 1;
-        
+
         statementPair.setSecond(batchNum);
         if ((batchNum < TdarConfiguration.getInstance().getTdarDataBatchSize()) && !force) {
             return;
@@ -224,7 +224,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
-
 
     @Override
     @Deprecated
@@ -855,7 +854,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             if (!integrationColumn.isIntegrationColumn()) {
                 continue;
             }
-            
+
             for (OntologyNode node : integrationColumn.getFilteredOntologyNodes()) {
                 DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
 

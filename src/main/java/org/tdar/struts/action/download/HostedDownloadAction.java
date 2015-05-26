@@ -13,9 +13,9 @@ import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
-import org.tdar.utils.PersistableUtils;
 
 /**
  * Created by jimdevos on 9/23/14. This action is designed to facilitate un-authenticated downloads if resources are part of a given collection and the host
@@ -47,7 +47,7 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
     public String execute() {
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(),
                 informationResourceFile, isCoverPageIncluded(), this, null, true));
-        
+
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }
@@ -70,7 +70,7 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
             addActionError("hostedDownloadController.api_key_required");
         }
 
-        if(PersistableUtils.isNotNullOrTransient(informationResourceFile)) {
+        if (PersistableUtils.isNotNullOrTransient(informationResourceFile)) {
             InformationResourceFileVersion fileVersion = informationResourceFile.getLatestUploadedVersion();
 
             if (!authorzationService.checkValidUnauthenticatedDownload(fileVersion, getApiKey(), getServletRequest())) {
@@ -82,12 +82,11 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
 
     @Override
     public void validate() {
-        //Note: we specifically do not want to call parent.validate()
+        // Note: we specifically do not want to call parent.validate()
         if (PersistableUtils.isNullOrTransient(informationResourceFile)) {
             addActionError(getText("downloadController.specify_what_to_download"));
         }
     }
-
 
     public Long getInformationResourceFileId() {
         return informationResourceFileId;

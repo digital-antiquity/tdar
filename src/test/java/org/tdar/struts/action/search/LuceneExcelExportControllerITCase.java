@@ -52,7 +52,8 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         // currentUser = getBasicUser();
-        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class, genericService.find(TdarUser.class, getBasicUserId()));
+        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
+                genericService.find(TdarUser.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
@@ -77,10 +78,11 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         setIgnoreActionErrors(true);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
-        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class, genericService.find(TdarUser.class, getBasicUserId()));
+        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
+                genericService.find(TdarUser.class, getBasicUserId()));
         controller.setSessionData(new SessionData()); // create unauthenticated session
         getServletRequest().setAttribute("RequestURI", "http://www.test.com");
-//        controller = generateNewInitializedController(AdvancedSearchController.class);
+        // controller = generateNewInitializedController(AdvancedSearchController.class);
 
         controller.setServletRequest(getServletRequest());
         doSearch("");

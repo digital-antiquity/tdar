@@ -67,11 +67,11 @@ public class LegacyObfuscateLatLongProcess extends ScheduledBatchProcess<Latitud
         if (!Objects.equal(llb.getMaximumLongitude().doubleValue(), maxObfuscatedLongitude)) {
             changed = true;
         }
-        if (Math.abs(maxObfuscatedLatitude- minObfuscatedLatitude) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES  ||
-                Math.abs(maxObfuscatedLongitude - minObfuscatedLongitude) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES ) {
-            logger.error("HUH: {}|{}| {}", maxObfuscatedLatitude, minObfuscatedLongitude,llb);
+        if (Math.abs(maxObfuscatedLatitude - minObfuscatedLatitude) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES ||
+                Math.abs(maxObfuscatedLongitude - minObfuscatedLongitude) <= LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
+            logger.error("HUH: {}|{}| {}", maxObfuscatedLatitude, minObfuscatedLongitude, llb);
         }
-        
+
         if (changed) {
             genericDao.detachFromSession(llb);
             genericDao.update(llb);

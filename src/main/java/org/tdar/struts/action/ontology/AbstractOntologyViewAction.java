@@ -15,7 +15,7 @@ public abstract class AbstractOntologyViewAction extends AbstractResourceViewAct
     private String iri;
     private String redirectIri;
     private List<Dataset> datasetsWithMappingsToNode;
-    
+
     protected OntologyNode getNodeByIri() {
         String iri_ = getIri();
         getLogger().trace("id: {} iri: {} slug: {}", getId(), iri_, getSlug());
@@ -44,9 +44,8 @@ public abstract class AbstractOntologyViewAction extends AbstractResourceViewAct
     }
 
     public Ontology getOntology() {
-        return (Ontology)getResource();
+        return (Ontology) getResource();
     }
-
 
     /**
      * Checks for IRI, also removes parenthesis which may be removed by struts
@@ -66,7 +65,6 @@ public abstract class AbstractOntologyViewAction extends AbstractResourceViewAct
         }
         return null;
     }
-
 
     public List<Dataset> getDatasetsWithMappingsToNode() {
         return datasetsWithMappingsToNode;

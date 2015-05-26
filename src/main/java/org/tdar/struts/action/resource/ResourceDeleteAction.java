@@ -26,7 +26,7 @@ public class ResourceDeleteAction extends AbstractDeleteAction<Resource> impleme
     private transient ResourceService resourceService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     @Override
     protected Resource loadPersistable() {
         return resourceService.find(getId());

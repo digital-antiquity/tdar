@@ -33,7 +33,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private AuthorityManagementService authorityManagementService;
-    
+
     @Test
     public void testFindAllDescendants() {
         CultureKeyword historicKeyword = genericKeywordService.findByLabel(CultureKeyword.class, "Historic");
@@ -55,7 +55,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         createAndAddTK("1920");
         createAndAddTK("1920s");
 
-        authorityManagementService.findPluralDups(TemporalKeyword.class,getUser(), true);
+        authorityManagementService.findPluralDups(TemporalKeyword.class, getUser(), true);
     }
 
     private void createAndAddTK(String term) {

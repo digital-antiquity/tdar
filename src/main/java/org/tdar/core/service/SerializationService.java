@@ -59,6 +59,7 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.LatLongGeoJsonSerializer;
+import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -97,7 +98,8 @@ public class SerializationService {
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
     @SuppressWarnings("unchecked")
-    private static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class, FileProxies.class, FileProxy.class };
+    private static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class,
+            FileProxies.class, FileProxy.class };
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -173,15 +175,15 @@ public class SerializationService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer, Class<?> view, GeoRssMode mode) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper(mode);
+    public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
+        ObjectMapper mapper = initializeObjectMapper();
         ObjectWriter objectWriter = mapper.writer();
 
         if (view != null) {
             mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
             objectWriter = mapper.writerWithView(view);
         }
-
+        
         if (TdarConfiguration.getInstance().isPrettyPrintJson()) {
             objectWriter = objectWriter.with(new DefaultPrettyPrinter());
         }
@@ -190,11 +192,11 @@ public class SerializationService {
 
     @Transactional(readOnly = true)
     public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper(GeoRssMode.NONE);
+        ObjectMapper mapper = initializeObjectMapper();
         return mapper.readValue(json, cls);
     }
 
-    private ObjectMapper initializeObjectMapper(GeoRssMode mode) {
+    private ObjectMapper initializeObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
@@ -202,15 +204,8 @@ public class SerializationService {
         Hibernate4Module hibernate4Module = new Hibernate4Module();
         hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
         SimpleModule module = new SimpleModule();
-        switch (mode) {
-            case ENVELOPE:
-                module.addSerializer(LatitudeLongitudeBox.class, new LatLongGeoJsonSerializer());
-                mapper.registerModules(hibernate4Module, module);
-                break;
-            default:
-                mapper.registerModules(hibernate4Module);
-                break;
-        }
+        module.addSerializer(LatitudeLongitudeBoxWrapper.class, new LatLongGeoJsonSerializer());
+        mapper.registerModules(hibernate4Module, module);
         mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
         return mapper;
     }
@@ -225,7 +220,7 @@ public class SerializationService {
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, null, GeoRssMode.NONE);
+        convertToJson(object, writer, null);
         return writer.toString();
     }
 
@@ -268,7 +263,7 @@ public class SerializationService {
     @Transactional
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, view, GeoRssMode.NONE);
+        convertToJson(object, writer, view);
         return writer.toString();
     }
 
@@ -295,7 +290,7 @@ public class SerializationService {
     public Object parseXml(Reader reader) throws Exception {
         return parseXml(null, reader);
     }
-    
+
     public Object parseXml(Class<?> c, Reader reader) throws Exception {
         JAXBContext jc = JAXBContext.newInstance(rootClasses);
         if (c != null) {
@@ -463,7 +458,7 @@ public class SerializationService {
 
     public String createJsonFromResourceList(Map<String, Object> map, String rssUrl, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(map, writer, view, GeoRssMode.ENVELOPE);
+        convertToJson(map, writer, view);
         return writer.toString();
     }
 }
