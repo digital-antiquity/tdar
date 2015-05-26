@@ -1,5 +1,6 @@
 package org.tdar.struts.action.browse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,19 +18,20 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.util.HomepageGeographicCache;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
@@ -72,7 +74,7 @@ public class ExploreController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+    private String mapJson;
 
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
@@ -90,6 +92,9 @@ public class ExploreController extends AbstractLookupController {
     @Autowired
     private transient AuthenticationService authenticationService;
 
+    @Autowired
+    private transient SerializationService serializationService;
+    
     @Autowired
     private transient EntityService entityService;
 
@@ -117,7 +122,14 @@ public class ExploreController extends AbstractLookupController {
         setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
-        resourceService.setupWorldMap(worldMapData);
+
+        List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
+        try {
+            setMapJson(serializationService.convertToJson(isoGeographicCounts));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         int count = 10;
         getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
@@ -262,12 +274,12 @@ public class ExploreController extends AbstractLookupController {
         this.viewCount = viewCount;
     }
 
-    public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {
-        return worldMapData;
+    public String getMapJson() {
+        return mapJson;
     }
 
-    public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
-        this.worldMapData = worldMapData;
+    public void setMapJson(String mapJson) {
+        this.mapJson = mapJson;
     }
 
 }

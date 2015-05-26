@@ -24,13 +24,11 @@ import org.hibernate.criterion.SimpleExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -38,6 +36,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
+import org.tdar.core.bean.util.HomepageGeographicCache;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -169,21 +168,31 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return (Number) query.uniqueResult();
     }
 
-    public List<HomepageGeographicKeywordCache> getISOGeographicCounts() {
+    public List<HomepageGeographicCache> getISOGeographicCounts() {
         logger.info("executing country count from database");
 
-        List<HomepageGeographicKeywordCache> cache = new ArrayList<HomepageGeographicKeywordCache>();
-        Query query = getCurrentSession().getNamedQuery(QUERY_MANAGED_ISO_COUNTRIES);
+        List<HomepageGeographicCache> cache = new ArrayList<HomepageGeographicCache>();
+        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.HOMEPAGE_GEOGRAPHIC);
+        Map<String,Integer> totals = new HashMap<String, Integer>();
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
                 if ((objs == null) || (objs[0] == null)) {
                     continue;
                 }
-                cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2], (Long) objs[3]));
+                String code = (String) objs[0];
+                Integer count = ((Number) objs[2]).intValue();
+                cache.add(new HomepageGeographicCache(code, ResourceType.valueOf((String)objs[1]), count, (Long)objs[3]));
+                if (!totals.containsKey(code)) {
+                    totals.put(code, 0);
+                }
+                totals.put(code, totals.get(code) + count);
             } catch (Exception e) {
                 logger.debug("cannot get iso counts:", e);
             }
+        }
+        for (String code : totals.keySet()) {
+            cache.add(new HomepageGeographicCache(code, null, totals.get(code),null));
         }
         return cache;
     }

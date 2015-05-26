@@ -1,9 +1,9 @@
 package org.tdar.struts.action;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,13 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.util.HomepageGeographicCache;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.RssService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -55,7 +56,6 @@ public class IndexController extends AuthenticationAware.Base {
 
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
-    private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
 
     private String sitemapFile = "sitemap_index.xml";
 
@@ -66,11 +66,16 @@ public class IndexController extends AuthenticationAware.Base {
     private ObfuscationService obfuscationService;
     @Autowired
     private transient AuthorizationService authorizationService;
+    
+    @Autowired
+    private transient SerializationService serializationService;
 
     @Autowired
-    private RssService rssService;
+    private transient RssService rssService;
 
     private List<SyndEntry> rssEntries;
+
+    private String mapJson;
 
     @HttpOnlyIfUnauthenticated
     @Actions({
@@ -140,7 +145,13 @@ public class IndexController extends AuthenticationAware.Base {
 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
     public String worldMap() {
-        resourceService.setupWorldMap(worldMapData);
+        List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
+        try {
+            setMapJson(serializationService.convertToJson(isoGeographicCounts));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return SUCCESS;
     }
 
@@ -209,20 +220,20 @@ public class IndexController extends AuthenticationAware.Base {
         this.rssEntries = rssEntries;
     }
 
-    public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {
-        return worldMapData;
-    }
-
-    public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
-        this.worldMapData = worldMapData;
-    }
-
     public String getSitemapFile() {
         return sitemapFile;
     }
 
     public void setSitemapFile(String sitemapFile) {
         this.sitemapFile = sitemapFile;
+    }
+
+    public String getMapJson() {
+        return mapJson;
+    }
+
+    public void setMapJson(String mapJson) {
+        this.mapJson = mapJson;
     }
 
 }

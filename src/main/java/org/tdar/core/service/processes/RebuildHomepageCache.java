@@ -71,8 +71,6 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
     @Override
     public void execute() {
         logger.info("rebuilding homepage cache");
-        resourceService.deleteAll(HomepageGeographicKeywordCache.class);
-        resourceService.save(resourceService.getISOGeographicCounts());
         resourceService.deleteAll(HomepageResourceCountCache.class);
         resourceService.save(resourceService.getResourceCounts());
         resourceService.deleteAll(BrowseDecadeCountCache.class);

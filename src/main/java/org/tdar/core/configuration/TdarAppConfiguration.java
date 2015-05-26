@@ -130,6 +130,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
         List<Cache> caches = new ArrayList<>();
         caches.add(cacheBean());
         caches.add(new ConcurrentMapCache("rssFeed"));
+        caches.add(new ConcurrentMapCache("homepageMap"));
         cacheManager.setCaches(caches);
         return cacheManager;
     }

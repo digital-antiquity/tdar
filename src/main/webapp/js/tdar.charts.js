@@ -385,49 +385,6 @@
 
             var plot = $.jqplot(graphId, data, _defaults);
 
-        },
-        worldMap : function() {
-
-            $('.worldmap').maphilight({
-                fade : true,
-                groupBy : "alt",
-                strokeColor : '#ffffff'
-            });
-
-            $(".worldmap").delegate('area', 'mouseover', function(e) {
-                $('[iso=' + $(this).attr('iso') + ']').each(function(index, val) {
-                    hightlight(true, val);
-                });
-            });
-
-            $(".worldmap").delegate('area', 'mouseout', function(e) {
-                $('[iso=' + $(this).attr('iso') + ']').each(function(index, val) {
-                    hightlight(false, val);
-                });
-            });
-
-        },
-
-        highlight : function(on, element) {
-            var data = $(element).data('maphilight') || {};
-            if (on) {
-                data.oldFillColor = data.fillColor;
-                data.oldFillOpacity = data.fillOpacity;
-                data.oldStrokeColor = data.strokeColor;
-                data.oldStrokeWidth = data.strokeWidth;
-
-                data.fillColor = '4B514D';
-                data.fillOpacity = .5;
-                data.strokeColor = '111111';
-                data.strokeWidth = '.6';
-            } else {
-                data.fillColor = data.oldFillColor;
-                data.fillOpacity = data.oldFillOpacity;
-                data.strokeColor = data.oldStrokeColor;
-                data.strokeWidth = data.oldStrokeWidth;
-            }
-            $(element).data('maphilight', data).trigger('alwaysOn.maphilight');
         }
     }
-
 })(jQuery, TDAR);

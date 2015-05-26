@@ -57,6 +57,8 @@
         <js>/includes/jqplot-1.08/plugins/jqplot.enhancedLegendRenderer.js</js>
         <js>/includes/jqplot-1.08/plugins/jqplot.pieRenderer.js</js>
         <js>/includes/jqplot-1.08/plugins/jqplot.pointLabels.js</js>
+        <js>/components/leaflet/dist/leaflet.js</js>
+        <css>/components/leaflet/dist/leaflet.css</css>
         <js>/js/tdar.core.js</js>
         <js>/js/tdar.gmaps.js</js>
         <js>/js/tdar.upload.js</js>
@@ -83,8 +85,7 @@
         <js>/js/tdar.contexthelp.js</js>
         <js>/js/tdar.formValidateExtensions.js</js>
         <js>/includes/bindWithDelay.js</js>
-        <js>/components/leaflet/dist/leaflet.js</js>
-        <css>/components/leaflet/dist/leaflet.css</css>
+        <js>/js/maps/tdar.worldmap.js</js>
         <!-- LICENSE: MIT -->
     </group>
     <group name="ng-integrate">

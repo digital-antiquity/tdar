@@ -22,6 +22,7 @@ import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
@@ -50,6 +51,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
+import org.tdar.core.bean.util.HomepageGeographicCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -256,7 +258,9 @@ public class ResourceService extends GenericService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<HomepageGeographicKeywordCache> getISOGeographicCounts() {
+    @Cacheable(value = "homepageMap")
+    public List<HomepageGeographicCache> getISOGeographicCounts() {
+        logger.debug("requesting homepage cache");
         return datasetDao.getISOGeographicCounts();
     }
 
