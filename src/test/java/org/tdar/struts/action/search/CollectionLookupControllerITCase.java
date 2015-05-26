@@ -118,7 +118,6 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationTestCas
         assertTrue(controller.getResults().contains(e));
     }
 
-
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUserForModification() {
@@ -148,6 +147,5 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationTestCas
 
     @Autowired
     ReflectionService reflectionService;
-
 
 }

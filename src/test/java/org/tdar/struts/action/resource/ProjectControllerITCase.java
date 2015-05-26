@@ -186,7 +186,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         users2.addAll(Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
                 GeneralPermissions.VIEW_ALL),
                 new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_GROUP)));
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, (TdarUser)testCollection.getOwner());
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, (TdarUser) testCollection.getOwner());
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
@@ -208,7 +208,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         logger.info("potential parents: {}", potentialParents);
         assertTrue("potential parents should always at least have one item (the null project)", potentialParents.size() >= 1);
         // first element should always be the null project
-        assertTrue( -1L == potentialParents.get(0).getId());
+        assertTrue(-1L == potentialParents.get(0).getId());
         assertEquals(getText("project.no_associated_project"), potentialParents.get(0).getTitle());
 
         int originalParentCount = potentialParents.size();
@@ -226,7 +226,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         potentialParents = controller.getPotentialParents();
         logger.info("{}", potentialParents);
         assertTrue(potentialParents.size() > 2);
-        assertTrue( -1L == potentialParents.get(0).getId());
+        assertTrue(-1L == potentialParents.get(0).getId());
         assertEquals(getText("project.no_associated_project"), potentialParents.get(0).getTitle());
     }
 

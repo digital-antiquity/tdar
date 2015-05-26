@@ -35,7 +35,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
 
     @Action(value = "duplicate", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "confirm-duplicate.ftl"),
-            @Result(name = INPUT, type = FREEMARKER, location ="duplicate-error.ftl")
+            @Result(name = INPUT, type = FREEMARKER, location = "duplicate-error.ftl")
     })
     public String execute() {
         if (!getAuthenticatedUser().isContributor()) {

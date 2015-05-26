@@ -19,7 +19,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
@@ -93,7 +92,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         List<File> files = new ArrayList<>();
         File file = new File(TestConstants.TEST_DOCUMENT_DIR + "sample_pdf_formats/volume1-encrypted-test.pdf");
         InformationResourceFileVersion version = generateAndStoreVersion(Document.class, file.getName(), file, filestore);
-        Document document = (Document)version.getInformationResourceFile().getInformationResource();
+        Document document = (Document) version.getInformationResourceFile().getInformationResource();
         document.setTitle("test");
         document.setDescription("test");
         document.setDocumentType(DocumentType.BOOK);

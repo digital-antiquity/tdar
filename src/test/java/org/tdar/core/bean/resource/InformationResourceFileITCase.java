@@ -230,7 +230,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         }
     }
 
-    
     @Rollback(true)
     @Test
     public void testVersionDeletion() throws InstantiationException, IllegalAccessException, FileNotFoundException {
@@ -250,7 +249,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         informationResourceFileVersionDao.delete(version);
         assertTrue(file.exists());
 
-        
     }
 
     private InformationResourceFileVersion getVersion(InformationResourceFile irFile, VersionType type) throws FileNotFoundException {

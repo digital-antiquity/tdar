@@ -32,7 +32,6 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     private List<AuthNotice> acceptedAuthNotices = new ArrayList<>();
     private TdarUser user;
 
-
     private String submitAccept = null;
     private String submitDecline = null;
 
@@ -56,7 +55,8 @@ public class UserAgreementController extends AuthenticationAware.Base implements
 
     @Override
     public void validate() {
-        if(declineClicked()) return;
+        if (declineClicked())
+            return;
 
         if (processResponse()) {
             getLogger().debug("all requirements met,  success!! returning success");
@@ -74,8 +74,11 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     })
     @PostOnly
     public String agreementResponse() {
-        if(!isAuthenticated()) {return LOGIN;}
-        if(!acceptClicked() && !declineClicked()) return BAD_REQUEST;
+        if (!isAuthenticated()) {
+            return LOGIN;
+        }
+        if (!acceptClicked() && !declineClicked())
+            return BAD_REQUEST;
 
         if (acceptClicked()) {
             return SUCCESS;

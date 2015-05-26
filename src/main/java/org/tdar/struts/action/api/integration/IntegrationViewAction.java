@@ -47,7 +47,7 @@ public class IntegrationViewAction extends AbstractIntegrationAction implements 
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.VIEW);
-        
+
         if (workflow != null) {
             try {
                 data = serializationService.readObjectFromJson(workflow.getJsonData(), IntegrationWorkflowData.class);
@@ -67,11 +67,10 @@ public class IntegrationViewAction extends AbstractIntegrationAction implements 
             }
         }
     }
-    
 
     @Action(value = "view")
     public String viewIntegration() throws IOException {
-        
+
         setJsonObject(data);
         return SUCCESS;
     }

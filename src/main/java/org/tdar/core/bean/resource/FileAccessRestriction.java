@@ -47,7 +47,7 @@ public enum FileAccessRestriction implements HasLabel, Localizable {
     }
 
     public int getEmbargoPeriod() {
-        switch(this) {
+        switch (this) {
             case EMBARGOED_FIVE_YEARS:
                 return 5 * ONE_YEAR;
             case EMBARGOED_ONE_YEAR:

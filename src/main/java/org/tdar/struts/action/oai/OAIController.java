@@ -559,13 +559,13 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             total = getTotalRecords();
             List<Long> ids = new ArrayList<>();
             for (Indexable i : getResults()) {
-                getLogger().debug("{}, {}", i ,((Viewable) i).isViewable());
+                getLogger().debug("{}, {}", i, ((Viewable) i).isViewable());
                 if ((i instanceof Viewable) && !((Viewable) i).isViewable()) {
                     continue;
                 }
                 ids.add(i.getId());
                 // create OAI metadata for the record
-                sets.add((ResourceCollection)i);
+                sets.add((ResourceCollection) i);
             }
             getLogger().info("ALL IDS: {}", ids);
         } catch (SearchPaginationException spe) {
@@ -577,7 +577,6 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         } catch (ParseException e) {
             getLogger().debug("an exception happened .. {} ", e);
         }
-
 
         // if any of the queries returned more than a page of search results, create a resumptionToken to allow
         // the client to continue harvesting from that point
@@ -596,8 +595,8 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 newResumptionToken.setUntilDate(effectiveUntil);
                 newResumptionToken.setMetadataPrefix(effectiveMetadataPrefix);
             }
-        }        
-         return SUCCESS_LIST_SETS;
+        }
+        return SUCCESS_LIST_SETS;
     }
 
     private String getRecordVerb() throws JAXBException, OAIException, ParserConfigurationException {

@@ -69,11 +69,10 @@ public class OntologyDao extends ResourceDao<Ontology> {
         query.setFirstResult(searchFilter.getStartRecord());
         query.setMaxResults(searchFilter.getRecordsPerPage());
         IntegrationOntologySearchResult result = new IntegrationOntologySearchResult();
-        for (Ontology ontology : (List<Ontology>)query.list()) {
+        for (Ontology ontology : (List<Ontology>) query.list()) {
             result.getOntologies().add(new OntologyProxy(ontology));
         }
         return result;
     }
-
 
 }

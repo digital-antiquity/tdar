@@ -165,7 +165,6 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         }
     }
 
-    
     @Test
     public void testUnauthorized() {
         gotoPage("/admin");

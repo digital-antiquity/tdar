@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("default")

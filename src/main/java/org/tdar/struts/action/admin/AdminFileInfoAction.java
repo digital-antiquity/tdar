@@ -34,7 +34,6 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
 public class AdminFileInfoAction extends AuthenticationAware.Base {
 
-
     private static final long serialVersionUID = 4550037457679814164L;
 
     @Autowired
@@ -43,13 +42,11 @@ public class AdminFileInfoAction extends AuthenticationAware.Base {
     @Autowired
     private transient StatisticService statisticService;
 
-
     private Map<String, Float> extensionStats;
     private List<InformationResourceFile> files;
     private Map<String, List<Number>> fileAverageStats;
     private Map<String, Long> fileStats;
     private Map<String, List<Number>> fileUploadedAverageStats;
-
 
     @Action("file-info")
     public String fileInfo() {
@@ -61,7 +58,6 @@ public class AdminFileInfoAction extends AuthenticationAware.Base {
         setFiles(informationResourceFileService.findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
         return SUCCESS;
     }
-
 
     public Map<String, Float> getExtensionStats() {
         return extensionStats;

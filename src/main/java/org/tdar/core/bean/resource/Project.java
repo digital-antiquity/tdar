@@ -69,6 +69,7 @@ public class Project extends Resource implements Sortable {
 
     /**
      * Instantiate a transient project instance with the specified ID and Title.
+     * 
      * @param id
      * @param title
      */

@@ -30,13 +30,13 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
         } catch (NumberFormatException nfx) {
             return false;
         }
-        
-        String lastChar = value.substring(value.length() -1);
+
+        String lastChar = value.substring(value.length() - 1);
         // handles cases like "1F" which Double.parseDouble handles but cannot be casted to double in postgres
         if (StringUtils.isAlpha(lastChar)) {
             return false;
         }
-        
+
         return true;
     }
 

@@ -82,7 +82,7 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
             getAccounts().add(new BillingAccount("Add an account"));
         }
 
-        //if user is currently not contributor, show them the ToS agreement
+        // if user is currently not contributor, show them the ToS agreement
         showContributorAgreement = !getAuthenticatedUser().isContributor();
     }
 

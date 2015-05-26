@@ -76,7 +76,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient WorkflowContext workflowContext;
 
-
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     // cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "information_resource_id", nullable = false, updatable = false)

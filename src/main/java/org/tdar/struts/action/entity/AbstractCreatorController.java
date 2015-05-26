@@ -123,7 +123,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     public Creator getCreator() {
         return getPersistable();
     }
-    
+
     public String getReturnUrl() {
         return returnUrl;
     }

@@ -36,15 +36,15 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
     public void testCreatorEquality() {
         Person person = new Person();
         person.setId(10l);
-        assertNotEquals(person,null);
+        assertNotEquals(person, null);
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
         assertNotEquals(person, llb);
-        assertEquals(person, (Creator)person);
+        assertEquals(person, (Creator) person);
         Institution institution = new Institution();
         institution.setId(10l);
         assertNotEquals(person, institution);
     }
-    
+
     @Test
     public void testSkeletonPersonRetentionInSet() {
         HashSet<Person> personSet = new HashSet<Person>();
@@ -132,7 +132,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             // person equality based on db identity. so the two person records should not be equal
             TdarUser person = new TdarUser();
             person.setEmail(persistedPerson.getEmail());
-//            person.setRegistered(persistedPerson.isRegistered());
+            // person.setRegistered(persistedPerson.isRegistered());
             person.setContributor(true);
             person.setLastName(persistedPerson.getLastName());
             person.setFirstName(persistedPerson.getFirstName());

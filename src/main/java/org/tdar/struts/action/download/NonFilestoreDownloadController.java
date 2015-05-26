@@ -38,16 +38,16 @@ import com.opensymphony.xwork2.Preparable;
  *
  */
 @Results(value = {
-            @Result(name = TdarActionSupport.SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "${contentType}",
-                            "inputName", "stream",
-                            "contentDisposition", "filename=\"${filename}\""
-                    // ,"contentLength", "${downloadTransferObject.contentLength}"
-                    }
-            ),
-            @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
-            @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })})
+        @Result(name = TdarActionSupport.SUCCESS, type = "stream",
+                params = {
+                        "contentType", "${contentType}",
+                        "inputName", "stream",
+                        "contentDisposition", "filename=\"${filename}\""
+                // ,"contentLength", "${downloadTransferObject.contentLength}"
+                }
+        ),
+        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" }) })
 public class NonFilestoreDownloadController extends TdarActionSupport implements Preparable, Serializable {
 
     private static final long serialVersionUID = 520143306023106607L;
@@ -67,7 +67,7 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
 
     @Action("/creator/{versionString}/{id}/logo")
     public String creator() throws IOException {
-        filename = "logo"+version.toPath()+".jpg";
+        filename = "logo" + version.toPath() + ".jpg";
         type = ObjectType.CREATOR;
         FileStoreFile proxy = new FileStoreFile(type, version, getId(), getFilename());
         File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
@@ -82,7 +82,7 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
 
     @Action("/collection/{versionString}/{id}/logo")
     public String collection() throws IOException {
-        filename = "logo"+version.toPath()+".jpg";
+        filename = "logo" + version.toPath() + ".jpg";
         type = ObjectType.COLLECTION;
         FileStoreFile proxy = new FileStoreFile(type, version, getId(), getFilename());
         File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);

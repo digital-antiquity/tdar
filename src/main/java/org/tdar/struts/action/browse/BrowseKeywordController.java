@@ -106,7 +106,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
-        
+
         if (PersistableUtils.isNotNullOrTransient(keyword) && getKeyword().isDuplicate()) {
             keyword = genericKeywordService.findAuthority(keyword);
             setRedirectBadSlug(true);
@@ -211,7 +211,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public int getDefaultRecordsPerPage() {
         return DEFAULT_RESULT_SIZE;
     }
-    
+
     @Override
     public Addressable getPersistable() {
         return keyword;

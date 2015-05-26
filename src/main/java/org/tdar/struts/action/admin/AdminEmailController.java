@@ -55,13 +55,13 @@ public class AdminEmailController extends AuthenticationAware.Base implements Pr
                 }
             }
         });
-        
+
         for (Email email : emails) {
             if (email.getStatus().isInReview()) {
                 emailsToReview.add(email);
             }
         }
-        
+
         return SUCCESS;
     }
 

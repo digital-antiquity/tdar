@@ -102,7 +102,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     // true if this ontology node or its children doesn't have any mapped data
     private transient boolean mappedDataValues;
     private transient boolean parent;
-    private transient Map<DataTableColumn,Boolean> columnHasValueMap = new HashMap<>();
+    private transient Map<DataTableColumn, Boolean> columnHasValueMap = new HashMap<>();
 
     private transient OntologyNode parentNode;
     private transient Set<OntologyNode> synonymNodes = new HashSet<>();
@@ -145,7 +145,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.intervalEnd = end;
     }
 
-    @JsonView({JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class})
+    @JsonView({ JsonIntegrationDetailsFilter.class, JsonIdNameFilter.class })
     public String getIri() {
         return iri;
     }
@@ -343,11 +343,11 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.mappedDataValues = mappedDataValues;
     }
 
-    public Map<DataTableColumn,Boolean> getColumnHasValueMap() {
+    public Map<DataTableColumn, Boolean> getColumnHasValueMap() {
         return columnHasValueMap;
     }
 
-    public void setColumnHasValueMap(Map<DataTableColumn,Boolean> columnHasValueMap) {
+    public void setColumnHasValueMap(Map<DataTableColumn, Boolean> columnHasValueMap) {
         this.columnHasValueMap = columnHasValueMap;
     }
 

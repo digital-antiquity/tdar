@@ -26,7 +26,7 @@ public class CollectionDeleteAction extends AbstractDeleteAction<ResourceCollect
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     @Override
     protected ResourceCollection loadPersistable() {
         ResourceCollection collection = resourceCollectionService.find(getId());

@@ -273,7 +273,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
         return getDao().findOntologies(searchFilter);
     }

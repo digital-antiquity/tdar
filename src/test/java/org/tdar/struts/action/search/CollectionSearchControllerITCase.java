@@ -22,7 +22,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
 
     @Autowired
     CollectionSearchAction controller;
-    
+
     @Test
     @Rollback(true)
     public void testFindAllSearchPhrase() {

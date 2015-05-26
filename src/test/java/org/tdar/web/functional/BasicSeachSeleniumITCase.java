@@ -17,7 +17,6 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
 
     private static final String SEARCH_RESULTS = "/search/results";
 
-
     @Test
     public void testBrowse() {
         gotoPage("/browse/explore");

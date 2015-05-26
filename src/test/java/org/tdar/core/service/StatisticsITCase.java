@@ -42,7 +42,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     private DailyStatisticsUpdate dailyTask;
     @Autowired
     private ResourceService resourceService;
-    
+
     @Test
     @Rollback(true)
     public void testBasicStats() {
@@ -62,11 +62,11 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         genericService.synchronize();
         count = datasetService.getDao().getAccessCount(document);
         assertEquals(2l, count.longValue());
-        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, DateTime.now().minusDays(5).toDate(), DateTime.now().toDate(), 1L);
+        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, DateTime.now().minusDays(5).toDate(),
+                DateTime.now().toDate(), 1L);
         assertEquals(1, aggregateUsageStats.size());
-        
-    }
 
+    }
 
     @SuppressWarnings("deprecation")
     @Test
@@ -91,7 +91,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         processingTask.execute();
         genericService.synchronize();
 
-//        flush();
+        // flush();
         List<AggregateStatistic> allStats = genericService.findAll(AggregateStatistic.class);
         Map<AggregateStatistic.StatisticType, AggregateStatistic> map = new HashMap<AggregateStatistic.StatisticType, AggregateStatistic>();
         for (AggregateStatistic stat : allStats) {

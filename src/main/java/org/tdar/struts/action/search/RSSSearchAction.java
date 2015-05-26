@@ -38,7 +38,6 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
     private Long contentLength;
     private InputStream inputStream;
 
-
     @Action(value = "rss", results = { @Result(name = SUCCESS, type = "stream", params = {
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
             "inputStream", "contentType", "application/rss+xml",
@@ -68,6 +67,7 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
         }
         return SUCCESS;
     }
+
     public GeoRssMode getGeoMode() {
         return geoMode;
     }

@@ -55,7 +55,7 @@ public class PersonSearchControllerITCase extends AbstractControllerITCase {
 
     public List<Institution> setupInstitutionSearch() {
         ArrayList<Institution> insts = new ArrayList<>();
-        String[] names = new String[] {"US Air Force", "Vandenberg Air Force Base", "Air Force Base"};
+        String[] names = new String[] { "US Air Force", "Vandenberg Air Force Base", "Air Force Base" };
         for (String name : names) {
             Institution institution = new Institution(name);
             updateAndIndex(institution);
@@ -92,7 +92,6 @@ public class PersonSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(CollectionUtils.containsAll(controller.getResults(), insts));
     }
 
-
     @Override
     protected void reindex() {
         evictCache();
@@ -109,7 +108,7 @@ public class PersonSearchControllerITCase extends AbstractControllerITCase {
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());
     }
-    
+
     private void updateAndIndex(Indexable doc) {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);

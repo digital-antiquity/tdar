@@ -24,7 +24,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());
     String documentViewUrl;
-    
+
     @Before
     public void createDocument() {
         loginAdmin();
@@ -37,21 +37,21 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         uploadFileAsync(FileAccessRestriction.PUBLIC, new File(TEST_DOCUMENT));
         submitForm();
         documentViewUrl = getCurrentUrl();
-        //if something went wrong we'd probably be on /document/save.action
+        // if something went wrong we'd probably be on /document/save.action
         assertThat(documentViewUrl, containsString("/document/"));
-        assertThat(documentViewUrl, not( containsString("/document/save")));
+        assertThat(documentViewUrl, not(containsString("/document/save")));
         logout();
     }
 
     @Test
     public void testVisitorDownload() throws InterruptedException {
-        //start at the cart page, and click one of the suggested packages
+        // start at the cart page, and click one of the suggested packages
         logout();
         gotoPage(documentViewUrl);
         find(".download-file").get(0).click();
 
-        //now we are on the review form (w/ registration/login forms)
-        //fill out required user registration fields and submit form
+        // now we are on the review form (w/ registration/login forms)
+        // fill out required user registration fields and submit form
         assertThat(getCurrentUrl(), containsString("download"));
         UserRegistration reg = createUserRegistration("bob");
         reg.setConfirmEmail(reg.getConfirmEmail().toUpperCase());
@@ -62,7 +62,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         buttons.first().click();
         Thread.sleep(1000);
 
-        //now we are on the "choose billing account" page. just click through to next page
+        // now we are on the "choose billing account" page. just click through to next page
         waitFor(titleContains("Download: "));
         dismissModal();
         assertThat(getCurrentUrl(), containsString(CONFIRM));
@@ -70,20 +70,20 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Test
     public void testLoginDownload() {
-        //go to document-view page (while logged-out) and  click on one of the file download links
+        // go to document-view page (while logged-out) and click on one of the file download links
         logout();
         gotoPage(documentViewUrl);
         find(".download-file").first().click();
 
-        //we should now be on the download authentication page.
+        // we should now be on the download authentication page.
         assertThat(getCurrentUrl(), containsString("download"));
 
-        //fill out the "login" form and submit
+        // fill out the "login" form and submit
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
         submitForm("#loginForm [type=submit]");
 
-        //At this point we need to hurry before the autodownload starts (in 4 seconds or so).  Confirm we're on the right page and then bail out!
+        // At this point we need to hurry before the autodownload starts (in 4 seconds or so). Confirm we're on the right page and then bail out!
         waitFor(titleContains("Download: "));
         assertThat(getCurrentUrl(), containsString(CONFIRM));
     }

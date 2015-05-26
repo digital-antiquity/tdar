@@ -56,7 +56,6 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
 
-    
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();

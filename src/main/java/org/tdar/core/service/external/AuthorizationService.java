@@ -234,9 +234,10 @@ public class AuthorizationService implements Accessible {
         return authorizedUserDao.isAllowedTo(person, resource, basePermission);
     }
 
-    
     /**
-     * Avoid using in general, but this allows us to ask whether a User has the "inherited" rights to do something as opposed to being granted direct rights to it.
+     * Avoid using in general, but this allows us to ask whether a User has the "inherited" rights to do something as opposed to being granted direct rights to
+     * it.
+     * 
      * @param person
      * @param permission
      * @param ids
@@ -478,7 +479,7 @@ public class AuthorizationService implements Accessible {
         if (collection.isShared() && !collection.isHidden()) {
             return true;
         }
-        
+
         if (can(InternalTdarRights.VIEW_ANYTHING, person)) {
             logger.trace("\tuser is special': {}", person);
             return true;
@@ -611,7 +612,7 @@ public class AuthorizationService implements Accessible {
      * @param informationResourceFileVersion
      * @param apiKey
      * @param request
-     * @return  true, if download authorized.
+     * @return true, if download authorized.
      */
     @Transactional(readOnly = true)
     public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, HttpServletRequest request) {
@@ -634,8 +635,8 @@ public class AuthorizationService implements Accessible {
     @Transactional(readOnly = true)
     public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
         return (isAdministrator(authenticatedUser) ||
-                PersistableUtils.isNullOrTransient(workflow) ||
-                PersistableUtils.isNotNullOrTransient(workflow) && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser));
+                PersistableUtils.isNullOrTransient(workflow) || PersistableUtils.isNotNullOrTransient(workflow)
+                && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser));
     }
 
     @Transactional(readOnly = true)

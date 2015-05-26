@@ -348,7 +348,7 @@ public class Invoice extends Base implements Updatable {
         }
         return false;
     }
-    
+
     public void setTransactionStatus(TransactionStatus transactionStatus) {
         this.transactionStatus = transactionStatus;
     }

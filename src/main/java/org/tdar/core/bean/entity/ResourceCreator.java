@@ -72,7 +72,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Enumerated(EnumType.STRING)
     @Field
-    @BulkImportField(key="CREATOR_ROLE", order = 200)
+    @BulkImportField(key = "CREATOR_ROLE", order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private ResourceCreatorRole role;

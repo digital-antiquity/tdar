@@ -24,7 +24,6 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
      */
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-
     public static final String SEP = "([\\s\\,\\:\\-]0*)";
     public static final String SEP_OPT = SEP + "?";
     public static final String PATTERN_SMITHSONIAN_ALPHA = "([A-Z][A-Z]\\s)?(([A-Z][A-Z])(" + SEP_OPT + "([A-Z]{1,3}))?" + SEP_OPT + "(\\d+))";
@@ -45,7 +44,7 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
             return replaceFilter;
         } catch (IOException e) {
             logger.warn("exception in sitecode tokenization", e);
-//            throw new TdarRecoverableRuntimeException();
+            // throw new TdarRecoverableRuntimeException();
             return null;
         }
     }

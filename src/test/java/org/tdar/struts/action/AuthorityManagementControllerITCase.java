@@ -30,7 +30,6 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Autowired
     private GenericService genericService;
 
-
     @Before
     public void setup() {
         controller = generateNewInitializedController(AuthorityManagementController.class);
@@ -102,7 +101,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         evictCache();
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

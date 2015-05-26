@@ -40,7 +40,6 @@ public class GenericITCase extends AbstractIntegrationTestCase {
         assertEquals(INVESTIATION_TYPE_COUNT, Integer.valueOf(allInvestigationTypes.size()));
     }
 
-    
     @Test
     public void testCache() {
         long id = Long.parseLong(TestConstants.TEST_DOCUMENT_ID);

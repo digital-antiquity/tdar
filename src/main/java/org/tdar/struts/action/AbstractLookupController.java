@@ -455,7 +455,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         PersonQueryPart pqp = new PersonQueryPart();
         pqp.add(incomingPerson);
         q.append(pqp);
-        getLogger().debug("{}",pqp.toString());
+        getLogger().debug("{}", pqp.toString());
         q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
         if (valid || (getMinLookupLength() == 0)) {
             if (StringUtils.isNotBlank(registered)) {

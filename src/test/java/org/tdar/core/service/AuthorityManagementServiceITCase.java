@@ -150,8 +150,8 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         Document d1 = createAndSaveNewInformationResource(Document.class);
         Document d2 = createAndSaveNewInformationResource(Document.class);
 
-//        d1.setSubmitter(dupe1);
-//        d2.setUpdatedBy(dupe2);
+        // d1.setSubmitter(dupe1);
+        // d2.setUpdatedBy(dupe2);
         resourceService.save(d1);
         resourceService.save(d2);
 
@@ -176,9 +176,9 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
             case DELETE_DUPLICATES:
                 Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DELETED, entityService.find(dupe1Id).getStatus());
                 Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DELETED, entityService.find(dupe2Id).getStatus());
-//                Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
-//                Assert.assertEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
-//                Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
+                // Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
+                // Assert.assertEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
+                // Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
                 Assert.assertEquals("authority should have replaced dupe", authority, rc.getCreator());
                 break;
             case MARK_DUPS_AND_CONSOLDIATE:
@@ -186,17 +186,17 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
                 Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
                 Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
                 Assert.assertEquals("authority should have replaced dupe", authority, rc.getCreator());
-//                Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
-//                Assert.assertEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
-//                Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
+                // Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
+                // Assert.assertEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
+                // Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
                 break;
             case MARK_DUPS_ONLY:
                 Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
                 Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
                 Assert.assertNotEquals("authority should have replaced dupe", authority, rc.getCreator());
-//                Assert.assertNotEquals("authority should have replaced dupe", authority, d1.getSubmitter());
-//                Assert.assertNotEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
-//                Assert.assertNotEquals("authority should have replaced dupe", authority, user1.getUser());
+                // Assert.assertNotEquals("authority should have replaced dupe", authority, d1.getSubmitter());
+                // Assert.assertNotEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
+                // Assert.assertNotEquals("authority should have replaced dupe", authority, user1.getUser());
                 break;
         }
         // todo: make sure that the authority replaced all the dupes of the former referrers

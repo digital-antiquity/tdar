@@ -8,21 +8,31 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.openqa.selenium.By.*;
+import static org.openqa.selenium.By.className;
+import static org.openqa.selenium.By.cssSelector;
+import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.By.linkText;
+import static org.openqa.selenium.By.name;
+import static org.openqa.selenium.By.partialLinkText;
+import static org.openqa.selenium.By.tagName;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
-import static org.tdar.web.functional.util.TdarExpectedConditions.*;
+import static org.tdar.web.functional.util.TdarExpectedConditions.bootstrapModalGone;
+import static org.tdar.web.functional.util.TdarExpectedConditions.locatedElementCountEquals;
+import static org.tdar.web.functional.util.TdarExpectedConditions.locatedElementCountGreaterThan;
+import static org.tdar.web.functional.util.TdarExpectedConditions.textToBePresentInElementsLocated;
 
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.tdar.web.functional.util.*;
+import org.tdar.web.functional.util.ByLabelText;
+import org.tdar.web.functional.util.WebElementSelection;
 
 public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
@@ -46,11 +56,11 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(linkText("Start Now")).click();
         Assert.assertTrue(getCurrentUrl().contains("/workspace/integrate"));
     }
-    
+
     @Test
     public void testInvalidIntegrate() throws InterruptedException {
         // add three datasets that don't work, remove one, assert that we get back to an integratable state
-        
+
         setFieldByName("integration.title", TEST_INTEGRATION);
         // assert save enabled
         openDatasetsModal();
@@ -68,21 +78,20 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find(className("btn-primary")).click();
         waitFor(bootstrapModalGone());
 
-        //wait for modal to disappear and dataset list to populate
+        // wait for modal to disappear and dataset list to populate
         waitFor(locatedElementCountEquals(className("sharedOntologies"), 0));
         waitFor(locatedElementCountGreaterThan(cssSelector("#selDatasets option"), 1));
 
         removeDatasetByPartialName("Knowth");
         assertThat(find(".sharedOntologies").toList(), hasSize(2));
-        assertThat(getText(), not( containsString("Knowth")));
+        assertThat(getText(), not(containsString("Knowth")));
         waitFor(elementToBeClickable(linkText("Add Integration Column")));
     }
-
 
     @Test
     public void testValidIntegrate() throws InterruptedException {
         // add two datasets that work, assert that we get back to an integrate-able state
-        
+
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
@@ -113,7 +122,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertTrue("Coding error should be visible for alexandria", find(id("cbx-31710-56490")).isDisplayed());
         assertTrue(ExpectedConditions.elementSelectionStateToBe(sheep, true).apply(getDriver()).booleanValue());
 
-        //click the integrate button and wait for results
+        // click the integrate button and wait for results
         find(id("btnIntegrate")).click();
         waitFor(visibilityOfElementLocated(id("divResultContainer")));
         takeScreenshot();
@@ -121,14 +130,14 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         String pivotTableText = find("#divResultContainer tbody").first().getText();
         find(linkText("Preview")).click();
 
-        //Capture the contents of the preview table body.
+        // Capture the contents of the preview table body.
         String previewTableText = find("#divResultContainer tbody").last().getText();
         logger.debug("previewTableText: {}", previewTableText);
         logger.debug("pivotTableText: {}", pivotTableText);
 
         // test ontology present
-        //todo:  jtd: I don't think we show the names of the ontologies in the new integration preview (are we supposed to?). commenting out for now.
-        //assertTrue(pivotTableText.contains("Fauna Taxon"));
+        // todo: jtd: I don't think we show the names of the ontologies in the new integration preview (are we supposed to?). commenting out for now.
+        // assertTrue(pivotTableText.contains("Fauna Taxon"));
 
         // test nodes present
         assertThat(pivotTableText, containsString("Aves"));
@@ -143,7 +152,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     @Test
     public void testSaveAndReload() throws InterruptedException {
         // add two datasets that work, assert that we get back to an integratable state
-        
+
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
@@ -175,13 +184,13 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertThat(find(sheep).isSelected(), is(true));
         waitFor(saveButton).click();
         waitFor(textToBePresentInElementLocated(id("divStatusMessage"), "success"));
-        //waitFor(4);
+        // waitFor(4);
         gotoPage("/workspace/list");
         logger.debug(getText());
         clearPageCache();
         find(partialLinkText(TEST_INTEGRATION)).first().click();
         waitForPageload();
-        
+
         waitFor(partialLinkText("Fauna Taxon Ontology")).click();
         waitFor(".nodechild1");
         logger.trace(getText());
@@ -196,7 +205,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
                 containsString("element"),
                 containsString("spitalfield"),
                 containsString("alexandria")
-        ));
+                ));
 
         assertThat(find(aves).isSelected(), is(true));
         assertThat(find(rabbit).isSelected(), is(true));
@@ -206,7 +215,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     @Test
     public void testIntegrateRetainCheckboxOnClearAll() throws InterruptedException {
         // add two datasets that work, assert that we get back to an integratable state
-        
+
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
@@ -219,7 +228,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // wait for tab contents is visible
         waitFor(id("tab0")).isDisplayed();
 
-        //click on aves, rabbit, and sheep in the 'Fauna Taxon Ontology' integration column
+        // click on aves, rabbit, and sheep in the 'Fauna Taxon Ontology' integration column
         find(aves).click();
         find(rabbit).click();
         find(sheep).click();
@@ -240,7 +249,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         find(id("btnModalAdd")).click();
 
-        //wait for the browser to render the checkboxes (as soon as 'aves' shows up, the rest should be found as well)
+        // wait for the browser to render the checkboxes (as soon as 'aves' shows up, the rest should be found as well)
         waitFor(aves);
 
         // make sure the checkboxes are still there
@@ -282,26 +291,26 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     /**
      * Enter specified text into "add datasets..." popup's search filter, and wait for element with specified
      * ID to appear in results.
+     * 
      * @param text
      * @param cbid
      */
     private void findAndClickDataset(String text, String cbid) {
         WebElementSelection currentResults = find("#modalResults tbody tr");
         find(name("searchFilter.title")).val(text);
-        if(!currentResults.isEmpty()) {
+        if (!currentResults.isEmpty()) {
             waitFor(ExpectedConditions.stalenessOf(currentResults.last()));
         }
         // wait for response ... would be nice to not use this, but we could already have the checkbox, and have issues when the ajax cycles back
-        //fixme: this wait seems to be necessary for some reason
-//        waitFor(2);
-        //wait until the one of the rows contains the specified text in the 'title' column
+        // fixme: this wait seems to be necessary for some reason
+        // waitFor(2);
+        // wait until the one of the rows contains the specified text in the 'title' column
         waitFor(textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
         By checkbox = id(cbid);
         waitFor(elementToBeClickable(checkbox));
         find(checkbox).click();
     }
-
 
     private void openDatasetsModal() throws InterruptedException {
         // wait for modal to load

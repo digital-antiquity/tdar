@@ -103,7 +103,6 @@ public class AdminController extends AuthenticationAware.Base {
     private Map<Date, Map<StatisticType, Long>> historicalCollectionStats;
     private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
 
-
     private List<TdarUser> recentLogins;
 
     @Actions({
@@ -305,7 +304,6 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalCollectionStats = historicalCollectionStats;
     }
 
-
     public Map<Date, Map<StatisticType, Long>> getHistoricalRepositorySizes() {
         return historicalRepositorySizes;
     }
@@ -313,7 +311,6 @@ public class AdminController extends AuthenticationAware.Base {
     public void setHistoricalRepositorySizes(Map<Date, Map<StatisticType, Long>> historicalRepositorySizes) {
         this.historicalRepositorySizes = historicalRepositorySizes;
     }
-
 
     public Map<Date, Map<StatisticType, Long>> getHistoricalResourceStatsWithFiles() {
         return historicalResourceStatsWithFiles;

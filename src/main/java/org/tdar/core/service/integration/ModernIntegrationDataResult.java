@@ -73,12 +73,12 @@ public class ModernIntegrationDataResult implements Serializable {
             List<Object> cols = new ArrayList<Object>();
             for (OntologyNode node : entrySet.getKey()) {
                 if (node != null) {
-                cols.add(node.getDisplayName());
+                    cols.add(node.getDisplayName());
                 } else {
                     cols.add("");
                 }
             }
-            
+
             HashMap<Long, IntContainer> value = entrySet.getValue();
             for (DataTable table : integrationContext.getDataTables()) {
                 Long tableId = table.getId();

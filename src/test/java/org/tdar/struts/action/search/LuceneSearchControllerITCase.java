@@ -79,7 +79,6 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
     }
 
-    
     @Test
     @Rollback(true)
     public void testCreatorOwnerQueryPart() throws ParseException {
@@ -102,7 +101,6 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         genericService.saveOrUpdate(contribDocument);
         searchIndexService.index(contribDocument);
 
-        
         Document ownerDocument = new Document();
         ownerDocument.setTitle("owner");
         ownerDocument.setDescription(REASON);
@@ -124,7 +122,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         result.setSortField(SortOption.RELEVANCE);
         searchService.handleSearch(rqb, result, MessageHelper.getInstance());
-        for (Resource r : (List<Resource>)(List<?>)result.getResults()) {
+        for (Resource r : (List<Resource>) (List<?>) result.getResults()) {
             List<Long> authorIds = new ArrayList<Long>();
             for (ResourceCreator cr : r.getContentOwners()) {
                 authorIds.add(cr.getCreator().getId());
@@ -136,7 +134,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         assertTrue(result.getResults().contains(authorDocument));
         assertTrue(result.getResults().contains(ownerDocument));
     }
-    
+
     @Test
     @Rollback(true)
     public void testResourceTypeSearchPhrase() {

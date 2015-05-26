@@ -57,7 +57,8 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            AuthenticationResult result = authenticationService.authenticatePerson(getDownloadUserLogin(), getServletRequest(), getServletResponse(), getSessionData());
+            AuthenticationResult result = authenticationService.authenticatePerson(getDownloadUserLogin(), getServletRequest(), getServletResponse(),
+                    getSessionData());
             status = result.getStatus();
         } catch (Exception e) {
             addActionError(e.getMessage());

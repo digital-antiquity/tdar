@@ -197,7 +197,7 @@ public class Dataset extends InformationResource {
         }
         return false;
     }
-    
+
     @Transient
     public boolean hasCodingColumns() {
         if (CollectionUtils.isEmpty(getDataTables())) {

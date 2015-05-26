@@ -117,5 +117,4 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         return htmlPage.getElementById("resource-" + confidentialFile);
     }
 
-
 }

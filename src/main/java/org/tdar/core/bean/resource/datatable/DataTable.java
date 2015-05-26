@@ -298,7 +298,7 @@ public class DataTable extends Persistable.Base {
         this.displayName = displayName;
     }
 
-    @JsonView(value={JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class})
+    @JsonView(value = { JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class })
     public String getDisplayName() {
         return displayName;
     }
@@ -322,5 +322,5 @@ public class DataTable extends Persistable.Base {
         }
         return columns;
     }
-    
+
 }

@@ -86,7 +86,8 @@ public class WorkflowContextService {
                         break;
                     }
 
-                    // This should only be done once; if it's a composite geospatial resource, it might be dangerous to do twice as you're merging and reconcilling with yourself over yourself
+                    // This should only be done once; if it's a composite geospatial resource, it might be dangerous to do twice as you're merging and
+                    // reconcilling with yourself over yourself
                     if (count == 1) {
                         genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
                         logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());

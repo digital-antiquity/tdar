@@ -238,7 +238,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 }
                 setAsyncErrors(sb.toString());
             }
-            
+
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);

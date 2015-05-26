@@ -98,7 +98,8 @@ public class SerializationService {
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
     @SuppressWarnings("unchecked")
-    private static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class, FileProxies.class, FileProxy.class };
+    private static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class,
+            FileProxies.class, FileProxy.class };
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -289,7 +290,7 @@ public class SerializationService {
     public Object parseXml(Reader reader) throws Exception {
         return parseXml(null, reader);
     }
-    
+
     public Object parseXml(Class<?> c, Reader reader) throws Exception {
         JAXBContext jc = JAXBContext.newInstance(rootClasses);
         if (c != null) {

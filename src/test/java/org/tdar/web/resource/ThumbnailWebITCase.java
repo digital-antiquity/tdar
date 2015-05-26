@@ -74,7 +74,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace("source of view page: {}", getPageCode());
         assertTextPresent(RESTRICTED_ACCESS_TEXT);
         String viewPage = path;
-        path = path.substring(0,path.lastIndexOf("/"));
+        path = path.substring(0, path.lastIndexOf("/"));
         String editPage = path + "/edit";
         logger.debug("view:" + viewPage);
         logger.debug("edit:" + editPage);
@@ -182,7 +182,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     public void assertDeniedAccess(List<Long> irFileIds, List<Long> irFileVersionIds) {
-        for (int i=0;i < irFileIds.size(); i++) {
+        for (int i = 0; i < irFileIds.size(); i++) {
             String pth = getBaseUrl() + "/filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
             int status = gotoPageWithoutErrorCheck(pth);
             logger.info(pth + ":" + status + " -" + getCurrentUrlPath());
@@ -191,7 +191,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     public void assertLoginPrompt(List<Long> irFileIds, List<Long> irFileVersionIds) {
-        for (int i=0;i < irFileIds.size(); i++) {
+        for (int i = 0; i < irFileIds.size(); i++) {
             String pth = getBaseUrl() + "/filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
             int status = gotoPageWithoutErrorCheck(pth);
             logger.info(pth + ":" + status + " -" + getCurrentUrlPath());
@@ -200,7 +200,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     public void assertAllowedToViewIRVersionIds(List<Long> irFileIds, List<Long> irFileVersionIds) {
-        for (int i=0;i < irFileIds.size(); i++) {
+        for (int i = 0; i < irFileIds.size(); i++) {
             String pth = getBaseUrl() + "/filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
             int status = gotoPageWithoutErrorCheck(pth);
             logger.info(pth + ":" + status + " -" + getCurrentUrlPath());

@@ -80,6 +80,7 @@ public class TdarConfiguration {
         logger.info("| Storage:");
         logger.info("| FileStoreLocation: {}", getFileStoreLocation());
         logger.info("| PersonalFileStoreLocation: {}", getPersonalFileStoreLocation());
+        logger.info("| HostedFileStoreLocation: {}", getHostedFileStoreLocation());
         logger.info("| ");
         logger.info("| RunScheduledProcesses: {}", shouldRunPeriodicEvents());
         logger.info("| PayPerIngest: {}", isPayPerIngestEnabled());
@@ -258,6 +259,28 @@ public class TdarConfiguration {
         }
     }
 
+    // FIXME: change to use + encorpearate sitemap (TDAR-4703)
+    private void initFilestorePath(String location) {
+        if (personalFilestorePathInitialized) {
+            return;
+        }
+        personalFilestorePathInitialized = true;
+        File personalFilestoreHome = new File(location);
+        String msg = null;
+        try {
+            logger.info("initializing personal filestore at {}", location);
+            if (!personalFilestoreHome.exists()) {
+                boolean pathExists = personalFilestoreHome.mkdirs();
+                if (!pathExists) {
+                    msg = "Could not create personal filestore at " + location;
+                }
+            }
+        } catch (SecurityException ex) {
+            logger.error(SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY, ex);
+            throw new IllegalStateException(msg);
+        }
+    }
+
     public static TdarConfiguration getInstance() {
         return INSTANCE;
     }
@@ -316,6 +339,10 @@ public class TdarConfiguration {
 
     public String getPersonalFileStoreLocation() {
         return assistant.getStringProperty("personal.file.store.location", "/home/tdar/personal-filestore");
+    }
+
+    public String getHostedFileStoreLocation() {
+        return assistant.getStringProperty("hosted.file.store.location", "/home/tdar/hosted-filestore");
     }
 
     public String getSmtpHost() {

@@ -139,7 +139,8 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             }
             logger.debug("unauthorized access to {}/{} from {} with required group {}", action.getClass().getSimpleName(), methodName, user, group);
             // NOTE, for whatever reason, Struts is not allowing us to swap out the body of the message when we change the http status code
-            // thus we need to use the redirect here to get a tDAR error message.  This seems to be an issue specific to the FreemarkerHttpResult and this interceptor
+            // thus we need to use the redirect here to get a tDAR error message. This seems to be an issue specific to the FreemarkerHttpResult and this
+            // interceptor
             // probably because the action has not been invoked, so we redirect
             return TdarActionSupport.UNAUTHORIZED_REDIRECT;
         }
@@ -156,10 +157,10 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         if (ArrayUtils.isEmpty(token_)) {
             return false;
         }
-        String token = (String)token_[0];
+        String token = (String) token_[0];
         if (StringUtils.isNotBlank(token)) {
             logger.debug("checking valid token: {}", token);
-            boolean result = authenticationService.checkToken((String)token, getSessionData(), ServletActionContext.getRequest()).getType().isValid();
+            boolean result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest()).getType().isValid();
             logger.debug("token authentication result: {}", result);
             return result;
         }
@@ -170,7 +171,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         HttpServletRequest request = ServletActionContext.getRequest();
         ActionProxy proxy = invocation.getProxy();
         String returnUrl = String.format("%s/%s", proxy.getNamespace(), proxy.getActionName());
-        if (StringUtils.isBlank(proxy.getNamespace() )) {
+        if (StringUtils.isBlank(proxy.getNamespace())) {
             returnUrl = proxy.getActionName();
         }
         logger.trace(returnUrl);

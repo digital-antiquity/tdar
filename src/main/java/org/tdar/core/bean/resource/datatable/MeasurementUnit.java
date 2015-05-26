@@ -26,7 +26,7 @@ public enum MeasurementUnit implements HasLabel, Localizable {
     CUBIC_CM("cubic centimeter", "cc"),
     LITRE("liter", "l"),
     PARTS_PER_MILLION("parts per million", "ppm"),
-    YEAR("year","year");
+    YEAR("year", "year");
 
     private String shortName;
     private String fullName;

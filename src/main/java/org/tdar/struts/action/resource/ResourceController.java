@@ -47,14 +47,14 @@ public class ResourceController extends AuthenticationAware.Base {
     /**
      * Passthrough action, just loads add.ftl via conventions plugin.
      */
-    @Actions(value={
+    @Actions(value = {
             @Action(value = "add",
                     results = {
                             @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
                             @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
                             @Result(name = SUCCESS, location = "add.ftl")
                     }),
-                    @Action(value = "add/{projectId}",
+            @Action(value = "add/{projectId}",
                     results = {
                             @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
                             @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
@@ -156,4 +156,5 @@ public class ResourceController extends AuthenticationAware.Base {
     public void setResource(Resource resource) {
         this.resource = resource;
     }
+
 }

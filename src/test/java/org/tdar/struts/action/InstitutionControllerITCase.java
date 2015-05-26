@@ -69,7 +69,6 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.prepare();
         assertTrue(controller.isEditable());
 
-        
         // authorized
         controller = generateNewInitializedController(InstitutionController.class, getAdminUser());
         controller.setId(test.getId());

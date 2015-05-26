@@ -23,7 +23,6 @@ public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
         add(creator);
     }
 
-
     @Override
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(getOperator());

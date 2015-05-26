@@ -58,7 +58,6 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     public final static String TAB_ONTOLOGY_FILE = "/ontology/tabOntologyFile.txt";
     public final static String UPDATED_TAB_ONTOLOGY_FILE = "/ontology/updatedTabOntologyFile.txt";
 
-
     @Test
     @Rollback
     public void testControllerLoadsTabText() throws Exception {
@@ -112,7 +111,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertEquals("Navicular (Central) & Cuboid", node.getDisplayName());
         logger.debug("synonyms: {}", node.getSynonyms());
         assertTrue(node.getSynonyms().contains("4th Tarsal2"));
-//        assertEquals("4th Tarsal2", node.getSynonyms().iterator().next());
+        // assertEquals("4th Tarsal2", node.getSynonyms().iterator().next());
         assertEquals("<Fish Element Additional>", map.get("_Fish_Element_Additional_").getDisplayName());
         assertEquals("Clavicle % Clavicle.clavicle", map.get("Clavicle___Clavicle.clavicle").getDisplayName());
     }
@@ -355,7 +354,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
                     Set<String> nodeSynonyms = ontologyNodes.get(i).getSynonyms();
                     logger.debug("node synonyms for " + ontologyNodes.get(i).getDisplayName() + ": " + nodeSynonyms);
                     // should be one fewer synonyms ... the one that matches our actual term name
-                    assertEquals(nodeSynonyms.size() -1 , matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX).length);
+                    assertEquals(nodeSynonyms.size() - 1, matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX).length);
                     for (String synonym : matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX)) {
                         synonym = synonym.trim();
                         synonyms.add(synonym);

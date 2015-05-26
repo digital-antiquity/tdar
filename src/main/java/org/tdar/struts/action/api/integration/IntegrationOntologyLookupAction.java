@@ -49,7 +49,7 @@ public class IntegrationOntologyLookupAction extends AbstractIntegrationAction i
         setJsonObject(result, JsonIntegrationFilter.class);
         return SUCCESS;
     }
-    
+
     public OntologySearchFilter getSearchFilter() {
         return searchFilter;
     }

@@ -117,7 +117,8 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             submitForm();
             selectAnyAccount();
             // setInput("invoice.paymentMethod", "CREDIT_CARD");
-            accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);;
+            accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
+            ;
         }
 
         Map<String, String> extra = new HashMap<String, String>();
@@ -300,7 +301,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
                 fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
             }
             count++;
-        }//.contains("errors\":\"\"")
+        }// .contains("errors\":\"\"")
         if (expectSuccess && !getPageCode().matches("(?s)(.*)errors\"(\\s*):(\\s*)\"\"(.*)")) {
             Assert.fail(getPageBodyCode());
         }

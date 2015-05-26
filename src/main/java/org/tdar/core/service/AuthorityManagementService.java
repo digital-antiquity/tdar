@@ -123,7 +123,8 @@ public class AuthorityManagementService {
 
     // List of classes we will evaluate when looking for references.
     private static List<Class<?>> hostClasses = Arrays.<Class<?>> asList(Resource.class, InformationResource.class, ResourceCreator.class,
-            Person.class, Institution.class, TdarUser.class, IntegrationWorkflowData.class, BookmarkedResource.class, AuthorizedUser.class, ResourceCollection.class);
+            Person.class, Institution.class, TdarUser.class, IntegrationWorkflowData.class, BookmarkedResource.class, AuthorizedUser.class,
+            ResourceCollection.class);
 
     /**
      * Search through all of the defined classes in {@link #hostClasses} and find Fields that refer to the specified class.

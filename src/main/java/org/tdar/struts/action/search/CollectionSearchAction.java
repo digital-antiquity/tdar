@@ -30,10 +30,10 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpOnlyIfUnauthenticated
-public class CollectionSearchAction extends AbstractLookupController<ResourceCollection>{
+public class CollectionSearchAction extends AbstractLookupController<ResourceCollection> {
 
     private static final long serialVersionUID = -4107940683143336985L;
-    
+
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(ResourceCollection.class);
 
     @Autowired
@@ -81,7 +81,6 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         }
     }
 
-
     protected void determineCollectionSearchTitle() {
         if (StringUtils.isEmpty(getQuery())) {
             setSearchTitle(getText("advancedSearchController.title_all_collections"));
@@ -89,7 +88,6 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
             setSearchTitle(getQuery());
         }
     }
-
 
     public List<SortOption> getSortOptions() {
         sortOptions.remove(SortOption.RESOURCE_TYPE);

@@ -401,16 +401,16 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
         return getDao().canAddResource(account, re);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void deleteForController(TextProvider provider, BillingAccount account, String deletionReason, TdarUser authenticatedUser) {
         if (StringUtils.isNotBlank(getDeletionIssues(provider, account).getIssue())) {
             return;
         }
         delete(account);
-        
+
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public DeleteIssue getDeletionIssues(TextProvider provider, BillingAccount persistable) {
         DeleteIssue deleteIssue = new DeleteIssue();
         if (CollectionUtils.isNotEmpty(persistable.getResources()) || CollectionUtils.isNotEmpty(persistable.getCoupons())) {

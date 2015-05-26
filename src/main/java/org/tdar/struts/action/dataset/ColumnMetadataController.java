@@ -51,7 +51,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespaces(value={
+@Namespaces(value = {
         @Namespace("/dataset/columns"),
         @Namespace("/geospatial/columns"),
         @Namespace("/sensory-data/columns")
@@ -151,7 +151,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
 
     @SkipValidation
     @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "../../dataset/edit-column-metadata.ftl"),
-            })
+    })
     public String editColumnMetadata() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
@@ -211,13 +211,13 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
         initializePaginationHelper();
 
         try {
-            hasOntologies  = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            hasOntologies = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
-        return getPostSaveAction().getResultName(!hasOntologies , getDataResource());
+        return getPostSaveAction().getResultName(!hasOntologies, getDataResource());
     }
 
     public Dataset getPersistable() {

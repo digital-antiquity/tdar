@@ -73,7 +73,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
             })
     @HttpsOnly
     public String requestAccess() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         return SUCCESS;
     }
@@ -91,7 +91,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     @WriteableSession
     @HttpsOnly
     public String processAccessRequest() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (getPermission() == null) {
             addActionError("requestPermissionsController.specify_permission");
             return ERROR;

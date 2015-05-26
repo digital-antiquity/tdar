@@ -11,7 +11,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
-@JsonAutoDetect(getterVisibility=Visibility.PUBLIC_ONLY)
+@JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
 public class ResultMetadataWrapper implements Serializable {
 
     private static final long serialVersionUID = 1524243095172930161L;

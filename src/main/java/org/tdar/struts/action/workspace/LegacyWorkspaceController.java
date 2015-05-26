@@ -85,7 +85,6 @@ public class LegacyWorkspaceController extends AuthenticationAware.Base implemen
 
     private Long ticketId;
 
-
     /**
      * Pass through actions that will go to <action-name>.ftl or <action-name>.jsp
      */

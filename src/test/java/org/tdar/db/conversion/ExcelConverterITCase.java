@@ -16,7 +16,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,8 +83,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         }
     }
 
-
-@Test
+    @Test
     @Rollback
     public void testPoiInfiniteLoop() throws IOException {
         InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "infinite-loop.xlsx"), 519);

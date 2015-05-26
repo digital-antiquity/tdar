@@ -75,7 +75,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testDuplicateUser() {
-        TdarUser p = new TdarUser("Allen","Lee","allen.lee@dsu.edu");
+        TdarUser p = new TdarUser("Allen", "Lee", "allen.lee@dsu.edu");
         p.setUsername("allen.lee");
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
@@ -88,7 +88,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 .getActionErrors().iterator().next());
     }
 
-    
     @Test
     @Rollback
     public void testUnContributorStatus() throws TdarActionException {
@@ -97,7 +96,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         person.setContributor(false);
         ResourceController controller = generateNewInitializedController(ResourceController.class, person);
         Assert.equals(ResourceController.CONTRIBUTOR, controller.execute());
-        
+
         DocumentController controller2 = generateNewInitializedController(DocumentController.class, person);
         controller2.prepare();
         Assert.equals(ResourceController.CONTRIBUTOR, controller2.add());
@@ -105,7 +104,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         Assert.equals(ResourceController.SUCCESS, controller2.add());
 
     }
-    
+
     @Test
     @Rollback
     public void testDuplicateEmail() {
@@ -128,7 +127,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 .iterator().next());
     }
 
-    
     @Test
     @Rollback
     public void testExistingAuthorWithoutLogin() {
@@ -182,7 +180,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         if (findByEmail != null) {
             findByEmail.setStatus(status);
             findByEmail.setUsername("abc123");
-    
+
             genericService.saveOrUpdate(findByEmail);
         }
         evictCache();
@@ -198,7 +196,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = controller.create();
         assertEquals(success, execute);
 
-        findByEmail = (TdarUser)entityService.findByEmail(email);
+        findByEmail = (TdarUser) entityService.findByEmail(email);
         genericService.refresh(findByEmail);
 
         boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
@@ -267,7 +265,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
         sendEmailProcess.execute();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender)emailService.getMailSender()).getMessages();
+        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
         // we assume that the message sent was the registration one. If it wasn't we will soon find out...
         assertTrue("Registration email was not sent - " + messages.size(), messages.size() == 1);
         String messageText = messages.get(0).getText();
@@ -283,7 +281,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
         String email = "test+++user@gmail.com";
-        TdarUser findByEmail = (TdarUser)entityService.findByEmail(email);
+        TdarUser findByEmail = (TdarUser) entityService.findByEmail(email);
         if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
             genericService.delete(findByEmail);
             authenticationService.getAuthenticationProvider().deleteUser(findByEmail);
@@ -374,8 +372,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(p.getEmail());
         assertTrue(p.getId().equals(-1L));
         controller.validate();
-        assertTrue("expecting user existing",
-                controller.getFieldErrors().get("registration.person.username").contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
+        assertTrue(
+                "expecting user existing",
+                controller.getFieldErrors().get("registration.person.username")
+                        .contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
     }
 
     private String getFirstFieldError(UserAccountController controller) {
@@ -391,7 +391,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setEmail(TESTING_EMAIL);
         controller.getRegistration().setPerson(p);
         controller.validate();
-        assertTrue("expecting password", controller.getFieldErrors().get("registration.password").contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
+        assertTrue("expecting password",
+                controller.getFieldErrors().get("registration.password").contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
     }
 
     @Test
@@ -405,7 +406,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         controller.getRegistration().setPassword(PASSWORD);
         controller.validate();
-        assertTrue("expecting confirm email", controller.getFieldErrors().get("registration.confirmEmail").contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
+        assertTrue("expecting confirm email",
+                controller.getFieldErrors().get("registration.confirmEmail").contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
     }
 
     @Test
@@ -485,7 +487,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setFirstName("Testing auth");
         p.setLastName("User");
         p.setPhone("212 000 0000");
-        
+
         controller.getRegistration().setRequestingContributorAccess(true);
         controller.getRegistration().setContributorReason(REASON);
         p.setRpaNumber("234");

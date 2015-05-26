@@ -64,7 +64,7 @@ public enum NelnetTransactionType implements HasLabel, Localizable {
      * @return payment method that corresponds to this transaction type
      */
     public PaymentMethod getPaymentMethod() {
-        //note: we currently only ahve two payment methods. Go back to using switch-statement if we add more.
+        // note: we currently only ahve two payment methods. Go back to using switch-statement if we add more.
         return this == CHECK ? PaymentMethod.CHECK : PaymentMethod.CREDIT_CARD;
     }
 }

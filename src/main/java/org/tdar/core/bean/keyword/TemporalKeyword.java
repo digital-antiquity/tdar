@@ -32,7 +32,7 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 
     private static final long serialVersionUID = -626136232824053935L;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();

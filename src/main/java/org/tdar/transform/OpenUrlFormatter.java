@@ -35,7 +35,7 @@ public class OpenUrlFormatter {
                             title = doc.getBookTitle();
                         }
                         sb.append(AMP);
-                        sb.append("rft.btitle=").append(URLEncoder.encode(doc.getBookTitle(),UTF_8));
+                        sb.append("rft.btitle=").append(URLEncoder.encode(doc.getBookTitle(), UTF_8));
                         break;
                     case CONFERENCE_PRESENTATION:
                         break;
@@ -43,7 +43,7 @@ public class OpenUrlFormatter {
                         if (StringUtils.isNotBlank(doc.getJournalName())) {
                             title = doc.getJournalName();
                         }
-                        sb.append("rft.atitle=").append(URLEncoder.encode(doc.getTitle(),UTF_8));
+                        sb.append("rft.atitle=").append(URLEncoder.encode(doc.getTitle(), UTF_8));
                         sb.append(AMP);
                         break;
                     default:

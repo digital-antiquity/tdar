@@ -11,7 +11,7 @@ public interface SlugViewAction {
     String getSlug();
 
     boolean isRedirectBadSlug();
-    
+
     Addressable getPersistable();
 
 }

@@ -110,7 +110,7 @@ public final class WorkflowContext implements Serializable {
     public File getWorkingDirectory() {
         if (workingDirectory == null) {
             workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
-            workingDirectory = new File(workingDirectory, Thread.currentThread().getName()  + "-" + System.currentTimeMillis());
+            workingDirectory = new File(workingDirectory, Thread.currentThread().getName() + "-" + System.currentTimeMillis());
             workingDirectory.mkdirs();
         }
         return workingDirectory;
@@ -222,7 +222,6 @@ public final class WorkflowContext implements Serializable {
             maxDepth--;
         }
 
-        
         ExceptionWrapper exceptionWrapper = new ExceptionWrapper(sb.toString(), e);
         if (e instanceof NonFatalWorkflowException || thrw instanceof NonFatalWorkflowException) {
             exceptionWrapper.setFatal(false);
