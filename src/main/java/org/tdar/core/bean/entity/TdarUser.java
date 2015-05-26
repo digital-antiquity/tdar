@@ -94,10 +94,9 @@ public class TdarUser extends Person {
     @Column(name = "dismissed_notifications_date", nullable = true)
     private Date dismissedNotificationsDate;
 
-    
-    @Column(name="start_as_draft", nullable=false, columnDefinition="boolean default false")
+    @Column(name = "start_as_draft", nullable = false, columnDefinition = "boolean default false")
     private Boolean newResourceSavedAsDraft = Boolean.FALSE;
-    
+
     public TdarUser() {
     }
 
@@ -105,7 +104,7 @@ public class TdarUser extends Person {
         super(firstName, lastName, email);
     }
 
-    public TdarUser(String firstName, String lastName, String email,String username) {
+    public TdarUser(String firstName, String lastName, String email, String username) {
         super(firstName, lastName, email);
         this.username = username;
     }

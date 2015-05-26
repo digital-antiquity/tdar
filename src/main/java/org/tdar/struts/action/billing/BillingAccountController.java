@@ -340,7 +340,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return SUCCESS;
     }
 
-    
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
@@ -348,9 +347,9 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             getAuthorizedUsersFullNames().add(user.getProperName());
         }
     }
-    
+
     public List<Status> getStatuses() {
-        return Arrays.asList(Status.ACTIVE, Status.FLAGGED,Status.FLAGGED_ACCOUNT_BALANCE, Status.DELETED);
+        return Arrays.asList(Status.ACTIVE, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE, Status.DELETED);
     }
 
 }

@@ -216,7 +216,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         this.dataTableColumns = dataTableColumns;
     }
 
-
     /**
      * @return the mappedDataValues
      */

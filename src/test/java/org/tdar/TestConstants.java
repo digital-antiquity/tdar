@@ -47,7 +47,7 @@ public interface TestConstants {
     public static final String TEST_IMAGE_NAME = "5127663428_42ef7f4463_b.jpg";
     public static final String TEST_IMAGE = TEST_IMAGE_DIR + TEST_IMAGE_NAME;
     public static final String TEST_IMAGE_NAME2 = "handbook_of_archaeology.jpg";
-    public static final String TEST_IMAGE2  = TEST_IMAGE_DIR + TEST_IMAGE_NAME2;
+    public static final String TEST_IMAGE2 = TEST_IMAGE_DIR + TEST_IMAGE_NAME2;
 
     public static String INSTITUTION_NAME = "Arizona State University";
     public static String DEFAULT_FIRST_NAME = "Test";
@@ -73,8 +73,10 @@ public interface TestConstants {
     // time conversion constant
     int MILLIS_PER_SECOND = 1000;
     // regex pattern for js error that typically occurs when rendering google maps in test environment
-    public static final Pattern REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.compile(Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent"));
-    // [[{"message":"errorEvent::(no error message)","tag":"<script async=\"\" src=\"//use.typekit.net/czp6njc.js\"></script>","time":"0.293s"}, {"message":"errorEvent::(no error message)","tag":"<script src=\"https://ssl.google-analytics.com/ga.js\" async=\"\" type=\"text/javascript\"></script>","time":"0.294s"}]]
+    public static final Pattern REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.compile(Pattern
+            .quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent"));
+    // [[{"message":"errorEvent::(no error message)","tag":"<script async=\"\" src=\"//use.typekit.net/czp6njc.js\"></script>","time":"0.293s"},
+    // {"message":"errorEvent::(no error message)","tag":"<script src=\"https://ssl.google-analytics.com/ga.js\" async=\"\" type=\"text/javascript\"></script>","time":"0.294s"}]]
     public static final Pattern REGEX_TYPEKIT = Pattern.compile("use.typekit.net");
     public static final Pattern REGEX_GOOGLE_ANALYTICS = Pattern.compile("ssl.google-analytics.com");
 }

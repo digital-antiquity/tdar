@@ -32,7 +32,7 @@ public class ODataMetadataRequestIntegrationITCase extends AbstractLightFitTest 
 
     @Test
     public void testMetaDataUrl() throws Exception {
-        HttpResponse  exchange = setupExchange(Constant.META_DATA_URL);
+        HttpResponse exchange = setupExchange(Constant.META_DATA_URL);
         verifyResponseIsReturned(exchange);
     }
 

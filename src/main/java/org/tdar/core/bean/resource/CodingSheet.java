@@ -264,16 +264,16 @@ public class CodingSheet extends InformationResource implements SupportsResource
                 count++;
             }
         }
-        
+
         if (count == 0) {
             return true;
         }
         int size = CollectionUtils.size(getCodingRules());
-        //if less than 25% then warn
+        // if less than 25% then warn
         if (count < size / 4) {
             return true;
         }
-        
+
         return false;
     }
 

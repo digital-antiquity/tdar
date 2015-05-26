@@ -52,34 +52,33 @@ public class InstitutionSearchControllerITCase extends AbstractControllerITCase 
         controller.setRecordsPerPage(50);
     }
 
-
     @Test
     @Rollback
     public void testPersonRelevancy() throws TdarActionException {
         List<Person> people = new ArrayList<>();
-        Person whelan = new Person("Mary", "Whelan",null);
+        Person whelan = new Person("Mary", "Whelan", null);
         people.add(whelan);
-        Person mmc = new Person("Mary", "McCready",null);
-        Person mmc2 = new Person("McCready","Mary",null);
+        Person mmc = new Person("Mary", "McCready", null);
+        Person mmc2 = new Person("McCready", "Mary", null);
         people.add(mmc);
-        people.add(new Person("Doug", "Mary",null));
+        people.add(new Person("Doug", "Mary", null));
         people.add(mmc2);
-        people.add(new Person("Mary", "Robbins-Wade",null));
-        people.add(new Person("Robbins-Wade", "Mary",null));
+        people.add(new Person("Mary", "Robbins-Wade", null));
+        people.add(new Person("Robbins-Wade", "Mary", null));
         for (Person p : people) {
             updateAndIndex(p);
         }
         controller.setQuery("Mary Whelan");
         controller.searchPeople();
-        List<Person> results = ((List<Person>)(List<?>)controller.getResults());
+        List<Person> results = ((List<Person>) (List<?>) controller.getResults());
         logger.debug("Results: {}", results);
         assertTrue(results.get(0).equals(whelan));
         assertTrue(results.size() == 1);
-        
+
         resetController();
         controller.setQuery("Mary McCready");
         controller.searchPeople();
-        results = ((List<Person>)(List<?>)controller.getResults());
+        results = ((List<Person>) (List<?>) controller.getResults());
         logger.debug("Results: {}", results);
         assertTrue(results.contains(mmc));
         assertTrue(results.contains(mmc2));
@@ -102,7 +101,7 @@ public class InstitutionSearchControllerITCase extends AbstractControllerITCase 
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());
     }
-    
+
     private void updateAndIndex(Indexable doc) {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);

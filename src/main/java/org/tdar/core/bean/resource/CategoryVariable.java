@@ -124,7 +124,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         }
         return null;
     }
-    
+
     @Override
     public String toString() {
         return name;

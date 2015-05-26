@@ -32,6 +32,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 /**
  * $Id$
  * <p>
+ * 
  * @version $Rev$
  */
 @Namespace("/lookup")
@@ -42,17 +43,15 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
 
     private static final long serialVersionUID = 1614951978147004418L;
 
-
     @Autowired
     private transient AuthorizationService authorizationService;
-
 
     private String keywordType;
     private String term;
 
-    @Action(value = "keyword",results = {
-                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
-            })
+    @Action(value = "keyword", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String lookupKeyword() {
         // only return results if query length has enough characters
         getLogger().trace("term: {} , minLength: {}", getTerm(), getMinLookupLength());
@@ -70,8 +69,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
             getLogger().debug("returning ... too short?" + getTerm());
             return SUCCESS;
         }
-        
-        
+
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
             if (StringUtils.isNotBlank(getTerm()) && SiteCodeTokenizingAnalyzer.pattern.matcher(getTerm()).matches()) {
@@ -106,32 +104,26 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
         return SUCCESS;
     }
 
-
     @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
 
-
     public String getKeywordType() {
         return keywordType;
     }
-
 
     public void setKeywordType(String keywordType) {
         this.keywordType = keywordType;
     }
 
-
     public String getTerm() {
         return term;
     }
 
-
     public void setTerm(String term) {
         this.term = term;
     }
-
 
 }

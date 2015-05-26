@@ -43,7 +43,7 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
 
     private boolean approved;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CultureKeyword> synonyms = new HashSet<CultureKeyword>();

@@ -115,7 +115,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
      */
     @Transactional(readOnly = true)
     public Set<InformationResource> findAllResourcesInProject(Project p, Status... statuses) {
-        ScrollableResults  informationResources = getDao().findAllResourcesInProject(p, statuses);
+        ScrollableResults informationResources = getDao().findAllResourcesInProject(p, statuses);
         Set<InformationResource> results = new HashSet<>();
         for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(informationResources)) {
             results.add(ir);
@@ -152,7 +152,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     // return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
     // }
 
-    //FIXME: isAdmin should not be an argument.  It's not the controller's job to know what the user can/can't see.
+    // FIXME: isAdmin should not be an argument. It's not the controller's job to know what the user can/can't see.
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(TdarUser person, boolean isAdmin) {
         // get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user

@@ -249,7 +249,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         if (scheduledProcessQueue.size() <= 0) {
             return;
         }
-        
+
         ScheduledProcess<Persistable> process = scheduledProcessQueue.iterator().next();
         // FIXME: merge UpgradeTask and ScheduledProcess at some point, so that UpgradeTask-s are
         // created / added / managed within a ScheduledProcess.execute()

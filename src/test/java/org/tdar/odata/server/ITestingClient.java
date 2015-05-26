@@ -8,9 +8,9 @@ public interface ITestingClient {
 
     void createClient() throws Exception;
 
-//    void startClient() throws Exception;
-//
-//    void stopClient() throws Exception;
+    // void startClient() throws Exception;
+    //
+    // void stopClient() throws Exception;
 
 HttpResponse sendRequest(String url) throws IOException;
 

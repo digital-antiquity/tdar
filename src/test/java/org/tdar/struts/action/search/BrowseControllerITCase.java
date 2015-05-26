@@ -65,7 +65,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(person);
         genericService.synchronize();
         testFailed(person);
-}
+    }
 
     private void testFailed(TdarUser person) {
         boolean expectedException = false;
@@ -73,8 +73,8 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         controller = generateNewController(BrowseCreatorController.class);
         controller.setId(person.getId());
         try {
-           controller.setSlug(person.getSlug());
-           controller.prepare();
+            controller.setSlug(person.getSlug());
+            controller.prepare();
             assertEquals(Action.SUCCESS, controller.browseCreators());
         } catch (Exception ex) {
             expectedException = true;

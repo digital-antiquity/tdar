@@ -140,7 +140,8 @@ public class UploadController extends AuthenticationAware.Base {
                 file.put("delete_type", "DELETE");
             }
             result.put("ticket", ticket);
-            setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
+            setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback())
+                    .getBytes()));
 
             return SUCCESS;
         } else {
@@ -153,7 +154,8 @@ public class UploadController extends AuthenticationAware.Base {
     })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())
+        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class,
+                getCallback())
                 .getBytes()));
 
         return SUCCESS;

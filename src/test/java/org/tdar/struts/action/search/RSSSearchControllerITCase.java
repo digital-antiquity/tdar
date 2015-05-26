@@ -89,7 +89,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
-//        doSearch("");
+        // doSearch("");
         controller.viewRss();
         // the record we created should be the absolute first record
         assertEquals(document, controller.getResults().get(0));
@@ -124,7 +124,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         logger.debug(xml);
         assertTrue(xml.contains("link rel=\"enclosure\" type=\"application/vnd.ms-excel"));
     }
-    
+
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
         controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -144,7 +144,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
-//        doSearch("");
+        // doSearch("");
         String viewRss = controller.viewRss();
         logger.debug(viewRss);
         logger.debug("{}", controller.getActionErrors());

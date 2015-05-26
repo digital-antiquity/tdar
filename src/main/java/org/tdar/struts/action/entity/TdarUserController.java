@@ -168,7 +168,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         return false;
     }
 
-
     @Override
     public Class<TdarUser> getPersistableClass() {
         return TdarUser.class;

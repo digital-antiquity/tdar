@@ -35,7 +35,7 @@ public class SiteNameKeyword extends UncontrolledKeyword.Base<SiteNameKeyword> {
 
     private static final long serialVersionUID = 60750909588980398L;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteNameKeyword> synonyms = new HashSet<SiteNameKeyword>();

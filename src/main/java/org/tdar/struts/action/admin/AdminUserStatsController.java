@@ -52,17 +52,16 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
     private Map<UserAffiliation, Long> affiliationCounts;
     private Map<AgreementTypes, Long> agreementCounts;
 
-
     @Action("user")
     public String userInfo() {
         try {
-        setHistoricalUserStats(statisticService.getUserStatistics());
-        setRecentUsers(entityService.findAllRegisteredUsers(10));
-        setUserLoginStats(statisticService.getUserLoginStats());
-        setAffiliationCounts(entityService.getAffiliationCounts());
-        setAgreementCounts(entityService.getAgreementCounts());
+            setHistoricalUserStats(statisticService.getUserStatistics());
+            setRecentUsers(entityService.findAllRegisteredUsers(10));
+            setUserLoginStats(statisticService.getUserLoginStats());
+            setAffiliationCounts(entityService.getAffiliationCounts());
+            setAgreementCounts(entityService.getAgreementCounts());
         } catch (Exception e) {
-            getLogger().error("error in userInfo",e);
+            getLogger().error("error in userInfo", e);
         }
         return SUCCESS;
     }

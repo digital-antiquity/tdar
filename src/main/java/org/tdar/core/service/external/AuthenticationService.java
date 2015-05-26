@@ -155,10 +155,11 @@ public class AuthenticationService {
     public AuthenticationResult authenticatePerson(UserLogin userLogin, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
         // deny authentication if we've turned it off in cases of system manintance
-        if (!TdarConfiguration.getInstance().allowAuthentication() || TdarConfiguration.getInstance().getAdminUsernames().contains(userLogin.getLoginUsername())) {
+        if (!TdarConfiguration.getInstance().allowAuthentication()
+                || TdarConfiguration.getInstance().getAdminUsernames().contains(userLogin.getLoginUsername())) {
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         }
-        
+
         if (!isPossibleValidUsername(userLogin.getLoginUsername())) {
             throw new TdarRecoverableRuntimeException("auth.username.invalid");
         }
@@ -407,7 +408,7 @@ public class AuthenticationService {
         }
         return result;
     }
-    
+
     private void sendWelcomeEmail(Person person) {
         Map<String, Object> result = new HashMap<>();
         final TdarConfiguration config = TdarConfiguration.getInstance();

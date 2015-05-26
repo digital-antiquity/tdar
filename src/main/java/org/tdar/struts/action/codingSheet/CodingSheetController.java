@@ -47,7 +47,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         super.loadCustomMetadata();
         setOntology(getCodingSheet().getDefaultOntology());
     };
-    
+
     /**
      * Save basic metadata of the registering concept.
      * 
@@ -78,7 +78,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         // ensure csv conversion
         return new FileProxy(filename, FileProxy.createTempFileFromString(fileTextInput), VersionType.UPLOADED);
     }
-
 
     /**
      * Get the current concept.

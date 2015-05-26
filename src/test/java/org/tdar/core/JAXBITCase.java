@@ -76,9 +76,9 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         String xml = serializationService.convertToXML(fp);
         logger.info(xml);
         serializationService.parseXml(FileProxies.class, new StringReader(xml));
-        
+
     }
-    
+
     @Test
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);

@@ -17,7 +17,6 @@ import org.tdar.struts.action.project.ProjectController;
 
 public class ProjectControllerResourceAnnotationITCase extends AbstractResourceControllerITCase {
 
-
     @Test
     @Rollback
     public void testAddSingleAnnotation() throws Exception {

@@ -145,7 +145,7 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
 
     @Override
     public void setPersistable(Resource persistable) {
-        this.resource= persistable;
+        this.resource = persistable;
     }
 
     @Override

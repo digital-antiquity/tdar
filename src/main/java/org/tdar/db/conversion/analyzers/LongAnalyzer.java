@@ -36,7 +36,7 @@ public class LongAnalyzer implements ColumnAnalyzer {
         } catch (NumberFormatException nfx) {
             return false;
         }
-        String lastChar = value.substring(value.length() -1);
+        String lastChar = value.substring(value.length() - 1);
         // handles cases like "1D" which Double.parseDouble handles but cannot be casted to double in postgres
         if (StringUtils.isAlpha(lastChar)) {
             return false;

@@ -23,13 +23,13 @@ public class CollectionStatisticsAction extends AbstractStatisticsAction impleme
 
     @Autowired
     private ResourceCollectionService collectionService;
-    
+
     private ResourceCollection collection;
 
     @Override
     public void prepare() throws Exception {
         collection = collectionService.find(getId());
-        setStatsForAccount(statisticsService.getStatsForCollection(collection,this, getGranularity()));
+        setStatsForAccount(statisticsService.getStatsForCollection(collection, this, getGranularity()));
     }
 
     public ResourceCollection getCollection() {

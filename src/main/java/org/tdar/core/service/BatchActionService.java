@@ -23,14 +23,13 @@ public class BatchActionService {
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void processBatch(BatchAction action, TdarUser user) {
         action.setup(genericDao);
         List<ResourceCollection> allCollections = new ArrayList<>();
         allCollections.addAll(resourceCollectionDao.getAllChildCollections(action.getCollection()));
         allCollections.add(action.getCollection());
-        
-        
+
         for (ResourceCollection collection : allCollections) {
             for (Resource resource : collection.getResources()) {
                 ResourceRevisionLog log = action.performAction(resource, user);

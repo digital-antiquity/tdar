@@ -358,7 +358,6 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
         this.authorizedMembers = authorizedMembers;
     }
 
-
     public Long getFilesUsed() {
         return filesUsed;
     }
@@ -411,7 +410,6 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
         this.expires = expires;
     }
 
-
     @Override
     public Date getDateUpdated() {
         return lastModified;
@@ -451,7 +449,7 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     public String toString() {
         return String.format("%s (%s)", getName(), getId());
     }
-    
+
     @Override
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());

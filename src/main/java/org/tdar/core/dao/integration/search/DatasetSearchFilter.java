@@ -23,7 +23,7 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
     public void setOntologyIds(List<Long> ontologyIds) {
         this.ontologyIds = ontologyIds;
     }
-    
+
     public boolean isAbleToIntegrate() {
         return ableToIntegrate;
     }
@@ -31,8 +31,6 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
     public void setAbleToIntegrate(boolean ableToIntegrate) {
         this.ableToIntegrate = ableToIntegrate;
     }
-
-
 
     public boolean isHasOntologies() {
         return !getOntologyIds().isEmpty();

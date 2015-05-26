@@ -31,11 +31,12 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespaces(value={
+@Namespaces(value = {
         @Namespace("/dataset/row"),
         @Namespace("/geospatial/row"),
         @Namespace("/sensory-data/row")
-})public class RowViewAction extends AuthenticationAware.Base implements Preparable {
+})
+public class RowViewAction extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -4346591781165839553L;
     @Autowired

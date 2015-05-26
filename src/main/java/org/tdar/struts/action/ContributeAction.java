@@ -40,7 +40,8 @@ public class ContributeAction extends AuthenticationAware.Base {
     private transient FileAnalyzer analyzer;
 
     @Override
-    @Action(value = "contribute", results = { @Result(name = SUCCESS, location = "contribute.ftl"), @Result(name = AUTHENTICATED, type=REDIRECT, location = "/resource/add") })
+    @Action(value = "contribute", results = { @Result(name = SUCCESS, location = "contribute.ftl"),
+            @Result(name = AUTHENTICATED, type = REDIRECT, location = "/resource/add") })
     public String execute() {
         if (isAuthenticated()) {
             return AUTHENTICATED;

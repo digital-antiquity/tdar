@@ -21,7 +21,6 @@ import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
-    
     @Test
     @Rollback
     public void testMockMailSender() {
@@ -42,10 +41,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(received.getTo()[0], to.getEmail());
 
         assertEquals(email.getStatus(), Status.SENT);
-        //implicit assumption that something that is marked sent has a sent-date
-        assertThat(email.getDateSent(), is( not( nullValue())));
+        // implicit assumption that something that is marked sent has a sent-date
+        assertThat(email.getDateSent(), is(not(nullValue())));
     }
-
 
     @Test
     public void testSendTemplate() {
@@ -57,7 +55,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         email.setSubject("test");
         emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
         sendEmailProcess.execute();
-        assertTrue("expecting a mail in in the inbox", ((MockMailSender)emailService.getMailSender()).getMessages().size() > 0);
+        assertTrue("expecting a mail in in the inbox", ((MockMailSender) emailService.getMailSender()).getMessages().size() > 0);
 
     }
 

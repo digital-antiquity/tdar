@@ -1,6 +1,5 @@
 package org.tdar.core.dao;
 
-
 public interface TdarNamedQueries {
     /**
      * constants to map between the Annotation Keys for HQL queries and the queries in the DAOs
@@ -211,15 +210,15 @@ public interface TdarNamedQueries {
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
             + ")"
             + ")  ";
-    
+
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
-    + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
-    + " lower(ds.title) like :titleLookup and "
-    + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
-    + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
-    + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
-    + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
-    + "";
+            + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
+            + " lower(ds.title) like :titleLookup and "
+            + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
+            + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
+            + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
+            + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
+            + "";
 
     String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
@@ -238,7 +237,7 @@ public interface TdarNamedQueries {
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id and resource_id in (select project_id from information_resource where inheriting_individual_institutional_credit is true)  group by creator_id),0) ";
     String UPDATE_CREATOR_OCCURRENCE_INSTITUTION = "update creator set occurrence = occurrence+ coalesce((select count(person.id) from person where institution_id=creator.id group by institution_id),0) ";
     String DATASETS_USING_NODES = "select id from resource where id in (select dataset_id from data_table where data_table.id in (select data_table_id from data_table_column, coding_rule, coding_sheet where data_table_column.default_coding_sheet_id=coding_sheet_id and coding_rule.coding_sheet_id=coding_sheet.id and  ontology_node_id=%s)) and status = 'ACTIVE'";
-    
+
     String BROWSE_CREATOR_CREATE_TEMP = "create temporary table rctest (rid bigint, cid bigint, role int);create temporary table rctest_creator (cid bigint, cnt bigint)";
     String BROWSE_CREATOR_ACTIVE_USERS_1 = "insert into rctest select resource.id, submitter_id, 0 from resource where status='ACTIVE'";
     String BROWSE_CREATOR_ROLES_2 = "insert into rctest select resource_id, creator_id, %2$s from resource_creator where resource_id in (select rid from rctest) and role in (%1$s)";
@@ -246,7 +245,7 @@ public interface TdarNamedQueries {
     String BROWSE_CREATOR_IR_FIELDS_4 = "insert into rctest select id, provider_institution_id, -1 from information_resource where id in (select rid from rctest) and provider_institution_id is not null union select id, publisher_id, -1 from information_resource where id in (select rid from rctest) and publisher_id is not null";
     String BROWSE_CREATOR_CREATOR_TEMP_5 = "insert into rctest_creator (cid, cnt) select cid, count(rid) from rctest where rid in (select rid from rctest where role >= 0 group by rid having sum(role) = 0 union select rid from rctest where role!=0) group by cid";
     String BROWSE_CREATOR_UPDATE_CREATOR_6 = "update creator SET browse_occurrence = cnt from creator c, rctest_creator where cid=c.id and c.id=creator.id";
-    
+
     String SELECT_RAW_IMAGE_SITEMAP_FILES = "select r.id as resourceId, r.title, r.description as resourceDescription, r.resource_type, irf.description, irfv.id from resource r, information_resource ir, information_resource_file irf, "
             + "information_resource_file_version irfv where r.id=ir.id and ir.id=irf.information_resource_id and "
             + "irf.id=irfv.information_resource_file_id and internal_type='WEB_SMALL' and resource_type in ('IMAGE','SENSORY_DATA','GEOSPATIAL') "
@@ -274,11 +273,11 @@ public interface TdarNamedQueries {
     String DAY_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and date_accessed = '%1$s') as \"%1$s Downloads\"";
     String CREATOR_ANALYSIS_CREATE_TEMP = "CREATE TEMPORARY TABLE temp_ccounts (id bigserial, creator_id bigint);";
     String CREATOR_ANALYSIS_RESOURCE_CREATOR_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id in :resourceIds";
-    String CREATOR_ANALYSIS_SUBMITTER_INSERT =  "INSERT INTO temp_ccounts (creator_id) SELECT submitter_id from resource where id in :resourceIds";
+    String CREATOR_ANALYSIS_SUBMITTER_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT submitter_id from resource where id in :resourceIds";
     String CREATOR_ANALYSIS_PUBLISHER_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT publisher_id from information_resource where id in :resourceIds";
     String CREATOR_ANALYSIS_INHERITED_CREATORS_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator,information_resource where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id=project_id and information_resource.id in :resourceIds";
     String CREATOR_ANALYSIS__SLECT_COUNTS = "select count(id), creator_id from temp_ccounts where creator_id is not null group by creator_id";
-    String CREATOR_DROP_TEMP =  "DROP TABLE IF EXISTS temp_ccounts;";
+    String CREATOR_DROP_TEMP = "DROP TABLE IF EXISTS temp_ccounts;";
     String CREATOR_ANALYSIS_KWD_DROP_TEMP = "DROP TABLE IF EXISTS temp_kwd;";
     String CREATOR_ANALYSIS_KWD_CREATE_TEMP = "CREATE TEMPORARY TABLE temp_kwd (id bigserial, kwd_id bigint);";
     String CREATOR_ANALYSIS_TRUNCATE_TEMP = "truncate table temp_kwd";
@@ -287,5 +286,4 @@ public interface TdarNamedQueries {
     String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
     
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.geographic_keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.geographic_keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
-    
 }

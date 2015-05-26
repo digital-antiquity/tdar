@@ -34,7 +34,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpOnlyIfUnauthenticated
-public class PersonSearchAction extends AbstractLookupController<Person>{
+public class PersonSearchAction extends AbstractLookupController<Person> {
 
     private static final long serialVersionUID = -4399875145290579664L;
 

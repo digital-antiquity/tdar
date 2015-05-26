@@ -22,7 +22,6 @@ public class OntologySearchFilter extends AbstractIntegrationSearchFilter {
         return !getDataTableIds().isEmpty();
     }
 
-
     public List<Long> getDataTableIds() {
         return dataTableIds;
     }
@@ -33,7 +32,6 @@ public class OntologySearchFilter extends AbstractIntegrationSearchFilter {
         }
         return dataTableIds;
     }
-
 
     public void setDataTableIds(List<Long> dataTableIds) {
         this.dataTableIds = dataTableIds;

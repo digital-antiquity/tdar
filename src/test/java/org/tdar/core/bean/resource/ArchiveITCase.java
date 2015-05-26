@@ -31,7 +31,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void replicateFaultyArchiveIssue() throws Exception {
-//        setIgnoreActionErrors(Boolean.TRUE);
+        // setIgnoreActionErrors(Boolean.TRUE);
         InformationResource ir = generateArchiveFileAndUser(TestConstants.FAULTY_ARCHIVE);
         // Martin: in my scenario, the file results in a processing error.
         final Set<InformationResourceFile> irFiles = ir.getInformationResourceFiles();

@@ -101,7 +101,7 @@ public class IntegrationContext implements Serializable {
         sb.append(StringUtils.join(getIntegrationColumns(), "\n"));
         return sb.toString();
     }
-    
+
     @XmlElementWrapper(name = "dataTables")
     @XmlElement(name = "dataTable")
     public List<DataTable> getDataTables() {

@@ -21,7 +21,7 @@ public enum DocumentSubType implements HasLabel, Localizable {
     FORUM(DocumentType.CONFERENCE_PRESENTATION),
     DEBATE(DocumentType.CONFERENCE_PRESENTATION),
     POSTER_SYMPOSIUM(DocumentType.CONFERENCE_PRESENTATION);
-    
+
     private DocumentType type;
 
     private DocumentSubType(DocumentType type) {

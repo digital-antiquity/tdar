@@ -92,35 +92,35 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         excelUnit.assertCellEquals(0, 0, BulkUploadTemplate.FILENAME + "*");
         excelUnit.assertCellEquals(1, 0, BulkUploadTemplate.EXAMPLE_PDF);
         excelUnit.assertCellEquals(2, 0, BulkUploadTemplate.EXAMPLE_TIFF);
-        excelUnit.assertCellCommentEquals(0, 0, CellMetadata.getDescription(MessageHelper.getInstance(),"FILENAME"));
+        excelUnit.assertCellCommentEquals(0, 0, CellMetadata.getDescription(MessageHelper.getInstance(), "FILENAME"));
 
-        excelUnit.assertCellEquals(0, 1, CellMetadata.getDisplayLabel(MessageHelper.getInstance(),"TITLE") + "*");
-        excelUnit.assertCellCommentEquals(0, 1, CellMetadata.getDescription(MessageHelper.getInstance(),"TITLE"));
+        excelUnit.assertCellEquals(0, 1, CellMetadata.getDisplayLabel(MessageHelper.getInstance(), "TITLE") + "*");
+        excelUnit.assertCellCommentEquals(0, 1, CellMetadata.getDescription(MessageHelper.getInstance(), "TITLE"));
 
-        excelUnit.assertCellEquals(0, 2, CellMetadata.getDisplayLabel(MessageHelper.getInstance(),"DESCRIPTION") + "*");
-        excelUnit.assertCellCommentEquals(0, 2, CellMetadata.getDescription(MessageHelper.getInstance(),"DESCRIPTION"));
+        excelUnit.assertCellEquals(0, 2, CellMetadata.getDisplayLabel(MessageHelper.getInstance(), "DESCRIPTION") + "*");
+        excelUnit.assertCellCommentEquals(0, 2, CellMetadata.getDescription(MessageHelper.getInstance(), "DESCRIPTION"));
 
-        String licenseLabel = CellMetadata.getDisplayLabel(MessageHelper.getInstance(),"LICENSE_TYPE");
-        String yearLabel = CellMetadata.getDisplayLabel(MessageHelper.getInstance(),"YEAR") + "*";
+        String licenseLabel = CellMetadata.getDisplayLabel(MessageHelper.getInstance(), "LICENSE_TYPE");
+        String yearLabel = CellMetadata.getDisplayLabel(MessageHelper.getInstance(), "YEAR") + "*";
         if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
             excelUnit.assertRowDoesNotContain(0, licenseLabel);
             excelUnit.assertCellEquals(0, 14, yearLabel);
-            excelUnit.assertCellCommentEquals(0, 14, CellMetadata.getDescription(MessageHelper.getInstance(),"YEAR"));
+            excelUnit.assertCellCommentEquals(0, 14, CellMetadata.getDescription(MessageHelper.getInstance(), "YEAR"));
         } else {
             excelUnit.assertRowContains(0, licenseLabel);
             excelUnit.assertRowContains(0, yearLabel);
         }
 
-        // for the time being we are assuming that copyright holders won't be fed in via the spreadsheet, 
+        // for the time being we are assuming that copyright holders won't be fed in via the spreadsheet,
         // as the back end logic as written will apply the same copyright holder entered on the final screen in the process
         // to all of the files imported.
-        String copyrightLabel = CellMetadata.getDisplayLabel(MessageHelper.getInstance(),"COPYRIGHT_HOLDER");
+        String copyrightLabel = CellMetadata.getDisplayLabel(MessageHelper.getInstance(), "COPYRIGHT_HOLDER");
         if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
             excelUnit.assertRowDoesNotContain(0, copyrightLabel);
         } else {
             excelUnit.assertRowContains(0, copyrightLabel);
         }
-        
+
         sheet.getRow(1).getCell(3).isPartOfArrayFormulaGroup();
     }
 
@@ -145,7 +145,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         Map<String, Resource> filenameResourceMap = setup();
         manifestProxy.setResourcesCreated(filenameResourceMap);
         manifestProxy.readExcelFile();
-        
+
         for (Resource resource : filenameResourceMap.values()) {
             logger.info("{}", resource);
             logger.info("title:" + resource.getTitle());

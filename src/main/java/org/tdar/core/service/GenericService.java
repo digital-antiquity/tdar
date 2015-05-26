@@ -560,7 +560,6 @@ public class GenericService {
         genericDao.refresh(object);
     }
 
-
     /**
      * Mark an object as "read only" so that changes are not persisted to the database (used in obfuscation, for example)..
      * 

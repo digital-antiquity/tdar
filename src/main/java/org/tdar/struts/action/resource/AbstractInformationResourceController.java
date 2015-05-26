@@ -188,22 +188,22 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     /**
      * Throw an extension if any of the provided proxies describe a file that is not contained in the list of accepted file types.
+     * 
      * @param proxies
      * @throws TdarActionException
      */
     private void validateFileExtensions(List<FileProxy> proxies) throws TdarActionException {
         List<FileProxy> invalidFiles = new ArrayList<>();
-        for(FileProxy proxy : proxies) {
-            if(!getValidFileExtensions().contains(proxy.getExtension()) && proxy.getAction() != FileAction.DELETE) {
+        for (FileProxy proxy : proxies) {
+            if (!getValidFileExtensions().contains(proxy.getExtension()) && proxy.getAction() != FileAction.DELETE) {
                 getLogger().info("Rejecting file:{} - extension not allowed.  Allowed types:{}", proxy.getExtension(), getValidFileExtensions());
                 invalidFiles.add(proxy);
             }
         }
-        if(!invalidFiles.isEmpty()) {
+        if (!invalidFiles.isEmpty()) {
             throw new TdarRecoverableRuntimeException(getText("abstractResourceController.bad_extension"));
         }
     }
-
 
     /**
      * One-size-fits-all method for handling uploaded InformationResource files.

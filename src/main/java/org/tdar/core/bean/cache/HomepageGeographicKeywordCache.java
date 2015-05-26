@@ -149,7 +149,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         return 8;
 
     }
-    
+
     public String getSlug() {
         return UrlUtils.slugify(getLabel());
     }

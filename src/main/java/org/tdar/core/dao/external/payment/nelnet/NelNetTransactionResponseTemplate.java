@@ -112,12 +112,11 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         }
     }
 
-
-    public NelNetTransactionResponseTemplate(String secret, Map<String, String[]>requestParms) {
+    public NelNetTransactionResponseTemplate(String secret, Map<String, String[]> requestParms) {
         this.secret = secret;
         this.values = requestParms;
         String value = getValuesFor(NelnetTransactionItemResponse.TRANSACTION_TYPE);
-        if(value != null) {
+        if (value != null) {
             this.nelnetTransactionType = NelnetTransactionType.fromOrdinal(Integer.parseInt(value));
         }
     }
@@ -129,7 +128,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
 
     @Override
     public boolean validate() {
-        //jtd: I assume a multivalued entry for most of these keys (excepting maybe the custom fields) would indicate an error, yeah?
+        // jtd: I assume a multivalued entry for most of these keys (excepting maybe the custom fields) would indicate an error, yeah?
         String hashkey = generateHashKey();
         String actual = getValuesFor(NelnetTransactionItemResponse.HASH);
         if (!actual.equals(hashkey)) {
@@ -186,7 +185,8 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
             } catch (Exception e) {
                 logger.trace("cannot parse: {} as a date , {}", value, e);
             }
-            //jtd: if we're using a fraction of the enum values, i think enum method overriding would be a more succinct approach (http://stackoverflow.com/questions/14968075)
+            // jtd: if we're using a fraction of the enum values, i think enum method overriding would be a more succinct approach
+            // (http://stackoverflow.com/questions/14968075)
             switch (item) {
                 case TRANSACTION_ACCOUNT_TYPE:
                     invoice.setAccountType(value);

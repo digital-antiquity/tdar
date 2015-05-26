@@ -137,20 +137,19 @@ public class LoginController extends AuthenticationAware.Base implements Validat
             return null;
         }
 
-        //Favor the session's 'returnUrl' over the querystring 'url'.
+        // Favor the session's 'returnUrl' over the querystring 'url'.
         if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
             parsedUrl = getSessionData().getReturnUrl();
         } else {
             parsedUrl = UrlUtils.urlDecode(url);
         }
 
-        //enforce valid + relative url
+        // enforce valid + relative url
         String normalizedUrl = org.tdar.core.bean.util.UrlUtils.sanitizeRelativeUrl(parsedUrl);
-        if(!normalizedUrl.equals(parsedUrl)) {
+        if (!normalizedUrl.equals(parsedUrl)) {
             getLogger().warn("Return url does not relative. Replacing {} with {}", parsedUrl, normalizedUrl);
         }
         parsedUrl = normalizedUrl;
-
 
         getLogger().info("url {} ", parsedUrl);
         if (parsedUrl.contains("filestore/")) {

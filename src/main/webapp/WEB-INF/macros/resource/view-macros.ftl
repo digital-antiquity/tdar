@@ -779,18 +779,18 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         </#if>
     </#macro>
 
-<#macro featured header="Featured Content" span="span12">
+<#macro featured header="Featured Content" span="span12" resourceList=featuredResources>
 <div class="tdar-slider slider ${span}">
     <h3>${header}</h3>
 
     <div id="slider" class="carousel slide">
         <!-- Carousel items -->
         <div class="carousel-inner">
-            <#list featuredResources as featuredResource>
-            <#if featuredResource?has_content>
+            <#list resourceList as featuredResource>
+        <#if featuredResource?has_content>
                 <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
             </#if>
-            </#list>
+        </#list>
         </div>
         <!-- Carousel nav -->
         <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>

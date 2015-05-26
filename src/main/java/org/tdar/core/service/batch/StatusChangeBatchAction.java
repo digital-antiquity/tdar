@@ -21,7 +21,7 @@ public class StatusChangeBatchAction extends BatchAction {
 
     @Override
     public ResourceRevisionLog performAction(Resource resource, TdarUser user) {
-        ResourceRevisionLog log = new ResourceRevisionLog(String.format("changed status from %s to %s", resource.getStatus() , status), resource, user);
+        ResourceRevisionLog log = new ResourceRevisionLog(String.format("changed status from %s to %s", resource.getStatus(), status), resource, user);
         resource.setStatus(status);
         resource.markUpdated(user);
         return log;

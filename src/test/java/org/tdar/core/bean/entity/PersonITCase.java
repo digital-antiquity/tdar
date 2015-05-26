@@ -37,17 +37,17 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         Person p = genericService.find(Person.class, (Long) null);
         assertNull(p);
     }
-    
+
     @Test
     @Rollback
     public void testFindByExample() {
-        //create a user that we will try to find
+        // create a user that we will try to find
         TdarUser user1 = createAndSaveNewPerson();
         user1.setDescription("this sia tst");
         user1.setUsername("1234");
         genericService.update(user1);
 
-        //now create a prototypical user object that we'll use to find the first user
+        // now create a prototypical user object that we'll use to find the first user
         TdarUser example = new TdarUser();
         example.setId(null);
         example.setEmail(user1.getEmail());
@@ -69,7 +69,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         person = null;
         TdarUser user = genericService.find(TdarUser.class, id);
         logger.debug("user:{} ", user);
-        
+
     }
 
     @Test
@@ -186,7 +186,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertNotNull("should have a date created", person.getDateCreated());
     }
 
-    @Test(expected=org.hibernate.NonUniqueObjectException.class)
+    @Test(expected = org.hibernate.NonUniqueObjectException.class)
     @Rollback
     public void testPersonBecomesWritable() {
         Person person = createAndSaveNewPerson("robert.loblaw@mailinator.org", "");
@@ -196,14 +196,14 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         person.setInstitution(institution);
         genericService.saveOrUpdate(person);
 
-        //object wasn't read-only to begin with, but who cares
+        // object wasn't read-only to begin with, but who cares
 
         Institution inst = person.getInstitution();
-        //markWritable detaches person, but we re-assign it so we're cool.... OR ARE WE??
+        // markWritable detaches person, but we re-assign it so we're cool.... OR ARE WE??
         person = genericService.markWritable(person);
-        //... later in the code
+        // ... later in the code
         institution.setName("Bob Loblaw and Associates");
-        //This call will fail. some jerk done detached our institution!
+        // This call will fail. some jerk done detached our institution!
         genericService.saveOrUpdate(institution);
     }
 

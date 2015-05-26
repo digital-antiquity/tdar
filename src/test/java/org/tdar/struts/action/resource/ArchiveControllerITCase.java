@@ -29,9 +29,9 @@ import org.tdar.struts.action.archive.ArchiveController;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
 
-    //Was "zip", "tar", "bz2", "tgz", but because of user interface confusion we are limiting
+    // Was "zip", "tar", "bz2", "tgz", but because of user interface confusion we are limiting
     // the choice that users can make.
-    private static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] {"bz2"});
+    private static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "bz2" });
     private ArchiveController controller;
 
     @Before
@@ -90,7 +90,6 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         assertTrue("Unexpected Action Exceptions were found", controller.getActionErrors().size() == 0);
         assertEquals("Result was expected to be \"SUCCESS\", not " + saveResult, TdarActionSupport.SUCCESS, saveResult);
     }
-
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })

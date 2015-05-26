@@ -72,7 +72,8 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
     public CodingSheet setupGeneratedCodingSheet(DataTableColumn column, Dataset dataset, TdarUser user, TextProvider provider, Ontology ontology) {
         CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
-        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset.getTitle())));
+        codingSheet
+                .setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset.getTitle())));
         if (ontology != null) {
             codingSheet.setCategoryVariable(ontology.getCategoryVariable());
             codingSheet.setDefaultOntology(ontology);

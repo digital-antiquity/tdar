@@ -64,7 +64,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         }
 
         // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
-        MDC.put("path",Activity.formatRequest(ServletActionContext.getRequest()));
+        MDC.put("path", Activity.formatRequest(ServletActionContext.getRequest()));
         logger.trace(String.format("marking %s/%s session", action.getClass().getSimpleName(), methodName));
         String invoke = TdarActionSupport.SUCCESS;
         try {

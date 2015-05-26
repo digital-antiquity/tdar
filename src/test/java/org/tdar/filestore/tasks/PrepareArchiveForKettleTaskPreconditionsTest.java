@@ -106,7 +106,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveAFileToWorkWith() {
-        
+
         archive.setProject(new Project(1L, "test"));
         try {
             task.run();

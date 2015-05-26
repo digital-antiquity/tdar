@@ -27,7 +27,7 @@ public class DefaultSortITCase extends AbstractSearchControllerITCase {
     @Test
     public void testRSSDefaultSort() throws TdarActionException {
         RSSSearchAction controller_ = null;
-        boolean fail =false;
+        boolean fail = false;
         try {
             controller_ = generateNewInitializedController(RSSSearchAction.class);
             controller_.viewRss();
@@ -35,7 +35,7 @@ public class DefaultSortITCase extends AbstractSearchControllerITCase {
             logger.error("exception in rss", e);
             fail = true;
         }
-        
+
         logger.info("sorting by: {} ", controller_.getSortField());
         assertEquals(SortOption.ID_REVERSE, controller_.getSortField());
         assertFalse(fail);

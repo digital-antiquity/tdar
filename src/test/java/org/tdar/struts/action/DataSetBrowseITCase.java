@@ -75,7 +75,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         assertEquals(new Integer(5), resultsWrapper.getStartRecord());
         assertFalse(resultsWrapper.getResults().isEmpty());
         assertFalse(resultsWrapper.getFields().isEmpty());
-        
+
         logger.debug("{}", controller.getJsonResult());
 
         // OVER-EXTENDED CASE -- START @ 500

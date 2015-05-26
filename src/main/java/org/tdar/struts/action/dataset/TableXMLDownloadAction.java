@@ -26,7 +26,6 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -43,7 +42,6 @@ public class TableXMLDownloadAction extends AuthenticationAware.Base implements 
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    
     private InputStream xmlStream;
     private Long id;
     private Long dataTableId;
@@ -93,7 +91,7 @@ public class TableXMLDownloadAction extends AuthenticationAware.Base implements 
         }
         return ERROR;
     }
-    
+
     @Override
     public void prepare() throws Exception {
         persistable = datasetService.find(getId());

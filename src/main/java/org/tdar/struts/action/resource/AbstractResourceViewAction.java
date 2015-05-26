@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -21,6 +23,7 @@ import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -32,6 +35,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -46,6 +50,7 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.Filestore;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -181,14 +186,14 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         } catch (Exception e) {
             getLogger().error("error converting scholar tag for resource:", getId(), e);
         }
-        
+
         try {
             SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
             setSchemaOrgJsonLD(transformer.convert(serializationService, getResource()));
         } catch (Exception e) {
             getLogger().error("error converting to json-ld", e);
         }
-        
+
         return sw.toString();
     }
 
@@ -224,7 +229,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
             if (getPersistableClass().equals(Project.class)) {
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatisticsForProject(getId(), null));
             } else {
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()),null));
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()), null));
             }
         }
 
@@ -490,4 +495,31 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
     public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
+
+    @XmlTransient
+    /**
+     * We assume for now that a resource will only belong to a single white-label collection.
+     *
+     * @return
+     */
+    public WhiteLabelCollection getWhiteLabelCollection() {
+        // if parent list defined, go up the chain (otherwise only use direct membership, since it's costly to compute)
+
+        for (ResourceCollection rc : resourceCollections) {
+            if (rc.isWhiteLabelCollection()) {
+                return (WhiteLabelCollection) rc;
+            }
+        }
+        return null;
+    }
+
+    public boolean isWhiteLabelLogoAvailable() {
+        WhiteLabelCollection wlc = getWhiteLabelCollection();
+        return wlc != null && checkLogoAvailable(Filestore.ObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
+    }
+
+    public String getWhiteLabelLogoUrl() {
+        return String.format("/files/collection/lg/%s/logo", getWhiteLabelCollection().getId());
+    }
+
 }

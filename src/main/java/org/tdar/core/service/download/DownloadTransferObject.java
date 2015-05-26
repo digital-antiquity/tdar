@@ -60,7 +60,8 @@ public class DownloadTransferObject implements Serializable {
 
     private DownloadService downloadService;
 
-    public DownloadTransferObject(InformationResource resourceToDownload, TdarUser user, TextProvider textProvider, DownloadService downloadService, DownloadAuthorization authorization) {
+    public DownloadTransferObject(InformationResource resourceToDownload, TdarUser user, TextProvider textProvider, DownloadService downloadService,
+            DownloadAuthorization authorization) {
         this.informationResource = resourceToDownload;
         this.downloadService = downloadService;
         this.setTextProvider(textProvider);
@@ -154,7 +155,7 @@ public class DownloadTransferObject implements Serializable {
                             if (!messages.isEmpty()) {
                                 ZipEntry zentry = new ZipEntry("tdar-changes.txt");
                                 zout.putNextEntry(zentry);
-                                IOUtils.write(StringUtils.join(messages,"\n"), zout);
+                                IOUtils.write(StringUtils.join(messages, "\n"), zout);
                             }
                         } catch (Exception e) {
                             logger.error("exception when processing zip file: {}", e.getMessage(), e);

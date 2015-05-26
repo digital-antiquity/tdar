@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.struts.action.dataset.AbstractDatasetViewAction;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("default")

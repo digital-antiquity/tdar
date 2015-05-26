@@ -7,7 +7,6 @@ public class UploadControllerITCase extends AbstractAdminControllerITCase {
 
     UploadController controller;
 
-
     @Before
     public void setup() {
         controller = generateNewInitializedController(UploadController.class);

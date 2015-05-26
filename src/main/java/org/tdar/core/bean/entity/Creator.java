@@ -242,7 +242,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     private transient Integer maxHeight;
     private transient Integer maxWidth;
     private transient VersionType maxSize;
-    
+
     // @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
@@ -555,9 +555,9 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     @JsonView(JsonLookupFilter.class)
     public String getDetailUrl() {
-        return String.format("/%s/%s/%s", getUrlNamespace(), getId(),getSlug());
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
-    
+
     @Override
     public String getSlug() {
         return UrlUtils.slugify(getProperName());
@@ -593,5 +593,5 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     public void setMaxSize(VersionType maxSize) {
         this.maxSize = maxSize;
     }
-    
+
 }

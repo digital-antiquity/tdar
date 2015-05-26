@@ -65,7 +65,7 @@ public interface TargetDatabase extends Database {
 
     @Deprecated
     @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String ... orderBy);
+    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);

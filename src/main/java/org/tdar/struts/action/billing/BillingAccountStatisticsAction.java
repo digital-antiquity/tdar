@@ -21,16 +21,16 @@ public class BillingAccountStatisticsAction extends AbstractStatisticsAction imp
 
     private static final long serialVersionUID = -668002786160683089L;
     private BillingAccount account;
-    
+
     @Autowired
     private BillingAccountService accountService;
-    
+
     @Override
     public void prepare() throws Exception {
         account = accountService.find(getId());
-        setStatsForAccount(statisticsService.getStatsForAccount(account,this, getGranularity()));
+        setStatsForAccount(statisticsService.getStatsForAccount(account, this, getGranularity()));
     }
-    
+
     public BillingAccount getAccount() {
         return account;
     }

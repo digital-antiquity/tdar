@@ -22,6 +22,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 /**
  * $Id$
  * <p>
+ * 
  * @version $Rev$
  */
 @Namespace("/lookup")
@@ -36,10 +37,10 @@ public class ResourceAnnotationKeyLookupAction extends AbstractLookupController<
     private transient AuthorizationService authorizationService;
 
     private String term;
-    
+
     @Action(value = "annotationkey", results = {
-                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
-            })
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String lookupAnnotationKey() {
         QueryBuilder q = new ResourceAnnotationKeyQueryBuilder();
         setMinLookupLength(2);

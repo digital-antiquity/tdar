@@ -1,6 +1,5 @@
 package org.tdar.core.exception;
 
-
 /**
  * $Id$
  * 

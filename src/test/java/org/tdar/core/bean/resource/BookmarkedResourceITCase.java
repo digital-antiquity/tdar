@@ -33,7 +33,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         }
         return dataset;
     }
-    
+
     private BookmarkedResource[] createNewUnsavedBookmarkedResources() {
         return createNewUnsavedBookmarkedResources(10);
     }
@@ -49,7 +49,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
             savedPersons[i] = newPerson;
             br.setPerson(newPerson);
             br.setResource(dataset);
-//            dataset.getBookmarks().add(br);
+            // dataset.getBookmarks().add(br);
             array[i] = br;
         }
         return array;
@@ -106,7 +106,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         assertTrue(list.isEmpty());
         assertTrue(map.isEmpty());
     }
-    
+
     @Test
     @Rollback
     public void testDuplicateBookmarks() {
@@ -116,8 +116,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         try {
             saveAll(createNewUnsavedBookmarkedResources());
             fail("Should not be able to save duplicate bookmarked resources.");
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             // expected exception
             logger.debug("{}", exception);
         }
@@ -130,36 +129,36 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         saveAll(array);
         verifyCollectionOperations(array);
         // these are the unsaved / unmanaged resources..
-//        set = new HashSet<BookmarkedResource>(Arrays.asList(array));
-//        assertEquals(dataset.getBookmarks().size(), set.size());
-//        Dataset mergedDataset = genericService.merge(dataset);
-//        Set<BookmarkedResource> persistedDatasetBookmarks = mergedDataset.getBookmarks();
-//        assertTrue(set.containsAll(persistedDatasetBookmarks));
-//        assertTrue(persistedDatasetBookmarks.containsAll(set));
-//        for (BookmarkedResource pbr : persistedDatasetBookmarks) {
-//            assertTrue(set.contains(pbr));
-//        }
-//        for (BookmarkedResource br : set) {
-//            logger.debug("Examining: " + br.getId() + ":" + br);
-//            assertTrue(persistedDatasetBookmarks.contains(br));
-//        }
-//        // test existence
-//        for (BookmarkedResource br : set) {
-//            boolean equal = false;
-//            for (BookmarkedResource pbr : persistedDatasetBookmarks) {
-//                logger.debug("comparing " + pbr + " with " + br);
-//                if (pbr.equals(br) && br.equals(pbr) && (pbr.hashCode() == br.hashCode())) {
-//                    equal = true;
-//                    break;
-//                }
-//            }
-//            assertTrue(equal);
-//        }
-//        // test removal
-//        for (BookmarkedResource br : set) {
-//            assertTrue(mergedDataset.getBookmarks().remove(br));
-//        }
-//        assertTrue(persistedDatasetBookmarks.isEmpty());
+        // set = new HashSet<BookmarkedResource>(Arrays.asList(array));
+        // assertEquals(dataset.getBookmarks().size(), set.size());
+        // Dataset mergedDataset = genericService.merge(dataset);
+        // Set<BookmarkedResource> persistedDatasetBookmarks = mergedDataset.getBookmarks();
+        // assertTrue(set.containsAll(persistedDatasetBookmarks));
+        // assertTrue(persistedDatasetBookmarks.containsAll(set));
+        // for (BookmarkedResource pbr : persistedDatasetBookmarks) {
+        // assertTrue(set.contains(pbr));
+        // }
+        // for (BookmarkedResource br : set) {
+        // logger.debug("Examining: " + br.getId() + ":" + br);
+        // assertTrue(persistedDatasetBookmarks.contains(br));
+        // }
+        // // test existence
+        // for (BookmarkedResource br : set) {
+        // boolean equal = false;
+        // for (BookmarkedResource pbr : persistedDatasetBookmarks) {
+        // logger.debug("comparing " + pbr + " with " + br);
+        // if (pbr.equals(br) && br.equals(pbr) && (pbr.hashCode() == br.hashCode())) {
+        // equal = true;
+        // break;
+        // }
+        // }
+        // assertTrue(equal);
+        // }
+        // // test removal
+        // for (BookmarkedResource br : set) {
+        // assertTrue(mergedDataset.getBookmarks().remove(br));
+        // }
+        // assertTrue(persistedDatasetBookmarks.isEmpty());
     }
 
     @Test
@@ -172,7 +171,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
             logger.debug("person:{} ds: {}", person, dataset);
             assertTrue(bookmarkedResourceService.removeBookmark(mergedDataset, person));
         }
-//        assertTrue(mergedDataset.getBookmarks().isEmpty());
+        // assertTrue(mergedDataset.getBookmarks().isEmpty());
     }
 
 }

@@ -269,7 +269,7 @@ public class SearchIndexService {
                 Project project = (Project) item;
                 if (null == project.getCachedInformationResources()) {
                     setupProjectForIndexing(project);
-//                    logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
+                    // logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
                 }
             }
             fullTextSession.index(item);
@@ -499,7 +499,8 @@ public class SearchIndexService {
     }
 
     private void setupProjectForIndexing(Project project) {
-        Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE,
+        Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(projectDao.findAllResourcesInProject(project,
+                Status.ACTIVE,
                 Status.DRAFT));
         project.setCachedInformationResources(irs);
         project.setReadyToIndex(true);

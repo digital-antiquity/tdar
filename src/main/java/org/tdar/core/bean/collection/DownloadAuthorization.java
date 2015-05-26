@@ -44,14 +44,16 @@ public class DownloadAuthorization extends Persistable.Base {
     private ResourceCollection resourceCollection;
 
     private static String generateSimpleKey() {
-        return  "d" + UUID.randomUUID().toString().substring(UUID_BEGIN_INDEX);
+        return "d" + UUID.randomUUID().toString().substring(UUID_BEGIN_INDEX);
     };
 
-    //zero-arg constructor for hibernate (does not generate key)
-    public DownloadAuthorization(){}
+    // zero-arg constructor for hibernate (does not generate key)
+    public DownloadAuthorization() {
+    }
 
     /**
      * Create new downloadAuthorization w/ default api key for the specified resourceCollection.
+     * 
      * @param resourceCollection
      */
     public DownloadAuthorization(ResourceCollection resourceCollection) {
@@ -60,6 +62,7 @@ public class DownloadAuthorization extends Persistable.Base {
 
     /**
      * Create new downloadAuth with specified resourceCollection & key
+     * 
      * @param resourceCollection
      * @param apiKey
      */
@@ -93,19 +96,20 @@ public class DownloadAuthorization extends Persistable.Base {
     }
 
     /**
-     * Returns true if downloads are supported for requests from any referrer.  The convention for this policy is for a
-     * DownloadAuthorization object to have a single referrerHostname with a value of '*'  (the asterisk symbol).
+     * Returns true if downloads are supported for requests from any referrer. The convention for this policy is for a
+     * DownloadAuthorization object to have a single referrerHostname with a value of '*' (the asterisk symbol).
+     * 
      * @return
      */
-//    @Transient
-//    public boolean  isAnyReferrerAllowed() {
-//        if(CollectionUtils.isEmpty(refererHostnames)) return false;
-//        return refererHostnames.size() == 1 && refererHostnames.iterator().next().equals("*");
-//    }
+    // @Transient
+    // public boolean isAnyReferrerAllowed() {
+    // if(CollectionUtils.isEmpty(refererHostnames)) return false;
+    // return refererHostnames.size() == 1 && refererHostnames.iterator().next().equals("*");
+    // }
 
     @Transient
-    public boolean  isAnyReferrerAllowed() {
-        //FIXME: needs implementation
+    public boolean isAnyReferrerAllowed() {
+        // FIXME: needs implementation
         return false;
     }
 

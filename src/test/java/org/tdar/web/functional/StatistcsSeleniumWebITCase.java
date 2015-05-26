@@ -31,7 +31,7 @@ public class StatistcsSeleniumWebITCase extends AbstractEditorSeleniumWebITCase 
         gotoPage("/billing/1");
         testStatsSection();
     }
-    
+
     @Test
     public void testResourceStats() {
         gotoPage("/dataset/3088");

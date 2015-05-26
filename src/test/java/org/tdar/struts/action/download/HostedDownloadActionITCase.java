@@ -14,7 +14,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -39,7 +38,6 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
     @Autowired
     PdfService pdfService;
-
 
     @Test
     @Rollback

@@ -69,7 +69,7 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
             "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence", "browseOccurrence", "hidden" };
 
     @Column(nullable = false, unique = true)
-    @BulkImportField(key="CREATOR_INSTITUTION", order = 10)
+    @BulkImportField(key = "CREATOR_INSTITUTION", order = 10)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -87,7 +87,6 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
-
     public Institution() {
     }
 
@@ -101,7 +100,7 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     @Fields({
             @Field(name = "name_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name=QueryFieldNames.NAME_TOKEN),
+            @Field(name = QueryFieldNames.NAME_TOKEN),
             @Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
                     analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     })
@@ -186,7 +185,6 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
         return super.getDateUpdated();
     }
 
-
     public String getEmail() {
         return email;
     }
@@ -198,6 +196,5 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
             this.email = email;
         }
     }
-
 
 }

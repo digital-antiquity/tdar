@@ -63,7 +63,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
         }
     }
 
-    @Action(value="{id}", results={@Result(name=SUCCESS, location="view.ftl")} )
+    @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "view.ftl") })
     public String execute() {
         return SUCCESS;
     }

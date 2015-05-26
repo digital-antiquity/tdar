@@ -28,6 +28,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.web.StaticContentServlet;
 import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
@@ -38,6 +39,8 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     private static final String ALL_PATHS = "/*";
 
     private static final long serialVersionUID = -6063648713073283277L;
+
+    public static final String HOSTED_CONTENT_BASE_URL = "/hosted";
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     public final String BAR = "*************************************************************************";
@@ -53,7 +56,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {
             failureMessage = t.getMessage() + " (see initial exception for details)";
-            logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR +"\r\n", t);
+            logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR + "\r\n", t);
         }
     }
 
@@ -64,7 +67,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         if (StringUtils.isNotBlank(failureMessage)) {
             throw new ServletException(failureMessage);
         }
-        if(!configuration.isProductionEnvironment()) {
+        if (!configuration.isProductionEnvironment()) {
             onDevStartup(container);
         }
 
@@ -92,10 +95,19 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
         configureStrutsAndSiteMeshFilters(container);
 
+        if (!configuration.isStaticContentEnabled()) {
+            ServletRegistration.Dynamic staticContent = container.addServlet("static-content", StaticContentServlet.class);
+            staticContent.setInitParameter("default_encoding", "UTF-8");
+            staticContent.setLoadOnStartup(1);
+            staticContent.addMapping(HOSTED_CONTENT_BASE_URL + "/*");
+        }
+
     }
 
     private void onDevStartup(ServletContext container) {
-        if(configuration.isProductionEnvironment()) {throw new IllegalStateException("dev startup tasks not allowed in production");}
+        if (configuration.isProductionEnvironment()) {
+            throw new IllegalStateException("dev startup tasks not allowed in production");
+        }
         logServerInfo(container);
     }
 
@@ -110,7 +122,6 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         logger.info("\t context name:{}", container.getServletContextName());
         logger.info(BAR);
     }
-
 
     private void configureFreemarker(ServletContext container) {
         ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker", FreemarkerDecoratorServlet.class);

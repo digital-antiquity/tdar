@@ -46,7 +46,6 @@ public class APIViewAction extends AuthenticationAware.Base {
     private InputStream inputStream;
     private JaxbResultContainer xmlResultObject = new JaxbResultContainer();
 
-    
     @Action(value = "view", results = {
             @Result(name = SUCCESS, type = "xmldocument") })
     public String view() throws Exception {
@@ -91,5 +90,5 @@ public class APIViewAction extends AuthenticationAware.Base {
     public void setXmlResultObject(JaxbResultContainer xmlResultObject) {
         this.xmlResultObject = xmlResultObject;
     }
-    
+
 }

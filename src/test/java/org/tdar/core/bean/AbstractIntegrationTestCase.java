@@ -73,6 +73,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -188,8 +189,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
     @Autowired
-    private
-    AuthorizedUserDao authorizedUserDao;
+    private AuthorizedUserDao authorizedUserDao;
 
     @Autowired
     public SendEmailProcess sendEmailProcess;
@@ -445,7 +445,17 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     // create new, public, collection with the getUser() as the owner and no resources
     public ResourceCollection createAndSaveNewResourceCollection(String name) {
-        ResourceCollection resourceCollection = new ResourceCollection();
+        return init(new ResourceCollection(), name);
+    }
+
+    public WhiteLabelCollection createAndSaveNewWhiteLabelCollection(String name) {
+        WhiteLabelCollection wlc = new WhiteLabelCollection();
+        wlc.setSubtitle("This is a fancy whitelabel collection");
+        init(wlc, name);
+        return wlc;
+    }
+
+    ResourceCollection init(ResourceCollection resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setType(CollectionType.SHARED);
@@ -796,7 +806,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 schemaMap.put(url, schema);
             }
         }
-        
+
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
@@ -810,8 +820,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Validator v = new Validator(factory);
         v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
-//        v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
-//        v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
+        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
+        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
 
         if (extra) {
             // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
@@ -1014,7 +1024,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public String getText(String msgKey) {
         String msg = MessageHelper.getMessage(msgKey);
-        assertThat("key should not be same as getText(key) (did you forget to add it to tdar-messages?)", msgKey, is( not( msg )));
+        assertThat("key should not be same as getText(key) (did you forget to add it to tdar-messages?)", msgKey, is(not(msg)));
         return msg;
     }
 

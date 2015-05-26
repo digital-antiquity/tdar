@@ -51,9 +51,11 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
     public List<IntegrationColumnPartProxy> getIntegrationColumnPartProxies() {
         return integrationColumnPartProxies;
     }
+
     public boolean isVerbose() {
         return verbose;
     }
+
     public void setVerbose(boolean debug) {
         this.verbose = debug;
     }
@@ -61,20 +63,21 @@ public class NodeParticipationByColumnAction extends AbstractIntegrationAction i
     public void prepare() {
         integrationColumnPartProxies = integrationService.getNodeParticipationByColumn(dataTableColumnIds);
 
-        for(Long dataTableColumnId : dataTableColumnIds) {
+        for (Long dataTableColumnId : dataTableColumnIds) {
             nodeIdsByColumnId.put(dataTableColumnId, new ArrayList<Long>());
         }
 
-        for(IntegrationColumnPartProxy columnPart : integrationColumnPartProxies) {
-            for(OntologyNode ontologyNode : columnPart.getFlattenedNodes()) {
+        for (IntegrationColumnPartProxy columnPart : integrationColumnPartProxies) {
+            for (OntologyNode ontologyNode : columnPart.getFlattenedNodes()) {
                 nodeIdsByColumnId.get(columnPart.getDataTableColumn().getId()).add(ontologyNode.getId());
             }
         }
     }
 
-    @Action("node-participation") @PostOnly
+    @Action("node-participation")
+    @PostOnly
     public String execute() throws IOException {
-        if(verbose) {
+        if (verbose) {
             setJsonObject(integrationColumnPartProxies, JsonIdNameFilter.class);
         } else {
             setJsonObject(nodeIdsByColumnId);

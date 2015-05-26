@@ -15,14 +15,14 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
 
     @Autowired
     ImportService importService;
-    
+
     @Autowired
     SerializationService serializationService;
-    
+
     @Test
     @Rollback
     public void testClone() throws Exception {
-        Document document  = genericService.find(Document.class, 4287L);
+        Document document = genericService.find(Document.class, 4287L);
         Long id = document.getId();
         genericService.synchronize();
         Document newDoc = importService.cloneResource(document, getAdminUser());
@@ -32,7 +32,7 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
         Assert.assertNotNull(newDoc.getId());
         Set<CoverageDate> coverageDates = newDoc.getCoverageDates();
         assertNotEmpty(coverageDates);
-        document  = genericService.find(Document.class, 4287L);
+        document = genericService.find(Document.class, 4287L);
         Set<CoverageDate> coverageDates2 = document.getCoverageDates();
         assertNotEmpty(coverageDates2);
         assertNotEquals(coverageDates.iterator().next().getId(), coverageDates2.iterator().next().getId());
@@ -48,8 +48,6 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
         Dataset newDoc = importService.cloneResource(dataset, getAdminUser());
         genericService.synchronize();
         logger.debug(serializationService.convertToXML(newDoc));
-
-
 
     }
 }

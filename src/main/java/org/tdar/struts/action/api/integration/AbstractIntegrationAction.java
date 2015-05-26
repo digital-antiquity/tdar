@@ -33,8 +33,11 @@ public class AbstractIntegrationAction extends AuthenticationAware.Base {
 
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
-     * @param obj object to stringify
-     * @param jsonFilter JSON filter view to use during serialization
+     * 
+     * @param obj
+     *            object to stringify
+     * @param jsonFilter
+     *            JSON filter view to use during serialization
      * @throws IOException
      */
     protected final void setJsonObject(Object obj, Class<?> jsonFilter) throws IOException {
@@ -45,7 +48,9 @@ public class AbstractIntegrationAction extends AuthenticationAware.Base {
 
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
-     * @param obj object to stringify
+     * 
+     * @param obj
+     *            object to stringify
      * @throws IOException
      */
     protected final void setJsonObject(Object obj) throws IOException {
