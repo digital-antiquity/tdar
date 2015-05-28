@@ -26,7 +26,7 @@
     <#if searchHeaderLogoAvailable>
     <style>
         div.searchheader {
-            background-image: url("${hostedContentBaseUrl}/search-header.jpg");
+            background-image: url("${staticHost}${hostedContentBaseUrl}/search-header.jpg");
         }
     </style>
     </#if>
@@ -74,7 +74,7 @@
 
             <div class="viewpage-section">
                 <#-- TODO: move this logic to logoAvailable() -->
-                <#if (logoAvailable && (resourceCollection.subCollection || !resourceCollection.whiteLabelCollection))>
+                <#if (logoAvailable && !whitelabelCollection.customHeaderEnabled)>
                     <div class="pull-right"><img class="img-rounded whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
                 </#if>
                 <@common.description resourceCollection.description />
@@ -163,7 +163,6 @@
         </div>
             <@search.basicPagination "Records" />
         <#else>
-        <hr/>
         This collection is either empty or you do not currently have permissions to view the contents.
         </#if>
         <#if editable>
