@@ -62,7 +62,6 @@
 
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
         <div>
-            <h2>Description</h2>
             <#if resourceCollection.parent??><p><b>Part of:</b>
             	<#if resourceCollection.parent.hidden && !authenticated >
 					${resourceCollection.parent.name!"(n/a)"}
@@ -75,7 +74,7 @@
             <div class="viewpage-section">
                 <#-- TODO: move this logic to logoAvailable() -->
                 <#if (logoAvailable && !whitelabelCollection.customHeaderEnabled)>
-                    <div class="pull-right"><img class="img-rounded whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
+                    <div class="pull-right"><img class="whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
                 </#if>
                 <@common.description resourceCollection.description />
 
