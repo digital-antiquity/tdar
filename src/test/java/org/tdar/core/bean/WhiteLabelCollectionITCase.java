@@ -3,12 +3,20 @@ package org.tdar.core.bean;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
+import static org.tdar.TestConstants.TEST_IMAGE_DIR;
+import static org.tdar.TestConstants.TEST_IMAGE_NAME;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +26,11 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.collection.CollectionController;
+import org.tdar.struts.action.collection.CollectionViewAction;
 
 /**
  * Created by jimdevos on 3/23/15.
@@ -111,6 +123,84 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         rc.setInstitution(institution);
         genericService.save(rc);
         return rc;
+    }
+
+
+
+    @Test
+    @Rollback
+    public void testWhitelabelCollectionLogoAvailable() throws TdarActionException {
+        WhiteLabelCollection parentCollection = createAndSaveNewWhiteLabelCollection("whitelabel colllection");
+        ResourceCollection childCollection = createAndSaveNewResourceCollection("child collection");
+        ResourceCollection grandChildCollection = createAndSaveNewResourceCollection("grandchild collection");
+
+        childCollection.setParent(parentCollection);
+        grandChildCollection.setParent(childCollection);
+        genericService.saveOrUpdate(grandChildCollection);
+        uploadLogo(parentCollection);
+
+        // confirm that view action has a logo
+        CollectionViewAction action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        action.setId(parentCollection.getId());
+        action.prepare();
+        assertThat(action.isLogoAvailable(), is(true));
+    }
+
+    @Test
+    @Rollback
+    public void testWhitelabelCollectionSearchHeaderPaths() throws TdarActionException {
+        WhiteLabelCollection parentCollection = createAndSaveNewWhiteLabelCollection("whitelabel colllection");
+        CollectionViewAction action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        action.setId(parentCollection.getId());
+        action.prepare();
+        assertThat(action.getHostedContentBaseUrl(), allOf(
+                startsWith(action.getStaticHost()),
+                containsString("/hosted"),
+                not(endsWith("/"))
+                ));
+    }
+
+    @Test
+    @Ignore("remove this ignore if we decide to support 'inherted' collection logos")
+    @Rollback
+    public void testWhitelabelCollectionLogoAvailableForGrandchild() throws TdarActionException {
+        WhiteLabelCollection parentCollection = createAndSaveNewWhiteLabelCollection("whitelabel colllection");
+        ResourceCollection childCollection = createAndSaveNewResourceCollection("child collection");
+        ResourceCollection grandChildCollection = createAndSaveNewResourceCollection("grandchild collection");
+
+        childCollection.setParent(parentCollection);
+        grandChildCollection.setParent(childCollection);
+        genericService.saveOrUpdate(grandChildCollection);
+        uploadLogo(parentCollection);
+
+        // confirm that view action has a logo
+        CollectionViewAction action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        action.setId(parentCollection.getId());
+        action.prepare();
+        assertThat(action.isLogoAvailable(), is(true));
+
+        // now try the grandchild colleciton, which should also have a logo.
+        action = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
+        action.setId(grandChildCollection.getId());
+        action.prepare();
+        assertThat(action.isLogoAvailable(), is(true));
+    }
+
+    /**
+     * Add a logo for a ResourceCollection by simulating the struts workflow for the "/collection/save" action
+     *
+     * @param persistedCollection
+     * @throws TdarActionException
+     */
+    protected void uploadLogo(ResourceCollection persistedCollection) throws TdarActionException {
+        CollectionController action = generateNewInitializedController(CollectionController.class, getAdminUser());
+        action.setId(persistedCollection.getId());
+        action.prepare();
+        action.setFile(new File(TEST_IMAGE_DIR, TEST_IMAGE_NAME));
+        action.setFileFileName(TEST_IMAGE_NAME);
+        action.setFileContentType("image/jpeg");
+        action.setServletRequest(getServletPostRequest());
+        action.save();
     }
 
 }
