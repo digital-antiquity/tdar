@@ -38,7 +38,7 @@ div.viewpage-section {
     margin-top: 1em;
     padding-bottom: 3em;
     margin-bottom: 1em;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #999;
 }
 
 /** override carousel item height when inside viewpage **/
