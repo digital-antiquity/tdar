@@ -110,13 +110,21 @@
                 <#if contactProxies?has_content>
                 <#list contactProxies as prox>
                 <#assign contactId = prox.person.id />
+                <#if contactId == -1>
+                    <#assign contactId = prox.institution.id />
+                </#if>
                 <#break/>
                 </#list>
                 </#if>
                 <@s.hidden name="toId" value="${contactId?c}" />
                 <@s.hidden name="resourceId" value="${resource.id?c}" />
-                <@s.hidden name="fromId" value="${(authenticatedUser.id)!-1?c}" /> 
+                <#assign fromId = -1 />
+                <#if (authenticatedUser.id)?has_content>
+                    <#assign fromId = authenticatedUser.id />
+                </#if>
+                <@s.hidden name="fromId" value="${fromId?c}" /> 
                 <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span5" cols="80" />
+
                 <p><b>Note:</b> Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
                 <@common.antiSpam />
             </div>

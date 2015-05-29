@@ -197,6 +197,21 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         return sw.toString();
     }
 
+    @Override
+    public void validate() {
+        super.validate();
+
+        List<WhiteLabelCollection> whiteLabelCollections = new ArrayList<>();
+        for (ResourceCollection rc : getResource().getSharedResourceCollections()) {
+            if (rc.isWhiteLabelCollection()) {
+                whiteLabelCollections.add((WhiteLabelCollection) rc);
+            }
+        }
+        if(whiteLabelCollections.size() > 1) {
+            getLogger().error("resource #{} belongs to more than one whitelabel collection: {}", getResource().getId(), whiteLabelCollections);
+        }
+    }
+
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).

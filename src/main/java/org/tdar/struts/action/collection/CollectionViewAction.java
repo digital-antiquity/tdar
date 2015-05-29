@@ -491,7 +491,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
      * @return
      */
     public String getHostedContentBaseUrl() {
-        String baseUrl = TdarServletConfiguration.HOSTED_CONTENT_BASE_URL;
+        String baseUrl = getStaticHost() + TdarServletConfiguration.HOSTED_CONTENT_BASE_URL;
         if (PersistableUtils.isNotNullOrTransient(getResourceCollection())) {
             baseUrl += PairtreeFilestore.toPairTree(getResourceCollection().getId());
         }

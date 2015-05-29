@@ -2,6 +2,8 @@ package org.tdar.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -87,6 +89,35 @@ public class TdarConfiguration {
         logger.info("| CORS Hosts: {} ({})", getAllAllowedDomains(), getContentSecurityPolicyEnabled());
         logger.info("---------------------------------------------");
     }
+
+    /**
+     * Write the current properties to a the supplied outputstream.
+     * @param outs  stream to receive properties
+     * @param comments Comment line to include at beginning of output
+     */
+    public void store(OutputStream outs, String comments) throws IOException {
+        assistant.getProperties().store(outs, comments);
+    }
+
+    /**
+     * Write current properties to stdout.
+     * @throws IOException
+     */
+    public void store() throws IOException {
+        //FIXME: this is kinda worthless because we don't include default properties.
+        store(System.out, "Current tDAR Configuration");
+    }
+
+
+    public static void main (String [] args) {
+        try {
+            getInstance().store();
+        } catch (IOException e) {
+            System.err.println("Could not write properties.");
+            System.exit(1);
+        }
+    }
+
 
     /*
      * Do not use this except for via the @MultipleTdarConfigurationRunner
