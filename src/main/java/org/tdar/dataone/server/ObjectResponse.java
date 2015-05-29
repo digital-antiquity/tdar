@@ -95,7 +95,9 @@ public class ObjectResponse extends AbstractDataOneResponse {
                     IOUtils.closeQuietly(output);
                 };
             };
-            return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
+            if (container != null) {
+                return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
+            }
         } catch (Exception e) {
             logger.error("error in DataOne getObject:", e);
         }
