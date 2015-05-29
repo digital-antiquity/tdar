@@ -66,7 +66,7 @@
     </#if>
     <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
     <#include "/${themeDir}/head.dec" />
-    <link href="/css/whitelabel-default.css" rel="stylesheet" media="all">
+    <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
 ${head}
 
     <@common.globalJavascript />
