@@ -902,4 +902,157 @@
 			<where> level='COUNTRY' and label like 'Territory of Christmas Island%'</where>
 		</update>
 	</changeSet>
+    <changeSet id="neolithic-7" author="abrin">
+        <comment>Assigning State Codes</comment>
+    <update tableName="geographic_keyword"><column name="code" value="USAAL"/>
+        <where> level='STATE' and label like 'Alabama (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAAK"/>
+            <where> level='STATE' and label like 'Alaska (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAAZ"/>
+            <where> level='STATE' and label like 'Arizona (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAAR"/>
+            <where> level='STATE' and label like 'Arkansas (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USACA"/>
+            <where> level='STATE' and label like 'California (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USACO"/>
+            <where> level='STATE' and label like 'Colorado (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USACT"/>
+            <where> level='STATE' and label like 'Connecticut (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USADE"/>
+            <where> level='STATE' and label like 'Delaware (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAFL"/>
+            <where> level='STATE' and label like 'Florida (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAGA"/>
+            <where> level='STATE' and label like 'Georgia (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAHI"/>
+            <where> level='STATE' and label like 'Hawaii (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAID"/>
+            <where> level='STATE' and label like 'Idaho (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAIL"/>
+            <where> level='STATE' and label like 'Illinois (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAIN"/>
+            <where> level='STATE' and label like 'Indiana (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAIA"/>
+            <where> level='STATE' and label like 'Iowa (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAKS"/>
+            <where> level='STATE' and label like 'Kansas (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAKY"/>
+            <where> level='STATE' and label like 'Kentucky (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USALA"/>
+            <where> level='STATE' and label like 'Louisiana (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAME"/>
+            <where> level='STATE' and label like 'Maine (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAMD"/>
+            <where> level='STATE' and label like 'Maryland (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAMA"/>
+            <where> level='STATE' and label like 'Massachusetts (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAMI"/>
+            <where> level='STATE' and label like 'Michigan (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAMN"/>
+            <where> level='STATE' and label like 'Minnesota (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAMS"/>
+            <where> level='STATE' and label like 'Mississippi (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAMO"/>
+            <where> level='STATE' and label like 'Missouri (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAMT"/>
+            <where> level='STATE' and label like 'Montana (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USANE"/>
+            <where> level='STATE' and label like 'Nebraska (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USANV"/>
+            <where> level='STATE' and label like 'Nevada (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USANH"/>
+            <where> level='STATE' and label like 'New Hampshire (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USANJ"/>
+            <where> level='STATE' and label like 'New Jersey (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USANM"/>
+            <where> level='STATE' and label like 'New Mexico (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USANY"/>
+            <where> level='STATE' and label like 'New York (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USANC"/>
+            <where> level='STATE' and label like 'North Carolina (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAND"/>
+            <where> level='STATE' and label like 'North Dakota (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAOH"/>
+            <where> level='STATE' and label like 'Ohio (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAOK"/>
+            <where> level='STATE' and label like 'Oklahoma (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAOR"/>
+            <where> level='STATE' and label like 'Oregon (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAPA"/>
+            <where> level='STATE' and label like 'Pennsylvania (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USARI"/>
+            <where> level='STATE' and label like 'Rhode Island (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USASC"/>
+            <where> level='STATE' and label like 'South Carolina (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USASD"/>
+            <where> level='STATE' and label like 'South Dakota (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USATN"/>
+            <where> level='STATE' and label like 'Tennessee (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USATX"/>
+            <where> level='STATE' and label like 'Texas (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAUT"/>
+            <where> level='STATE' and label like 'Utah (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAVT"/>
+            <where> level='STATE' and label like 'Vermont (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAVA"/>
+            <where> level='STATE' and label like 'Virginia (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAWA"/>
+            <where> level='STATE' and label like 'Washington (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAWV"/>
+            <where> level='STATE' and label like 'West Virginia (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAWI"/>
+            <where> level='STATE' and label like 'Wisconsin (State / Territory)'</where>
+    </update>
+    <update tableName="geographic_keyword"><column name="code" value="USAWY"/>
+            <where> level='STATE' and label like 'Wyoming (State / Territory)'</where>
+    </update>
+    </changeSet>
 </databaseChangeLog>
