@@ -61,7 +61,7 @@
     <div id="subtitle">
         <p>Part of the
             <#if resource.projectVisible || editable>
-                <a href="<@s.url value='/project/${resource.project.id?c}'/>">${resource.project.coreTitle}</a>
+                <a href="<@s.url value='${resource.project.detailUrl}'/>">${resource.project.coreTitle}</a>
             <#else>
             ${resource.project.coreTitle}
             </#if>
