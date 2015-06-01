@@ -1169,8 +1169,33 @@ select.searchType {
 }
 
 .piechart {
-    padding-top: 10px;
     padding-bottom: 10px;
+}
+
+/* clean up sidebar pie css */
+.sidebar table.jqplot-table-legend {
+    padding-top: 30pt;
+    border:none;
+}
+.sidebar table.jqplot-table-legend td  {
+    padding:0 0 0 2px;
+    margin:0;
+    border: none ;
+}
+
+.sidebar .jqplot-table-legend-swatch-outline {
+    border:none
+}
+
+/*jqplot bakes certain css rules into style-attr. override them with !important */
+.sidebar .jqplot-title {
+    text-align:left !important;
+    font-size: 15px;
+}
+
+/* jqplog bug: highlighter occluded by pie slices */
+.sidebar .jqplot-highlighter-tooltip {
+    z-index: 1;
 }
 
 .silhouette {
