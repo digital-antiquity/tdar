@@ -166,6 +166,8 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
                 getContactProxies().add(proxy);
             }
         }
+        Collections.sort(authorshipProxies);
+        Collections.sort(creditProxies);
     }
 
     protected void loadCustomMetadata() throws TdarActionException {

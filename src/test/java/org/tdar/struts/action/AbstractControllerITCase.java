@@ -340,10 +340,17 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return PATH;
     }
 
+
+    public FileProxy uploadFileAsync(File file, PersonalFilestoreTicket ticket) throws FileNotFoundException {
+        return uploadFilesAsync(Arrays.asList(file), ticket).getSecond().get(0);
+    }
+
     public Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles) throws FileNotFoundException {
-        UploadController uploadController = generateNewInitializedController(UploadController.class);
-        assertEquals(Action.SUCCESS, uploadController.grabTicket());
-        PersonalFilestoreTicket ticket = uploadController.getPersonalFilestoreTicket();
+        return uploadFilesAsync(uploadFiles, grabTicket());
+    }
+
+    public Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles, PersonalFilestoreTicket ticket) throws FileNotFoundException {
+        UploadController uploadController;
         Pair<PersonalFilestoreTicket, List<FileProxy>> toReturn = new Pair<PersonalFilestoreTicket, List<FileProxy>>(ticket, new ArrayList<FileProxy>());
         uploadController = generateNewInitializedController(UploadController.class);
         assertNull(uploadController.getTicketId());
@@ -374,6 +381,12 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             assertTrue(filename + " not found in uploadFiles: " + uploadFiles, equal);
         }
         return toReturn;
+    }
+
+    protected PersonalFilestoreTicket grabTicket() {
+        UploadController uploadController = generateNewInitializedController(UploadController.class);
+        assertEquals(Action.SUCCESS, uploadController.grabTicket());
+        return uploadController.getPersonalFilestoreTicket();
     }
 
     @Override
