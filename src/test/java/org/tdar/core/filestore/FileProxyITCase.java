@@ -6,15 +6,20 @@
  */
 package org.tdar.core.filestore;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.opensymphony.xwork2.Action.SUCCESS;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+import static org.tdar.TestConstants.TEST_DOCUMENT_DIR;
+import static org.tdar.TestConstants.TEST_IMAGE_DIR;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.opensymphony.xwork2.ActionSupport;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -22,12 +27,11 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.FileAccessRestriction;
-import org.tdar.core.bean.resource.FileAction;
-import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.*;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.Pair;
 
@@ -47,9 +51,9 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.add();
         Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "schoenwetter1964b.pdf"));
+        fileList.add(new File(TEST_DOCUMENT_DIR + "a2-15.pdf"));
+        fileList.add(new File(TEST_DOCUMENT_DIR + "a2-17.pdf"));
+        fileList.add(new File(TEST_DOCUMENT_DIR + "schoenwetter1964b.pdf"));
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(fileList);
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         uploadFilesAsync.getSecond().remove(0);
@@ -57,7 +61,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(Action.SUCCESS, save);
+        assertEquals(SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -80,7 +84,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
         for (String subdir : Arrays.asList("t1", "t2", "t3")) {
-            File file = new File(TestConstants.TEST_DOCUMENT_DIR + subdir, "test.pdf");
+            File file = new File(TEST_DOCUMENT_DIR + subdir, "test.pdf");
             assertTrue(file.exists());
             fileList.add(file);
         }
@@ -91,7 +95,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(Action.SUCCESS, save);
+        assertEquals(SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -106,9 +110,9 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.add();
         Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "schoenwetter1964b.pdf"));
+        fileList.add(new File(TEST_DOCUMENT_DIR + "a2-15.pdf"));
+        fileList.add(new File(TEST_DOCUMENT_DIR + "a2-17.pdf"));
+        fileList.add(new File(TEST_DOCUMENT_DIR + "schoenwetter1964b.pdf"));
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(fileList);
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
@@ -144,7 +148,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         replaceConfidentialFileProxy.setAction(FileAction.REPLACE);
         replaceConfidentialFileProxy.setRestriction(FileAccessRestriction.PUBLIC);
         replaceConfidentialFileProxy.setFilename("pia-09-lame-1980.pdf");
-        Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
+        Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TEST_DOCUMENT_DIR
                 + "pia-09-lame-1980.pdf")));
         controller.setTicketId(newProxyList.getFirst().getId());
         controller.setServletRequest(getServletPostRequest());
@@ -168,8 +172,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
         String a2pdf = "a2-15.pdf";
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + a2pdf));
-        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
+        fileList.add(new File(TEST_DOCUMENT_DIR + a2pdf));
+        fileList.add(new File(TEST_DOCUMENT_DIR + "a2-17.pdf"));
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(fileList);
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
@@ -202,8 +206,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         replaceConfidentialFileProxy.setAction(FileAction.REPLACE);
         replaceConfidentialFileProxy.setRestriction(FileAccessRestriction.PUBLIC);
-        Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
-                + a2pdf)));
+        Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TEST_DOCUMENT_DIR, a2pdf)));
         controller.setTicketId(newProxyList.getFirst().getId());
         controller.setServletRequest(getServletPostRequest());
         controller.save();
@@ -216,12 +219,29 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
             } else {
                 assertTrue(irFile.isConfidential());
             }
-            // if (irFile.getLatestUploadedVersion().getFilename().equals("a2-15.pdf")) {
-            // assertTrue(irFile + " should have been flagged as deleted", irFile.isDeleted());
-            // }
-            // logger.info("{}", irFile);
-
         }
+    }
+
+    @Test
+    public void testImageWithUppercaseFilename() throws FileNotFoundException, TdarActionException {
+        PersonalFilestoreTicket ticket = grabTicket();
+        FileProxy fileProxy = uploadFileAsync(new File(TEST_IMAGE_DIR, "GREYBOX.PNG"), ticket);
+        ImageController controller = generateNewInitializedController(ImageController.class);
+        controller.setServletRequest(getServletPostRequest());
+        controller.prepare();
+
+        Image image = controller.getResource();
+        image.setTitle("test title");
+        image.setDescription("descr");
+        image.setDate(1234);
+        image.setProject(Project.NULL);
+        image.getFileProxies().clear();
+        image.getFileProxies().add(fileProxy);
+        controller.setTicketId(ticket.getId());
+        controller.validate();
+        String resultName = controller.save();
+        assertThat(resultName, is( SUCCESS));
+        assertThat(controller.getActionErrors(), is( empty()));
     }
 
     private Document getNewDocument(DocumentController controller) {

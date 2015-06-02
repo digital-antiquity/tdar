@@ -195,7 +195,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private void validateFileExtensions(List<FileProxy> proxies) throws TdarActionException {
         List<FileProxy> invalidFiles = new ArrayList<>();
         for (FileProxy proxy : proxies) {
-            if (!getValidFileExtensions().contains(proxy.getExtension()) && proxy.getAction() != FileAction.DELETE) {
+            if (!getValidFileExtensions().contains(proxy.getExtension().toLowerCase()) && proxy.getAction() != FileAction.DELETE) {
                 getLogger().info("Rejecting file:{} - extension not allowed.  Allowed types:{}", proxy.getExtension(), getValidFileExtensions());
                 invalidFiles.add(proxy);
             }
