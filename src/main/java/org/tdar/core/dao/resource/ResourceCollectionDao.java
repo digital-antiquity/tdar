@@ -24,9 +24,11 @@ import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -221,6 +223,20 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT);
         query.setLong("id", persistable.getId());
         return (Long) query.uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void makeResourceInCollectionActive(ResourceCollection col, TdarUser person) {
+        Query query = createQuery(TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE);
+        query.setParameter("id", col.getId());
+        List<Resource> resources = query.list();
+        for (Resource resource : resources) {
+            resource.markUpdated(person);
+            resource.setStatus(Status.ACTIVE);
+            ResourceRevisionLog rrl = new ResourceRevisionLog("Resource made Active", resource, person);
+            saveOrUpdate(rrl);
+            saveOrUpdate(resource);
+        }
     }
 
 }

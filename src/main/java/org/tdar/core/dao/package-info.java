@@ -516,6 +516,10 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS,
                 query = "DELETE FROM DataTableRelationship dtr where dtr.id in :ids"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE,
+                query = "from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and status='DRAFT'"),
+                
 })
 package org.tdar.core.dao;
 
