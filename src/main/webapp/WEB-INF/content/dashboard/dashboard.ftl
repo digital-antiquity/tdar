@@ -25,11 +25,11 @@
             <strong>Profile:</strong>
 			<a href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.properName}</a>
 			<#if authenticatedUser.institution??>
-			<br/><strong>Institution:</strong> 
-<a href="<@s.url value="/browse/creators/${authenticatedUser.institution.id?c}"/>">${authenticatedUser.institution.properName}</a></#if><br/>
+			<br><strong>Institution:</strong>
+<a href="<@s.url value="/browse/creators/${authenticatedUser.institution.id?c}"/>">${authenticatedUser.institution.properName}</a></#if><br>
             <#if authenticatedUser.penultimateLogin??>
-                <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
-            </#if><br/>
+                <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br>
+            </#if><br>
             <a class="button btn" href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
             <hr/>
     	</div>
@@ -154,24 +154,22 @@
     </#macro>
 
     <#macro resourcePieChart>
-    <div class="row">
-        <div class="span3">
+    <div>
             <h2>At a glance</h2>
 
-            <div class="piechart row">
+            <div class="piechart">
                 <@common.generatePieJson statusCountForUser "statusForUser" />
-	            <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=150 context=true graphLabel="Resources By Status"/>
+                <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=250 context=true graphLabel="Resources By Status"/>
             </div>
-            <div class="piechart row">
+            <div class="piechart">
                 <@common.generatePieJson resourceCountForUser "resourceCountForUser" />
                 <script>
                     var pcconfig = {
                         legend: { show: true, location: 's', rendererOptions: {numberColumns: 3} }
                     };
                 </script>
-                <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=280 context=true config="pcconfig" graphLabel="Resources By Type"/>
+                <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphWidth="100%" graphHeight=280 context=true config="pcconfig" graphLabel="Resources By Type"/>
             </div>
-        </div>
     </div>
 
     </#macro>
@@ -259,7 +257,7 @@
             <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
         </@common.listCollections>
     </div>
-    <br/>
+    <br>
         <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
         <div class="">
             <h2>Collections Shared With You</h2>
@@ -273,9 +271,9 @@
     <div id="accountSection" class="row">
         <div id="divAccountInfo" class="<#if payPerIngestEnabled>span4<#else>span9</#if>">
             <h2>About ${authenticatedUser.firstName}</h2>
-            <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br/>
+            <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br>
             <#if authenticatedUser.penultimateLogin??>
-                <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
+                <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br>
             </#if>
             <a href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
         </div>

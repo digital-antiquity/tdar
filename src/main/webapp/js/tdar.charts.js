@@ -158,6 +158,7 @@
                 // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
                 title : props.title,
                 animate : !$.jqplot.use_excanvas,
+                gridPadding: {top: 5, right:0, bottom:30, left:0},
                 seriesDefaults : {
                     renderer : $.jqplot.BarRenderer,
                     pointLabels : {
@@ -246,22 +247,29 @@
                 return;
             }
 
+            $.each(data, function(idx, row){
+                if(row[0] && row[0] === '3D & Sensory Data') {
+                    row[0] = '3D Data';
+                }
+            });
+
             var _defaults = {
                 // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
                 fontSize : 10,
                 title : props.title,
                 animate : !$.jqplot.use_excanvas,
+                gridPadding: {top: 30, right:0, bottom:0, left:0},
                 seriesDefaults : {
                     renderer : jQuery.jqplot.PieRenderer,
                     rendererOptions : {
                         fill : true,
                         animate : !$.jqplot.use_excanvas,
-                        showDataLabels : true,
+                        showDataLabels : false,
                         // Add a margin to seperate the slices.
-                        sliceMargin : 4,
+                        sliceMargin : 0,
                         // stroke the slices with a little thicker line.
-                        lineWidth : 5,
-                        padding : 5,
+                        lineWidth : 0,
+                        padding : 0,
                         dataLabels : 'value'
                     }
                 },

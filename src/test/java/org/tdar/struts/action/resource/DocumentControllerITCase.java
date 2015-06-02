@@ -1,14 +1,7 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -51,6 +44,11 @@ import org.tdar.struts.action.project.ProjectController;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.*;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
@@ -733,5 +731,39 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(getActionErrors().size() > 0);
         assertTrue(getActionErrors().contains(MessageHelper.getMessage("abstractResourceController.bad_extension")));
     }
+
+    @Test
+    @Rollback
+    public void testObsoleteSubmission() throws TdarActionException {
+        setIgnoreActionErrors(true);
+        Document doc = new Document();
+        Date date1 = new Date(500L);
+        Date date2 = new Date(1000L);
+        Date date3 = new Date(1500L);
+
+
+        doc.setTitle("test rights project");
+        doc.setDescription(doc.getTitle());
+        doc.markUpdated(getUser());
+        doc.setDateCreated(date1);
+        doc.setDateUpdated(date3);
+        genericService.saveOrUpdate(doc);
+
+        long docId = doc.getId();
+        assertThat(docId, is(not(-1L)));
+
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(docId);
+        controller.setServletRequest(getServletPostRequest());
+        controller.prepare();
+        //set a time that occurs before date3, which should result in an error because this date is obsolete (startDate must occur on/after lastUpdateDate)
+        controller.setStartTime(date2.getTime());
+        controller.validate();
+        controller.save();
+
+        assertThat(controller.getActionErrors(), hasSize(1));
+    }
+
+
 
 }
