@@ -771,6 +771,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (!authenticationAndAuthorizationService.canEditCollection(person, col)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.make_active_permissions");
         }
-        getDao().makeResourceInCollectionActive(col, person,newOwner);
+        getDao().makeResourceInCollectionActive(col, person, newOwner);
     }
 }
