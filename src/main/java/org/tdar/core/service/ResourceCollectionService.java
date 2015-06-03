@@ -765,4 +765,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
     }
+
+    @Transactional(readOnly = false)
+    public void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person, TdarUser newOwner) {
+        if (!authenticationAndAuthorizationService.canEditCollection(person, col)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.make_active_permissions");
+        }
+        getDao().makeResourceInCollectionActive(col, person, newOwner);
+    }
 }

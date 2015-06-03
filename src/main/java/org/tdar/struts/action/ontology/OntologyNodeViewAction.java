@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.StatusCode;
@@ -147,5 +148,10 @@ public class OntologyNodeViewAction extends AbstractOntologyViewAction {
 
     public void setCodingSheetsWithMappings(List<CodingSheet> codingSheetsWithMappings) {
         this.codingSheetsWithMappings = codingSheetsWithMappings;
+    }
+
+    @Override
+    public Class<Ontology> getPersistableClass() {
+        return Ontology.class;
     }
 }

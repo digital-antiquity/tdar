@@ -15,4 +15,8 @@ public class VideoViewAction extends AbstractResourceViewAction<Video> {
 
     private static final long serialVersionUID = -1500162569254791978L;
 
+    @Override
+    public Class<Video> getPersistableClass() {
+        return Video.class;
+    }
 }

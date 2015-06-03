@@ -15,4 +15,8 @@ public class SensoryDataViewAction extends AbstractDatasetViewAction<SensoryData
 
     private static final long serialVersionUID = -6147128935043196832L;
 
+    @Override
+    public Class<SensoryData> getPersistableClass() {
+        return SensoryData.class;
+    }
 }
