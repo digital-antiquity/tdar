@@ -40,7 +40,7 @@ public class CollectionResourceActiveAction extends Base implements Preparable {
     @WriteableSession
     @Action(value = "makeActive/{id}")
     public String execute() throws Exception {
-        resourceCollectionService.makeResourcesInCollectionActive(collection, getAuthenticatedUser());
+        resourceCollectionService.makeResourcesInCollectionActive(collection, getAuthenticatedUser(), null);
         return SUCCESS;
     }
     
