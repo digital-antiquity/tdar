@@ -568,7 +568,7 @@ TDAR.common = function (TDAR, fileupload) {
             var $scrollspy = $(this);
 
             $(document).bind("repeatrowadded repeatrowdeleted heightchange", function () {
-                //console.trace("resizing scrollspy");
+                //console.debug("resizing scrollspy");
                 $scrollspy.scrollspy("refresh");
             });
         });

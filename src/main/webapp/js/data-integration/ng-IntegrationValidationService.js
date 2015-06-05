@@ -104,8 +104,8 @@
                             return "dataTableColumn id is obsolete:" + invalidDtcId;
                         })
             );
-            console.trace("validateIntegration::");
-            console.trace(self.errors);
+            console.debug("validateIntegration::");
+            console.debug(self.errors);
 
         }
     }]);
