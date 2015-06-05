@@ -13,7 +13,7 @@
  * files to prevent a form submission)
  *
  */
-(function (TDAR, fileupload, $, console) {
+(function (TDAR, fileupload, $, console, window) {
     "use strict";
 
     /**
@@ -179,6 +179,24 @@
                     return $.inArray(file.ext, opts.extension) > -1;
                 }).length;
                 return filecount >= opts.min && filecount <= opts.max;
+            },
+
+            /**
+             * Disallow file replacements.
+             *
+             * fixme: This is a workaround for TDAR-4722.  If the UI state becomes inconsistent, the UI logic may show the 'Replace' button
+             *          even when it is not appropriate (for example,  when adding a new resource instead of editing an existing resource).
+             *
+             * @param file
+             * @param files
+             * @param settings
+             * @returns {boolean}
+             */
+            "noreplacements": function(file, files, settings) {
+                var replaceFiles = $.grep(files, function(f){
+                    return f.action === 'REPLACE';
+                });
+                return replaceFiles.length === 0;
             }
 
         },
@@ -198,7 +216,8 @@
             "nodupes": $.validator.format("Files with duplicated filenames are not allowed."),
             "required": $.validator.format("A file attachment is required."),
             "nodupes-ext": $.validator.format("You may only attach one file with this extension"),
-            "filecount": $.validator.format("Filecount exceeded")
+            "filecount": $.validator.format("Filecount exceeded"),
+            "noreplacements": $.validator.format("You cannot replace a file for a new resource.  Please delete the file instead and upload a new file.")
         }
     };
 
