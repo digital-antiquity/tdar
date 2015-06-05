@@ -8,6 +8,54 @@
             <param value="%-5p %d %-4r [%t %x] (%F:%L) %c - %m%n" name="ConversionPattern"/>
         </layout>
     </appender>
+
+        <!--
+            /**
+             * EXPRESSION FILTER INFO
+             */
+
+            ExpressionFilter is comically undocumented.  Here's the knowledge I compiled from various parts of the web and the log4j source code.
+            Syntax:
+                    {KEYWORD} {OPERATOR} {EXPRESSION}  or
+                    ( {KEYWORD} {OPERATOR} {EXPRESSION} ) {BOOL_OP} ( {KEYWORD} {OPERATOR} '{EXPRESSION}' )
+
+            Where {KEYWORD} is one of:
+                LOGGER
+                LEVEL
+                CLASS
+                FILE
+                LINE
+                METHOD
+                MSG
+                NDC
+                EXCEPTION
+                TIMESTAMP
+                THREAD
+                PROP.
+
+            {OPERATOR} is one of:
+                LIKE (denotes regular expression)
+                ~= (denotes... something)
+                = >= <= (use with LEVEL keyword, e.g.   "LEVEL >= DEBUG")
+
+            {BOOL_OP} is one of :
+                 &&  (but since this is xml,  &amp;&amp;.  what fun!!)
+                 ||
+
+            Notes:
+               - Spaces are hyper important.  Parens must be separated by space.  Operators too.  In fact, you know what? Just put about 10 spaces
+                 between *everything*, just to be safe.
+               - any expression that contains spaces must be single quoted.
+               - You cannot have multiple <filter> elements in an <appender> node. Use the painfully awkward boolean operators instead.
+
+            Usage (must go inside <appender> node):
+                <filter class="org.apache.log4j.filter.ExpressionFilter">
+                    <param name="acceptOnMatch" value="false" />
+                    <param name="expression" value=" ( MSG LIKE '.*Broken pipe.*' ) &amp;&amp; ( EXCEPTION ~= org.apache.catalina.connector.ClientAbortException ) "  />
+                </filter>
+
+        -->
+
     <appender class="org.tdar.utils.PatternSubjectSMTPAppender" name="smtp">
         <param value="100" name="BufferSize"/>
         <param value="fi.reaktor.log4j.emailthrottle.ErrorEmailThrottle" name="EvaluatorClass"/>
