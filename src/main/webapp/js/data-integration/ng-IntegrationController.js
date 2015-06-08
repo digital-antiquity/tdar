@@ -142,14 +142,14 @@
 
         // add and initialize an integration column associated with with the specified ontology ID
         _processAddedIntegrationColumns = function(ontologies) {
-            console.trace("_processAddedIntegrationColumns ::");
+            console.debug("_processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
         };
 
         self.integrateClicked = function() {
-            console.trace('integrate clicked');
+            console.debug('integrate clicked');
             // FIXME: HACK: NEVERDOTHIS: This is absolutely not the correct way to invoke a form submission, for a number of reasons.
             //invoke a click to force form submission.  Normally angular would know whether an $apply() is necessary, but because of our hack we do it manually
 
@@ -163,7 +163,7 @@
         };
 
         self.addDatasetsClicked = function(arg) {
-            console.trace('Add Datasets clicked');
+            console.debug('Add Datasets clicked');
             _openModal({
                 title: "Add Datasets",
                 searchType: "dataset",

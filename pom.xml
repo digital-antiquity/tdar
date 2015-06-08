@@ -1433,7 +1433,6 @@
                     <exclude>crowd.properties</exclude>
                     <exclude>hibernate.properties</exclude>
                     <exclude>local-wro-config.properties</exclude>
-                    <exclude>log4j.properties</exclude>
                     <exclude>struts-local-settings.xml</exclude>
                     <exclude>common.json</exclude>
                     <exclude>liquibase.properties</exclude>
@@ -1451,7 +1450,6 @@
                     <include>crowd.properties</include>
                     <include>hibernate.properties</include>
                     <include>local-wro-config.properties</include>
-                    <include>log4j.properties</include>
                     <include>struts-local-settings.xml</include>
                     <include>common.json</include>
                     <include>liquibase.properties</include>
@@ -2474,8 +2472,8 @@
                                             file="src/main/resources/hibernate.properties.template"
                                             tofile="src/main/resources/hibernate.properties" />
                                         <copy
-                                            file="src/main/resources/log4j.properties.template"
-                                            tofile="src/main/resources/log4j.properties" />
+                                            file="src/main/resources/log4j.xml.template"
+                                            tofile="src/main/resources/log4j.xml" />
                                         <copy
                                             file="src/main/resources/tdar.properties.template"
                                             tofile="src/main/resources/tdar.properties" />
@@ -2558,7 +2556,6 @@
 							<exclude>crowd.properties</exclude>
 							<exclude>hibernate.properties</exclude>
 							<exclude>local-wro-config.properties</exclude>
-							<exclude>log4j.properties</exclude>
 							<exclude>struts-local-settings.xml</exclude>
 							<exclude>common.json</exclude>
 							<exclude>liquibase.properties</exclude>
@@ -2638,7 +2635,6 @@
                             <exclude>crowd.properties</exclude>
                             <exclude>hibernate.properties</exclude>
                             <exclude>local-wro-config.properties</exclude>
-                            <exclude>log4j.properties</exclude>
                             <exclude>struts-local-settings.xml</exclude>
                             <exclude>common.json</exclude>
                             <exclude>liquibase.properties</exclude>
@@ -2716,7 +2712,6 @@
                             <exclude>crowd.properties</exclude>
                             <exclude>hibernate.properties</exclude>
                             <exclude>local-wro-config.properties</exclude>
-                            <exclude>log4j.properties</exclude>
                             <exclude>struts-local-settings.xml</exclude>
                             <exclude>common.json</exclude>
                             <exclude>liquibase.properties</exclude>
@@ -2801,7 +2796,6 @@
                             <exclude>crowd.properties</exclude>
                             <exclude>hibernate.properties</exclude>
                             <exclude>local-wro-config.properties</exclude>
-                            <exclude>log4j.properties</exclude>
                             <exclude>struts-local-settings.xml</exclude>
                             <exclude>common.json</exclude>
                             <exclude>liquibase.properties</exclude>
@@ -2868,7 +2862,6 @@
                             <exclude>crowd.properties</exclude>
                             <exclude>hibernate.properties</exclude>
                             <exclude>local-wro-config.properties</exclude>
-                            <exclude>log4j.properties</exclude>
                             <exclude>struts-local-settings.xml</exclude>
                             <exclude>common.json</exclude>
                             <exclude>liquibase.properties</exclude>

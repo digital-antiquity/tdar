@@ -113,6 +113,11 @@ file.store.class=org.tdar.filestore.PairtreeFilestore
 # default: /home/tdar/personal-filestore
 personal.file.store.location=/home/tdar/personal-filestore
 
+# path to the '/hosted/' virtual directory.  This only applies in a non-production setting
+# default: ${personal.file.store.location}/hosted
+hosted.file.store.location=/home/tdar/hosted-filestore
+
+
 # Freemarker template directory (where custom freemarker templates are stored for emails and other tasks (Not web pages))
 # freemarker.templatedir
 

@@ -13,15 +13,18 @@
     <!-- If we want the MockAuthentication Service activated set the property 
         "enableMockAuth" via JVM command line for the test like so: -DenableMockAuth=true -->
 
-<!--    
-        <bean id="AuthenticationProvider"
+<!--
+         <bean id="AuthenticationProvider" 
             class="org.tdar.core.dao.external.auth.MockAuthenticationProvider">
-            
+-->            
             <!-- define local passwords and rights -->
+<!-- 
             <property name="localValues">
                 <map>
+ -->                    
                     <!-- Key is username -->
-                    <entry key="adminuser">
+
+<!--                     <entry key="adminuser">
                         <bean
                             class="org.tdar.core.dao.external.auth.MockAuthenticationInfo">
                             <property name="memberships">
@@ -35,11 +38,11 @@
                 </map>
             </property>
         </bean>
-     -->
-
-     <bean id="DoiProvider" class="org.tdar.core.dao.external.pid.EZIDDao" />
 
  -->
+
+      <!-- <bean id="DoiProvider" class="org.tdar.core.dao.external.pid.EZIDDao" /> -->
+
  
   
     <!-- Site specific labels -->
