@@ -77,7 +77,6 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
 
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
-        // FIXME: seems weird to be here, how about adding this as an option in the FTL select instead?
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             getAccounts().add(new BillingAccount("Add an account"));
         }
