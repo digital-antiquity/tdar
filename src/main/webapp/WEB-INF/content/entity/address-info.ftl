@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<h1>Your Address</h1>
+<h1>Edit an Address</h1>
 
 <div>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save-address'>
