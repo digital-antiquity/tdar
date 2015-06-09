@@ -1,8 +1,14 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
 import java.util.List;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -21,9 +27,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 
 public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
