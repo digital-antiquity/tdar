@@ -202,11 +202,11 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(activity, invoice);
 
         //recreate a repeat of the "choose a billing account" step  with a blank account.
-        BillingAccount account1 = accountService.reconcileSelectedAccount(-1L, invoice, null, Collections.emptyList());
+        BillingAccount account1 = accountService.reconcileSelectedAccount(-1L, invoice, null, Collections.<BillingAccount>emptyList());
         account1.markUpdated(authenticatedUser);
         accountService.processBillingAccountChoice(account1, invoice, authenticatedUser);
 
-        BillingAccount account2 = accountService.reconcileSelectedAccount(-1L, invoice, null, Collections.emptyList());
+        BillingAccount account2 = accountService.reconcileSelectedAccount(-1L, invoice, null, Collections.<BillingAccount>emptyList());
 
         //account1 and account2 should  be equal because the system should detect on the second call that it is not necessary to create a new account
         assertThat(account1, is( account2));
