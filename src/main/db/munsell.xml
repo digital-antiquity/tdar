@@ -312,4 +312,24 @@
         </update>
     </changeSet>
  -->
+
+    <changeSet id="munsell-20" author="abrin">
+        <createTable tableName="pos_account_usage_history">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="account_id" type="bigint">
+                <constraints nullable="false" references="pos_account"
+                             foreignKeyName="fk_account_usage_history_pos_account" />
+            </column>
+            <column name="files_used" type="bigint"/>
+            <column name="space_used" type="bigint"/>
+            <column name="resources_used" type="bigint"/>
+
+            <column name="date_created" type="date">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
