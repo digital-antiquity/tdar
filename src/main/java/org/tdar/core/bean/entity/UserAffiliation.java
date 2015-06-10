@@ -1,13 +1,13 @@
 package org.tdar.core.bean.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public enum UserAffiliation implements HasLabel, Localizable {
     K12_STUDENT("K-12 Student"),

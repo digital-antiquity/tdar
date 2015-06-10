@@ -89,7 +89,6 @@
         $scope.updateFilter = function() {
             filter.startRecord = 0;
             filter.recordCount = true;
-            $scope.search();
         }
 
         // called when user clicks 'Add Selected Items'

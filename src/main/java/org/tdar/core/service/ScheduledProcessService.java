@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.AccountUsageHistory;
 import org.tdar.core.bean.util.UpgradeTask;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -163,6 +164,15 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void cronUpdateDois() {
         logger.info("updating DOIs");
         queue(scheduledProcessMap.get(DoiProcess.class));
+    }
+
+    /**
+     * Log Account Usage History
+     */
+    @Scheduled(cron = "0 1 1 * * *")
+    public void cronUpdateAccountUsageHistory() {
+        logger.info("updating account usage history");
+        queue(scheduledProcessMap.get(AccountUsageHistory.class));
     }
 
     /**

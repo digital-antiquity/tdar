@@ -323,7 +323,7 @@
                             <div class="control-group">
                                 <label class="control-label">Title contains</label>
                                 <div class="controls">
-                                    <input type="text" ng-model="filter.title" class="input-block-level" name="searchFilter.title"></input>
+                                    <input type="text" ng-model="filter.title" class="input-block-level" name="searchFilter.title" ng-change="updateFilter()"> </input>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -331,13 +331,15 @@
                                 <div class="controls controls-row">
                                     <div class="span3">
                                         <select name="searchFilter.projectId" class="input-block-level"
-                                                ng-model="filter.projectId" ng-options="project.id as project.title for project in projects">
+                                                ng-model="filter.projectId" ng-options="project.id as project.title for project in projects"
+                                                ng-change="updateFilter()">
                                             <option value="">Any project</option>
                                         </select>
                                     </div>
                                     <div class="span3">
                                         <select name="searchFilter.collectionId" class="input-block-level"
-                                                ng-model="filter.collectionId" ng-options="collection.id as collection.title for collection in collections">
+                                                ng-model="filter.collectionId" ng-options="collection.id as collection.title for collection in collections"
+                                                ng-change="updateFilter()">
                                             <option value="">Any collection</option>
                                         </select>
                                     </div>
@@ -348,7 +350,8 @@
                                 <label class="control-label">Category</label>
                                 <div class="controls">
                                     <select name="searchFilter.categoryId" class="input-xlarge"
-                                            ng-model="filter.categoryId" ng-options="category.id as category.name group by category.parent_name for category in categories" >
+                                            ng-model="filter.categoryId" ng-options="category.id as category.name group by category.parent_name for category in categories"
+                                            ng-change="updateFilter()">
                                         <option value="">Any category</option>
                                     </select>
                                 </div>
@@ -357,8 +360,8 @@
                             <div class="control-group">
                                 <label class="control-label">Other Filters</label>
                                 <div class="controls form-inline">
-                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.bookmarked" ng-model="filter.bookmarked">Bookmarked Items</label>
-                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.integrationCompatible" ng-model="filter.integrationCompatible" value="true">Integration-compatible</label>
+                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.bookmarked" ng-model="filter.bookmarked" ng-change="updateFilter()">Bookmarked Items</label>
+                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.integrationCompatible" ng-model="filter.integrationCompatible" value="true" ng-change="updateFilter()">Integration-compatible</label>
                                 </div>
                             </div>
                         </div>

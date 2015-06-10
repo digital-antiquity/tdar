@@ -1,9 +1,12 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -157,7 +160,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback(true)
+    @Rollback
     public void testAvaliableActivities() {
         BillingActivityModel model = new BillingActivityModel();
         model.setActive(true);
@@ -180,6 +183,33 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         List<BillingActivity> activeBillingActivities = invoiceService.getActiveBillingActivities();
         assertTrue(activeBillingActivities.contains(ctivity));
         assertFalse(activeBillingActivities.contains(disabledDctivity));
+    }
+
+    @Test
+    @Rollback
+    /**
+     * Simulate a situation where someone invoices this method by way of repeating parts of the invoice purchase workflow without
+     * completing the purchase (i.e. finalizing/paying for the invoice)
+     */
+    public void testRepeatedBlankBillingAccountChoice() {
+        TdarUser authenticatedUser = getAdminUser();
+        Invoice invoice = new Invoice();
+        invoice.markUpdated(authenticatedUser);
+        invoice.getItems().add(new BillingItem(new BillingActivity("6 mb", 10f, 0, 0L, 1L, 10L, accountService.getLatestActivityModel()), 1));
+        BillingActivity activity = invoice.getItems().get(0).getActivity();
+        invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+
+        genericService.saveOrUpdate(activity, invoice);
+
+        //recreate a repeat of the "choose a billing account" step  with a blank account.
+        BillingAccount account1 = accountService.reconcileSelectedAccount(-1L, invoice, null, Collections.<BillingAccount>emptyList());
+        account1.markUpdated(authenticatedUser);
+        accountService.processBillingAccountChoice(account1, invoice, authenticatedUser);
+
+        BillingAccount account2 = accountService.reconcileSelectedAccount(-1L, invoice, null, Collections.<BillingAccount>emptyList());
+
+        //account1 and account2 should  be equal because the system should detect on the second call that it is not necessary to create a new account
+        assertThat(account1, is( account2));
     }
 
 }

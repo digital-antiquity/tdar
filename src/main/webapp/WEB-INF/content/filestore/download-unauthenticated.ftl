@@ -72,7 +72,7 @@
         </div>
 
         <div class="span3" id="divLoginSection">
-            <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate"
+            <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate form-condensed"
                     enctype='multipart/form-data' action="process-download-login">
                 <fieldset>
                     <legend>Login</legend>

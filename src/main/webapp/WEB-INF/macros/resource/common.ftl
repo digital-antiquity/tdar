@@ -607,7 +607,7 @@ with that datapoint -->
                            <#if address.id==addressId || (!addressId?has_content || addressId == -1) && address_index==0>checked=checked</#if>/>
                 </#if>
 
-                <@printAddress  address=address creatorId=entity.id modifiable=true showLabel=false >
+                <@printAddress  address=address creatorId=entity.id creatorType=entityType modifiable=true showLabel=false >
                     <b><#if address.type?has_content>${address.type.label!""}</#if></b>
                 </label><br/>
                 </@printAddress>
