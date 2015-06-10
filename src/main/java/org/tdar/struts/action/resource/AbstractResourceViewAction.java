@@ -29,6 +29,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
@@ -81,7 +82,7 @@ import org.tdar.utils.PersistableUtils;
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, location = "../resource/view-template.ftl")
 })
-public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAction<Resource> implements SlugViewAction {
+public abstract class AbstractResourceViewAction<R extends Resource> extends AbstractPersistableViewableAction<R> implements SlugViewAction {
 
     private static final long serialVersionUID = 896347341133309643L;
 
@@ -302,7 +303,7 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
         return getPersistable();
     }
 
-    public void setResource(Resource resource) {
+    public void setResource(R resource) {
         getLogger().debug("setResource: {}", resource);
         setPersistable(resource);
     }
@@ -463,11 +464,6 @@ public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAc
 
     public void setEmailTypes(List<EmailMessageType> emailTypes) {
         this.emailTypes = emailTypes;
-    }
-
-    @Override
-    public Class<Resource> getPersistableClass() {
-        return Resource.class;
     }
 
     /*

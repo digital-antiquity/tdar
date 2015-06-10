@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender class="org.apache.log4j.rolling.RollingFileAppender" name="R">
+        <param value="org.apache.log4j.rolling.TimeBasedRollingPolicy" name="rollingPolicy"/>
+        <param value="logs/tdar.%d{yyyy-MM-dd}.log" name="FileNamePattern"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%-5p %d %-4r [%t %x] (%F:%L) %c - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.tdar.utils.PatternSubjectSMTPAppender" name="smtp">
+        <param value="100" name="BufferSize"/>
+        <param value="fi.reaktor.log4j.emailthrottle.ErrorEmailThrottle" name="EvaluatorClass"/>
+        <param value="tdar-error@tdar.org" name="From"/>
+        <param value="localhost" name="SMTPHost"/>
+        <param value="%c{1}: %m" name="Subject"/>
+        <param value="ERROR" name="Threshold"/>
+        <param value="tdar-dev@lists.asu.edu" name="To"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{MMM-dd HH:mm:ss} %-5p %t %x %c - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+
+    <appender class="org.apache.log4j.ConsoleAppender" name="stdout">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%-5p %d %-4r [%t %x] (%F:%L) %c - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <logger name="org.hibernate.util.JDBCExceptionReporter">
+        <level value="debug"/>
+    </logger>
+    <logger name="org.tdar">
+        <level value="debug"/>
+    </logger>
+    <logger name="uk.org">
+        <level value="debug"/>
+    </logger>
+    <root>
+        <level value="error"/>
+        <appender-ref ref="R"/>
+        <appender-ref ref="smtp"/>
+    </root>
+</log4j:configuration>

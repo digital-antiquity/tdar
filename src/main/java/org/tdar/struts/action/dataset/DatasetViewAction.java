@@ -14,4 +14,8 @@ public class DatasetViewAction extends AbstractDatasetViewAction<Dataset> {
 
     private static final long serialVersionUID = -6320076338548768011L;
 
+    @Override
+    public Class<Dataset> getPersistableClass() {
+        return Dataset.class;
+    }
 }

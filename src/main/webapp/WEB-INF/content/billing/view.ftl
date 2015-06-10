@@ -213,6 +213,22 @@
     </tbody>
 </table>
 
+<table class="table tableFormat">
+<thead>
+    <tr> <th>Date</th><th>Files Used</th><th>Space Used (in bytes)</th><th>Resources Used</th></tr>
+    <#list account.usageHistory as history>
+    <tr>
+        <td>${history.date}</td>
+        <td>${history.filesUsed}</td>
+        <td>${history.spaceUsedInMb}</td>
+        <td>${history.resourcesUsed}</td>
+    </tr>
+    </#list>
+</thead>
+<tbody>
+</tbody>
+</table>
+
 <script>
     //FIXME: replace with declaritive implementation e.g <input type="text" name="expiration"  data-datepicker  data-dateformat="m/d/y">
     //FIXME: validation errors are ugly due to bootstrap layout issues in form.  Better than no validation, but need to fix.

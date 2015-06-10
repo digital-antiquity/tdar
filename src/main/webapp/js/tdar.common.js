@@ -485,6 +485,14 @@ TDAR.common = function (TDAR, fileupload) {
 
                 var fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
                 fileValidator.addRule("nodupes");
+
+                //fixme: (TDAR-4722) prohibit file replacements on 'add' pages. Due to bug, UI may display 'replace' option even when it shouldn't.
+                // Until bug is fixed, we use this additional workaround to prevent the user from submitting if the UI allowed an invalid replacement.
+                var path = window.location.pathname
+                if(path.length && path.match(/(document|dataset|image).add$/)) {
+                    fileValidator.addRule("noreplacements");
+                }
+
                 TDAR.fileupload.validator = fileValidator;
             }
         }
@@ -568,7 +576,7 @@ TDAR.common = function (TDAR, fileupload) {
             var $scrollspy = $(this);
 
             $(document).bind("repeatrowadded repeatrowdeleted heightchange", function () {
-                //console.trace("resizing scrollspy");
+                //console.debug("resizing scrollspy");
                 $scrollspy.scrollspy("refresh");
             });
         });

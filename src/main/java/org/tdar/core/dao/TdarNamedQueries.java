@@ -146,11 +146,11 @@ public interface TdarNamedQueries {
     String DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS = "delete.data_table_column_relationships";
     String DELETE_DATA_TABLE_RELATIONSHIPS = "delete.data_table_relationships";
     String SCROLLABLE_SITEMAP = "sitemap.active_resources";
-
-    
     String QUERY_BY_DOI = "query.by_doi";
     String QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI = "query.recent_ir_with_doi";
     String QUERY_DATAONE_LIST_OBJECTS = "query.d1_list_objects";
+    String UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE = "resourceCollection.updateResourcesToActice";
+
     // raw SQL/HQL queries
 
     /**
