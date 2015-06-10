@@ -1,5 +1,6 @@
 package org.tdar.core.dao.resource;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -182,7 +183,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
                 }
                 String code = (String) objs[0];
                 Integer count = ((Number) objs[2]).intValue();
-                cache.add(new HomepageGeographicCache(code, ResourceType.valueOf((String)objs[1]), count, (Long)objs[3]));
+                BigInteger bigint = (BigInteger)objs[3];
+                cache.add(new HomepageGeographicCache(code, ResourceType.valueOf((String)objs[1]), count, bigint.longValue()));
                 if (!totals.containsKey(code)) {
                     totals.put(code, 0);
                 }

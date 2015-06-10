@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
@@ -67,10 +68,12 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
     public boolean shouldRunAtStartup() {
         return true;
     }
-
+    
+    
     @Override
     public void execute() {
         logger.info("rebuilding homepage cache");
+        resourceService.evictHomepageMapCache();
         resourceService.deleteAll(HomepageResourceCountCache.class);
         resourceService.save(resourceService.getResourceCounts());
         resourceService.deleteAll(BrowseDecadeCountCache.class);

@@ -14,13 +14,13 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.HomepageGeographicCache;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.AbstractControllerITCase;
@@ -82,27 +82,36 @@ public class CachingServiceITCase extends AbstractControllerITCase {
     @Rollback
     public void testCachingServiceGeo() throws Exception {
         cacheRebuilder.execute();
-        List<HomepageGeographicKeywordCache> findAll = genericService.findAll(HomepageGeographicKeywordCache.class);
+        List<HomepageGeographicCache> findAll = resourceService.getISOGeographicCounts();
         final Long count = new Long(findAll.size());
         Long count_ = count;
         CodingSheet cs = createAndSaveNewInformationResource(CodingSheet.class);
         GeographicKeyword mgc = new GeographicKeyword();
         mgc.setLabel("test");
         mgc.setLevel(Level.COUNTRY);
+        mgc.setCode("TST");
         genericService.save(mgc);
         cs.getManagedGeographicKeywords().add(mgc);
         genericService.saveOrUpdate(cs);
         evictCache();
         count_ = new Long(findAll.size());
         assertEquals(count, count_);
-        logger.info("list: {} ", findAll);
+        for (HomepageGeographicCache c: findAll) {
+            logger.trace("{} {} {}", c.getCode(), c.getCount(), c.getResourceType());
+        }
+
+        // done setup
         cacheRebuilder.execute();
-        findAll = genericService.findAll(HomepageGeographicKeywordCache.class);
+        findAll = resourceService.getISOGeographicCounts();
         count_ = new Long(findAll.size());
         logger.info("list: {} ", findAll);
+        for (HomepageGeographicCache c: findAll) {
+            logger.trace("{} {} {}", c.getCode(), c.getCount(), c.getResourceType());
+        }
         assertFalse(count.equals(count_));
 
-        assertEquals(count.longValue(), count_ - 1L);
+        // note this will need to be updated when the countries and codes are folded together
+        assertEquals(count.longValue(), count_ - 2L);
 
     }
 
