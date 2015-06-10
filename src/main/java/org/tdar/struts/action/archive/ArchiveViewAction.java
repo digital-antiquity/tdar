@@ -15,4 +15,8 @@ public class ArchiveViewAction extends AbstractResourceViewAction<Archive> {
 
     private static final long serialVersionUID = 7665230957988896511L;
 
+    @Override
+    public Class<Archive> getPersistableClass() {
+        return Archive.class;
+    }
 }

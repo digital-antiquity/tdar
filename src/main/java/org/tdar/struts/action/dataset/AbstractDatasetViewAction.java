@@ -19,7 +19,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.utils.PersistableUtils;
 
-public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dataset> {
+public abstract class AbstractDatasetViewAction<D extends Dataset> extends AbstractResourceViewAction<D> {
 
     private static final long serialVersionUID = -7657008098263870208L;
     private Long dataTableId;

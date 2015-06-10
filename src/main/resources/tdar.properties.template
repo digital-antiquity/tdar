@@ -38,7 +38,7 @@ site.name=the Digital Archaeological Record
 # tDAR can optionally use a "theme" with different headers and footers and css
 # this tells tDAR what directgory to use
 # default: includes/themes/tdar/
-app.theme.dir=includes/themes/tdar/
+app.theme.dir=/WEB-INF/themes/tdar/
 
 ###########################
 ##   Email Settings
@@ -112,6 +112,11 @@ file.store.class=org.tdar.filestore.PairtreeFilestore
 # where should the personal filestore live (used for information about people, for things they create, and temporary storage)
 # default: /home/tdar/personal-filestore
 personal.file.store.location=/home/tdar/personal-filestore
+
+# path to the '/hosted/' virtual directory.  This only applies in a non-production setting
+# default: ${personal.file.store.location}/hosted
+hosted.file.store.location=/home/tdar/hosted-filestore
+
 
 # Freemarker template directory (where custom freemarker templates are stored for emails and other tasks (Not web pages))
 # freemarker.templatedir

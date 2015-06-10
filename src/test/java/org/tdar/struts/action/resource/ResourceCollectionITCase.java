@@ -1,24 +1,16 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.tdar.TestConstants.TEST_IMAGE_DIR;
-import static org.tdar.TestConstants.TEST_IMAGE_NAME;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +25,6 @@ import java.util.UUID;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -41,7 +32,6 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -1258,11 +1248,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(seen);
     }
 
-    @Test
     /**
-     *  Assert that the sparse resource list returned by findCollectionSparseResources  matches the persisted list (for
-     *  the subset of properties in Resource that we care about)
+     * Assert that the sparse resource list returned by findCollectionSparseResources matches the persisted list (for
+     * the subset of properties in Resource that we care about)
      */
+    @Test
     public void testfindCollectionSparseResources() {
 
         // For now we rely on the the init-test and any data created by intervening web tests. In this way this test
@@ -1290,5 +1280,4 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             }
         }
     }
-
 }

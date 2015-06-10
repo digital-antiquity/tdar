@@ -60,7 +60,7 @@
     TDAR.documentHeightEvents = function (arg) {
         var _init = function (options) {
             _settings = $.extend({}, _defaults, options);
-            console.trace("init:: options:%s", options);
+            console.debug("init:: options:%s", options);
             $doc.data(_settings.dataProp, $doc.height());
             _cbid = window.setInterval(_poll, _settings.interval);
         };

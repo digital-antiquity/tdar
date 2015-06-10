@@ -261,6 +261,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         // resetting
         pap.execute();
     }
+    
+    @Test
+    @Rollback(true)
+    public void testAccountUsageHistory() {
+        scheduledProcessService.cronUpdateAccountUsageHistory();
+    }
 
     @Autowired
     OccurranceStatisticsUpdateProcess ocur;

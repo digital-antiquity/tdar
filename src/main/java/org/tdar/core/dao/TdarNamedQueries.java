@@ -146,6 +146,7 @@ public interface TdarNamedQueries {
     String DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS = "delete.data_table_column_relationships";
     String DELETE_DATA_TABLE_RELATIONSHIPS = "delete.data_table_relationships";
     String SCROLLABLE_SITEMAP = "sitemap.active_resources";
+    String UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE = "resourceCollection.updateResourcesToActice";
     // raw SQL/HQL queries
 
     /**

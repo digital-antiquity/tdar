@@ -1,7 +1,9 @@
 package org.tdar.core.bean.billing;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -16,6 +18,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -112,6 +115,11 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Resource> resources = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "account_id")
+    @OrderBy("date_created DESC")
+    private List<AccountUsageHistory> usageHistory = new ArrayList<>();
 
     private transient Long totalResources = 0L;
     private transient Long totalFiles = 0L;
@@ -453,5 +461,13 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     @Override
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
+    }
+
+    public List<AccountUsageHistory> getUsageHistory() {
+        return usageHistory;
+    }
+
+    public void setUsageHistory(List<AccountUsageHistory> history) {
+        this.usageHistory = history;
     }
 }
