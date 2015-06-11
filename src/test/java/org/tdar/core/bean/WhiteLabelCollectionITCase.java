@@ -26,7 +26,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.CollectionController;

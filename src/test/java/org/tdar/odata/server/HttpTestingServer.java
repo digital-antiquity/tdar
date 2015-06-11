@@ -2,8 +2,6 @@ package org.tdar.odata.server;
 
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.odata4j.jersey.producer.server.ODataJerseyServer;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerFactory;
@@ -11,6 +9,8 @@ import org.odata4j.producer.resources.DefaultODataApplication;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.web.SessionData;
