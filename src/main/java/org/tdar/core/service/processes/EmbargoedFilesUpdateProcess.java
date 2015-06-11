@@ -16,7 +16,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 
 @Component
-public class EmbargoedFilesUpdateProcess extends ScheduledBatchProcess<InformationResourceFile> {
+public class EmbargoedFilesUpdateProcess extends AbstractScheduledBatchProcess<InformationResourceFile> {
 
     private static final String SITE_ACRONYM = TdarConfiguration.getInstance().getSiteAcronym();
 

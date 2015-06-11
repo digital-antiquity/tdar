@@ -37,7 +37,7 @@ import org.tdar.core.service.resource.ResourceService;
  */
 
 @Component
-public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class RebuildHomepageCache extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 7987123045870435222L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -51,11 +51,6 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
     @Override
     public String getDisplayName() {
         return "Reprocess homepage cache";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return HomepageGeographicKeywordCache.class;
     }
 
     @Override

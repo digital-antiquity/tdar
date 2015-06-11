@@ -31,6 +31,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.processes.AbstractPersistableScheduledProcess;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.DailyStatisticsUpdate;
@@ -89,9 +90,9 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // all scheduled processes configured on the system
-    private Map<Class<?>, ScheduledProcess<Persistable>> scheduledProcessMap = new HashMap<Class<?>, ScheduledProcess<Persistable>>();
+    private Map<Class<?>, ScheduledProcess> scheduledProcessMap = new HashMap<Class<?>, ScheduledProcess>();
     // scheduled processes currently set to run in batches when spare cycles are available
-    private LinkedHashSet<ScheduledProcess<Persistable>> scheduledProcessQueue = new LinkedHashSet<ScheduledProcess<Persistable>>();
+    private LinkedHashSet<ScheduledProcess> scheduledProcessQueue = new LinkedHashSet<ScheduledProcess>();
     private boolean hasRunStartupProcesses;
 
     /**
@@ -209,10 +210,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @param processes
      */
     @Autowired
-    public void setAllScheduledProcesses(List<ScheduledProcess<?>> processes) {
-        for (ScheduledProcess<?> process_ : processes) {
-            @SuppressWarnings("unchecked")
-            ScheduledProcess<Persistable> process = (ScheduledProcess<Persistable>) process_;
+    public void setAllScheduledProcesses(List<ScheduledProcess> processes) {
+        for (ScheduledProcess process : processes) {
             // if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
             // scheduledProcessMap.clear();
             // logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
@@ -260,7 +259,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             return;
         }
 
-        ScheduledProcess<Persistable> process = scheduledProcessQueue.iterator().next();
+        ScheduledProcess process = scheduledProcessQueue.iterator().next();
         // FIXME: merge UpgradeTask and ScheduledProcess at some point, so that UpgradeTask-s are
         // created / added / managed within a ScheduledProcess.execute()
         if (process == null) {
@@ -278,7 +277,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             logger.debug("SKIPPING SCHEDULED PROCESSES, TOO MANY ACTIVE PROCESSES");
             return;
         }
-        logger.info("beginning {} startId: {}", process.getDisplayName(), process.getLastId());
+        if (process instanceof AbstractPersistableScheduledProcess) {
+            logger.info("beginning {} startId: {}", process.getDisplayName(), ((AbstractPersistableScheduledProcess)process).getLastId());
+        } else {
+            logger.info("beginning {}", process.getDisplayName());
+            
+        }
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             process.execute();
@@ -336,7 +340,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @param process
      * @return
      */
-    public boolean queue(ScheduledProcess<Persistable> process) {
+    public boolean queue(ScheduledProcess process) {
         if ((process == null) || !TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
             return false;
         }
@@ -348,7 +352,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * 
      * @return
      */
-    public Set<ScheduledProcess<Persistable>> getScheduledProcessQueue() {
+    public Set<ScheduledProcess> getScheduledProcessQueue() {
         return scheduledProcessQueue;
     }
 
@@ -357,8 +361,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * 
      * @return
      */
-    public List<ScheduledProcess<Persistable>> getAllScheduledProcesses() {
-        return new ArrayList<ScheduledProcess<Persistable>>(scheduledProcessMap.values());
+    public List<ScheduledProcess> getAllScheduledProcesses() {
+        return new ArrayList<ScheduledProcess>(scheduledProcessMap.values());
     }
 
     /**
@@ -395,8 +399,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     @Transactional
-    public void queueTask(Class<? extends ScheduledProcess<? extends Persistable>> class1) {
-        ScheduledProcess<Persistable> process = scheduledProcessMap.get(class1);
+    public void queueTask(Class<? extends ScheduledProcess> class1) {
+        ScheduledProcess process = scheduledProcessMap.get(class1);
         if (process != null) {
             scheduledProcessQueue.add(process);
         }

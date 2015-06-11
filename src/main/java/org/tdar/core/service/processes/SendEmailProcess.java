@@ -21,7 +21,7 @@ import org.tdar.core.service.external.EmailService;
  */
 
 @Component
-public class SendEmailProcess extends ScheduledBatchProcess<Email> {
+public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
 
     private static final long serialVersionUID = 6711790499277412427L;
 

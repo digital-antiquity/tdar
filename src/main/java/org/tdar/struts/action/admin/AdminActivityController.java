@@ -58,8 +58,8 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private Statistics sessionStatistics;
     private Boolean scheduledProcessesEnabled;
 
-    private List<ScheduledProcess<Persistable>> allScheduledProcesses;
-    private Collection<ScheduledProcess<Persistable>> scheduledProcessQueue;
+    private List<ScheduledProcess> allScheduledProcesses;
+    private Collection<ScheduledProcess> scheduledProcessQueue;
 
     private List<Activity> activityList = new ArrayList<Activity>();
 
@@ -138,19 +138,19 @@ public class AdminActivityController extends AuthenticationAware.Base {
         getMoreInfo().put("system load", osBean.getSystemLoadAverage());
     }
 
-    public Collection<ScheduledProcess<Persistable>> getScheduledProcessQueue() {
+    public Collection<ScheduledProcess> getScheduledProcessQueue() {
         return scheduledProcessQueue;
     }
 
-    public void setScheduledProcessQueue(Set<ScheduledProcess<Persistable>> scheduledProcessQueue) {
+    public void setScheduledProcessQueue(Set<ScheduledProcess> scheduledProcessQueue) {
         this.scheduledProcessQueue = scheduledProcessQueue;
     }
 
-    public List<ScheduledProcess<Persistable>> getAllScheduledProcesses() {
+    public List<ScheduledProcess> getAllScheduledProcesses() {
         return allScheduledProcesses;
     }
 
-    public void setAllScheduledProcesses(List<ScheduledProcess<Persistable>> allScheduledProcesses) {
+    public void setAllScheduledProcesses(List<ScheduledProcess> allScheduledProcesses) {
         this.allScheduledProcesses = allScheduledProcesses;
     }
 
