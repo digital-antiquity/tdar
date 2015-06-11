@@ -5,13 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -28,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -696,27 +693,6 @@ public class ResourceService extends GenericService {
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         return datasetDao.findAllResourcesWithPublicImagesForSitemap(gisg);
 
-    }
-
-    @Transactional
-    public void setupWorldMap(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
-        Long countryTotal = 0l;
-        Double countryLogTotal = 0d;
-        for (HomepageGeographicKeywordCache item : findAllWithL2Cache(HomepageGeographicKeywordCache.class)) {
-            Long count = item.getCount();
-            Double logCount = item.getLogCount();
-            if (logCount > countryLogTotal) {
-                countryLogTotal = logCount;
-            }
-            if (count > countryTotal) {
-                countryTotal = count;
-            }
-            worldMapData.put(item.getKey(), item);
-        }
-        for (Entry<String, HomepageGeographicKeywordCache> entrySet : worldMapData.entrySet()) {
-            entrySet.getValue().setTotalCount(countryTotal);
-            entrySet.getValue().setTotalLogCount(countryLogTotal);
-        }
     }
 
     @Transactional(readOnly = true)

@@ -14,12 +14,12 @@ import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Layout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.net.SMTPAppender;
 import org.apache.log4j.spi.LoggingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author abrin gracefully borrowed from
