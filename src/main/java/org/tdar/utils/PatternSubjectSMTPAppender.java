@@ -14,7 +14,8 @@ import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Layout;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.net.SMTPAppender;
@@ -27,7 +28,7 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class PatternSubjectSMTPAppender extends SMTPAppender {
 
-    Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     protected void sendBuffer() {
@@ -88,7 +89,7 @@ public class PatternSubjectSMTPAppender extends SMTPAppender {
             msg.setSentDate(new Date());
             Transport.send(msg);
         } catch (MessagingException e) {
-            logger.trace(e);
+            logger.trace("SMTP MessageException", e);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

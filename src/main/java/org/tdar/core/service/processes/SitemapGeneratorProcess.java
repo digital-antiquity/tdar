@@ -28,7 +28,7 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import com.redfin.sitemapgenerator.WebSitemapUrl;
 
 @Component
-public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class SitemapGeneratorProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 561910508692901053L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -163,12 +163,6 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     @Override
     public String getDisplayName() {
         return "SiteMap generator";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

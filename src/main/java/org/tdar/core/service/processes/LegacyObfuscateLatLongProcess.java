@@ -16,7 +16,7 @@ import com.google.common.base.Objects;
  *
  */
 @Component
-public class LegacyObfuscateLatLongProcess extends ScheduledBatchProcess<LatitudeLongitudeBox> {
+public class LegacyObfuscateLatLongProcess extends AbstractScheduledBatchProcess<LatitudeLongitudeBox> {
 
     /**
      * 

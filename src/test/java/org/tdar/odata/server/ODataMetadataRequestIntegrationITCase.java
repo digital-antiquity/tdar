@@ -4,7 +4,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import org.tdar.core.bean.resource.Dataset;
 @ContextConfiguration(locations = { "Placeholder-context.xml" })
 public class ODataMetadataRequestIntegrationITCase extends AbstractLightFitTest {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private InitialisableRepositoryService repositoryService;

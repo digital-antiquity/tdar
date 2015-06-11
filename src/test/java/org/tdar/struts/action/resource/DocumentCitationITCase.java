@@ -9,7 +9,8 @@ import java.util.HashMap;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -26,7 +27,7 @@ import edu.asu.lib.mods.ModsDocument;
 
 public class DocumentCitationITCase extends AbstractResourceControllerITCase {
 
-    private Logger log = Logger.getLogger(getClass());
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     private static final String DOC_TITLE = "Archeological Survey and Architectural Study of Montezuma Castle National Monument";
     private static final String DOC_DESCRIPTION_FRAGMENT = "survey of Montezuma Castle National Monument was conducted";

@@ -29,7 +29,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
 
 @Component
-public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
     public static final String PROBLEM_FILES_REPORT = "Problem Files Report";
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -169,11 +169,6 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     @Override
     public String getDisplayName() {
         return "Filestore Verification Task";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return null;
     }
 
     @Override

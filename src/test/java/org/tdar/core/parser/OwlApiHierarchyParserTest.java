@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -38,7 +39,7 @@ public class OwlApiHierarchyParserTest {
 
     public final static String EXAMPLE_HIERARCHY = TestConstants.TEST_ONTOLOGY_DIR + "example-hierarchy.owl";
 
-    private final static Logger logger = Logger.getLogger(OwlApiHierarchyParserTest.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(OwlApiHierarchyParserTest.class);
 
     public OWLOntology getOwlOntology() {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();

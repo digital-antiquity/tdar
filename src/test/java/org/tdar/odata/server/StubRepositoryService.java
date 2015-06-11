@@ -9,6 +9,7 @@ import java.util.Map;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.odata.bean.AbstractDataRecord;
 
 // TODO RR: This Stub is a mess at the moment. Rationalise it.
 

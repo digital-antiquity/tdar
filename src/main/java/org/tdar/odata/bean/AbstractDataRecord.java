@@ -1,4 +1,4 @@
-package org.tdar.odata.server;
+package org.tdar.odata.bean;
 
 import java.util.HashMap;
 import java.util.Map;

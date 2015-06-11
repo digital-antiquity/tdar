@@ -6,7 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.db.conversion.analyzers.CharAnalyzer;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
@@ -16,7 +17,7 @@ import org.tdar.db.conversion.analyzers.LongAnalyzer;
 
 public class ConversionStatisticsManager {
 
-    private Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<DataTableColumn, List<ColumnAnalyzer>> statistics = new HashMap<DataTableColumn, List<ColumnAnalyzer>>();
 

@@ -7,12 +7,13 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 
 public class ResourceCreatorRoleTestCase {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final int ROLE_COUNT_ALL = 17; // counting deprecated
     private static final int ROLE_COUNT_PERSON = 12; // not counting deprecated

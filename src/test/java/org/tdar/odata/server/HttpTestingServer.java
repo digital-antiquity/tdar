@@ -2,7 +2,8 @@ package org.tdar.odata.server;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.odata4j.jersey.producer.server.ODataJerseyServer;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerFactory;
@@ -22,7 +23,7 @@ import com.sun.net.httpserver.HttpExchange;
 @SuppressWarnings("restriction")
 public class HttpTestingServer implements ITestingServer {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private SessionData sessionData;

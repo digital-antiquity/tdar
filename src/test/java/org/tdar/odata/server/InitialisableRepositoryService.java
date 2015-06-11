@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.odata.service.RepositoryService;
 
 // RR: Used by tests.
 

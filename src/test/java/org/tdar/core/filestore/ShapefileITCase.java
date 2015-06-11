@@ -5,7 +5,8 @@ package org.tdar.core.filestore;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import org.tdar.filestore.tasks.ShapefileReaderTask;
  */
 public class ShapefileITCase extends AbstractIntegrationTestCase {
 
-    private Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     FileAnalyzer fileAnalyzer;

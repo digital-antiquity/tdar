@@ -5,7 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.lucene.queryParser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     @Autowired
     private BrowseCreatorController controller;
-    private Logger log = Logger.getLogger(getClass());
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Before
     public void initController() {
@@ -142,7 +143,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         controller.prepare();
         assertEquals(Action.SUCCESS, controller.browseCreators());
         assertEquals(creator, controller.getCreator());
-        log.info(controller.getResults());
+        log.info("{}", controller.getResults());
         assertTrue(controller.getResults().size() > 0);
     }
 }

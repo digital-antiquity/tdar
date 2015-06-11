@@ -37,7 +37,7 @@ import org.tdar.core.service.UrlService;
  */
 
 @Component
-public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class SalesforceSyncProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 4558666368084097084L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
@@ -51,11 +51,6 @@ public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeograp
     @Override
     public String getDisplayName() {
         return "Salesforce Sync";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return HomepageGeographicKeywordCache.class;
     }
 
     @Override

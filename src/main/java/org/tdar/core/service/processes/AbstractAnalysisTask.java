@@ -23,7 +23,7 @@ import org.tdar.utils.PersistableUtils;
 
 import com.google.common.primitives.Doubles;
 
-public abstract class AbstractAnalysisTask<P extends Persistable> extends ScheduledBatchProcess<P> {
+public abstract class AbstractAnalysisTask<P extends Persistable> extends AbstractScheduledBatchProcess<P> {
 
     private static final long serialVersionUID = 3903831600832839879L;
 

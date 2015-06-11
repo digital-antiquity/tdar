@@ -6,6 +6,7 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerDelegate;
 import org.odata4j.producer.ODataProducerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.odata.service.RepositoryService;
 
 // TODO RR: this Factory can go away. It does not do enough. 
 // The TDarODataProducer should be instantiated directly by Spring.

@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -30,7 +31,7 @@ public class GeoSearchService {
 
     @Autowired
     GeoSearchDao geoSearchDao;
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     // continent
     private static final String COL_CONTINENT_NAME = "continent";

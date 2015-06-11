@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.odata.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.odata4j.exceptions.NotAuthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,10 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.Accessible;
-import org.tdar.odata.server.AbstractDataRecord;
-import org.tdar.odata.server.RepositoryService;
+import org.tdar.odata.bean.AbstractDataRecord;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
@@ -33,7 +35,7 @@ import org.tdar.web.SessionDataAware;
 @Service
 public class ODataRepositoryService implements RepositoryService, SessionDataAware {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private Accessible authService;

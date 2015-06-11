@@ -12,7 +12,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -43,7 +44,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
     @Autowired
     private MessageService messageService;
 
-    private Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testAnalyzerSuggestions() {
@@ -79,7 +80,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
 
         boolean seen = false;
         for (InformationResourceFileVersion version : informationResourceFile.getLatestVersions()) {
-            logger.info(version);
+            logger.info("{}", version);
 
             if (version.isTranslated()) {
                 String contents = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
@@ -23,14 +24,16 @@ import org.odata4j.edm.EdmSimpleType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.odata.server.MetaData.Container;
-import org.tdar.odata.server.MetaData.Entity;
-import org.tdar.odata.server.MetaData.EntitySet;
-import org.tdar.odata.server.MetaData.Property;
+import org.tdar.odata.bean.MetaData;
+import org.tdar.odata.bean.MetaData.Container;
+import org.tdar.odata.bean.MetaData.Entity;
+import org.tdar.odata.bean.MetaData.EntitySet;
+import org.tdar.odata.bean.MetaData.Property;
+import org.tdar.odata.service.RepositoryService;
 
 public class MetaDataBuilder implements IMetaDataBuilder {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     // The entity hierarchy.
     // These are semantically different for Datasets and DataTables in the tDAR domain model.

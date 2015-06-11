@@ -39,7 +39,7 @@ import org.tdar.core.service.resource.ResourceService;
  */
 
 @Component
-public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser> {
+public class SetupBillingAccountsProcess extends AbstractScheduledBatchProcess<TdarUser> {
 
     private static final String INVOICE_NOTE = "This invoice was generated on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
