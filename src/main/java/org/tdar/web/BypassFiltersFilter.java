@@ -10,7 +10,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * $Id$
@@ -39,7 +41,7 @@ import org.apache.log4j.Logger;
  */
 public class BypassFiltersFilter implements Filter {
 
-    private static final Logger log = Logger.getLogger(BypassFiltersFilter.class);
+    private final transient Logger log = LoggerFactory.getLogger(BypassFiltersFilter.class);
 
     @Override
     public void destroy() {

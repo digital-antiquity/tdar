@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -56,7 +57,7 @@ public abstract class ModsTransformer<R extends Resource> implements
         Transformer<R, ModsDocument> {
 
     @SuppressWarnings("unused")
-    private Logger logger = Logger.getLogger(getClass());
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public ModsDocument transform(R source) {

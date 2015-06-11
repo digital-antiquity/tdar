@@ -11,7 +11,9 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * $Id$
@@ -27,7 +29,7 @@ public class ConfigurationAssistant implements Serializable {
     private static final long serialVersionUID = -9093022080387404606L;
 
     private final Properties properties;
-    private final transient Logger logger = Logger.getLogger(getClass());
+    private final transient static Logger logger = LoggerFactory.getLogger(ConfigurationAssistant.class);
 
     public ConfigurationAssistant() {
         this(new Properties());

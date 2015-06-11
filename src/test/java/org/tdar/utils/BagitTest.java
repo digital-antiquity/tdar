@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +43,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 public class BagitTest {
 
     private BagFactory bagFactory = new BagFactory();
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
 
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
 
@@ -120,8 +123,7 @@ public class BagitTest {
         Bag bagOut = this.getBag(bagHome, Version.V0_96, LoadOption.BY_MANIFESTS);
         SimpleResult result = verifier.verify(bagOut);
         Assert.assertTrue("Bag contents valid", result.isSuccess());
-        Logger logger = Logger.getLogger(getClass());
-        logger.info(result.getMessages());
+        logger.info("mesages;{}", result.getMessages());
         for (BagFile bf : bagOut.getPayload()) {
             logger.info(bf.getFilepath() + " - " + bf.getSize());
 

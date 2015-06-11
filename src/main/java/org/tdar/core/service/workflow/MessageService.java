@@ -7,7 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.FileStatus;
@@ -40,7 +41,7 @@ public class MessageService {
     @Autowired
     private SerializationService serializationService;
 
-    private transient final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /*
      * ContextObjects are embedded in messages as objects and need to be casted back

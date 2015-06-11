@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -16,6 +15,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 
@@ -29,7 +30,7 @@ import org.tdar.core.bean.resource.CodingSheet;
  */
 public class ExcelCodingSheetParser implements CodingSheetParser {
 
-    private final static Logger logger = Logger.getLogger(ExcelCodingSheetParser.class);
+    private final static Logger logger = LoggerFactory.getLogger(ExcelCodingSheetParser.class);
     private DataFormatter excelDataFormatter = new HSSFDataFormatter();
 
     @Override

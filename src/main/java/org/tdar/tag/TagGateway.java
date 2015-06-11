@@ -11,7 +11,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.lucene.queryParser.ParseException;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ import org.w3c.dom.Element;
         endpointInterface = "org.tdar.tag.TagGatewayPort")
 public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
-    private static final Logger logger = Logger.getLogger(TagGateway.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(TagGateway.class);
     private static final Element XSLT;
     private String version;
     @Autowired
@@ -88,7 +89,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         } catch (Exception e) {
             String msg = "Could not initialize the TagGateway service. " +
                     "Error reading or parsing tagPortal.xsl.";
-            logger.fatal(msg, e);
+            logger.error(msg, e);
             throw new RuntimeException(msg, e);
         }
     }

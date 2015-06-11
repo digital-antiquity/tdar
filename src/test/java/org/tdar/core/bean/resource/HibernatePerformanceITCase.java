@@ -8,9 +8,8 @@ import java.util.Random;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+
 import org.hibernate.Cache;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -33,29 +32,32 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     @Autowired
     private transient SessionFactory sessionFactory;
 
-    List<Level> oldLevels = new LinkedList<>();
+    /**
+     * FIXME: Disabled for new log4j 
+     */
+//    List<Level> oldLevels = new LinkedList<>();
     List<Logger> loggers = new LinkedList<>();
 
     // turn off *all* loggers. revert state with tron(). Careful: if you don't call tron() or if an unhandled
     // exception occurs the loggers will remain off for the remainder of your unit tests.
     void disableLogging() {
         getVerifyTransactionCallback();
-        loggers.clear();
-        oldLevels.clear();
-        loggers.addAll(Collections.<Logger> list(LogManager.getCurrentLoggers()));
-        loggers.add(LogManager.getRootLogger());
-        for (Logger logger : loggers) {
-            // out("troff:: %s \t was:%s", logger.getName(), logger.getLevel());
-            oldLevels.add(logger.getLevel());
-            logger.setLevel(Level.OFF);
-        }
+//        loggers.clear();
+//        oldLevels.clear();
+//        loggers.addAll(Collections.<Logger> list(LogManager.getCurrentLoggers()));
+//        loggers.add(LogManager.getRootLogger());
+//        for (Logger logger : loggers) {
+//            // out("troff:: %s \t was:%s", logger.getName(), logger.getLevel());
+//            oldLevels.add(logger.getLevel());
+//            logger.setLevel(Level.OFF);
+//        }
     }
 
     void enableLogging() {
-        ListIterator<Logger> itor = loggers.listIterator();
-        for (Level level : oldLevels) {
-            itor.next().setLevel(level);
-        }
+//        ListIterator<Logger> itor = loggers.listIterator();
+//        for (Level level : oldLevels) {
+//            itor.next().setLevel(level);
+//        }
     }
 
     void logstats(String title, SummaryStatistics stats) {

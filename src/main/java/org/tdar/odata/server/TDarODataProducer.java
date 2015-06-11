@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.joda.time.LocalDateTime;
 import org.odata4j.core.OAtomEntity;
 import org.odata4j.core.OEntities;
@@ -66,7 +67,7 @@ import org.tdar.odata.server.MetaData.Property;
 
 public class TDarODataProducer implements ODataProducer {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private RepositoryService repositoryService;
     private IMetaDataBuilder metaDataBuilder;

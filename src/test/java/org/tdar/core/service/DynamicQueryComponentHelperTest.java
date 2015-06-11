@@ -4,7 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Project;
@@ -16,7 +17,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 
 public class DynamicQueryComponentHelperTest {
 
-    public Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     HashSet<DynamicQueryComponent> createFields = new HashSet<DynamicQueryComponent>();
 
     public DynamicQueryComponentHelperTest() {
