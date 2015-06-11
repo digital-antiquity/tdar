@@ -1,24 +1,16 @@
-package org.tdar.core.bean.cache;
+package org.tdar.core.cache;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import java.io.Serializable;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 
-@Entity
-@Table(name = "weekly_popular_resource_cache")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.WeeklyPopularResourceCache")
-public class WeeklyPopularResourceCache extends Persistable.Base implements Comparable<WeeklyPopularResourceCache>, ResourceCache<Resource> {
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+@JsonAutoDetect
+public class WeeklyPopularResourceCache implements Comparable<WeeklyPopularResourceCache>, ResourceCache<Resource>, Serializable {
 
     private static final long serialVersionUID = 589291882710378333L;
-    @OneToOne
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+
     private Resource resource;
 
     public WeeklyPopularResourceCache() {

@@ -1,4 +1,4 @@
-package org.tdar.core.bean.util;
+package org.tdar.core.cache;
 
 import java.io.Serializable;
 

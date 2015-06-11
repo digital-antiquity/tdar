@@ -16,15 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.cache.BrowseDecadeCountCache;
-import org.tdar.core.bean.cache.BrowseYearCountCache;
-import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.HomepageGeographicCache;
+import org.tdar.core.cache.BrowseDecadeCountCache;
+import org.tdar.core.cache.BrowseYearCountCache;
+import org.tdar.core.cache.HomepageGeographicCache;
+import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -34,6 +34,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
@@ -113,15 +114,18 @@ public class ExploreController extends AbstractLookupController {
     @Autowired
     private transient ResourceService resourceService;
 
+    @Autowired
+    private transient InformationResourceService informationResourceService;
+
     @Action(EXPLORE)
     public String explore() {
-        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
+        setHomepageResourceCountCache(resourceService.getResourceCounts());
         setMaterialTypes(genericKeywordService.findAllWithCache(MaterialKeyword.class));
         setInvestigationTypes(genericKeywordService.findAllWithCache(InvestigationType.class));
         setCultureKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
-        setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
-        setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
+        setTimelineData(informationResourceService.findResourcesByDecade());
+        setScholarData(informationResourceService.findResourceCountsByYear());
 
         List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
         try {
@@ -131,10 +135,9 @@ public class ExploreController extends AbstractLookupController {
             e.printStackTrace();
         }
 
-        int count = 10;
-        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
+        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
         try {
-            getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
+            getRecentResources().addAll(searchService.findMostRecentResources(10, getAuthenticatedUser(), this));
         } catch (ParseException pe) {
             getLogger().debug("parse exception", pe);
         }

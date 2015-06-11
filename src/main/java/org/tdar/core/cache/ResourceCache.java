@@ -1,4 +1,4 @@
-package org.tdar.core.bean.cache;
+package org.tdar.core.cache;
 
 import org.tdar.core.bean.HasLabel;
 

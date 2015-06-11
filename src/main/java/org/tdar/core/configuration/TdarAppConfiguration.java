@@ -45,6 +45,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
+import org.tdar.core.cache.Caches;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.dao.external.pid.EZIDDao;
@@ -129,8 +130,14 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         List<Cache> caches = new ArrayList<>();
         caches.add(cacheBean());
-        caches.add(new ConcurrentMapCache("rssFeed"));
-        caches.add(new ConcurrentMapCache("homepageMap"));
+        caches.add(new ConcurrentMapCache(Caches.RSS_FEED));
+        caches.add(new ConcurrentMapCache(Caches.BROWSE_DECADE_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.BROWSE_YEAR_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.DECADE_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_FEATURED_ITEM_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_MAP_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_RESOURCE_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.WEEKLY_POPULAR_RESOURCE_CACHE));
         cacheManager.setCaches(caches);
         return cacheManager;
     }

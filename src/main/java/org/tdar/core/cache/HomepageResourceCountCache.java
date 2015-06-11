@@ -1,17 +1,11 @@
-package org.tdar.core.bean.cache;
+package org.tdar.core.cache;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import java.io.Serializable;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.ResourceType;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 /**
  * This caches the counts of resource types for the homepage.
@@ -19,19 +13,13 @@ import org.tdar.core.bean.resource.ResourceType;
  * @author abrin
  * 
  */
-@Entity
-@Table(name = "homepage_cache_resource_type")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.HomepageResourceCountCache")
-public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType> {
+@JsonAutoDetect
+public class HomepageResourceCountCache implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType>, Serializable {
 
     private static final long serialVersionUID = 1808499288414868010L;
 
-    @Column(name = "resource_count")
     private Long count;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "resource_type", nullable = false, unique = true)
     private ResourceType resourceType;
 
     public HomepageResourceCountCache() {

@@ -1,7 +1,8 @@
-package org.tdar.core.bean.cache;
+package org.tdar.core.cache;
+
+import java.io.Serializable;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.tdar.core.bean.Persistable;
 import org.tdar.utils.DataUtil;
 
 /**
@@ -13,8 +14,8 @@ import org.tdar.utils.DataUtil;
  * @param <D>
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractCountCache<C extends AbstractCountCache, D extends Comparable<D>> extends Persistable.Base implements Comparable<C>,
-        ResourceCache {
+public abstract class AbstractCountCache<C extends AbstractCountCache, D extends Comparable<D>> implements Comparable<C>,
+        ResourceCache, Serializable {
 
     private static final long serialVersionUID = 6182074332493898892L;
 

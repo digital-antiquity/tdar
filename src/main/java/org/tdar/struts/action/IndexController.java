@@ -16,16 +16,16 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
-import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.HomepageGeographicCache;
+import org.tdar.core.cache.HomepageGeographicCache;
+import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
@@ -60,6 +60,8 @@ public class IndexController extends AuthenticationAware.Base {
 
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private InformationResourceService informationResourceService;
 
     @Autowired
     private ObfuscationService obfuscationService;
@@ -159,8 +161,7 @@ public class IndexController extends AuthenticationAware.Base {
             params = { "contentType", "text/html" }) })
     public String featuredItems() {
         try {
-            for (HomepageFeaturedItemCache cache : getGenericService().findAllWithL2Cache(HomepageFeaturedItemCache.class)) {
-                Resource key = cache.getKey();
+            for (Resource key : informationResourceService.getFeaturedItems()) {
                 if (key instanceof InformationResource) {
                     authorizationService.applyTransientViewableFlag(key, null);
                 }

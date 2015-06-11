@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.ScrollableResults;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.cache.HomepageResourceCountCache;
-import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -49,7 +48,9 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
-import org.tdar.core.bean.util.HomepageGeographicCache;
+import org.tdar.core.cache.Caches;
+import org.tdar.core.cache.HomepageGeographicCache;
+import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -256,7 +257,7 @@ public class ResourceService extends GenericService {
      * @return
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "homepageMap")
+    @Cacheable(value = Caches.HOMEPAGE_MAP_CACHE)
     public List<HomepageGeographicCache> getISOGeographicCounts() {
         logger.debug("requesting homepage cache");
         return datasetDao.getISOGeographicCounts();
@@ -390,6 +391,8 @@ public class ResourceService extends GenericService {
      * 
      * @return
      */
+    @Cacheable(value = Caches.HOMEPAGE_RESOURCE_COUNT_CACHE)
+    @Transactional(readOnly=true)
     public List<HomepageResourceCountCache> getResourceCounts() {
         return datasetDao.getResourceCounts();
     }
@@ -701,27 +704,40 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly = true)
-    public List<Resource> getWeeklyPopularResources(int count) {
-        List<Resource> featured = new ArrayList<>();
-        try {
-            int cacheCount = 0;
-            for (WeeklyPopularResourceCache cache : datasetDao.findAll(WeeklyPopularResourceCache.class)) {
-                Resource key = cache.getKey();
-                if (key instanceof Resource) {
-                    authenticationAndAuthorizationService.applyTransientViewableFlag(key, null);
+    @Cacheable(value = Caches.WEEKLY_POPULAR_RESOURCE_CACHE)
+    public List<Resource> getWeeklyPopularResources() {
+        return getWeeklyPopularResources(10);
+    }
+    
+    public List<Resource> getWeeklyPopularResources(int count) {    
+        int max = count;
+        DateTime end = new DateTime();
+        DateTime start = end.minusDays(7);
+        List<Resource> popular = new ArrayList<>();
+        List<AggregateViewStatistic> aggregateUsageStats = getOverallUsageStats(start.toDate(), end.toDate(), 40L);
+        if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
+            Set<Long> seen = new HashSet<>();
+            for (AggregateViewStatistic avs : aggregateUsageStats) {
+                Long resourceId = avs.getResource().getId();
+                // handling unique resource ids across the timeperiod
+                if (seen.contains(resourceId)) {
+                    continue;
                 }
-                if (key.isActive()) {
-                    if (cacheCount == count) {
-                        break;
-                    }
-                    cacheCount++;
-                    featured.add(key);
+
+                if (max == 0) {
+                    break;
+                }
+                max--;
+
+                seen.add(resourceId);
+                Resource resource = find(resourceId);
+                if ((resource != null) && resource.isActive()) {
+                    popular.add(resource);
                 }
             }
-        } catch (IndexOutOfBoundsException ioe) {
-            logger.debug("no featured resources found");
         }
-        return featured;
+
+        return popular;
     }
 
     @Transactional(readOnly = false)
@@ -813,10 +829,46 @@ public class ResourceService extends GenericService {
         return datasetDao.findAllActiveScrollableForSitemap();
     }
     
-    @CacheEvict(value="homepageMap",allEntries=true)
+    @CacheEvict(value=Caches.HOMEPAGE_MAP_CACHE, allEntries=true)
     @Transactional(readOnly=false)
     public void evictHomepageMapCache() {
         logger.debug("evicting homepage cache");
+    }
+
+    @CacheEvict(value=Caches.HOMEPAGE_RESOURCE_COUNT_CACHE, allEntries=true)
+    @Transactional(readOnly=false)
+    public void evictResourceCountCache() {
+        // TODO Auto-generated method stub
+    }
+
+    @CacheEvict(value=Caches.DECADE_COUNT_CACHE, allEntries=true)
+    @Transactional(readOnly=false)
+    public void evictDecadeCountCache() {
+        // TODO Auto-generated method stub
+    }
+
+    @CacheEvict(value=Caches.BROWSE_DECADE_COUNT_CACHE, allEntries=true)
+    @Transactional(readOnly=false)
+    public void evictBrowseYearCountCache() {
+        // TODO Auto-generated method stub
+    }
+
+    @CacheEvict(value=Caches.WEEKLY_POPULAR_RESOURCE_CACHE, allEntries=true)
+    @Transactional(readOnly=false)
+    public void evictPopularResourceCache() {
+        // TODO Auto-generated method stub
+    }
+
+    @CacheEvict(value=Caches.HOMEPAGE_FEATURED_ITEM_CACHE, allEntries=true)
+    @Transactional(readOnly=false)
+    public void evictHomepageFeaturedItemCache() {
+        // TODO Auto-generated method stub
+    }
+    
+    @CacheEvict(value=Caches.BROWSE_YEAR_COUNT_CACHE, allEntries=true)
+    @Transactional(readOnly=false)
+    public void evictBrowseYearCountcache() {
+        
     }
 
 }

@@ -116,6 +116,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         } catch (ParseException pe) {
             getLogger().debug("parse exception", pe);
         }
+        // note, in rare occasions, a cache hit might mean that the resource's status has changed
         getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
 
     }

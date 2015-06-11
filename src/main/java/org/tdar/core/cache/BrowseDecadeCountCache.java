@@ -1,31 +1,20 @@
-package org.tdar.core.bean.cache;
+package org.tdar.core.cache;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 /**
  * This caches the resource-count-per-decade on the homepage.
  * 
  * @author abrin
  * 
- */
-@Entity
-@Table(name = "explore_cache_decade")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.BrowseDecadeCache")
+*/
+@JsonAutoDetect
 public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCountCache, Integer> {
 
     private static final long serialVersionUID = -5905078214966414970L;
 
-    @Column(name = "item_count")
     private Long count;
 
-    @Column(name = "key")
     private Integer key;
 
     @SuppressWarnings("unused")

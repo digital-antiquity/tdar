@@ -36,6 +36,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.cache.Caches;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
@@ -147,7 +148,7 @@ public class RssService implements Serializable {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    @Cacheable(value = "rssFeed")
+    @Cacheable(value = Caches.RSS_FEED)
     public List<SyndEntry> parseFeed(URL url) throws FeedException, IOException {
         List<SyndEntry> result = new ArrayList<>();
         logger.debug("requesting rss");

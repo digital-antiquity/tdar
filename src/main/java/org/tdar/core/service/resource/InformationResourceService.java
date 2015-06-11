@@ -3,16 +3,20 @@ package org.tdar.core.service.resource;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.cache.BrowseDecadeCountCache;
-import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.cache.BrowseDecadeCountCache;
+import org.tdar.core.cache.BrowseYearCountCache;
+import org.tdar.core.cache.Caches;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.InformationResourceDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.utils.PersistableUtils;
@@ -47,8 +51,9 @@ public class InformationResourceService extends AbstractInformationResourceServi
      * @return
      */
     @Transactional(readOnly = true)
-    public List<BrowseDecadeCountCache> findResourcesByDecade(Status... statuses) {
-        return getDao().findResourcesByDecade(statuses);
+    @Cacheable(value = Caches.BROWSE_DECADE_COUNT_CACHE)
+    public List<BrowseDecadeCountCache> findResourcesByDecade() {
+        return getDao().findResourcesByDecade(Status.ACTIVE);
     }
 
     /**
@@ -72,7 +77,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
      *            how many to return
      * @return
      */
-    public <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, int maxResults) {
+    public <E extends Resource> List<E> findRandomFeaturedResource(boolean restrictToFiles, int maxResults) {
         return getDao().findRandomFeaturedResource(restrictToFiles, maxResults);
     }
 
@@ -84,7 +89,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
      * @param maxResults
      * @return
      */
-    public <E> List<E> findRandomFeaturedResourceInProject(boolean restrictToFiles, Project project, int maxResults) {
+    public <E extends Resource> List<E> findRandomFeaturedResourceInProject(boolean restrictToFiles, Project project, int maxResults) {
         return getDao().findRandomFeaturedResourceInProject(restrictToFiles, project, maxResults);
     }
 
@@ -96,7 +101,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
      * @param maxResults
      * @return
      */
-    public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
+    public <E extends Resource> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
         List<ResourceCollection> collections = null;
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
             collections = resourceCollectionDao.findCollectionsOfParent(collectionId, false, CollectionType.SHARED);
@@ -112,8 +117,15 @@ public class InformationResourceService extends AbstractInformationResourceServi
      * @return
      */
     @Transactional(readOnly = true)
-    public List<BrowseYearCountCache> findResourcesByYear(Status... statuses) {
-        return getDao().findResourcesByYear(statuses);
+    @Cacheable(value = Caches.BROWSE_YEAR_COUNT_CACHE)
+    public List<BrowseYearCountCache> findResourceCountsByYear() {
+        return getDao().findResourcesByYear(Status.ACTIVE);
     }
 
+    @Cacheable(value = Caches.HOMEPAGE_FEATURED_ITEM_CACHE)
+    @Transactional(readOnly=true)
+    public List<Resource> getFeaturedItems() {
+        Long featuredCollectionId = TdarConfiguration.getInstance().getFeaturedCollectionId();
+        return  findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5);
+    }
 }

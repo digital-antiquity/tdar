@@ -332,4 +332,12 @@
         </createTable>
     </changeSet>
 
+	<changeSet id="munsell-cache-1" author="abrin">
+		<dropTable tableName="explore_cache_decade"/>
+		<dropTable tableName="explore_cache_year"/>
+		<dropTable tableName="homepage_featured_item_cache"/>
+		<dropTable tableName="homepage_cache_resource_type"/>
+		<dropTable tableName="weekly_popular_resource_cache"/>
+		<dropTable tableName="homepage_cache_geographic_keyword"/>
+	</changeSet>
 </databaseChangeLog>
