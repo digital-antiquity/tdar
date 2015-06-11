@@ -17,7 +17,9 @@ import org.odata4j.exceptions.ForbiddenException;
 import org.odata4j.exceptions.NotFoundException;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.odata.server.MetaData.EntitySet;
+import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.odata.bean.MetaData.EntitySet;
+import org.tdar.odata.service.RepositoryService;
 
 @RunWith(JMock.class)
 public class TDarODataProducerUpdateTest {

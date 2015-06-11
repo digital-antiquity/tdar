@@ -15,6 +15,7 @@ import org.odata4j.edm.EdmEntityType;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.odata.service.RepositoryService;
 
 @RunWith(JMock.class)
 public class MetaDataBuilderTest {

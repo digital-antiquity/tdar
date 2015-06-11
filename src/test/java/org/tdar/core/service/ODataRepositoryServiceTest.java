@@ -24,7 +24,9 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.external.Accessible;
-import org.tdar.odata.server.AbstractDataRecord;
+import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.odata.service.ODataRepositoryService;
+import org.tdar.odata.service.RowOperations;
 import org.tdar.web.SessionData;
 
 @RunWith(JMock.class)

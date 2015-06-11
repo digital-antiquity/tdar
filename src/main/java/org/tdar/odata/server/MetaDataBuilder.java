@@ -24,10 +24,12 @@ import org.odata4j.edm.EdmSimpleType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.odata.server.MetaData.Container;
-import org.tdar.odata.server.MetaData.Entity;
-import org.tdar.odata.server.MetaData.EntitySet;
-import org.tdar.odata.server.MetaData.Property;
+import org.tdar.odata.bean.MetaData;
+import org.tdar.odata.bean.MetaData.Container;
+import org.tdar.odata.bean.MetaData.Entity;
+import org.tdar.odata.bean.MetaData.EntitySet;
+import org.tdar.odata.bean.MetaData.Property;
+import org.tdar.odata.service.RepositoryService;
 
 public class MetaDataBuilder implements IMetaDataBuilder {
 

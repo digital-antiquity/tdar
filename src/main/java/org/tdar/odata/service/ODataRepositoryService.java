@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.odata.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,9 +18,10 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.Accessible;
-import org.tdar.odata.server.AbstractDataRecord;
-import org.tdar.odata.server.RepositoryService;
+import org.tdar.odata.bean.AbstractDataRecord;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;

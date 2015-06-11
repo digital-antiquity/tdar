@@ -11,7 +11,7 @@
 
 	<context:component-scan base-package="org.tdar" />
 
-	<bean id="testingRepositoryService" class="org.tdar.core.service.ODataRepositoryService"
+	<bean id="testingRepositoryService" class="org.tdar.odata.service.ODataRepositoryService"
 		autowire-candidate="true" >
 	</bean>
 

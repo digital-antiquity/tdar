@@ -49,8 +49,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.odata.server.MetaData.EntitySet;
-import org.tdar.odata.server.MetaData.Property;
+import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.odata.bean.MetaData.EntitySet;
+import org.tdar.odata.bean.MetaData.Property;
+import org.tdar.odata.service.RepositoryService;
 
 /**
  * References:
