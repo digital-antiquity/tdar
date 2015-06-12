@@ -53,15 +53,15 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         Long count = countActive();
         cacheRebuilder.execute();
         Long count_ = -1l;
-        count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
+        count_ = updateCodingSheetCount(resourceService.getResourceCounts());
         assertEquals(count, count_);
 
         createAndSaveNewInformationResource(CodingSheet.class);
-        count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
+        count_ = updateCodingSheetCount(resourceService.getResourceCounts());
         assertEquals(count, count_);
 
         cacheRebuilder.execute();
-        count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
+        count_ = updateCodingSheetCount(resourceService.getResourceCounts());
         assertFalse(count.equals(count_));
 
         assertEquals(count.longValue(), count_ - 1l);
