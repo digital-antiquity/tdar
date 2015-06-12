@@ -1,4 +1,4 @@
-/* global describe, it, $j */
+/* global describe, it, expect, $j */
 describe("some sanity tests to ensure that we have configured the test framwork correctly", function(){
 
     it("should define TDAR and packages ", function() {
