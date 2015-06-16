@@ -1,8 +1,7 @@
 (function($, angular, console){
     "use strict";
     console.debug("IntegrationController::");
-
-
+    
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
@@ -19,6 +18,14 @@
         _openModal = function(options) {
             $rootScope.$broadcast("openTdarModal", options);
         };
+        
+        //status messages
+        $scope.alert = {
+            kind: "default",
+            message: ""
+        };
+        
+        
 
         // controller public methods
         self.setTab  = function(idx) {
@@ -34,17 +41,16 @@
         }
 
         self.saveClicked = function() {
-            console.log("Saving.")
             self.updateStatus("Saving...");
-            dataService.saveIntegration(self.integration).then(function(status) {
-                self.updateStatus("Save: " + status.status);
+            var savePromise = dataService.saveIntegration(self.integration);
+            self.promiseStatus(savePromise, "Saving", "Saved");
+            savePromise.then(function(status) {
                 window.location.hash = self.integration.id;
             });
-            
         };
 
         self.saveAsClicked = function() {
-            console.log("Saving.")
+            console.log("Saving.");
             self.integration.id = -1;
             self.updateStatus("Saving...");
 
@@ -61,11 +67,15 @@
 
         /**
          * shows the user a status message
+         * @param msg  the message to display
+         * @param kind the kind of message ('info', 'success', or error'error')
          */
-        self.updateStatus = function(msg) {
+        self.updateStatus = function(msg, kind) {
+            var _kind = kind ? kind : "success";
             $scope.statusMessage = msg;
-            console.log("updateStatus:: %s", msg);
-        }
+            $scope.alert.message = msg;
+            $scope.alert.kind = _kind;
+        };
 
         /**
          * Show user status messages across the span of a promise lifecycle.
@@ -76,12 +86,13 @@
          * @param [msgFail] message to display when promise rejects (default: "${msgStart} : failed")
          */
         self.promiseStatus = function(promise, msgStart, msgDone, msgFail) {
-            var _msgFail = msgFail ? msgFail : (msgStart + ":" + "failed.");
+            var _msgDone = msgDone ? msgDone : (msgStart + ": " + "complete.")
+            var _msgFail = msgFail ? msgFail : (msgStart + ": " + "failed.");
 
-            $scope.statusMessage = msgStart;
+            self.updateStatus(msgStart, "default");
             promise.then(
-                    function(){self.updateStatus(msgDone)},
-                    function(){self.updateStatus(_msgFail)}
+                    function(){self.updateStatus(_msgDone, "success");},
+                    function(){self.updateStatus(_msgFail, "error");}
             );
             return promise;
         }
@@ -90,17 +101,18 @@
             var jsonData = dataService.getDocumentData("jsondata");
             if(!jsonData) return;
 
-            self.updateStatus("Loading...");
-
             //validate the embedded json first
-            var embeddedJsonErrors = validationService.validateJson(jsonData);
-
+            validationService.validateJson(jsonData);
 
             var result = dataService.loadIntegration(jsonData , self.integration);
+            self.promiseStatus(result,
+                "Loading integration...", 
+                "Loading complete.",
+                "Load failed. Please try again - if problem continues please contact a system administrator."
+            );
             result.then(
                 function(){
-                        validationService.validateIntegration(jsonData, self.integration);
-                    self.updateStatus("Done loading");
+                    validationService.validateIntegration(jsonData, self.integration);
                     if(validationService.errors.length) {
                         self.updateStatus("Loading complete. However, the underlying resources used in this integration may have changed. " +
                         " Please review your selections and ensure they are up-to-date.");
@@ -110,7 +122,6 @@
                     }
                 },
                 function(err) {
-                    self.updateStatus("Load failed. Please try again - if problem continues please contact a system administrator.");
                     console.log("load failed - error information follows");
                     console.error(err);
                 });
@@ -123,20 +134,17 @@
          */
         self.addDatasets = function(dataTableIds) {
             if(dataTableIds.length === 0) return;
-            self.updateStatus("loading data table information...");
-            dataService.loadTableDetails(dataTableIds).then(function(dataTables) {
+            
+            var tableDetailsPromise =  dataService.loadTableDetails(dataTableIds);
+            self.promiseStatus(tableDetailsPromise, "Loading table details");
+            
+            tableDetailsPromise.then(function(dataTables) {
                 dataService.addDataTables(integration, dataTables);
-                self.updateStatus("done loading data table information");
-                self.updateStatus("loading column details");
-                dataService.loadUpdatedParticipationInformation(integration).then(
-                        function(){
-                            self.updateStatus("Done loading column details");
-                        },
-                        function(err){
-                            self.updateStatus("Error: unable to load ontology info.  Please try again - if the problem continues please contact a system administrator")
-                            console.error(err);
-                        }
-                );
+                var participationPromise = dataService.loadUpdatedParticipationInformation(integration);
+                self.promiseStatus(participationPromise, 
+                    "Loadng participation data",
+                    "Loading complete",
+                    "Error: unable to load ontology info.  Please try again - if the problem continues please contact a system administrator");
             });
         };
 
@@ -146,20 +154,6 @@
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
-        };
-
-        self.integrateClicked = function() {
-            console.debug('integrate clicked');
-            // FIXME: HACK: NEVERDOTHIS: This is absolutely not the correct way to invoke a form submission, for a number of reasons.
-            //invoke a click to force form submission.  Normally angular would know whether an $apply() is necessary, but because of our hack we do it manually
-
-            setTimeout(function() {
-                $("#frmLegacy").scope().$apply();
-                $("#frmLegacy").scope().$root.$apply();
-                $("#btnSubmitLegacyForm").click();
-            }, 1);
-
-
         };
 
         self.addDatasetsClicked = function(arg) {

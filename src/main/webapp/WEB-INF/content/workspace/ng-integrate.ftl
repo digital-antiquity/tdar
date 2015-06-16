@@ -8,6 +8,9 @@
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
     </div>
+    <div id="divStatusMessage" class="alert alert-{{alert.kind}}" ng-show="alert.message !==''" >
+    {{alert.message}}
+    </div>
 
     <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
         <div class="row">
@@ -48,10 +51,6 @@
                 </div>
             </div>
         </div>
-
-    <div id="divStatusMessage">
-    {{statusMessage}} {{$scope.statusMessage}}
-    </div>
 
         <div id="divSelectedItemsSection">
             <div class="row">
@@ -267,40 +266,6 @@
         </div>
     </form>
 </div>
-
-<form ng-controller="LegacyFormController as legacyCtrl" id="frmLegacy" method="post" action="/workspace/display-filtered-results" style="visibility: hidden;">
-<button type="button" class="btn" ng-disabled="legacyCtrl.integration.columns.length === 0" ng-click="legacyCtrl.dumpdata()">log to console</button>
-<input type="submit" id="btnSubmitLegacyForm" class="btn" ng-disabled="legacyCtrl.integration.columns.length === 0" name="submit" value="submit">
-
-
-<fieldset>
-    <div ng-repeat="col in legacyCtrl.integration.columns" ng-init="columnIndex=$index">
-        <input type="hidden" name="integrationColumns[{{$index}}].columnType" value="{{col.type | uppercase}}">
-        <input type="hidden" name="integrationColumns[{{$index}}].name" value="{{col.name}}">
-        <div ng-switch="col.type">
-            <span ng-switch-when="integration">
-                <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
-                       value="{{dtc.id}}"  ng-repeat="dtc in col.selectedDataTableColumns">
-                <input type="hidden" name="integrationColumns[{{columnIndex}}].sharedOntology.id"
-                       value="{{col.ontologyId}}">
-                <input type="hidden" name="integrationColumns[{{columnIndex}}].filteredOntologyNodes.id"
-                       value="{{nodeSelection.node.id}}" ng-repeat="nodeSelection in col.nodeSelections | filter: {selected:true}">
-            </span>
-            <span ng-switch-when="display">
-                <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
-                       value="{{colSelection.dataTableColumn.id}}"
-                       ng-repeat="colSelection in col.dataTableColumnSelections | filter: {dataTableColumn: '!!'}">
-            </span>
-            <span ng-switch-when="count">
-                <input type="hidden" name="integrationColumns[{{columnIndex}}].columns[{{$index}}].id"
-                       value="{{colSelection.dataTableColumn.id}}"
-                       ng-repeat="colSelection in col.dataTableColumnSelections | filter: {dataTableColumn: '!!'}">
-            </span>
-        </div>
-    </div>
-    <input ng-repeat="dataTable in legacyCtrl.integration.dataTables" type="hidden" name="tableIds[{{$index}}]" value="{{dataTable.id}}">
-</fieldset>
-</form>
 
 <tdar-modal ng-controller="ModalDialogController"></tdar-modal>
 
