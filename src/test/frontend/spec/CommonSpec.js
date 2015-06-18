@@ -1,13 +1,29 @@
-/* global describe, it, expect */
+/* global describe, it, expect, loadFixtures */
 describe("tests for TDAR.common methods", function() {  
 
 it("should work when we call initEditPage", function() {
    var form = null;
-   var props = null;
-   var expectedVal = null;
+   var props = {
+            formSelector: "#metadataForm",
+            includeInheritance : true,
+            acceptFileTypes : /\.(pdf|doc|docx|rtf|txt)$/i,
+            multipleUpload : true,
+            validExtensions : "pdf|doc|docx|rtf|txt",
+            validExtensionsWarning : "Please enter a valid file (pdf, doc, docx, rtf, txt)",
+            ableToUpload : true,
+             dataTableEnabled : false
+         };
+   
+   loadFixtures("document-add-form.html");
+   
+   var $form = $j("#metadataForm");
 
-   //var result = TDAR.common.initEditPage(form, props);
-   expect(true).toBe(false); //fixme: implement this test
+   expect($form).toExist();
+
+   TDAR;
+   var result = TDAR.common.initEditPage(form, props);
+   
+   
 });
 
 it("should work when we call initFormValidation", function() {
@@ -16,6 +32,7 @@ it("should work when we call initFormValidation", function() {
 
    //var result = TDAR.common.initFormValidation(form);
    expect(true).toBe(false); //fixme: implement this test
+
 });
 
 it("should work when we call applyTreeviews", function() {
