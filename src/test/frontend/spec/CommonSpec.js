@@ -15,12 +15,8 @@ it("should work when we call initEditPage", function() {
          };
    
    loadFixtures("document-add-form.html");
-   
    var $form = $j("#metadataForm");
-
    expect($form).toExist();
-
-   TDAR;
    var result = TDAR.common.initEditPage(form, props);
    
    
