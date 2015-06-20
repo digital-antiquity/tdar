@@ -15,7 +15,7 @@ import org.tdar.utils.jaxb.XMLFilestoreLogger;
  */
 
 @Component
-public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource> {
+public class SerializeResourceRecordToXml extends AbstractScheduledBatchProcess<Resource> {
 
     private static final long serialVersionUID = 7024941986161148001L;
 

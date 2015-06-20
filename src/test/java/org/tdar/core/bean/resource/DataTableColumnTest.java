@@ -6,14 +6,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.Types;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class DataTableColumnTest {
 
-    Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testJDBCTypeMappings() {

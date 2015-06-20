@@ -15,7 +15,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.PersistableUtils;
 
 @Component
-public class OverdrawnAccountUpdate extends ScheduledBatchProcess<BillingAccount> {
+public class OverdrawnAccountUpdate extends AbstractScheduledBatchProcess<BillingAccount> {
 
     public static final String SUBJECT = "overdrawn accounts";
 

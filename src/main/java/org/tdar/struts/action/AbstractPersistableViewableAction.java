@@ -21,8 +21,6 @@ import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;

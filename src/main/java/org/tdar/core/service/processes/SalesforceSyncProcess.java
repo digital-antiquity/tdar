@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -37,7 +36,7 @@ import org.tdar.core.service.UrlService;
  */
 
 @Component
-public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class SalesforceSyncProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 4558666368084097084L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
@@ -51,11 +50,6 @@ public class SalesforceSyncProcess extends ScheduledProcess.Base<HomepageGeograp
     @Override
     public String getDisplayName() {
         return "Salesforce Sync";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return HomepageGeographicKeywordCache.class;
     }
 
     @Override

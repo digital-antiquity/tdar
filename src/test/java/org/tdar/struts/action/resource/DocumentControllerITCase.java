@@ -1,7 +1,19 @@
 package org.tdar.struts.action.resource;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -44,11 +56,6 @@ import org.tdar.struts.action.project.ProjectController;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 

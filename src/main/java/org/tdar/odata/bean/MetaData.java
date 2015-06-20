@@ -1,10 +1,10 @@
-package org.tdar.odata.server;
+package org.tdar.odata.bean;
 
 public class MetaData {
 
     public static class Container {
 
-        static final String NAME = "Datasets";
+        public static final String NAME = "Datasets";
 
     }
 

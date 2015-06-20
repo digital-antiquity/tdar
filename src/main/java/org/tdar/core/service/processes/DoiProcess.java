@@ -26,7 +26,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
 
 @Component
-public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
+public class DoiProcess extends AbstractScheduledBatchProcess<InformationResource> {
 
     public static final String SUBJECT = " DOI Creation Info";
 

@@ -6,9 +6,10 @@ import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,7 +20,7 @@ import org.tdar.core.bean.resource.Dataset;
 @ContextConfiguration(locations = { "Placeholder-context.xml" })
 public class TDataSetFeedRequestIntegrationITCase extends AbstractLightFitTest {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private InitialisableRepositoryService repositoryService;

@@ -2,13 +2,12 @@ package org.tdar.core.service.processes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.search.SearchIndexService;
 
 @Component
-public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class OccurranceStatisticsUpdateProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 8726938824021007982L;
 
@@ -48,11 +47,6 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
     @Override
     public boolean isSingleRunProcess() {
         return false;
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return null;
     }
 
 }

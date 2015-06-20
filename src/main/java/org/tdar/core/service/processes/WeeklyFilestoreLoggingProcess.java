@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -29,7 +28,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
 
 @Component
-public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
     public static final String PROBLEM_FILES_REPORT = "Problem Files Report";
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -169,11 +168,6 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     @Override
     public String getDisplayName() {
         return "Filestore Verification Task";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return null;
     }
 
     @Override

@@ -13,7 +13,6 @@ import static java.lang.System.out;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -49,10 +48,8 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * http://thegenomefactory.blogspot.com.au/2013/08/minimum-standards-for-bioinformatics.html
@@ -98,9 +95,9 @@ public class CommandLineAPITool {
     @SuppressWarnings("unused")
     private static final String CORE_TDAR_ORG = "core.tdar.org";
     private static final String OPTION_HTTP = "http";
-    private static final String OPTION_SHOW_LOG = "log";
+//    private static final String OPTION_SHOW_LOG = "log";
 
-    private static final Logger logger = Logger.getLogger(CommandLineAPITool.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(CommandLineAPITool.class);
 
     private static int errorCount = 0;
     private DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -156,9 +153,9 @@ public class CommandLineAPITool {
         if (hasUnrecognizedOptions(line)) {
             showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
         }
-        if (line.hasOption(OPTION_SHOW_LOG)) {
-            copyLogOutputToScreen();
-        }
+//        if (line.hasOption(OPTION_SHOW_LOG)) {
+//            copyLogOutputToScreen();
+//        }
         if (line.hasOption(OPTION_HTTP)) {
             importer.setHttpProtocol(HTTP_PROTOCOL);
         }
@@ -198,8 +195,8 @@ public class CommandLineAPITool {
         Options options = new Options();
         options.addOption(OptionBuilder.withArgName(OPTION_HELP).withDescription("print this message").create(OPTION_HELP));
         options.addOption(OptionBuilder.withArgName(OPTION_HTTP).withDescription("use the http protocol (default is https)").create(OPTION_HTTP));
-        options.addOption(OptionBuilder.withArgName(OPTION_SHOW_LOG).withDescription("send the log output to the screen at the info level")
-                .create(OPTION_SHOW_LOG));
+//        options.addOption(OptionBuilder.withArgName(OPTION_SHOW_LOG).withDescription("send the log output to the screen at the info level")
+//                .create(OPTION_SHOW_LOG));
         options.addOption(OptionBuilder.withArgName(OPTION_USERNAME).hasArg().withDescription(SITE_ACRONYM + " username")
                 .create(OPTION_USERNAME));
         options.addOption(OptionBuilder.withArgName(OPTION_PASSWORD).hasArg().withDescription(SITE_ACRONYM + " password")
@@ -265,12 +262,13 @@ public class CommandLineAPITool {
     }
 
     private static void copyLogOutputToScreen() {
-        Logger.getRootLogger().removeAllAppenders();
-        ConsoleAppender console = new ConsoleAppender(new PatternLayout("%-5p [%t]: %m%n"));
-        console.setName("console");
-        console.setWriter(new OutputStreamWriter(System.out));
-        logger.setLevel(Level.INFO);
-        logger.addAppender(console);
+
+//        Logger.getRootLogger().removeAllAppenders();
+//        ConsoleAppender console = new ConsoleAppender(new PatternLayout("%-5p [%t]: %m%n"));
+//        console.setName("console");
+//        console.setWriter(new OutputStreamWriter(System.out));
+//        logger.setLevel(Level.INFO);
+//        logger.addAppender(console);
     }
 
     private static boolean hasNoOptions(CommandLine line) {
@@ -336,7 +334,7 @@ public class CommandLineAPITool {
                 httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
                 logger.info("creating challenge/response authentication request for alpha");
                 HttpGet tdarIPAuth = new HttpGet(httpProtocol + getHostname() + "/");
-                logger.debug(tdarIPAuth.getRequestLine());
+                logger.debug("{}",tdarIPAuth.getRequestLine());
                 HttpResponse response = httpclient.execute(tdarIPAuth);
                 HttpEntity entity = response.getEntity();
                 EntityUtils.consume(entity);

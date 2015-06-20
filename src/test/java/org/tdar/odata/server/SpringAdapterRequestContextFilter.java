@@ -6,7 +6,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextListener;
 
 import com.sun.net.httpserver.Filter;
@@ -15,7 +16,7 @@ import com.sun.net.httpserver.HttpExchange;
 @SuppressWarnings("restriction")
 public class SpringAdapterRequestContextFilter extends Filter
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private RequestContextListener contextListener = new RequestContextListener();
 

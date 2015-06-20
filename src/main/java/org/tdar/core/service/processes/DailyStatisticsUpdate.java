@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.service.StatisticService;
 
 /**
@@ -19,7 +18,7 @@ import org.tdar.core.service.StatisticService;
  */
 
 @Component
-public class DailyStatisticsUpdate extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class DailyStatisticsUpdate extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 840474044233878010L;
 
@@ -31,11 +30,6 @@ public class DailyStatisticsUpdate extends ScheduledProcess.Base<HomepageGeograp
     @Override
     public String getDisplayName() {
         return "Daily statistics service";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return HomepageGeographicKeywordCache.class;
     }
 
     @Override

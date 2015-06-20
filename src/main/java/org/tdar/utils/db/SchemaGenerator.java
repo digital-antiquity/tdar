@@ -16,13 +16,14 @@ import java.io.File;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaExport.Type;
 import org.hibernate.tool.hbm2ddl.Target;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -37,7 +38,8 @@ public class SchemaGenerator {
 
     private static final String DIALECT = "org.hibernate.dialect.PostgreSQLDialect";
     private Configuration cfg;
-    private Logger log = Logger.getLogger(getClass());
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
+
     public static final String HBM_FILENAME = "hibernate.hbm.xml";
 
     public SchemaGenerator() throws Exception {

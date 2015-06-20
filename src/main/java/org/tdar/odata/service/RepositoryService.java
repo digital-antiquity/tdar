@@ -1,10 +1,11 @@
-package org.tdar.odata.server;
+package org.tdar.odata.service;
 
 import java.util.Collection;
 import java.util.List;
 
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.odata.bean.AbstractDataRecord;
 
 public interface RepositoryService {
 

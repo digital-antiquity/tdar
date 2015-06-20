@@ -7,13 +7,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.part.QueryPartGroup;
@@ -30,7 +31,7 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public abstract class QueryBuilder extends QueryPartGroup {
     private static final String _AUTO = "_auto";
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Class<?>[] classes;
     private List<DynamicQueryComponent> overrides = new ArrayList<DynamicQueryComponent>();
     // private List<String> omitContainedLabels = Arrays.asList("_auto");

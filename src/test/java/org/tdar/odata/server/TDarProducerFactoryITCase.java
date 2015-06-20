@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.producer.ODataProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,7 +24,7 @@ import org.tdar.core.bean.resource.Dataset;
 @DirtiesContext
 public class TDarProducerFactoryITCase extends AbstractLightFitTest {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private InitialisableRepositoryService repositoryService;

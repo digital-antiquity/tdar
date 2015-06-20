@@ -22,7 +22,7 @@ import org.tdar.utils.Pair;
  * 
  * @param <P>
  */
-public abstract class ScheduledBatchProcess<P extends Persistable> extends ScheduledProcess.Base<P> {
+public abstract class ScheduledBatchProcess<P extends Persistable> extends AbstractPersistableScheduledProcess<P> {
 
     private static final long serialVersionUID = -8936499060533204646L;
 

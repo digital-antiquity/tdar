@@ -7,9 +7,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
@@ -35,7 +36,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private PersonLookupAction controller;
-    private Logger log = Logger.getLogger(getClass());
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Before
     public void initController() {

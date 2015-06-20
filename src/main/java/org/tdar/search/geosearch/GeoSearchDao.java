@@ -17,9 +17,10 @@ import javax.sql.DataSource;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -46,7 +47,7 @@ public class GeoSearchDao {
 
     private static boolean databaseEnabled;
     private JdbcTemplate jdbcTemplate;
-    private final Logger logger = Logger.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     public static final Integer DEFAULT_PROJECTION = 4326;
 
     private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
@@ -23,7 +23,7 @@ import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.resource.ResourceService;
 
 @Component
-public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 6866081834770368244L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -80,6 +80,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
+        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS_WHITE_LABEL, genericService.count(WhiteLabelCollection.class), ""));
         stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
 
         stats.add(generateStatistics(StatisticType.NUM_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, true), ""));
@@ -123,11 +124,6 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
     @Override
     public String getDisplayName() {
         return "Weekly System Statistics Task";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return null;
     }
 
     @Override

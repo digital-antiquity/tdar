@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
@@ -31,7 +30,7 @@ import org.tdar.core.service.external.EmailService;
  */
 
 @Component
-public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class DailyEmailProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = -1945086550963254634L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
@@ -46,11 +45,6 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
     @Override
     public String getDisplayName() {
         return "Daily emails";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return HomepageGeographicKeywordCache.class;
     }
 
     @Override

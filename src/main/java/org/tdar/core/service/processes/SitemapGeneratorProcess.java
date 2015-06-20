@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
@@ -28,7 +27,7 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import com.redfin.sitemapgenerator.WebSitemapUrl;
 
 @Component
-public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class SitemapGeneratorProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 561910508692901053L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -163,12 +162,6 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     @Override
     public String getDisplayName() {
         return "SiteMap generator";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

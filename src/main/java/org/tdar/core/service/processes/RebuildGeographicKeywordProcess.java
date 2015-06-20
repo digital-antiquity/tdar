@@ -8,7 +8,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.resource.ResourceService;
 
 @Component
-public class RebuildGeographicKeywordProcess extends ScheduledBatchProcess<Resource> {
+public class RebuildGeographicKeywordProcess extends AbstractScheduledBatchProcess<Resource> {
 
     private static final long serialVersionUID = -1389096329990660324L;
     private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -16,7 +16,7 @@ import org.tdar.utils.PersistableUtils;
  *
  */
 @Component
-public class AccountUsageHistoryLoggingTask extends ScheduledBatchProcess<BillingAccount> {
+public class AccountUsageHistoryLoggingTask extends AbstractScheduledBatchProcess<BillingAccount> {
 
     private static final long serialVersionUID = -6773975693075576122L;
 

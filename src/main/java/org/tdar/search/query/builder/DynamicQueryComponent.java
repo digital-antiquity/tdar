@@ -4,7 +4,9 @@
 package org.tdar.search.query.builder;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * $$Id$$
@@ -26,7 +28,7 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
     private Class<?> analyzer;
     private String parent;
     @SuppressWarnings("unused")
-    private Logger logger = Logger.getLogger(DynamicQueryComponent.class);
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Basic constructor
