@@ -1,4 +1,4 @@
-/* global describe, it, $j */
+/* global describe, it, expect, $j */
 describe("some sanity tests to ensure that we have configured the test framwork correctly", function(){
 
     it("should define TDAR and packages ", function() {
@@ -11,8 +11,12 @@ describe("some sanity tests to ensure that we have configured the test framwork 
         //will have a url of localhost:9876/base/src/test/frontent/fixtures
         jasmine.getFixtures().fixturesPath = "base/src/test/frontend/fixtures";
         loadFixtures("example-fixture.html");
-        expect($(".foo.bar")).toBeDefined();
+        expect($j(".foo.bar").length).toBe(1);
     });
+    
+    it("should isolate fixtures from other tests", function() {
+        expect($j(".foo.bar").length).toBe(0);
+    }); 
 
     it("has html2js fixtures", function() {
         //html2js processes all fixtures and loads them into window.__html__

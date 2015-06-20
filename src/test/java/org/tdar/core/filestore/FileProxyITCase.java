@@ -9,7 +9,10 @@ package org.tdar.core.filestore;
 import static com.opensymphony.xwork2.Action.SUCCESS;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT_DIR;
 import static org.tdar.TestConstants.TEST_IMAGE_DIR;
 
@@ -19,23 +22,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.opensymphony.xwork2.ActionSupport;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.Pair;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * @author Adam Brin

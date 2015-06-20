@@ -183,7 +183,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         assertThat(find(sheep).isSelected(), is(true));
         waitFor(saveButton).click();
-        waitFor(textToBePresentInElementLocated(id("divStatusMessage"), "success"));
+        waitFor(textToBePresentInElementLocated(id("divStatusMessage"), "Saved"), 20);
         // waitFor(4);
         gotoPage("/workspace/list");
         logger.debug(getText());

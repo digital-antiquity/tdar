@@ -64,7 +64,8 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_TEMPORAL("# of Temporal Keywords"),
         NUM_SITE_NAME("# of Site Name Keywords"),
         NUM_SITE_TYPE("# of Site Type Keywords (Controled)"),
-        NUM_UNCONTROLLED_SITE_TYPE("# of Site Type Keywords (Uncontroled)");
+        NUM_UNCONTROLLED_SITE_TYPE("# of Site Type Keywords (Uncontroled)"), 
+        NUM_COLLECTIONS_WHITE_LABEL("# of White Label Collections");
 
         private String label;
 

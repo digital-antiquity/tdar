@@ -12,20 +12,38 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser (we aren't using requireJS, so order matters)
         files: [
-            // app dependencies
-            //TODO: should be included but not monitored
-            "src/main/webapp/components/jquery/jquery.js",
-
-            // app files
+            // app dependencies  (included in DOM served by karma, but not monitored for changes)
+            {pattern: "src/main/webapp/components/jquery/jquery.js", watched: false},
+            {pattern: "src/main/webapp/includes/jquery-ui-1.8.23/ui/minified/jquery-ui.min.js", watched: false},
+            {pattern: "src/main/webapp/includes/jquery-ui-1.8.23/themes/base/minified/jquery-ui.min.css", watched: false},
+            {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
+            {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
+            {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
+            
+            {pattern:"src/main/webapp/includes/blueimp-javascript-templates/tmpl.min.js", watched: false},
+            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js", watched: false},
+            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js", watched: false},
+            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload.js", watched: false},
+            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js", watched: false},
+            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js", watched: false},
+            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js", watched: false},            
+            
+            // app files (included in DOM, monitored for changes)
             "src/main/webapp/includes/blueimp-javascript-templates/tmpl.min.js",
             "src/main/webapp/js/tdar.core.js",
+            "src/main/webapp/js/tdar.repeatrow.js",
+            "src/main/webapp/js/tdar.autocomplete.js", //fixme: undeclared dependency in TDAR.common
+            "src/main/webapp/js/tdar.heightevents.js", //fixme: undeclared dependency in TDAR.common
+            "src/main/webapp/js/tdar.contexthelp.js", //fixme: undeclared dependency in TDAR.common
+            "src/main/webapp/js/tdar.upload.js", //fixme: undeclared dependency in TDAR.common
+            "src/main/webapp/js/tdar.jquery-upload-validation.js", //fixme: undeclared dependency in TDAR.common
             "src/main/webapp/js/tdar.common.js",
 
             // specs
             "src/test/frontend/spec/**/*.js",
 
             // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
-            "src/test/frontend/fixtures/**/*.html",
+            {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
 
             // html2js fixtures - globally accessible via  window.__html__[filepath]
             "src/test/frontend/html2js/**/*.html"

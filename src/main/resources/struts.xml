@@ -92,15 +92,7 @@
                     it just in case we start doing multi-selects -->
                 <interceptor-ref name="multiselect" />
                 <interceptor-ref name="staticParams" />
-
-                <interceptor-ref name="params">
-                    <!-- Mirror changes to the second entry below as well... -->
-                    <!-- The '-' is because when jQuery Ajax call is made 
-                        with 'cache: false' we get a _=timestamp with each request -->
-                    <!-- As we don't have a property named '_' in our actions 
-                        we get an error logged in development mode. Excluding '-' removes the error -->
-                    <!-- <param name="excludeParams">(.*\.|^|.*|\[('|"))(c|C)lass(\.|('|")]|\[).*,^dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,^parameters\..*,^action:.*,^method:.*,_tdar\..*</param> -->
-                </interceptor-ref>
+                <interceptor-ref name="params" />
                 <interceptor-ref name="servletConfig" />
                 <interceptor-ref name="prepare" />
                 <interceptor-ref name="staticParams" />
@@ -117,11 +109,7 @@
                         THE TEMP DIRECTORY AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED <param 
                         name="maximumSize">8589934592</param> -->
                 </interceptor-ref>
-                <interceptor-ref name="params">
-                    <!-- See AbstractPersistableController.prepare() for 
-                        more detail on why this entry occurs twice -->
-                    <!-- <param name="excludeParams">(.*\.|^|.*|\[('|"))(c|C)lass(\.|('|")]|\[).*,^dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,^parameters\..*,^action:.*,^method:.*,_tdar\..*</param> -->
-                </interceptor-ref>
+                <interceptor-ref name="params" />
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="validation">
                     <param name="excludeMethods">input,back,cancel,browse</param>
