@@ -1831,11 +1831,11 @@
                             <name>jetty.port</name>
                             <value>${jetty.port}</value>
                         </systemProperty>
-                        <systemProperty>
+<!--                         <systemProperty>
                             <name>log4j.configuration</name>
                             <value>file:${basedir}/src/main/resources/log4j.xml</value>
                         </systemProperty>
-                        <systemProperty>
+ -->                        <systemProperty>
                             <name>slf4j</name>
                             <value>true</value>
                         </systemProperty>
