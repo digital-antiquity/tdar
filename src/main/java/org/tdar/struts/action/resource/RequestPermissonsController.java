@@ -34,7 +34,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 public class RequestPermissonsController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Resource> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6775247968159166454L;
     private Long requestorId;
     private Long resourceId;
     private TdarUser requestor;
