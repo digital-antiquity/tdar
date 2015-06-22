@@ -7,7 +7,7 @@
 		<Routing name="File">
 			<Routes pattern="$${sd:type}">
 				<Route>
-					<RollingFile name="Rolling-${sd:type}" fileName="logs/tdar.log"
+                    <RollingFile name="Rolling-${sd:type}" fileName="logs/tdar-${date:yyyy-MM-dd}.log"
 						filePattern="logs/tdar.%d{yyyy-MM-dd}.log.gz">
 						<PatternLayout>
 							<pattern>%d %p %c{1.} [%t] %m%n</pattern>
