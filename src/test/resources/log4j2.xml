@@ -21,7 +21,7 @@
 	<Loggers>
 		<Root level="error">
 			<AppenderRef ref="Console" />
-			<AppenderRef ref="File" />
+<!-- 			<AppenderRef ref="File" /> -->
 		</Root>
 		<Logger name="org.hibernate.util.JDBCExceptionReporter" level="debug" />
 		<Logger name="org.liquibase" level="error" />
