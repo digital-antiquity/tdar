@@ -81,7 +81,7 @@ public class PdfService {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document, File coverPageLogo)
+    public synchronized InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document, File coverPageLogo)
             throws PdfCoverPageGenerationException {
         try {
             logger.debug("IR: {}, {} {}", document, version, version.getExtension());
