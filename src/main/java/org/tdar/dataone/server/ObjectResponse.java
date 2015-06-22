@@ -114,13 +114,15 @@ public class ObjectResponse extends AbstractDataOneResponse {
 
         try {
             ObjectResponseContainer container = service.getObject(id, request, false);
-            logger.debug("returning OK");
-            response.setHeader(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat());
-            response.setHeader(DATA_ONE_CHECKSUM, "MD5," + container.getChecksum());
-            response.setHeader(LAST_MODIFIED, toIso822(container.getLastModified()));
-            response.setHeader(HttpHeaders.CONTENT_LENGTH, Integer.toString(container.getSize()));
-            response.setHeader(DATA_ONE_SERIAL_VERSION, container.getSerialVersionId().toString());
-            return Response.ok().build();
+            if (container != null) {
+                logger.debug("returning OK");
+                response.setHeader(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat());
+                response.setHeader(DATA_ONE_CHECKSUM, "MD5," + container.getChecksum());
+                response.setHeader(LAST_MODIFIED, toIso822(container.getLastModified()));
+                response.setHeader(HttpHeaders.CONTENT_LENGTH, Integer.toString(container.getSize()));
+                response.setHeader(DATA_ONE_SERIAL_VERSION, container.getSerialVersionId().toString());
+                return Response.ok().build();
+            }
 
         } catch (Exception e) {
             logger.error("execption in DataOne object head request", e);
