@@ -317,7 +317,7 @@ public class TdarConfiguration {
     }
 
     public String getSitemapDir() {
-        return String.format("%s/%s", getPersonalFileStoreLocation(), "sitemap");
+        return String.format("%s/%s", getHostedFileStoreLocation(), "sitemap");
     }
 
     public String getBaseUrl() {
