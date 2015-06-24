@@ -5,7 +5,10 @@ package org.tdar.utils.smtp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.activation.DataSource;
@@ -122,10 +125,20 @@ public class SmtpManager extends AbstractManager {
             connect();
         }
         try {
+            String threadName = appendEvent.getThreadName();
             final LogEvent[] priorEvents = buffer.removeAll();
             // LOG4J-310: log appendEvent even if priorEvents is empty
-
-            final byte[] rawBytes = formatContentToBytes(priorEvents, appendEvent, layout);
+            // tying to thread (but could tie to context stack 
+            List<LogEvent> events = new ArrayList<>();
+            for (LogEvent event : priorEvents) {
+                if (Objects.equals(threadName, event.getThreadName())) {
+                    events.add(event);
+                }
+            }
+            
+            final LogEvent[] toLog = events.toArray(new LogEvent[0]);
+            
+            final byte[] rawBytes = formatContentToBytes(toLog, appendEvent, layout);
 
             final String contentType = layout.getContentType();
             final String encoding = getEncoding(rawBytes, contentType);

@@ -45,6 +45,7 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
+import org.tdar.struts.TdarServletConfiguration;
 import org.tdar.struts.WROProfile;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
@@ -504,6 +505,20 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
         return String.format("%s//%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port);
     }
+    
+    /**
+     * Return the default/suggested base url for static content (trailing slash removed, if present)
+     * 
+     * @return
+     */
+    public String getHostedContentBaseUrl() {
+        String baseUrl = getStaticHost() + TdarServletConfiguration.HOSTED_CONTENT_BASE_URL;
+        if (baseUrl.endsWith("/")) {
+            baseUrl = StringUtils.chop(baseUrl);
+        }
+        return baseUrl;
+    }
+
 
     public boolean getShowJiraLink() {
         return getTdarConfiguration().getShowJiraLink();
