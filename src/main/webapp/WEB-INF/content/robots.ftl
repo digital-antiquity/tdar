@@ -15,4 +15,4 @@ Disallow: /browse/creators/12729/
 <#else>
 Disallow: *
 </#if>
-Sitemap: ${protocol}//${hostName}/hosted/sitemap/${sitemapFile}
+Sitemap: ${hostedContentBaseUrl}/${sitemapFile}
