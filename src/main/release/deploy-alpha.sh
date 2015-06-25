@@ -24,8 +24,8 @@ if [ $? -ne 0 ]
    exit 1
   else
     sudo service tomcat7 stop
-  	sudo cp target/ROOT.war ~tdar/app/
+#  	sudo cp target/ROOT.war ~tdar/app/
     sudo rm -Rrf ~tdar/app/ROOT
-	cp /home/tdar/tdar.src/target/ROOT.war /home/tdar/app/
+#	cp /home/tdar/tdar.src/target/ROOT.war /home/tdar/app/
     sudo service tomcat7 restart
 fi
