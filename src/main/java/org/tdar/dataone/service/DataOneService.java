@@ -198,6 +198,9 @@ public class DataOneService {
 
         node.setServices(services);
         node.setState(NodeState.UP);
+        List<Subject> list = new ArrayList<>();
+        list.add(createSubject(CONFIG.getSystemAdminEmail()));
+        node.setContactSubjectList(list);
         Synchronization sync = new Synchronization();
         sync.setLastCompleteHarvest(new Date(0));
         sync.setLastHarvested(new Date());
@@ -278,7 +281,7 @@ public class DataOneService {
         list.setStart(start);
 
         ListObjectEntry.Type type = Type.D1;
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type, identifier, list);
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type, formatid, identifier, list);
         for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();
             ObjectResponseContainer object = null;

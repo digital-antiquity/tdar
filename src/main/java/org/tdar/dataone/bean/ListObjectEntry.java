@@ -11,7 +11,14 @@ public class ListObjectEntry implements Serializable {
     private static final long serialVersionUID = 8894503838119896193L;
 
     public enum Type {
-        D1, TDAR, FILE;
+        D1, TDAR, FILE, BAD;
+        
+        public static Type getTypeFromFormatId(String format) {
+            if (format != null) {
+                return BAD;
+            }
+            return D1;
+        }
     }
 
     private String identifier;

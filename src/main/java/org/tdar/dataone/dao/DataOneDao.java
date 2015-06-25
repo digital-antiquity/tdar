@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Log;
 import org.dataone.service.types.v1.ObjectList;
@@ -29,27 +30,32 @@ public class DataOneDao {
     private GenericDao genericDao;
 
     @SuppressWarnings("unchecked")
-    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, String identifier, ObjectList list) {
-        Query query = setupListObjectQuery(start, end, type, identifier);
+    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, String formatId, String identifier, ObjectList list) {
+        Query query = setupListObjectQuery(start, end, type, formatId, identifier);
 
         // FIXME: find better way to handle pagination
         list.setTotal(query.list().size());
 
-        query = setupListObjectQuery(start, end, type, identifier);
+        query = setupListObjectQuery(start, end, type, formatId, identifier);
         query.setMaxResults(list.getCount());
         query.setFirstResult(list.getStart());
         return query.list();
     }
 
-    private Query setupListObjectQuery(Date fromDate, Date toDate, Type type, String identifier) {
+    private Query setupListObjectQuery(Date fromDate, Date toDate, Type type, String formatId, String identifier) {
         Query query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
         // if Tier3, use "query.dataone_list_objects_t3"
         initStartEnd(fromDate, toDate, query);
+        if (StringUtils.isNotBlank(formatId)) {
+            type = Type.getTypeFromFormatId(formatId);
+        }
+        
         if (type != null) {
-        query.setString("type", type.name());
+            query.setString("type", type.name());
         } else {
             query.setString("type", null);
         }
+        
         query.setString("identifier", identifier);
         return query;
     }
