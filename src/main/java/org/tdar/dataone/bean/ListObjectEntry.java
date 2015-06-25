@@ -115,7 +115,6 @@ public class ListObjectEntry implements Serializable {
         switch (type) {
             case D1:
                 sb.append(DataOneService.D1_FORMAT);
-                sb.append(DataOneService.D1_SEP);
                 sb.append(dateUpdated);
                 break;
             case FILE:
@@ -125,8 +124,6 @@ public class ListObjectEntry implements Serializable {
                 break;
             case TDAR:
                 sb.append(DataOneService.META);
-                sb.append(DataOneService.D1_SEP);
-                sb.append(dateUpdated);
                 break;
             default:
                 break;

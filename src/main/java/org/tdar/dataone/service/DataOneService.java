@@ -418,7 +418,7 @@ public class DataOneService {
                 return null;
             }
             logger.debug("{} --> {} (id: {} {})", doi, ir.getId(), partIdentifier);
-            if (partIdentifier.equals(D1_FORMAT) || partIdentifier == null) {
+            if (partIdentifier.startsWith(D1_FORMAT) || partIdentifier == null) {
                 resp = constructD1FormatObject(ir);
             } else if (partIdentifier.equals(META)) {
                 resp = constructMetadataFormatObject(ir);
