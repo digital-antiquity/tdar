@@ -129,15 +129,16 @@ public class DataOneService {
     @Transactional(readOnly=true)
     public String createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         Identifier id = new Identifier();
-        id.setValue(ListObjectEntry.formatIdentifier(ir.getExternalId(), ir.getDateUpdated(), Type.D1, null));
+        String formattedId = ListObjectEntry.webSafeDoi(ir.getExternalId());
+        id.setValue(ListObjectEntry.formatIdentifier(formattedId, ir.getDateUpdated(), Type.D1, null));
 
         Identifier packageId = new Identifier();
-        packageId.setValue(ir.getExternalId() + D1_SEP + ir.getDateUpdated().toString());
+        packageId.setValue(formattedId + D1_SEP + ir.getDateUpdated().toString());
         List<Identifier> dataIds = new ArrayList<>();
         if (includeFiles) {
             for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
                 Identifier fileId = new Identifier();
-                fileId.setValue(ListObjectEntry.formatIdentifier(ir.getExternalId(), ir.getDateUpdated(), Type.FILE, irf));
+                fileId.setValue(ListObjectEntry.formatIdentifier(formattedId, ir.getDateUpdated(), Type.FILE, irf));
                 dataIds.add(fileId);
             }
         }

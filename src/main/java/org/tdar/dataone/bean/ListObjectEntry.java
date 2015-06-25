@@ -108,10 +108,14 @@ public class ListObjectEntry implements Serializable {
         }
         return formatIdentifier(identifier, dateUpdated, type, irf.getId(), irf.getLatestVersion());
     }
+    
+    public static String webSafeDoi(String identfier) {
+        return identfier.replace("/", ":");
+    }
 
     public static String formatIdentifier(String identifier, Date dateUpdated, Type type, Long irfId, Integer version) {
         StringBuilder sb = new StringBuilder();
-        sb.append(identifier).append(DataOneService.D1_SEP);
+        sb.append(webSafeDoi(identifier)).append(DataOneService.D1_SEP);
         switch (type) {
             case D1:
                 sb.append(DataOneService.D1_FORMAT);
@@ -128,7 +132,7 @@ public class ListObjectEntry implements Serializable {
             default:
                 break;
         }
-        return sb.toString();
+        return sb.toString().replace(" ", "%20");
 
     }
 
