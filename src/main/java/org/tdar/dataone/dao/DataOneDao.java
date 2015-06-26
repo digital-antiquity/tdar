@@ -1,5 +1,6 @@
 package org.tdar.dataone.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,9 @@ public class DataOneDao {
     @SuppressWarnings("unchecked")
     public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, String formatId, String identifier, ObjectList list) {
         Query query = setupListObjectQuery(start, end, type, formatId, identifier);
-
+        if (list.getCount() == 0) {
+            return new ArrayList<>();
+        }
         // FIXME: find better way to handle pagination
         list.setTotal(query.list().size());
 
@@ -63,6 +66,9 @@ public class DataOneDao {
     @SuppressWarnings("unchecked")
     public List<LogEntryImpl> findLogFiles(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, Log log) {
         Query query = setupQuery(fromDate, toDate, event, idFilter);
+        if (count == 0) {
+            return new ArrayList<>();
+        }
         // FIXME: find better way to handle pagination
         log.setTotal(query.list().size());
 
