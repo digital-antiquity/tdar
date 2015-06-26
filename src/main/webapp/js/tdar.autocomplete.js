@@ -304,23 +304,6 @@ TDAR.autocomplete = (function () {
 
         var cache = _getCache(options);
 
-        // if there's a change in the autocomplete, reset the ID to ""
-        $elements.change(function () {
-            var $element = $(this);
-            // if the existing autocomplete value stored in the "autoVal" attribute does is not undefined and is not the same as the current
-            // evaluate it for being significant (important when trying to figure out if a minimum set of fields have been filled in
-            if (($element.attr("autoVal") != undefined && $element.attr("autoVal") != $element.val()) || _evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? [] : options.ignoreRequestOptionsWhenEvaluatingEmptyRow)) {
-                if ($element.attr("autocompleteIdElement")) {
-                    var $idElement = $($element.attr("autocompleteIdElement"));
-                    $idElement.val("");
-
-                } else {
-                    //TODO:  confirm  $element.closest('.autocomplete-id-element') will work for all use cases.
-                }
-            }
-            return true;
-        });
-
         //set allowNew attribute for each element's corresponding 'id' element
         $elements.each(function () {
             if (options.showCreate) {
@@ -442,8 +425,25 @@ TDAR.autocomplete = (function () {
                 $.ajax(ajaxRequest);
             },
             minLength: options.minLength || 0,
+
+            change: function(event, ui) {
+                var $element = $(this);
+                // if the existing autocomplete value stored in the "autoVal" attribute does is not undefined and is not the same as the current
+                // evaluate it for being significant (important when trying to figure out if a minimum set of fields have been filled in
+                if (($element.attr("autoVal") != undefined && $element.attr("autoVal") != $element.val())
+                    | _evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? [] : options.ignoreRequestOptionsWhenEvaluatingEmptyRow)) {
+                    if ($element.attr("autocompleteIdElement")) {
+                        var $idElement = $($element.attr("autocompleteIdElement"));
+                        $idElement.val("");
+
+                    }
+                }
+                return true;
+            },
+
             select: function (event, ui) {
                 var $elem = $(event.target);
+                $elem.data('autocompleteSelectedItem', ui.item.value);
                 _applyDataElements(this, ui.item);
 
                 //cancel any pending searches once the user selects an item
@@ -696,20 +696,45 @@ TDAR.autocomplete = (function () {
      * @param type resource type name (e.g "document", "coding-sheet".
      */
     function _applyComboboxAutocomplete($elements, type) {
-        "use strict";
 
         //register autocomplete text box
-        //TODO: defer autocomplete registration if better perf needed,  but "show all" button must be registered at onload
         _applyResourceAutocomplete($elements, type);
 
-        //register "show-all" click
         $elements.each(function () {
+            //the autocomplete text field
+            var $elem = $(this);
+
+            //register "show-all" click
             var $controls = $(this).closest('.controls');
             var $textInput = $controls.find("input[type=text]");
             var $button = $controls.find("button.show-all");
             $button.click(function () {
                 $textInput.focus().autocomplete("search", "");
             });
+
+            //override the default change-event listener
+            $elem.autocomplete("option", "change", function(event){
+                //the most recent menu item that the user selected
+                var item = $elem.data('autocompleteSelectedItem');
+
+                //the hidden input that holds the ID for the associated record in tdar
+                var $idElem = $($elem.attr("autocompleteIdElement"));
+
+                //if user deletes the contents of the text field, we also clear the ID field value
+                if($elem.val() === "") {
+                    $idElem.val("");
+                }
+
+                //if the user manually changed the value (as opposed to using the autocomplete menu), clear the ID field value
+                if(item && $elem.val() !== item) {
+                    $idElem.val("");
+                }
+            });
+
+            //prime the initial value of the 'previously selected' menu item
+            if($elem.val() !== "") {
+                $elem.data('autocompleteSelectedItem', $elem.val());
+            }
         });
     }
 
