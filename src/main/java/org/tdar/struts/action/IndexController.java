@@ -19,14 +19,19 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.PersistableUtils;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
@@ -52,14 +57,18 @@ public class IndexController extends AuthenticationAware.Base {
 
     private Project featuredProject;
 
-    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
-    private List<Resource> featuredResources = new ArrayList<Resource>();
+    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<>();
+    private List<Resource> featuredResources = new ArrayList<>();
     private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+    private ResourceCollection featuredCollection;
 
     private String sitemapFile = "sitemap_index.xml";
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
 
     @Autowired
     private ObfuscationService obfuscationService;
@@ -124,15 +133,16 @@ public class IndexController extends AuthenticationAware.Base {
     @Action(value = "about", results = { @Result(name = SUCCESS, location = "about.ftl") })
     @HttpOnlyIfUnauthenticated
     public String about() {
-        worldMap();
 
         try {
+            worldMap();
             setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
+            featuredItems();
+            resourceStats();
+            featuredCollection();
         } catch (Exception e) {
             getLogger().warn("RssParsingException happened", e);
         }
-        featuredItems();
-        resourceStats();
         return SUCCESS;
     }
 
@@ -162,6 +172,13 @@ public class IndexController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
+    @Action(value = "featuredCollection", results = { @Result(name = SUCCESS, location = "featuredCollection.ftl", type = FREEMARKER,
+            params = { "contentType", "text/html" }) })
+    public String featuredCollection() {
+        setFeaturedCollection(resourceCollectionService.getRandomFeaturedCollection());        
+        return SUCCESS;
+    }
+    
     @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = FREEMARKER,
             params = { "contentType", "text/html" }) })
     public String resourceStats() {
@@ -221,6 +238,21 @@ public class IndexController extends AuthenticationAware.Base {
 
     public void setSitemapFile(String sitemapFile) {
         this.sitemapFile = sitemapFile;
+    }
+
+    public ResourceCollection getFeaturedCollection() {
+        return featuredCollection;
+    }
+
+    public void setFeaturedCollection(ResourceCollection featuredCollection) {
+        this.featuredCollection = featuredCollection;
+    }
+
+    public boolean isLogoAvailable() {
+        if (PersistableUtils.isNullOrTransient(getFeaturedCollection())) {
+            return false;
+        }
+        return checkLogoAvailable(ObjectType.COLLECTION, getFeaturedCollection().getId(), VersionType.WEB_SMALL);
     }
 
 }
