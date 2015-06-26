@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.tdar.dataone.bean.DataOneError;
+
 public class AbstractDataOneResponse {
 
     public static final String BASE_PATH = "/v1/";
@@ -29,6 +31,8 @@ public class AbstractDataOneResponse {
         return format.format(date);
     }
     
-    
+    public DataOneError getNotFoundError() {
+        return new DataOneError(404,"NotFound",1800);
+    }
     
 }
