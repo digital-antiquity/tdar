@@ -166,7 +166,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
             }
             return Response.ok().entity(service.getListObjectsResponse(fromDate, toDate, formatid, identifier, start, count)).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("error in listObjects: {}",e ,e);
         }
         return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
     }

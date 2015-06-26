@@ -10,6 +10,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.dataone.service.types.v1.SystemMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,8 @@ import org.tdar.dataone.service.DataOneService;
 @Component
 @Scope("prototype")
 public class SystemMetadataResponse extends AbstractDataOneResponse {
+
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DataOneService service;
@@ -44,7 +48,7 @@ public class SystemMetadataResponse extends AbstractDataOneResponse {
 
     @Context
     private HttpServletResponse response;
-    
+
     @GET
     @Path("{id:.*}")
     @Produces(APPLICATION_XML)
@@ -57,7 +61,7 @@ public class SystemMetadataResponse extends AbstractDataOneResponse {
             }
             return Response.ok(metadataRequest).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("error in metadataResponse: {}", e, e);
             return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();
         }
     }

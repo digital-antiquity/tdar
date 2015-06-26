@@ -22,10 +22,9 @@ import org.tdar.dataone.service.DataOneService;
 @Path(AbstractDataOneResponse.BASE_PATH)
 public class CapabilitiesResponse extends AbstractDataOneResponse {
 
-
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Autowired
     private SerializationService serialize;
 
@@ -43,10 +42,9 @@ public class CapabilitiesResponse extends AbstractDataOneResponse {
             logger.debug("d1s: {}, ss: {}", serialize, service);
             return Response.ok().entity(service.getNodeResponse()).build();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("error in nodeInfo: {}", e, e);
         }
-        
+
         return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
     }
 
