@@ -30,9 +30,9 @@ public class AbstractDataOneResponse {
     public String toIso822(Date date) {
         return format.format(date);
     }
-    
+
     public DataOneError getNotFoundError() {
-        return new DataOneError(404,"NotFound",1800);
+        return new DataOneError(404, "NotFound", "Not Found", 1800);
     }
-    
+
 }
