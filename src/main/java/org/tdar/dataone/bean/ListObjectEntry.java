@@ -3,6 +3,7 @@ package org.tdar.dataone.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.dataone.service.DataOneService;
 
@@ -14,6 +15,12 @@ public class ListObjectEntry implements Serializable {
         D1, TDAR, FILE, BAD;
         
         public static Type getTypeFromFormatId(String format) {
+            if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_RESOURCE_MAP_FORMAT)) {
+                return D1;
+            }
+            if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_MODS_FORMAT)) {
+                return Type.TDAR;
+            }
             if (format != null) {
                 return BAD;
             }

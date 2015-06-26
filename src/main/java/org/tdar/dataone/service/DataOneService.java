@@ -87,6 +87,8 @@ public class DataOneService {
     public static final String D1_VERS_SEP = "&v=";
     public static final String D1_SEP = "_";
     public static final String D1_FORMAT = "format=d1rem";
+    public static final String D1_RESOURCE_MAP_FORMAT = "http://www.openarchives.org/ore/terms";
+    public static final String D1_MODS_FORMAT = "http://loc.gov/mods/v3";
     static final String MN_REPLICATION = "MNREplication";
     static final String MN_STORAGE = "MNStorage";
     static final String MN_AUTHORIZATION = "MNAuthorization";
@@ -113,9 +115,6 @@ public class DataOneService {
 
      @Autowired
      private GenericService genericService;
-
-    @Autowired
-    private SerializationService serializationService;
 
     @Autowired
     private DataOneDao dataOneDao;
@@ -351,7 +350,7 @@ public class DataOneService {
         // metadata.setReplicationPolicy(rpolicy );
 
         // rights to change the permissions sitting on the object
-        metadata.setRightsHolder(createSubject(CONFIG.getSystemAdminEmail()));
+        metadata.setRightsHolder(createSubject(String.format("CN=%s, OU=TDAR,DC=org",CONFIG.getSystemAdminEmail())));
         // metadata.setSerialVersion(value);
         metadata.setSubmitter(createSubject(resource.getSubmitter().getProperName()));
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
@@ -362,12 +361,12 @@ public class DataOneService {
         ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
         switch (type) {
             case D1:
-                identifier.setValue("http://www.openarchives.org/ore/terms");
+                identifier.setValue(D1_RESOURCE_MAP_FORMAT);
                 break;
 //            case FILE:
 //                break;
             case TDAR:
-                identifier.setValue("http://loc.gov/mods/v3");
+                identifier.setValue(D1_MODS_FORMAT);
                 break;
             default:
                 identifier.setValue("BAD-FORMAT");
