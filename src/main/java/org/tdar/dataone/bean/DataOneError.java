@@ -31,10 +31,11 @@ public class DataOneError implements Serializable {
         
     }
     
-    public DataOneError(int errorCode, String string, int detailCode) {
+    public DataOneError(int errorCode, String name, String description, int detailCode) {
         this.errorCode = errorCode;
         this.detailCode = detailCode;
-        this.description = string;
+        this.description = description;
+        this.name = name;
     }
 
     public int getErrorCode() {
