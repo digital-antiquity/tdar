@@ -270,6 +270,9 @@ public class DataOneService {
     @Transactional(readOnly = true)
     public Checksum getChecksumResponse(String pid, String checksum_) {
         ObjectResponseContainer object = getObject(pid, null, false);
+        if (object == null) {
+            return null;
+        }
         return createChecksum(object.getChecksum());
     }
 
@@ -328,6 +331,9 @@ public class DataOneService {
         AccessPolicy policy = new AccessPolicy();
 
         ObjectResponseContainer object = getObjectFromTdar(id);
+        if (object == null) {
+            return null;
+        }
         InformationResource resource = object.getTdarResource();
         policy.getAllowList().add(createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);

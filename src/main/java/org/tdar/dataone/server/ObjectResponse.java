@@ -38,6 +38,7 @@ import org.tdar.dataone.service.ObjectResponseContainer;
 @Path(AbstractDataOneResponse.BASE_PATH + "object")
 public class ObjectResponse extends AbstractDataOneResponse {
 
+    private static final String SERVER_ERROR = "ServerError";
     private static final String DATA_ONE_OBJECT_FORMAT = "DataONE-ObjectFormat";
     private static final String DATA_ONE_CHECKSUM = "DataONE-Checksum";
     private static final String LAST_MODIFIED = "Last-Modified";
@@ -98,12 +99,13 @@ public class ObjectResponse extends AbstractDataOneResponse {
             };
             if (container != null) {
                 return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
+            } else {
+                return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();                
             }
         } catch (Exception e) {
             logger.error("error in DataOne getObject:", e);
+            return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
         }
-        DataOneError error = getNotFoundError();
-        return Response.serverError().entity(error).status(Status.NOT_FOUND).build();
 
     }
 
@@ -128,6 +130,11 @@ public class ObjectResponse extends AbstractDataOneResponse {
 
         } catch (Exception e) {
             logger.error("execption in DataOne object head request", e);
+            response.setHeader(DATA_ONE_EXCEPTION_NAME, SERVER_ERROR);
+//            response.setHeader(DATA_ONE_EXCEPTION_DETAIL_CODE, "1380");
+//            response.setHeader(DATA_ONE_EXCEPTION_DESCRIPTION, SPECIFIED_OBJECT_DOES_NOT_EXIST_ON_THIS_NODE);
+            response.setHeader(DATA_ONE_EXCEPTION_PID, id);
+            return Response.serverError().status(Status.NOT_FOUND).build();
         }
         response.setHeader(DATA_ONE_EXCEPTION_NAME, NOT_FOUND);
         response.setHeader(DATA_ONE_EXCEPTION_DETAIL_CODE, "1380");

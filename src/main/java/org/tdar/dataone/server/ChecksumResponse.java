@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
+import org.dataone.service.types.v1.Checksum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +48,15 @@ public class ChecksumResponse extends AbstractDataOneResponse {
         }
 
         try {
-            return Response.ok().entity(service.getChecksumResponse(pid, checksum)).build();
+            Checksum checksumResponse = service.getChecksumResponse(pid, checksum);
+            if (checksumResponse == null) {
+                return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();
+            }
+            return Response.ok().entity(checksumResponse).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
         }
-        return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
     }
 
 }

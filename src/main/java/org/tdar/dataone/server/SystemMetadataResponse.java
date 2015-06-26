@@ -9,6 +9,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.dataone.service.types.v1.SystemMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -50,11 +51,15 @@ public class SystemMetadataResponse extends AbstractDataOneResponse {
     public Response meta(@PathParam("id") String id) {
         setupResponseContext(response);
         try {
-            return Response.ok(service.metadataRequest(id)).build();
+            SystemMetadata metadataRequest = service.metadataRequest(id);
+            if (metadataRequest == null) {
+                return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();
+            }
+            return Response.ok(metadataRequest).build();
         } catch (Exception e) {
-            
+            e.printStackTrace();
+            return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();
         }
-        return Response.serverError().status(Status.NOT_FOUND).build();
     }
 
 }
