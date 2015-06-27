@@ -58,6 +58,19 @@ public class ExcelParserTestCase {
     }
 
     @Test
+    public void testMergedColumnHeader() throws Exception {
+        FileInputStream fis = getDataIntegrationResource("merged_column.xlsx");
+        Workbook workbook = WorkbookFactory.create(fis);
+        SheetEvaluator evaluator = new SheetEvaluator(workbook.getSheetAt(0));
+        logger.debug("{}", evaluator.getHeaderColumnNames());
+        assertEquals(2, evaluator.getDataRowStartIndex());
+        assertEquals(0, evaluator.getDataColumnStartIndex());
+        assertEquals(6, evaluator.getDataColumnEndIndex());
+        assertEquals(evaluator.getHeaderColumnNames().get(5),"Associated Substructures");
+        assertEquals(evaluator.getHeaderColumnNames().get(6),"Associated Substructures");
+    }
+    
+    @Test
     public void testDegenerateExcelFile() throws Exception {
         FileInputStream fis = getDataIntegrationResource("PFRAA_fake_Ferengi_trading_post_data_for tDAR test.xls");
         Workbook workbook = WorkbookFactory.create(fis);
