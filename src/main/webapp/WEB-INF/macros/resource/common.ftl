@@ -896,7 +896,7 @@ true for our registration page or our profile page).-->
         <h3>Featured Collection</h3>
         <p>
     <#if logoAvailable>
-        <img class="pull-right collection-logo" src="/files/collection/sm/${id?c}/logo"
+        <img class="pull-right collection-logo" src="/files/collection/sm/${featuredCollection.id?c}/logo"
         alt="logo" title="logo" /> 
     </#if>
     <a href="${featuredCollection.detailUrl}"><b>${featuredCollection.name}</b></a>: ${featuredCollection.description}</p>
