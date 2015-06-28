@@ -40,15 +40,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     private static final long serialVersionUID = -1831798412944149018L;
     @Autowired
-    private transient DownloadService downloadService;
-    @Autowired
     private transient AuthorizationService authorizationService;
-
-    @Autowired
-    private transient ResourceService resourceService;
-
-    @Autowired
-    private transient InformationResourceFileVersionService informationResourceFileVersionService;
 
     private DownloadTransferObject downloadTransferObject;
 

@@ -24,22 +24,18 @@ import com.opensymphony.xwork2.Preparable;
 public class UnauthenticatedDownloadAction extends AbstractDownloadController implements Preparable {
 
     private static final long serialVersionUID = 3682702108165100228L;
-    @Autowired
-    private transient DownloadService downloadService;
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Actions(value = {
             @Action(value = "download/{informationResourceId}/{informationResourceFileVersionId}",
                     results = {
-                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
+                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING, params = { "ignoreParams", "informationResourceFileVersionId,informationResourceId" }),
                             @Result(name = DOWNLOAD_ALL, type = "redirect",
                                     location = "/filestore/zip/${informationResourceId}"),
                             @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
                             @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") }),
             @Action(value = "download/{informationResourceId}",
                     results = {
-                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
+                            @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING, params = { "ignoreParams", "informationResourceFileVersionId,informationResourceId" }),
                             @Result(name = DOWNLOAD_ALL, type = "redirect",
                                     location = "/filestore/zip/${informationResourceId}"),
                             @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
