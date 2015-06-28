@@ -84,11 +84,18 @@
         <@view.browse resource.copyrightHolder "copyrightHolder" />
     </p>
     </#if>
+
 </p>
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 <hr class="dbl">
-
+    <h3>This Resource is Part of the Following Collections</h3>
+<p>    <ul class="inline">
+        <#list viewableResourceCollections as collection>
+            <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+            <#if collection_has_next>&nbsp;&nbsp;&bull;</#if></li>
+        </#list></ul>
+</p>
 <h2>Summary</h2>
     <@common.description resource.description />
 
@@ -468,11 +475,6 @@
 
     <@view.unapiLink resource />
     <#if viewableResourceCollections?has_content>
-    <h3>This Resource is Part of the Following Collections</h3>
-    <p>
-        <#list viewableResourceCollections as collection>
-            <a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a> <br/>
-        </#list></p>
     <hr/>
     </#if>
 
