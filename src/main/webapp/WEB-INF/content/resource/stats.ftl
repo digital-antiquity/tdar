@@ -6,11 +6,22 @@
 <h1>Usage Information for <span>${resource.title}</span></h1>
 
 <h2>Usage Stats</h2>
+
+
 <div class="row">
     <div class="span9">
         <div id="chart1" style="width:100%; height:400px" title="Views & Downloads"></div>
     </div>
 </div>
+
+
+<@statTable allByYear yearLabels "Year" />
+
+<@statTable allByMonth monthLabels "Last Month" />
+
+<@statTable allByDay dayLabels "Last Week" />
+
+
 <#-- The '&' is being escaped, hence no need for '&amp;' -->
 <#--<@common.barGraph data="data" graphLabel="views & downloads" xaxis="date" graphHeight=200/>-->
 <table class="tableFormat table">
@@ -72,5 +83,39 @@
         <p><b>None</b></p>
         </#if>
     </#if>
+
+
+<#macro statTable hash labelList lbl>
+<#if labelList?size == 0>
+<#return/>
+</#if>
+<table class="table tableFormat">
+    <thead>
+    <tr>
+        <th>${lbl}</th>
+        <#list labelList as label>
+            <th>
+                <#if label?is_number>
+                    ${label?c}
+                <#else>
+                    ${label}
+                </#if>
+            </th>
+        </#list>
+    </tr>
+    </thead>
+    <tbody>
+    <#list hash?keys as key>
+        <tr>
+            <td><b>${key}</b></td>
+            <#list hash[key] as val>
+            <td>${val}</td>
+            </#list>
+        </tr>
+    </#list>
+    </tbody>
+</table>
+<br/>
+</#macro>
 
 </#escape>

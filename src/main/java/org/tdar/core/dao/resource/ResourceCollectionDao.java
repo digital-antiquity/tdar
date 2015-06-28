@@ -6,6 +6,7 @@
  */
 package org.tdar.core.dao.resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,13 +15,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
@@ -240,6 +244,16 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             saveOrUpdate(rrl);
             saveOrUpdate(resource);
         }
+    }
+
+    public ResourceCollection findRandomFeaturedCollection() {
+        // use projection to just get the ID of the resource back -- less crazy binding in database queries
+        Criteria criteria = getCurrentSession().createCriteria(HomepageFeaturedCollections.class, "h");
+        criteria.createAlias("h.featured", "c");
+//        criteria.add(Restrictions.eq("c.status", Status.ACTIVE));
+        criteria.add(Restrictions.sqlRestriction("1=1 order by random()"));
+        criteria.setMaxResults(1);
+        return ((HomepageFeaturedCollections) criteria.uniqueResult()).getFeatured();
     }
 
 }

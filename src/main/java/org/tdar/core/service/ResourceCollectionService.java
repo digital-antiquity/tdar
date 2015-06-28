@@ -773,4 +773,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         getDao().makeResourceInCollectionActive(col, person, newOwner);
     }
+
+    @Transactional(readOnly=true)
+    public ResourceCollection getRandomFeaturedCollection() {
+        return getDao().findRandomFeaturedCollection();
+    }
 }

@@ -331,5 +331,19 @@
             </column>
         </createTable>
     </changeSet>
+    
+    <!--  had issue with id running, hence skipping to 25 -->
+    <changeSet id="munsell-25" author="abrin">
+    	<createTable tableName="homepage_featured_collection">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="collection_id" type="bigint">
+                <constraints nullable="false" references="collection"
+                             foreignKeyName="fk_homepage_featured_collection_collection_id" />
+            </column>
+    	
+    	</createTable>
+    </changeSet>
 
 </databaseChangeLog>
