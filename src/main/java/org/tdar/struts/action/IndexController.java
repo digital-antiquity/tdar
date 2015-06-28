@@ -136,10 +136,14 @@ public class IndexController extends AuthenticationAware.Base {
 
         try {
             worldMap();
-            setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
             featuredItems();
             resourceStats();
             featuredCollection();
+        } catch (Exception e) {
+            getLogger().error("exception in setting up homepage: {}", e,e);
+        }
+        try {
+            setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
         } catch (Exception e) {
             getLogger().warn("RssParsingException happened", e);
         }

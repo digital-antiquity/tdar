@@ -38,7 +38,6 @@ import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.UsageStats;
 
-import com.ibm.icu.impl.duration.DateFormatter;
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -95,17 +94,18 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
         Map<Integer, Map<String, Long>> byYear = new HashMap<>();
         Map<String, Map<String, Long>> byMonth = new HashMap<>();
         Map<String, Map<String, Long>> byDay = new HashMap<>();
+        String viewsText = getText("resourceStatisticsController.views");
         DateTime lastYear = DateTime.now().minusDays(255);
         DateTime lastWeek = DateTime.now().minusDays(7);
         for (AggregateViewStatistic stat : getUsageStatsForResources()) {
-            incrementKey(byYear, stat.getYear(), stat.getCount(), "Views");
+            incrementKey(byYear, stat.getYear(), stat.getCount(), viewsText);
             if (lastYear.isBefore(stat.getAggregateDate().getTime())) {
-                incrementKey(byMonth, stat.getYear() + "-" + stat.getMonth(), stat.getCount(), "Views");
+                incrementKey(byMonth, stat.getYear() + "-" + stat.getMonth(), stat.getCount(), viewsText);
             }
             if (lastWeek.isBefore(stat.getAggregateDate().getTime())) {
-                incrementKey(byDay, format.format(stat.getAggregateDate()), stat.getCount(), "Views");
+                incrementKey(byDay, format.format(stat.getAggregateDate()), stat.getCount(), viewsText);
             }
-            keys.add("Views");
+            keys.add(viewsText);
         }
         for (Entry<String, List<AggregateDownloadStatistic>> entry : getDownloadStats().entrySet()) {
             for (AggregateDownloadStatistic stat : entry.getValue()) {
