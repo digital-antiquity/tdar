@@ -67,7 +67,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.ListObjectEntry.Type;
@@ -240,10 +239,10 @@ public class DataOneService {
         // and idFilter startsWith(idFilter)
         // log.setCount...
 
-        logger.debug("logResponse: {} {} {} {} {} {} {}", fromDate, toDate, event, idFilter, start, count);
-        List<LogEntryImpl> findLogFiles = dataOneDao.findLogFiles(fromDate, toDate, event, idFilter, start, count, log);
         log.setStart(start);
         log.setCount(count);
+        logger.debug("logResponse: {} {} {} {} {} {} {}", fromDate, toDate, event, idFilter, start, count);
+        List<LogEntryImpl> findLogFiles = dataOneDao.findLogFiles(fromDate, toDate, event, idFilter, start, count, log);
         for (LogEntryImpl impl : findLogFiles) {
             LogEntry entry = new LogEntry();
             entry.setDateLogged(impl.getDateLogged());
@@ -264,6 +263,7 @@ public class DataOneService {
             entry.setSubject(createSubject(impl.getSubject()));
             log.addLogEntry(entry);
         }
+        log.setCount(log.getLogEntryList().size());
         return log;
     }
 
@@ -303,6 +303,8 @@ public class DataOneService {
             info.setSize(BigInteger.valueOf(object.getSize()));
             list.getObjectInfoList().add(info);
         }
+        // matching count of list to match # of results per test
+        list.setCount(list.getObjectInfoList().size());
         return list;
     }
 
