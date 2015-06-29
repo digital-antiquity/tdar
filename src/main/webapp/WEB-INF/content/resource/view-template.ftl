@@ -84,11 +84,18 @@
         <@view.browse resource.copyrightHolder "copyrightHolder" />
     </p>
     </#if>
+
 </p>
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 <hr class="dbl">
-
+    <h3>This Resource is Part of the Following Collections</h3>
+<p>    <ul class="inline">
+        <#list viewableResourceCollections as collection>
+            <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+            <#if collection_has_next>&nbsp;&nbsp;&bull;</#if></li>
+        </#list></ul>
+</p>
 <h2>Summary</h2>
     <@common.description resource.description />
 
@@ -220,7 +227,7 @@
             <#if dataTable.description?has_content>
 			<p>${dataTable.description}</p>
 			</#if>
-            <table class="tableFormat table table-striped table-bordered">
+            <table class="tableFormat table table-bordered">
                 <thead class='highlight'>
                 <tr>
                     <th class="guide">Column Name</th>
@@ -232,6 +239,10 @@
                 </tr>
                 </thead>
                 <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
+                <#assign oddEven="oddC" />
+                <#if column_index % 2 == 0>
+                    <#assign oddEven="evenC" />
+                </#if>
                     <tr>
                         <#assign typeLabel = ""/>
                         <#if column.measurementUnit?has_content><#assign typeLabel = "measurement"/></#if>
@@ -239,24 +250,34 @@
                         <#if (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
                         <#if column.columnEncodingType?has_content && column.columnEncodingType.count><#assign typeLabel = "count"/></#if>
                         <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
-                        <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
+                        <#assign hasDescription = false />
+                        <#if column.description?has_content >
+                            <#assign hasDescription = true />
+                        </#if>
+
+
+                        <td class="guide" nowrap <#if hasDescription>rowspan=2</#if>><span class="columnSquare ${typeLabel}"></span><b>
                         ${column.displayName}
                         </b></td>
-                        <td><#if column.columnDataType??>${column.columnDataType.label}&nbsp;</#if></td>
-                        <td><#if column.columnEncodingType??>${column.columnEncodingType.label}</#if>
+                        <#if hasDescription>
+                            <td colspan="6" class="${oddEven} descriptionRow" >${column.description}</td></tr><tr>
+                        </#if>
+
+                        <td class="${oddEven}"><#if column.columnDataType??>${column.columnDataType.label}&nbsp;</#if></td>
+                        <td class="${oddEven}"><#if column.columnEncodingType??>${column.columnEncodingType.label}</#if>
                             <#if column.measurementUnit??> (${column.measurementUnit.label})</#if> </td>
-                        <td>
+                        <td class="${oddEven}">
                             <#if column.categoryVariable??>
                                 <#if column.categoryVariable.parent??>
                                 ${column.categoryVariable.parent} :</#if> ${column.categoryVariable}
                             <#else>uncategorized</#if> </td>
-                        <td>
+                        <td class="${oddEven}">
                             <#if column.defaultCodingSheet??>
                                 <a href="<@s.url value="/coding-sheet/${column.defaultCodingSheet.id?c}" />">
                                 ${column.defaultCodingSheet.title!"no title"}</a>
                             <#else>none</#if>
                         </td>
-                        <td>
+                        <td class="${oddEven}">
                             <@_printOntology column />
                         </td>
                     </tr>
@@ -468,11 +489,6 @@
 
     <@view.unapiLink resource />
     <#if viewableResourceCollections?has_content>
-    <h3>This Resource is Part of the Following Collections</h3>
-    <p>
-        <#list viewableResourceCollections as collection>
-            <a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a> <br/>
-        </#list></p>
     <hr/>
     </#if>
 

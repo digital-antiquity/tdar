@@ -2,9 +2,7 @@ package org.tdar.core.service.excel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -86,21 +84,26 @@ public class SheetEvaluator {
         // clamp endRow if the sheet doesn't have enough rows to scan
         endRow = Math.min(endRow, sheet.getLastRowNum());
         // locate and skip any merged regions at the start of the sheet
-        Set<Integer> mergedRegionRowIndexes = getMergedRegionsIndexes(sheet);
         // look for something headerish in the data and develop some heuristics based on how many
         // rows of consistent data we can find.
         formulaEvaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
         List<DataRow> dataRows = new ArrayList<>();
+
         for (int rowIndex = ExcelService.FIRST_ROW; rowIndex < endRow; rowIndex++) {
-            if (mergedRegionRowIndexes.contains(rowIndex)) {
-                // this row is a merged region that we can't sensibly use for anything at all
-                logger.trace("skipping merged region row index {}", rowIndex);
-                continue;
-            }
             Row row = sheet.getRow(rowIndex);
             if (row == null) {
                 continue;
             }
+            boolean skipRow = evaluateRowForMergedRegions(sheet, rowIndex, row);
+
+            if (skipRow) {
+                continue;
+            }
+            // if (mergedRegionRowIndexes.contains(rowIndex)) {
+            // // this row is a merged region that we can't sensibly use for anything at all
+            // logger.debug("skipping merged region row index {}", rowIndex);
+            // continue;
+            // }
             dataRows.add(new DataRow(row));
         }
         // analyze DataRows and score them for likelihood of being a header or data row
@@ -130,24 +133,46 @@ public class SheetEvaluator {
         logger.debug("initialized headers: {}", headerColumnNames);
     }
 
-    public Set<Integer> getMergedRegionsIndexes(Sheet sheet) {
-        Set<Integer> indexes = new HashSet<>();
+    /**
+     * Iterates over cells in merged regions and sets values to be the value of the merged region if
+     * we're merging just a few columns together on a single row
+     * 
+     * @param sheet
+     * @param rowIndex
+     * @param row
+     * @return
+     */
+    private boolean evaluateRowForMergedRegions(Sheet sheet, int rowIndex, Row row) {
+        boolean skipRow = false;
         int numMergedRegions = sheet.getNumMergedRegions();
-        // FIXME: why upper bound < 5?
-        if (numMergedRegions > 0 && numMergedRegions < 5) {
-            for (int i = 0; i < numMergedRegions; i++) {
-                CellRangeAddress mergedRegion = sheet.getMergedRegion(i);
-                int firstRow = mergedRegion.getFirstRow();
-                int lastRow = mergedRegion.getLastRow();
-                // FIXME: why upper bound < 10?
-                if (lastRow < 10) {
-                    for (int rowIndex = firstRow; rowIndex <= lastRow; rowIndex++) {
-                        indexes.add(rowIndex);
+        for (int i = 0; i < numMergedRegions; i++) {
+            CellRangeAddress region = sheet.getMergedRegion(i);
+            logger.trace("{},{}",region.getFirstRow(), region.getFirstColumn());
+
+            // find overlap of current row in region
+            if (rowIndex >= region.getFirstRow() && rowIndex <= region.getLastRow()) {
+                Cell merged = sheet.getRow(region.getFirstRow()).getCell(region.getFirstColumn());
+                // and skip if region is more than one row
+                if (region.getLastRow() - region.getFirstRow() > 1) {
+                    logger.debug("skipping merged region with multiple rows {}", rowIndex);
+                    skipRow = true;
+                    continue;
+                }
+                // if more than 3 columns
+                if (region.getLastColumn() - region.getFirstColumn() > 3) {
+                    logger.debug("skipping merged region with more than 3 columns {}", rowIndex);
+                    skipRow = true;
+                    continue;
+                }
+                for (int j = region.getFirstColumn(); j <= region.getLastColumn(); j++) {
+                    if (row.getCell(j) == null) {
+                        continue;
                     }
+                    row.getCell(j).setCellValue(formatter.formatCellValue(merged, formulaEvaluator));
                 }
             }
         }
-        return indexes;
+        return skipRow;
     }
 
     public void validate(Row row) {
@@ -232,8 +257,7 @@ public class SheetEvaluator {
             for (int i = dataColumnStartIndex; i <= dataColumnEndIndex; i++) {
                 headerColumnNames.add("Column #" + (i + 1));
             }
-        }
-        else {
+        } else {
             headerColumnNames = dataRow.extractHeaders();
             setHeaderRowIndex(dataRow.getRowIndex());
         }
