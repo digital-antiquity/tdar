@@ -101,7 +101,7 @@
     </div>
 </#if>
 <br/>
-
+<hr />
 <div class="row">
     <div class="span6">
 		<#if featuredCollection?has_content>
