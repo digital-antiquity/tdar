@@ -34,7 +34,7 @@
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <geotools.version>13.1</geotools.version>
-        <tika.version>1.8</tika.version>
+        <tika.version>1.9</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
         <jersey.version>1.19</jersey.version>
@@ -896,7 +896,7 @@
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
             <artifactId>jackcess</artifactId>
-            <version>2.1.1</version>
+            <version>2.1.2</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <!-- OpenCSV -->
