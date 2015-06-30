@@ -88,6 +88,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
                     col.getFilteredOntologyNodes().addAll(col.getSharedOntology().getOntologyNodes());
                 }
             }
+            col.setName(ic_.getName());
             integrationContext.getIntegrationColumns().add(col);
         }
         integrationContext.setDataTables(service.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));

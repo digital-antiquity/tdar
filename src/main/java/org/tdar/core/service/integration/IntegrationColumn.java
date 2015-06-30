@@ -89,8 +89,9 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     @Override
     public String toString() {
-        return String.format("%s (ontology: %s | columns: %s | nodes: %s)", columnType, sharedOntology, PersistableUtils.extractIds(getColumns()),
+        String add = String.format("(ontology: %s | columns: %s | nodes: %s)", sharedOntology, PersistableUtils.extractIds(getColumns()),
                 PersistableUtils.extractIds(getFilteredOntologyNodes()));
+        return String.format("%s (%s) %s", getName(), columnType, add);
     }
 
     public void setColumns(List<DataTableColumn> columns) {
@@ -103,24 +104,11 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return columns;
     }
 
-    // @XmlElementWrapper(name = "mappingRules")
-    // @XmlElement(name = "mappingRule")
-    // public List<CodingRule> getCodingRules() {
-    // List<CodingRule> rules = new ArrayList<CodingRule>();
-    // columns.removeAll(Collections.singletonList(null));
-    // for (DataTableColumn column : columns) {
-    // if (column != null && column.getDefaultCodingSheet() == null) {
-    // continue;
-    // }
-    // rules.addAll(column.getDefaultCodingSheet().getCodingRules());
-    // }
-    // return rules;
-    // }
-
     @XmlElementWrapper(name = "filteredOntologyNodes")
     @XmlElement(name = "ontologyNode")
     /**
      * The list of OntologyNodes specified by the "filter" process (specifying which nodes should be actually used in the integration)
+     * 
      * @return
      */
     public List<OntologyNode> getFilteredOntologyNodes() {
@@ -259,7 +247,8 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     @XmlTransient
     /**
      * This is the fully-formed list of ontology nodes that has the filter/flatten process applied the node Hierarchy
-     * includes all childen that are necessary for the hierarchical query. 
+     * includes all childen that are necessary for the hierarchical query.
+     * 
      * @return
      */
     public Set<OntologyNode> getOntologyNodesForSelect() {
