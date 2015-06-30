@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.FileType;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
@@ -53,11 +55,14 @@ public class DownloadService {
 
     private final AuthorizationService authorizationService;
 
+    private final ResourceCollectionDao resourceCollectionDao;
+    
     @Autowired
-    public DownloadService(PdfService pdfService, GenericService genericService, AuthorizationService authorizationService) {
+    public DownloadService(PdfService pdfService, GenericService genericService, AuthorizationService authorizationService, ResourceCollectionDao resourceCollectionDao) {
         this.pdfService = pdfService;
         this.genericService = genericService;
         this.authorizationService = authorizationService;
+        this.resourceCollectionDao = resourceCollectionDao;
         this.downloadLock = CacheBuilder.newBuilder()
                 .concurrencyLevel(4)
                 .maximumSize(10000)
@@ -112,9 +117,9 @@ public class DownloadService {
             list.remove(new Integer(array.hashCode()));
         }
 
-        if (CollectionUtils.isEmpty(list))
-            ;
-        downloadLock.invalidate(key);
+        if (CollectionUtils.isEmpty(list)) {
+            downloadLock.invalidate(key);
+        }
     }
 
     public void enforceDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
@@ -203,6 +208,11 @@ public class DownloadService {
             issue = DownloadResult.ERROR;
         }
 
+        WhiteLabelCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
+        if (whiteLabelCollection != null) {
+            //whiteLabelCollection;
+        }
+        
         DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, authenticatedUser, textProvider, this, authorization);
         dto.setIncludeCoverPage(includeCoverPage);
         if (issue != DownloadResult.SUCCESS) {

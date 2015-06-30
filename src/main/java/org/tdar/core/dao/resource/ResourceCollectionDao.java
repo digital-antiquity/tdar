@@ -18,7 +18,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,7 @@ import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -259,6 +259,25 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         } catch (NullPointerException npe) {
             return null;
         }
+    }
+
+    public WhiteLabelCollection getWhiteLabelCollectionForResource(Resource resource) {
+        Set<ResourceCollection> resourceCollections = resource.getSharedResourceCollections();
+
+        List<WhiteLabelCollection> whiteLabelCollections = new ArrayList<>();
+        for (ResourceCollection rc : resourceCollections) {
+            if (rc.isWhiteLabelCollection()) {
+                whiteLabelCollections.add((WhiteLabelCollection) rc);
+            }
+        }
+        if (whiteLabelCollections.size() > 1) {
+            getLogger().error("resource #{} belongs to more than one whitelabel collection: {}", resource.getId(), whiteLabelCollections);
+        }
+
+        if (CollectionUtils.isNotEmpty(whiteLabelCollections)) {
+            return whiteLabelCollections.get(0);
+        }
+        return null;
     }
 
 }
