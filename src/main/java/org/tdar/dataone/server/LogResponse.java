@@ -66,7 +66,7 @@ public class LogResponse extends AbstractDataOneResponse {
     @Produces(APPLICATION_XML)
     public Response log(@QueryParam(FROM_DATE) String fromDate_,
             @QueryParam(TO_DATE) String toDate_,
-            @QueryParam(EVENT) Event event,
+            @QueryParam(EVENT) String event,
             @QueryParam(ID_FILTER) String idFilter,
             @QueryParam(START) @DefaultValue("0") int start,
             @QueryParam(COUNT) @DefaultValue("1000") int count) {
@@ -81,7 +81,7 @@ public class LogResponse extends AbstractDataOneResponse {
                 toDate = DateTime.parse(toDate_).toDate();
             }
 
-            return Response.ok().entity(service.getLogResponse(fromDate, toDate, event, idFilter, start, count, request)).build();
+            return Response.ok().entity(service.getLogResponse(fromDate, toDate, Event.valueOf(StringUtils.upperCase(event)), idFilter, start, count, request)).build();
         } catch (Exception e) {
             logger.error("exception in logResponse:{}", e, e);
         }
