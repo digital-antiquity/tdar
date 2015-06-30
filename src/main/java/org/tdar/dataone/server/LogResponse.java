@@ -38,17 +38,17 @@ public class LogResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletResponse response;
 
-    @Context 
+    @Context
     private HttpServletRequest request;
 
     /**
      * Exceptions.NotAuthorized – (errorCode=401, detailCode=1460)
      * Raised if the user making the request is not authorized to access the log records. This is determined by the policy of the Member Node.
-
+     * 
      * Exceptions.InvalidRequest –
      * (errorCode=400, detailCode=1480)
      * The request parameters were malformed or an invalid date range was specified.
-
+     * 
      * Exceptions.ServiceFailure – (errorCode=500, detailCode=1490)
      * Exceptions.InvalidToken – (errorCode=401, detailCode=1470)
      * Exceptions.NotImplemented – (errorCode=501, detailCode=1461)
@@ -83,7 +83,7 @@ public class LogResponse extends AbstractDataOneResponse {
 
             return Response.ok().entity(service.getLogResponse(fromDate, toDate, event, idFilter, start, count, request)).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("exception in logResponse:{}", e, e);
         }
         return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
     }
