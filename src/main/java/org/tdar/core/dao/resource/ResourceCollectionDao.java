@@ -192,14 +192,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     @SuppressWarnings("unchecked")
     /**
      * Return download authorizations that have a host name that matches the referrer and the APIKey that matches the one in the DB.
-     * Does Hierarchical Collection Query 
+     * Does Hierarchical Collection Query
      * 
      * @param informationResourceFileVersion
      * @param apiKey
      * @param referrer
      * @return
      */
-    public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+    public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
+            String referrer) {
         List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
         if (CollectionUtils.isEmpty(sharedCollectionIds)) {
             return Collections.EMPTY_LIST;
@@ -250,10 +251,14 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         // use projection to just get the ID of the resource back -- less crazy binding in database queries
         Criteria criteria = getCurrentSession().createCriteria(HomepageFeaturedCollections.class, "h");
         criteria.createAlias("h.featured", "c");
-//        criteria.add(Restrictions.eq("c.status", Status.ACTIVE));
+        // criteria.add(Restrictions.eq("c.status", Status.ACTIVE));
         criteria.add(Restrictions.sqlRestriction("1=1 order by random()"));
         criteria.setMaxResults(1);
-        return ((HomepageFeaturedCollections) criteria.uniqueResult()).getFeatured();
+        try {
+            return ((HomepageFeaturedCollections) criteria.uniqueResult()).getFeatured();
+        } catch (NullPointerException npe) {
+            return null;
+        }
     }
 
 }
