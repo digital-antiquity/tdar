@@ -1108,7 +1108,14 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
         waitFor(elementToBeClickable(id("fileAsyncUpload")));
-        find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
+        // TEMPORARY FIX
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        find(id("fileAsyncUpload")).sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
         find("#proxy0_conf").val(restriction.name());
     }
