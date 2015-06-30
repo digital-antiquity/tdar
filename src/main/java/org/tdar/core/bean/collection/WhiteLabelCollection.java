@@ -35,6 +35,9 @@ public class WhiteLabelCollection extends ResourceCollection {
     @Column(name = "custom_header_enabled")
     private boolean customHeaderEnabled;
 
+    @Column(name = "custom_doc_logo_enabled")
+    private boolean customDocumentLogoEnabled;
+
     @Column(name = "featured_resources_enabled")
     private boolean featuredResourcesEnabled;
 
@@ -139,5 +142,13 @@ public class WhiteLabelCollection extends ResourceCollection {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public boolean isCustomDocumentLogoEnabled() {
+        return customDocumentLogoEnabled;
+    }
+
+    public void setCustomDocumentLogoEnabled(boolean customDocumentLogoEnabled) {
+        this.customDocumentLogoEnabled = customDocumentLogoEnabled;
     }
 }
