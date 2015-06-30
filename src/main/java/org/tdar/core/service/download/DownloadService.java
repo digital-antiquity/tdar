@@ -163,7 +163,7 @@ public class DownloadService {
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {
             resourceFile = new DownloadPdfFile((Document) dto.getInformationResource(), irFileVersion, pdfService, dto.getAuthenticatedUser(),
-                    dto.getTextProvider());
+                    dto.getTextProvider(), dto.getCoverPageLogo());
         }
 
         if (FileType.IMAGE != irFileVersion.getInformationResourceFile().getInformationResourceFileType()) {

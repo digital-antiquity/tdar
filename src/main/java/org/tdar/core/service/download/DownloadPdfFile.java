@@ -1,6 +1,7 @@
 package org.tdar.core.service.download;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
@@ -26,14 +27,16 @@ public class DownloadPdfFile extends DownloadFile {
     private TdarUser person;
     private TextProvider provider;
     private Document document;
+    private File coverPageLogo;
 
-    public DownloadPdfFile(Document ir, InformationResourceFileVersion irFileVersion, PdfService pdfService, TdarUser person, TextProvider provider) {
+    public DownloadPdfFile(Document ir, InformationResourceFileVersion irFileVersion, PdfService pdfService, TdarUser person, TextProvider provider, File coverPageLogo) {
         super(irFileVersion.getTransientFile(), irFileVersion.getInformationResourceFile().getFilename(), irFileVersion);
         this.version = irFileVersion;
         this.pdfService = pdfService;
         this.person = person;
         this.provider = provider;
         this.document = ir;
+        this.coverPageLogo = coverPageLogo;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class DownloadPdfFile extends DownloadFile {
         getLogger().debug("person: {} version: {} provider: {}", person, version, provider);
         InputStream inputStream = null;
         try {
-            inputStream = pdfService.mergeCoverPage(provider, person, version, document, null);
+            inputStream = pdfService.mergeCoverPage(provider, person, version, document, coverPageLogo);
         } catch (PdfCoverPageGenerationException pcpe) {
             inputStream = new FileInputStream(getFile());
         }
@@ -56,5 +59,13 @@ public class DownloadPdfFile extends DownloadFile {
     public Long getFileLength() {
         // we have a cover page, so we have no idea about length
         return null;
+    }
+
+    public File getCoverPageLogo() {
+        return coverPageLogo;
+    }
+
+    public void setCoverPageLogo(File coverPageLogo) {
+        this.coverPageLogo = coverPageLogo;
     }
 }
