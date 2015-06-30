@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /*
  * Closes a DownloadLock when stream is closed
@@ -18,7 +19,7 @@ public class DownloadLockInputStream extends BufferedInputStream implements Seri
     private DownloadTransferObject dto;
 
     public DownloadLockInputStream(InputStream in, DownloadTransferObject dto) {
-        super(in);
+        super(in,TdarConfiguration.getInstance().getDownloadBufferSize());
         this.dto = dto;
         dto.registerDownloadLock();
     }

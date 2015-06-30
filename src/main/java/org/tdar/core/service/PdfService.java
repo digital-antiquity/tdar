@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -126,14 +127,11 @@ public class PdfService {
      */
     private PipedInputStream mergePDFs(File coverPage, File document, File coverPageImage) throws IOException, COSVisitorException, InterruptedException {
         final PDFMergeWrapper wrapper = new PDFMergeWrapper();
-        /*
-         * FIXME:
-         * only change i might suggest is to switch the initialization order to emphasize that the PipedOutputStream is where the data is coming from. At first
-         * I thought you were reading the data into the PipedInputStream to send to the PipedOutputStream because of the way they were initialized
-         */
-        PipedInputStream inputStream = new PipedInputStream(2048);
+
+        int downloadBufferSize = TdarConfiguration.getInstance().getDownloadBufferSize();
+        PipedInputStream inputStream = new PipedInputStream(downloadBufferSize);
         final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
-        wrapper.getMerger().setDestinationStream(pipedOutputStream);
+        wrapper.getMerger().setDestinationStream(new BufferedOutputStream(pipedOutputStream,downloadBufferSize));
         wrapper.getMerger().addSource(coverPage);
         wrapper.getMerger().addSource(document);
         wrapper.setDocument(document);
