@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -37,9 +38,10 @@ public class PDFMergeTask implements Runnable {
     
     @Override
     public void run() {
-        // TODO Auto-generated method stub
+        File scratchFile = null;
         try {
-            wrapper.getMerger().mergeDocumentsNonSeq(new RandomAccessFile(File.createTempFile("pdfbox-merge", "pdf"), "rw"));
+            scratchFile = File.createTempFile("pdfbox-scratch", ".bin");
+            wrapper.getMerger().mergeDocumentsNonSeq(new RandomAccessFile(scratchFile, "rw"));
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions
@@ -59,6 +61,7 @@ public class PDFMergeTask implements Runnable {
             attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
         } finally {
             IOUtils.closeQuietly(pipedOutputStream);
+            FileUtils.deleteQuietly(scratchFile);
         }
     }
 
