@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.pdf;
 
 /*
  * LOCAL FIX TO TRY AND ADDRESS MEMORY USAGE ISSUE, REMOVE WHEN PDFBOX fixes
