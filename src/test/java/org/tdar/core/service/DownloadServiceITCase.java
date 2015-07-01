@@ -97,7 +97,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         document.setDescription("test");
         document.setDocumentType(DocumentType.BOOK);
         filestore.store(ObjectType.RESOURCE, file, version);
-        DownloadPdfFile downloadPdfFile = new DownloadPdfFile(document, version, pdfService, getAdminUser(), MessageHelper.getInstance());
+        DownloadPdfFile downloadPdfFile = new DownloadPdfFile(document, version, pdfService, getAdminUser(), MessageHelper.getInstance(), null);
         downloadPdfFile.setFile(file);
         dto.getDownloads().add(downloadPdfFile);
 

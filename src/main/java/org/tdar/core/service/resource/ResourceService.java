@@ -65,7 +65,6 @@ import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
@@ -85,9 +84,6 @@ public class ResourceService extends GenericService {
         VALIDATE_SKIP_ERRORS,
         VALIDATE_WITH_EXCEPTION
     }
-
-    @Autowired
-    private transient SerializationService serializationService;
 
     @Autowired
     private transient EntityService entityService;

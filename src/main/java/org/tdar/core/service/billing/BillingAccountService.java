@@ -408,7 +408,9 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
 
     @Transactional(readOnly = false)
     public void deleteForController(TextProvider provider, BillingAccount account, String deletionReason, TdarUser authenticatedUser) {
-        if (StringUtils.isNotBlank(getDeletionIssues(provider, account).getIssue())) {
+        DeleteIssue deletionIssues = getDeletionIssues(provider, account);
+        if (deletionIssues != null && StringUtils.isNotBlank(deletionIssues.getIssue())) {
+            logger.debug("deletion issues: {}", deletionIssues.getIssue());
             return;
         }
         delete(account);

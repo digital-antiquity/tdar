@@ -252,6 +252,9 @@ table.legend {
     padding: 0px;
 }
 
+.evenC {background-color:#DDD !important}
+.descriptionRow {border-bottom:1px solid #eee}
+
 .countColumn, .buttontable div[data-count], .columnSquare.count {
     background: #e5e696; /* Old browsers */
     border: 1px solid #999999;
