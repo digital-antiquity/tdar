@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.pdf;
 
 import java.io.File;
 import java.io.FileInputStream;

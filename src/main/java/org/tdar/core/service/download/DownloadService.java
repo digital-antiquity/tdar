@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.FileType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -29,6 +30,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.PersistableUtils;
 
@@ -208,12 +210,10 @@ public class DownloadService {
             issue = DownloadResult.ERROR;
         }
 
-        WhiteLabelCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
-        if (whiteLabelCollection != null) {
-            //whiteLabelCollection;
-        }
+        File coverLogo = getCoverLogo(resourceToDownload);
         
         DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, authenticatedUser, textProvider, this, authorization);
+        dto.setCoverPageLogo(coverLogo);
         dto.setIncludeCoverPage(includeCoverPage);
         if (issue != DownloadResult.SUCCESS) {
             dto.setResult(issue);
@@ -277,6 +277,20 @@ public class DownloadService {
         }
         dto.setResult(DownloadResult.SUCCESS);
         return dto;
+    }
+
+    private File getCoverLogo(InformationResource resourceToDownload) {
+        WhiteLabelCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
+        if (whiteLabelCollection != null && whiteLabelCollection.isCustomDocumentLogoEnabled()) {
+            VersionType small = VersionType.WEB_SMALL;
+            FileStoreFile proxy = new FileStoreFile(ObjectType.COLLECTION, small, whiteLabelCollection.getId(), "logo" + small.toPath() + ".jpg");
+            try {
+                return  TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.COLLECTION, proxy);
+            } catch (FileNotFoundException e) {
+                logger.warn("could not get cover logo:{}", e, e);
+            }
+        }
+        return null;
     }
 
     private void logNotFound(InformationResourceFileVersion version, FileNotFoundException e1, String path) {
