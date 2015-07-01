@@ -202,16 +202,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Override
     public void validate() {
         super.validate();
-
-        List<WhiteLabelCollection> whiteLabelCollections = new ArrayList<>();
-        for (ResourceCollection rc : getResource().getSharedResourceCollections()) {
-            if (rc.isWhiteLabelCollection()) {
-                whiteLabelCollections.add((WhiteLabelCollection) rc);
-            }
-        }
-        if(whiteLabelCollections.size() > 1) {
-            getLogger().error("resource #{} belongs to more than one whitelabel collection: {}", getResource().getId(), whiteLabelCollections);
-        }
     }
 
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
@@ -508,6 +498,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 
+    private transient WhiteLabelCollection whiteLabelCollection;
+    
     @XmlTransient
     /**
      * We assume for now that a resource will only belong to a single white-label collection.
@@ -515,14 +507,10 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      * @return
      */
     public WhiteLabelCollection getWhiteLabelCollection() {
-        // if parent list defined, go up the chain (otherwise only use direct membership, since it's costly to compute)
-
-        for (ResourceCollection rc : resourceCollections) {
-            if (rc.isWhiteLabelCollection()) {
-                return (WhiteLabelCollection) rc;
-            }
+        if (whiteLabelCollection == null) {
+            whiteLabelCollection = resourceCollectionService.getWhiteLabelCollectionForResource(getResource());
         }
-        return null;
+        return whiteLabelCollection;
     }
 
     public boolean isWhiteLabelLogoAvailable() {

@@ -18,7 +18,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,7 @@ import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -192,14 +192,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     @SuppressWarnings("unchecked")
     /**
      * Return download authorizations that have a host name that matches the referrer and the APIKey that matches the one in the DB.
-     * Does Hierarchical Collection Query 
+     * Does Hierarchical Collection Query
      * 
      * @param informationResourceFileVersion
      * @param apiKey
      * @param referrer
      * @return
      */
-    public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+    public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
+            String referrer) {
         List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
         if (CollectionUtils.isEmpty(sharedCollectionIds)) {
             return Collections.EMPTY_LIST;
@@ -250,10 +251,33 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         // use projection to just get the ID of the resource back -- less crazy binding in database queries
         Criteria criteria = getCurrentSession().createCriteria(HomepageFeaturedCollections.class, "h");
         criteria.createAlias("h.featured", "c");
-//        criteria.add(Restrictions.eq("c.status", Status.ACTIVE));
+        // criteria.add(Restrictions.eq("c.status", Status.ACTIVE));
         criteria.add(Restrictions.sqlRestriction("1=1 order by random()"));
         criteria.setMaxResults(1);
-        return ((HomepageFeaturedCollections) criteria.uniqueResult()).getFeatured();
+        try {
+            return ((HomepageFeaturedCollections) criteria.uniqueResult()).getFeatured();
+        } catch (NullPointerException npe) {
+            return null;
+        }
+    }
+
+    public WhiteLabelCollection getWhiteLabelCollectionForResource(Resource resource) {
+        Set<ResourceCollection> resourceCollections = resource.getSharedResourceCollections();
+
+        List<WhiteLabelCollection> whiteLabelCollections = new ArrayList<>();
+        for (ResourceCollection rc : resourceCollections) {
+            if (rc.isWhiteLabelCollection()) {
+                whiteLabelCollections.add((WhiteLabelCollection) rc);
+            }
+        }
+        if (whiteLabelCollections.size() > 1) {
+            getLogger().error("resource #{} belongs to more than one whitelabel collection: {}", resource.getId(), whiteLabelCollections);
+        }
+
+        if (CollectionUtils.isNotEmpty(whiteLabelCollections)) {
+            return whiteLabelCollections.get(0);
+        }
+        return null;
     }
 
 }

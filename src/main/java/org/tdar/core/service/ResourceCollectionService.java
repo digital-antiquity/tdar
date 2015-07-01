@@ -28,6 +28,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -777,5 +778,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly=true)
     public ResourceCollection getRandomFeaturedCollection() {
         return getDao().findRandomFeaturedCollection();
+    }
+
+    @Transactional(readOnly=true)
+    public WhiteLabelCollection getWhiteLabelCollectionForResource(Resource resource) {
+        return getDao().getWhiteLabelCollectionForResource(resource);
     }
 }

@@ -1,9 +1,7 @@
-package org.tdar.core.service;
+package org.tdar.core.service.pdf;
 
 import java.io.File;
 import java.io.Serializable;
-
-import org.apache.pdfbox.util.PDFMergerUtility;
 
 public class PDFMergeWrapper implements Serializable {
 

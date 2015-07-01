@@ -345,5 +345,9 @@
     	
     	</createTable>
     </changeSet>
-
+    <changeSet id="munsell-26" author="abrin">
+    <addColumn tableName="whitelabel_collection">
+        <column name="custom_doc_logo_enabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+    </addColumn>    
+    </changeSet>
 </databaseChangeLog>

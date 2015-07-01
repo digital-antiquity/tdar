@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.pdf;
 
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.PdfDocEncoding;
