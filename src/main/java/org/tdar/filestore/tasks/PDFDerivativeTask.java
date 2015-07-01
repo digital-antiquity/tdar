@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -39,6 +41,8 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             throw new TdarRecoverableRuntimeException("pdfDerivativeTask.processing_error", e);
         }
     }
+
+    private File scratchFile;
 
     @Override
     public void run() throws Exception {
@@ -120,6 +124,8 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 document.close();
             } catch (IOException e) {
                 getLogger().warn("cannot close PDF", e);
+            } finally {
+                FileUtils.deleteQuietly(scratchFile);
             }
         }
     }
@@ -127,7 +133,8 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
     private PDDocument openPDF(String password, File pdfFile) {
         PDDocument document = null;
         try {
-            document = PDDocument.load(pdfFile);
+            scratchFile = File.createTempFile("pdfbox-scratch", ".bin");
+            document = PDDocument.loadNonSeq(pdfFile, new RandomAccessFile(scratchFile, "rw"));
 
             if (document.isEncrypted()) {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
