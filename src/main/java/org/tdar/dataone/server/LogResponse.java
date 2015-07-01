@@ -80,8 +80,11 @@ public class LogResponse extends AbstractDataOneResponse {
             if (StringUtils.isNotBlank(toDate_)) {
                 toDate = DateTime.parse(toDate_).toDate();
             }
-
-            return Response.ok().entity(service.getLogResponse(fromDate, toDate, Event.valueOf(StringUtils.upperCase(event)), idFilter, start, count, request)).build();
+            Event evt = null;
+            if (StringUtils.isNotBlank(event)) {
+                evt = Event.valueOf(StringUtils.upperCase(event));
+            }
+            return Response.ok().entity(service.getLogResponse(fromDate, toDate, evt, idFilter, start, count, request)).build();
         } catch (Exception e) {
             logger.error("exception in logResponse:{}", e, e);
         }
