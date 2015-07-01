@@ -1,6 +1,7 @@
 package org.tdar.core.service.download;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -57,7 +58,8 @@ public class DownloadTransferObject implements Serializable {
     private boolean includeCoverPage;
     private String dispositionPrefix;
     private TextProvider textProvider;
-
+    private File coverPageLogo;
+    
     private DownloadService downloadService;
 
     public DownloadTransferObject(InformationResource resourceToDownload, TdarUser user, TextProvider textProvider, DownloadService downloadService,
@@ -262,6 +264,14 @@ public class DownloadTransferObject implements Serializable {
 
     public void setAttachment(boolean isAttachment) {
         this.setDispositionPrefix(ATTACHMENT);
+    }
+
+    public File getCoverPageLogo() {
+        return coverPageLogo;
+    }
+
+    public void setCoverPageLogo(File coverPageLogo) {
+        this.coverPageLogo = coverPageLogo;
     }
 
 }
