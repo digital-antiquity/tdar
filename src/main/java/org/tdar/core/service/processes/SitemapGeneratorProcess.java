@@ -58,7 +58,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
         int totalImages = 0;
         boolean imageSitemapGeneratorEnabled = true;
         try {
-            String baseUrl = CONFIG.getStaticContentBaseUrl();
+            String baseUrl = CONFIG.getBaseUrl();
             wsg = WebSitemapGenerator.builder(baseUrl, dir).gzip(true).allowMultipleSitemaps(true).build();
             gisg = GoogleImageSitemapGenerator.builder(baseUrl, dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
             sig = new SitemapIndexGenerator(baseUrl, new File(dir, "sitemap_index.xml"));
