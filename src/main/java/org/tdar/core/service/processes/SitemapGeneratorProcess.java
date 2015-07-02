@@ -17,7 +17,6 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.ResourceService;
 
@@ -37,10 +36,6 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     private transient ResourceService resourceService;
     @Autowired
     private transient GenericService genericService;
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private transient UrlService urlService;
     private TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
     private boolean run = false;
@@ -63,10 +58,11 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
         int totalImages = 0;
         boolean imageSitemapGeneratorEnabled = true;
         try {
-            wsg = WebSitemapGenerator.builder(CONFIG.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).build();
-            gisg = GoogleImageSitemapGenerator.builder(CONFIG.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
-            sig = new SitemapIndexGenerator(CONFIG.getBaseUrl(), new File(dir, "sitemap_index.xml"));
-            // wsg.set
+            String baseUrl = CONFIG.getStaticContentBaseUrl();
+            wsg = WebSitemapGenerator.builder(baseUrl, dir).gzip(true).allowMultipleSitemaps(true).build();
+            gisg = GoogleImageSitemapGenerator.builder(baseUrl, dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
+            sig = new SitemapIndexGenerator(baseUrl, new File(dir, "sitemap_index.xml"));
+
             Integer totalResource = genericService.countActive(Resource.class).intValue();
             total += totalResource;
 
@@ -140,7 +136,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
                     continue;
                 }
 
-                sig.addUrl(String.format("%s/%s/%s", CONFIG.getBaseUrl(), "hosted/sitemap", file.getName()), date);
+                sig.addUrl(String.format("%s/%s/%s", baseUrl, "hosted/sitemap", file.getName()), date);
             }
 
             sig.write();
