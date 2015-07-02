@@ -3,6 +3,7 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +98,9 @@ public class AuthenticationService {
      * a shutdown hook, as well as, for knowing when it's safe to deploy.
      */
     public synchronized List<TdarUser> getCurrentlyActiveUsers() {
-        return new ArrayList<>(groupMembershipCache.keySet());
+        List<TdarUser> toReturn = new ArrayList<>(groupMembershipCache.keySet());
+        toReturn.removeAll(Collections.singleton(null));
+        return toReturn;
     }
 
     public List<TdarGroup> findGroupMemberships(TdarUser user) {
