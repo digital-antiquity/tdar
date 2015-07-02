@@ -94,6 +94,9 @@ public class MessageService {
             // be part of that call back process?
             workflowContextService.processContext(ctx);
             ctx.clear();
+            if (ctx.isErrorFatal()) {
+                return false;
+            }
             return success;
         } catch (Exception e) {
             // trying to get a more useful debug message...
