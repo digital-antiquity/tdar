@@ -136,7 +136,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
                     continue;
                 }
 
-                sig.addUrl(String.format("%s/%s/%s", baseUrl, "hosted/sitemap", file.getName()), date);
+                sig.addUrl(String.format("%s/%s/%s", baseUrl, "sitemap", file.getName()), date);
             }
 
             sig.write();
