@@ -189,7 +189,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
                 setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
-            findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), false,
+            findAllChildCollections = new LinkedHashSet<>(resourceCollectionService.findDirectChildCollections(getId(), false,
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
