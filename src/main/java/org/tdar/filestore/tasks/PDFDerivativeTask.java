@@ -134,7 +134,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         PDDocument document = null;
         try {
             scratchFile = File.createTempFile("pdfbox-scratch", ".bin");
-            document = PDDocument.loadNonSeq(pdfFile, new RandomAccessFile(scratchFile, "rw"));
+            document = PDDocument.load(pdfFile); //, new RandomAccessFile(scratchFile, "rw")
 
             if (document.isEncrypted()) {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
