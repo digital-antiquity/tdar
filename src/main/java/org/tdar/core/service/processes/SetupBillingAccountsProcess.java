@@ -102,7 +102,7 @@ public class SetupBillingAccountsProcess extends AbstractScheduledBatchProcess<T
         BillingActivity oneFileActivity = null;
         BillingActivity oneMbActivity = null;
         for (BillingActivity activity : activeBillingActivities) {
-            if ((activity.getEnabled() == true) && !activity.isProduction()) {
+            if ((activity.getActive() == true) && !activity.isProduction()) {
                 if ((activity.getNumberOfFiles() == 1L) && (activity.getNumberOfMb() == 0L)) {
                     oneFileActivity = activity;
                 }
@@ -117,13 +117,13 @@ public class SetupBillingAccountsProcess extends AbstractScheduledBatchProcess<T
             oneFileActivity.setMinAllowedNumberOfFiles(0L);
             oneFileActivity.setNumberOfMb(0L);
             oneFileActivity.setActivityType(BillingActivityType.TEST);
-            oneFileActivity.setEnabled(true);
+            oneFileActivity.setActive(true);
             genericService.saveOrUpdate(oneFileActivity);
         }
 
         if (oneMbActivity == null) {
             oneMbActivity = new BillingActivity("one mb", 0f, accountService.getLatestActivityModel());
-            oneMbActivity.setEnabled(true);
+            oneMbActivity.setActive(true);
             oneMbActivity.setNumberOfFiles(0L);
             oneMbActivity.setActivityType(BillingActivityType.TEST);
             oneMbActivity.setMinAllowedNumberOfFiles(0L);
