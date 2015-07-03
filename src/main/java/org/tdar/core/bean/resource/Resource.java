@@ -163,7 +163,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "res_uploaderid", columnList = "uploader_id"),
         @Index(name = "res_updaterid", columnList = "updater_id"),
         @Index(name = "resource_type_index", columnList = "resource_type"),
-        @Index(name = "idx_created", columnList = "date_registered")
+        @Index(name = "idx_created", columnList = "date_created")
 })
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
@@ -275,7 +275,7 @@ public class Resource implements Persistable,
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
-    @Column(name = "date_registered")
+    @Column(name = "date_created", nullable=false)
     @DateBridge(resolution = Resolution.DAY)
     @JsonView({ JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class })
     @Temporal(TemporalType.TIMESTAMP)
@@ -323,7 +323,7 @@ public class Resource implements Persistable,
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
-    @Column(name = "date_updated")
+    @Column(name = "date_updated", nullable=false)
     @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;

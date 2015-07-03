@@ -221,10 +221,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Column(nullable = false, name = "date_created")
     @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
     private Date dateCreated;
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
-    @Column(nullable = true, name = "date_updated")
+    @Column(nullable = false, name = "date_updated")
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;

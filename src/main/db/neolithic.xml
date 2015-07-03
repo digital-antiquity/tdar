@@ -70,4 +70,39 @@
         <dropColumn tableName="person" columnName="creator_agreement_version" />
     </changeSet>
 
+    <changeSet id="neolithic-6" author="abrin">
+        <comment>setting updated date to created date where updated date is null; renaming columns for consistency; dropping unused date columns on resource_annotation</comment>
+        <update tableName="creator">
+            <column name="last_updated" valueComputed="date_created"></column>
+            <where>last_updated is NULL</where>
+        </update>
+        <update tableName="collection">
+            <column name="date_updated" valueComputed="date_created"></column>
+            <where>date_updated is NULL</where>
+        </update>
+        <update tableName="creator">
+            <column name="date_created" valueComputed="now()"></column>
+            <where>date_created is NULL</where>
+        </update>
+        <update tableName="creator">
+            <column name="last_updated" valueComputed="date_created"></column>
+            <where>last_updated is NULL</where>
+        </update>
+        <addNotNullConstraint tableName="pos_account" columnName="date_updated"/>
+        <addNotNullConstraint tableName="pos_account" columnName="date_created"/>
+        <addNotNullConstraint tableName="pos_account_group" columnName="date_created"/>
+        <addNotNullConstraint tableName="pos_account_group" columnName="date_updated"/>
+        <addNotNullConstraint tableName="pos_invoice" columnName="date_created"/>
+        <addNotNullConstraint tableName="collection" columnName="date_created"/>
+        <addNotNullConstraint tableName="collection" columnName="date_updated"/>
+        <addNotNullConstraint tableName="creator" columnName="date_created"/>
+        <addNotNullConstraint tableName="creator" columnName="last_updated"/>
+        <addNotNullConstraint tableName="resource" columnName="date_registered"/>
+        <addNotNullConstraint tableName="resource" columnName="date_updated"/>
+        <renameColumn tableName="creator" oldColumnName="last_updated" newColumnName="date_updated"/>
+        <renameColumn tableName="resource" oldColumnName="date_registered" newColumnName="date_created"/>
+        <renameColumn tableName="data_integration_workflow" oldColumnName="last_updated" newColumnName="date_updated"/>
+        <dropColumn tableName="resource_annotation" columnName="date_created"/>
+        <dropColumn tableName="resource_annotation" columnName="last_updated"/>
+    </changeSet>
 </databaseChangeLog>
