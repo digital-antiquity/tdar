@@ -284,14 +284,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     public Set<AuthorizedUser> getUsersFromDb(ResourceCollection collection) {
         Query query = getNamedQuery(TdarNamedQueries.USERS_IN_COLLECTION);
         query.setLong("id", collection.getId());
-//        query.setReadOnly(true);
+        query.setReadOnly(true);
         query.list();
-        // for (Object[] tuple : (List<Object[]>) query.list()) {
-        // toReturn.add(new AuthorizedUser(new TdarUser(null, null, null,null, (Long)tuple[0]),(GeneralPermissions)tuple[1]));
-        // }
 
         HashSet<AuthorizedUser> set = new HashSet<AuthorizedUser>(query.list());
-//        detachFromSession(set);
+        detachFromSession(set);
         return set;
     }
 

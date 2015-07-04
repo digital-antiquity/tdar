@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,15 +26,15 @@ public class CollectionRightsComparator {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionRightsComparator.class);
     private Set<AuthorizedUser> currentUsers;
-    private List<AuthorizedUser> incomingUsers;
+    private Set<AuthorizedUser> incomingUsers;
 
     private List<AuthorizedUser> additions = new ArrayList<>();
     private List<AuthorizedUser> deletions = new ArrayList<>();
     private List<AuthorizedUser> changes = new ArrayList<>();
 
     public CollectionRightsComparator(Set<AuthorizedUser> currentUsers, List<AuthorizedUser> incomingUsers) {
-        this.currentUsers = currentUsers;
-        this.incomingUsers = incomingUsers;
+        this.currentUsers = new HashSet<>(currentUsers);
+        this.incomingUsers = new HashSet<>(incomingUsers);
     }
 
     public boolean rightsDifferent() {
@@ -63,7 +64,7 @@ public class CollectionRightsComparator {
         }
 
         // if there are no changes and no additions, and the map is empty, then, we're done
-        if (MapUtils.isEmpty(map) && CollectionUtils.isEmpty(additions) && CollectionUtils.isEmpty(changes)) {
+        if (MapUtils.isEmpty(map) && CollectionUtils.isEmpty(getAdditions()) && CollectionUtils.isEmpty(getChanges())) {
             logger.debug("skipping rights section b/c no-changes");
             return false;
         }
@@ -75,11 +76,11 @@ public class CollectionRightsComparator {
             }
             for (Long id : map.keySet()) {
                 if (Objects.equals(user.getUser().getId(),id)) {
-                    deletions.add(user);
+                    getDeletions().add(user);
                 }
             }
         }
-        logger.debug("add: {} ; change: {} ; delete: {}", additions, changes, deletions);
+        logger.debug("add: {} ; change: {} ; delete: {}", getAdditions(), getChanges(), getDeletions());
         return true;
     }
 
@@ -107,13 +108,37 @@ public class CollectionRightsComparator {
                 if (Objects.equals(perm, user.getGeneralPermission())) {
                     map.remove(id);
                 } else {
-                    changes.add(user);
+                    getChanges().add(user);
                 }
             } else {
                 // if we're not in the map, we're an addition
-                additions.add(user);
+                getAdditions().add(user);
             }
         }
+    }
+
+    public List<AuthorizedUser> getAdditions() {
+        return additions;
+    }
+
+    public void setAdditions(List<AuthorizedUser> additions) {
+        this.additions = additions;
+    }
+
+    public List<AuthorizedUser> getDeletions() {
+        return deletions;
+    }
+
+    public void setDeletions(List<AuthorizedUser> deletions) {
+        this.deletions = deletions;
+    }
+
+    public List<AuthorizedUser> getChanges() {
+        return changes;
+    }
+
+    public void setChanges(List<AuthorizedUser> changes) {
+        this.changes = changes;
     }
 
 }
