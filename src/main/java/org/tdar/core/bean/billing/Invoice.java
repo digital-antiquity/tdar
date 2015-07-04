@@ -53,7 +53,7 @@ public class Invoice extends Base implements Updatable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @NotNull
-    @Column(name = "date_created")
+    @Column(name = "date_created", updatable=false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
     // the confirmation id for this invoice

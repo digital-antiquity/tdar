@@ -42,10 +42,12 @@ public class DataIntegrationWorkflow extends Persistable.Base implements HasSubm
     private String jsonData;
 
     @Column(name = "date_created", nullable = false)
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
-    @Column(name = "last_updated", nullable = false)
+    @Column(name = "date_updated", nullable = false)
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated = new Date();
 

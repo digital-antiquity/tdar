@@ -33,11 +33,11 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
-import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -67,9 +67,6 @@ public class AdminController extends AuthenticationAware.Base {
 
     @Autowired
     private transient ResourceService resourceService;
-
-    @Autowired
-    private transient InformationResourceFileService informationResourceFileService;
 
     @Autowired
     private transient StatisticService statisticService;
@@ -160,6 +157,15 @@ public class AdminController extends AuthenticationAware.Base {
     public String rebuildCaches() {
         scheduledProcessService.queueTask(SitemapGeneratorProcess.class);
         scheduledProcessService.queueTask(RebuildHomepageCache.class);
+        getActionMessages().add("Scheduled... check admin activity controller to test");
+        return SUCCESS;
+    }
+
+    @Action(value = "logAccounts", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String logAccounts() {
+        scheduledProcessService.queueTask(AccountUsageHistoryLoggingTask.class);
         getActionMessages().add("Scheduled... check admin activity controller to test");
         return SUCCESS;
     }

@@ -350,4 +350,16 @@
         <column name="custom_doc_logo_enabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
     </addColumn>    
     </changeSet>
+    <changeSet id="munsell-27" author="abrin">
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberoffiles" newColumnName="num_files"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberofmb" newColumnName="num_mb"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberofhours" newColumnName="num_hours"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberofresources" newColumnName="num_resources"/>
+
+        <renameColumn tableName="pos_billing_activity" oldColumnName="displaynumberoffiles" newColumnName="display_num_files"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="displaynumberofmb" newColumnName="display_num_mb"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="displaynumberofresources" newColumnName="display_num_resources"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="groupname" newColumnName="group_name"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="enabled" newColumnName="active"/>
+    </changeSet>
 </databaseChangeLog>

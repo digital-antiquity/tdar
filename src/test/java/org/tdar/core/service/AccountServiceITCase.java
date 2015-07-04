@@ -165,14 +165,14 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         BillingActivityModel model = new BillingActivityModel();
         model.setActive(true);
         BillingActivity disabledDctivity = new BillingActivity();
-        disabledDctivity.setEnabled(false);
+        disabledDctivity.setActive(false);
         disabledDctivity.setName("not active");
         genericService.saveOrUpdate(model);
         disabledDctivity.setModel(model);
         genericService.saveOrUpdate(disabledDctivity);
         model.setVersion(105);
         BillingActivity ctivity = new BillingActivity("test", 1f, model);
-        ctivity.setEnabled(true);
+        ctivity.setActive(true);
         ctivity.setName("active");
         genericService.saveOrUpdate(ctivity);
         model.getActivities().add(disabledDctivity);

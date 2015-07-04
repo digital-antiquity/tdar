@@ -204,37 +204,41 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * Save the incoming @link AuthorizedUser entries for the @link ResourceCollection resolving as needed, avoiding duplicates
      * 
      * @param resourceCollection
-     * @param authorizedUsers
+     * @param incomingUsers
      * @param shouldSaveResource
      */
-    @Transactional
-    public void saveAuthorizedUsersForResourceCollection(HasSubmitter source, ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers,
+    @Transactional(readOnly=false)
+    public void saveAuthorizedUsersForResourceCollection(HasSubmitter source, ResourceCollection resourceCollection, List<AuthorizedUser> incomingUsers,
             boolean shouldSaveResource, TdarUser actor) {
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_save");
         }
-        Set<AuthorizedUser> currentUsers = resourceCollection.getAuthorizedUsers();
-        logger.debug("current users (start): {}", currentUsers);
-        logger.debug("incoming authorized users (start): {}", authorizedUsers);
+        logger.debug("current users (start): {}", resourceCollection.getAuthorizedUsers());
+        logger.debug("incoming authorized users (start): {}", resourceCollection.getAuthorizedUsers());
 
-        // the request may have edited the an existing authUser's permissions, so clear out the old set and go w/ most recent set.
-        currentUsers.clear();
 
-        ResourceCollection.normalizeAuthorizedUsers(authorizedUsers);
+        ResourceCollection.normalizeAuthorizedUsers(incomingUsers);
+        CollectionRightsComparator comparator = new CollectionRightsComparator(getDao().getUsersFromDb(resourceCollection), incomingUsers);
+        boolean different  = comparator.rightsDifferent();
+        if (different) {
+            resourceCollection.getAuthorizedUsers().clear();
 
-        if (CollectionUtils.isNotEmpty(authorizedUsers)) {
-            for (AuthorizedUser incomingUser : authorizedUsers) {
+            // the request may have edited the an existing authUser's permissions, so clear out the old set and go w/ most recent set.
+            for (AuthorizedUser incomingUser : incomingUsers) {
                 if (incomingUser == null) {
                     continue;
                 }
-                addUserToCollection(shouldSaveResource, currentUsers, incomingUser, actor, resourceCollection, source);
+                addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), incomingUser, actor, resourceCollection, source);
             }
         }
+
         // CollectionUtils.removeAll(currentUsers, Collections.);
-        logger.debug("users after save: {}", currentUsers);
-        if (shouldSaveResource)
+        logger.debug("users after save: {}", resourceCollection.getAuthorizedUsers());
+        if (shouldSaveResource) {
             getDao().saveOrUpdate(resourceCollection);
+        }
     }
+
 
     /**
      * Add a @link AuthorizedUser to the @link ResourceCollection if it's valid
@@ -249,33 +253,36 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         TdarUser transientUser = incomingUser.getUser();
         if (PersistableUtils.isNotNullOrTransient(transientUser)) {
             TdarUser user = null;
+            Long tranientUserId = transientUser.getId();
             try {
-                user = getDao().find(TdarUser.class, transientUser.getId());
+                user = getDao().find(TdarUser.class, tranientUserId);
             } catch (Exception e) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", e, Arrays.asList(transientUser));
             }
-            if (user != null) {
-                // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
-                // may evaluate fields that aren't set in the proxy object.
-                incomingUser.setUser(user);
-                if (!incomingUser.isValid()) {
-                    return;
-                }
-
-                if (actor.equals(transientUser) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
-                    if (!authenticationAndAuthorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, incomingUser.getGeneralPermission())) {
-                        throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
-                                incomingUser.getGeneralPermission()));
-                    }
-                    // find highest permission for actor
-                    // check that permission is valid for actor to assign
-
-                }
-                currentUsers.add(incomingUser);
-                if (shouldSaveResource)
-                    getDao().saveOrUpdate(incomingUser);
-            } else {
+            if (user == null) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(transientUser));
+            }
+
+            // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
+            // may evaluate fields that aren't set in the proxy object.
+            incomingUser.setUser(user);
+            if (!incomingUser.isValid()) {
+                return;
+            }
+
+            // specifically checking for rights escalation
+            if (actor.equals(transientUser) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
+                if (!authenticationAndAuthorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, incomingUser.getGeneralPermission())) {
+                    throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
+                            incomingUser.getGeneralPermission()));
+                }
+                // find highest permission for actor
+                // check that permission is valid for actor to assign
+
+            }
+            currentUsers.add(incomingUser);
+            if (shouldSaveResource) {
+                getDao().saveOrUpdate(incomingUser);
             }
         }
     }

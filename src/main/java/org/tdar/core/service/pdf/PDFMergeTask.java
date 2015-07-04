@@ -40,7 +40,7 @@ public class PDFMergeTask implements Runnable {
     public void run() {
         File scratchFile = null;
         try {
-            scratchFile = File.createTempFile("pdfbox-scratch", ".bin");
+            scratchFile = File.createTempFile("pdfbox-merge-scratch", ".bin");
             wrapper.getMerger().mergeDocumentsNonSeq(new RandomAccessFile(scratchFile, "rw"));
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {

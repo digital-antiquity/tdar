@@ -150,6 +150,7 @@ public interface TdarNamedQueries {
     String QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI = "query.recent_ir_with_doi";
     String QUERY_DATAONE_LIST_OBJECTS = "query.d1_list_objects";
     String UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE = "resourceCollection.updateResourcesToActice";
+    String USERS_IN_COLLECTION = "query.users.in.collection";
 
     // raw SQL/HQL queries
 
@@ -227,7 +228,7 @@ public interface TdarNamedQueries {
 
     String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
-    String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
+    String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_created), count(id) from resource where status='ACTIVE' and date_created is not null group by date_part('year', date_created)  order by date_part('year', date_created)  asc";
     String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
 
     String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT = "update %1$s set occurrence=0";
