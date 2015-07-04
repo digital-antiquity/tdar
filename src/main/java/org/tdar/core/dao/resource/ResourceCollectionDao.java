@@ -27,6 +27,7 @@ import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -278,6 +279,17 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             return whiteLabelCollections.get(0);
         }
         return null;
+    }
+
+    public Set<AuthorizedUser> getUsersFromDb(ResourceCollection collection) {
+        Query query = getNamedQuery(TdarNamedQueries.USERS_IN_COLLECTION);
+        query.setLong("id", collection.getId());
+        query.setReadOnly(true);
+        query.list();
+
+        HashSet<AuthorizedUser> set = new HashSet<AuthorizedUser>(query.list());
+        detachFromSession(set);
+        return set;
     }
 
 }

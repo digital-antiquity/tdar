@@ -100,6 +100,10 @@ public class TdarUser extends Person {
     public TdarUser() {
     }
 
+    public TdarUser(String firstName, String lastName, String email, String username, Long id) {
+        this(firstName, lastName, email, username);
+        setId(id);
+    }
     public TdarUser(String firstName, String lastName, String email) {
         super(firstName, lastName, email);
     }
