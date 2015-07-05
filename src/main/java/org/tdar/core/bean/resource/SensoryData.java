@@ -77,7 +77,7 @@ public class SensoryData extends Dataset {
 
     @Column(name = "rgb_data_capture_info")
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String rgbDataCaptureInfo;
 
     @Column(name = "estimated_data_resolution", length = FieldLength.FIELD_LENGTH_254)
@@ -88,7 +88,7 @@ public class SensoryData extends Dataset {
 
     @Column(name = "final_dataset_description")
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String finalDatasetDescription;
 
     @Column(name = "additional_project_notes")
@@ -168,7 +168,7 @@ public class SensoryData extends Dataset {
 
     @Column(name = "point_deletion_summary")
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String pointDeletionSummary;
 
     // polygonal mesh metadata
@@ -203,7 +203,7 @@ public class SensoryData extends Dataset {
 
     @Column(name = "mesh_processing_notes")
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String meshProcessingNotes;
 
     // decimated mesh metadata

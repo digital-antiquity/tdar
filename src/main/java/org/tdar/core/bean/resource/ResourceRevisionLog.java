@@ -63,7 +63,7 @@ public class ResourceRevisionLog extends Persistable.Base {
     private TdarUser person;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "payload", nullable = true)
     private String payload;
 

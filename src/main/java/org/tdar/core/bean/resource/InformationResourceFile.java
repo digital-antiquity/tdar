@@ -85,7 +85,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private transient Long transientDownloadCount;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     @Column(name = "file_created_date")
@@ -121,7 +121,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "error_message")
     private String errorMessage;
 

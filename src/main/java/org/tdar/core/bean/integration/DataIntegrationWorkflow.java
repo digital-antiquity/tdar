@@ -38,7 +38,7 @@ public class DataIntegrationWorkflow extends Persistable.Base implements HasSubm
 
     @Column(name = "json_data")
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String jsonData;
 
     @Column(name = "date_created", nullable = false)

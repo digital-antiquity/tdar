@@ -45,7 +45,7 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
     private final static String[] JSON_PROPERTIES = { "id", "text" };
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Length(max = FieldLength.FIELD_LENGTH_1024)
     @JsonView(JsonLookupFilter.class)
     private String text;

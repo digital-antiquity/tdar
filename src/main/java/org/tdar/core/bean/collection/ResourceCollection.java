@@ -173,11 +173,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private String name;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "description_admin")
     private String adminDescription;
 

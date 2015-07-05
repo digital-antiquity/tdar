@@ -269,7 +269,7 @@ public class Resource implements Persistable,
 
     @BulkImportField(required = true, order = -50, key = "DESCRIPTION")
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @JsonView(JsonLookupFilter.class)
     private String description;
 
