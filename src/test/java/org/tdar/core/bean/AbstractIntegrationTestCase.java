@@ -462,6 +462,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         resourceCollection.setType(CollectionType.SHARED);
         resourceCollection.setViewable(true);
         resourceCollection.setHidden(false);
+        resourceCollection.markUpdated(getUser());
         resourceCollection.setOwner(getUser());
         genericService.saveOrUpdate(resourceCollection);
         return resourceCollection;
@@ -675,6 +676,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (internalResourceCollection == null) {
             internalResourceCollection = new ResourceCollection(CollectionType.INTERNAL);
             internalResourceCollection.setOwner(person);
+            internalResourceCollection.markUpdated(person);
             resource.getResourceCollections().add(internalResourceCollection);
             genericService.save(internalResourceCollection);
         }

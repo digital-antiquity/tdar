@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -219,26 +220,44 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         ResourceCollection.normalizeAuthorizedUsers(incomingUsers);
         CollectionRightsComparator comparator = new CollectionRightsComparator(getDao().getUsersFromDb(resourceCollection), incomingUsers);
-        boolean different  = comparator.rightsDifferent();
-        if (different) {
-            resourceCollection.getAuthorizedUsers().clear();
+        if (comparator.rightsDifferent()) {
+            for (AuthorizedUser user : comparator.getAdditions()) {
+                addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), user, actor, resourceCollection, source);
+            }
 
-            // the request may have edited the an existing authUser's permissions, so clear out the old set and go w/ most recent set.
-            for (AuthorizedUser incomingUser : incomingUsers) {
-                if (incomingUser == null) {
-                    continue;
+            resourceCollection.getAuthorizedUsers().removeAll(comparator.getDeletions());
+
+            if (CollectionUtils.isNotEmpty(comparator.getChanges())) {
+                Map<Long, AuthorizedUser> idMap = PersistableUtils.createIdMap(resourceCollection.getAuthorizedUsers());
+                for (AuthorizedUser user : comparator.getChanges()) {
+                    AuthorizedUser actual = idMap.get(user.getUser().getId());
+                    checkSelfEscalation(actor, user.getUser(),source, user.getGeneralPermission());
+                    actual.setGeneralPermission(user.getGeneralPermission());;
                 }
-                addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), incomingUser, actor, resourceCollection, source);
             }
         }
+        comparator = null;
 
-        // CollectionUtils.removeAll(currentUsers, Collections.);
         logger.debug("users after save: {}", resourceCollection.getAuthorizedUsers());
         if (shouldSaveResource) {
             getDao().saveOrUpdate(resourceCollection);
         }
     }
 
+
+    private void checkSelfEscalation(TdarUser actor, TdarUser transientUser,HasSubmitter source, GeneralPermissions generalPermission) {
+        // specifically checking for rights escalation
+        if (actor.equals(transientUser) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
+            if (!authenticationAndAuthorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, generalPermission)) {
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
+                        generalPermission));
+            }
+            // find highest permission for actor
+            // check that permission is valid for actor to assign
+
+        }
+        
+    }
 
     /**
      * Add a @link AuthorizedUser to the @link ResourceCollection if it's valid
@@ -270,16 +289,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 return;
             }
 
-            // specifically checking for rights escalation
-            if (actor.equals(transientUser) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
-                if (!authenticationAndAuthorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, incomingUser.getGeneralPermission())) {
-                    throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
-                            incomingUser.getGeneralPermission()));
-                }
-                // find highest permission for actor
-                // check that permission is valid for actor to assign
-
-            }
+            checkSelfEscalation(actor, user,source, incomingUser.getGeneralPermission());
             currentUsers.add(incomingUser);
             if (shouldSaveResource) {
                 getDao().saveOrUpdate(incomingUser);

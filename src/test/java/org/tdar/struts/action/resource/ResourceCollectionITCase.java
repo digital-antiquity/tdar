@@ -306,6 +306,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         genericService.saveOrUpdate(owner);
         resourceCollection.setOwner(owner);
+        resourceCollection.markUpdated(owner);
         genericService.saveOrUpdate(resourceCollection);
 
         genericService.saveOrUpdate(resourceCollection);
