@@ -53,12 +53,8 @@ public class CollectionRightsComparator {
 
         //iterate through the incoming list
         for (AuthorizedUser user : incomingUsers) {
-            if (user == null) {
+            if (user == null || PersistableUtils.isNullOrTransient(user.getUser())) {
                 continue;
-            }
-            if (PersistableUtils.isTransient(user.getUser())) {
-                logger.debug(">>>> {}", user);
-                return true;
             }
             addRemoveMap(map, user, false);
         }
@@ -71,7 +67,7 @@ public class CollectionRightsComparator {
 
         // otherwise, find deletions
         for (AuthorizedUser user : currentUsers) {
-            if (user == null || user.getUser() == null) {
+            if (user == null || PersistableUtils.isNullOrTransient(user.getUser())) {
                 continue;
             }
             for (Long id : map.keySet()) {
