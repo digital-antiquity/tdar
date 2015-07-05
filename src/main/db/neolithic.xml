@@ -105,4 +105,10 @@
         <dropColumn tableName="resource_annotation" columnName="date_created"/>
         <dropColumn tableName="resource_annotation" columnName="last_updated"/>
     </changeSet>
+    <changeSet id="neolithic-7" author="abrin">
+        <renameColumn tableName="collection" oldColumnName="description_admin" newColumnName="description_formatted"/>
+        <addColumn tableName="resource">
+        <column name="description_formatted" type="text"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

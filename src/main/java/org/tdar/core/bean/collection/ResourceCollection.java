@@ -178,8 +178,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
-    @Column(name = "description_admin")
-    private String adminDescription;
+    @Column(name = "description_formatted")
+    private String formattedDescription;
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
@@ -748,12 +748,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.secondarySortBy = secondarySortBy;
     }
 
-    public String getAdminDescription() {
-        return adminDescription;
+    public String getFormattedDescription() {
+        return formattedDescription;
     }
 
-    public void setAdminDescription(String adminDescription) {
-        this.adminDescription = adminDescription;
+    public void setFormattedDescription(String adminDescription) {
+        this.formattedDescription = adminDescription;
     }
 
     /**
