@@ -52,6 +52,7 @@
         -->
         <skipTestLiquibase>true</skipTestLiquibase>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
+        <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <!-- Following points to the profile directory to use for filtering 
             resources -->
         <!-- override by redefining in a profile. don't forget to 'clean' 
@@ -1492,69 +1493,6 @@
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>ant-run-run</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <exportAntProperties>true</exportAntProperties>
-                            <target>
-                                <condition property="hg.location"
-                                    value="/usr/local/bin/hg">
-                                    <available file="/usr/local/bin/hg" />
-                                </condition>
-                                <condition property="hg.location"
-                                    value="/usr/bin/hg">
-                                    <available file="/usr/bin/hg" />
-                                </condition>
-                                <property name="hg.location"
-                                    value="hg" />
-                                <echo
-                                    message=" using mercurial from: ${hg.location}" />
-                                <mkdir dir="target" />
-                                <mkdir dir="target/classes" />
-                                <exec output="target/classes/version.txt"
-                                    executable="${hg.location}">
-                                    <arg line="id -n" />
-                                </exec>
-                                <loadfile property="hg.version"
-                                    srcFile="target/classes/version.txt" />
-                                <loadfile property="hg.version.as_dir"
-                                    srcFile="target/classes/version.txt">
-                                    <filterchain>
-                                        <deletecharacters
-                                            chars="\t\r\n+" />
-                                    </filterchain>
-                                </loadfile>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <!-- when doing a tomcat redeploy these directories 
-                            need to be created -->
-                        <id>ant-run-tomcat-redeploy</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="target" />
-                                <mkdir dir="target/generated" />
-                                <mkdir dir="target/generated/db" />
-                                <mkdir dir="target/generated/webapp" />
-                                <mkdir dir="target/generated/webapp-test" />
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
              <plugin>
                  <groupId>org.liquibase</groupId>
                  <artifactId>liquibase-maven-plugin</artifactId>
@@ -1652,26 +1590,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- FIXME: disabling this for the interim in favor of using <filters></filters> in the default profile
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>read-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <files>
-                                <file>src/main/resources/hibernate.properties</file>
-                            </files>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -1974,27 +1892,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <mkdir dir="target" />
-                                        <mkdir dir="target/generated" />
-                                        <mkdir dir="target/generated/db" />
-                                        <mkdir dir="target/generated/webapp" />
-                                        <mkdir
-                                            dir="target/generated/webapp-test" />
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
             <properties>
@@ -2040,33 +1937,6 @@
         </profile>
         <profile>
             <id>production</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <mkdir dir="target" />
-                                        <mkdir dir="target/generated" />
-                                        <mkdir dir="target/generated/db" />
-                                        <mkdir dir="target/generated/webapp" />
-                                        <mkdir
-                                            dir="target/generated/webapp-test" />
-                                        <!--<rmdir dir="src/main/webapp/wro" 
-                                            /> -->
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
             <properties>
                 <webapp.deploy.dir>/home/tdar/app</webapp.deploy.dir>
                 <maven.test.skip>true</maven.test.skip>
@@ -2082,29 +1952,6 @@
             </properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <mkdir dir="target" />
-                                        <mkdir dir="target/generated" />
-                                        <mkdir dir="target/generated/db" />
-                                        <mkdir dir="target/generated/webapp" />
-                                        <mkdir
-                                            dir="target/generated/webapp-test" />
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    
                     <!-- 
                     
                       <plugin>
@@ -2484,6 +2331,95 @@
 					</plugin>
 				</plugins>
 			</build>
+        </profile>
+        
+
+        <profile>
+            <id>maven-scm-branch</id>
+            <activation>
+                <!-- always run (except when told not to) -->
+                <property>
+                    <name>!skipMavenMercurialSetup</name>
+              </property>
+            </activation>
+              <build>
+            <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="target" />
+                                        <mkdir dir="target/generated" />
+                                        <mkdir dir="target/generated/db" />
+                                        <mkdir dir="target/generated/webapp" />
+                                        <mkdir
+                                            dir="target/generated/webapp-test" />
+                                        <!--<rmdir dir="src/main/webapp/wro" 
+                                            /> -->
+                                    </target>
+                                </configuration>
+                            </execution>
+        
+                    <execution>
+                        <id>ant-run-mercurial</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <condition property="hg.location"
+                                    value="/usr/local/bin/hg">
+                                    <available file="/usr/local/bin/hg" />
+                                </condition>
+                                <condition property="hg.location"
+                                    value="/usr/bin/hg">
+                                    <available file="/usr/bin/hg" />
+                                </condition>
+                                <property name="hg.location"
+                                    value="hg" />
+                                <echo
+                                    message=" using mercurial from: ${hg.location}" />
+                                <mkdir dir="target/classes" />
+                                <exec output="target/classes/version.txt"
+                                    executable="${hg.location}">
+                                    <arg line="id -n" />
+                                </exec>
+                                <exec output="target/classes/branch.txt"
+                                    executable="${hg.location}">
+                                    <arg line="branch" />
+                                </exec>
+                                <loadfile property="hg.version"
+                                    srcFile="target/classes/version.txt" />
+                                <loadfile property="hg.branch"
+                                    srcFile="target/classes/branch.txt" >
+                                    <filterchain>
+                                        <deletecharacters
+                                            chars="\t\r\n+" />
+                                    </filterchain>
+                                </loadfile>
+                                <loadfile property="hg.version.as_dir"
+                                    srcFile="target/classes/version.txt">
+                                    <filterchain>
+                                        <deletecharacters
+                                            chars="\t\r\n+" />
+                                    </filterchain>
+                                </loadfile>
+                            </target>
+                        </configuration>
+                    </execution>
+                    </executions>
+                    </plugin>
+            </plugins>
+            </build>
         </profile>
         <profile>
             <id>liquibase-setup-dev-instance</id>
