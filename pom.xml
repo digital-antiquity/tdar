@@ -1980,7 +1980,7 @@
                         <version>${wro4j.version}</version>
                         <executions>
                             <execution>
-                                <phase>compile</phase>
+                                <phase>generate-resources</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
@@ -2004,13 +2004,14 @@
                         <version>1.7</version>
                         <executions>
                             <execution>
+                                <id>copy-wro-files</id>
                                 <phase>compile</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy
+                                        <copy 
                                             todir="${project.build.directory}/generated/webapp/wro/">
                                             <fileset
                                                 dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}" />
@@ -2349,26 +2350,6 @@
                 <version>1.7</version>
                 <executions>
                     <execution>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <mkdir dir="target" />
-                                        <mkdir dir="target/generated" />
-                                        <mkdir dir="target/generated/db" />
-                                        <mkdir dir="target/generated/webapp" />
-                                        <mkdir
-                                            dir="target/generated/webapp-test" />
-                                        <!--<rmdir dir="src/main/webapp/wro" 
-                                            /> -->
-                                    </target>
-                                </configuration>
-                            </execution>
-        
-                    <execution>
-                        <id>ant-run-mercurial</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>run</goal>
@@ -2376,6 +2357,14 @@
                         <configuration>
                             <exportAntProperties>true</exportAntProperties>
                             <target>
+                                <mkdir dir="target" />
+                                <mkdir dir="target/generated" />
+                                <mkdir dir="target/generated/db" />
+                                <mkdir dir="target/generated/webapp" />
+                                <mkdir
+                                    dir="target/generated/webapp-test" />
+                                <!--<rmdir dir="src/main/webapp/wro" 
+                                    /> -->
                                 <condition property="hg.location"
                                     value="/usr/local/bin/hg">
                                     <available file="/usr/local/bin/hg" />
