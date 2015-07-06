@@ -21,6 +21,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.cache.HomepageGeographicCache;
+import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.RssService;
