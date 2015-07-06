@@ -71,7 +71,7 @@
 		<dropColumn tableName="person" columnName="creator_agreement_version" />
 	</changeSet>
 
-	<changeSet id="neolithic-6" author="abrin">
+	<changeSet id="neolithic-leaflet-6" author="abrin">
 	<comment>setting the iso country code on the country</comment>
 		<update tableName="geographic_keyword"><column name="code" value="FLK"/>
 			<where> level='COUNTRY' and label like 'Falkland Islands (Islas Malvinas)%'</where>
@@ -902,7 +902,7 @@
 			<where> level='COUNTRY' and label like 'Territory of Christmas Island%'</where>
 		</update>
 	</changeSet>
-    <changeSet id="neolithic-7" author="abrin">
+    <changeSet id="neolithic-leaflet-7" author="abrin">
         <comment>Assigning State Codes</comment>
     <update tableName="geographic_keyword"><column name="code" value="USAAL"/>
         <where> level='STATE' and label like 'Alabama (State / Territory)'</where>
