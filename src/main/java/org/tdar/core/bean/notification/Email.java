@@ -42,7 +42,7 @@ public class Email extends Persistable.Base {
     private boolean userGenerated = true;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "message")
     private String message;
 

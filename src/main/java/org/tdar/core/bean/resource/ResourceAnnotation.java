@@ -59,7 +59,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     private ResourceAnnotationKey resourceAnnotationKey;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Field
     @JsonView(JsonLookupFilter.class)
     private String value;

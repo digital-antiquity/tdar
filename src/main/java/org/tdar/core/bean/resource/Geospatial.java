@@ -36,7 +36,7 @@ public class Geospatial extends Dataset {
     }
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String currentnessUpdateNotes;
 
     @Column(name = "spatial_reference_system", length = FieldLength.FIELD_LENGTH_50)

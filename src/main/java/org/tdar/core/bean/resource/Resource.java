@@ -269,10 +269,17 @@ public class Resource implements Persistable,
 
     @BulkImportField(required = true, order = -50, key = "DESCRIPTION")
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @JsonView(JsonLookupFilter.class)
     private String description;
 
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "description_formatted")
+    private String formattedDescription;
+
+    
+    
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_created", nullable=false)
@@ -2043,5 +2050,13 @@ public class Resource implements Persistable,
 
     private void setStatusChanged(Boolean statusChanged) {
         this.statusChanged = statusChanged;
+    }
+
+    public String getFormattedDescription() {
+        return formattedDescription;
+    }
+
+    public void setFormattedDescription(String formattedDescription) {
+        this.formattedDescription = formattedDescription;
     }
 }

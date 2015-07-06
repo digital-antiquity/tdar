@@ -69,7 +69,7 @@ public class DataTable extends Persistable.Base {
     private String displayName;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTable")

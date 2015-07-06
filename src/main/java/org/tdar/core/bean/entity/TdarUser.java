@@ -53,7 +53,7 @@ public class TdarUser extends Person {
     private Institution proxyInstitution;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "proxy_note")
     private String proxyNote;
 

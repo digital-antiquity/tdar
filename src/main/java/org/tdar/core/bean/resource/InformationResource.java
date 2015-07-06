@@ -183,7 +183,7 @@ public abstract class InformationResource extends Resource {
 
     @Column(name = "license_text")
     @BulkImportField(key = LICENSE_TEXT)
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Lob
     private String licenseText;
 

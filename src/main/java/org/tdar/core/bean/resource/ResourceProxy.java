@@ -111,7 +111,7 @@ public class ResourceProxy implements Serializable {
     private Status status = Status.ACTIVE;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     @Column(name = "title")

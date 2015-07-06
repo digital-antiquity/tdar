@@ -82,7 +82,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         private String label;
 
         @Lob
-        @Type(type = "org.hibernate.type.StringClobType")
+        @Type(type = "org.hibernate.type.TextType")
         private String definition;
 
         @Enumerated(EnumType.STRING)

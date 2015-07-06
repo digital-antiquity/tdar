@@ -219,7 +219,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     public Creator() {

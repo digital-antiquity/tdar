@@ -48,7 +48,7 @@ public class WhiteLabelCollection extends ResourceCollection {
     private boolean subCollectionsEnabled;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String css;
 
     @Column

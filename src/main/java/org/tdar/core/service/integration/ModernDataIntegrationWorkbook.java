@@ -20,7 +20,7 @@ import java.util.Set;
 import org.apache.commons.dbutils.ResultSetIterator;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -56,7 +56,6 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private IntegrationContext context;
     private StringBuilder description = new StringBuilder();
     private TdarUser person;
-    private List<String> names;
     private PersonalFilestoreTicket ticket;
     private TextProvider provider;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -71,8 +70,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         this.context = result.getIntegrationContext();
         this.person = context.getCreator();
         this.provider = provider;
-        setWorkbook(new HSSFWorkbook());
-        names = new ArrayList<String>();
+        setWorkbook(new XSSFWorkbook());
     }
 
     /**
@@ -140,16 +138,6 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
     /**
      * Create the workbook for the actual data
-     * 
-     * @param integrationColumns
-     * @param integrationDataResults
-     * @param workbook
-     * @param names
-     * @param dataTableNameStyle
-     * @param rowIndex
-     * @param tableList
-     * @param columnNames
-     * @param datasetNames
      */
     public void createDataSheet() {
         // Create header
@@ -286,11 +274,6 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
     /**
      * Create the "pivot" table worksheet ("summmary")
-     * 
-     * @param workbook
-     * @param tableList
-     * @param columnNames
-     * @param pivot
      */
     private void createPivotSheet() {
         int rowIndex;

@@ -54,7 +54,7 @@ ${resourceCollection.name!"untitled collection"}</h1>
         </div>
         </#if>
 
-        <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
+        <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.formattedDescription?? || collections??>
         <div class="glide">
             <#if resourceCollection.parent??><p><b>Part of:</b>
             	<#if resourceCollection.parent.hidden && !authenticated >
@@ -66,10 +66,10 @@ ${resourceCollection.name!"untitled collection"}</h1>
 			</p></#if>
             <@common.description resourceCollection.description />
 
-            <#if resourceCollection.adminDescription??>
+            <#if resourceCollection.formattedDescription??>
                 <p>
                     <#noescape>
-			    ${resourceCollection.adminDescription}
+			    ${resourceCollection.formattedDescription}
 			  </#noescape>
                 </p>
             </#if>
