@@ -2402,6 +2402,8 @@
                                             chars="\t\r\n+" />
                                     </filterchain>
                                 </loadfile>
+                                <echo
+                                    message=" ${hg.branch}: ${hg.version.as_dir}" />
                             </target>
                         </configuration>
                     </execution>
