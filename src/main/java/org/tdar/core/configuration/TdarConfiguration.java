@@ -328,6 +328,14 @@ public class TdarConfiguration {
         return base;
     }
 
+    public String getStaticContentBaseUrl() {
+        String base = "http://" + getStaticContentHost();
+        if (getStaticContentPort() != DEFAULT_PORT) {
+            base += ":" + getStaticContentPort();
+        }
+        return base;
+    }
+
     public String getBaseSecureUrl() {
         String base = "https://" + getHostName();
         if (getHttpsPort() != HTTPS_PORT_DEFAULT) {

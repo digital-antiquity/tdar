@@ -14,6 +14,7 @@ import nu.validator.messages.MessageEmitter;
 import nu.validator.messages.MessageEmitterAdapter;
 import nu.validator.servlet.imagereview.ImageCollector;
 import nu.validator.source.SourceCode;
+import nu.validator.validation.SimpleDocumentValidator;
 import nu.validator.xml.SystemErrErrorHandler;
 
 import org.apache.commons.lang3.StringUtils;

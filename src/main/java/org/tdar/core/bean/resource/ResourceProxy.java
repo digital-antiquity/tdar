@@ -80,7 +80,7 @@ public class ResourceProxy implements Serializable {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
 
-    @Column(name = "date_registered")
+    @Column(name = "date_created")
     @DateBridge(resolution = Resolution.DAY)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
@@ -111,7 +111,7 @@ public class ResourceProxy implements Serializable {
     private Status status = Status.ACTIVE;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     @Column(name = "title")

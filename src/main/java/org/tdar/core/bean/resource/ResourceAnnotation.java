@@ -59,18 +59,10 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     private ResourceAnnotationKey resourceAnnotationKey;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Field
     @JsonView(JsonLookupFilter.class)
     private String value;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "date_created")
-    private Date dateCreated;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_updated")
-    private Date lastUpdated;
 
     @Field
     public String getPairedValue() {
@@ -102,22 +94,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     public void setResourceAnnotationKey(ResourceAnnotationKey resourceAnnotationKey) {
         this.resourceAnnotationKey = resourceAnnotationKey;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
     }
 
     @Override

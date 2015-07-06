@@ -37,8 +37,6 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient ReflectionService reflectionService;
-    @Autowired
     private transient GenericService genericService;
     private SessionData sessionData;
 

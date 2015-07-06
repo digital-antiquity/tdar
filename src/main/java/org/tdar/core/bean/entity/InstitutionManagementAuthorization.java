@@ -36,7 +36,7 @@ public class InstitutionManagementAuthorization extends Persistable.Base {
     private boolean authorized = false;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @NotNull
     private String reason;
 

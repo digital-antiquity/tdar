@@ -53,7 +53,7 @@ public class TdarUser extends Person {
     private Institution proxyInstitution;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "proxy_note")
     private String proxyNote;
 
@@ -100,6 +100,10 @@ public class TdarUser extends Person {
     public TdarUser() {
     }
 
+    public TdarUser(String firstName, String lastName, String email, String username, Long id) {
+        this(firstName, lastName, email, username);
+        setId(id);
+    }
     public TdarUser(String firstName, String lastName, String email) {
         super(firstName, lastName, email);
     }

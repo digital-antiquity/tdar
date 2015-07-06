@@ -55,12 +55,12 @@ public class BillingAccountGroup extends Base implements Updatable {
     private Status status = Status.ACTIVE;
 
     @NotNull
-    @Column(name = "date_created")
+    @Column(name = "date_created", nullable=false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
     @NotNull
-    @Column(name = "date_updated")
+    @Column(name = "date_updated", nullable=false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified = new Date();
 

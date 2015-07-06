@@ -117,7 +117,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private String displayName;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     @Enumerated(EnumType.STRING)

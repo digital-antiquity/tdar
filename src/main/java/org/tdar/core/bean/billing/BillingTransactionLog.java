@@ -30,7 +30,7 @@ public class BillingTransactionLog extends Base {
     private static final long serialVersionUID = 2104177203134056911L;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "response")
     private String responseInJson;
 

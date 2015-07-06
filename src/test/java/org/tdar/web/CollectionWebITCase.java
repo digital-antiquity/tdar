@@ -1,5 +1,6 @@
 package org.tdar.web;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -18,6 +19,8 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.StatusCode;
+import org.tdar.utils.TestConfiguration;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -248,5 +251,47 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTrue(getCurrentUrlPath().contains("/collection/save"));
 
         assertTextPresent("my fancy collection");
+    }
+    
+
+    @Test
+    public void testCollectionRightsRevoke() {
+        //create test collection with basic user having adminGroup rights
+        assertNotNull(genericService);
+        gotoPage("/collection/add");
+        String name = "my fancy collection";
+        String desc = "description goes here";
+        setInput("resourceCollection.name", name);
+        setInput("resourceCollection.description", desc);
+
+        TdarUser person = getBasicUser();
+        setInput(String.format(FMT_AUTHUSERS_ID, 0), person.getId());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
+
+        submitForm();
+        String url = getCurrentUrlPath();
+        Long id = extractTdarIdFromCurrentURL();
+        logout();
+        
+        // logout and login as that user, remove self
+        login(getBasicUser().getUsername(), TestConfiguration.getInstance().getPassword());
+        gotoPage(url);
+        assertTextPresent("my fancy collection");
+        clickLinkWithText("edit");
+        assertTextPresent("my fancy collection");
+        removeElementsByName(String.format(FMT_AUTHUSERS_ID, 0));
+        removeElementsByName(String.format(FMT_AUTHUSERS_PERMISSION, 0));
+        String path = getCurrentUrlPath();
+        submitForm();
+        
+        // assert that we can no longer edit that collection
+        int status = gotoPageWithoutErrorCheck(path);
+        assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(),status);
+        logout();
+        // logout / login, try again (assert not allowd)
+        login(getBasicUser().getUsername(), TestConfiguration.getInstance().getPassword());
+        status = gotoPageWithoutErrorCheck(path);
+        assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(),status);
+        
     }
 }

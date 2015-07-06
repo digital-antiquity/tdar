@@ -100,7 +100,7 @@
         <#if whitelabelCollection.subCollectionsEnabled>
             <div class="viewpage-section">
                 <h2>Collections</h2>
-                <#list whitelabelCollection.transientChildren as childCollection>
+                <#list collections as childCollection>
                     <p>
                         <@s.a href="/collection/${childCollection.id?c}/${childCollection.slug}" cssClass="title"
                             >${childCollection.name}</@s.a>

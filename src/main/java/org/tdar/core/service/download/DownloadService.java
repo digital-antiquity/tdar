@@ -141,7 +141,7 @@ public class DownloadService {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
             } else {
-                logger.error("too many concurrent downloads of the same file by one user");
+                logger.error("too many concurrent downloads of the same file by one user: {}",authenticatedUser);
             }
         }
 
@@ -149,7 +149,7 @@ public class DownloadService {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.too_many_concurrent_download");
             } else {
-                logger.error("too many concurrent downloads by one user");
+                logger.error("too many concurrent downloads by one user: {}",authenticatedUser);
             }
         }
 

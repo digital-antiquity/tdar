@@ -85,7 +85,7 @@ public class InvoiceService {
 
         BillingActivityModel model = accountDao.getLatestActivityModel();
         for (BillingActivity activity : model.getActivities()) {
-            if (activity.getEnabled()) {
+            if (activity.getActive()) {
                 toReturn.add(activity);
             }
         }

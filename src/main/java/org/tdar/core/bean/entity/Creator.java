@@ -195,12 +195,14 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Field(norms = Norms.NO, store = Store.YES)
     @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_updated", nullable = true)
+    @Column(name = "date_updated", nullable = false)
+    @NotNull
     private Date dateUpdated;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonView(JsonLookupFilter.class)
-    @Column(name = "date_created")
+    @Column(name = "date_created", nullable=false)
+    @NotNull
     private Date dateCreated;
 
     @Enumerated(EnumType.STRING)
@@ -217,7 +219,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     public Creator() {
