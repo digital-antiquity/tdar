@@ -1,7 +1,7 @@
 TDAR.leaflet = {};
 TDAR.leaflet = (function(console, $, ctx) {
 
-    function _initWorldMap() {
+    function _initLeafletMaps() {
         $(".leaflet-map").each(
                 function() {
                     var $el = $(this);
@@ -26,6 +26,19 @@ TDAR.leaflet = (function(console, $, ctx) {
                         map.fitBounds(polygon.getBounds());
                     }
                 });
+        _initEditableMaps();
+    }
+    
+    function _initEditableMaps() {
+        $(".leaflet-map[data-attr-bind-ids='true']").each(function(){
+            var $el = $(this);
+            var $minx = parseFloat($el.data("minx"));
+            var $miny = parseFloat($el.data("miny"));
+            var $maxx = parseFloat($el.data("maxx"));
+            var $maxy = parseFloat($el.data("maxy"));
+            console.log($minx, $maxx, $miny, $maxy);
+
+        });
     }
 
     return {
