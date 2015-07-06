@@ -18,7 +18,6 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionException;
@@ -49,9 +48,6 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
 
     @Autowired
     private ResourceCollectionService resourceCollectionService;
-
-    @Autowired
-    private SerializationService serializationService;
 
     @Action(value = ADMIN, results = {
             @Result(name = SUCCESS, location = "../resource/admin.ftl")
