@@ -2562,6 +2562,9 @@
                                 <loadfile property="hg.branch"
                                     srcFile="target/classes/branch.txt" >
                                     <filterchain>
+                                        <tokenfilter>
+                                            <replaceregex pattern="-" replace="_" flags="gi"/>
+                                        </tokenfilter>
                                         <deletecharacters
                                             chars="\t\r\n+" />
                                     </filterchain>
