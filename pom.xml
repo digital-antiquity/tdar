@@ -256,13 +256,13 @@
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.9.5</version>
+            <version>1.9.6</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.49u</version>
+            <version>1.49v</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
         </dependency>
         <dependency>
@@ -430,13 +430,13 @@
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.1</version>
              <!-- LICENSE: APACHE 2.0 -->
          </dependency>
          <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome-modules</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.1</version>
              <!-- LICENSE: APACHE 2.0 -->
          </dependency>
         <!-- Spring LDAP -->
@@ -768,7 +768,7 @@
         <dependency>
 		    <groupId>nu.validator</groupId>
 		    <artifactId>validator</artifactId>
-		    <version>15.4.12</version>
+		    <version>15.6.29</version>
 		    <exclusions>
 		    	<exclusion>
 		    		<artifactId>httpcore</artifactId>
