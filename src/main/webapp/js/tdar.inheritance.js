@@ -1110,10 +1110,46 @@ TDAR.inheritance = (function () {
         });
     };
 
+
+    function _clearSection(divSection) {
+        var $section = $(divSection);
+
+        //first, reset all of the checkboxes
+        $section.find(":checkbox").each(function(i) {
+            var  elem = this;
+            $(elem).prop("checked", elem.defaultChecked);
+        });
+
+        //now remove the repeatrows  (sorry, 'reset' not an option)
+        $section.find(".repeat-row").each(function() {TDAR.repeatrow.deleteRow(this);});
+    }
+
+    function _registerClearSectionButtons(formSelector) {
+        $(formSelector || "#metadataForm").find(".btn.clear-section").each(function() {
+            var button = this;
+            var targetSelector = button.getAttribute("data-clear-target");
+
+            //clear section when button clicked
+            $(button).click(function() {
+                _clearSection($(targetSelector)[0]);
+            });
+
+            //disable when inheritance enabled
+            var $cb = $(button).closest(".divInheritSection").find("label.checkbox :checkbox");
+            var _onchange = function() {
+                $(button).prop("disabled", $cb.prop("checked"));
+            };
+            $cb.change(_onchange);
+            _onchange();
+        });
+    }
+
     return{
         resetRepeatable: resetRepeatable,
         resetKeywords: resetKeywords,
         registerInheritSection: registerInheritSection,
-        applyInheritance: applyInheritance
+        applyInheritance: applyInheritance,
+        clearSection: _clearSection,
+        registerClearSectionButtons: _registerClearSectionButtons,
     };
 })();
