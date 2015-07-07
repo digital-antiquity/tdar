@@ -10,6 +10,7 @@
         "jquery-file-upload": "8.6.1",
         "jquery-validation": "~1.8.1",
         "leaflet": "~0.7.3",
+        "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.2.4",
         "qunit": "1.11.0"
     },
     "homepage": "https://bitbucket.org/tdar/tdar.src",

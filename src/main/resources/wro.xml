@@ -59,6 +59,8 @@
         <js>/includes/jqplot-1.08/plugins/jqplot.pointLabels.js</js>
         <js>/components/leaflet/dist/leaflet.js</js>
         <css>/components/leaflet/dist/leaflet.css</css>
+        <js>/components/leaflet-draw/dist/leaflet.draw.js</js>
+        <css>/components/leaflet-draw/dist/leaflet.draw.css</css>
         <js>/js/tdar.core.js</js>
         <js>/js/tdar.gmaps.js</js>
         <js>/js/tdar.upload.js</js>

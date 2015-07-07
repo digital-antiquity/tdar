@@ -91,10 +91,20 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <@helptext.geo />
             <h4>Geographic Region</h4>
 
+<!--
             <div id='editmapv3' class="tdar-map-large google-map"
                  data-tiplabel="Geographic Coordinates"
                  data-tooltipcontent="#geoHelpDiv"
                     ></div>
+-->
+        <div id='large-map' style="height:300px" class="leaflet-map span9" 
+        data-maxy="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" 
+        data-minx="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}"
+        data-maxx="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}"
+        data-miny="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}" data-attr-editable="true" data-attr-bind-ids="true"></div>
+
+
+
             <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip">
                 <br/>
                 <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
