@@ -62,7 +62,7 @@
         <js>/components/leaflet-draw/dist/leaflet.draw.js</js>
         <css>/components/leaflet-draw/dist/leaflet.draw.css</css>
         <js>/js/tdar.core.js</js>
-        <js>/js/tdar.gmaps.js</js>
+<!--         <js>/js/tdar.gmaps.js</js> -->
         <js>/js/tdar.upload.js</js>
         <js>/js/tdar.jquery-upload-validation.js</js>
         <js>/js/tdar.common.js</js>

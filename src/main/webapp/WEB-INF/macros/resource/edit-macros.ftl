@@ -97,11 +97,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                  data-tooltipcontent="#geoHelpDiv"
                     ></div>
 -->
-        <div id='large-map' style="height:300px" class="leaflet-map span9" 
-        data-maxy="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" 
-        data-minx="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}"
-        data-maxx="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}"
-        data-miny="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}" data-attr-editable="true" data-attr-bind-ids="true"></div>
+        <div id='large-map' style="height:300px" class="leaflet-map span9" data-attr-editable="true" data-attr-bind-ids="true">
+
 
 
 
@@ -113,34 +110,35 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                         <tr>
                             <td></td>
                             <td>
-                                <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
-                                <input type="text" id='d_maxy' placeholder="Latitude (max)" class="ne-lat-display span2"/>
+                                <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="maxy float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
+                                <input type="text" id='d_maxy' placeholder="Latitude (max)" class="ne-lat-display span2 d_maxy"/>
                             </td>
                             <td></td>
                         </tr>
                         <tr>
                             <td style="width:33%;text-align:center">
-                                <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
-                                <input type="text" id='d_minx' placeholder="Longitude (min)" class="sw-lng-display span2"/>
+                                <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="minx float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
+                                <input type="text" id='d_minx' placeholder="Longitude (min)" class="sw-lng-display span2 d_minx"/>
                             </td>
                             <td style="width:33%;text-align:center">
                                 <input type="button" id="locate" value="Locate" class="btn locateCoordsButton"/>
                             </td>
                             <td style="width:33%;text-align:center">
-                                <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
-                                <input type="text" id='d_maxx' placeholder="Longitude (max)" class="ne-lng-display span2"/>
+                                <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="maxx float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
+                                <input type="text" id='d_maxx' placeholder="Longitude (max)" class="d_maxx ne-lng-display span2"/>
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td>
-                                <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" />
-                                <input type="text" id="d_miny" placeholder="Latitude (min)" class="sw-lat-display span2"/>
+                                <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="miny float latLong sw-lat" title="Please enter a valid Minimum Latitude" />
+                                <input type="text" id="d_miny" placeholder="Latitude (min)" class="d_miny sw-lat-display span2"/>
                             </td>
                             <td></td>
                         </tr>
                     </table>
                 </div>
+</div>
                 <@helptext.manualGeo />
             </div>
             <#if switchableMapObfuscation>
