@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender name="file" class="org.apache.log4j.rolling.RollingFileAppender">
+        <param name="threshold" value="debug" />
+        <rollingPolicy name="file"
+                       class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+            <param name="FileNamePattern" value="logs/tdar.%d{yyyy-MM-dd-HH-mm}.log.gz" />
+            <!-- The below param will keep the live update file in a different location-->
+            <!-- param name="ActiveFileName" value="logs/tdar.log" /-->
+        </rollingPolicy>
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%5p %d{ISO8601} [%t][%x] %c - %m%n" />
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.ConsoleAppender" name="stdout">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%-5p %d %-4r [%t %x] (%F:%L) %c - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <logger name="org.hibernate.util.JDBCExceptionReporter">
+        <level value="debug"/>
+    </logger>
+    <logger name="org.liquibase">
+        <level value="error"/>
+    </logger>
+    <logger name="org.tdar">
+        <level value="debug"/>
+    </logger>
+    <logger name="uk.org">
+        <level value="debug"/>
+    </logger>
+
+    <!-- /**                                            -->
+    <!-- *  Hibernate options                           -->
+    <!-- */                                             -->
+
+    <!--// log parameterized SQL statements -->
+    <!--<logger name="org.hibernate.SQL"><level value="debug"></level></logger>-->
+
+    <!--// log the parameter bindings for above SQL statements -->
+    <!--<logger name="org.hibernate.type"><level value="trace"></level></logger>-->
+
+
+    <!--/**                                              -->
+    <!-- * Struts options                                -->
+    <!-- */                                              -->
+
+    <!--//  details w.r.t. action lifecycle (interceptors, mappings, action results, etc.) -->
+    <!--<logger name="com.opensymphony.xwork2"><level value="debug"></level></logger>-->
+    <!--// ognl errors  (type conversion errors, umnmapped form field names) are pretty common, so they are logged at TRACE. Uncomment next line to see them -->
+    <!--<logger name="com.opensymphony.xwork2.ognl.OgnlValueStack"><level value="trace"></level></logger>-->
+
+    <root>
+        <level value="error"/>
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="file"/>
+    </root>
+</log4j:configuration>
