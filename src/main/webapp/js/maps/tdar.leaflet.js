@@ -1,11 +1,20 @@
 TDAR.leaflet = {};
 TDAR.leaflet = (function(console, $, ctx) {
     
+    var _defaults = {
+            isGeoLocationToBeUsed: false,
+            center: {
+                lat: 0,
+                lng: 0
+            },
+            zoomLevel: 4
+    }
+    
     /**
      * Init the leaflet map, and bind it to the element
      */
     function _initMap(elem) {
-        var map = L.map(elem).setView([ 51.505, -0.09 ], 13);
+        var map = L.map(elem).setView([ _defaults.center.lat, _defaults.center.lng ], _defaults.zoomLevel);
         var tile = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
             maxZoom : 17,
             attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
@@ -203,7 +212,8 @@ TDAR.leaflet = (function(console, $, ctx) {
     }
 
     return {
-        initLeafletMaps : _initLeafletMaps
+        initLeafletMaps : _initLeafletMaps,
+        defaults : _defaults
     }
 })(console, jQuery, window);
 $(function() {
