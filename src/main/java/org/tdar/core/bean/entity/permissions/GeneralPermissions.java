@@ -31,12 +31,12 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     private String label;
     private Class<? extends Persistable> context;
 
-    private GeneralPermissions(String label, Integer effectivePermissions) {
+    GeneralPermissions(String label, Integer effectivePermissions) {
         this.setLabel(label);
         this.setEffectivePermissions(effectivePermissions);
     }
 
-    private GeneralPermissions(String label, Class<? extends Persistable> context, Integer effectivePermissions) {
+    GeneralPermissions(String label, Class<? extends Persistable> context, Integer effectivePermissions) {
         this.setLabel(label);
         this.setEffectivePermissions(effectivePermissions);
         this.setContext(context);
@@ -82,7 +82,7 @@ public enum GeneralPermissions implements HasLabel, Localizable {
      * @param context
      *            the context to set
      */
-    public void setContext(Class<? extends Persistable> context) {
+    private void setContext(Class<? extends Persistable> context) {
         this.context = context;
     }
 
