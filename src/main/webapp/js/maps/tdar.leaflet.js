@@ -38,17 +38,28 @@ TDAR.leaflet = (function(console, $, ctx) {
                     var $miny = parseFloat($el.data("miny"));
                     var $maxx = parseFloat($el.data("maxx"));
                     var $maxy = parseFloat($el.data("maxy"));
-                    if ($minx != undefined && $miny != undefined && $maxx != undefined && $maxy != undefined) {
-                        console.log($minx, $maxx, $miny, $maxy);
-                        var poly = [ [ $maxy, $maxx ], [ $miny, $minx ]];
-                        console.log(poly);
-                        var rectangle = L.rectangle(poly).addTo(map);
-                        map.fitBounds(rectangle.getBounds());
-                    }
+					_initRectangle(map, $minx,$miny,$maxx,$maxy, true);
                 });
         _initEditableMaps();
     }
     
+	/**
+	* create the rectangle based on the bounds
+	*/
+	function _initRectangle(map, minx, miny, maxx, maxy,fitToBounds) {
+        if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined &&
+			!isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
+            console.log(minx, maxx, miny, maxy);
+            var poly = [ [ maxy, maxx ], [ miny, minx ]];
+            var rectangle = L.rectangle(poly).addTo(map);
+			if (fitToBounds) {
+	            map.fitBounds(rectangle.getBounds());
+			}
+			return rectangle;
+        }
+		
+	}
+	
     /**
      * Updates a leaflet layer (removes/adds) based on the .minx, .miny, .maxx, .maxy vals
      */
@@ -64,16 +75,14 @@ TDAR.leaflet = (function(console, $, ctx) {
         if (layers.length > 0) {
             drawnItems.removeLayer(layers[0]);
         }
-        console.log($minx,$miny,$maxx,$maxy);
-        if ($minx != undefined && $miny != undefined && $maxx != undefined && $maxy != undefined) {
-            var poly = [ [ $maxy, $maxx ], [ $miny, $minx ]];
-            var rectangle = L.rectangle(poly);
-            map.fitBounds(rectangle.getBounds());
-            //recangle.addTo(map);
+		
+		var rectangle = _initRectangle(map, $minx,$miny,$maxx,$maxy,true);
+		
+		if (rectangle != undefined) {
             _disableRectangleCreate();
             drawnItems.addLayer(rectangle);
-            return rectangle;
-        }            
+		}
+        return rectangle;
 
     }
     
