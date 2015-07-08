@@ -30,7 +30,7 @@ TDAR.leaflet = (function(console, $, ctx) {
      * init a "view" only map, binds to data-attribute minx, miny, maxx, maxy
      */
     function _initLeafletMaps() {
-        $(".leaflet-map:not([data-attr-bind-ids='true'])").each(
+        $(".leaflet-map").each(
                 function() {
                     var $el = $(this);
                     var map  = _initMap(this);
@@ -92,7 +92,7 @@ TDAR.leaflet = (function(console, $, ctx) {
      * this will create the map just before the element specified
      */
     function _initEditableMaps() {
-        $(".leaflet-map[data-attr-bind-ids='true']").each(function(){
+        $(".leaflet-map-editable").each(function(){
             var $el = $(this);
 
             // we create a div just before the div and copy the styles from the container.  This is so that we can bind to class seletion for the fields.  

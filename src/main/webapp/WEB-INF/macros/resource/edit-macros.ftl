@@ -97,7 +97,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                  data-tooltipcontent="#geoHelpDiv"
                     ></div>
 -->
-        <div id='large-map' style="height:300px" class="leaflet-map span9" data-attr-editable="true" data-attr-bind-ids="true">
+        <div id='large-map' style="height:300px" class="leaflet-map-editable span9">
 
 
 
