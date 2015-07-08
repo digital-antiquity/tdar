@@ -112,9 +112,6 @@ TDAR.inheritance = (function () {
             obj.spatialInformation['maxy'] = '';
         }
 
-        console.log(obj.spatialInformation);
-        console.log(llb);
-        //now build out individual/institutional credit
         return obj;
     }
 
@@ -385,7 +382,6 @@ TDAR.inheritance = (function () {
         _populateLatLongTextFields();
 
         var si = json.spatialInformation;
-        console.log(si);
         if (si.miny != null && si.minx != null && si.maxy != null && si.maxx != null) {
             $(".locateCoordsButton",$("#divSpatialInformation")).click();
         }
@@ -523,8 +519,6 @@ TDAR.inheritance = (function () {
         TDAR.inheritance.project = data;
         // if user picked blank option, then clear the sections
         if (!TDAR.inheritance.project.id || TDAR.inheritance.project.id == -1) {
-            TDAR.inheritance.project = _getBlankProject();
-        } else if (TDAR.inheritance.project.resourceType === 'INDEPENDENT_RESOURCES_PROJECT') {
             TDAR.inheritance.project = _getBlankProject();
         }
 
@@ -801,6 +795,7 @@ TDAR.inheritance = (function () {
         _enableSection('#divMaterialInformation');
         _enableSection('#divCulturalInformation');
         _enableSection('#divSpatialInformation');
+        _enableMap();
         _enableSection('#divTemporalInformation');
         _enableSection('#divOtherInformation');
         _enableSection('#divIdentifiers');
@@ -959,15 +954,14 @@ TDAR.inheritance = (function () {
     }
 
     function _disableMap() {
-        var $mapdiv = $('.leaflet-map-editable');
-        $mapdiv.addClass('opaque');
-        $(".leaflet-draw").hide();
+        var $mapdiv = $('#divSpatialInformation');
+        $mapdiv.addClass('disable-map');
     }
 
     function _enableMap() {
-        var $mapdiv = $('.leaflet-map-editable');
-        $mapdiv.removeClass('opaque');
-        $(".leaflet-draw").show();
+        var $mapdiv = $('#divSpatialInformation');
+        console.log('enable-map');
+        $mapdiv.removeClass('disable-map');
     }
 
     /**

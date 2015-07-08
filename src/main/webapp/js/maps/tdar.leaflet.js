@@ -81,6 +81,11 @@ TDAR.leaflet = (function(console, $, ctx) {
 		if (rectangle != undefined) {
             _disableRectangleCreate();
             drawnItems.addLayer(rectangle);
+		} else {
+		    _enableRectangleCreate();
+		    for (var i=0;i> drawnItems.getLayers().length ; i++) {
+		        drawnItems.removeLayer(drawnItems.getLayer(i));
+		    }
 		}
         return rectangle;
 
@@ -110,6 +115,11 @@ TDAR.leaflet = (function(console, $, ctx) {
             $(".locateCoordsButton",$el).click(function(){
                 var rec = _updateLayerFromFields($el,map,drawnItems);
             });
+
+//            $("#d_minx").val(Geo.toLon($("#minx").val()));
+//            $("#d_miny").val(Geo.toLat($("#miny").val()));
+//            $("#d_maxx").val(Geo.toLon($("#maxx").val()));
+//            $("#d_maxy").val(Geo.toLat($("#maxy").val()));
 
             // bind ids
             $(".d_maxx",$el).change(function(){$(".maxx",$el).val($(".d_maxx",$el).val());});

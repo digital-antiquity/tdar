@@ -1491,3 +1491,13 @@ tr.DELETED {
     display:none;
     visibility:hidden;
 }
+
+/** leaflet maps - **/
+.disable-map .leaflet-draw {
+	display:none;
+	visibility:hidden;
+}
+
+.disable-map .leaflet-container, .leaflet-container.disable-map {
+	opacity:.5;
+}
