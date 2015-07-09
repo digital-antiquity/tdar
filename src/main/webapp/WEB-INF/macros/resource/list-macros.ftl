@@ -42,12 +42,19 @@
         <div class="resource-list row">
             <#if mapPosition=="top" || mapPosition == "right">
                 <div class="span9 leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
-    <#if map??>
-        data-maxy="${map.maxObfuscatedLatitude}" 
-        data-minx="${map.minObfuscatedLongitude}"
-        data-maxx="${map.maxObfuscatedLongitude}"
-        data-miny="${map.minObfuscatedLatitude}"
-    </#if>
+        <#assign map_ = "" />
+        <#if map?has_content>
+            <#assign map_ = map />
+        </#if>
+        <#if !map_?has_content && (g[0].latitudeLongitudeBoxes[0])?has_content>
+            <#assign map_ = g[0].latitudeLongitudeBoxes[0] />
+        </#if>
+        <#if map_?has_content && map_.valid && map_.minimumLatitude?has_content >
+        data-maxy="${map_.maxObfuscatedLatitude}" 
+        data-minx="${map_.minObfuscatedLongitude}"
+        data-maxx="${map_.maxObfuscatedLongitude}"
+        data-miny="${map_.minObfuscatedLatitude}"
+        </#if>
                  ></div>
             </#if>
         <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">

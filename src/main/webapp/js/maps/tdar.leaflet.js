@@ -36,6 +36,7 @@ TDAR.leaflet = (function(console, $, ctx) {
                 var $t = $(this);
                 var title = $(".resourceLink",$t);
                 var marker = L.marker(new L.LatLng($t.data("lat"), $t.data("long")), { title: title.html() });
+                marker.bindPopup(title.html());
                 markers.addLayer(marker);
             });
             map.addLayer(markers);
