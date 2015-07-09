@@ -358,7 +358,7 @@ public class DataOneService {
         // metadata.setReplicationPolicy(rpolicy );
 
         // rights to change the permissions sitting on the object
-        metadata.setRightsHolder(createSubject(String.format("uid=%s,o=TDAR,dc=org",CONFIG.getSystemAdminEmail())));
+        metadata.setRightsHolder(createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail())));
         // metadata.setSerialVersion(value);
         metadata.setSubmitter(createSubject(resource.getSubmitter().getProperName()));
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
