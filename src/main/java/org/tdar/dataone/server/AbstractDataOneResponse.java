@@ -1,12 +1,32 @@
 package org.tdar.dataone.server;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.IOUtils;
+import org.dataone.service.types.v1.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.dataone.bean.DataOneError;
+import org.tdar.dataone.service.DataOneService;
+import org.tdar.dataone.service.ObjectResponseContainer;
 
+@Component
+@Scope("prototype")
 public class AbstractDataOneResponse {
 
     public static final String BASE_PATH = "/v1/";
@@ -22,6 +42,11 @@ public class AbstractDataOneResponse {
     public static final String COUNT = "count";
     public static final String EVENT = "event";
     public static final String ID_FILTER = "idFilter";
+
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private DataOneService service;
 
     public void setupResponseContext(HttpServletResponse response) {
         response.setHeader(HEADER_DATE, toIso822(new Date()));
@@ -39,4 +64,28 @@ public class AbstractDataOneResponse {
         return new DataOneError(501, "NotImplemented", "Not Implemented", 2180);
     }
 
+
+    public Response constructObjectResponse(String id, HttpServletRequest request, Event read) {
+        logger.debug("object full request: {}", request);
+        try {
+            final ObjectResponseContainer container = service.getObject(id, request, Event.READ);
+            StreamingOutput stream = new StreamingOutput() {
+                @Override
+                public void write(OutputStream os) throws IOException, WebApplicationException {
+                    logger.debug("{} - {}", os, container.getReader());
+                    OutputStreamWriter output = new OutputStreamWriter(os);
+                    IOUtils.copyLarge(container.getReader(), output);
+                    IOUtils.closeQuietly(output);
+                };
+            };
+            if (container != null) {
+                return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
+            } else {
+                return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();                
+            }
+        } catch (Exception e) {
+            logger.error("error in DataOne getObject:", e);
+            return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

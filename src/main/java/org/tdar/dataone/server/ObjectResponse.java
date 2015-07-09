@@ -1,8 +1,5 @@
 package org.tdar.dataone.server;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,15 +11,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dataone.service.types.v1.Event;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,28 +79,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @Path("{id:.*}")
     public Response object(@PathParam("id") String id) {
         setupResponseContext(response);
-        logger.debug("object full request: {}", request);
-        try {
-            final ObjectResponseContainer container = service.getObject(id, request, true);
-            StreamingOutput stream = new StreamingOutput() {
-                @Override
-                public void write(OutputStream os) throws IOException, WebApplicationException {
-                    logger.debug("{} - {}", os, container.getReader());
-                    OutputStreamWriter output = new OutputStreamWriter(os);
-                    IOUtils.copyLarge(container.getReader(), output);
-                    IOUtils.closeQuietly(output);
-                };
-            };
-            if (container != null) {
-                return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
-            } else {
-                return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();                
-            }
-        } catch (Exception e) {
-            logger.error("error in DataOne getObject:", e);
-            return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-
+        return constructObjectResponse(id, request,Event.READ);
     }
 
     @HEAD
@@ -114,9 +88,8 @@ public class ObjectResponse extends AbstractDataOneResponse {
     public Response describe(@PathParam("id") String id) {
         logger.debug("object head request: {}", request);
         setupResponseContext(response);
-
         try {
-            ObjectResponseContainer container = service.getObject(id, request, false);
+            ObjectResponseContainer container = service.getObject(id, request, null);
             if (container != null) {
                 logger.debug("returning OK");
                 response.setHeader(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat());

@@ -273,7 +273,7 @@ public class DataOneService {
 
     @Transactional(readOnly = true)
     public Checksum getChecksumResponse(String pid, String checksum_) {
-        ObjectResponseContainer object = getObject(pid, null, false);
+        ObjectResponseContainer object = getObject(pid, null, null);
         if (object == null) {
             return null;
         }
@@ -410,10 +410,10 @@ public class DataOneService {
     }
 
     @Transactional(readOnly = false)
-    public ObjectResponseContainer getObject(final String id, HttpServletRequest request, boolean log) {
+    public ObjectResponseContainer getObject(final String id, HttpServletRequest request, Event event) {
         ObjectResponseContainer resp = getObjectFromTdar(id);
-        if (request != null && resp != null && log == true) {
-            LogEntryImpl entry = new LogEntryImpl(id, request, Event.READ);
+        if (request != null && resp != null && event != null) {
+            LogEntryImpl entry = new LogEntryImpl(id, request, event);
             genericService.markWritable(entry);
             genericService.save(entry);
         }

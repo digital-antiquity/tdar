@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.dataone.service.types.v1.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,6 @@ public class ReplicaResponse extends AbstractDataOneResponse {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private DataOneService service;
 
     @Context
     private HttpServletResponse response;
@@ -37,10 +36,9 @@ public class ReplicaResponse extends AbstractDataOneResponse {
     @GET
     @Produces(APPLICATION_XML)
     @Path("{pid:.*}")
-    public Response replica(@PathParam("pid") String pid) {
+    public Response replica(@PathParam("pid") String id) {
         setupResponseContext(response);
-        service.replicate(pid, request);
-        return Response.serverError().status(501).build();
+        return constructObjectResponse(id, request,Event.REPLICATE);
     }
 
 }
