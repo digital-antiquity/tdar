@@ -42,6 +42,7 @@ public class AbstractDataOneResponse {
     public static final String COUNT = "count";
     public static final String EVENT = "event";
     public static final String ID_FILTER = "idFilter";
+    public static final String PID_FILTER = "pidFilter";
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
