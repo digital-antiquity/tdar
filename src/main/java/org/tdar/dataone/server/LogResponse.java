@@ -67,7 +67,7 @@ public class LogResponse extends AbstractDataOneResponse {
     public Response log(@QueryParam(FROM_DATE) String fromDate_,
             @QueryParam(TO_DATE) String toDate_,
             @QueryParam(EVENT) String event,
-            @QueryParam(ID_FILTER) String idFilter,
+            @QueryParam(PID_FILTER) String idFilter,
             @QueryParam(START) @DefaultValue("0") int start,
             @QueryParam(COUNT) @DefaultValue("1000") int count) {
         setupResponseContext(response);
