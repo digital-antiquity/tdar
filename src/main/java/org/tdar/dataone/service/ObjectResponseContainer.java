@@ -50,6 +50,10 @@ public class ObjectResponseContainer {
         this.checksum = checksum;
     }
 
+    public Long getSerialVersionId() {
+        return getLastModified().getTime();
+    }
+
     public String getIdentifier() {
         return identifier;
     }
