@@ -35,9 +35,13 @@ TDAR.leaflet = (function(console, $, ctx) {
             $(".resource-list.MAP .listItem").each(function() {
                 var $t = $(this);
                 var title = $(".resourceLink",$t);
-                var marker = L.marker(new L.LatLng($t.data("lat"), $t.data("long")), { title: title.html() });
-                marker.bindPopup(title.html());
-                markers.addLayer(marker);
+                var lat = $t.data("lat");
+                var lng = $t.data("long");
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    var marker = L.marker(new L.LatLng(lat, lng), { title: title.html() });
+                    marker.bindPopup(title.html());
+                    markers.addLayer(marker);
+                }
             });
             map.addLayer(markers);
         });
