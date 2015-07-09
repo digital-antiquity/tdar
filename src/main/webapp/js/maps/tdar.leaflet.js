@@ -26,6 +26,22 @@ TDAR.leaflet = (function(console, $, ctx) {
         return map;
     }
 
+    function _initResultsMaps() {
+        $(".leaflet-map-results").each(function(){
+            var $el = $(this);
+            var map  = _initMap(this);
+            var markers = new L.MarkerClusterGroup();
+            _initFromDataAttr($el,map, true);
+            $(".resource-list.MAP .listItem").each(function() {
+                var $t = $(this);
+                var title = $(".resourceLink",$t);
+                var marker = L.marker(new L.LatLng($t.data("lat"), $t.data("long")), { title: title.html() });
+                markers.addLayer(marker);
+            });
+            map.addLayer(markers);
+        });
+    }
+    
     /**
      * init a "view" only map, binds to data-attribute minx, miny, maxx, maxy
      */
@@ -34,18 +50,21 @@ TDAR.leaflet = (function(console, $, ctx) {
                 function() {
                     var $el = $(this);
                     var map  = _initMap(this);
-                    var $minx = parseFloat($el.data("minx"));
-                    var $miny = parseFloat($el.data("miny"));
-                    var $maxx = parseFloat($el.data("maxx"));
-                    var $maxy = parseFloat($el.data("maxy"));
-					_initRectangle(map, $minx,$miny,$maxx,$maxy, true);
+                    _initFromDataAttr($el,map, true);
                 });
-        _initEditableMaps();
     }
     
+    function _initFromDataAttr($el,map, fitToBounds) {
+        var $minx = parseFloat($el.data("minx"));
+        var $miny = parseFloat($el.data("miny"));
+        var $maxx = parseFloat($el.data("maxx"));
+        var $maxy = parseFloat($el.data("maxy"));
+        _initRectangle(map, $minx,$miny,$maxx,$maxy, fitToBounds);
+
+    }
 	/**
-	* create the rectangle based on the bounds
-	*/
+     * create the rectangle based on the bounds
+     */
 	function _initRectangle(map, minx, miny, maxx, maxy,fitToBounds) {
         if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined &&
 			!isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
@@ -92,7 +111,8 @@ TDAR.leaflet = (function(console, $, ctx) {
     }
     
     /**
-     * Init an editable map, it uses a set of classes to determine values .minx, .maxx, .miny, .maxy for actual values; .d_* for display values, and .locateCoordsButton for the locate button
+     * Init an editable map, it uses a set of classes to determine values .minx, .maxx, .miny, .maxy for actual values; .d_* for display values, and
+     * .locateCoordsButton for the locate button
      * 
      * this will create the map just before the element specified
      */
@@ -100,14 +120,17 @@ TDAR.leaflet = (function(console, $, ctx) {
         $(".leaflet-map-editable").each(function(){
             var $el = $(this);
 
-            // we create a div just before the div and copy the styles from the container.  This is so that we can bind to class seletion for the fields.  
+            // we create a div just before the div and copy the styles from the container. This is so that we can bind to class seletion for the fields.
             // Currently, this is a bit of overkill but it would enable multiple forms on the same page
             
             // we're using raw javascript because jquery didn't like the prepend or "before" method.
            var div = document.createElement("div");
-           // copy styles 
+           // copy styles
            div.setAttribute("style",$el.attr("style"));
            $el.attr("style","");
+           if ($(div).height() == 0) {
+               $(div).height(400);
+           }
            $el.before(div);
            var map = _initMap(div);
 
@@ -116,10 +139,10 @@ TDAR.leaflet = (function(console, $, ctx) {
                 var rec = _updateLayerFromFields($el,map,drawnItems);
             });
 
-//            $("#d_minx").val(Geo.toLon($("#minx").val()));
-//            $("#d_miny").val(Geo.toLat($("#miny").val()));
-//            $("#d_maxx").val(Geo.toLon($("#maxx").val()));
-//            $("#d_maxy").val(Geo.toLat($("#maxy").val()));
+// $("#d_minx").val(Geo.toLon($("#minx").val()));
+// $("#d_miny").val(Geo.toLat($("#miny").val()));
+// $("#d_maxx").val(Geo.toLon($("#maxx").val()));
+// $("#d_maxy").val(Geo.toLat($("#maxy").val()));
 
             // bind ids
             $(".d_maxx",$el).change(function(){$(".maxx",$el).val($(".d_maxx",$el).val());});
@@ -204,7 +227,7 @@ TDAR.leaflet = (function(console, $, ctx) {
     function _enableRectangleCreate() {
         var $drawRec = $(".leaflet-draw-draw-rectangle");
         $drawRec.fadeTo(1,1);
-//        $drawRec.click($drawRec.clickHandler);
+// $drawRec.click($drawRec.clickHandler);
         
     }
     
@@ -212,11 +235,11 @@ TDAR.leaflet = (function(console, $, ctx) {
     function _disableRectangleCreate() {
         var $drawRec = $(".leaflet-draw-draw-rectangle");
         $drawRec.fadeTo(1,.5);
-//        $drawRec.off("click");
+// $drawRec.off("click");
     }
     
     /**
-     *  set the input values based on the bounding box
+     * set the input values based on the bounding box
      */
     function _setValuesFromBounds($el, b) {
         $(".minx",$el).val(b.getWest());
@@ -227,14 +250,17 @@ TDAR.leaflet = (function(console, $, ctx) {
         $(".d_miny",$el).val(b.getSouth());
         $(".d_maxx",$el).val(b.getEast());
         $(".d_maxy",$el).val(b.getNorth());
-
     }
 
     return {
         initLeafletMaps : _initLeafletMaps,
+        initEditableLeafletMaps : _initEditableMaps,
+        initResultsMaps: _initResultsMaps,
         defaults : _defaults
     }
 })(console, jQuery, window);
 $(function() {
     TDAR.leaflet.initLeafletMaps();
+    TDAR.leaflet.initEditableLeafletMaps();
+    TDAR.leaflet.initResultsMaps();
 });

@@ -71,11 +71,6 @@
         }
         TDAR.advancedSearch.initAdvancedSearch();
 
-        //other view init stuff;
-        if ($('#large-google-map').length) {
-            var mapdiv = $('#large-google-map')[0];
-            TDAR.maps.setupEditMap(mapdiv, $("#latlongoptions")[0]);
-        }
     });
 </script>
 

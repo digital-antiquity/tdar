@@ -25,11 +25,12 @@
 
     <h4>Limit by geographic region:</h4>
     <div id="latlongoptions">
-        <div id='large-google-map'></div>
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng latLongInput" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat latLongInput" />
+        <div id='large-map' class='leaflet-map-editable'>
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput maxx" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput miny" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng latLongInput minx" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat latLongInput maxy" />
+        </div>
     </div>
 
     <h2>Sorting Options and Submit</h2>
