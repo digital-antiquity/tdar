@@ -1,5 +1,6 @@
 package org.tdar.dataone.dao;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Log;
 import org.dataone.service.types.v1.ObjectList;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,35 +26,37 @@ import org.tdar.dataone.bean.LogEntryImpl;
 @Component
 public class DataOneDao {
 
+    private static final String LIST_OBJECT_QUERY = "select external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type) union " +
+                                                    "select external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
+
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private GenericDao genericDao;
 
-    @SuppressWarnings("unchecked")
     public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, String formatId, String identifier, ObjectList list) {
-        Query query = setupListObjectQuery(start, end, formatId, identifier, "query.dataone_list_objects_t1");
+        SQLQuery query = setupListObjectQuery(start, end, formatId, identifier);
         if (list.getCount() == 0) {
             return new ArrayList<>();
         }
         // FIXME: find better way to handle pagination
         list.setTotal(query.list().size());
-        query = setupListObjectQuery(start, end, formatId, identifier, "query.dataone_list_objects_t1_1");
-        list.setTotal(list.getTotal() + query.list().size());
-        query = setupListObjectQuery(start, end, formatId, identifier,"query.dataone_list_objects_t1");
+
+        query = setupListObjectQuery(start, end, formatId, identifier);
         query.setMaxResults(list.getCount());
         query.setFirstResult(list.getStart());
-        List<ListObjectEntry> results = new ArrayList<>(query.list());
-        query = setupListObjectQuery(start, end, formatId, identifier,"query.dataone_list_objects_t1_1");
-        query.setMaxResults(list.getCount());
-        query.setFirstResult(list.getStart());
-        results.addAll(query.list());
-        return results;
+        List<ListObjectEntry> toReturn = new ArrayList<>();
+        for (Object wrap : query.list()) {
+            Object[] obj = (Object[])wrap;
+            toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], ((BigInteger)obj[2]).longValue(), (Date)obj[3],null,null,null,null));
+        }
+        return toReturn;
     }
 
-    private Query setupListObjectQuery(Date fromDate, Date toDate, String formatId, String identifier, String queryName) {
-        Query query = genericDao.getNamedQuery(queryName);
+    private SQLQuery setupListObjectQuery(Date fromDate, Date toDate, String formatId, String identifier) {
+        SQLQuery query = genericDao.getNativeQuery(LIST_OBJECT_QUERY);
+        
         // if Tier3, use "query.dataone_list_objects_t3"
         initStartEnd(fromDate, toDate, query);
         Type type = null;
@@ -67,7 +71,6 @@ public class DataOneDao {
         }
                 
         query.setString("identifier", identifier);
-        logger.debug("t:{} ({}) [{} - {}], id:{}", type,formatId, fromDate,toDate, identifier);
         return query;
     }
 

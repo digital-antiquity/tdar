@@ -292,7 +292,6 @@ public class DataOneService {
             ObjectResponseContainer object = null;
             if (entry.getType() != Type.FILE) {
                 InformationResource resource = genericService.find(InformationResource.class, entry.getPersistableId());
-                logger.debug("e: {}", entry);
                 if (entry.getType() == Type.D1) {
                     object = constructD1FormatObject(resource);
                 }

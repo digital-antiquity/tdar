@@ -35,4 +35,8 @@ public class AbstractDataOneResponse {
         return new DataOneError(404, "NotFound", "Not Found", 1800);
     }
 
+    public DataOneError getNotImplementedError() {
+        return new DataOneError(501, "NotImplemented", "Not Implemented", 2180);
+    }
+
 }

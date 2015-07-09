@@ -51,14 +51,9 @@ public class ListObjectEntry implements Serializable {
         this.dateUpdated = updated;
     }
 
-    //(externalId, 'TDAR',    id,      dateUpdated, null,       null,      null        , null) 
     public ListObjectEntry(String exId, String type_, Long id, Date updated, Long size, String sum, Integer version, String contentType) {
         this.identifier = exId;
-        try {
         this.type = Type.valueOf(type_);
-        } catch (Exception e) {
-            System.err.println(e);;
-        }
         this.persistableId = id;
         this.dateUpdated = updated;
         this.size = size;

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -534,6 +535,10 @@ public class GenericDao {
         return getCurrentSession().hashCode();
     }
 
+    public SQLQuery getNativeQuery(String sql) {
+        return getCurrentSession().createSQLQuery(sql);
+    }
+    
     protected Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
