@@ -13,7 +13,6 @@ public class ObjectResponseContainer {
     private String contentType = "binary/binray";
     private String checksum = "SHA-1,2e01e17467891f7c933dbaa00e1459d23db3fe4f";
     private String identifier;
-    private Long serialVersionId = 1234L;
     private int size;
     private Reader reader;
     private InformationResource tdarResource;
@@ -57,14 +56,6 @@ public class ObjectResponseContainer {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
-    }
-
-    public Long getSerialVersionId() {
-        return getLastModified().getTime();
-    }
-
-    public void setSerialVersionId(Long serialVersionId) {
-        this.serialVersionId = serialVersionId;
     }
 
     public int getSize() {

@@ -73,12 +73,10 @@ import org.tdar.dataone.bean.ListObjectEntry.Type;
 import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.PersistableUtils;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
-import edu.asu.lib.mods.ModsDocument;
 
 @Service
 public class DataOneService {
@@ -90,7 +88,7 @@ public class DataOneService {
     public static final String D1_FORMAT = "format=d1rem";
     public static final String D1_RESOURCE_MAP_FORMAT = "http://www.openarchives.org/ore/terms";
 //    public static final String D1_MODS_FORMAT = "http://loc.gov/mods/v3";
-    public static final String D1_DC_FORMAT = "http://ns.dataone.org/metadata/schema/onedcx/v1.0";
+    public static final String D1_DC_FORMAT = "http://dublincore.org/schemas/xmls/qdc/2008/02/11/simpledc.xsd";
     static final String MN_REPLICATION = "MNREplication";
     static final String MN_STORAGE = "MNStorage";
     static final String MN_AUTHORIZATION = "MNAuthorization";
