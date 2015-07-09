@@ -18,7 +18,7 @@ public class ListObjectEntry implements Serializable {
             if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_RESOURCE_MAP_FORMAT)) {
                 return D1;
             }
-            if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_MODS_FORMAT)) {
+            if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_DC_FORMAT)) {
                 return Type.TDAR;
             }
             if (format != null) {
@@ -37,6 +37,12 @@ public class ListObjectEntry implements Serializable {
     private Integer version;
     private String contentType;
 
+    
+    @Override
+    public String toString() {
+        return String.format("id: %s type: %s", identifier, type);
+    }
+
     // externalId, 'file', irf.id , dateUpdated, fileLength, checksum, latestVersion
     public ListObjectEntry(String exId, String type, Long id, Date updated) {
         this.identifier = exId;
@@ -45,9 +51,14 @@ public class ListObjectEntry implements Serializable {
         this.dateUpdated = updated;
     }
 
-    public ListObjectEntry(String exId, String type, Long id, Date updated, Long size, String sum, Integer version, String contentType) {
+    //(externalId, 'TDAR',    id,      dateUpdated, null,       null,      null        , null) 
+    public ListObjectEntry(String exId, String type_, Long id, Date updated, Long size, String sum, Integer version, String contentType) {
         this.identifier = exId;
-        this.type = Type.valueOf(type);
+        try {
+        this.type = Type.valueOf(type_);
+        } catch (Exception e) {
+            System.err.println(e);;
+        }
         this.persistableId = id;
         this.dateUpdated = updated;
         this.size = size;

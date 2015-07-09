@@ -72,9 +72,11 @@ import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.ListObjectEntry.Type;
 import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.dao.DataOneDao;
+import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.PersistableUtils;
 
+import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
 import edu.asu.lib.mods.ModsDocument;
 
@@ -87,7 +89,8 @@ public class DataOneService {
     public static final String D1_SEP = "_";
     public static final String D1_FORMAT = "format=d1rem";
     public static final String D1_RESOURCE_MAP_FORMAT = "http://www.openarchives.org/ore/terms";
-    public static final String D1_MODS_FORMAT = "http://loc.gov/mods/v3";
+//    public static final String D1_MODS_FORMAT = "http://loc.gov/mods/v3";
+    public static final String D1_DC_FORMAT = "http://ns.dataone.org/metadata/schema/onedcx/v1.0";
     static final String MN_REPLICATION = "MNREplication";
     static final String MN_STORAGE = "MNStorage";
     static final String MN_AUTHORIZATION = "MNAuthorization";
@@ -201,6 +204,7 @@ public class DataOneService {
         node.setContactSubjectList(list);
         Synchronization sync = new Synchronization();
         sync.setLastCompleteHarvest(new Date(0));
+        node.getContactSubjectList().add(getSystemUserLdap());
         sync.setLastHarvested(new Date());
         Schedule schedule = new Schedule();
         schedule.setHour("2");
@@ -282,13 +286,13 @@ public class DataOneService {
         list.setCount(count);
         list.setStart(start);
 
-        ListObjectEntry.Type type = Type.D1;
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, type, formatid, identifier, list);
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, formatid, identifier, list);
         for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();
             ObjectResponseContainer object = null;
             if (entry.getType() != Type.FILE) {
                 InformationResource resource = genericService.find(InformationResource.class, entry.getPersistableId());
+                logger.debug("e: {}", entry);
                 if (entry.getType() == Type.D1) {
                     object = constructD1FormatObject(resource);
                 }
@@ -358,11 +362,19 @@ public class DataOneService {
         // metadata.setReplicationPolicy(rpolicy );
 
         // rights to change the permissions sitting on the object
-        metadata.setRightsHolder(createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail())));
+        metadata.setRightsHolder(getRightsHolder());
         // metadata.setSerialVersion(value);
         metadata.setSubmitter(createSubject(resource.getSubmitter().getProperName()));
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
+    }
+
+    private Subject getRightsHolder() {
+        return createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
+    }
+
+    private Subject getSystemUserLdap() {
+        return createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
     }
 
     private ObjectFormatIdentifier contentTypeToD1Format(Type type, String contentType) {
@@ -374,7 +386,7 @@ public class DataOneService {
 //            case FILE:
 //                break;
             case TDAR:
-                identifier.setValue(D1_MODS_FORMAT);
+                identifier.setValue(D1_DC_FORMAT);
                 break;
             default:
                 identifier.setValue("BAD-FORMAT");
@@ -469,12 +481,12 @@ public class DataOneService {
         ObjectResponseContainer resp = setupResponse(ir);
         resp.setContentType(XML_CONTENT_TYPE);
         resp.setType(Type.TDAR);
-        ModsDocument modsDoc = ModsTransformer.transformAny(ir);
+//        ModsDocument modsDoc = ModsTransformer.transformAny(ir);
+        DublinCoreDocument modsDoc = DcTransformer.transformAny(ir);
         resp.setObjectFormat(META);
         StringWriter sw = new StringWriter();
         JaxbDocumentWriter.write(modsDoc, sw, true);
         String metaXml = sw.toString();
-        logger.debug(metaXml);
         resp.setSize(metaXml.getBytes(UTF_8).length);
         resp.setReader(new StringReader(metaXml));
         resp.setChecksum(checksumString(metaXml));

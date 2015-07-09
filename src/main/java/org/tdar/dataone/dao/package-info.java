@@ -1,8 +1,11 @@
 @org.hibernate.annotations.NamedQueries({
     @org.hibernate.annotations.NamedQuery(
             name = "query.dataone_list_objects_t1",
-            query = "        select new org.tdar.dataone.bean.ListObjectEntry(externalId, 'D1',    id,      dateUpdated, null,       null,      null        , null) from InformationResource res where res.externalId is not null and (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.externalId=:identifier) and (:type is null or 'D1'=:type)"
-                    + "union select new org.tdar.dataone.bean.ListObjectEntry(externalId, 'TDAR',  id,      dateUpdated, null,       null,      null        , null) from InformationResource res where res.externalId is not null and (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.externalId=:identifier) and (:type is null or 'TDAR'=:type)"
+            query = "select new org.tdar.dataone.bean.ListObjectEntry(externalId, 'D1',  id,      dateUpdated, null,       null,      null        , null)     from InformationResource res where res.externalId is not null and (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.externalId=:identifier) and (:type is null or 'TDAR'=:type) "
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = "query.dataone_list_objects_t1_1",
+            query = "select new org.tdar.dataone.bean.ListObjectEntry(externalId, 'TDAR',    id,      dateUpdated, null,       null,      null        , null) from InformationResource res where res.externalId is not null and (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.externalId=:identifier) and (:type is null or   'D1'=:type) "
     ),
     @org.hibernate.annotations.NamedQuery(
             name = "query.dataone_list_objects_t3",

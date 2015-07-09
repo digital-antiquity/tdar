@@ -31,24 +31,31 @@ public class DataOneDao {
     private GenericDao genericDao;
 
     @SuppressWarnings("unchecked")
-    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, Type type, String formatId, String identifier, ObjectList list) {
-        Query query = setupListObjectQuery(start, end, type, formatId, identifier);
+    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, String formatId, String identifier, ObjectList list) {
+        Query query = setupListObjectQuery(start, end, formatId, identifier, "query.dataone_list_objects_t1");
         if (list.getCount() == 0) {
             return new ArrayList<>();
         }
         // FIXME: find better way to handle pagination
         list.setTotal(query.list().size());
-
-        query = setupListObjectQuery(start, end, type, formatId, identifier);
+        query = setupListObjectQuery(start, end, formatId, identifier, "query.dataone_list_objects_t1_1");
+        list.setTotal(list.getTotal() + query.list().size());
+        query = setupListObjectQuery(start, end, formatId, identifier,"query.dataone_list_objects_t1");
         query.setMaxResults(list.getCount());
         query.setFirstResult(list.getStart());
-        return query.list();
+        List<ListObjectEntry> results = new ArrayList<>(query.list());
+        query = setupListObjectQuery(start, end, formatId, identifier,"query.dataone_list_objects_t1_1");
+        query.setMaxResults(list.getCount());
+        query.setFirstResult(list.getStart());
+        results.addAll(query.list());
+        return results;
     }
 
-    private Query setupListObjectQuery(Date fromDate, Date toDate, Type type, String formatId, String identifier) {
-        Query query = genericDao.getNamedQuery("query.dataone_list_objects_t1");
+    private Query setupListObjectQuery(Date fromDate, Date toDate, String formatId, String identifier, String queryName) {
+        Query query = genericDao.getNamedQuery(queryName);
         // if Tier3, use "query.dataone_list_objects_t3"
         initStartEnd(fromDate, toDate, query);
+        Type type = null;
         if (StringUtils.isNotBlank(formatId)) {
             type = Type.getTypeFromFormatId(formatId);
         }
@@ -58,8 +65,9 @@ public class DataOneDao {
         } else {
             query.setString("type", null);
         }
-        
+                
         query.setString("identifier", identifier);
+        logger.debug("t:{} ({}) [{} - {}], id:{}", type,formatId, fromDate,toDate, identifier);
         return query;
     }
 
