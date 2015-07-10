@@ -1,0 +1,47 @@
+  JkWorkerProperty worker.list=ajp13w
+  JkWorkerProperty worker.ajp13w.type=ajp13
+  JkWorkerProperty worker.ajp13w.host=localhost
+  JkWorkerProperty worker.ajp13w.port=8009  
+  JkOptions     +ForwardURICompatUnparsed
+  # Where to put jk shared memory
+  # Update this path to match your local state directory or logs directory
+  JkShmFile     /var/log/apache2/mod_jk.shm
+  # Where to put jk logs
+  # Update this path to match your logs directory location (put mod_jk.log next to access_log)
+  JkLogFile     /var/log/tomcat6/mod_jk.log
+  # Set the jk log level [debug/error/info]
+  JkLogLevel    info
+  # Select the timestamp log format
+  JkLogStampFormat "[%a %b %d %H:%M:%S %Y] "
+  # Send everything for context /examples to worker named worker1 (ajp13)
+
+
+<VirtualHost *:80>
+	ServerAdmin tdar-svn@asu.edu
+#	ServerAlias beta.tdar.org
+	ServerName core.tdar.org
+
+	DocumentRoot /var/www/core.tdar.org/
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+
+<FilesMatch "\.(html|js|png|jpg|gif|css)">
+    ExpiresDefault "access plus 1 days"
+    ExpiresActive On
+</FilesMatch>
+
+	ErrorLog /var/log/apache2/error-tdar.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+
+	CustomLog /var/log/apache2/access-tdar.log combined
+#	RewriteEngine On
+#	RewriteRule ^/(.*)$ /tdar/$1 [PT,L]
+#	JkOptions     +ForwardURICompatUnparsed
+	JkMount  /* ajp13w
+</VirtualHost>

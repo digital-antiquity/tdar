@@ -1,0 +1,34 @@
+/* global describe, it, expect */
+describe("tests for TDAR.pricing methods", function() {  
+
+it("should work when we call initPricing", function() {
+   var form = null;
+   var ajaxUrl = null;
+   var expectedVal = null;
+
+   //var result = TDAR.pricing.initPricing(form, ajaxUrl);
+   expect(true).toBe(false); //fixme: implement this test
+});
+
+it("should work when we call updateProgress", function() {
+   var expectedVal = null;
+
+   //var result = TDAR.pricing.updateProgress();
+   expect(true).toBe(false); //fixme: implement this test
+});
+
+it("should work when we call initPolling", function() {
+   var expectedVal = null;
+
+   //var result = TDAR.pricing.initPolling();
+   expect(true).toBe(false); //fixme: implement this test
+});
+
+it("should work when we call initBillingChoice", function() {
+   var expectedVal = null;
+
+   //var result = TDAR.pricing.initBillingChoice();
+   expect(true).toBe(false); //fixme: implement this test
+});
+
+});
