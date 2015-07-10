@@ -168,7 +168,7 @@ public class DownloadService {
         DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename, irFileVersion);
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
-        if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {
+        if (dto.isIncludeCoverPage() && coverPageSupported(irFileVersion)) {
             resourceFile = new DownloadPdfFile((Document) dto.getInformationResource(), irFileVersion, pdfService, dto.getAuthenticatedUser(),
                     dto.getTextProvider(), dto.getCoverPageLogo());
         }
@@ -180,6 +180,23 @@ public class DownloadService {
         dto.getDownloads().add(resourceFile);
         return actualFilename;
         // downloadMap.put(resourceFile, irFileVersion.getFilename());
+    }
+
+    /**
+     * Can the system generate a coverpage for the provided file?  This method is non-deterministic.
+     * @param irfv
+     * @return
+     */
+    private boolean coverPageSupported(InformationResourceFileVersion irfv) {
+        //pdfbox 1.8.x uses at least irfv.fileLength bytes of RAM for merges (even when using scratchdisk)
+        long freemem = Runtime.getRuntime().freeMemory();
+        boolean enoughRam = freemem >  irfv.getFileLength();
+        if(!enoughRam) {
+            logger.warn("Not enough RAM for coverpage (free:{} needed:{}) ",
+                    freemem, irfv.getFileLength());
+        }
+
+        return enoughRam && irfv.getExtension().equalsIgnoreCase("PDF") ;
     }
 
     @Transactional(readOnly = false)
