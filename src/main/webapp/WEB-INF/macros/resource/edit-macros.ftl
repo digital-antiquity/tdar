@@ -81,7 +81,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro spatialContext showInherited=true>
     <div class="well-alt" id="spatialSection">
         <h2 id="spatialInfoSectionLabel">Spatial Terms</h2>
-        <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
+        <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited sectionId='#divSpatialInformation' />
         <div id="divSpatialInformation">
 
             <div data-tiplabel="Spatial Terms: Geographic"
@@ -166,7 +166,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro temporalContext showInherited=true>
     <div class="well-alt" id="temporalSection">
         <h2 id="temporalInfoSectionLabel">Temporal Coverage</h2>
-        <@_inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
+        <@_inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited sectionId='#divTemporalInformation' />
         <div id="divTemporalInformation">
             <div data-tiplabel="Temporal Terms"
                  data-tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
@@ -213,7 +213,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             data-tiplabel="General Keywords"
             data-tooltipcontent="Keyword list: Select the artifact types discussed in the document.">
         <h2 id="generalInfoSectionLabel">General Keywords</h2>
-        <@_inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
+        <@_inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited sectionId='#divOtherInformation'/>
         <div id="divOtherInformation">
             <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
         </div>
@@ -227,7 +227,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@helptext.siteName />
     <div id="siteSection" data-tooltipcontent="#siteinfohelp">
         <h2 id="siteInfoSectionLabel">${divTitle}</h2>
-        <@_inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
+        <@_inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited sectionId='#divSiteInformation'/>
         <div id="divSiteInformation">
             <@keywordRows "Site Name / Number" siteNameKeywords 'siteNameKeywords' />
 
@@ -254,7 +254,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div data-tooltipcontent="#materialtypehelp">
         <@helptext.materialType />
         <h2 id="materialInfoSectionLabel">Material Types</h2>
-        <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
+        <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited sectionId='#allMaterialInformation' />
 		<div id="allMaterialInformation">
 	        <div id="divMaterialInformation">
 	            <@s.checkboxlist theme="bootstrap" name='approvedMaterialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
@@ -276,7 +276,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div data-tooltipcontent="#culturehelp">
         <@helptext.cultureTerms />
         <h2 id="culturalInfoSectionLabel">${culturalTermsLabel!"Cultural Terms"}</h2>
-        <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
+        <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited sectionId='#divCulturalInformation'/>
         <div id="divCulturalInformation">
             <div class="control-group">
                 <label class="control-label">${culturalTermsLabel!"Culture"}</label>
@@ -299,7 +299,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro investigationTypes showInherited=true >
     <div data-tiplabel="Investigation Types" data-tooltipcontent="#investigationtypehelp" id="investigationSection">
         <h2 id="investigationInfoSectionLabel">Investigation Types</h2>
-        <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
+        <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited sectionId='#divInvestigationInformation' />
         <div id="divInvestigationInformation">
 
             <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="span3"
@@ -473,7 +473,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#if _relatedComparativeCollections.empty><#local _relatedComparativeCollections = [blankRelatedComparativeCollection] /></#if>
     <div class="well-alt" id="relatedCollectionsSectionGlide">
         <h2 id="relatedCollectionInfoSectionLabel">Museum or Archive Collections</h2>
-        <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
+        <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited sectionId='#relatedCollectionsSection'/>
         <div id="relatedCollectionsSection">
             <div id="divSourceCollectionControl" class="control-group repeatLastRow">
                 <label class="control-label">Source Collections</label>
@@ -506,17 +506,24 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#macro>
 
 <#-- emit an 'inherit from parent project' checkbox for a subsection of an edit form-->
-    <#macro _inheritsection checkboxId name showInherited=true  label="Inherit this section" >
+    <#macro _inheritsection checkboxId name sectionId showInherited=true  label="Inherit this section" >
     <div class='divInheritSection'>
         <#if showInherited>
             <div class="control-group alwaysEnabled">
                 <div class="controls">
+                    <#if editor!false>
+                        <button type="button" class="btn btn-mini btn-danger clear-section pull-right"
+                                data-clear-target="${sectionId}"
+                                title="Admin only: reset checkboxes and remove multi-value fields in this inheritance section."
+                                >Reset Section</button>
+                    </#if>
                     <label class="checkbox">
                         <@s.checkbox theme="simple" name="${name}" id="${checkboxId}" />
                         <span class="labeltext">${label}</span>
                     </label>
                 </div>
             </div>
+
 
         <#elseif resource??>
             <div id="${checkboxId}hint" class="inherit-tips">
@@ -537,7 +544,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <#local _resourceNotes = [blankResourceNote] />
         </#if>
         <h2 id="notesInfoSectionLabel">Notes</h2>
-        <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
+        <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited sectionId='#resourceNoteSection'/>
         <div id="resourceNoteSection" class="control-group repeatLastRow">
             <label class="control-label">Type / Contents</label>
             <#list _resourceNotes as resourceNote>
@@ -740,7 +747,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="divIdentifiersGlide" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
         <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
-        <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
+        <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited sectionId='#divIdentifiers' />
         <div id="divIdentifiers" class="repeatLastRow">
             <div class="control-group">
                 <label class="control-label">Name / Value</label>

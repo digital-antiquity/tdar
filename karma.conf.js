@@ -1,5 +1,7 @@
 // Karma configuration
-// Generated on Fri May 22 2015 16:00:39 GMT-0700 (MST)
+
+var wro = require("./src/test/frontend/lib/wro");
+
 module.exports = function(config) {
     config.set({
 

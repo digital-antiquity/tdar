@@ -60,8 +60,8 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
             getLogger().debug("invoice had no owner, setting to authenticated user {}", owner);
         }
         setAccounts(accountService.listAvailableAccountsForUser(owner));
-        // the account id may have been set already by the "add invoice" link on /billing/{id}/view
 
+        // the account id may have been set already by the "add invoice" link on /billing/{id}/view
         if (id == -1L && getInvoice() != null) {
             getLogger().debug("looking for account by invoice {}", getInvoice());
             selectedAccount = accountService.getAccountForInvoice(getInvoice());
@@ -70,6 +70,11 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
             }
             if (selectedAccount != null) {
                 id = selectedAccount.getId();
+
+                //billing managers may perform this action on accounts they do not have explicit permissions for
+                if(!getAccounts().contains(selectedAccount) && getAuthorizationService().isBillingManager(getAuthenticatedUser())) {
+                    getAccounts().add(selectedAccount);
+                }
             }
         } else {
             selectedAccount = getGenericService().find(BillingAccount.class, id);

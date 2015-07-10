@@ -720,6 +720,8 @@ TDAR.common = function (TDAR, fileupload) {
             $fileUploadField.change(_updateReminderVisibility);
             _updateReminderVisibility();
         });
+
+        TDAR.inheritance.registerClearSectionButtons(form);
     };
 
     /**
@@ -1292,7 +1294,6 @@ TDAR.common = function (TDAR, fileupload) {
         });
     }
 
-    
     $.extend(self, {
         "initEditPage": _initEditPage,
         "initFormValidation": _setupFormValidate,

@@ -11,7 +11,8 @@
     "karma-html2js-preprocessor": "^0.1.0",
     "karma-jasmine": "^0.3.5",
     "karma-jasmine-jquery": "^0.1.1",
-    "karma-phantomjs-launcher": "^0.1.4"
+    "karma-phantomjs-launcher": "^0.1.4",
+    "xml2js": "^0.4.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

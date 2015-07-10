@@ -4,11 +4,46 @@ th {border-right:1px solid #DDD}
 </style>
 <h3>Comparing ${resources?size?c} Resources</h3>
 
+<#-- for trying to do things as a columns: ${resource['resourceType']} -->
+<#assign properties=['id','resourceType','title','description','primaryCreators','activeIndividualAndInstitutionalCredit','resourceProviderInstitution','project','sharedResourceCollections','activeInformationResourceFiles','activeInvestigationTypes','activeMaterialTypes','activeSiteNameKeywords','activeSiteTypeKeywords','activeTemporalKeywords','activeOtherKeywords','activeGeographicKeywords','activeCultureKeywords'] />
+
+
+<table class="table">
+    <thead>
+    <tr>
+    <#list properties as prop>
+        <th>${prop}</th>
+    </#list>    
+    </tr>
+</thead>
+<tbody>
+     <#list resources as resource>
+    <tr>
+    <#list properties as prop>
+            <td>
+                <#if resource[prop]?? >
+                <#assign val=resource[prop] />
+                <#if val?is_number >
+                ${val?c}
+                <#else>
+                ${val}
+                </#if>
+                <#if prop == 'resourceType' && resource.resourceType.document>
+                    (${resource.documentType})
+                </#if>
+                </#if>
+            </td>
+         </#list>
+    </tr>
+    </#list>
+</tbody>
+</table>
+
 <table class="table">
     <tr>
         <th>Id:</th>
         <#list resources as resource>
-        <td>${resource.id?c}</td>
+        <td>${resource['id']?c}</td>
         </#list>
     </tr>
     <tr>

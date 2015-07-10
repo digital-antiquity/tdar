@@ -1757,3 +1757,11 @@ img.collection-logo {
     padding:1em;
     max-width: 20em; /*if we decide to use hi-res images*/
 }
+
+.divInheritSection button.clear-section {
+    display:none;
+}
+.divInheritSection:hover button.clear-section {
+    display:inline-block;
+    line-height:15px;
+}
