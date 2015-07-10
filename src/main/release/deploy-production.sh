@@ -51,7 +51,7 @@ hg update $PARAM
 perl src/main/release/release.pl
 if [ -e /usr/local/lib/nagios3/amazon-sns-notify.rb ]
 then
-        /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org" "DEPLOY" "$(hg id -n -b)"
+        /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
 fi
 
 # sudo rm /tmp/.wro4j/buildContext.properties
