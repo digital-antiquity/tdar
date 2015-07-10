@@ -310,7 +310,7 @@
 
         <#if !resource.resourceType.project>
             <h4>Create a Project</h4>
-			<p><a href="/project/add">Go here to create a Project</a>.  Projects in ${siteAcronym} are not required, be are useful for creating and managing metadaat for large groups of resources.</p>
+			<p><a href="/project/add">Go here to create a Project</a>.  Projects in ${siteAcronym} are not required, be are useful for creating and managing metadata for large groups of resources.</p>
 		</#if>
         </#if>
     </div>
@@ -332,7 +332,7 @@
         <#if !(hideCreditSection??)>
             <@edit.resourceCreators 'Individual and Institutional Roles' creditProxies 'credit' >
                 <#if !resource.resourceType.project>
-                    <@edit._inheritsection checkboxId="cbInheritingCreditRoles" name='resource.inheritingIndividualAndInstitutionalCredit' />
+                    <@edit._inheritsection checkboxId="cbInheritingCreditRoles" name='resource.inheritingIndividualAndInstitutionalCredit' sectionId='#creditTable' />
                 </#if>
             </@edit.resourceCreators>
         </#if>

@@ -317,13 +317,21 @@ public class TdarConfiguration {
     }
 
     public String getSitemapDir() {
-        return String.format("%s/%s", getPersonalFileStoreLocation(), "sitemap");
+        return String.format("%s/%s", getHostedFileStoreLocation(), "sitemap");
     }
 
     public String getBaseUrl() {
         String base = "http://" + getHostName();
         if (getPort() != DEFAULT_PORT) {
             base += ":" + getPort();
+        }
+        return base;
+    }
+
+    public String getStaticContentBaseUrl() {
+        String base = "http://" + getStaticContentHost();
+        if (getStaticContentPort() != DEFAULT_PORT) {
+            base += ":" + getStaticContentPort();
         }
         return base;
     }
@@ -895,5 +903,9 @@ public class TdarConfiguration {
 
     public int getTdarDataBatchSize() {
         return assistant.getIntProperty("tdardata.batch_size", 5000);
+    }
+
+    public int getDownloadBufferSize() {
+        return assistant.getIntProperty("download.buffer_size",2048);
     }
 }

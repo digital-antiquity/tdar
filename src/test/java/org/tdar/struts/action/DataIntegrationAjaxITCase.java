@@ -40,6 +40,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
+    private static final String TEST_PATH = "src/test/resources/data_integration_tests/json/";
+
     @Autowired
     DataTableService dataTableService;
 
@@ -132,15 +134,21 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
     @Test
     public void testIntegrationAction() throws IOException, IntegrationDeserializationException {
-        StringWriter writer = runJson("src/test/resources/data_integration_tests/json/sample-valid-integration.json");
+        StringWriter writer = runJson(TEST_PATH + "sample-valid-integration.json");
         logger.debug(writer.toString());
     }
 
-    private String testDupJson = "src/test/resources/data_integration_tests/json/test-integration-duplicate-display.json";
+    private String testDupJson = TEST_PATH + "test-integration-duplicate-display.json";
 
     @Test
     public void testIntegrationActionDupColumns() throws IOException, IntegrationDeserializationException {
         StringWriter writer = runJson(testDupJson);
+        logger.debug(writer.toString());
+    }
+
+    @Test
+    public void testEmptyCountColumn() throws IOException, IntegrationDeserializationException {
+        StringWriter writer = runJson(TEST_PATH + "test-empty-count-column.json");
         logger.debug(writer.toString());
     }
 
@@ -154,7 +162,7 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         return writer;
     }
 
-    private String testJson = "src/test/resources/data_integration_tests/json/selenium-integrate.json";
+    private String testJson = TEST_PATH + "selenium-integrate.json";
 
     @Test
     public void testIntegrationParllelToSelenium() throws JsonParseException, JsonMappingException, IOException, IntegrationDeserializationException {

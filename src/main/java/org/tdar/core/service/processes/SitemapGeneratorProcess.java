@@ -17,7 +17,6 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.ResourceService;
 
@@ -37,18 +36,14 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     private transient ResourceService resourceService;
     @Autowired
     private transient GenericService genericService;
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private transient UrlService urlService;
+    private TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
     private boolean run = false;
 
     @Override
     public void execute() {
         run = true;
-        TdarConfiguration config = TdarConfiguration.getInstance();
-        File dir = new File(config.getSitemapDir());
+        File dir = new File(CONFIG.getSitemapDir());
         try {
             FileUtils.deleteDirectory(dir);
         } catch (IOException e1) {
@@ -63,10 +58,11 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
         int totalImages = 0;
         boolean imageSitemapGeneratorEnabled = true;
         try {
-            wsg = WebSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).build();
-            gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
-            sig = new SitemapIndexGenerator(config.getBaseUrl(), new File(dir, "sitemap_index.xml"));
-            // wsg.set
+            String baseUrl = CONFIG.getBaseUrl();
+            wsg = WebSitemapGenerator.builder(baseUrl, dir).gzip(true).allowMultipleSitemaps(true).build();
+            gisg = GoogleImageSitemapGenerator.builder(baseUrl, dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
+            sig = new SitemapIndexGenerator(baseUrl, new File(dir, "sitemap_index.xml"));
+
             Integer totalResource = genericService.countActive(Resource.class).intValue();
             total += totalResource;
 
@@ -140,7 +136,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
                     continue;
                 }
 
-                sig.addUrl(String.format("%s/%s/%s", config.getBaseUrl(), "sitemap", file.getName()), date);
+                sig.addUrl(String.format("%s/%s/%s", baseUrl, "sitemap", file.getName()), date);
             }
 
             sig.write();

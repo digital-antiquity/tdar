@@ -15,18 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.FileType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.PersistableUtils;
 
@@ -53,11 +57,14 @@ public class DownloadService {
 
     private final AuthorizationService authorizationService;
 
+    private final ResourceCollectionDao resourceCollectionDao;
+    
     @Autowired
-    public DownloadService(PdfService pdfService, GenericService genericService, AuthorizationService authorizationService) {
+    public DownloadService(PdfService pdfService, GenericService genericService, AuthorizationService authorizationService, ResourceCollectionDao resourceCollectionDao) {
         this.pdfService = pdfService;
         this.genericService = genericService;
         this.authorizationService = authorizationService;
+        this.resourceCollectionDao = resourceCollectionDao;
         this.downloadLock = CacheBuilder.newBuilder()
                 .concurrencyLevel(4)
                 .maximumSize(10000)
@@ -112,9 +119,9 @@ public class DownloadService {
             list.remove(new Integer(array.hashCode()));
         }
 
-        if (CollectionUtils.isEmpty(list))
-            ;
-        downloadLock.invalidate(key);
+        if (CollectionUtils.isEmpty(list)) {
+            downloadLock.invalidate(key);
+        }
     }
 
     public void enforceDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
@@ -134,15 +141,15 @@ public class DownloadService {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
             } else {
-                logger.error("too many concurrent downloads of the same file by one user");
+                logger.error("too many concurrent downloads of the same file {} by one user: {}",array, authenticatedUser);
             }
         }
 
-        if (list.size() > 4) {
+        if (list.size() > 10) {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.too_many_concurrent_download");
             } else {
-                logger.error("too many concurrent downloads by one user");
+                logger.error("too many concurrent downloads ({}) by one user: {}",list.size(), authenticatedUser);
             }
         }
 
@@ -161,9 +168,9 @@ public class DownloadService {
         DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename, irFileVersion);
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
-        if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {
+        if (dto.isIncludeCoverPage() && coverPageSupported(irFileVersion)) {
             resourceFile = new DownloadPdfFile((Document) dto.getInformationResource(), irFileVersion, pdfService, dto.getAuthenticatedUser(),
-                    dto.getTextProvider());
+                    dto.getTextProvider(), dto.getCoverPageLogo());
         }
 
         if (FileType.IMAGE != irFileVersion.getInformationResourceFile().getInformationResourceFileType()) {
@@ -173,6 +180,23 @@ public class DownloadService {
         dto.getDownloads().add(resourceFile);
         return actualFilename;
         // downloadMap.put(resourceFile, irFileVersion.getFilename());
+    }
+
+    /**
+     * Can the system generate a coverpage for the provided file?  This method is non-deterministic.
+     * @param irfv
+     * @return
+     */
+    private boolean coverPageSupported(InformationResourceFileVersion irfv) {
+        //pdfbox 1.8.x uses at least irfv.fileLength bytes of RAM for merges (even when using scratchdisk)
+        long freemem = Runtime.getRuntime().freeMemory();
+        boolean enoughRam = freemem >  irfv.getFileLength();
+        if(!enoughRam) {
+            logger.warn("Not enough RAM for coverpage (free:{} needed:{}) ",
+                    freemem, irfv.getFileLength());
+        }
+
+        return enoughRam && irfv.getExtension().equalsIgnoreCase("PDF") ;
     }
 
     @Transactional(readOnly = false)
@@ -203,7 +227,10 @@ public class DownloadService {
             issue = DownloadResult.ERROR;
         }
 
+        File coverLogo = getCoverLogo(resourceToDownload);
+        
         DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, authenticatedUser, textProvider, this, authorization);
+        dto.setCoverPageLogo(coverLogo);
         dto.setIncludeCoverPage(includeCoverPage);
         if (issue != DownloadResult.SUCCESS) {
             dto.setResult(issue);
@@ -267,6 +294,20 @@ public class DownloadService {
         }
         dto.setResult(DownloadResult.SUCCESS);
         return dto;
+    }
+
+    private File getCoverLogo(InformationResource resourceToDownload) {
+        WhiteLabelCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
+        if (whiteLabelCollection != null && whiteLabelCollection.isCustomDocumentLogoEnabled()) {
+            VersionType small = VersionType.WEB_SMALL;
+            FileStoreFile proxy = new FileStoreFile(ObjectType.COLLECTION, small, whiteLabelCollection.getId(), "logo" + small.toPath() + ".jpg");
+            try {
+                return  TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.COLLECTION, proxy);
+            } catch (FileNotFoundException e) {
+                logger.warn("could not get cover logo:{}", e, e);
+            }
+        }
+        return null;
     }
 
     private void logNotFound(InformationResourceFileVersion version, FileNotFoundException e1, String path) {

@@ -78,3 +78,9 @@ Digital Antiquity worked with <a href="http://fervorcreative.com/">Fervor
 <p><b><a href="http://thenounproject.com/term/caution/7526/">http://thenounproject.com/term/caution/7526/</a><br/>
     <b>Designed By</b> Benni<br/>
     DE 2012</p>
+
+<p><b><a href="https://thenounproject.com/term/gears/50757">https://thenounproject.com/term/gears/50757</a><br>
+Gears by Hysen Drogu</b> from the Noun Project</p>
+
+
+</p>

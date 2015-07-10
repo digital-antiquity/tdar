@@ -1,15 +1,13 @@
-package org.tdar.core.service;
+package org.tdar.core.service.pdf;
 
 import java.io.File;
 import java.io.Serializable;
-
-import org.apache.pdfbox.util.PDFMergerUtility;
 
 public class PDFMergeWrapper implements Serializable {
 
     private static final long serialVersionUID = 3411714473307807362L;
 
-    private PDFMergerUtility merger = new PDFMergerUtility();
+    private TdarPDFMergerUtility merger = new TdarPDFMergerUtility();
     private boolean successful = false;
     private String failureReason;
     private File document;
@@ -22,11 +20,11 @@ public class PDFMergeWrapper implements Serializable {
         this.successful = successful;
     }
 
-    public PDFMergerUtility getMerger() {
+    public TdarPDFMergerUtility getMerger() {
         return merger;
     }
 
-    public void setMerger(PDFMergerUtility merger) {
+    public void setMerger(TdarPDFMergerUtility merger) {
         this.merger = merger;
     }
 

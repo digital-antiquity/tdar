@@ -101,10 +101,14 @@
     </div>
 </#if>
 <br/>
-
+<hr />
 <div class="row">
     <div class="span6">
-        <#include "/${themeDir}/homepage-bottom-left.dec" />
+		<#if featuredCollection?has_content>
+            <@common.featuredCollection featuredCollection />
+		<#else>
+            <#include "/${themeDir}/homepage-bottom-left.dec" />
+		</#if>
     </div>
     <div class="span6">
         <@common.resourceBarGraph />

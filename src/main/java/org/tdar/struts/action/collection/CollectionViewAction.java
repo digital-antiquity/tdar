@@ -41,7 +41,6 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.struts.TdarServletConfiguration;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -190,7 +189,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
                 setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
-            findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), false,
+            findAllChildCollections = new LinkedHashSet<>(resourceCollectionService.findDirectChildCollections(getId(), false,
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
@@ -490,8 +489,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
      * 
      * @return
      */
+    @Override
     public String getHostedContentBaseUrl() {
-        String baseUrl = getStaticHost() + TdarServletConfiguration.HOSTED_CONTENT_BASE_URL;
+        String baseUrl = super.getHostedContentBaseUrl() + "/";
         if (PersistableUtils.isNotNullOrTransient(getResourceCollection())) {
             baseUrl += PairtreeFilestore.toPairTree(getResourceCollection().getId());
         }

@@ -38,13 +38,13 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
-    @Column(updatable = false)
+    @Column(updatable = false, name="num_hours")
     private Integer numberOfHours = 0;
-    @Column(updatable = false)
+    @Column(updatable = false, name="num_mb")
     private Long numberOfMb = 0L;
-    @Column(updatable = false)
+    @Column(updatable = false, name="num_resources")
     private Long numberOfResources = 0L;
-    @Column(updatable = false)
+    @Column(updatable = false, name="num_files")
     private Long numberOfFiles = 0L;
 
     @Enumerated(EnumType.STRING)
@@ -63,8 +63,11 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     private Long minAllowedNumberOfFiles = 0L;
 
     // display values may be lower than actual values to give some wiggle room
+    @Column(name="display_num_mb")
     private Long displayNumberOfMb;
+    @Column(name="display_num_resources")
     private Long displayNumberOfResources;
+    @Column(name="display_num_files")
     private Long displayNumberOfFiles;
 
     @Column(updatable = false)
@@ -73,10 +76,11 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String currency;
 
-    private Boolean enabled = Boolean.FALSE;
+    @Column(name = "active")
+    private Boolean active = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "groupName", length = FieldLength.FIELD_LENGTH_255)
+    @Column(name = "group_name", length = FieldLength.FIELD_LENGTH_255)
     private TdarGroup group;
 
     public BillingActivity() {
@@ -156,12 +160,12 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
         this.currency = currency;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public void setActive(Boolean enabled) {
+        this.active = enabled;
     }
 
     public TdarGroup getGroup() {

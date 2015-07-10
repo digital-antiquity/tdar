@@ -25,12 +25,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.AccountUsageHistory;
 import org.tdar.core.bean.util.UpgradeTask;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.DailyStatisticsUpdate;
@@ -172,7 +172,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "0 1 1 * * *")
     public void cronUpdateAccountUsageHistory() {
         logger.info("updating account usage history");
-        queue(scheduledProcessMap.get(AccountUsageHistory.class));
+        queue(scheduledProcessMap.get(AccountUsageHistoryLoggingTask.class));
     }
 
     /**

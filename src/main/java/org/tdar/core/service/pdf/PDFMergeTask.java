@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.pdf;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,17 +24,24 @@ public class PDFMergeTask implements Runnable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private PDFMergeWrapper wrapper;
     private PipedOutputStream pipedOutputStream;
-
+    private long start = System.currentTimeMillis();
     public PDFMergeTask(PDFMergeWrapper wrapper, PipedOutputStream pipedOutputStream) {
         this.wrapper = wrapper;
         this.pipedOutputStream = pipedOutputStream;
     }
 
     @Override
+    protected void finalize() throws Throwable {
+        logger.debug("download took: {}", System.currentTimeMillis() -  start);
+        super.finalize();
+    }
+    
+    @Override
     public void run() {
-        // TODO Auto-generated method stub
+        File scratchFile = null;
         try {
-            wrapper.getMerger().mergeDocuments();
+            scratchFile = File.createTempFile("pdfbox-merge-scratch", ".bin");
+            wrapper.getMerger().mergeDocumentsNonSeq(new RandomAccessFile(scratchFile, "rw"));
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions
@@ -52,6 +61,7 @@ public class PDFMergeTask implements Runnable {
             attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
         } finally {
             IOUtils.closeQuietly(pipedOutputStream);
+            FileUtils.deleteQuietly(scratchFile);
         }
     }
 
