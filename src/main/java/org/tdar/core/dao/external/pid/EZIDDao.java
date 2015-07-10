@@ -307,7 +307,7 @@ public class EZIDDao implements ExternalIDProvider {
         }
 
         buildAnvlLine(responseBuilder, _STATUS, status);
-        buildAnvlLine(responseBuilder, _EXPORT, "no");
+//        buildAnvlLine(responseBuilder, _EXPORT, "no");
         buildAnvlLine(responseBuilder, _TARGET, url);
         buildAnvlLine(responseBuilder, _PROFILE, DATACITE_PROFILE_NAME);
         return responseBuilder.toString();

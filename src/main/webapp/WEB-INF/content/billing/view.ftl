@@ -140,7 +140,6 @@
             </div>
             <div class="span4">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
-		        <@s.textfield name="numberOfMb" cssClass="integer couponFilesOrSpace" label="Number of MB" value="" />
             </div>
         </div>
         <div class="row">

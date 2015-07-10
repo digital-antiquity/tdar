@@ -9,6 +9,10 @@ if [  $(id -u) -eq 0  ]
    exit 1
 fi
 
+echo "the following users are logged in:"
+LOGGED=$(curl -silent https://core.tdar.org/admin/loggedIn | grep "\[")
+echo "\t$LOGGED"
+
 while true; do
     read -p "Is the build clean (GREEN) and are there NO ACTIVE users? " yn
     case $yn in
@@ -45,6 +49,11 @@ cd /home/tdar/tdar.src/
 hg pull
 hg update $PARAM
 perl src/main/release/release.pl
+if [ -e /usr/local/lib/nagios3/amazon-sns-notify.rb ]
+then
+        /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
+fi
+
 # sudo rm /tmp/.wro4j/buildContext.properties
 # sudo rmdir /tmp/.wro4j/
 
