@@ -702,10 +702,15 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         normalizeAuthorizedUsers(authorizedUsers);
     }
 
+    /**
+     * Remove entries from provided list of AuthorizedUsers that contain duplicate User values.  Retained
+     * AuthorizedUsers will always have equal or greater permissions relative to the removed duplicate items.
+     * @param authorizedUsers
+     */
     public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
         Logger staticLogger = LoggerFactory.getLogger(ResourceCollection.class);
         staticLogger.trace("incoming " + authorizedUsers);
-        Map<Long, AuthorizedUser> bestMap = new HashMap<Long, AuthorizedUser>();
+        Map<Long, AuthorizedUser> bestMap = new HashMap<>();
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
         while (iterator.hasNext()) {
             AuthorizedUser incoming = iterator.next();
@@ -717,7 +722,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             AuthorizedUser existing = bestMap.get(user);
             staticLogger.trace(incoming + " <==>" + existing);
             if (existing != null) {
-                if (existing.getGeneralPermission().getEffectivePermissions() > incoming.getGeneralPermission().getEffectivePermissions()) {
+                if (existing.getGeneralPermission().getEffectivePermissions() >= incoming.getGeneralPermission().getEffectivePermissions()) {
                     continue;
                 }
             }
