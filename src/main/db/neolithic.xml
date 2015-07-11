@@ -70,7 +70,20 @@
 		<dropColumn tableName="person" columnName="tos_level" />
 		<dropColumn tableName="person" columnName="creator_agreement_version" />
 	</changeSet>
-
+    <changeSet id="neolithic-dataone-1" author="abrin">
+        <createTable tableName="dataone_log">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="identifier" type="varchar(100)" />
+            <column name="user_agent" type="varchar(1024)" />
+            <column name="ip_address" type="varchar(100)" />
+            <column name="event" type="varchar(50)" />
+            <column name="subject" type="varchar(255)" />
+            <column name="node_reference" type="varchar(255)" />
+            <column name="date_logged" type='timestamp' />
+            </createTable>
+    </changeSet>
 	<changeSet id="neolithic-leaflet-6" author="abrin">
 	<comment>setting the iso country code on the country</comment>
 		<update tableName="geographic_keyword"><column name="code" value="FLK"/>

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -707,6 +708,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     private TdarUser sessionUser;
 
+    private static Validator v;
+
     /**
      * @return
      */
@@ -767,7 +770,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
         }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(code));
+        InputStream rereadableStream = null;
+        try {
+            rereadableStream = new ByteArrayInputStream(IOUtils.toByteArray(code));
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        if (rereadableStream == null) {
+            rereadableStream = code;
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(rereadableStream));
         StreamSource is = new StreamSource(reader);
         List<?> errorList = v.getInstanceErrors(is);
 
@@ -778,7 +790,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 errors.append(System.getProperty("line.separator"));
                 logger.error(error.toString());
             }
-            Assert.fail("Instance invalid: " + errors.toString());
+            String content = "";
+            try {
+                rereadableStream.reset();
+                content = IOUtils.toString(rereadableStream);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            Assert.fail("Instance invalid: " + errors.toString() + " in:\n" + content);
         }
     }
 
@@ -820,28 +840,29 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     private Validator setupValidator(boolean extra) {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Validator v = new Validator(factory);
+        if (v != null) {
+            return v;
+        }
+        v = new Validator(factory);
         v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
 
-        if (extra) {
-            // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
-            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(TestConstants.TEST_XML_DIR,
-                    "schemaCache/oaipmh.xsd"));
-            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-                    new File(TestConstants.TEST_XML_DIR, "schemaCache/oaidc.xsd"));
-            addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(TestConstants.TEST_XML_DIR,
-                    "schemaCache/mods3.3.xsd"));
-            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(TestConstants.TEST_XML_DIR,
-                    "schemaCache/oai-identifier.xsd"));
+        // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
+        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(TestConstants.TEST_XML_DIR,
+                "schemaCache/oaipmh.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
+                new File(TestConstants.TEST_XML_DIR, "schemaCache/oaidc.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(TestConstants.TEST_XML_DIR,
+                "schemaCache/mods3.3.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(TestConstants.TEST_XML_DIR,
+                "schemaCache/oai-identifier.xsd"));
 
-            try {
-                addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", serializationService.generateSchema());
-            } catch (Exception e) {
-                logger.error("an error occured creating the schema", e);
-                assertTrue(false);
-            }
+        try {
+            addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", serializationService.generateSchema());
+        } catch (Exception e) {
+            logger.error("an error occured creating the schema", e);
+            assertTrue(false);
         }
         return v;
     }

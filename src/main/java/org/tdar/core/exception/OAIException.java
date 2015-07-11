@@ -1,5 +1,8 @@
 package org.tdar.core.exception;
 
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
+
+
 /**
  * $Id$
  * 
@@ -11,9 +14,9 @@ public class OAIException extends Exception {
 
     private static final long serialVersionUID = -5909815912933964223L;
 
-    private OaiErrorCode code = null;
+    private OAIPMHerrorcodeType code = null;
 
-    public OAIException(String msg, Throwable e, OaiErrorCode code) {
+    public OAIException(String msg, Throwable e, OAIPMHerrorcodeType code) {
         super(msg, e);
         this.setCode(code);
     }
@@ -22,16 +25,16 @@ public class OAIException extends Exception {
         super(msg, e);
     }
 
-    public OAIException(String msg, OaiErrorCode code) {
+    public OAIException(String msg, OAIPMHerrorcodeType code) {
         super(msg);
         this.setCode(code);
     }
 
-    public void setCode(OaiErrorCode code) {
+    public void setCode(OAIPMHerrorcodeType code) {
         this.code = code;
     }
 
-    public OaiErrorCode getCode() {
+    public OAIPMHerrorcodeType getCode() {
         return code;
     }
 }

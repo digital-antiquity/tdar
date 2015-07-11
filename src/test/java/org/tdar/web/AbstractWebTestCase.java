@@ -116,7 +116,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
-            "problems with this submission", "TDAR:500", "TDAR:404","TDAR:509");
+            "problems with this submission", "TDAR:500", "TDAR:404", "TDAR:509");
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -175,20 +175,37 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             if (localPath.startsWith("http")) {
                 return webClient.getPage(localPath);
             } else {
-                String prefix = getBaseUrl();
-                try {
-                    URL current = internalPage.getUrl();
-                    prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
-                    logger.info("SETTING URL TO {}{}", prefix, localPath);
-                } catch (Exception e) {
-                    logger.trace("{}", e);
-                }
-                return webClient.getPage(prefix + localPath);
+                String url = pathToUrl(localPath);
+                return webClient.getPage(url);
             }
         } catch (Exception e) {
             logger.error("couldn't find page at {}", localPath, e);
         }
         return null;
+    }
+
+    public String pathToUrl(String localPath) {
+        String prefix = getBaseUrl();
+        try {
+            URL current = internalPage.getUrl();
+            prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+            logger.info("SETTING URL TO {}{}", prefix, localPath);
+        } catch (Exception e) {
+            logger.trace("{}", e);
+        }
+
+        if (localPath.startsWith("//")) {
+            localPath = localPath.substring(1);
+        }
+
+        if (prefix.endsWith("/")) {
+            while (localPath.startsWith("/")) {
+                localPath = localPath.substring(1);
+            }
+        }
+
+        String url = prefix + localPath;
+        return url;
     }
 
     protected WebClient getWebClient() {

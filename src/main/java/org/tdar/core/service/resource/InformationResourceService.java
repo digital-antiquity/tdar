@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,4 +129,10 @@ public class InformationResourceService extends AbstractInformationResourceServi
         Long featuredCollectionId = TdarConfiguration.getInstance().getFeaturedCollectionId();
         return  findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5);
     }
+
+    @Transactional(readOnly = true)
+    public InformationResource findByDoi(String doi) {
+        return getDao().findByDoi(doi);
+    }
+
 }

@@ -1,6 +1,17 @@
 // Karma configuration
 
-var wro = require("./src/test/frontend/lib/wro");
+//build a files list using wro4j config
+function buildFilesFromWro() {
+    var wro = require("./src/test/frontend/lib/wro");
+    var fs = require("fs");
+    var xmldata = fs.readFileSync("src/main/resources/wro.xml", "utf-8");
+    var wroconfig = wro.parseSync(xmldata);
+    
+    var files = wroconfig.default.jsFiles.map(function(file){return "src/main/webapp" + file;});
+    return files;
+}
+
+
 
 module.exports = function(config) {
     config.set({
@@ -21,14 +32,8 @@ module.exports = function(config) {
             {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
             {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
             {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
-            
-            {pattern:"src/main/webapp/includes/blueimp-javascript-templates/tmpl.min.js", watched: false},
-            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js", watched: false},
-            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js", watched: false},
-            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload.js", watched: false},
-            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js", watched: false},
-            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js", watched: false},
-            {pattern:"src/main/webapp/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js", watched: false},            
+        ].concat(buildFilesFromWro())
+        .concat([
             
             // app files (included in DOM, monitored for changes)
             "src/main/webapp/includes/blueimp-javascript-templates/tmpl.min.js",
@@ -49,7 +54,7 @@ module.exports = function(config) {
 
             // html2js fixtures - globally accessible via  window.__html__[filepath]
             "src/test/frontend/html2js/**/*.html"
-        ],
+        ]),
 
         // list of files to exclude that would otherwise get picked up by the config.files patterns
         exclude: [],
