@@ -1,0 +1,30 @@
+{
+    "authors": [
+        "Adam Brin <abrin@digitalantiquity.org>"
+    ],
+    "dependencies": {
+        "DataTables": "~1.9.4",
+        "bootstrap": "~2.3.2",
+        "jqplot-bower": "1.0.8",
+        "jquery": "~1.10.2",
+        "jquery-file-upload": "8.6.1",
+        "jquery-validation": "~1.8.1",
+        "leaflet": "~0.7.3",
+        "qunit": "1.11.0"
+    },
+    "homepage": "https://bitbucket.org/tdar/tdar.src",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "license": "Apache 2.0",
+    "name": "tDAR",
+    "private": true,
+    "resolutions": {
+        "jquery": "~1.10.2"
+    },
+    "version": "14.0.0"
+}

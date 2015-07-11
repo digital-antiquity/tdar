@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="neolithic-1" author="abrin">
+        <addColumn tableName="geographic_keyword">
+            <column name="code" type="varchar(5)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="neolithic-2" author="abrin">
+        <update tableName="geographic_keyword">
+            <column name="level" value="COUNTRY" />
+            <where>level='ISO_COUNTRY'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="neolithic-3" author="jtdevos">
+        <update tableName="homepage_cache_geographic_keyword">
+            <column name="level" value="COUNTRY" />
+            <where>level='ISO_COUNTRY'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="neolithic-dataone-1" author="abrin">
+        <createTable tableName="dataone_log">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="identifier" type="varchar(100)" />
+            <column name="user_agent" type="varchar(1024)" />
+            <column name="ip_address" type="varchar(100)" />
+            <column name="event" type="varchar(50)" />
+            <column name="subject" type="varchar(255)" />
+            <column name="node_reference" type="varchar(255)" />
+            <column name="date_logged" type='timestamp' />
+            </createTable>
+    </changeSet>
+
+    <changeSet id='neolithic-4' author="abrin">
+        <addColumn tableName="creator">
+            <column name="merge_creator_id" type='bigint'>
+            </column>
+        </addColumn>
+        <comment>there's no easy way to do an update with joined tables...</comment>
+        <sql>
+            update creator set merge_creator_id=p.merge_creator_id from
+            creator c, person p where c.id=p.id and creator.id=c.id and
+            p.merge_creator_id is not null;
+        </sql>
+        <sql>
+            update creator set merge_creator_id=i.merge_creator_id from
+            creator c, institution i where c.id=i.id and creator.id=c.id
+            and
+            i.merge_creator_id is not null;
+        </sql>
+
+    </changeSet>
+    <changeSet id="neolithic-4.5" author="abrin">
+    <!--  alter table creator add constraint creator_merge_creator_id foreign key (merge_creator_id) references creator -->
+        <addForeignKeyConstraint constraintName="fk_creator_merge_creator_id" referencedTableName="creator" baseColumnNames="merge_creator_id" 
+        baseTableName="creator" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="neolithic-5" author="abrin">
+        <!-- these were moved in knap ... time to remove from the production 
+            database -->
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="person" columnName="proxyinstitution_id" />
+        </preConditions>
+        <dropColumn tableName="person" columnName="proxyinstitution_id" />
+        <dropColumn tableName="person" columnName="username" />
+        <dropColumn tableName="person" columnName="proxy_note" />
+        <dropColumn tableName="person" columnName="contributor" />
+        <dropColumn tableName="person" columnName="contributor_reason" />
+        <dropColumn tableName="person" columnName="last_login" />
+        <dropColumn tableName="person" columnName="total_login" />
+        <dropColumn tableName="person" columnName="penultimate_login" />
+        <dropColumn tableName="person" columnName="tos_version" />
+        <dropColumn tableName="person" columnName="tos_level" />
+        <dropColumn tableName="person" columnName="creator_agreement_version" />
+    </changeSet>
+
+    <changeSet id="neolithic-6" author="abrin">
+        <comment>setting updated date to created date where updated date is null; renaming columns for consistency; dropping unused date columns on resource_annotation</comment>
+        <update tableName="creator">
+            <column name="last_updated" valueComputed="date_created"></column>
+            <where>last_updated is NULL</where>
+        </update>
+        <update tableName="collection">
+            <column name="date_updated" valueComputed="date_created"></column>
+            <where>date_updated is NULL</where>
+        </update>
+        <update tableName="creator">
+            <column name="date_created" valueComputed="now()"></column>
+            <where>date_created is NULL</where>
+        </update>
+        <update tableName="creator">
+            <column name="last_updated" valueComputed="date_created"></column>
+            <where>last_updated is NULL</where>
+        </update>
+        <addNotNullConstraint tableName="pos_account" columnName="date_updated"/>
+        <addNotNullConstraint tableName="pos_account" columnName="date_created"/>
+        <addNotNullConstraint tableName="pos_account_group" columnName="date_created"/>
+        <addNotNullConstraint tableName="pos_account_group" columnName="date_updated"/>
+        <addNotNullConstraint tableName="pos_invoice" columnName="date_created"/>
+        <addNotNullConstraint tableName="collection" columnName="date_created"/>
+        <addNotNullConstraint tableName="collection" columnName="date_updated"/>
+        <addNotNullConstraint tableName="creator" columnName="date_created"/>
+        <addNotNullConstraint tableName="creator" columnName="last_updated"/>
+        <addNotNullConstraint tableName="resource" columnName="date_registered"/>
+        <addNotNullConstraint tableName="resource" columnName="date_updated"/>
+        <renameColumn tableName="creator" oldColumnName="last_updated" newColumnName="date_updated"/>
+        <renameColumn tableName="resource" oldColumnName="date_registered" newColumnName="date_created"/>
+        <renameColumn tableName="data_integration_workflow" oldColumnName="last_updated" newColumnName="date_updated"/>
+        <dropColumn tableName="resource_annotation" columnName="date_created"/>
+        <dropColumn tableName="resource_annotation" columnName="last_updated"/>
+    </changeSet>
+    <changeSet id="neolithic-7" author="abrin">
+        <renameColumn tableName="collection" oldColumnName="description_admin" newColumnName="description_formatted"/>
+        <addColumn tableName="resource">
+        <column name="description_formatted" type="text"></column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
