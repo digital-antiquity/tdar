@@ -27,6 +27,7 @@
 		<Logger name="org.liquibase" level="error" />
 		<Logger name="org.tdar" level="DEBUG" />
 		<Logger name="uk.org" level="debug" />
+        <!-- <Logger name="org.apache.struts2.components.ServletUrlRenderer" level="ERROR" /> -->
 
 		<!--// log parameterized SQL statements -->
 
