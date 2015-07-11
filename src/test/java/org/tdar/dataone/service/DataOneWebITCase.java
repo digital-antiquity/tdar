@@ -27,8 +27,10 @@ public class DataOneWebITCase extends AbstractWebTestCase {
         Assert.assertEquals(200,gotoPage("/dataone/v1/monitor/ping"));
     }
     @Test
-    public void replica() {
-        Assert.assertEquals(501,gotoPage("/dataone/v1/replica/" + TEST_DOI));
+    public void replica() throws ClientProtocolException, IOException {
+        getRecord("/dataone/v1/replica/" + TEST_DOI);
+        getRecord("/dataone/v1/replica/" + TEST_DOI_META);
+
     }
     
     @Test
