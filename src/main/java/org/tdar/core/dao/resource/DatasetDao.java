@@ -154,7 +154,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
         return query.list();
     }
-
+    
     public void resetColumnMappings(Project project) {
         String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s", project.getId());
         getCurrentSession().createSQLQuery(sql).executeUpdate();

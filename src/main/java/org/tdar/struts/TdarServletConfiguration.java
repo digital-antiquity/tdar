@@ -60,6 +60,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     }
 
     TdarConfiguration configuration = TdarConfiguration.getInstance();
+    private boolean enableServer = true;
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
@@ -73,26 +74,40 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(TdarAppConfiguration.class);
         container.addListener(new ContextLoaderListener(rootContext));
-        configureCxfForTag(container);
-        configureFreemarker(container);
-
+        if (enableServer) {
+            configureCxfForTag(container);
+            configureFreemarker(container);
+        }
         container.addListener(RequestContextListener.class);
-        container.addListener(StrutsListener.class);
+
+        if (enableServer) {
+            container.addListener(StrutsListener.class);
+        }
         container.addListener(ShutdownListener.class);
 
-        configureOdata(container);
+        if (enableServer) {
+            configureOdata(container);
+        }
 
-        configureUrlRewriteRule(container);
 
-        if (configuration.getContentSecurityPolicyEnabled()) {
-            logger.debug("enabling cors");
-            configureCorsFilter(container);
+        if (enableServer) {
+            configureUrlRewriteRule(container);
+
+            if (configuration.getContentSecurityPolicyEnabled()) {
+                logger.debug("enabling cors");
+                configureCorsFilter(container);
+            }
         }
 
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
 
-        configureStrutsAndSiteMeshFilters(container);
+        configureDataOneServlet(container);
+        configureOaiServlet(container);
+
+        if (enableServer) {
+            configureStrutsAndSiteMeshFilters(container);
+        }
 
         if (!configuration.isStaticContentEnabled()) {
             ServletRegistration.Dynamic staticContent = container.addServlet("static-content", StaticContentServlet.class);
@@ -127,6 +142,22 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         freemarker.setInitParameter("default_encoding", "UTF-8");
         freemarker.setLoadOnStartup(1);
         freemarker.addMapping("*.dec");
+    }
+
+    private void configureDataOneServlet(ServletContext container) {
+        // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
+        ServletRegistration.Dynamic dataOne = container.addServlet("dataone", SpringServlet.class);
+        dataOne.setLoadOnStartup(1);
+        dataOne.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.dataone.server");
+        dataOne.addMapping("/dataone/*");
+    }
+
+    private void configureOaiServlet(ServletContext container) {
+        // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
+        ServletRegistration.Dynamic oaiPmh = container.addServlet("oaipmh", SpringServlet.class);
+        oaiPmh.setLoadOnStartup(1);
+        oaiPmh.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.oai.server");
+        oaiPmh.addMapping("/oai-pmh/*");
     }
 
     private void configureCxfForTag(ServletContext container) {

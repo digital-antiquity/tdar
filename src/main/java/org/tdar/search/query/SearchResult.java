@@ -159,14 +159,12 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
 
     @Override
     public int getNextPageStartRecord() {
-        // TODO Auto-generated method stub
-        return 0;
+        return startRecord + recordsPerPage;
     }
 
     @Override
     public int getPrevPageStartRecord() {
-        // TODO Auto-generated method stub
-        return 0;
+        return startRecord - recordsPerPage;
     }
 
     @SuppressWarnings("rawtypes")
@@ -187,6 +185,10 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
 
     @Override
     public int getDefaultRecordsPerPage() {
-        return 20;
+        return DEFAULT_RESULT_SIZE;
+    }
+
+    public boolean hasMore() {
+        return (getTotalRecords() > getStartRecord() + getRecordsPerPage());
     }
 }

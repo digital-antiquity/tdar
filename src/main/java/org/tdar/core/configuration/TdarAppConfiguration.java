@@ -62,6 +62,7 @@ import org.tdar.web.SessionData;
 public class TdarAppConfiguration implements Serializable, SchedulingConfigurer, AsyncConfigurer {
 
     private static final long serialVersionUID = 6038273491995542363L;
+
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -74,8 +75,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
         Properties properties = new Properties();
 
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
-        builder.scanPackages(new String[] { "org.tdar.core" });
-        builder.addPackages(new String[] { "org.tdar.core" });
+        builder.scanPackages(new String[] { "org.tdar.core" ,"org.tdar.dataone","org.tdar.oai"});
         builder.addProperties(properties);
         return builder.buildSessionFactory();
     }

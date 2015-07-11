@@ -23,7 +23,8 @@ public enum StatusCode {
     UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "UNAUTHORIZED"),
     BAD_REQUEST(HttpStatus.SC_BAD_REQUEST, "BAD REQUEST"),
     UNKNOWN_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "UNKNOWN ERROR"),
-    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "NOT ALLOWED");
+    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "NOT ALLOWED"), 
+    NOT_IMPLEMENTED(HttpStatus.SC_NOT_IMPLEMENTED,"NOT IMPLEMENTED");
 
     private final int httpStatusCode;
     private final String errorMessage;

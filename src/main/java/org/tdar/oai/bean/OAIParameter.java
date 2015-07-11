@@ -4,10 +4,10 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.data.oai;
+package org.tdar.oai.bean;
 
 import org.tdar.core.exception.OAIException;
-import org.tdar.core.exception.OaiErrorCode;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 
 /**
  * @author Conal Tuohy
@@ -35,7 +35,7 @@ public enum OAIParameter {
                 return parameter;
             }
         }
-        throw new OAIException("Unknown parameter '" + val + "'", OaiErrorCode.BAD_ARGUMENT);
+        throw new OAIException("Unknown parameter '" + val + "'", OAIPMHerrorcodeType.BAD_ARGUMENT);
     }
 
     /**

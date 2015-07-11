@@ -221,6 +221,11 @@
                 query = "from Resource res where (res.dateUpdated > :updatedDate or res.dateCreated > :updatedDate )"
         ),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI,
+                query = "from InformationResource res where (res.dateUpdated between :startDate and :endDate or res.dateCreated between :startDate  and :endDate) and externalId != '' and externalId is not NULL"
+        ),
+
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED,
                 query = "select keyword, (select count(*) from Resource res inner join res.cultureKeywords rk where rk.id = keyword.id) as keywordCount from CultureKeyword keyword where keyword.approved = true order by keyword.index, keywordCount desc"
         ),
@@ -516,6 +521,9 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS,
                 query = "DELETE FROM DataTableRelationship dtr where dtr.id in :ids"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_BY_DOI,
+                query = "from InformationResource where lower(externalId)=trim(lower(:doi))"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE,
                 query = "from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and status='DRAFT'"),

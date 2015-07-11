@@ -27,6 +27,21 @@
         </update>
     </changeSet>
 
+    <changeSet id="neolithic-dataone-1" author="abrin">
+        <createTable tableName="dataone_log">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="identifier" type="varchar(100)" />
+            <column name="user_agent" type="varchar(1024)" />
+            <column name="ip_address" type="varchar(100)" />
+            <column name="event" type="varchar(50)" />
+            <column name="subject" type="varchar(255)" />
+            <column name="node_reference" type="varchar(255)" />
+            <column name="date_logged" type='timestamp' />
+            </createTable>
+    </changeSet>
+
     <changeSet id='neolithic-4' author="abrin">
         <addColumn tableName="creator">
             <column name="merge_creator_id" type='bigint'>

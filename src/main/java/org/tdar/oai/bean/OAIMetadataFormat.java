@@ -4,10 +4,11 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.data.oai;
+package org.tdar.oai.bean;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.exception.OAIException;
-import org.tdar.core.exception.OaiErrorCode;
+import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 
 /**
  * @author Adam Brin
@@ -31,11 +32,11 @@ public enum OAIMetadataFormat {
 
     public static OAIMetadataFormat fromString(String val) throws OAIException {
         for (OAIMetadataFormat prefix_ : OAIMetadataFormat.values()) {
-            if (prefix_.getPrefix().equals(val)) {
+            if (StringUtils.equalsIgnoreCase(prefix_.getPrefix(),val) || StringUtils.equalsIgnoreCase(prefix_.name(), val)) {
                 return prefix_;
             }
         }
-        throw new OAIException("Unknown or missing metadata format", OaiErrorCode.BAD_ARGUMENT);
+        throw new OAIException("Unknown or missing metadata format", OAIPMHerrorcodeType.BAD_ARGUMENT);
     }
 
     /**

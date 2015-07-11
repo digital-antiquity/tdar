@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.data.oai;
+package org.tdar.oai.bean;
 
 /**
  * @author Adam Brin
