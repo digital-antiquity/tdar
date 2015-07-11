@@ -3,34 +3,22 @@ package org.tdar.dataone.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.dataone.service.DataOneService;
 
+/**
+ * Helper object for tracking an Object Response. 
+ * @author abrin
+ *
+ */
 public class ListObjectEntry implements Serializable {
 
     private static final long serialVersionUID = 8894503838119896193L;
 
-    public enum Type {
-        D1, TDAR, FILE, BAD;
-        
-        public static Type getTypeFromFormatId(String format) {
-            if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_RESOURCE_MAP_FORMAT)) {
-                return D1;
-            }
-            if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_DC_FORMAT)) {
-                return Type.TDAR;
-            }
-            if (format != null) {
-                return BAD;
-            }
-            return D1;
-        }
-    }
 
     private String identifier;
     private Long persistableId;
-    private Type type;
+    private EntryType type;
     private Long size;
     private Date dateUpdated;
     private String checksum;
@@ -43,17 +31,16 @@ public class ListObjectEntry implements Serializable {
         return String.format("id: %s type: %s", identifier, type);
     }
 
-    // externalId, 'file', irf.id , dateUpdated, fileLength, checksum, latestVersion
     public ListObjectEntry(String exId, String type, Long id, Date updated) {
         this.identifier = exId;
-        this.type = Type.valueOf(type);
+        this.type = EntryType.valueOf(type);
         this.persistableId = id;
         this.dateUpdated = updated;
     }
 
     public ListObjectEntry(String exId, String type_, Long id, Date updated, Long size, String sum, Integer version, String contentType) {
         this.identifier = exId;
-        this.type = Type.valueOf(type_);
+        this.type = EntryType.valueOf(type_);
         this.persistableId = id;
         this.dateUpdated = updated;
         this.size = size;
@@ -78,11 +65,11 @@ public class ListObjectEntry implements Serializable {
         this.persistableId = persistableId;
     }
 
-    public Type getType() {
+    public EntryType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(EntryType type) {
         this.type = type;
     }
 
@@ -122,7 +109,7 @@ public class ListObjectEntry implements Serializable {
         return ListObjectEntry.formatIdentifier(identifier, dateUpdated, type, null);
     }
 
-    public static String formatIdentifier(String identifier, Date dateUpdated, Type type, InformationResourceFile irf) {
+    public static String formatIdentifier(String identifier, Date dateUpdated, EntryType type, InformationResourceFile irf) {
         if (irf == null) {
             return formatIdentifier(identifier, dateUpdated, type, null, null);
         }
@@ -133,7 +120,17 @@ public class ListObjectEntry implements Serializable {
         return identfier.replace("/", ":");
     }
 
-    public static String formatIdentifier(String identifier, Date dateUpdated, Type type, Long irfId, Integer version) {
+    /**
+     * The Identifier is constructed by combining the type with additional information. As we do not track every version of a
+     * record in tDAR, we use the "date" in the identifier name to differentiate within D1.
+     * @param identifier
+     * @param dateUpdated
+     * @param type
+     * @param irfId
+     * @param version
+     * @return
+     */
+    public static String formatIdentifier(String identifier, Date dateUpdated, EntryType type, Long irfId, Integer version) {
         StringBuilder sb = new StringBuilder();
         sb.append(webSafeDoi(identifier)).append(DataOneService.D1_SEP);
         switch (type) {

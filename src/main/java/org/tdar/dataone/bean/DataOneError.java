@@ -9,6 +9,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * The Error object is the only object that's not packaged as part of the DataOne package. 
+ * It has an error code, detail, name, and description.
+ * 
+ * @author abrin
+ *
+ */
 @XmlType(name="error")
 @XmlRootElement(name="error")
 @XmlAccessorType(XmlAccessType.FIELD)

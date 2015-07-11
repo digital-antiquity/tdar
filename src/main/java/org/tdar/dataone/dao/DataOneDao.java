@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
-import org.tdar.dataone.bean.ListObjectEntry.Type;
 import org.tdar.dataone.bean.LogEntryImpl;
 
 @Component
@@ -40,7 +40,7 @@ public class DataOneDao {
         if (list.getCount() == 0) {
             return new ArrayList<>();
         }
-        // FIXME: find better way to handle pagination
+
         list.setTotal(query.list().size());
 
         query = setupListObjectQuery(start, end, formatId, identifier);
@@ -59,9 +59,9 @@ public class DataOneDao {
         
         // if Tier3, use "query.dataone_list_objects_t3"
         initStartEnd(fromDate, toDate, query);
-        Type type = null;
+        EntryType type = null;
         if (StringUtils.isNotBlank(formatId)) {
-            type = Type.getTypeFromFormatId(formatId);
+            type = EntryType.getTypeFromFormatId(formatId);
         }
         
         if (type != null) {

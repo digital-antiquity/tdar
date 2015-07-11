@@ -17,7 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.dataone.service.types.v1.Event;
+import org.dataone.service.types.v1.Identifier;
+import org.dataone.service.types.v1.LogEntry;
+import org.dataone.service.types.v1.NodeReference;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.dataone.service.DataOneUtils;
 
 @Entity()
 @Table(name = "dataone_log")
@@ -125,6 +129,32 @@ public class LogEntryImpl implements Serializable {
 
     public void setNodeReference(String nodeReference) {
         this.nodeReference = nodeReference;
+    }
+
+    /**
+     * Convert an entry to a DataOne LogEntry
+     * @return
+     */
+    
+    public LogEntry toEntry() {
+        LogEntry entry = new LogEntry();
+        entry.setDateLogged(getDateLogged());
+        entry.setEntryId(getId().toString());
+        entry.setEvent(getEvent());
+        Identifier identifier = new Identifier();
+        identifier.setValue(getIdentifier());
+        entry.setIdentifier(identifier);
+        NodeReference nodeRef = new NodeReference();
+        if (getNodeReference() == null) {
+            nodeRef.setValue("");
+        } else {
+            nodeRef.setValue(getNodeReference());
+        }
+        entry.setNodeIdentifier(nodeRef);
+        entry.setIpAddress(getIpAddress());
+        entry.setUserAgent(getUserAgent());
+        entry.setSubject(DataOneUtils.createSubject(getSubject()));
+        return entry;
     }
 
 }

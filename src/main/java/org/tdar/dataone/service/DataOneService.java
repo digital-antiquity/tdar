@@ -6,59 +6,40 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
-import org.dataone.ore.ResourceMapFactory;
 import org.dataone.service.types.v1.AccessPolicy;
-import org.dataone.service.types.v1.AccessRule;
 import org.dataone.service.types.v1.Checksum;
 import org.dataone.service.types.v1.Event;
-import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Log;
-import org.dataone.service.types.v1.LogEntry;
 import org.dataone.service.types.v1.Node;
 import org.dataone.service.types.v1.NodeReference;
 import org.dataone.service.types.v1.NodeState;
 import org.dataone.service.types.v1.NodeType;
-import org.dataone.service.types.v1.ObjectFormatIdentifier;
 import org.dataone.service.types.v1.ObjectInfo;
 import org.dataone.service.types.v1.ObjectList;
 import org.dataone.service.types.v1.Permission;
 import org.dataone.service.types.v1.Ping;
 import org.dataone.service.types.v1.Schedule;
+import org.dataone.service.types.v1.Service;
 import org.dataone.service.types.v1.Services;
 import org.dataone.service.types.v1.Subject;
 import org.dataone.service.types.v1.Synchronization;
 import org.dataone.service.types.v1.SystemMetadata;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
-import org.dspace.foresite.ResourceMap;
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -68,8 +49,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
-import org.tdar.dataone.bean.ListObjectEntry.Type;
 import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.DcTransformer;
@@ -78,40 +59,22 @@ import org.tdar.utils.PersistableUtils;
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
 
-@Service
-public class DataOneService {
+/**
+ * The service backing DataOne controllers
+ * 
+ * @author abrin
+ *
+ */
+@org.springframework.stereotype.Service
+public class DataOneService implements DataOneConstants {
 
-    private static final String UTF_8 = "UTF-8";
-    public static final String META = "meta";
-    public static final String D1_VERS_SEP = "&v=";
-    public static final String D1_SEP = "_";
-    public static final String D1_FORMAT = "format=d1rem";
-    public static final String D1_RESOURCE_MAP_FORMAT = "http://www.openarchives.org/ore/terms";
-//    public static final String D1_MODS_FORMAT = "http://loc.gov/mods/v3";
-    public static final String D1_DC_FORMAT = "http://dublincore.org/schemas/xmls/qdc/2008/02/11/simpledc.xsd";
-    static final String MN_REPLICATION = "MNREplication";
-    static final String MN_STORAGE = "MNStorage";
-    static final String MN_AUTHORIZATION = "MNAuthorization";
-    static final String MN_READ = "MNRead";
-    static final String MN_CORE = "MNCore";
-    static final String VERSION = "v1";
-    static final String DATAONE = "/dataone/";
 
-    static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=UTF-8";
-    static final String XML_CONTENT_TYPE = "application/xml; charset=UTF-8";
-
-    static final String MN_NAME = "urn:node:tdar";
-    static final String MN_NAME_TEST = "urn:node:tdar_test";
-
-    // this is for Tier 3 support
-    private boolean includeFiles = false;
-
-    static final String PUBLIC = "public";
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+    DataOneConfiguration D1CONFIG = DataOneConfiguration.getInstance();
 
      @Autowired
      private GenericService genericService;
@@ -125,63 +88,35 @@ public class DataOneService {
     @Autowired
     private InformationResourceService informationResourceService;
 
+    /** 
+     * Create an OAI-ORE Resource Map this will include all versions of the files and metadata that get exposed to DataOne.
+     * @param ir
+     * @return
+     * @throws OREException
+     * @throws URISyntaxException
+     * @throws ORESerialiserException
+     * @throws JDOMException
+     * @throws IOException
+     */
     @Transactional(readOnly=true)
     public String createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
-        Identifier id = new Identifier();
-        String formattedId = ListObjectEntry.webSafeDoi(ir.getExternalId());
-        id.setValue(ListObjectEntry.formatIdentifier(formattedId, ir.getDateUpdated(), Type.D1, null));
-
-        Identifier packageId = new Identifier();
-        packageId.setValue(formattedId + D1_SEP + ir.getDateUpdated().toString());
-        List<Identifier> dataIds = new ArrayList<>();
-        if (includeFiles) {
-            for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
-                Identifier fileId = new Identifier();
-                fileId.setValue(ListObjectEntry.formatIdentifier(formattedId, ir.getDateUpdated(), Type.FILE, irf));
-                dataIds.add(fileId);
-            }
-        }
-        Map<Identifier, List<Identifier>> idMap = new HashMap<Identifier, List<Identifier>>();
-        idMap.put(packageId, dataIds);
-        // generate the resource map
-        ResourceMapFactory rmf = ResourceMapFactory.getInstance();
-        ResourceMap resourceMap = rmf.createResourceMap(id, idMap);
-        Date itemModDate = ir.getDateUpdated();
-        resourceMap.setModified(itemModDate);
-        String rdfXml = ResourceMapFactory.getInstance().serializeResourceMap(resourceMap);
-        SAXBuilder builder = new SAXBuilder();
-        Document d = builder.build(new StringReader(rdfXml));
-        Iterator<Element> it = d.getRootElement().getChildren().iterator();
-        List<Element> children = new ArrayList<Element>();
-        while (it.hasNext()) {
-            Element element = (Element) it.next();
-            children.add(element);
-        }
-        d.getRootElement().removeContent();
-        Collections.sort(children, new Comparator<Element>() {
-            @Override
-            public int compare(Element t, Element t1) {
-                return t.getAttributes().toString().compareTo(t1.getAttributes().toString());
-            }
-        });
-        for (Element el : children) {
-            d.getRootElement().addContent(el);
-        }
-        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-        rdfXml = outputter.outputString(d);
-        logger.trace(rdfXml);
-        return rdfXml;
+        OaiOreResourceMapGenerator generator = new OaiOreResourceMapGenerator(ir, false);
+        return generator.generate();
     }
 
+    /**
+     * Formulates a NodeResponse
+     * https://releases.dataone.org/online/api-documentation-v1.2.0/apis/MN_APIs.html#MNCore.getCapabilities
+     * @return
+     */
     @Transactional(readOnly=true)
     public Node getNodeResponse() {
-        org.dataone.service.types.v1.Node node = new Node();
+        Node node = new Node();
         node.setBaseURL(CONFIG.getBaseSecureUrl() + DATAONE);
         node.setDescription(CONFIG.getSystemDescription());
         node.setIdentifier(getTdarNodeReference());
         node.setName(CONFIG.getRepositoryName());
 
-        // v2?
         // node.setNodeReplicationPolicy();
         Ping ping = new Ping();
         ping.setSuccess(Boolean.TRUE);
@@ -198,7 +133,7 @@ public class DataOneService {
         node.setServices(services);
         node.setState(NodeState.UP);
         List<Subject> list = new ArrayList<>();
-        list.add(createSubject(CONFIG.getSystemAdminEmail()));
+        list.add(DataOneUtils.createSubject(CONFIG.getSystemAdminEmail()));
         node.setContactSubjectList(list);
         Synchronization sync = new Synchronization();
         sync.setLastCompleteHarvest(new Date(0));
@@ -220,64 +155,96 @@ public class DataOneService {
         return node;
     }
 
+    /**
+     * helper to create a node entry for tDAR
+     */
     private NodeReference getTdarNodeReference() {
         NodeReference nodeReference = new NodeReference();
-        nodeReference.setValue(getMemberNodeName());
+        nodeReference.setValue(D1CONFIG.getMemberNodeIdentifier());
         return nodeReference;
     }
 
+    /**
+     * Generate a service entry
+     * @param name
+     * @param version
+     * @param available
+     * @param services
+     */
     private void addService(String name, String version, Boolean available, Services services) {
-        org.dataone.service.types.v1.Service service = new org.dataone.service.types.v1.Service();
+        Service service = new Service();
         service.setName(name);
         service.setVersion(version);
         service.setAvailable(available);
         services.getServiceList().add(service);
     }
 
+    /**
+     * DataOne logs all requests and to track what's been done, they can ask for and query their own longs.
+     * https://releases.dataone.org/online/api-documentation-v1.2.0/apis/MN_APIs.html#MNCore.getLogRecords
+     * 
+     * @param fromDate
+     * @param toDate
+     * @param event
+     * @param idFilter
+     * @param start
+     * @param count
+     * @param request
+     * @return
+     */
     @Transactional(readOnly=true)
     public Log getLogResponse(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, HttpServletRequest request) {
         Log log = new Log();
-        // LogEntryImpl from LogEntryImpl where logDate is between :fromDate and :toDate and (useEventType=true and eventType=:eventType) and (useIdFilter=true
-        // and idFilter startsWith(idFilter)
-        // log.setCount...
 
         log.setStart(start);
         log.setCount(count);
-        logger.debug("logResponse: {} {} {} {} {} {} {}", fromDate, toDate, event, idFilter, start, count);
+        logger.trace("logResponse: {} {} {} {} {} {} {}", fromDate, toDate, event, idFilter, start, count);
         List<LogEntryImpl> findLogFiles = dataOneDao.findLogFiles(fromDate, toDate, event, idFilter, start, count, log);
+        // for each log entry
         for (LogEntryImpl impl : findLogFiles) {
-            LogEntry entry = new LogEntry();
-            entry.setDateLogged(impl.getDateLogged());
-            entry.setEntryId(impl.getId().toString());
-            entry.setEvent(impl.getEvent());
-            Identifier identifier = new Identifier();
-            identifier.setValue(impl.getIdentifier());
-            entry.setIdentifier(identifier);
-            NodeReference nodeRef = new NodeReference();
-            if (impl.getNodeReference() == null) {
-                nodeRef.setValue("");
-            } else {
-                nodeRef.setValue(impl.getNodeReference());
-            }
-            entry.setNodeIdentifier(nodeRef);
-            entry.setIpAddress(impl.getIpAddress());
-            entry.setUserAgent(impl.getUserAgent());
-            entry.setSubject(createSubject(impl.getSubject()));
-            log.addLogEntry(entry);
+            log.addLogEntry(impl.toEntry());
         }
         log.setCount(log.getLogEntryList().size());
         return log;
     }
 
+    /**
+     * Generate a checksum response -- Data One uses checksums mostly the way tDAR does
+     * https://releases.dataone.org/online/api-documentation-v1.2.0/apis/MN_APIs.html#MNRead.getChecksum
+     * 
+     * @param pid
+     * @param checksum_
+     * @return
+     */
     @Transactional(readOnly = true)
     public Checksum getChecksumResponse(String pid, String checksum_) {
         ObjectResponseContainer object = getObject(pid, null, null);
         if (object == null) {
             return null;
         }
-        return createChecksum(object.getChecksum());
+        return DataOneUtils.createChecksum(object.getChecksum());
     }
 
+    /**
+     * The object List response queries the database for objects that match and then returns them
+     * https://releases.dataone.org/online/api-documentation-v1.2.0/apis/MN_APIs.html#MNRead.listObjects
+     * 
+     * @param fromDate
+     * @param toDate
+     * @param formatid
+     * @param identifier
+     * @param start
+     * @param count
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException
+     * @throws OREException
+     * @throws URISyntaxException
+     * @throws ORESerialiserException
+     * @throws JDOMException
+     * @throws IOException
+     * @throws JAXBException
+     */
     @Transactional(readOnly = true)
     public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count) throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
         ObjectList list = new ObjectList();
@@ -285,22 +252,26 @@ public class DataOneService {
         list.setStart(start);
 
         List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, formatid, identifier, list);
+
+        // for each entry we find in the database, create a packaged response
         for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();
             ObjectResponseContainer object = null;
-            if (entry.getType() != Type.FILE) {
+
+            // contstruct the metadata/response
+            if (entry.getType() != EntryType.FILE) {
                 InformationResource resource = genericService.find(InformationResource.class, entry.getPersistableId());
-                if (entry.getType() == Type.D1) {
+                if (entry.getType() == EntryType.D1) {
                     object = constructD1FormatObject(resource);
                 }
-                if (entry.getType() == Type.TDAR) {
+                if (entry.getType() == EntryType.TDAR) {
                     object = constructMetadataFormatObject(resource);
                 }
             }
-            info.setChecksum(createChecksum(object.getChecksum()));
+            info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
             info.setDateSysMetadataModified(entry.getDateUpdated());
-            info.setFormatId(contentTypeToD1Format(entry.getType(), entry.getContentType()));
-            info.setIdentifier(createIdentifier(entry.getFormattedIdentifier()));
+            info.setFormatId(DataOneUtils.contentTypeToD1Format(entry.getType(), entry.getContentType()));
+            info.setIdentifier(DataOneUtils.createIdentifier(entry.getFormattedIdentifier()));
             info.setSize(BigInteger.valueOf(object.getSize()));
             list.getObjectInfoList().add(info);
         }
@@ -309,21 +280,10 @@ public class DataOneService {
         return list;
     }
 
-    private Identifier createIdentifier(String formattedIdentifier) {
-        Identifier id = new Identifier();
-        id.setValue(formattedIdentifier);
-        return id;
-    }
-
-    private Checksum createChecksum(String checksum) {
-        Checksum cs = new Checksum();
-        cs.setAlgorithm("MD5");
-        cs.setValue(checksum);
-        return cs;
-    }
 
     /**
      * Gets DataOne System metadata for a given id. The ID will be a tDAR DOI with a suffix that specifies a metadata object, a resource, or a file
+     * https://releases.dataone.org/online/api-documentation-v1.2.0/apis/MN_APIs.html#MNRead.getSystemMetadata
      * 
      * @param id
      * @return
@@ -337,21 +297,24 @@ public class DataOneService {
         if (object == null) {
             return null;
         }
+
         InformationResource resource = object.getTdarResource();
-        policy.getAllowList().add(createAccessRule(Permission.READ, PUBLIC));
+        policy.getAllowList().add(DataOneUtils.createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
         metadata.setDateUploaded(resource.getDateCreated());
+
+        // if it's deleted, we mark it as archived
         if (resource.getStatus() != Status.ACTIVE) {
             metadata.setArchived(true);
         } else {
             metadata.setArchived(false);
         }
-        metadata.setChecksum(createChecksum(object.getChecksum()));
-        metadata.setFormatId(contentTypeToD1Format(object.getType(), object.getContentType()));
+        metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
+        metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
         metadata.setSize(BigInteger.valueOf(object.getSize()));
-        metadata.setIdentifier(createIdentifier(object.getIdentifier()));
+        metadata.setIdentifier(DataOneUtils.createIdentifier(object.getIdentifier()));
         // metadata.setObsoletedBy(value);
         // metadata.setObsoletes(value);
 
@@ -361,52 +324,35 @@ public class DataOneService {
         // rights to change the permissions sitting on the object
         metadata.setRightsHolder(getRightsHolder());
         // metadata.setSerialVersion(value);
-        metadata.setSubmitter(createSubject(resource.getSubmitter().getProperName()));
+        metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
     }
 
+    /**
+     * generate the LDAP-style rights entry for the rights holder (likely change from tDAR's sysadmin)
+     * @return
+     */
     private Subject getRightsHolder() {
-        return createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
+        return DataOneUtils.createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
     }
 
+    /**
+     * generate the LDAP-style rights entry for the sysadmin
+     * @return
+     */
     private Subject getSystemUserLdap() {
-        return createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
+        return DataOneUtils.createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
     }
 
-    private ObjectFormatIdentifier contentTypeToD1Format(Type type, String contentType) {
-        ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
-        switch (type) {
-            case D1:
-                identifier.setValue(D1_RESOURCE_MAP_FORMAT);
-                break;
-//            case FILE:
-//                break;
-            case TDAR:
-                identifier.setValue(D1_DC_FORMAT);
-                break;
-            default:
-                identifier.setValue("BAD-FORMAT");
-                break;
-        }
-        return identifier;
-    }
-
-    private AccessRule createAccessRule(Permission permission, String name) {
-        AccessRule rule = new AccessRule();
-        rule.getPermissionList().add(permission);
-        if (StringUtils.isNotBlank(name)) {
-            rule.getSubjectList().add(createSubject(name));
-        }
-        return rule;
-    }
-
-    private Subject createSubject(String name) {
-        Subject subject = new Subject();
-        subject.setValue(name);
-        return subject;
-    }
-
+    /**
+     * Get an object from tDAR based on the ID (Object, ObjectList, and Metadata responses)
+     * 
+     * @param id
+     * @param request
+     * @param event
+     * @return
+     */
     @Transactional(readOnly = false)
     public ObjectResponseContainer getObject(final String id, HttpServletRequest request, Event event) {
         ObjectResponseContainer resp = getObjectFromTdar(id);
@@ -419,18 +365,18 @@ public class DataOneService {
     }
 
     /**
-     * For a given DataOne Identifier (tDAR DOI + additional suffix)
+     * For a given DataOne Identifier (tDAR DOI + additional suffix) get the entry from tDAR
      * 
      * @param id_
      * @return
      */
     @Transactional(readOnly = true)
-    public ObjectResponseContainer getObjectFromTdar(String id_) {
+    private ObjectResponseContainer getObjectFromTdar(String id_) {
         ObjectResponseContainer resp = null;
         try {
             logger.debug("looking for Id: {}", id_);
             String doi = StringUtils.substringBefore(id_, D1_SEP);
-            doi = doi.replace("doi:10.6067:", "doi:10.6067/");
+            doi = doi.replace(D1CONFIG.getDoiPrefix() + ":", D1CONFIG.getDoiPrefix() + "/");
             String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
             InformationResource ir = informationResourceService.findByDoi(doi);
             if (PersistableUtils.isNullOrTransient(ir)) {
@@ -456,9 +402,15 @@ public class DataOneService {
         return resp;
     }
 
+    /**
+     * Create an ObjectResponseContainer from a resource and the identifier for a file
+     * @param partIdentifier
+     * @param ir
+     * @return
+     */
     private ObjectResponseContainer constructFileFormatObject(String partIdentifier, InformationResource ir) {
         ObjectResponseContainer resp = setupResponse(ir);
-        resp.setType(Type.FILE);
+        resp.setType(EntryType.FILE);
         Long irfid = Long.parseLong(StringUtils.substringBefore(partIdentifier, D1_VERS_SEP));
         Integer versionNumber = Integer.parseInt(StringUtils.substringAfter(partIdentifier, D1_VERS_SEP));
 
@@ -474,10 +426,18 @@ public class DataOneService {
         return resp;
     }
 
+    /**
+     * Create an ObjectResponseContainer for a metadata request
+     * @param ir
+     * @return
+     * @throws JAXBException
+     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException
+     */
     private ObjectResponseContainer constructMetadataFormatObject(InformationResource ir) throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException {
         ObjectResponseContainer resp = setupResponse(ir);
         resp.setContentType(XML_CONTENT_TYPE);
-        resp.setType(Type.TDAR);
+        resp.setType(EntryType.TDAR);
 //        ModsDocument modsDoc = ModsTransformer.transformAny(ir);
         DublinCoreDocument modsDoc = DcTransformer.transformAny(ir);
         resp.setObjectFormat(META);
@@ -486,23 +446,41 @@ public class DataOneService {
         String metaXml = sw.toString();
         resp.setSize(metaXml.getBytes(UTF_8).length);
         resp.setReader(new StringReader(metaXml));
-        resp.setChecksum(checksumString(metaXml));
+        resp.setChecksum(DataOneUtils.checksumString(metaXml));
         return resp;
     }
 
+    /**
+     * Create an ObjectResponseContainer for a DataOne ResourceMap 
+     * 
+     * @param ir
+     * @return
+     * @throws OREException
+     * @throws URISyntaxException
+     * @throws ORESerialiserException
+     * @throws JDOMException
+     * @throws IOException
+     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException
+     */
     private ObjectResponseContainer constructD1FormatObject(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException,
             JDOMException, IOException, UnsupportedEncodingException, NoSuchAlgorithmException {
         ObjectResponseContainer resp = setupResponse(ir);
-        resp.setType(Type.D1);
+        resp.setType(EntryType.D1);
         resp.setContentType(RDF_CONTENT_TYPE);
         String map = createResourceMap(ir);
         resp.setObjectFormat(D1_FORMAT);
         resp.setSize(map.getBytes(UTF_8).length);
         resp.setReader(new StringReader(map));
-        resp.setChecksum(checksumString(map));
+        resp.setChecksum(DataOneUtils.checksumString(map));
         return resp;
     }
 
+    /**
+     * setup a ObjectResponseContainer from a resource 
+     * @param ir
+     * @return
+     */
     private ObjectResponseContainer setupResponse(InformationResource ir) {
         obfuscationService.obfuscate(ir, null);
         ObjectResponseContainer resp = new ObjectResponseContainer();
@@ -511,15 +489,13 @@ public class DataOneService {
         return resp;
     }
 
-    private String checksumString(String string) throws NoSuchAlgorithmException {
-        final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        messageDigest.reset();
-        messageDigest.update(string.getBytes(Charset.forName("UTF8")));
-        final byte[] resultByte = messageDigest.digest();
-        final String result = new String(Hex.encodeHex(resultByte));
-        return result;
-    }
-
+    /**
+     * Replicate request - not really sure how it's used for D1
+     * https://releases.dataone.org/online/api-documentation-v1.2.0/apis/MN_APIs.html#MNRead.getReplica
+     * 
+     * @param pid
+     * @param request
+     */
     @Transactional(readOnly = false)
     public void replicate(String pid, HttpServletRequest request) {
         LogEntryImpl entry = new LogEntryImpl(pid, request, Event.REPLICATE);
@@ -528,7 +504,4 @@ public class DataOneService {
 
     }
 
-    public String getMemberNodeName() {
-        return MN_NAME_TEST;
-    }
 }
