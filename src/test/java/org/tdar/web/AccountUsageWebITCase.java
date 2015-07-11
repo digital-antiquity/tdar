@@ -56,7 +56,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartWithCoupon() throws MalformedURLException {
-        Map<String, String> personmap = new HashMap<String, String>();
+        Map<String, String> personmap = new HashMap<>();
         setupBasicUser(personmap, "user1124");
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH);

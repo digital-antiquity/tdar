@@ -199,7 +199,7 @@ public class TdarConfiguration {
                     "radiometric", "reconnaissance", "sediments", "seriation", "settlement", "sherd", "site", "slip", "soils", "square", "stela", "stele",
                     "stratigraphy", "style", "stylus", "surface", "survey", "tell", "temper", "terminus", "test", "thermoluminescence", "transit", "trench",
                     "tufa", "tumulus", "type", "typology", "varves", "ware", "ziggurat", "zone", "adovasio", "aharoni", "akbar", "akurgal", "alarcao",
-                    "albright", "alcock", "allen", "alp", "amiran", "anderson", "andronicos", "archaeologist", "artamonov", "arık", "aston", "atkinson",
+                    "albright", "alcock", "allen", "alp", "amiran", "anderson", "andronicos", "archaeologist", "artamonov", "arik", "aston", "atkinson",
                     "australian", "aveni", "avigad", "azarnoush", "babington", "bahn", "bailey", "bandelier", "bandinelli", "bandyopadhyay", "baqir", "barkay",
                     "barker", "bateman", "batres", "beech", "belzoni", "berger", "bersu", "beule", "bey", "bicknell", "biddle", "biglari", "binford",
                     "bingham", "biondo", "biran", "black", "blegen", "bliss", "boni", "bordes", "borhegyi", "bourbourg", "bradley", "breasted", "breuer",
