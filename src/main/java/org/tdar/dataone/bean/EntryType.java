@@ -8,12 +8,12 @@ import org.tdar.dataone.service.DataOneService;
  * DataOne - a ResourceMap file
  * TDAR - our local metadata
  * FILE - an actual file
-
+ * UNKNOWN - an unknown format type
  * @author abrin
  *
  */
 public enum EntryType {
-    D1, TDAR, FILE;
+    D1, TDAR, FILE, UNKOWN;
     
     public static EntryType getTypeFromFormatId(String format) {
         if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_RESOURCE_MAP_FORMAT)) {
@@ -22,6 +22,6 @@ public enum EntryType {
         if (StringUtils.equalsIgnoreCase(format, DataOneService.D1_DC_FORMAT)) {
             return EntryType.TDAR;
         }
-        return D1;
+        return EntryType.UNKOWN;
     }
 }
