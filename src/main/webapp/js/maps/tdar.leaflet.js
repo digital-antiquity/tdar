@@ -144,16 +144,16 @@ TDAR.leaflet = (function(console, $, ctx) {
                 var rec = _updateLayerFromFields($el,map,drawnItems);
             });
 
-// $("#d_minx").val(Geo.toLon($("#minx").val()));
-// $("#d_miny").val(Geo.toLat($("#miny").val()));
-// $("#d_maxx").val(Geo.toLon($("#maxx").val()));
-// $("#d_maxy").val(Geo.toLat($("#maxy").val()));
-
             // bind ids
-            $(".d_maxx",$el).change(function(){$(".maxx",$el).val($(".d_maxx",$el).val());});
-            $(".d_maxy",$el).change(function(){$(".maxy",$el).val($(".d_maxy",$el).val());});
-            $(".d_minx",$el).change(function(){$(".minx",$el).val($(".d_minx",$el).val());});
-            $(".d_miny",$el).change(function(){$(".miny",$el).val($(".d_miny",$el).val());});
+            var $dmx = $(".d_maxx",$el);
+            var $dix = $(".d_minx",$el);
+            var $dmy = $(".d_maxy",$el);
+            var $diy = $(".d_miny",$el);
+            // handling text based formats too    Geo.parseDMS("51°33′39″N" ); ...
+            $dmx.change(function(){$(".maxx",$el).val(Geo.parseDMS($dmx.val()));});
+            $dmy.change(function(){$(".maxy",$el).val(Geo.parseDMS($dmy.val()));});
+            $dix.change(function(){$(".minx",$el).val(Geo.parseDMS($dix.val()));});
+            $diy.change(function(){$(".miny",$el).val(Geo.parseDMS($diy.val()));});
             
             // create a toolbar with just the rectangle and edit tool
            var options = {
@@ -215,6 +215,7 @@ TDAR.leaflet = (function(console, $, ctx) {
                 var layers = e.layers;
                 layers.eachLayer(function (layer) {
                     drawnItems.removeLayer(layer);
+                    // the change() watch deosn't always pay attention to these explicit calls
                     $(".minx",$el).val('');
                     $(".miny",$el).val('');
                     $(".maxx",$el).val('');
@@ -247,6 +248,7 @@ TDAR.leaflet = (function(console, $, ctx) {
      * set the input values based on the bounding box
      */
     function _setValuesFromBounds($el, b) {
+        // the change() watch deosn't always pay attention to these explicit calls
         $(".minx",$el).val(b.getWest());
         $(".miny",$el).val(b.getSouth());
         $(".maxx",$el).val(b.getEast());
