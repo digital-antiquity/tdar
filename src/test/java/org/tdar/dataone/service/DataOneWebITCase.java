@@ -64,6 +64,8 @@ public class DataOneWebITCase extends AbstractWebTestCase {
     @Test
     public void testGetObjects() {
         Assert.assertEquals(200, gotoPage("/dataone/v1/object?idFilter=" + TEST_DOI));
+        // bad doi
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?formatId=fake_formatasdasd"));
         Assert.assertEquals(200, gotoPage("/dataone/v1/object?"));
         //YYYY-MM-DDTHH:MM:SS.mmm
         Assert.assertEquals(200, gotoPage("/dataone/v1/object?fromDate=2010-01-01T01:01:00.000"));
