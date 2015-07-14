@@ -52,7 +52,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "0");
         submitFormWithoutErrorCheck();
         assertCurrentUrlContains("process-choice");
-        assertTextPresentInCode("55 USD");
+        assertTextPresentInCode("Pricing");
         assertTextPresentInCode(getText("cartController.specify_mb_or_files"));
     }
 
