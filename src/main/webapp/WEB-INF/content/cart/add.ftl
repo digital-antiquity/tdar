@@ -36,7 +36,6 @@ img.media-object {opacity:.8;padding-top:.4em;}
 .how-works {color:#555; }
 table { border:1px solid #DDD;}
 table td {font-family: "ff-tisa-web-pro",  serif !important;}
-</style>
     </style>
 </head>
 <body>
