@@ -109,7 +109,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                         </tr>
                         <tr>
                             <th class="borderRight">
-                                Total File Size
+                                Total File Size (MB)
                             </th>
                             <td class="custom" style="text-align:center">
                                 <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer span2 orderinfo" maxlength=9 />
@@ -141,7 +141,9 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 <h4>Redeem a Coupon Code</h4>
 <div class="well">
 <div class="input-append">
-            <input type="text" name="code" label="Redeem Code" cssClass="input-xxlarge" />
+
+
+            <input type="text" name="code" label="Redeem Code" class="input-xxlarge" />
                 <input type="submit" class="btn" name="submitAction" value="Redeem">
     </div>
 </div>
