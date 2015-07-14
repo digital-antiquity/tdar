@@ -87,13 +87,13 @@
                             subtotal = data[i].subtotal;
                         }
                     }
+                    var $price = $("#price");
                     if (subtotal == defaultsubtotal) {
-                        $("#price").html("0.00");
+                        $price.html("0.00");
                         var line = TDAR.common.sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
                         $est.append(line);
 
                     } else {
-                        $("#price").html(TDAR.common.formatNumber(item.subtotal));
 
                         checked = "";
                         //(i +1), data[i].model, data[i].subtotal );
@@ -103,21 +103,21 @@
                             for (var j = 0; j < item.items.length; j++) {
                                 var part = item.items[j];
                                 part.name = part.activity.numberOfFiles ===0 ?  "Extra Space" : "Files";
-                                var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>${3}</td></tr>",
-                                                part.name,
+                                var line = TDAR.common.sprintf("{0}  ( {1} Files / {2} )",
+                                                TDAR.common.formatNumber(item.subtotal),
                                                 TDAR.common.formatNumber(part.activity.numberOfFiles * part.quantity),
-                                                TDAR.common.humanFileSize(part.activity.numberOfMb * part.quantity * 1024*1024, ''),
-                                                TDAR.common.formatNumber(part.subtotal));
+                                                TDAR.common.humanFileSize(part.activity.numberOfMb * part.quantity * 1024*1024, ''));
                                 total_files += part.activity.numberOfFiles * part.quantity;
                                 total_mb += part.activity.numberOfMb * part.quantity;
-                                $est.append(line);
+                                $price.html(line);
+
                             }
                         }
-                        var line = TDAR.common.sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1}</td><td class='red'>${2}</td></tr>",
-                                TDAR.common.formatNumber(total_files),
-                                TDAR.common.humanFileSize(total_mb * 1024*1024),
-                                TDAR.common.formatNumber(subtotal));
-                        $est.append(line);
+//                        var line = TDAR.common.sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1}</td><td class='red'>${2}</td></tr>",
+//                                TDAR.common.formatNumber(total_files),
+//                                TDAR.common.humanFileSize(total_mb * 1024*1024),
+//                                TDAR.common.formatNumber(subtotal));
+//                        $est.append(line);
                     }
                 },
                 error: function (xhr, txtStatus, errorThrown) {
