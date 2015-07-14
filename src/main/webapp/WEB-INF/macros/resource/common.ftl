@@ -717,9 +717,11 @@ with that datapoint -->
         <h2 id="billingSection">Billing Accounts</h2>
         <ul>
             <#list accountList as account>
+                <#if account.active>
                 <li>
                     <a href="<@s.url value="/billing/${account.id?c} " scheme="https" />">${account.name!"unamed"}</a>
                 </li>
+                </#if>
             </#list>
 <#--
             <#if billingManager>
