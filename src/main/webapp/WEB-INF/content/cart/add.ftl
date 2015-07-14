@@ -80,7 +80,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     </thead>
                 </table>
                 <ul class="unstyled">
-                    <li class="xsmall">* Each tDAR file comes with 10MB of space. To upload digital resources larger than 10MB, simply purchase additional files.
+                    <li class="xsmall">* Each tDAR file comes with 10MB of space. To upload digital resources larger than 10MB, simply purchase additional tDAR files.
                     </li><!--                <li  class="xsmall">** Space is “pooled.” If you buy more than one file, space can be distributed between those files in any way you choose.</li>
              -->
                 </ul>
@@ -268,7 +268,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     About
                 </h3>
                 <p>
-                    Digital Antiquity is a not-for-profit center at Arizona State University. Digital preservation fees fund the long-term digital preservation of your files in tDAR; access to your public data and protection of confidential data; data security; customer service; advocacy; and, professional training for proper digital curation of all archaeological materials.
+                    Digital Antiquity is a not-for-profit center at Arizona State University. Digital preservation fees fund the long-term digital preservation of your files in tDAR; access to your public data and protection of confidential data; data security; customer service; and, advocacy and professional training for proper digital curation of all archaeological materials.
                 </p>
                 <p>
                     tDAR is a domain repository for archaeology. It preserves data and information about and from archaeological resources, investigations, and related topics. In tDAR data and information are curated, discoverable, accessible, and preserved for future use.&nbsp; tDAR is developed and maintained by the Center for Digital Antiquity.
