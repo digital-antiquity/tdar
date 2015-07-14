@@ -36,6 +36,7 @@
             var numFiles = _parse($("#MetadataForm_invoice_numberOfFiles").val());
             var numMb = _parse($("#MetadataForm_invoice_numberOfMb").val());
 
+            
             $("#MetadataForm_invoice_numberOfFiles, #MetadataForm_invoice_numberOfMb").each(function () {
                 if(this.value.length) {
                     this.value = _parse(this.value).toFixed(0);
@@ -158,7 +159,7 @@
             },
             errorClass: "text-error",
             errorPlacement: function($error, $element) {
-                    $error.appendTo($element.closest(".controls"));
+                $element.after($error);
             }
         });
         console.log("validtor:", validator);

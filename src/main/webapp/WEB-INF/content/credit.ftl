@@ -82,5 +82,19 @@ Digital Antiquity worked with <a href="http://fervorcreative.com/">Fervor
 <p><b><a href="https://thenounproject.com/term/gears/50757">https://thenounproject.com/term/gears/50757</a><br>
 Gears by Hysen Drogu</b> from the Noun Project</p>
 
+<p><b><a href="https://thenounproject.com/term/heart/187">https://thenounproject.com/term/heart/187</a><br>
+Heart</b> from the Noun Project</p>
+
+<p><b><a href="https://thenounproject.com/term/upload/643">https://thenounproject.com/term/upload/643</a><br>
+    Upload by Edward Boatman</b> from the Noun Project</p>
+<p><b><a href="https://thenounproject.com/term/form/77764">https://thenounproject.com/term/form/77764</a><br>
+    form by Daniel Yahya</b> from the Noun Project</p>
+<p><b><a href="https://thenounproject.com/term/network/58198">https://thenounproject.com/term/network/58198</a><br>
+    Network by Bybzee</b> from the Noun Project</p>
+<p><b><a href="https://thenounproject.com/term/lock/5427">https://thenounproject.com/term/lock/5427</a><br>
+Lock by Andy Fuchs</b> from the Noun Project</p>
+<p><b><a href="https://thenounproject.com/term/institution/33851">https://thenounproject.com/term/institution/33851</a><br>
+City By Berkay Sargın, TR</b> from the Noun Project</p>
+
 
 </p>

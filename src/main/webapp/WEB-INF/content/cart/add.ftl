@@ -142,7 +142,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 <div class="input-append">
 
 
-            <input type="text" name="code" label="Redeem Code" class="input-xxlarge" />
+            <input type="text" id="couponCode" name="code" label="Redeem Code" class="input-xxlarge orderinfo" />
                 <input type="submit" class="btn" name="submitAction" value="Redeem">
     </div>
 </div>
