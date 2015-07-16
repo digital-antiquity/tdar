@@ -2,6 +2,7 @@ package org.tdar.struts.action.billing;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -97,7 +98,16 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         getResources().addAll(getAccount().getResources());
         PersistableUtils.sortByUpdatedDate(getResources());
-
+        setInvoices(new ArrayList<>(getAccount().getInvoices()));
+        PersistableUtils.sortByCreatedDate(getInvoices());
+        Iterator<Invoice> iter = getInvoices().iterator();
+        while (iter.hasNext()) {
+            Invoice inv = iter.next();
+            if (inv.isModifiable()) {
+                iter.remove();
+            }
+        }
+        
         for (TdarUser au : getAuthorizedMembers()) {
             String name = null;
             if (au != null) {

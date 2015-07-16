@@ -8,14 +8,34 @@
     <title>Your Cart</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <style>
-        #convert {
-            margin-left: 10px;
-        }
+.price {padding-top:.2em; display:inline-block;}
+.small {font-size: 85%;}
+.xsmall {font-size: 75%;}
+.rateTable {margin-bottom: 0px;}
+.borderRight {border-right:1px solid #DDD;}
+.pTable input  {margin:0px;}
+.topspace {margin-top:2em;}
+.pTable th,.table.pTable thead { background-color:#EFEFEF} 
+.table.pTable thead { font-size:120%;} 
+span.sub {font-size:60%;color:#6e6e6e !important}
+.badTable td.highlight { border-left:1px solid black !Important;border-right:1px solid black;border-bottom:1px solid black;background:#eee; }
+.pTable th.normal {background-color:#fff}
+.pTable th {text-align:center !important}
+.badTable th.highlighttop {border-left:1px solid black;border-right:1px solid black; border-top:1px solid black !important; background:#7a1501 !important; }
+.badTable th.highlight { border-left:1px solid black;border-right:1px solid black;background:#7a1501; border-top:none !important;color:#eee !Important}
 
-        #editFormActions {
-            border: none;
-            background: none;
-        }
+.pTable .custom { border-right:#eee; border-left:#eee; }
+
+.pTable .customtop { border-left:1px solid #333; background:#fff; }
+.pTable .clean {border:none !important; background-color:#fff;}
+.pTable .custom {background:#FAFAFA; }
+td img {display:none; height:0px;}
+.subhead {font-size:80%;border:0px !important;}
+.media-body p {margin-top:0px !important}
+img.media-object {opacity:.8;padding-top:.4em;}
+.how-works {color:#555; }
+table { border:1px solid #DDD;}
+table td {font-family: "ff-tisa-web-pro",  serif !important;}
     </style>
 </head>
 <body>
@@ -23,101 +43,335 @@
         <@s.token name='struts.csrf.token' />
         <@edit.hiddenStartTime />
         <@common.jsErrorLog />
-        <h1>What would you like to put into tDAR?</h1>
 
-<div class="row">
-    <div class="span8">
-        <p>tDAR is operated thanks to the generous support of the National Science Foundation, The Andrew W. Mellon Foundation, and our paying clients. &nbsp;
-        Uploads to tDAR carry a modest, one-time fee to ensure the long-term preservation of and permanent shared access to archaeological files stored in the repository. &nbsp;</p>
-        <p>Our prices&nbsp;are based upon the number of files uploaded.&nbsp; Each file comes with 10MB of storage space.&nbsp; File price is based on a sliding scale&mdash;the more
-            files purchased the lower the cost per file.&nbsp; Allotted space is &ldquo;pooled&rdquo; meaning that if you buy more than one file, the associated space in MB can be distributed between 
-            those files in any way you choose. We accept debit and major credit cards including MasterCard, Visa, and American Express.&nbsp;</p>
-        <p>&nbsp;</p>
-    </div>
-    <div class="span4">
-        <div>
-            <p><i class="icon-ok">&nbsp;</i> Designed to preserve files in perpetuity (<a href="http://www.tdar.org/why-tdar/preservation/">Learn More</a>)</p>
-        </div>
-        <div>
-            <p><i class="icon-ok">&nbsp;</i> Publish &amp; Share materials (<a href="http://www.tdar.org/why-tdar/preservation/">Learn More</a>)</p>
-        </div>
-        <div>
-            <p><i class="icon-ok">&nbsp;</i> Contribute Documents, Data Sets, Images &amp;&nbsp;more&nbsp;(<a href="http://www.tdar.org/why-tdar/preservation/">Learn More</a>)</p>
-        </div>
-    </div>
-    
-    
-</div>
+<h1>Pricing</h1>
 
-    <#assign showSuggested=!administrator && actionName != 'modify'/>
+
+        <div class="row">
+            <div class="span4">
+                <h3>
+                    Digital Preservation Fees
+                </h3>
+                <table class="table rateTable small">
+                    <thead>
+                        <tr style="background-color:#EEE">
+                            <th>
+                                Digital Preservation
+                            </th>
+                            <th>
+                                Rate
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                1-99 Files
+                            </td>
+                            <td>
+                                $10 / File*
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                100+ Files
+                            </td>
+                            <td>
+                                $5 / File
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+                <ul class="unstyled">
+                    <li class="xsmall">* Each tDAR file comes with 10MB of space. To upload digital resources larger than 10MB, simply purchase additional tDAR files.
+                    </li><!--                <li  class="xsmall">** Space is “pooled.” If you buy more than one file, space can be distributed between those files in any way you choose.</li>
+             -->
+                </ul>
+            </div>
+
+
+
+
+<!--                                        <tbody id="estimated">
+                                            <td colspan=5>enter number of files and mb above</td> -->
+
+            <div class="span6">
+                <h3>
+                    Digital Preservation Fee Calculator
+                </h3>
+                <table class="table pTable">
+                    <tbody>
+                        <tr>
+                            <th class="borderRight">
+                                # of Files
+                            </th>
+                            <td class="custom" style="text-align:center">
+                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer span2 orderinfo" maxlength=9  />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="borderRight">
+                                Total File Size (MB)
+                            </th>
+                            <td class="custom" style="text-align:center">
+                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer span2 orderinfo" maxlength=9 />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="borderRight">
+                                Cost
+                            </th>
+                            <td class="custom" style="text-align:center">
+                                $<span class="red" id="price">0.00</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="borderRight"></th>
+                            <td class="custom">
+                                <div class="center">
+                                    <button class="button btn btn-primary tdar-button">Continue</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     <div class="row">
-        <div class="span4" style="min-height:30em">
-            <@rates />
+        <div class="span10">
+<h4>Redeem a Coupon Code</h4>
+<div class="well">
+<div class="input-append">
 
-        </div>
-        <div class="span8">
-            <ul class="nav nav-tabs">
-                <li class="<#if showSuggested>active</#if>">
-                    <a href="#suggested" data-toggle="tab">Suggested</a>
-                </li>
-                <li class="<#if !showSuggested>active</#if>"><a href="#custom" data-toggle="tab">Rate Calculator (Customize) &amp; All Rates</a></li>
-            </ul>
-            <div class="tab-content">
-                <div id="suggested" class="tab-pane <#if showSuggested>active</#if> ">
-                    <div class="row">
-                        <div class="span8">
-                            <h2>Suggested Levels</h2>
 
-                            <div class="row">
-                                <@invoicecommon.pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
-                                <@invoicecommon.pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
-                                <@invoicecommon.pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="custom" class="tab-pane <#if !showSuggested>active</#if>">
-                    <div class="row">
-                        <div class="span8">
-                            <h2>Cost Calculator</h2>
+            <input type="text" id="couponCode" name="code" label="Redeem Code" class="input-xxlarge orderinfo" />
+                <input type="submit" class="btn" name="submitAction" value="Redeem">
+    </div>
+</div>
 
-                            <div class="well">
-                                <@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2 orderinfo" maxlength=9  />
-
-                                <div class="control-group">
-                                    <label class="control-label">Number of Mb</label>
-
-                                    <div class="controls">
-                                        <@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2 orderinfo" maxlength=9 />
-                                        <span id="convert"></span>
-                                    </div>
-                                </div>
-                                <br/>
-
-                                <div>
-                                    <h4>Cost: $<span class="red" id="price">0.00</span></h4>
-                                    <table class="table tableFormat">
-                                        <tr>
-                                            <th>Item</th>
-                                            <th> # Files</th>
-                                            <th>Space</th>
-                                            <th>Subtotal</th>
-                                        </tr>
-                                        <tbody id="estimated">
-                                        <tr>
-                                            <td colspan=5>enter number of files and mb above</td>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- End of tab hell. You made it! -->
 
         </div>
     </div>
+
+<!--
+    <div class="row">
+        <div class="span10">
+            <h3>Choose a Package</h3>
+            <table class="table pTable">
+            <thead>
+             <tr>
+            <th>Package</th>
+              <th>
+                  <div class="center"><b>
+                Small
+            </b></div></th>
+              <th>
+                  <div class="center"><b>
+                Medium
+            </b></div></th>
+              <th>
+                  <div class="center"><b>
+                Large
+            </b></div></th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="borderRight">Files</th>
+                    <td style="text-align:center">10</td>
+                    <td style="text-align:center">100</td>
+                    <td style="text-align:center">500</td>
+                </tr>
+
+                <tr>
+                    <th class="borderRight">Space</th>
+                    <td style="text-align:center">100 MB</td>
+                    <td style="text-align:center">1 GB</td>
+                    <td style="text-align:center">5 GB</td>
+                </tr>
+
+                <tr>
+                    <th  class="borderRight">Cost</th>
+                    <td style="text-align:center"><span class="price">$100</span></td>
+                    <td style="text-align:center"><span class="price">$500</span></td>
+                    <td style="text-align:center"><span class="price">$2,500</span></td>
+                </tr>
+
+            <tr>
+                <th class="borderRight"></th>
+                <td><div class="center">
+            <button class="btn btn-small  tdar-button" type="button">select</button></div></td>
+                <td><div class="center">
+            <button class="btn btn-small  tdar-button" type="button">select</button></div></td>
+                <td><div class="center">
+            <button class="btn btn-small  tdar-button" type="button">select</button>
+            </div></td>
+            </tr>
+            </tbody>
+            </table>
+                                    <@invoicecommon.pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
+                                <@invoicecommon.pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
+                                <@invoicecommon.pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
+
+
+    
+        </div>
+    </div>
+-->
+
+
+        <div class='row'>
+            <div class="span4">
+                <h3>
+                    Service Fees
+                </h3>
+                <table class="table rateTable small">
+                    <tr style="background-color:#EEE">
+                        <th>
+                            Curation Services
+                        </th>
+                        <th width="35%">
+                            Rate
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            File Checking, Metadata Drafting, &amp; Basic Quality Control
+                        </td>
+                        <td>
+                            $90 / Hour
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Consulting, Programming, &amp; Project Management
+                        </td>
+                        <td>
+                            $180 / Hour
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class='span6'>
+                <h3>
+                    Additional Services
+                </h3>
+                <p>
+                    Our full service digital curation covers everything necessary to migrate your paper library or born-digital files into a discoverable, accessible (with you in control of who gets access), searchable, and preserved digital archive in tDAR. <a href="mailto:info@digitalantiquity.org">Contact us for a quote</a>.
+                </p>
+                <p>
+                    Service packages coming soon.
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span10">
+                <h3>
+                    About
+                </h3>
+                <p>
+                    Digital Antiquity is a not-for-profit center at Arizona State University. Digital preservation fees fund the long-term digital preservation of your files in tDAR; access to your public data and protection of confidential data; data security; customer service; and, advocacy and professional training for proper digital curation of all archaeological materials.
+                </p>
+                <p>
+                    tDAR is a domain repository for archaeology. It preserves data and information about and from archaeological resources, investigations, and related topics. In tDAR data and information are curated, discoverable, accessible, and preserved for future use.&nbsp; tDAR is developed and maintained by the Center for Digital Antiquity.
+                </p>
+            </div>
+        </div>
+<br/>
+
+
+        <div class="row">
+            <div class="span10 well how-works">
+                <h4>
+                    Learn How tDAR Works
+                </h4>
+                <div class="row">
+                    <div class="span5">
+                        <div class="media">
+                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-edit.png" width="60" alt="edit" title="edit"></a>
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    Create &amp; Edit Metadata
+                                </h5>
+                                <p>
+                                    Easy to use forms to add authors, keywords, location and other archaeological information.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span5">
+                        <div class="media">
+                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-institution.png" width="60" alt="institution" title="institution"></a>
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    Agency &amp; CRM Ready
+                                </h5>
+                                <p>
+                                    tDAR includes support for agencies and CRM organizations to manage their archaeological and cultural resource information.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row topspace">
+                    <div class="span5">
+                        <div class="media">
+                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-cloud.png" width="60" alt="upload" title="upload"></a>
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    Easy Upload
+                                </h5>
+                                <p>
+                                    Drag and drop interface for uploading and managing files.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span5">
+                        <div class="media">
+                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-share.png" width="60" alt="share" title="share"></a>
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    Share &amp; Cite
+                                </h5>
+                                <p>
+                                    All resources in tDAR with files get a DOI for easy citation. Resources are indexed by Google and other major search engines.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row topspace">
+                    <div class="span5">
+                        <div class="media">
+                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-lock.png" width="60" alt="secure" title="secure"></a>
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    Confidential &amp; Secure
+                                </h5>
+                                <p>
+                                    You maintain control over who has access to your materials. Files can be marked as embargoed for a short period, or confidential, allowing you to decide who has access to them.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span5">
+                        <div class="media">
+                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-safe.png" width="60" alt="preserve" title="preserve"></a>
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    Preserve
+                                </h5>
+                                <p>
+                                    All files in tDAR are constantly checked to ensure that they are valid. Files are migrated to preservation formats automatically to ensure long-term access.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 
     <#if administrator || billingManager>
     <div class="divAdminLand admin-well">
@@ -181,18 +435,6 @@
     </div>
     </#if>
 
-    <div class="row">
-        <div class="span12">
-            <@s.textfield name="code" label="Redeem Code" cssClass="input-xxlarge" />
-
-
-            <div class="form-actions">
-                <input type="submit" class="tdar-button" name="submitAction"
-                       value="Next: Review & Choose Payment Method">
-            </div>
-
-        </div>
-    </div>
 
     </@s.form>
 

@@ -413,6 +413,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
             logger.debug("deletion issues: {}", deletionIssues.getIssue());
             return;
         }
+        account = getDao().markWritableOnExistingSession(account);
         delete(account);
 
     }
