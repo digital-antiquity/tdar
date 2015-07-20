@@ -88,13 +88,10 @@ public class FileProxyService {
             // we assume this happens when proxy fields in form were submitted in state that struts could not type-convert into a proxy instance
             if (proxy == null) {
                 logger.warn(MISSING_FILE_PROXY_WARNING, file.getName());
-                proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
-                proxy.setCreatedByServer(true);
-                finalProxyList.add(proxy);
+            } else {
+                proxy.setFile(file);
             }
-            proxy.setFile(file);
         }
-
         Collections.sort(finalProxyList);
         return finalProxyList;
     }

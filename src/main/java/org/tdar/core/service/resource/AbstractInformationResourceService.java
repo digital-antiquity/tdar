@@ -297,14 +297,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     private List<FileProxy> validateFileProxies(List<FileProxy> proxies, InformationResource informationResource) {
-        List<FileProxy> serverCreated = new ArrayList<>();
         List<FileProxy> rollbackIssues = new ArrayList<>();
 
         for (FileProxy proxy : proxies) {
             getLogger().debug("applying {} to {}", proxy, informationResource);
-            if (proxy.isCreatedByServer()) {
-                serverCreated.add(proxy);
-            }
 
             // will be reassigned in a REPLACE or ADD_DERIVATIVE
             InformationResourceFile irFile = new InformationResourceFile();
@@ -339,14 +335,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             }
 
             proxy.setInformationResourceFile(irFile);
-        }
-        // if we have a 1:1 relationship between server created proxies and rollback issues (proxies w/ids that don't exist), remove the server-created files
-        // as they're more than likely hanging out in the personal filestore and not being cleaned out
-        logger.debug("rollbackIssues: {}", rollbackIssues);
-        if (CollectionUtils.isNotEmpty(serverCreated) && Objects.equals(serverCreated.size(), rollbackIssues.size())) {
-            logger.debug("removing: {}", serverCreated);
-            proxies.removeAll(serverCreated);
-            logger.debug("after: {}", proxies);
         }
         return proxies;
     }
