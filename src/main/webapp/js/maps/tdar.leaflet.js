@@ -17,6 +17,9 @@ TDAR.leaflet = (function(console, $, ctx) {
         var map = L.map(elem).setView([ _defaults.center.lat, _defaults.center.lng ], _defaults.zoomLevel);
         var tile = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
             maxZoom : 17,
+            continuousWorld: false,
+            // This option disables loading tiles outside of the world bounds.
+            noWrap: true,
             attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
                 + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
                 + 'Imagery © <a href="http://mapbox.com">Mapbox</a>',
