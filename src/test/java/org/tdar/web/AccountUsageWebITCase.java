@@ -47,16 +47,16 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         createDocumentAndUploadFile("my first document", Long.parseLong(accountId));
         createDocumentAndUploadFile("my second document", Long.parseLong(accountId));
         gotoPage("/document/add");
-        assertTextPresent("What would you like to put into tDAR");
+        assertTextPresent("Pricing");
         gotoPage("/resource/add");
-        assertTextPresent("What would you like to put into tDAR");
+        assertTextPresent("Pricing");
         logger.info(getPageText());
         gotoPage("/logout");
     }
 
     @Test
     public void testCartWithCoupon() throws MalformedURLException {
-        Map<String, String> personmap = new HashMap<String, String>();
+        Map<String, String> personmap = new HashMap<>();
         setupBasicUser(personmap, "user1124");
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH);

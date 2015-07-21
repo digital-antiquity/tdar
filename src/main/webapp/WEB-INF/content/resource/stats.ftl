@@ -89,10 +89,12 @@
 <#if labelList?size == 0>
 <#return/>
 </#if>
+<h4>${lbl}</h4>
 <table class="table tableFormat">
     <thead>
     <tr>
-        <th>${lbl}</th>
+        <th>Type</th>
+        <th>File</th>
         <#list labelList as label>
             <th>
                 <#if label?is_number>
@@ -105,9 +107,13 @@
     </tr>
     </thead>
     <tbody>
-    <#list hash?keys as key>
+    <#list hash?keys?sort?reverse as key>
         <tr>
-            <td><b>${key}</b></td>
+            <#if key?? && key?contains("Views")>
+                <td colspan="2"><b>Views</b></td>
+             <#else>
+                <td>Download:</td><td><b> ${key}</b></td>
+            </#if>
             <#list hash[key] as val>
             <td>${val}</td>
             </#list>

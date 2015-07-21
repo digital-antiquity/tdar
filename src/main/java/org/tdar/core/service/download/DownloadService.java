@@ -48,6 +48,9 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class DownloadService {
 
+    private static final int DOWNLOAD_LOCK_CACHE_AGE_MINUTES = 5;
+    private static final int MAX_DOWNLOADS = 10;
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private final PdfService pdfService;
@@ -68,7 +71,7 @@ public class DownloadService {
         this.downloadLock = CacheBuilder.newBuilder()
                 .concurrencyLevel(4)
                 .maximumSize(10000)
-                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .expireAfterWrite(DOWNLOAD_LOCK_CACHE_AGE_MINUTES, TimeUnit.MINUTES)
                 .build();
 
     }
@@ -145,7 +148,7 @@ public class DownloadService {
             }
         }
 
-        if (list.size() > 10) {
+        if (list.size() > MAX_DOWNLOADS) {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.too_many_concurrent_download");
             } else {
@@ -168,7 +171,7 @@ public class DownloadService {
         DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename, irFileVersion);
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
-        if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {
+        if (dto.isIncludeCoverPage() && pdfService.coverPageSupported(irFileVersion)) {
             resourceFile = new DownloadPdfFile((Document) dto.getInformationResource(), irFileVersion, pdfService, dto.getAuthenticatedUser(),
                     dto.getTextProvider(), dto.getCoverPageLogo());
         }

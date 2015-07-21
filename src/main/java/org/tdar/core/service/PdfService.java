@@ -60,10 +60,12 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class PdfService {
 
+    private static final int MAX_FILE_DESCRIPTION_LENGTH = 640;
     private static final int MAX_DESCRIPTION_LENGTH = 512;
     private static final String DOT_PDF = ".pdf";
     private static final String COVER_PAGE = "cover_page";
     private static final int LEFT_MARGIN = 73;
+    private static final String PDF = "PDF";
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -98,12 +100,7 @@ public class PdfService {
 
                 // create the cover page
                 String description = version.getInformationResourceFile().getDescription();
-                if (StringUtils.isNotBlank(description) && description.length() > 640) {
-                    BreakIterator instance = BreakIterator.getWordInstance();
-                    instance.setText(description);
-                    int after = instance.following(MAX_DESCRIPTION_LENGTH);
-                    description = description.substring(0, after) + "...";
-                }
+                description = truncateDescription(description);
                 template = createCoverPage(provider, submitter, template, document, description, coverPageLogo);
 
                 // merge the two PDFs
@@ -117,6 +114,40 @@ public class PdfService {
             logger.debug("IR: merge issue", e);
             throw new PdfCoverPageGenerationException("pdfService.could_not_add_cover_page", e);
         }
+    }
+
+
+
+    private String truncateDescription(String description) {
+        if (StringUtils.isNotBlank(description) && description.length() > MAX_FILE_DESCRIPTION_LENGTH) {
+            BreakIterator instance = BreakIterator.getWordInstance();
+            instance.setText(description);
+            int after = instance.following(MAX_DESCRIPTION_LENGTH);
+            description = description.substring(0, after) + "...";
+        }
+        return description;
+    }
+
+    
+
+    /**
+     * Can the system generate a coverpage for the provided file?  This method is non-deterministic.
+     * @param irfv
+     * @return
+     */
+    public boolean coverPageSupported(InformationResourceFileVersion irfv) {
+        if (!StringUtils.equalsIgnoreCase(PDF, irfv.getExtension())) {
+            return false;
+        }
+        
+        //pdfbox 1.8.x uses at least irfv.fileLength bytes of RAM for merges (even when using scratchdisk)
+        long freemem = Runtime.getRuntime().freeMemory();
+        boolean enoughRam = freemem >  irfv.getFileLength();
+        if(!enoughRam) {
+            logger.error("Not enough RAM for coverpage (free:{} needed:{}) ", freemem, irfv.getFileLength());
+        }
+
+        return enoughRam;
     }
 
     /**

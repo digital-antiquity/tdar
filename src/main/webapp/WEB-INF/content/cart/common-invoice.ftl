@@ -2,7 +2,11 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
     <#macro printInvoice>
-    <!-- FOR testing total:$${invoice.calculatedCost!0} -->
+    <#local calculatedCost = 0 />
+    <#if invoice?? && invoice.calculatedCost??>
+        <#local calculatedCost = invoice.calculatedCost /> 
+    </#if>
+    <!-- FOR testing total:$${calculatedCost!0} -->
     <table class="table  table-invoice">
         <thead>
             <tr>

@@ -55,8 +55,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // start at the cart page, and click one of the suggested packages
         gotoPage(CART_ADD);
         assertLoggedOut();
-        find("#divlarge button").click();
-
+        selectPackage();
+        
         // now we are on the review form (w/ registration/login forms)
         // fill out required user registration fields and submit form
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
@@ -104,8 +104,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // go to the cart page and make sure we are logged out
         gotoPage(CART_ADD);
         assertLoggedOut();
-        // choose the large package
-        find("#divlarge button").click();
+        selectPackage();
 
         // review (note that we navigated here via javascript click handler instead of a link or a form submit, so we need to explicitly wait for pageload)
         waitForPageload();
@@ -134,6 +133,13 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // switch back to polling page
         getDriver().switchTo().window(startWindow);
         waitFor("body.dashboard");
+    }
+
+    private void selectPackage() {
+        // choose the large package
+        find("#MetadataForm_invoice_numberOfFiles").val("10");
+        submitForm();
+        waitForPageload();
     }
 
     /**
@@ -188,8 +194,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testInvalidLogin() {
         gotoPage(CART_ADD);
         // choose the large package
-        find("#divlarge button").click();
-
+        selectPackage();
+        
         // try to log in with a blank username (javascript whould catch this, but we want to make sure we handle server-side too
         find(ByLabelText.byPartialLabelText("Username")).val("");
 
@@ -208,8 +214,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testInvalidRegistration() {
         gotoPage(CART_ADD);
         // choose the large package
-        find("#divlarge button").click();
-
+        selectPackage();
         // make sure at least one required field is blank before submitting form
         find("#username").val("");
 

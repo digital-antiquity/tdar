@@ -74,7 +74,7 @@
         <th>resources</th>
         <th>total</th>
     </tr>
-    <#list account.invoices as invoice>
+    <#list invoices as invoice>
         <#assign extraClass=""/>
         <#if invoice.transactionStatus.invalid>
             <#assign extraClass="strikethrough" />
@@ -161,7 +161,7 @@
     </tr>
     <tr>
         <td>
-            <a href="<@s.url value="/browse/creator/${account.owner.id?c}"/>">${account.owner.properName}</a> (owner)
+            <a href="<@s.url value="/browse/creators/${account.owner.id?c}"/>">${account.owner.properName}</a> (owner)
         </td>
     </tr>
     <#list account.authorizedMembers as member>
