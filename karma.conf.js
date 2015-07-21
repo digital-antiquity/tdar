@@ -39,7 +39,6 @@ module.exports = function(config) {
             "src/main/webapp/includes/blueimp-javascript-templates/tmpl.min.js",
             "src/main/webapp/js/tdar.core.js",
             "src/main/webapp/js/tdar.repeatrow.js",
-            "src/main/webapp/js/tdar.leaflet.js",
             "src/main/webapp/js/tdar.autocomplete.js", //fixme: undeclared dependency in TDAR.common
             "src/main/webapp/js/tdar.heightevents.js", //fixme: undeclared dependency in TDAR.common
             "src/main/webapp/js/tdar.contexthelp.js", //fixme: undeclared dependency in TDAR.common

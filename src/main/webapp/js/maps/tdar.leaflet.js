@@ -10,6 +10,8 @@ TDAR.leaflet = (function(console, $, ctx) {
             zoomLevel: 4
     }
     
+	var _initialized = false;
+	
     /**
      * Init the leaflet map, and bind it to the element
      */
@@ -26,6 +28,8 @@ TDAR.leaflet = (function(console, $, ctx) {
                 id : 'examples.map-i875mjb7'
         });
         tile.addTo(map);
+		//FIXME: WARN if DIV DOM HEIGHT IS EMPTY
+		_initialized = true;
         return map;
     }
 
@@ -67,6 +71,7 @@ TDAR.leaflet = (function(console, $, ctx) {
         var $miny = parseFloat($el.data("miny"));
         var $maxx = parseFloat($el.data("maxx"));
         var $maxy = parseFloat($el.data("maxy"));
+		// FIXME: log error state if not valid
         _initRectangle(map, $minx,$miny,$maxx,$maxy, fitToBounds);
 
     }
@@ -261,11 +266,17 @@ TDAR.leaflet = (function(console, $, ctx) {
         $(".d_maxx",$el).val(b.getEast());
         $(".d_maxy",$el).val(b.getNorth());
     }
+	
+	
+	function _isIntialized() {
+		return _initialized;
+	}
 
     return {
         initLeafletMaps : _initLeafletMaps,
         initEditableLeafletMaps : _initEditableMaps,
         initResultsMaps: _initResultsMaps,
+		initialized : _isIntialized,
         defaults : _defaults
     }
 })(console, jQuery, window);
