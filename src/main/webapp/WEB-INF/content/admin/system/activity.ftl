@@ -115,7 +115,7 @@
     </#list>
 </table>
 
-    <#assign threshold =99/>
+    <#assign threshold = 200 />
 <p>Threshold for slow queries is: <strong>${threshold} ms</strong></p>
 <table class="tableFormat table" id="tblQueryStats">
     <thead>
