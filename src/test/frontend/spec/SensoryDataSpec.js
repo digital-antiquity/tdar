@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.sensoryData methods", function() {  
 
-it("should work when we call initEdit", function() {
+xit("should work when we call initEdit", function() {
    var expectedVal = null;
 
    //var result = TDAR.sensoryData.initEdit();

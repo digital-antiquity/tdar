@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.inheritance methods", function() {  
 
-it("should work when we call resetRepeatable", function() {
+xit("should work when we call resetRepeatable", function() {
    var repeatableSelector = null;
    var newSize = null;
    var expectedVal = null;
@@ -10,7 +10,7 @@ it("should work when we call resetRepeatable", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call resetKeywords", function() {
+xit("should work when we call resetKeywords", function() {
    var keywords = null;
    var repeatableSelector = null;
    var expectedVal = null;
@@ -19,7 +19,7 @@ it("should work when we call resetKeywords", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerInheritSection", function() {
+xit("should work when we call registerInheritSection", function() {
    var options = null;
    var expectedVal = null;
 
@@ -27,7 +27,7 @@ it("should work when we call registerInheritSection", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyInheritance", function() {
+xit("should work when we call applyInheritance", function() {
    var formSelector = null;
    var expectedVal = null;
 

@@ -1,14 +1,14 @@
 /* global describe, it, expect */
 describe("tests for TDAR.datatable methods", function() {  
 
-it("should work when we call extendSorting", function() {
+xit("should work when we call extendSorting", function() {
    var expectedVal = null;
 
    //var result = TDAR.datatable.extendSorting();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerLookupDataTable", function() {
+xit("should work when we call registerLookupDataTable", function() {
    var parms = null;
    var expectedVal = null;
 
@@ -16,14 +16,14 @@ it("should work when we call registerLookupDataTable", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call initUserDataTable", function() {
+xit("should work when we call initUserDataTable", function() {
    var expectedVal = null;
 
    //var result = TDAR.datatable.initUserDataTable();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call setupDashboardDataTable", function() {
+xit("should work when we call setupDashboardDataTable", function() {
    var options = null;
    var expectedVal = null;
 
@@ -31,7 +31,7 @@ it("should work when we call setupDashboardDataTable", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerResourceCollectionDataTable", function() {
+xit("should work when we call registerResourceCollectionDataTable", function() {
    var dataTable = null;
    var resourcesTable = null;
    var expectedVal = null;
@@ -40,7 +40,7 @@ it("should work when we call registerResourceCollectionDataTable", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call renderPersonId", function() {
+xit("should work when we call renderPersonId", function() {
    var oObj = null;
    var expectedVal = null;
 
@@ -48,14 +48,14 @@ it("should work when we call renderPersonId", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call checkAllToggle", function() {
+xit("should work when we call checkAllToggle", function() {
    var expectedVal = null;
 
    //var result = TDAR.datatable.checkAllToggle();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerChild", function() {
+xit("should work when we call registerChild", function() {
    var id = null;
    var title = null;
    var expectedVal = null;
@@ -64,7 +64,7 @@ it("should work when we call registerChild", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call initalizeResourceDatasetDataTable", function() {
+xit("should work when we call initalizeResourceDatasetDataTable", function() {
    var columns = null;
    var viewRowSupported = null;
    var resourceId = null;
@@ -76,7 +76,7 @@ it("should work when we call initalizeResourceDatasetDataTable", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerAddRemoveSection", function() {
+xit("should work when we call registerAddRemoveSection", function() {
    var id = null;
    var expectedVal = null;
 

@@ -1,14 +1,14 @@
 /* global describe, it, expect */
 describe("tests for TDAR.notifications methods", function() {  
 
-it("should work when we call init", function() {
+xit("should work when we call init", function() {
    var expectedVal = null;
 
    //var result = TDAR.notifications.init();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call dismiss", function() {
+xit("should work when we call dismiss", function() {
    var id = null;
    var expectedVal = null;
 
