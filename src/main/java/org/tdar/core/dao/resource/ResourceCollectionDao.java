@@ -57,7 +57,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      */
     @SuppressWarnings("unchecked")
     public List<ResourceCollection> findCollectionsOfParent(Long parent, Boolean visible, CollectionType... collectionTypes) {
-        // FIXME: nesting...
         Query namedQuery = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_PARENT);
         namedQuery.setParameter("parent", parent);
         namedQuery.setParameterList("collectionTypes", collectionTypes);

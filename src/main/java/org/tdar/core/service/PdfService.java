@@ -60,6 +60,7 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class PdfService {
 
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     private static final int MAX_FILE_DESCRIPTION_LENGTH = 640;
     private static final int MAX_DESCRIPTION_LENGTH = 512;
     private static final String DOT_PDF = ".pdf";
@@ -73,9 +74,6 @@ public class PdfService {
     @Autowired
     private FileSystemResourceDao fileDao;
 
-    @Autowired
-    private UrlService urlService;
-
     /**
      * Provided a submitter and a file version, it creates a cover page from the resource, and then combines them
      * 
@@ -87,25 +85,27 @@ public class PdfService {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document, File coverPageLogo)
+    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document, File coverPage)
             throws PdfCoverPageGenerationException {
         try {
             logger.debug("IR: {}, {} {}", document, version, version.getExtension());
             if (version.getExtension().equalsIgnoreCase("PDF")) {
                 // get the tDAR document and get the path to the template
-                String path = String.format("%s/%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
+                String path = String.format("%s/%s%s", CONFIG.getThemeDir(), COVER_PAGE, DOT_PDF);
 
                 // get the template
                 File template = fileDao.loadTemplate(path);
-
+                if (coverPage.exists()) {
+                    template = coverPage;
+                }
                 // create the cover page
                 String description = version.getInformationResourceFile().getDescription();
                 description = truncateDescription(description);
-                template = createCoverPage(provider, submitter, template, document, description, coverPageLogo);
+                template = createCoverPage(provider, submitter, template, document, description);
 
                 // merge the two PDFs
                 logger.debug("calling merge on: {}", version);
-                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version), coverPageLogo);
+                return mergePDFs(template, CONFIG.getFilestore().retrieveFile(ObjectType.RESOURCE, version), coverPage);
             } else {
                 logger.debug("IR: invalid type");
                 throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");
@@ -162,7 +162,7 @@ public class PdfService {
     private PipedInputStream mergePDFs(File coverPage, File document, File coverPageImage) throws IOException, COSVisitorException, InterruptedException {
         final PDFMergeWrapper wrapper = new PDFMergeWrapper();
 
-        int downloadBufferSize = TdarConfiguration.getInstance().getDownloadBufferSize();
+        int downloadBufferSize = CONFIG.getDownloadBufferSize();
         PipedInputStream inputStream = new PipedInputStream(downloadBufferSize);
         final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
         wrapper.getMerger().setDestinationStream(new BufferedOutputStream(pipedOutputStream,downloadBufferSize));
@@ -196,7 +196,7 @@ public class PdfService {
      * @throws FileNotFoundException
      * @throws URISyntaxException
      */
-    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description, File coverPageLogo)
+    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description)
             throws IOException,
             COSVisitorException, FileNotFoundException,
             URISyntaxException {
@@ -209,17 +209,8 @@ public class PdfService {
             }
         }
 
-        PDPageContentStream content = new PDPageContentStream(doc, page, true, false);
-        if (coverPageLogo != null && coverPageLogo.exists()) {
-            InputStream in = new FileInputStream(coverPageLogo);
-
-            BufferedImage awtImage = ImageIO.read(in);
-            PDXObjectImage img = new PDPixelMap(doc, awtImage);
-
-            int TOP = 639;
-            int LEFT = 580 - img.getWidth();
-            content.drawImage(img, LEFT, TOP);
-        }
+        PDPageContentStream content = new PDPageContentStream(doc, page, true, false, true);
+        appendCoverPageLogo(doc, content);
         int cursorPositionFromBottom = 580;
         /*
          * Title: An Interaction Model for Resource Implement Complexity Based on Risk and Number of Annual Moves
@@ -245,7 +236,7 @@ public class PdfService {
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
 
-        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.stable_url"), urlService.absoluteUrl(document),
+        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.stable_url"), UrlService.absoluteUrl(document),
                 PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom, true, page);
@@ -280,10 +271,35 @@ public class PdfService {
                 PdfFontHelper.HELVETICA_EIGHT_POINT,
                 LEFT_MARGIN, cursorPositionFromBottom);
         content.close();
-        File tempFile = File.createTempFile(COVER_PAGE, DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
+        File tempFile = File.createTempFile(COVER_PAGE, DOT_PDF, CONFIG.getTempDirectory());
         doc.save(new FileOutputStream(tempFile));
         doc.close();
         return tempFile;
+    }
+
+
+
+    /**
+     *  This is not used, but is here for reference.
+     *  NOTE: THIS HAS ISSUES WITH SCREEN vs. Image Resolution and cannot produce the quality acceptable for us
+     * @param doc
+     * @param content
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    
+    private void appendCoverPageLogo(PDDocument doc, PDPageContentStream content) throws FileNotFoundException, IOException {
+        File coverPageLogo = null;
+        if (coverPageLogo != null && coverPageLogo.exists()) {
+            InputStream in = new FileInputStream(coverPageLogo);
+
+            BufferedImage awtImage = ImageIO.read(in);
+            PDXObjectImage img = new PDPixelMap(doc, awtImage);
+
+            int TOP = 646;
+            int LEFT = 541 - img.getWidth();
+            content.drawXObject(img, LEFT, TOP,awtImage.getWidth(), awtImage.getHeight());
+        }
     }
 
     public int writeLabelPairOnPage(PDPageContentStream content, String label, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom)

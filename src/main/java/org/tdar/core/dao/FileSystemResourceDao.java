@@ -22,7 +22,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -235,7 +238,7 @@ public class FileSystemResourceDao {
     }
 
     public List<String> fetchGroupUrls(String groupName, ResourceType type) {
-        List<String> srcList = new ArrayList();
+        List<String> srcList = new ArrayList<>();
         WroModelInspector wroModelInspector = getWroInspector();
 
         Group group = wroModelInspector.getGroupByName(groupName);
@@ -245,6 +248,25 @@ public class FileSystemResourceDao {
             }
         }
         return srcList;
+    }
+
+    public boolean checkHostedFileAvailable(String filename, ObjectType type, Long id) {
+        if (getHostedFile(filename, type, id) != null) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    public File getHostedFile(String filename, ObjectType type, Long id) {
+        File baseFolder = new File(TdarConfiguration.getInstance().getHostedFileStoreLocation());
+        File pairTreeRoot = new File(baseFolder, PairtreeFilestore.toPairTree(id));
+        File file = new File(pairTreeRoot, filename);
+        logger.debug(file.getAbsolutePath());
+        if (file.exists()) {
+            return file;
+        }
+        return null;
     }
 
 }
