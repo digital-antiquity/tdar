@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.bulk methods", function() {  
 
-it("should work when we call updateProgress", function() {
+xit("should work when we call updateProgress", function() {
    var expectedVal = null;
 
    //var result = TDAR.bulk.updateProgress();

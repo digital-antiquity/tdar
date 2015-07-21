@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.fileupload methods", function() {  
 
-it("should work when we call registerUpload", function() {
+xit("should work when we call registerUpload", function() {
    var options = null;
    var expectedVal = null;
 
@@ -9,7 +9,7 @@ it("should work when we call registerUpload", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call updateFileAction", function() {
+xit("should work when we call updateFileAction", function() {
    var elemInRow = null;
    var expectedVal = null;
 
@@ -17,21 +17,21 @@ it("should work when we call updateFileAction", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call getRowId", function() {
+xit("should work when we call getRowId", function() {
    var expectedVal = null;
 
    //var result = TDAR.fileupload.getRowId();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call getRowVisibility", function() {
+xit("should work when we call getRowVisibility", function() {
    var expectedVal = null;
 
    //var result = TDAR.fileupload.getRowVisibility();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call FileuploadValidator", function() {
+xit("should work when we call FileuploadValidator", function() {
    var formId = null;
    var settings = null;
    var expectedVal = null;
@@ -40,7 +40,7 @@ it("should work when we call FileuploadValidator", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call addDataTableValidation", function() {
+xit("should work when we call addDataTableValidation", function() {
    var validator = null;
    var expectedVal = null;
 
@@ -48,7 +48,7 @@ it("should work when we call addDataTableValidation", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call addGisValidation", function() {
+xit("should work when we call addGisValidation", function() {
    var validator = null;
    var expectedVal = null;
 

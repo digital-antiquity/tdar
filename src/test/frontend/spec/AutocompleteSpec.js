@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.autocomplete methods", function() {  
 
-it("should work when we call applyPersonAutoComplete", function() {
+xit("should work when we call applyPersonAutoComplete", function() {
    var $elements = null;
    var usersOnly = null;
    var showCreate = null;
@@ -11,7 +11,7 @@ it("should work when we call applyPersonAutoComplete", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call evaluateAutocompleteRowAsEmpty", function() {
+xit("should work when we call evaluateAutocompleteRowAsEmpty", function() {
    var element = null;
    var minCount = null;
    var expectedVal = null;
@@ -20,7 +20,7 @@ it("should work when we call evaluateAutocompleteRowAsEmpty", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyKeywordAutocomplete", function() {
+xit("should work when we call applyKeywordAutocomplete", function() {
    var selector = null;
    var lookupType = null;
    var extraData = null;
@@ -31,7 +31,7 @@ it("should work when we call applyKeywordAutocomplete", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyCollectionAutocomplete", function() {
+xit("should work when we call applyCollectionAutocomplete", function() {
    var $elements = null;
    var options = null;
    var extraData = null;
@@ -41,7 +41,7 @@ it("should work when we call applyCollectionAutocomplete", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyResourceAutocomplete", function() {
+xit("should work when we call applyResourceAutocomplete", function() {
    var $elements = null;
    var type = null;
    var expectedVal = null;
@@ -50,7 +50,7 @@ it("should work when we call applyResourceAutocomplete", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyInstitutionAutocomplete", function() {
+xit("should work when we call applyInstitutionAutocomplete", function() {
    var $elements = null;
    var newOption = null;
    var expectedVal = null;
@@ -59,7 +59,7 @@ it("should work when we call applyInstitutionAutocomplete", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyComboboxAutocomplete", function() {
+xit("should work when we call applyComboboxAutocomplete", function() {
    var $elements = null;
    var type = null;
    var expectedVal = null;
@@ -68,7 +68,7 @@ it("should work when we call applyComboboxAutocomplete", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call objectFromAutocompleteParent", function() {
+xit("should work when we call objectFromAutocompleteParent", function() {
    var parentElem = null;
    var expectedVal = null;
 
@@ -76,7 +76,7 @@ it("should work when we call objectFromAutocompleteParent", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call delegateCreator", function() {
+xit("should work when we call delegateCreator", function() {
    var id = null;
    var user = null;
    var showCreate = null;
@@ -86,7 +86,7 @@ it("should work when we call delegateCreator", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call delegateAnnotationKey", function() {
+xit("should work when we call delegateAnnotationKey", function() {
    var id = null;
    var prefix = null;
    var delim = null;
@@ -96,7 +96,7 @@ it("should work when we call delegateAnnotationKey", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call delegateKeyword", function() {
+xit("should work when we call delegateKeyword", function() {
    var id = null;
    var prefix = null;
    var type = null;
@@ -106,7 +106,7 @@ it("should work when we call delegateKeyword", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call buildRequestData", function() {
+xit("should work when we call buildRequestData", function() {
    var element = null;
    var expectedVal = null;
 

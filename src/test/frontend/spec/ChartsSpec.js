@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.charts methods", function() {  
 
-it("should work when we call adminUsageStats", function() {
+xit("should work when we call adminUsageStats", function() {
    var options = null;
    var expectedVal = null;
 
@@ -9,7 +9,7 @@ it("should work when we call adminUsageStats", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call generateSeriesColors", function() {
+xit("should work when we call generateSeriesColors", function() {
    var size = null;
    var bgcolor = null;
    var expectedVal = null;
@@ -18,7 +18,7 @@ it("should work when we call generateSeriesColors", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call barGraph", function() {
+xit("should work when we call barGraph", function() {
    var props = null;
    var data = null;
    var id = null;
@@ -29,7 +29,7 @@ it("should work when we call barGraph", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call pieChart", function() {
+xit("should work when we call pieChart", function() {
    var props = null;
    var data = null;
    var id = null;
@@ -40,7 +40,7 @@ it("should work when we call pieChart", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call lineChart", function() {
+xit("should work when we call lineChart", function() {
    var props = null;
    var labels = null;
    var data = null;
@@ -52,14 +52,14 @@ it("should work when we call lineChart", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call worldMap", function() {
+xit("should work when we call worldMap", function() {
    var expectedVal = null;
 
    //var result = TDAR.charts.worldMap();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call highlight", function() {
+xit("should work when we call highlight", function() {
    var on = null;
    var element = null;
    var expectedVal = null;

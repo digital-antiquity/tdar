@@ -1,7 +1,7 @@
 /* global describe, it, expect, loadFixtures */
 describe("tests for TDAR.common methods", function() {  
 
-it("should work when we call initEditPage", function() {
+xit("should work when we call initEditPage", function() {
    var form = null;
    var props = {
             formSelector: "#metadataForm",
@@ -22,7 +22,7 @@ it("should work when we call initEditPage", function() {
    
 });
 
-it("should work when we call initFormValidation", function() {
+xit("should work when we call initFormValidation", function() {
    var form = null;
    var expectedVal = null;
 
@@ -31,21 +31,21 @@ it("should work when we call initFormValidation", function() {
 
 });
 
-it("should work when we call applyTreeviews", function() {
+xit("should work when we call applyTreeviews", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.applyTreeviews();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call initializeView", function() {
+xit("should work when we call initializeView", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.initializeView();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call initRegformValidation", function() {
+xit("should work when we call initRegformValidation", function() {
    var form = null;
    var expectedVal = null;
 
@@ -53,7 +53,7 @@ it("should work when we call initRegformValidation", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call determineResponsiveClass", function() {
+xit("should work when we call determineResponsiveClass", function() {
    var width = null;
    var expectedVal = null;
 
@@ -61,7 +61,7 @@ it("should work when we call determineResponsiveClass", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call elipsify", function() {
+xit("should work when we call elipsify", function() {
    var text = null;
    var n = null;
    var useWordBoundary = null;
@@ -71,7 +71,7 @@ it("should work when we call elipsify", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call populateTarget", function() {
+xit("should work when we call populateTarget", function() {
    var obj = null;
    var expectedVal = null;
 
@@ -79,7 +79,7 @@ it("should work when we call populateTarget", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call prepareDateFields", function() {
+xit("should work when we call prepareDateFields", function() {
    var selectElem = null;
    var expectedVal = null;
 
@@ -87,7 +87,7 @@ it("should work when we call prepareDateFields", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call setAdhocTarget", function() {
+xit("should work when we call setAdhocTarget", function() {
    var elem = null;
    var selector = null;
    var expectedVal = null;
@@ -96,7 +96,7 @@ it("should work when we call setAdhocTarget", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call changeSubcategory", function() {
+xit("should work when we call changeSubcategory", function() {
    var categoryIdSelect = null;
    var subCategoryIdSelect = null;
    var expectedVal = null;
@@ -105,7 +105,7 @@ it("should work when we call changeSubcategory", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerDownload", function() {
+xit("should work when we call registerDownload", function() {
    var url = null;
    var tdarId = null;
    var expectedVal = null;
@@ -114,7 +114,7 @@ it("should work when we call registerDownload", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerShare", function() {
+xit("should work when we call registerShare", function() {
    var service = null;
    var url = null;
    var tdarId = null;
@@ -124,14 +124,14 @@ it("should work when we call registerShare", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call gaevent", function() {
+xit("should work when we call gaevent", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.gaevent();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call outboundLink", function() {
+xit("should work when we call outboundLink", function() {
    var elem = null;
    var expectedVal = null;
 
@@ -139,7 +139,7 @@ it("should work when we call outboundLink", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call setupSupportingResourceForm", function() {
+xit("should work when we call setupSupportingResourceForm", function() {
    var totalNumberOfFiles = null;
    var rtype = null;
    var expectedVal = null;
@@ -148,7 +148,7 @@ it("should work when we call setupSupportingResourceForm", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call switchType", function() {
+xit("should work when we call switchType", function() {
    var radio = null;
    var container = null;
    var expectedVal = null;
@@ -157,35 +157,35 @@ it("should work when we call switchType", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call setupDocumentEditForm", function() {
+xit("should work when we call setupDocumentEditForm", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.setupDocumentEditForm();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call sessionTimeoutWarning", function() {
+xit("should work when we call sessionTimeoutWarning", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.sessionTimeoutWarning();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyBookmarks", function() {
+xit("should work when we call applyBookmarks", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.applyBookmarks();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call sprintf", function() {
+xit("should work when we call sprintf", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.sprintf();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call htmlDecode", function() {
+xit("should work when we call htmlDecode", function() {
    var value = null;
    var expectedVal = null;
 
@@ -193,7 +193,7 @@ it("should work when we call htmlDecode", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call htmlEncode", function() {
+xit("should work when we call htmlEncode", function() {
    var value = null;
    var expectedVal = null;
 
@@ -201,7 +201,7 @@ it("should work when we call htmlEncode", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call htmlDoubleEncode", function() {
+xit("should work when we call htmlDoubleEncode", function() {
    var value = null;
    var expectedVal = null;
 
@@ -209,7 +209,7 @@ it("should work when we call htmlDoubleEncode", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call applyWatermarks", function() {
+xit("should work when we call applyWatermarks", function() {
    var context = null;
    var expectedVal = null;
 
@@ -217,7 +217,7 @@ it("should work when we call applyWatermarks", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call coordinatesCheckboxClicked", function() {
+xit("should work when we call coordinatesCheckboxClicked", function() {
    var elem = null;
    var expectedVal = null;
 
@@ -225,14 +225,14 @@ it("should work when we call coordinatesCheckboxClicked", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call refreshInputDisplay", function() {
+xit("should work when we call refreshInputDisplay", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.refreshInputDisplay();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call tmpl", function() {
+xit("should work when we call tmpl", function() {
    var a = null;
    var c = null;
    var expectedVal = null;
@@ -241,21 +241,21 @@ it("should work when we call tmpl", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call validateProfileImage", function() {
+xit("should work when we call validateProfileImage", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.validateProfileImage();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call collectionTreeview", function() {
+xit("should work when we call collectionTreeview", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.collectionTreeview();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call humanFileSize", function() {
+xit("should work when we call humanFileSize", function() {
    var bytes = null;
    var si = null;
    var expectedVal = null;
@@ -264,14 +264,14 @@ it("should work when we call humanFileSize", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call initImageGallery", function() {
+xit("should work when we call initImageGallery", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.initImageGallery();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call formatNumber", function() {
+xit("should work when we call formatNumber", function() {
    var num = null;
    var expectedVal = null;
 
@@ -279,14 +279,14 @@ it("should work when we call formatNumber", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerAjaxStatusContainer", function() {
+xit("should work when we call registerAjaxStatusContainer", function() {
    var expectedVal = null;
 
    //var result = TDAR.common.registerAjaxStatusContainer();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call suppressKeypressFormSubmissions", function() {
+xit("should work when we call suppressKeypressFormSubmissions", function() {
    var $form = null;
    var expectedVal = null;
 

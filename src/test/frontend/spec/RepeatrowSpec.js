@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.repeatrow methods", function() {  
 
-it("should work when we call registerRepeatable", function() {
+xit("should work when we call registerRepeatable", function() {
    var selector = null;
    var options = null;
    var expectedVal = null;
@@ -10,7 +10,7 @@ it("should work when we call registerRepeatable", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call registerDeleteButtons", function() {
+xit("should work when we call registerDeleteButtons", function() {
    var parentElement = null;
    var expectedVal = null;
 
@@ -18,7 +18,7 @@ it("should work when we call registerDeleteButtons", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call cloneSection", function() {
+xit("should work when we call cloneSection", function() {
    var element = null;
    var appendTo = null;
    var expectedVal = null;
@@ -27,7 +27,7 @@ it("should work when we call cloneSection", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call deleteRow", function() {
+xit("should work when we call deleteRow", function() {
    var elem = null;
    var expectedVal = null;
 
@@ -35,7 +35,7 @@ it("should work when we call deleteRow", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call clearInputs", function() {
+xit("should work when we call clearInputs", function() {
    var $element = null;
    var expectedVal = null;
 

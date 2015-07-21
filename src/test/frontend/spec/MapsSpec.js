@@ -1,21 +1,21 @@
 /* global describe, it, expect */
 describe("tests for TDAR.maps methods", function() {  
 
-it("should work when we call apiLoaded", function() {
+xit("should work when we call apiLoaded", function() {
    var expectedVal = null;
 
    //var result = TDAR.maps.apiLoaded();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call initMapApi", function() {
+xit("should work when we call initMapApi", function() {
    var expectedVal = null;
 
    //var result = TDAR.maps.initMapApi();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call setupMap", function() {
+xit("should work when we call setupMap", function() {
    var mapDiv = null;
    var inputContainer = null;
    var expectedVal = null;
@@ -24,7 +24,7 @@ it("should work when we call setupMap", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call updateResourceRect", function() {
+xit("should work when we call updateResourceRect", function() {
    var mapDiv = null;
    var swlat = null;
    var swlng = null;
@@ -36,7 +36,7 @@ it("should work when we call updateResourceRect", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call clearResourceRect", function() {
+xit("should work when we call clearResourceRect", function() {
    var mapDiv = null;
    var expectedVal = null;
 
@@ -44,7 +44,7 @@ it("should work when we call clearResourceRect", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call setupEditMap", function() {
+xit("should work when we call setupEditMap", function() {
    var mapDiv = null;
    var inputContainer = null;
    var expectedVal = null;
@@ -53,14 +53,14 @@ it("should work when we call setupEditMap", function() {
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call setupMapResult", function() {
+xit("should work when we call setupMapResult", function() {
    var expectedVal = null;
 
    //var result = TDAR.maps.setupMapResult();
    expect(true).toBe(false); //fixme: implement this test
 });
 
-it("should work when we call addBound", function() {
+xit("should work when we call addBound", function() {
    var mapDiv = null;
    var rectStyleOptions = null;
    var lat1 = null;
