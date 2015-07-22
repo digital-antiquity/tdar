@@ -76,7 +76,7 @@
         </div>
         <div class="span6 news">
     
-            <h3><a href="${newsUrl}"What's New at ${siteAcronym}?</a></h3>
+            <h3><a href="${newsUrl}">What's New at ${siteAcronym}?</a></h3>
     
             <#if rssEntries?has_content>
                 <ul>
