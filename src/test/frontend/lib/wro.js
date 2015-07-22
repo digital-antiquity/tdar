@@ -7,24 +7,6 @@
     var path = require('path');
     var deasync = require('deasync');
 
-    function _test() {
-        var resourcesPath = path.resolve(__dirname, '../../../main/resources');
-        var wroPath = path.resolve(resourcesPath, 'wro.xml');
-        var xmldata = fs.readFileSync(wroPath, 'utf-8');
-        var parser = xml2js.Parser();
-        parser.on('end', onparse);
-        parser.on('error', onerror);
-        parser.parseString(xmldata);
-
-        function onerror(err) {
-            console.log('oops:%s', err);
-        }
-
-        function onparse(xmlObj) {
-            console.log(JSON.stringify(xmlObj, null, 4));
-        }
-    }
-
     //transform the parsed object from list<group> into map<groupName, group>
     function _transform(obj) {
          var wro = obj.groups.group.reduce(function(prev, current){
