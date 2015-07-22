@@ -3,7 +3,8 @@
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <head>
-    <title>Register with ${siteName}</title>
+    <title>${siteAcronym} Registration</title>
+    <meta name="description" content="Registered users can download files and organize content on their personal dashboard">
 </head>
 <body>
 
@@ -26,6 +27,7 @@
     <ul>
         <li>Download Documents, Data sets, Images, and Other Resources</li>
         <li>Bookmark Resources for future use</li>
+
     </ul>
 
     <h3>About You</h3>

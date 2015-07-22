@@ -7,8 +7,6 @@
 
 <head>
     <title>Welcome to ${siteName}</title>
-    <meta name="lastModifiedDate" content="$Date: 2009-02-13 09:05:44 -0700 (Fri, 13 Feb 2009)$"/>
-    
     <script type="application/ld+json">
 {
    "@context": "http://schema.org",
@@ -78,7 +76,7 @@
         </div>
         <div class="span6 news">
     
-            <h3>What&rsquo;s New at ${siteAcronym}?</h3>
+            <h3><a href="${newsUrl}"What's New at ${siteAcronym}?</a></h3>
     
             <#if rssEntries?has_content>
                 <ul>
