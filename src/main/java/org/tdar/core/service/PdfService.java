@@ -19,6 +19,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -95,7 +96,7 @@ public class PdfService {
 
                 // get the template
                 File template = fileDao.loadTemplate(path);
-                if (coverPage.exists()) {
+                if (coverPage != null && coverPage.exists()) {
                     template = coverPage;
                 }
                 // create the cover page
