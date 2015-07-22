@@ -258,7 +258,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             if (proxy.getFilename().equals(replaceFile)) {
                 proxy.setFilename(uploadFile);
                 proxy.setAction(FileAction.REPLACE);
-                // newProxy.set
+                logger.debug("replaceFile: Replacing {} with {}", replaceFile, uploadFile);
             }
         }
         // controller.getFileProxies().add(newProxy);
