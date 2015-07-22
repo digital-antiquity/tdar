@@ -59,6 +59,7 @@ import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.resource.dataset.DatasetChangeLogger;
@@ -68,6 +69,7 @@ import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
@@ -83,7 +85,7 @@ import com.opensymphony.xwork2.TextProvider;
  * @version $Revision$
  */
 @Service
-public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
+public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, DatasetDao> {
 
     Pattern originalColumnPattern = Pattern.compile("^(.+)_original_(\\d+)$");
 
@@ -113,6 +115,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private DataTableDao dataTableDao;
+
+    private FileAnalyzer analyzer;
 
     /*
      * Translates a @link DataTableColumn based on the default
@@ -993,4 +997,19 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         remapColumns(columns, project);
     }
 
+    /**
+     * We autowire the setter to help with autowiring issues
+     * 
+     * @param analyzer
+     *            the analyzer to set
+     */
+    @Autowired
+    public void setAnalyzer(FileAnalyzer analyzer) {
+        this.analyzer = analyzer;
+    }
+
+    public FileAnalyzer getAnalyzer() {
+        return analyzer;
+    }
+    
 }
