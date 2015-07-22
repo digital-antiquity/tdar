@@ -225,7 +225,8 @@ public class Invoice extends Base implements Updatable {
         return totalFiles;
     }
 
-    private <T> T coalesce(@SuppressWarnings("unchecked") T... items) {
+    @SuppressWarnings("unchecked")
+    private <T> T coalesce( T... items) {
         for (T i : items) {
             if (i != null) {
                 return i;

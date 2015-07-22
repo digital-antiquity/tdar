@@ -3,6 +3,7 @@ package org.tdar.dataone.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.ConfigurationAssistant;
+import org.tdar.core.exception.ConfigurationFileException;
 
 /**
  * $Id$
@@ -51,8 +52,10 @@ public class DataOneConfiguration {
     public void setConfigurationFile(String configurationFile) {
         assistant = new ConfigurationAssistant();
         try {
-        assistant.loadProperties(configurationFile);
-        this.configurationFile = configurationFile;
+            assistant.loadProperties(configurationFile);
+            this.configurationFile = configurationFile;
+        } catch (ConfigurationFileException cfe) {
+            logger.warn("could not load dataOne.properties (using defaults)");
         } catch (Exception e) {
             logger.error("could not load dataOne.properties (using defaults)",e);
         }

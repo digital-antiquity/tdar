@@ -40,6 +40,7 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
@@ -47,15 +48,16 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
-import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 
-import au.com.bytecode.opencsv.CSVWriter;
-
 import com.opensymphony.xwork2.TextProvider;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 /**
  * $Id$
@@ -86,7 +88,10 @@ public class DataIntegrationService {
     private ExcelService excelService;
 
     @Autowired
-    private InformationResourceService informationResourceService;
+    private DatasetDao datasetDao;
+    
+    @Autowired
+    private FileAnalyzer analyzer;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -215,8 +220,9 @@ public class DataIntegrationService {
             String csvText = convertCodingSheetToCSV(codingSheet, rules);
             FileProxy fileProxy = new FileProxy(baseFileName + ".csv", FileProxy.createTempFileFromString(csvText), VersionType.UPLOADED);
             fileProxy.addVersion(new FileProxy(baseFileName + ".txt", FileProxy.createTempFileFromString(csvText), VersionType.UPLOADED_TEXT));
-
-            informationResourceService.processMetadataForFileProxies(codingSheet, fileProxy);
+            // prepare the metadata
+            FileProxyWrapper wrapper = new FileProxyWrapper(codingSheet, analyzer, datasetDao, Arrays.asList(fileProxy));
+            wrapper.processMetadataForFileProxies();
         } catch (Exception e) {
             logger.debug("could not process coding sheet", e);
         }

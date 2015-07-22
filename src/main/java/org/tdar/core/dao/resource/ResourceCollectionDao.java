@@ -281,6 +281,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public Set<AuthorizedUser> getUsersFromDb(ResourceCollection collection) {
         Query query = getNamedQuery(TdarNamedQueries.USERS_IN_COLLECTION);
         query.setLong("id", collection.getId());

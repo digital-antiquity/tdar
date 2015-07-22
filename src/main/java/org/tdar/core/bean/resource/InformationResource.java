@@ -244,7 +244,7 @@ public abstract class InformationResource extends Resource {
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(key = COPYRIGHT_HOLDER, required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Creator copyrightHolder;
+    private Creator<?> copyrightHolder;
 
     public static final String INVESTIGATION_TYPE_INHERITANCE_TOGGLE = "inheriting_investigation_information";
     public static final String SITE_NAME_INHERITANCE_TOGGLE = "inheriting_site_information";
@@ -314,11 +314,11 @@ public abstract class InformationResource extends Resource {
 
     @XmlElement(name = "copyrightHolderRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Creator getCopyrightHolder() {
+    public Creator<?> getCopyrightHolder() {
         return copyrightHolder;
     }
 
-    public void setCopyrightHolder(Creator copyrightHolder) {
+    public void setCopyrightHolder(Creator<?> copyrightHolder) {
         this.copyrightHolder = copyrightHolder;
     }
 
@@ -978,8 +978,8 @@ public abstract class InformationResource extends Resource {
 
     @Override
     @XmlTransient
-    public List<Creator> getRelatedCreators() {
-        List<Creator> creators = super.getRelatedCreators();
+    public List<Creator<?>> getRelatedCreators() {
+        List<Creator<?>> creators = super.getRelatedCreators();
         creators.add(getResourceProviderInstitution());
         creators.add(getPublisher());
         return creators;

@@ -8,6 +8,7 @@ package org.tdar.core.filestore;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -25,6 +26,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.utils.AsynchTester;
+
 
 /**
  * @author Adam Brin
@@ -66,10 +68,7 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
                                 InformationResource ir = irfv.getInformationResourceFile().getInformationResource();
                                 ir = gs.merge(ir);
-                                boolean result = analyzer.processFile(irfv);
-                                if (!result) {
-                                    throw new TdarRecoverableRuntimeException("should not see this, file processing error");
-                                }
+                                analyzer.processFiles(Arrays.asList(irfv),false);
                             } catch (Exception e) {
                                 logger.error("exception in workflowITCase", e);
                                 throw new TdarRecoverableRuntimeException("something happened", e);

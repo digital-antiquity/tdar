@@ -217,7 +217,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
             fileProxy.setRestriction(file.getRestriction());
             fileProxy.setFileId(file.getId());
-            processMetadataForFileProxies(dataset, fileProxy);
+            FileProxyWrapper wrapper = new FileProxyWrapper(dataset, getAnalyzer(), getDao(),Arrays.asList(fileProxy));
+            wrapper.processMetadataForFileProxies();
             irFile = fileProxy.getInformationResourceFile();
         } catch (IOException exception) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
@@ -239,14 +240,16 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         if (CollectionUtils.isEmpty(dataset.getInformationResourceFiles())) {
             return;
         }
+        List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
         try {
             for (InformationResourceFile file : dataset.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
                 File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, latestUploadedVersion);
                 latestUploadedVersion.setTransientFile(transientFile);
+                latestVersions.add(latestUploadedVersion);
             }
 
-            getAnalyzer().processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
+            getAnalyzer().processFiles(latestVersions,true);
             if (dataset.hasCodingColumns()) {
                 createTranslatedFile(dataset);
             }
@@ -341,7 +344,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
         getDao().deleteRelationships(dataset.getRelationships());
         reconcileRelationships(dataset, transientDatasetToPersist);
-        cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
+        getDao().cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
         reconcileTables = null; // resetting and removing references
         getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
