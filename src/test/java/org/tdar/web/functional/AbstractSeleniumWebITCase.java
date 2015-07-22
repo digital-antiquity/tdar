@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -113,6 +114,7 @@ public abstract class AbstractSeleniumWebITCase {
     protected Dimension originalSize;
 
     private boolean screenshotsAllowed = true;
+    private Long previousScreenshotSize;
     // if true, ignore all javascript errors during page navigation events
     private boolean ignoreJavascriptErrors = false;
     // ignore javascript errors that match that match Patterns in this list
@@ -447,8 +449,14 @@ public abstract class AbstractSeleniumWebITCase {
         screenshotsAllowed = false;
         try {
             File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            String scrFilename = "target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName();
+            if (scrFile != null && Objects.equals(scrFile.length(), previousScreenshotSize)) {
+                logger.debug("skipping screenshot, size identical: {}", scrFilename);
+                return;
+            }
+            previousScreenshotSize = scrFile.length();
             // Now you can do whatever you need to do with it, for example copy somewhere
-            File dir = new File("target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName());
+            File dir = new File(scrFilename);
             dir.mkdirs();
             String finalFilename = screenshotFilename(filename, "png");
             logger.debug("saving screenshot: dir:{}, name:", dir, finalFilename);

@@ -96,6 +96,7 @@ public class CartLoginController extends AbstractCartController implements Valid
         // FIXME: this should not be necessary, but is one of the challenges of returning input and not having the session available anymore
         if (getInvoice() != null) {
             getLogger().debug("items:{} ", getInvoice().getItems());
+            getLogger().debug("cost:{}", getInvoice().getCalculatedCost());
         }
     }
 
