@@ -64,13 +64,14 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.search.SearchFieldType;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.data.DateRange;
+import org.tdar.utils.range.DateRange;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {

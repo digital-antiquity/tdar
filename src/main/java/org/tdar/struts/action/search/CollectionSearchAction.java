@@ -22,7 +22,6 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @Namespace("/search")

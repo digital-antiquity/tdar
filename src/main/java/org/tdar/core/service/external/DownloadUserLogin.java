@@ -1,6 +1,4 @@
-package org.tdar.struts.data;
-
-import org.tdar.core.service.external.UserLogin;
+package org.tdar.core.service.external;
 
 public class DownloadUserLogin extends UserLogin {
 

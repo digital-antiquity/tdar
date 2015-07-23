@@ -22,9 +22,10 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.lookup.CollectionLookupAction;
 
-public class CollectionLookupControllerITCase extends AbstractIntegrationTestCase {
+public class CollectionLookupControllerITCase extends AbstractIntegrationControllerTestCase {
 
     private CollectionLookupAction controller;
 

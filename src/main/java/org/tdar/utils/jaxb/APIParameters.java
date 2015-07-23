@@ -1,4 +1,4 @@
-package org.tdar.struts.action.api;
+package org.tdar.utils.jaxb;
 
 public interface APIParameters {
     String API_TOKEN_KEY_NAME = "apiTokenKeyName";

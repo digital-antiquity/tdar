@@ -89,7 +89,7 @@ import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
-import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.action.search.FacetGroup;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;

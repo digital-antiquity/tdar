@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.external.AntiSpamHelper;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.filestore.PairtreeFilestore;
@@ -32,7 +33,6 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
 

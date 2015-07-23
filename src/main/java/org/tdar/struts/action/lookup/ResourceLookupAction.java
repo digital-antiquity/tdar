@@ -23,7 +23,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.action.search.FacetGroup;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 

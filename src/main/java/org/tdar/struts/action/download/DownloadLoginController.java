@@ -13,8 +13,8 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.DownloadUserLogin;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -86,7 +86,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService, getRecaptchaService());
+        ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService, getRecaptchaService(), getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
         if (!isPostRequest() || errors.isNotEmpty()) {

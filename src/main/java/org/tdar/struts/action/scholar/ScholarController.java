@@ -14,7 +14,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.action.search.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @SuppressWarnings("rawtypes")

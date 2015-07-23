@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.action.search.FacetGroup;
 
 /**
  * $Id$

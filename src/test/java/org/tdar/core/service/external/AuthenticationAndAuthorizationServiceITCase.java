@@ -32,6 +32,7 @@ import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.UserAgreementController;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.utils.PersistableUtils;
@@ -40,7 +41,7 @@ import com.opensymphony.xwork2.Action;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
-public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegrationTestCase {
+public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegrationControllerTestCase {
 
     int tosLatestVersion = TdarConfiguration.getInstance().getTosLatestVersion();
     int contributorAgreementLatestVersion = TdarConfiguration.getInstance().getContributorAgreementLatestVersion();

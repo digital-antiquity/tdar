@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.web.AbstractWebTestCase;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -83,9 +82,9 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
     }
 
     private void setConfiguration(final FrameworkMethod method, String config) {
-        if (AbstractWebTestCase.class.isAssignableFrom(getTestClass().getJavaClass())) {
+        if (WebTestCase.class.isAssignableFrom(getTestClass().getJavaClass())) {
             try {
-                String url = AbstractWebTestCase.getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;
+                String url = ((WebTestCase)getTestClass()).getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;
                 logger.info("LOADING CONFIG : " + url);
                 webClient.getPage(url);
             } catch (Exception e) {

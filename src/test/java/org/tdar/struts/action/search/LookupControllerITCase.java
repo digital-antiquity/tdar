@@ -30,6 +30,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.lookup.CollectionLookupAction;
 import org.tdar.struts.action.lookup.InstitutionLookupAction;
@@ -40,7 +41,7 @@ import org.tdar.struts.action.lookup.ResourceLookupAction;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.utils.PersistableUtils;
 
-public class LookupControllerITCase extends AbstractIntegrationTestCase {
+public class LookupControllerITCase extends AbstractIntegrationControllerTestCase {
 
     private static final String L_BL_AW = "l[]bl aw\\";
     private ResourceLookupAction controller;

@@ -14,11 +14,12 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.lookup.InstitutionLookupAction;
 
 import com.opensymphony.xwork2.Action;
 
-public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCase {
+public class InstiutionLookupControllerITCase extends AbstractIntegrationControllerTestCase {
 
     @Autowired
     private InstitutionLookupAction controller;

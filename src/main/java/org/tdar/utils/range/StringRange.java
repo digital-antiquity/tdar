@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.utils.range;
 
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Validatable;
