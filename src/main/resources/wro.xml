@@ -63,7 +63,6 @@
         <css>/components/leaflet-cluster/dist/MarkerCluster.css</css>
         <css>/components/leaflet-cluster/dist/MarkerCluster.Default.css</css>
         <js>/js/tdar.core.js</js>
-<!--         <js>/js/tdar.gmaps.js</js> -->
         <js>/js/tdar.upload.js</js>
         <js>/js/tdar.jquery-upload-validation.js</js>
         <js>/js/tdar.common.js</js>
