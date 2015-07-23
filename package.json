@@ -1,0 +1,35 @@
+{
+  "name": "tDAR",
+  "version": "14.0.0",
+  "description": "The Digital Archaeological Record Web Application",
+  "main": "index.js",
+  "dependencies": {
+    "bower": "~1.3.12",
+    "grunt-cli": "^0.1.13"
+  },
+  "devDependencies": {
+    "deasync": "^0.1.0",
+    "karma": "^0.13.2",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-html2js-preprocessor": "^0.1.0",
+    "karma-jasmine": "^0.3.6",
+    "karma-jasmine-jquery": "^0.1.1",
+    "karma-junit-reporter": "^0.3.2",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "xml2js": "^0.4.9"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "hg",
+    "url": "https://bitbucket.org/tdar/tdar.src"
+  },
+  "author": "adam brin",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://dev.tdar.org/jira"
+  },
+  "homepage": "http://www.tdar.org/"
+}
