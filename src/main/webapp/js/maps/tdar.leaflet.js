@@ -10,18 +10,23 @@ TDAR.leaflet = (function(console, $, ctx) {
             zoomLevel: 4
     }
     
+    var _rectangleDefaults = {
+            fitToBounds : true
+    }
+    
 	var _initialized = false;
-	
+    var _map;
+    var _dc;
     /**
      * Init the leaflet map, and bind it to the element
      */
     function _initMap(elem) {
         var map = L.map(elem).setView([ _defaults.center.lat, _defaults.center.lng ], _defaults.zoomLevel);
+
+        map.setMaxBounds([[-85,-180.0],[85,180.0]]);
         var tile = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
             maxZoom : 17,
-            continuousWorld: false,
-            // This option disables loading tiles outside of the world bounds.
-            noWrap: true,
+            minZoom : 2,
             attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
                 + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
                 + 'Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -29,6 +34,7 @@ TDAR.leaflet = (function(console, $, ctx) {
         });
         tile.addTo(map);
 		//FIXME: WARN if DIV DOM HEIGHT IS EMPTY
+        _map = map;
 		_initialized = true;
         return map;
     }
@@ -38,15 +44,19 @@ TDAR.leaflet = (function(console, $, ctx) {
             var $el = $(this);
             var map  = _initMap(this);
             var markers = new L.MarkerClusterGroup();
-            _initFromDataAttr($el,map, true);
+            var recDefaults = $.extend(_rectangleDefaults, {
+                fillOpacity: 0.08,
+                fitToBounds : true
+            });
+            _initFromDataAttr($el,map, recDefaults);
             $(".resource-list.MAP .listItem").each(function() {
                 var $t = $(this);
                 var title = $(".resourceLink",$t);
                 var lat = $t.data("lat");
                 var lng = $t.data("long");
                 if (!isNaN(lat) && !isNaN(lng)) {
-                    var marker = L.marker(new L.LatLng(lat, lng), { title: title.html() });
-                    marker.bindPopup(title.html());
+                    var marker = L.marker(new L.LatLng(lat, lng), { title: title.text().trim() });
+                    marker.bindPopup(title.html() + "<br><a href='"+title.attr('href')+"'>view</a>");
                     markers.addLayer(marker);
                 }
             });
@@ -62,34 +72,39 @@ TDAR.leaflet = (function(console, $, ctx) {
                 function() {
                     var $el = $(this);
                     var map  = _initMap(this);
-                    _initFromDataAttr($el,map, true);
+                    _initFromDataAttr($el,map, _rectangleDefaults);
                 });
     }
     
-    function _initFromDataAttr($el,map, fitToBounds) {
+    
+    function _initFromDataAttr($el,map, rectangleSettings) {
         var $minx = parseFloat($el.data("minx"));
         var $miny = parseFloat($el.data("miny"));
         var $maxx = parseFloat($el.data("maxx"));
         var $maxy = parseFloat($el.data("maxy"));
 		// FIXME: log error state if not valid
-        _initRectangle(map, $minx,$miny,$maxx,$maxy, fitToBounds);
+        _initRectangle(map, $minx,$miny,$maxx,$maxy, rectangleSettings);
 
     }
 	/**
      * create the rectangle based on the bounds
      */
-	function _initRectangle(map, minx, miny, maxx, maxy,fitToBounds) {
+	function _initRectangle(map, minx, miny, maxx, maxy,rectangleSettings) {
         if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined &&
 			!isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
             console.log(minx, maxx, miny, maxy);
             var poly = [ [ maxy, maxx ], [ miny, minx ]];
-            var rectangle = L.rectangle(poly).addTo(map);
-			if (fitToBounds) {
+            var rectangle = L.rectangle(poly,rectangleSettings).addTo(map);
+            console.log("fitToBounds:", rectangleSettings.fitToBounds);
+			if (rectangleSettings.fitToBounds) {
 	            map.fitBounds(rectangle.getBounds());
 			}
 			return rectangle;
+        } else if (minx == undefined && miny == undefined && maxx == undefined && maxy == undefined) {
+            // skipping, we're just not configured at all;
+            return;
         }
-		
+        console.log("check map init bounds ["+ minx + "," + miny + "] [" + maxx + "," + maxy +"]");
 	}
 	
     /**
@@ -108,7 +123,7 @@ TDAR.leaflet = (function(console, $, ctx) {
             drawnItems.removeLayer(layers[0]);
         }
 		
-		var rectangle = _initRectangle(map, $minx,$miny,$maxx,$maxy,true);
+		var rectangle = _initRectangle(map, $minx,$miny,$maxx,$maxy,_rectangleDefaults);
 		
 		if (rectangle != undefined) {
             _disableRectangleCreate();
@@ -187,7 +202,7 @@ TDAR.leaflet = (function(console, $, ctx) {
             // Initialise the draw control and pass it the FeatureGroup of editable layers
             var drawControl = new L.Control.Draw(options);
             map.addControl(drawControl);
-            
+            _dc = drawControl;
             _updateLayerFromFields($el,map,drawnItems);
             map.addLayer(drawnItems);
             
@@ -200,7 +215,8 @@ TDAR.leaflet = (function(console, $, ctx) {
 
                 drawnItems.addLayer(layer);
                 var b = layer.getBounds();
-                _setValuesFromBounds($el, b);
+                var bnds = _setValuesFromBounds($el, b);
+                layer.setBounds(bnds);
                 map.addLayer(layer);
                 _disableRectangleCreate();
             });
@@ -212,7 +228,8 @@ TDAR.leaflet = (function(console, $, ctx) {
                 var layers = e.layers;
                 layers.eachLayer(function (layer) {
                     var b = layer.getBounds();
-                    _setValuesFromBounds($el, b);
+                    var bnds = _setValuesFromBounds($el, b);
+                    layer.setBounds(bnds);
                 });
             });
             
@@ -256,20 +273,35 @@ TDAR.leaflet = (function(console, $, ctx) {
      * set the input values based on the bounding box
      */
     function _setValuesFromBounds($el, b) {
+        var bnds = b;
+        // correct for bounding box being greater than 1 full world rotation
+        if (Math.abs(b.getWest() - b.getEast()) > 360) {
+            bnds = L.latLngBounds(L.latLng(b.getSouth(), -179.999999), L.latLng(b.getNorth(), 180.0000));
+            console.log("> 360:" + b.toBBoxString() + "  -->> ", bnds.toBBoxString());
+        }
+        
         // the change() watch deosn't always pay attention to these explicit calls
-        $(".minx",$el).val(b.getWest());
-        $(".miny",$el).val(b.getSouth());
-        $(".maxx",$el).val(b.getEast());
-        $(".maxy",$el).val(b.getNorth());
-        $(".d_minx",$el).val(b.getWest());
-        $(".d_miny",$el).val(b.getSouth());
-        $(".d_maxx",$el).val(b.getEast());
-        $(".d_maxy",$el).val(b.getNorth());
+        $(".minx",$el).val(bnds.getWest());
+        $(".miny",$el).val(bnds.getSouth());
+        $(".maxx",$el).val(bnds.getEast());
+        $(".maxy",$el).val(bnds.getNorth());
+        $(".d_minx",$el).val(bnds.getWest());
+        $(".d_miny",$el).val(bnds.getSouth());
+        $(".d_maxx",$el).val(bnds.getEast());
+        $(".d_maxy",$el).val(bnds.getNorth());
+        return bnds;
     }
 	
 	
 	function _isIntialized() {
 		return _initialized;
+	}
+	
+	function _getMap() {
+	    return _map;
+	}
+	function _getDc() {
+	    return _dc;
 	}
 
     return {
@@ -277,7 +309,9 @@ TDAR.leaflet = (function(console, $, ctx) {
         initEditableLeafletMaps : _initEditableMaps,
         initResultsMaps: _initResultsMaps,
 		initialized : _isIntialized,
-        defaults : _defaults
+        defaults : _defaults,
+        map : _getMap,
+        dc : _getDc
     }
 })(console, jQuery, window);
 $(function() {
