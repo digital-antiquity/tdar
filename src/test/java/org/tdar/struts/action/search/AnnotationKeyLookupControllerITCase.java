@@ -10,9 +10,10 @@ import org.junit.Test;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.lookup.ResourceAnnotationKeyLookupAction;
 
-public class AnnotationKeyLookupControllerITCase extends AbstractIntegrationTestCase {
+public class AnnotationKeyLookupControllerITCase extends AbstractIntegrationControllerTestCase {
 
     private ResourceAnnotationKeyLookupAction controller;
 

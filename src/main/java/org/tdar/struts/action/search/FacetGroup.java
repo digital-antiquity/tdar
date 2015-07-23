@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.struts.action.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;

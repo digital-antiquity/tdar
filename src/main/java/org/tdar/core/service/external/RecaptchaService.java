@@ -1,15 +1,14 @@
 package org.tdar.core.service.external;
 
-import net.tanesha.recaptcha.ReCaptcha;
-import net.tanesha.recaptcha.ReCaptchaImpl;
-import net.tanesha.recaptcha.ReCaptchaResponse;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
+
+import net.tanesha.recaptcha.ReCaptcha;
+import net.tanesha.recaptcha.ReCaptchaImpl;
+import net.tanesha.recaptcha.ReCaptchaResponse;
 
 /*
  * Enables us to use ReCaptcha if needed to help manage SPAM
@@ -37,14 +36,14 @@ public class RecaptchaService {
         return recaptcha;
     }
 
-    public boolean checkResponse(String recaptcha_challenge_field, String recaptcha_response_field) {
+    public boolean checkResponse(String recaptcha_challenge_field, String recaptcha_response_field, String remoteHost) {
         ReCaptcha reCaptcha = generateRecaptcha();
         if (reCaptcha == null) { // not configured properly
             return true;
         }
         logger.debug("recaptcha configured... trying to validate");
         ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(
-                ServletActionContext.getRequest().getRemoteHost(),
+                remoteHost,
                 recaptcha_challenge_field,
                 recaptcha_response_field);
 

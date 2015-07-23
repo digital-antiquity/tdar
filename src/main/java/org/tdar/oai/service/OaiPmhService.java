@@ -70,10 +70,10 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.RangeQueryPart;
-import org.tdar.struts.data.DateRange;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.range.DateRange;
 import org.w3c.dom.Document;
 
 import com.google.common.base.Objects;

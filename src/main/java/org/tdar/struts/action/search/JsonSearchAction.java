@@ -16,7 +16,6 @@ import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;

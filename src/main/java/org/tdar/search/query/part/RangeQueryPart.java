@@ -16,7 +16,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.index.TdarIndexNumberFormatter;
-import org.tdar.struts.data.Range;
+import org.tdar.utils.range.Range;
 
 import com.opensymphony.xwork2.TextProvider;
 

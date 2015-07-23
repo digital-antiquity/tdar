@@ -27,6 +27,7 @@ import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.GenericService;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.collection.CollectionViewAction;
@@ -34,7 +35,7 @@ import org.tdar.struts.action.collection.CollectionViewAction;
 /**
  * Created by jimdevos on 3/23/15.
  */
-public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
+public class WhiteLabelCollectionITCase extends AbstractIntegrationControllerTestCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 

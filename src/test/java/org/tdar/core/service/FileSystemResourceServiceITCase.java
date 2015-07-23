@@ -21,7 +21,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 public class FileSystemResourceServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    private FileSystemResourceService service;
+    private WebFileSystemResourceService service;
 
     @Test
     public void sanityTest() {

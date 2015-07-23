@@ -265,11 +265,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
         sendEmailProcess.execute();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
-        // we assume that the message sent was the registration one. If it wasn't we will soon find out...
-        assertTrue("Registration email was not sent - " + messages.size(), messages.size() == 1);
-        String messageText = messages.get(0).getText();
-        assertTrue(StringUtils.isNotBlank(messageText));
+        SimpleMailMessage received = checkMailAndGetLatest("Your user name");
     }
 
     @Test

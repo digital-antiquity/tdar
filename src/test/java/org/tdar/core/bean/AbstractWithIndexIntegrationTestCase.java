@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.struts.action.AbstractControllerITCase;
 
-public abstract class AbstractWithIndexIntegrationTestCase extends AbstractControllerITCase {
+public abstract class AbstractWithIndexIntegrationTestCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private SearchIndexService searchIndexService;

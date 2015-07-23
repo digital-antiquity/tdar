@@ -266,7 +266,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = checkMailAndGetLatest("Transaction Status");
+
         assertTrue(received.getSubject().contains("Billing Transaction"));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

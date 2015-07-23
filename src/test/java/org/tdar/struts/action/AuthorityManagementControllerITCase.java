@@ -101,7 +101,8 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         evictCache();
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = checkMailAndGetLatest("Records Merged");
+
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

@@ -17,12 +17,12 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.external.AntiSpamHelper;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.UserRegistration;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -225,7 +225,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = registration.validate(authenticationService, recaptchaService);
+        ErrorTransferObject errors = registration.validate(authenticationService, recaptchaService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
 

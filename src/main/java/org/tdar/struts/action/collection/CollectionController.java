@@ -36,7 +36,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.action.search.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
 
