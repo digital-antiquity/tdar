@@ -14,8 +14,6 @@
         <js>/includes/jquery.cookie.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
         <js>/includes/jquery.metadata.2.1/jquery.metadata.js</js>
-        <!-- LICENSE: MIT /GPL 2.0 -->
-        <js>/includes/jquery.maphilight-1.2.2.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/jquery.textarearesizer.js</js>
         <!-- LICENSE: MIT -->
@@ -28,13 +26,13 @@
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/includes/jquery-treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
-        <js>/includes/blueimp-javascript-templates/tmpl.min.js</js>
-        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js</js>
-        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js</js>
-        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload.js</js>
-        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js</js>
-        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js</js>
-        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js</js>
+        <js>/components/blueimp-tmpl/js/tmpl.min.js</js>
+        <js>/components/jquery-file-upload/js/vendor/jquery.ui.widget.js</js>
+        <js>/components/jquery-file-upload/js/jquery.iframe-transport.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload-process.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload-validate.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload-ui.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/jquery.populate.js</js>
         <!-- LICENSE: MIT -->
