@@ -293,4 +293,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return set;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Long> findCollectionIdsWithTimeLimitedAccess() {
+        Query query = getNamedQuery(TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS);
+        query.setReadOnly(true);
+        return query.list();
+    }
+
 }

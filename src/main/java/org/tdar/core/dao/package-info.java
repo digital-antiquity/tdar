@@ -530,7 +530,9 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.USERS_IN_COLLECTION,
                 query = "select au from ResourceCollection rc inner join rc.authorizedUsers as au where rc.id=:id"),
-//                query = "select au.user.id, au.generalPermission from ResourceCollection rc inner join rc.authorizedUsers as au where rc.id=:id"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS,
+                query = "select rc.id from ResourceCollection rc inner join rc.authorizedUsers as au where au.dateExpires != null and au.dateExpires < now()")
 })
 package org.tdar.core.dao;
 

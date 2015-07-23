@@ -126,4 +126,9 @@
         <column name="description_formatted" type="text"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="neolithic-8" author="abrin">
+        <addColumn tableName="authorized_user">
+            <column name="date_expires" type='date'/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

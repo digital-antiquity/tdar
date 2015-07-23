@@ -151,6 +151,7 @@ public interface TdarNamedQueries {
     String QUERY_DATAONE_LIST_OBJECTS = "query.d1_list_objects";
     String UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE = "resourceCollection.updateResourcesToActice";
     String USERS_IN_COLLECTION = "query.users.in.collection";
+    String COLLECTION_TIME_LIMITED_IDS = "query.collection_time_limited";
 
     // raw SQL/HQL queries
 

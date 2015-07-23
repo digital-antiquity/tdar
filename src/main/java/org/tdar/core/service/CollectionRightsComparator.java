@@ -38,7 +38,7 @@ public class CollectionRightsComparator {
     }
 
     public boolean rightsDifferent() {
-        Map<Long, GeneralPermissions> map = new HashMap<>();
+        Map<Long, String> map = new HashMap<>();
         // iterate through current users, add them to the map
         for (AuthorizedUser user : currentUsers) {
             if (user == null) {
@@ -88,20 +88,21 @@ public class CollectionRightsComparator {
      * @param add
      * @return
      */
-    private void addRemoveMap(Map<Long, GeneralPermissions> map, AuthorizedUser user, boolean add) {
+    private void addRemoveMap(Map<Long, String> map, AuthorizedUser user, boolean add) {
         if (user == null) {
             return;
         }
         Long id = user.getUser().getId();
+        String compareKey = getCompareKey(user);
         if (add) {
             //if we're adding, insert into the map
-            map.put(id, user.getGeneralPermission());
+            map.put(id, compareKey);
         } else {
             // try and get the permissions from the map
-            GeneralPermissions perm = map.get(id);
+            String perm = map.get(id);
             if (perm != null) {
                 // if we're there, then eitehr a no-op if exact match or a change
-                if (Objects.equals(perm, user.getGeneralPermission())) {
+                if (Objects.equals(perm, compareKey)) {
                     map.remove(id);
                 } else {
                     getChanges().add(user);
@@ -111,6 +112,10 @@ public class CollectionRightsComparator {
                 getAdditions().add(user);
             }
         }
+    }
+
+    private String getCompareKey(AuthorizedUser user) {
+        return String.format("%s-%s", user.getGeneralPermission(), user.getDateExpires());
     }
 
     public List<AuthorizedUser> getAdditions() {

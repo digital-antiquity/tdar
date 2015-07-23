@@ -6,6 +6,8 @@
  */
 package org.tdar.core.bean.entity;
 
+import java.util.Date;
+
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,12 +17,16 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.search.annotations.DateBridge;
+import org.hibernate.search.annotations.Resolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
@@ -29,6 +35,10 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin
@@ -73,6 +83,11 @@ public class AuthorizedUser extends Base implements Persistable {
     @JoinColumn(nullable = false, name = "user_id")
     private TdarUser user;
 
+    @Column(name = "date_expires")
+    @Temporal(TemporalType.DATE)
+    private Date dateExpires;
+
+    
     private transient boolean enabled = false;
 
     /**
@@ -185,6 +200,14 @@ public class AuthorizedUser extends Base implements Persistable {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Date getDateExpires() {
+        return dateExpires;
+    }
+
+    public void setDateExpires(Date dateExpires) {
+        this.dateExpires = dateExpires;
     }
 
     private transient String test = "";
