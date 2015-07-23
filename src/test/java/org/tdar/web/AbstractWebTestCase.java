@@ -59,6 +59,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.junit.WebTestCase;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
@@ -100,7 +101,7 @@ import com.gargoylesoftware.htmlunit.util.NameValuePair;
  * @author Adam Brin
  * 
  */
-public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
+public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";
 
@@ -162,7 +163,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * override to test with different URL can use this to point at another
      * instance of tDAR instead of running "integration" tests.
      */
-    public static String getBaseUrl() {
+    public String getBaseUrl() {
         return CONFIG.getBaseUrl();
     }
 
