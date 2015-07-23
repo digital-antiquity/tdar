@@ -19,7 +19,7 @@ describe("tests for TDAR.leaflet methods", function() {
 	   console.log(TDAR.leaflet.initialized());
 	   //https://www.npmjs.com/package/jasmine-jquery-matchers
 	   expect(TDAR.leaflet.initialized()).toBe(true); //fixme: implement this test
-	   expect($(".leaflet-container")).toHaveLength(3);
+	   expect($(".leaflet-container")).toHaveLength(1);
 	   
 	   // assert that the map was properly initialized and has the rectangle
 	   // assert that the map was not proeprly initialized because it was missing a parameter
