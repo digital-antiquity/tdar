@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
 import org.junit.Before;
@@ -216,7 +217,7 @@ public abstract class AbstractSeleniumWebITCase {
         @Override
         public void onException(Throwable throwable, WebDriver driver) {
             if (!throwable.getMessage().contains("n is null")) {
-                logger.error("hey there was an error", throwable);
+                logger.error("hey there was an error", ExceptionUtils.getRootCause(throwable));
             }
             takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
         }
