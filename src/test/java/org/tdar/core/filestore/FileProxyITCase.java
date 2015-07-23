@@ -8,6 +8,7 @@ package org.tdar.core.filestore;
 
 import static com.opensymphony.xwork2.Action.SUCCESS;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -47,6 +48,10 @@ import org.tdar.utils.Pair;
  */
 public class FileProxyITCase extends AbstractResourceControllerITCase {
 
+    /**
+     * Simulate situation where system encounters more files than file proxies.
+     * @throws Exception
+     */
     @Test
     @Rollback
     public void testDegenerateFileProxy() throws Exception {
@@ -66,7 +71,10 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(SUCCESS, save);
-        assertEquals(fileList.size(), document.getInformationResourceFiles().size());
+
+        document = genericService.find(Document.class, document.getId());
+        assertThat(document.getInformationResourceFiles(), hasSize(2));
+
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
             // assertEquals("only a2-17.pdf should be confidential", irFile.isConfidential(),
@@ -100,7 +108,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(SUCCESS, save);
-        assertEquals(fileList.size(), document.getInformationResourceFiles().size());
+        document = genericService.find(Document.class, document.getId());
+        assertThat(document.getInformationResourceFiles(), hasSize(2));
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
         }

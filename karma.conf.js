@@ -1,13 +1,19 @@
 // Karma configuration
 
 //build a files list using wro4j config
-function buildFilesFromWro() {
+
+
+/**
+ * @Param {string} [profile=default]
+ */
+function buildFilesFromWro(profile) {
+    if(!profile) profile = 'default'
     var wro = require("./src/test/frontend/lib/wro");
     var fs = require("fs");
     var xmldata = fs.readFileSync("src/main/resources/wro.xml", "utf-8");
     var wroconfig = wro.parseSync(xmldata);
     
-    var files = wroconfig.default.jsFiles.map(function(file){return "src/main/webapp" + file;});
+    var files = wroconfig[profile].jsFiles.map(function(file){return "src/main/webapp" + file;});
     return files;
 }
 
@@ -34,18 +40,6 @@ module.exports = function(config) {
             {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
         ].concat(buildFilesFromWro())
         .concat([
-            
-            // app files (included in DOM, monitored for changes)
-            "src/main/webapp/includes/blueimp-javascript-templates/tmpl.min.js",
-            "src/main/webapp/js/tdar.core.js",
-            "src/main/webapp/js/tdar.repeatrow.js",
-            "src/main/webapp/js/tdar.autocomplete.js", //fixme: undeclared dependency in TDAR.common
-            "src/main/webapp/js/tdar.heightevents.js", //fixme: undeclared dependency in TDAR.common
-            "src/main/webapp/js/tdar.contexthelp.js", //fixme: undeclared dependency in TDAR.common
-            "src/main/webapp/js/tdar.upload.js", //fixme: undeclared dependency in TDAR.common
-            "src/main/webapp/js/tdar.jquery-upload-validation.js", //fixme: undeclared dependency in TDAR.common
-            "src/main/webapp/js/tdar.common.js",
-
             // specs
             "src/test/frontend/spec/**/*.js",
 

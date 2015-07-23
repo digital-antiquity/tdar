@@ -23,9 +23,11 @@ import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -42,7 +44,7 @@ public class FileAnalyzer {
     private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<>();
     private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
+    public TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     @Autowired
     private MessageService messageService;
 
@@ -112,7 +114,7 @@ public class FileAnalyzer {
         return wf;
     }
 
-    public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
+    private boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         if (informationResourceFileVersions == null) {
             throw new TdarRecoverableRuntimeException("filestore.file_version_null");
         }
@@ -143,17 +145,6 @@ public class FileAnalyzer {
 
     }
 
-    public boolean processFile(InformationResourceFile irFile) throws Exception {
-        return processFile(irFile.getLatestUploadedVersion());
-    }
-
-    public boolean processFile(InformationResourceFile... irFiles) throws Exception {
-        List<InformationResourceFileVersion> versions = new ArrayList<>();
-        for (InformationResourceFile irf : irFiles) {
-            versions.add(irf.getLatestUploadedOrArchivalVersion());
-        }
-        return processFile(versions.toArray(new InformationResourceFileVersion[0]));
-    }
 
     @Autowired
     public void setWorkflows(List<Workflow> workflows) {
@@ -187,5 +178,27 @@ public class FileAnalyzer {
         String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
         return suggestTypeForFileExtension(extension, resourceTypesSupportingBulkUpload);
     }
+
+    /*
+     * Process the files based on whether the @link ResourceType is a composite (like a @link Dataset where all of the files are necessary) or not where each
+     * file is processed separately
+     */
+    public void processFiles(List<InformationResourceFileVersion> filesToProcess, boolean compositeFilesEnabled) throws FileNotFoundException, IOException {
+            if (CollectionUtils.isEmpty(filesToProcess)) {
+                return;
+            }
+
+            if (compositeFilesEnabled) {
+                processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
+            } else {
+                for (InformationResourceFileVersion version : filesToProcess) {
+                    if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
+                        // If we are re-processing, the transient file might not exist.
+                        version.setTransientFile(CONFIG.getFilestore().retrieveFile(ObjectType.RESOURCE, version));
+                    }
+                    processFile(version);
+                }
+            }
+        }
 
 }

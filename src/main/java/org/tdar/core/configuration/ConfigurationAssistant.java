@@ -7,13 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.AccessControlException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.tdar.core.exception.ConfigurationFileException;
 
 /**
  * $Id$
@@ -71,8 +72,7 @@ public class ConfigurationAssistant implements Serializable {
             File file = new File(resource);
             if (file.isFile()) {
                 stream = new FileInputStream(file);
-            }
-            else {
+            } else {
                 stream = getResourceAsStream(resource);
             }
         } catch (AccessControlException e) {
@@ -92,7 +92,7 @@ public class ConfigurationAssistant implements Serializable {
             stream = ClassLoader.getSystemResourceAsStream(path);
         }
         if (stream == null) {
-            throw new RuntimeException("Couldn't load resource from system classpath or context classpath: " + path);
+            throw new ConfigurationFileException("configurationFileException.not_found", Arrays.asList(path));
         }
         return stream;
     }

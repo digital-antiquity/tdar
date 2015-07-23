@@ -38,7 +38,7 @@
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
         <jersey.version>1.19</jersey.version>
-        <jackson.version>2.5.3</jackson.version>
+        <jackson.version>2.6.0</jackson.version>
         <slf4j.version>1.7.12</slf4j.version>
         <!--  note, needs htmlunit 2.18 -->
         <http-components.version>4.4.1</http-components.version>

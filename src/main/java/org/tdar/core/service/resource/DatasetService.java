@@ -59,6 +59,7 @@ import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.resource.dataset.DatasetChangeLogger;
@@ -68,6 +69,7 @@ import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
@@ -83,7 +85,7 @@ import com.opensymphony.xwork2.TextProvider;
  * @version $Revision$
  */
 @Service
-public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
+public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, DatasetDao> {
 
     Pattern originalColumnPattern = Pattern.compile("^(.+)_original_(\\d+)$");
 
@@ -113,6 +115,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private DataTableDao dataTableDao;
+
+    private FileAnalyzer analyzer;
 
     /*
      * Translates a @link DataTableColumn based on the default
@@ -217,7 +221,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
             fileProxy.setRestriction(file.getRestriction());
             fileProxy.setFileId(file.getId());
-            processMetadataForFileProxies(dataset, fileProxy);
+            FileProxyWrapper wrapper = new FileProxyWrapper(dataset, getAnalyzer(), getDao(),Arrays.asList(fileProxy));
+            wrapper.processMetadataForFileProxies();
             irFile = fileProxy.getInformationResourceFile();
         } catch (IOException exception) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
@@ -239,14 +244,16 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         if (CollectionUtils.isEmpty(dataset.getInformationResourceFiles())) {
             return;
         }
+        List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
         try {
             for (InformationResourceFile file : dataset.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
                 File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, latestUploadedVersion);
                 latestUploadedVersion.setTransientFile(transientFile);
+                latestVersions.add(latestUploadedVersion);
             }
 
-            getAnalyzer().processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
+            getAnalyzer().processFiles(latestVersions,true);
             if (dataset.hasCodingColumns()) {
                 createTranslatedFile(dataset);
             }
@@ -341,7 +348,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
         getDao().deleteRelationships(dataset.getRelationships());
         reconcileRelationships(dataset, transientDatasetToPersist);
-        cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
+        getDao().cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
         reconcileTables = null; // resetting and removing references
         getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
@@ -990,4 +997,19 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         remapColumns(columns, project);
     }
 
+    /**
+     * We autowire the setter to help with autowiring issues
+     * 
+     * @param analyzer
+     *            the analyzer to set
+     */
+    @Autowired
+    public void setAnalyzer(FileAnalyzer analyzer) {
+        this.analyzer = analyzer;
+    }
+
+    public FileAnalyzer getAnalyzer() {
+        return analyzer;
+    }
+    
 }

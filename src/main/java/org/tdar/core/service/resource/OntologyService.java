@@ -31,6 +31,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.core.service.FreemarkerService;
+import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.filestore.Filestore.ObjectType;
 
@@ -46,7 +47,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  */
 @Service
 @Transactional
-public class OntologyService extends AbstractInformationResourceService<Ontology, OntologyDao> {
+public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, OntologyDao> {
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
     private final Logger logger = LoggerFactory.getLogger(getClass());

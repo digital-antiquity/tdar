@@ -30,6 +30,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.CodingSheetDao;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
+import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
@@ -46,7 +47,7 @@ import org.tdar.utils.PersistableUtils;
  */
 @Service
 @Transactional
-public class CodingSheetService extends AbstractInformationResourceService<CodingSheet, CodingSheetDao> {
+public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingSheet, CodingSheetDao> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

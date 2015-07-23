@@ -288,14 +288,4 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         }
         return false;
     }
-
-    @XmlTransient
-    public boolean isCreatedByServer() {
-        return createdByServer;
-    }
-
-    public void setCreatedByServer(boolean createdByServer) {
-        this.createdByServer = createdByServer;
-    }
-
 }

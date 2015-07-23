@@ -646,7 +646,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public List<Language> getLanguages() {
         if (languages == null)
-            languages = informationResourceService.findAllLanguages();
+            languages = Arrays.asList(Language.values());
         return languages;
     }
 

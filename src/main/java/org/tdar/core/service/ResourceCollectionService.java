@@ -801,4 +801,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public WhiteLabelCollection getWhiteLabelCollectionForResource(Resource resource) {
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
+
+    public List<Long> findCollectionIdsWithTimeLimitedAccess() {
+        return getDao().findCollectionIdsWithTimeLimitedAccess();
+    }
 }

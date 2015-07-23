@@ -201,7 +201,7 @@ public class FileSystemResourceDao {
     }
 
     public List<String> fetchGroupUrls(String groupName, ResourceType type) {
-        List<String> srcList = new ArrayList();
+        List<String> srcList = new ArrayList<>();
         try {
         WroModelInspector wroModelInspector = getWroInspector();
 

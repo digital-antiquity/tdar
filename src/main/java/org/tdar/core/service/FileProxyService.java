@@ -35,7 +35,7 @@ public class FileProxyService {
     @Autowired
     private PersonalFilestoreService filestoreService;
 
-    public static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {} (creating proxy w/ADD)";
+    public static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}";
 
     /**
      * build a priority-queue of proxies that expect files.
@@ -88,13 +88,10 @@ public class FileProxyService {
             // we assume this happens when proxy fields in form were submitted in state that struts could not type-convert into a proxy instance
             if (proxy == null) {
                 logger.warn(MISSING_FILE_PROXY_WARNING, file.getName());
-                proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
-                proxy.setCreatedByServer(true);
-                finalProxyList.add(proxy);
+            } else {
+                proxy.setFile(file);
             }
-            proxy.setFile(file);
         }
-
         Collections.sort(finalProxyList);
         return finalProxyList;
     }

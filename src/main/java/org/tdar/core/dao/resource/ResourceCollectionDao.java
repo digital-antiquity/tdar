@@ -281,6 +281,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public Set<AuthorizedUser> getUsersFromDb(ResourceCollection collection) {
         Query query = getNamedQuery(TdarNamedQueries.USERS_IN_COLLECTION);
         query.setLong("id", collection.getId());
@@ -290,6 +291,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         HashSet<AuthorizedUser> set = new HashSet<AuthorizedUser>(query.list());
         detachFromSession(set);
         return set;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Long> findCollectionIdsWithTimeLimitedAccess() {
+        Query query = getNamedQuery(TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS);
+        query.setReadOnly(true);
+        return query.list();
     }
 
 }

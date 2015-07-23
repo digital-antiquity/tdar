@@ -1757,8 +1757,8 @@ public class Resource implements Persistable,
 
 
     @XmlTransient
-    public List<Creator> getRelatedCreators() {
-        List<Creator> creators = new ArrayList<Creator>();
+    public List<Creator<?>> getRelatedCreators() {
+        List<Creator<?>> creators = new ArrayList<>();
         for (ResourceCreator creator : resourceCreators) {
             creators.add(creator.getCreator());
         }

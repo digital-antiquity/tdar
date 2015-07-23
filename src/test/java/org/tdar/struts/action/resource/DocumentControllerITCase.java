@@ -734,8 +734,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Document document = setupAndLoadResource(TestConstants.TEST_DOCUMENT, Document.class);
         Long documentId = document.getId();
         String filename = "dataset_with_floats_to_varchar.xls";
-        Document document2 = replaceFile(TestConstants.TEST_IMAGE, TestConstants.TEST_DOCUMENT, Document.class, documentId);
-        assertTrue(getActionErrors().size() > 0);
+        Document document2 = replaceFile(TestConstants.TEST_IMAGE_NAME, TestConstants.TEST_DOCUMENT_NAME, Document.class, documentId);
         assertTrue(getActionErrors().contains(MessageHelper.getMessage("abstractResourceController.bad_extension")));
     }
 

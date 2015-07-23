@@ -40,13 +40,22 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.core.service.resource.FileProxyWrapper;
+import org.tdar.filestore.FileAnalyzer;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     BillingAccountService accountService;
 
+    @Autowired
+    DatasetDao datasetDao;
+    
+    @Autowired
+    FileAnalyzer analyzer;
+    
     @Test
     @Rollback
     public void testUnassignedInvoice() {
@@ -303,7 +312,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         FileProxy proxy = new FileProxy("test.pdf", new File(TestConstants.TEST_DOCUMENT_DIR, "/t2/test.pdf"), VersionType.UPLOADED_ARCHIVAL);
         proxy.setAction(FileAction.REPLACE);
         proxy.setFileId(file.getId());
-        informationResourceService.processMetadataForFileProxies(doc, proxy);
+        FileProxyWrapper wrapper = new FileProxyWrapper(doc, analyzer, datasetDao, Arrays.asList(proxy));
         ResourceEvaluator re4 = new ResourceEvaluator(model);
         logger.info("files {} ", doc.getInformationResourceFiles());
         re4.evaluateResources(doc);

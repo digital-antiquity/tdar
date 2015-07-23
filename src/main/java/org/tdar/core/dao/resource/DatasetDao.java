@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -386,6 +387,24 @@ public class DatasetDao extends ResourceDao<Dataset> {
         Query query2 = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS);
         query2.setParameterList("ids", ids);
         query2.executeUpdate();
+    }
+
+    public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
+        logger.info("deleting unmerged tables: {}", tablesToRemove);
+        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
+        if (CollectionUtils.isNotEmpty(columnsToRemove)) {
+            for (DataTableColumn column : columnsToRemove) {
+                columnsToUnmap.add(column);
+            }
+        }
+        // first unmap all columns from the removed tables
+        unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+
+        delete(columnsToRemove);
+        if (CollectionUtils.isNotEmpty(tablesToRemove)) {
+            dataset.getDataTables().removeAll(tablesToRemove);
+        }
+        
     }
 
 }
