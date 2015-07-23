@@ -40,8 +40,8 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
             assertEquals(Status.IN_REVIEW, email.getStatus());
             email.setStatus(Status.QUEUED);
             genericService.saveOrUpdate(email);
-            SimpleMailMessage received = checkMailAndGetLatest();
-            assertTrue(received.getText().contains("this is a test"));
+            checkMailAndGetLatest("this is a test");
+//            assertTrue(received.getText().contains("this is a test"));
         }
     }
 

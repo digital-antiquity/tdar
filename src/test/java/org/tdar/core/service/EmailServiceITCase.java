@@ -33,7 +33,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         email.setSubject(subject);
         emailService.send(email);
 
-        SimpleMailMessage received = checkMailAndGetLatest();
+        SimpleMailMessage received = checkMailAndGetLatest(mailBody);
 
         assertEquals(received.getSubject(), subject);
         assertEquals(received.getText(), mailBody);

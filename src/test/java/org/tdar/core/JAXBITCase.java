@@ -36,7 +36,6 @@ import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.json.JsonProjectLookupFilter;

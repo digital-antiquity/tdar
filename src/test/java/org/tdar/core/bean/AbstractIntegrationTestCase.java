@@ -182,8 +182,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected EmailService emailService;
 
-    private List<String> actionErrors = new ArrayList<>();
-    private boolean ignoreActionErrors = false;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private SessionData sessionData;
 
@@ -225,7 +223,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     @After
     public void announceTestOver() {
-        int errorCount = 0;
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
     }
@@ -902,14 +899,23 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
 
-    public SimpleMailMessage checkMailAndGetLatest() {
+    public SimpleMailMessage checkMailAndGetLatest(String text) {
         sendEmailProcess.execute();
         sendEmailProcess.cleanup();
         ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
+        logger.debug("{} messages " , messages.size());
+        SimpleMailMessage toReturn = null;
+        for (SimpleMailMessage msg : messages) {
+            logger.debug("{} from:{} to:{}" , msg.getSubject(), msg.getFrom(), msg.getTo());
+            if (msg.getText().contains(text)) {
+                toReturn = msg;
+            }
+        }
         assertTrue("should have a mail in our 'inbox'", messages.size() > 0);
-
-        SimpleMailMessage received = messages.remove(0);
-        return received;
+        if (toReturn != null) {
+            messages.remove(toReturn);
+        }
+        return toReturn;
     }
 
     public String getText(String msgKey) {
