@@ -28,7 +28,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
-import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.action.search.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
 @Component

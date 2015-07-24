@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.external.AntiSpamHelper;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
@@ -22,7 +23,6 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.UserLogin;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -190,7 +190,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = userLogin.validate(authorizationService, recaptchaService);
+        ErrorTransferObject errors = userLogin.validate(authorizationService, recaptchaService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
         if (!isPostRequest() || errors.isNotEmpty()) {

@@ -40,6 +40,7 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.WebFileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
@@ -155,6 +156,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Autowired
     private transient FileSystemResourceService filesystemResourceService;
+    @Autowired
+    private transient WebFileSystemResourceService webFilesystemResourceService;
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
@@ -614,11 +617,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<String> getJavascriptFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
+        return webFilesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
     }
 
     public List<String> getCssFiles() {
-        return filesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.CSS);
+        return webFilesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.CSS);
     }
 
     public String getWroProfile() {
@@ -626,7 +629,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public boolean isWebFilePreprocessingEnabled() {
-        return filesystemResourceService.testWRO();
+        return webFilesystemResourceService.testWRO();
     }
 
     public String getMoreInfoUrlKey() {
@@ -676,7 +679,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getWroTempDirName() {
-        return filesystemResourceService.getWroDir();
+        return webFilesystemResourceService.getWroDir();
     }
 
     public boolean isUseCDN() {

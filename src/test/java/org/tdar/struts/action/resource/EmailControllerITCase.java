@@ -11,9 +11,9 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.service.external.AntiSpamHelper;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.EmailController;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.utils.EmailMessageType;
 
 public class EmailControllerITCase extends AbstractResourceControllerITCase {
@@ -40,8 +40,8 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
             assertEquals(Status.IN_REVIEW, email.getStatus());
             email.setStatus(Status.QUEUED);
             genericService.saveOrUpdate(email);
-            SimpleMailMessage received = checkMailAndGetLatest();
-            assertTrue(received.getText().contains("this is a test"));
+            checkMailAndGetLatest("this is a test");
+//            assertTrue(received.getText().contains("this is a test"));
         }
     }
 

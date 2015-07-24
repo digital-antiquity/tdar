@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.action.search.FacetGroup;
 
 public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
 

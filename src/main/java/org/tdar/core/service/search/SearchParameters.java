@@ -41,11 +41,10 @@ import org.tdar.search.query.part.SkeletonPersistableQueryPart;
 import org.tdar.search.query.part.SpatialQueryPart;
 import org.tdar.search.query.part.TemporalQueryPart;
 import org.tdar.search.query.part.TitleQueryPart;
-import org.tdar.struts.action.search.SearchFieldType;
-import org.tdar.struts.data.DateRange;
-import org.tdar.struts.data.StringRange;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.range.DateRange;
+import org.tdar.utils.range.StringRange;
 
 import com.opensymphony.xwork2.TextProvider;
 

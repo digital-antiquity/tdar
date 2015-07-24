@@ -58,7 +58,7 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
-public abstract class AbstractControllerITCase extends AbstractIntegrationTestCase {
+public abstract class AbstractControllerITCase extends AbstractIntegrationControllerTestCase {
 
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
     public static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";

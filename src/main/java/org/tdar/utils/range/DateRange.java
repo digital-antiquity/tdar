@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.utils.range;
 
 import java.util.Date;
 

@@ -33,6 +33,9 @@ public interface TestConstants {
     public static String TEST_CODING_SHEET_DIR = TEST_ROOT_DIR + "coding sheet/";
     public static final String TEST_DATA_INTEGRATION_DIR = TEST_ROOT_DIR + "data_integration_tests/";
 
+    public static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
+    public static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
+
     // public static String USERNAME = "test@tdar.org";
     // public static String PASSWORD = "test";
     public static Long ADMIN_PROJECT_ID = 1L;

@@ -41,8 +41,8 @@ import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.struts.data.DateRange;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.range.DateRange;
 
 @Transactional
 public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase {
