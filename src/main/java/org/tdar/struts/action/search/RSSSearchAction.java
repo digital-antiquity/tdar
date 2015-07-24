@@ -1,0 +1,95 @@
+package org.tdar.struts.action.search;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.RssService;
+import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+
+@Namespace("/search")
+@Component
+@Scope("prototype")
+@ParentPackage("default")
+@HttpOnlyIfUnauthenticated
+public class RSSSearchAction extends AbstractAdvancedSearchController {
+
+    private static final long serialVersionUID = -1844450612633514072L;
+
+    @Autowired
+    private transient RssService rssService;
+
+    private GeoRssMode geoMode = GeoRssMode.POINT;
+
+    // contentLength for excel download requests
+    private Long contentLength;
+    private InputStream inputStream;
+
+    @Action(value = "rss", results = { @Result(name = SUCCESS, type = "stream", params = {
+            "documentName", "rssFeed", "formatOutput", "true", "inputName",
+            "inputStream", "contentType", "application/rss+xml",
+            "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }) })
+    public String viewRss() throws TdarActionException {
+        try {
+            setDefaultSort(SortOption.ID_REVERSE);
+            getLogger().trace("sort field {} ", getSortField());
+            if (getSortField() == null) {
+                setSecondarySortField(SortOption.TITLE);
+            }
+            setMode("rss");
+            performResourceSearch();
+            setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml11(getSearchPhrase()));
+            setSearchDescription(getText("advancedSearchController.rss_subtitle", TdarConfiguration.getInstance().getSiteAcronym(),
+                    StringEscapeUtils.escapeXml11(getSearchPhrase())));
+            if (!isReindexing()) {
+                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true, this));
+            } else {
+                setInputStream(new ByteArrayInputStream("".getBytes()));
+            }
+        } catch (TdarActionException tdae) {
+            return tdae.getResponse();
+        } catch (Exception e) {
+            getLogger().error("rss error", e);
+            addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
+        }
+        return SUCCESS;
+    }
+
+    public GeoRssMode getGeoMode() {
+        return geoMode;
+    }
+
+    public void setGeoMode(GeoRssMode geoMode) {
+        this.geoMode = geoMode;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    @Override
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        return null;
+    }
+
+}
