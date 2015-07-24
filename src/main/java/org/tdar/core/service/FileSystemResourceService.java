@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.dao.FileSystemResourceDao;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -43,6 +44,10 @@ public class FileSystemResourceService {
 
     public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
         return fileSystemResourceDao.parseCreatorInfoLog(prefix, limit, mean, sidebarValuesToShow, dom);
+    }
+
+    public boolean checkHostedFileAvailable(String filename, ObjectType type, Long id) {
+        return fileSystemResourceDao.checkHostedFileAvailable(filename, type, id);
     }
 
 }

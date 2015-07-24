@@ -24,10 +24,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.FileSystemResourceService;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AntiSpamHelper;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.SortOption;
@@ -62,9 +60,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
 
     private static final long serialVersionUID = -5126488373034823160L;
 
-    @Autowired
-    private transient RecaptchaService recaptchaService;
-
     private AntiSpamHelper h = new AntiSpamHelper();
     private Long startTime = -1L;
     private P persistable;
@@ -79,8 +74,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    @Autowired
-    private transient GenericService genericService;
+
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
