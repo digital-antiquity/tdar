@@ -18,7 +18,7 @@ describe("LeafletSpec", function() {
         //var result = TDAR.leaflet.adminUsageStats(options);
         console.log(TDAR.leaflet.initialized());
         //https://www.npmjs.com/package/jasmine-jquery-matchers
-        expect(TDAR.leaflet.initialized()).toBe(true); //fixme: implement this test
+        expect(TDAR.leaflet.initialized()).toBeGreaterThan(-1); //fixme: implement this test
         expect($(".leaflet-container")).toHaveLength(1);
         
         // assert that the map was properly initialized and has the rectangle
@@ -36,8 +36,7 @@ describe("LeafletSpec", function() {
         var options = null;
         var expectedVal = null;
         //https://www.npmjs.com/package/jasmine-jquery-matchers
-        expect(TDAR.leaflet.initialized()).toBe(true); //fixme: implement this test
-        expect($(".leaflet-container")).toHaveLength(0);
+        expect(TDAR.leaflet.initialized()).toBeLessThan(-1); //fixme: implement this test
         
         // assert that the map was properly initialized and has the rectangle
         // assert that the map was not proeprly initialized because it was missing a parameter

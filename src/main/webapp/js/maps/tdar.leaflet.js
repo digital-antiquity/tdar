@@ -13,8 +13,9 @@ TDAR.leaflet = (function(console, $, ctx) {
     var _rectangleDefaults = {
             fitToBounds : true
     }
-    
-	var _initialized = false;
+    // -1 -- not initialized ; -2 -- bad rectangle ; 1 -- initialized ; 2 -- rectangle setup
+	var _initialized = -1;
+	
     var _map;
     var _dc;
     /**
@@ -35,7 +36,7 @@ TDAR.leaflet = (function(console, $, ctx) {
         tile.addTo(map);
 		//FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _map = map;
-		_initialized = true;
+		_initialized = 0;
         return map;
     }
 
@@ -82,7 +83,6 @@ TDAR.leaflet = (function(console, $, ctx) {
         var $miny = parseFloat($el.data("miny"));
         var $maxx = parseFloat($el.data("maxx"));
         var $maxy = parseFloat($el.data("maxy"));
-		// FIXME: log error state if not valid
         _initRectangle(map, $minx,$miny,$maxx,$maxy, rectangleSettings);
 
     }
@@ -99,11 +99,13 @@ TDAR.leaflet = (function(console, $, ctx) {
 			if (rectangleSettings.fitToBounds) {
 	            map.fitBounds(rectangle.getBounds());
 			}
+			_initialized =2;
 			return rectangle;
         } else if (minx == undefined && miny == undefined && maxx == undefined && maxy == undefined) {
             // skipping, we're just not configured at all;
             return;
         }
+		_initialized = -2;
         console.log("check map init bounds ["+ minx + "," + miny + "] [" + maxx + "," + maxy +"]");
 	}
 	
