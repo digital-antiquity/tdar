@@ -36,22 +36,8 @@ Common macros used in multiple contexts
 -->
     <#macro globalJavascript>
     <script type="text/javascript">
-    <@baseUriJavascript />
     <@googleAnalyticsJavascript />
 </script>
-    </#macro>
-
-<#--define global getBaseURI(), getURI(path), TDAR.uri -->
-    <#macro baseUriJavascript>
-    if(typeof TDAR === "undefined") {var TDAR = {};}
-
-    //return absolute URL for the specified relative path,  including context path.
-    //if no path specified, return the base URL.
-    TDAR.uri = function(path) {
-    var uri = "<@s.url value='/' />";
-    if(path) {uri += path;}
-    return uri;
-    }
     </#macro>
 
 <#-- emit the javascript necessary for google analytics -->
