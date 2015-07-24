@@ -148,7 +148,4 @@ public class GeoSearchService {
         return geoSearchDao.isEnabled();
     }
 
-    public SvgMapWrapper toSvg(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
-        return geoSearchDao.getMapSvg(strokeWidth, searchPrefix, searchSuffix, table, limit);
-    }
 }
