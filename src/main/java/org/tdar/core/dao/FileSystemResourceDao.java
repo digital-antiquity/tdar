@@ -68,7 +68,7 @@ public class FileSystemResourceDao {
             logger.debug("wroFile: {}", wroFile);
             Resource resource = resourceLoader.getResource(wroFile);
             wroExists = resource.exists();
-            
+
             if (wroExists) {
                 logger.debug("WRO found? true");
             }
@@ -205,14 +205,15 @@ public class FileSystemResourceDao {
 
     public List<String> fetchGroupUrls(String groupName, ResourceType type) {
         List<String> srcList = new ArrayList<>();
-        WroModelInspector wroModelInspector = getWroInspector();
+        try {
+            WroModelInspector wroModelInspector = getWroInspector();
 
-        Group group = wroModelInspector.getGroupByName(groupName);
-        for (ro.isdc.wro.model.resource.Resource resource : group.getResources()) {
-            if (type == null || type == resource.getType()) {
-                srcList.add(resource.getUri());
+            Group group = wroModelInspector.getGroupByName(groupName);
+            for (ro.isdc.wro.model.resource.Resource resource : group.getResources()) {
+                if (type == null || type == resource.getType()) {
+                    srcList.add(resource.getUri());
+                }
             }
-        }
         } catch (URISyntaxException uriEx) {
             logger.error("could not find wro.xml", uriEx);
         }
@@ -223,7 +224,7 @@ public class FileSystemResourceDao {
         if (getHostedFile(filename, type, id) != null) {
             return true;
         }
-        
+
         return false;
     }
 
