@@ -5,8 +5,8 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/WEB-INF/content/cart/common-invoice.ftl" as invoicecommon >
 <head>
-    <title>Your Cart</title>
-    <meta name="lastModifiedDate" content="$Date$"/>
+    <title>tDAR Pricing</title>
+    <meta name="description" content="Migrate your papers and files to a discoverable, accessible digital archive.">
     <style>
 .price {padding-top:.2em; display:inline-block;}
 .small {font-size: 85%;}

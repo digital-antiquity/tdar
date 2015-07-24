@@ -2,7 +2,7 @@
     <div class="span3 bucket">
         <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
 
-        <h3>Access &amp; Use</h3>
+        <h3><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h3>
 
         <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
 
@@ -13,7 +13,7 @@
     <div class="span3 bucket">
         <img src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
 
-        <h3>Preservation</h3>
+        <h3><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h3>
 
         <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
 
@@ -24,7 +24,7 @@
     <div class="span3 bucket">
         <img src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
 
-        <h3>Upload Resources</h3>
+        <h3><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h3>
 
         <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
 
@@ -35,7 +35,7 @@
     <div class="span3 bucket">
         <img src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
 
-        <h3>Who Uses tDAR</h3>
+        <h3><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h3>
 
         <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
 
