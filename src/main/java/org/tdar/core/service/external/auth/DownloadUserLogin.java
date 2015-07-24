@@ -1,4 +1,4 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 public class DownloadUserLogin extends UserLogin {
 

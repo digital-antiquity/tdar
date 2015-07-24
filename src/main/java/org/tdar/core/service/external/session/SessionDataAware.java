@@ -1,6 +1,4 @@
-package org.tdar.web;
-
-import org.tdar.core.service.external.SessionData;
+package org.tdar.core.service.external.session;
 
 /**
  * $Id$

@@ -35,6 +35,9 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UserNotificationService;
+import org.tdar.core.service.external.auth.UserLogin;
+import org.tdar.core.service.external.auth.UserRegistration;
+import org.tdar.core.service.external.session.SessionData;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 

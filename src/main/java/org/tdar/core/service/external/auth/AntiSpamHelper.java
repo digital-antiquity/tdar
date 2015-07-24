@@ -1,4 +1,4 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.RecaptchaService;
 
 public class AntiSpamHelper implements Serializable {
 

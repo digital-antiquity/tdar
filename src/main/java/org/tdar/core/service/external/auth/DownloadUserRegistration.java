@@ -1,4 +1,4 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 /**
  * Appends file download specific data to typical user registration.

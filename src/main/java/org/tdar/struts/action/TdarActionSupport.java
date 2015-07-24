@@ -42,7 +42,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.WebFileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.SessionData;
+import org.tdar.core.service.external.session.SessionData;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SearchResultHandler;

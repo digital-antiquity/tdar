@@ -49,7 +49,7 @@ import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
-import org.tdar.core.service.external.SessionData;
+import org.tdar.core.service.external.session.SessionData;
 
 @Configuration
 @ComponentScan(basePackages = { "org.tdar" })

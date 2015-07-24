@@ -1,6 +1,8 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 public class CartUserRegistration extends UserRegistration {
 

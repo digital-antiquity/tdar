@@ -21,7 +21,7 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
-import org.tdar.core.service.external.UserRegistration;
+import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.utils.Pair;
 import org.tdar.web.functional.util.ByLabelText;
 import org.tdar.web.functional.util.WebElementSelection;

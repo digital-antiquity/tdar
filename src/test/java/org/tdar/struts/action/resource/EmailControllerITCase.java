@@ -11,8 +11,8 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.service.external.AntiSpamHelper;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.EmailController;
 import org.tdar.utils.EmailMessageType;
 

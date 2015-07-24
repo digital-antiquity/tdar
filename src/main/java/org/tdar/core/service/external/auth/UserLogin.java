@@ -1,8 +1,10 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 /**
  * Created by jimdevos on 6/17/14.

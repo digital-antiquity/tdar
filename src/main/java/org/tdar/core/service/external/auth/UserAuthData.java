@@ -1,4 +1,4 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 import java.io.Serializable;
 
@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.external.RecaptchaService;
 
 public abstract class UserAuthData implements Serializable {
 
