@@ -40,7 +40,6 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.WebFileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.filestore.FileStoreFile;
@@ -55,6 +54,7 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
+import org.tdar.web.WebFileSystemResourceService;
 
 import ro.isdc.wro.model.resource.ResourceType;
 

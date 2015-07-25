@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.web;
 
 import java.io.File;
 import java.net.URISyntaxException;
