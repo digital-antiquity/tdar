@@ -23,10 +23,10 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
-import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -61,8 +61,6 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient EntityService entityService;
-    @Autowired
-    private transient GenericService genericService;
 
     @Action(value = "login",
             results = {

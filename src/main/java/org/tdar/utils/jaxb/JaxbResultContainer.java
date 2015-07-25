@@ -62,7 +62,7 @@ public class JaxbResultContainer implements Serializable, APIParameters {
 
             ActionErrorWrapper tas = (ActionErrorWrapper) invocation.getAction();
             if (tas.hasActionErrors()) {
-                for (String actionError : tas.getActionErrors()) {
+                for (String actionError : tas.getErrorMessages()) {
                     errors.add(tas.getText(actionError));
                 }
             }

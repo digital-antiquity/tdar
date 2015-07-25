@@ -58,6 +58,5 @@
     </#macro>
 
     <#macro footer>
-    <script src="<@s.url value='/js/tdar.ontology.js'/>"></script>
     </#macro>
 </#escape>

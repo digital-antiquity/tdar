@@ -1,5 +1,6 @@
 package org.tdar.utils.jaxb;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ public interface ActionErrorWrapper extends TextProvider {
 
     boolean hasActionErrors();
     
-    List<String> getActionErrors();
+    Collection<String> getErrorMessages();
     
     boolean hasFieldErrors();
     
