@@ -26,7 +26,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.external.SessionData;
+import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 

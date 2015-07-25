@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.service.external.AntiSpamHelper;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AuthenticationAware;
 
 import com.opensymphony.xwork2.Preparable;

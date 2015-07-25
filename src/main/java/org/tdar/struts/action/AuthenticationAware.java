@@ -12,9 +12,9 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.web.SessionDataAware;
 
 /**
  * $Id$

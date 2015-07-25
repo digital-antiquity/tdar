@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,9 +41,8 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.WebFileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.SessionData;
+import org.tdar.core.service.external.session.SessionData;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SearchResultHandler;
@@ -55,6 +55,8 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
+import org.tdar.utils.jaxb.ActionErrorWrapper;
+import org.tdar.web.WebFileSystemResourceService;
 
 import ro.isdc.wro.model.resource.ResourceType;
 
@@ -72,7 +74,7 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 @Scope("prototype")
 // @Controller
-public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
+public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware, ActionErrorWrapper {
 
     private static final long serialVersionUID = 7084489869489013998L;
 
@@ -897,4 +899,5 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isSubnavEnabled() {
         return true;
     }
+    
 }

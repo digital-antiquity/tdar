@@ -36,6 +36,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.UrlService;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.struts.action.TdarActionException;

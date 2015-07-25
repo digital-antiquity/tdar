@@ -41,6 +41,7 @@ import org.tdar.core.service.search.SearchFieldType;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;

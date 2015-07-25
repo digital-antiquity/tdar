@@ -68,6 +68,7 @@
         <js>/js/tdar.autocomplete.js</js>
         <js>/js/tdar.datatable.js</js>
         <js>/js/tdar.dataset-metadata.js</js>
+        <js>/js/tdar.ontology.js</js>
         <js>/js/tdar.ontology-mapping.js</js>
         <js>/js/tdar.dataintegration.js</js>
         <js>/js/tdar.sensorydata.js</js>
