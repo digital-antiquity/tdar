@@ -1,4 +1,4 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 import java.util.List;
 
@@ -7,6 +7,8 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 /**
  * Created by jimdevos on 6/17/14.

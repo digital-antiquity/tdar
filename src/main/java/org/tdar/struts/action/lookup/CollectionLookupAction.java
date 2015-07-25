@@ -15,12 +15,12 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.CollectionAccessQueryPart;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.action.search.FacetGroup;
 import org.tdar.utils.json.JsonLookupFilter;
 
 /**

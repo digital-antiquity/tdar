@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceAnnotationKeyQueryBuilder;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.action.search.FacetGroup;
 import org.tdar.utils.json.JsonLookupFilter;
 
 /**

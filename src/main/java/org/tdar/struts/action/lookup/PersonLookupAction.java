@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.action.search.FacetGroup;
 
 /**
  * $Id$

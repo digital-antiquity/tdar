@@ -30,7 +30,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.struts.data.SvgMapWrapper;
 import org.tdar.utils.MessageHelper;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -107,9 +106,6 @@ public class GeoSearchDao {
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
     // , concat('${',%1$s,'-style?default('''')}') as style
-    public static final String QUERY_SVG = "select xmlelement(name g, xmlattributes( concat('a',%1$s) as id, concat('a',%1$s) as class, %2$s as name, " +
-            "  %3$s as \"stroke-width\" ), xmlelement(name a,xmlattributes(concat('%4$s',%1$s,'%5$s') as \"xlink:href\")," +
-            " xmlelement(name path, xmlattributes(ST_asSVG(ST_transform(the_geom, 2163), 0, 5) as d))) ) from %6$s where %1$s is not null";
 
     public enum SpatialTables {
         COUNTRY("country_wgs84", "long_name", "iso_2digit"),
@@ -347,61 +343,6 @@ public class GeoSearchDao {
 
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
-    }
-
-    public SvgMapWrapper getMapSvg(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
-        String sql = constructSVGQuery(strokeWidth, searchPrefix, searchSuffix, table, limit);
-        SvgMapWrapper wrapper = new SvgMapWrapper();
-        List<Map<String, Object>> findAll = findAll(sql, limit);
-        for (Map<String, Object> row : findAll) {
-            for (Object val : row.values()) {
-                wrapper.getSqlXml().add((SQLXML) val);
-            }
-        }
-        logger.info(sql);
-
-        sql = String.format(QUERY_ENVELOPE_WEBMER, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
-        Map<String, Object> envelope = null;
-        logger.info(sql);
-        if (StringUtils.isNotBlank(limit)) {
-            sql += String.format(" and %s='?'", table.getLimitColumn());
-            envelope = findFirst(sql, limit);
-        } else {
-            envelope = findFirst(sql);
-        }
-        if ((envelope != null) && (envelope.get(POLYGON) != null)) {
-            PGgeometry poly = (PGgeometry) envelope.get(POLYGON);
-            logger.trace(poly.getGeometry().toString());
-            Point firstPoint = poly.getGeometry().getPoint(0);
-            Point thirdPoint = poly.getGeometry().getPoint(2);
-            wrapper.setMinX((int) firstPoint.getX());
-            wrapper.setMinY((int) firstPoint.getY());
-
-            wrapper.setWidth((int) Math.abs(Math.ceil(firstPoint.getX() - thirdPoint.getX())));
-            if (thirdPoint.getX() < firstPoint.getX()) {
-                wrapper.setMinX((int) thirdPoint.getX());
-                logger.info("resetting x");
-                wrapper.setWidth((int) Math.abs(Math.ceil(thirdPoint.getX() - firstPoint.getX())));
-            }
-            wrapper.setHeight((int) Math.abs(Math.ceil(firstPoint.getY() - thirdPoint.getY())));
-            if (thirdPoint.getY() < firstPoint.getY()) {
-                wrapper.setMinY((int) thirdPoint.getY());
-                logger.info("resetting y");
-                wrapper.setHeight((int) Math.abs(Math.ceil(thirdPoint.getY() - firstPoint.getY())));
-            }
-
-            logger.trace(String.format("%s %s ", wrapper.getMinX(), wrapper.getMinY()));
-            logger.trace(String.format("%s %s ", wrapper.getWidth(), wrapper.getHeight()));
-        }
-        return wrapper;
-    }
-
-    public static String constructSVGQuery(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
-        String ret = String.format(QUERY_SVG, table.getIdColumn(), table.getLabelColumn(), strokeWidth, searchPrefix, searchSuffix, table.getTableName());
-        if (StringUtils.isNotBlank(limit)) {
-            ret += String.format(" and %s='?'", table.getLimitColumn());
-        }
-        return ret;
     }
 
 }

@@ -50,7 +50,7 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.external.SessionData;
+import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.resource.DataTableService;
