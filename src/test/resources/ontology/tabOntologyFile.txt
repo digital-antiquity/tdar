@@ -1,0 +1,10 @@
+Tool
+	Projectile Point
+		Scraper
+End Scraper
+Side Scraper
+	Other Tool (Unknown Tool;Miscellaneous Tool; Toolish; Toolosity   ; Tool of May )
+Flake
+	Utilized
+	Unutilized
+Core
