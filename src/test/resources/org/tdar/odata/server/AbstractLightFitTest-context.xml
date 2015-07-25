@@ -37,7 +37,7 @@
 
 	<!-- for the database integration test applicationContext.xml provides this -->
 	<tx:annotation-driven proxy-target-class='true' />
-	<bean id='sessionData' class='org.tdar.web.SessionData' scope='session'>
+	<bean id='sessionData' class='org.tdar.core.service.external.session.SessionData' scope='session'>
 		<aop:scoped-proxy />
 	</bean>
 
