@@ -1,9 +1,13 @@
 <project>
     <groupId>org.tdar</groupId>
 <artifactId>tdar-database</artifactId>
-    <version>14-NEOLITHIC-SNAPSHOT</version>
     <name>The Digital Archaeological Record (database)</name>
     <modelVersion>4.0.0</modelVersion>
+	<parent>
+	    <groupId>tdar</groupId>
+	    <artifactId>tdar-parent</artifactId>
+	    <version>14-NEOLITHIC-SNAPSHOT</version>
+	</parent>
     <build>
         <plugins>
             <plugin>

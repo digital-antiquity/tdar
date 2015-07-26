@@ -1776,33 +1776,36 @@
 			          <artifactId>maven-remote-resources-plugin</artifactId>
 			          <version>1.5</version>
 			          <executions>
-			            <execution>
-			              <id>process-remote-resources</id>
-			              <goals>
-			                <goal>process</goal>
-			              </goals>
-			              <configuration>
-							<attachToTest>true</attachToTest>
-			                <resourceBundles>
-			                  <resourceBundle>org.tdar:tdar-test-resources:${version}</resourceBundle>
-			                </resourceBundles>
-			              </configuration>
-			            </execution>
-		                <execution>
-		                  <id>process-database-resources</id>
-		                  <goals>
-		                    <goal>process</goal>
-		                  </goals>
-		                  <configuration>
-		    	 			 <outputDirectory>liquibase</outputDirectory>
-		  	  			  <attachToTest>false</attachToTest>	
-		                    <resourceBundles>
-		                      <resourceBundle>org.tdar:tdar-database:${version}</resourceBundle>
-		                    </resourceBundles>
-		                  </configuration>
-		                </execution>
+			              <execution>
+			                <id>process-test-resources</id>
+			                <goals>
+			                  <goal>process</goal>
+			                </goals>
+			                <configuration>
+			  				<attachToTest>true</attachToTest>
+							<attachToMain>false</attachToMain>
+			  			    <outputDirectory>target/test-resources</outputDirectory>
+			                  <resourceBundles>
+			                    <resourceBundle>org.tdar:tdar-test-resources:${version}</resourceBundle>
+			                  </resourceBundles>
+			                </configuration>
+			              </execution>
+			              <execution>
+			                <id>process-database-resources</id>
+			                <goals>
+			                  <goal>process</goal>
+			                </goals>
+			                <configuration>
+			   				 <attachToMain>true</attachToMain>
+				  			  <attachToTest>false</attachToTest>
+							  <outputDirectory>target</outputDirectory>
+			                  <resourceBundles>
+			                    <resourceBundle>org.tdar:tdar-database:${version}</resourceBundle>
+			                  </resourceBundles>
+			                </configuration>
+			              </execution>
 			          </executions>
-			        </plugin>
+			        </plugin>		
 
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>

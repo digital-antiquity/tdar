@@ -5,13 +5,13 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 	<!-- setup the test database -->
-    <include file="src/main/db/db-schema.xml" />
-	<include file="src/test/db/changelog-setup.xml" />
-    <include file="src/main/db/db-keys-and-indexes.xml"/>
+    <include file="liquibase/db-schema.xml" />
+	<include file="liquibase-test/changelog-setup.xml" />
+    <include file="liquibase/db-keys-and-indexes.xml"/>
 	<!-- setup the integration data -->
-	<include file="src/test/db/changelog-integration-setup.xml" />
-	<include file="src/test/db/reset-sequences.xml"/>
+	<include file="liquibase-test/changelog-integration-setup.xml" />
+	<include file="liquibase-test/reset-sequences.xml"/>
 	<!-- load the production updates -->
-	<include file="src/main/db/changelog.xml" />
-	<include file="src/test/db/additional-munsell-test-setup.xml"/>
+	<include file="liquibase/changelog.xml" />
+	<include file="liquibase-test/additional-munsell-test-setup.xml"/>
 </databaseChangeLog>
