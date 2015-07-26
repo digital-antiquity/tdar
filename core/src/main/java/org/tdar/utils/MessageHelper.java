@@ -29,7 +29,7 @@ public class MessageHelper implements Serializable, TextProvider {
         // Exists only to defeat instantiation.
     }
 
-    protected MessageHelper(ResourceBundle bundle) {
+    public MessageHelper(ResourceBundle bundle) {
         this.bundle = bundle;
     }
 
