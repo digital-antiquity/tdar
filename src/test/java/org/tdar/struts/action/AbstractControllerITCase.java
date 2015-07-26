@@ -17,7 +17,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;

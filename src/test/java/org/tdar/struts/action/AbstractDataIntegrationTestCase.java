@@ -9,7 +9,6 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,32 +23,18 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
-import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
-import org.tdar.db.conversion.DatasetConversionFactory;
-import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.db.model.PostgresDatabase;
-import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.workspace.IntegrationDownloadAction;
@@ -59,16 +44,6 @@ import org.tdar.utils.PersistableUtils;
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
     // public static final long SPITAL_IR_ID = 503l;
-    public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
-    protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
-
-    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
-    protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
-
-    @Override
-    protected String getTestFilePath() {
-        return PATH;
-    }
 
     public static Map<String, String> getElementValueMap() {
         HashMap<String, String> elementValueMap = new HashMap<String, String>();
@@ -121,59 +96,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return taxonValueMap;
     }
 
-    protected InformationResourceFileVersion makeFileVersion(File name, long id) throws IOException {
-        long infoId = (long) (Math.random() * 10000);
-        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
-        version.setId(id);
-        filestore.store(ObjectType.RESOURCE, name, version);
-        version.setTransientFile(name);
-        return version;
-    }
-
-    public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
-        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
-        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
-        assertTrue("text file exists", storedFile.exists());
-        DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
-        converter.execute();
-        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(), converter.getTableNames().toArray(new String[0])));
-        return converter;
-    }
-
-    static Long spitalIrId = (long) (Math.random() * 10000);
-
-    public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
-        spitalIrId++;
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
-        return converter;
-    }
-
-    @Autowired
-    @Qualifier("tdarDataImportDataSource")
-    public void setIntegrationDataSource(DataSource dataSource) {
-        tdarDataImportDatabase.setDataSource(dataSource);
-    }
-
-    String[] dataImportTables = new String[0];
-
-    public String[] getDataImportTables() {
-        return dataImportTables;
-    }
-
-    public void setDataImportTables(String[] dataImportTables) {
-        this.dataImportTables = dataImportTables;
-    }
-
-    @Before
-    public void dropDataImportDatabaseTables() throws Exception {
-        for (String table : getDataImportTables()) {
-            try {
-                tdarDataImportDatabase.dropTable(table);
-            } catch (Exception ignored) {
-            }
-        }
-
-    }
 
     protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws Exception {
         CodingSheetMappingController controller = generateNewInitializedController(CodingSheetMappingController.class);

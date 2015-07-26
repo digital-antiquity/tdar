@@ -2,12 +2,12 @@ package org.tdar.web;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
