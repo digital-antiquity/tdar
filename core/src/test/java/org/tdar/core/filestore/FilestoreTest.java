@@ -35,7 +35,6 @@ import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.web.StaticContentServlet;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 
@@ -253,21 +252,6 @@ public class FilestoreTest {
         logger.info(expectedDeletedPath);
         // logger.info(f.getAbsolutePath());
         assertTrue("deleted folder does not exist", new File(expectedDeletedPath).exists());
-    }
-
-    @Test
-    public void testStaticRequestedFile() {
-        StaticContentServlet servlet = new StaticContentServlet();
-        File file = servlet.getRequestedFile("search-header.jpg", null);
-        assertThat(file.getParent(), is(tdarConfig.getHostedFileStoreLocation()));
-    }
-
-    @Test
-    public void testStaticRequestedPairtreeFile() {
-        StaticContentServlet servlet = new StaticContentServlet();
-        File file = servlet.getRequestedFile("search-header.jpg", new String[] { "123456" });
-        assertThat(file.getParent(), endsWith("/12/34/56/rec"));
-
     }
 
 }

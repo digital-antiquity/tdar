@@ -9,9 +9,9 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 
-public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
+public class ImportServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     ImportService importService;
@@ -39,15 +39,4 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
         logger.debug(serializationService.convertToXML(newDoc));
     }
 
-    @Test
-    @Rollback
-    public void testDataset() throws Exception {
-        Dataset dataset = setupAndLoadResource(AbstractDataIntegrationTestCase.SPITAL_DB_NAME, Dataset.class);
-        Long id = dataset.getId();
-        genericService.synchronize();
-        Dataset newDoc = importService.cloneResource(dataset, getAdminUser());
-        genericService.synchronize();
-        logger.debug(serializationService.convertToXML(newDoc));
-
-    }
 }
