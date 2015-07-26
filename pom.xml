@@ -225,9 +225,6 @@
 	            </plugins>
 	        </build>
 	        <properties>
-	            <jetty.port>8180</jetty.port>
-	            <jetty.ssl.port>8143</jetty.ssl.port>
-	            <jetty.stop.port>12920</jetty.stop.port>
 	            <use.test.classpath>true</use.test.classpath>
 	            <webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
 	            <setupDb>true</setupDb>

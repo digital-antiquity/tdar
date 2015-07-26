@@ -579,6 +579,40 @@
             </testResource>
         </testResources>
         <plugins>
+	        <plugin>
+	          <artifactId>maven-remote-resources-plugin</artifactId>
+	          <version>1.5</version>
+	          <executions>
+	              <execution>
+	                <id>process-test-resources</id>
+	                <goals>
+	                  <goal>process</goal>
+	                </goals>
+	                <configuration>
+	  				<attachToTest>true</attachToTest>
+					<attachToMain>false</attachToMain>
+	  			    <outputDirectory>target/test-resources</outputDirectory>
+	                  <resourceBundles>
+	                    <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
+	                  </resourceBundles>
+	                </configuration>
+	              </execution>
+	              <execution>
+	                <id>process-database-resources</id>
+	                <goals>
+	                  <goal>process</goal>
+	                </goals>
+	                <configuration>
+	   				 <attachToMain>true</attachToMain>
+		  			  <attachToTest>false</attachToTest>
+					  <outputDirectory>target</outputDirectory>
+	                  <resourceBundles>
+	                    <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
+	                  </resourceBundles>
+	                </configuration>
+	              </execution>
+	          </executions>
+	        </plugin>	
             <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
@@ -1247,6 +1281,13 @@
                 </plugins>
             </build>
         </profile>
-
+		<profile>
+			<id>test</id>
+			<properties>
+            <jetty.port>8180</jetty.port>
+            <jetty.ssl.port>8143</jetty.ssl.port>
+            <jetty.stop.port>12920</jetty.stop.port>
+			</properties>
+		</profile>
     </profiles>
 </project>
