@@ -58,3 +58,14 @@ syntax: regexp
 ^src/main/resources/hibernate-ehcache\.xml$
 syntax: regexp
 ^src/main/webapp/components$
+^(.+)/src/main/db/log\.txt
+^(.+)/src/main/resources/jetty-ssl\.keystore
+^(.+)/src/main/resources/jetty/jetty-ssl\.keystore
+^(.+)/src/main/resources/hibernate-ehcache\.xml
+^(.+)/src/main/webapp/components
+^(.+)/src/main/resources/(.+)\.properties
+^(.+)/src/main/resources/(.+)-local-settings.xml
+^(.+)/src/main/resources/log4j\.xml
+^(.+)/src/main/resources/log4j2\.xml
+^(.+)/src/main/webapp/bower_components
+^(.+)/(indexes|target|logs|bin|node|node_modules)
