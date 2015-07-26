@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 
 @SuppressWarnings("unchecked")
 public class SearchServiceITCase extends AbstractWithIndexIntegrationTestCase {

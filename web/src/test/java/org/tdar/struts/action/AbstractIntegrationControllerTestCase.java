@@ -61,8 +61,6 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.struts.ErrorListener;
-import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.ActionContext;

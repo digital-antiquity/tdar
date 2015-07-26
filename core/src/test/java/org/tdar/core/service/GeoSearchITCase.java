@@ -31,7 +31,6 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
-import org.tdar.struts.action.AbstractAdminControllerITCase;
 
 public class GeoSearchITCase extends AbstractIntegrationTestCase {
 

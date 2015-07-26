@@ -6,6 +6,20 @@
  */
 package org.tdar.utils;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tdar.TestConstants;
+import org.tdar.core.configuration.TdarConfiguration;
+
 import gov.loc.repository.bagit.Bag;
 import gov.loc.repository.bagit.BagFactory;
 import gov.loc.repository.bagit.BagFactory.LoadOption;
@@ -21,20 +35,6 @@ import gov.loc.repository.bagit.verify.impl.ParallelManifestChecksumVerifier;
 import gov.loc.repository.bagit.verify.impl.ValidVerifierImpl;
 import gov.loc.repository.bagit.writer.Writer;
 import gov.loc.repository.bagit.writer.impl.FileSystemWriter;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tdar.TestConstants;
-import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * @author Adam Brin

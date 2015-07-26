@@ -20,15 +20,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.utils.MessageHelper;
 
-public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
+public class CsvConverterITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     public DataTableService dataTableService;

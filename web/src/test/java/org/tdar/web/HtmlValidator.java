@@ -9,14 +9,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import nu.validator.messages.GnuMessageEmitter;
-import nu.validator.messages.MessageEmitter;
-import nu.validator.messages.MessageEmitterAdapter;
-import nu.validator.servlet.imagereview.ImageCollector;
-import nu.validator.source.SourceCode;
-import nu.validator.validation.SimpleDocumentValidator;
-import nu.validator.xml.SystemErrErrorHandler;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +17,14 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.gargoylesoftware.htmlunit.Page;
+
+import nu.validator.messages.GnuMessageEmitter;
+import nu.validator.messages.MessageEmitter;
+import nu.validator.messages.MessageEmitterAdapter;
+import nu.validator.servlet.imagereview.ImageCollector;
+import nu.validator.source.SourceCode;
+import nu.validator.validation.SimpleDocumentValidator;
+import nu.validator.xml.SystemErrErrorHandler;
 
 public class HtmlValidator {
 

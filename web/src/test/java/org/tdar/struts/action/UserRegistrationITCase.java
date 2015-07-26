@@ -21,7 +21,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.struts.action.account.UserAccountController;

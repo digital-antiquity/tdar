@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,6 +33,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -116,6 +118,9 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.core.service.search.SearchService;
+import org.tdar.db.conversion.DatasetConversionFactory;
+import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
@@ -125,7 +130,7 @@ import org.xml.sax.SAXException;
 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
 @SuppressWarnings("rawtypes")
-public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests  {
+public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 
     protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
 
@@ -133,9 +138,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "/");
     protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
+    protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
+
     protected PlatformTransactionManager transactionManager;
     private TransactionCallback verifyTransactionCallback;
     private TransactionTemplate transactionTemplate;
+
+    public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
+    protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
     @Autowired
     protected SessionFactory sessionFactory;
@@ -215,6 +226,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         schemaMap.put("http://www.w3.org/2001/03/xml.xsd", new File(base, "xml.xsd"));
         schemaMap.put("http://dublincore.org/schemas/xmls/simpledc20021212.xsd", new File(base, "simpledc20021212.xsd"));
 
+    }
+    
+    protected String getTestFilePath() {
+        return PATH;
     }
 
     // Called when your test fails. Did I say "when"? I meant "if".
@@ -362,7 +377,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, null, persistentPerson, resourceTitle);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, TdarUser persistentPerson, String resourceTitle) {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, TdarUser persistentPerson,
+            String resourceTitle) {
         R iResource = createAndSaveNewResource(cls, persistentPerson, resourceTitle);
         iResource.setDescription("test description");
         iResource.setProject(project);
@@ -721,7 +737,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             return v;
         }
         v = new Validator(factory);
-//        v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
+        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
         addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", new File(TestConstants.TEST_XML_DIR,
@@ -898,15 +914,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         assertTrue(CollectionUtils.isNotEmpty(results));
     }
 
-
     public SimpleMailMessage checkMailAndGetLatest(String text) {
         sendEmailProcess.execute();
         sendEmailProcess.cleanup();
         ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
-        logger.debug("{} messages " , messages.size());
+        logger.debug("{} messages ", messages.size());
         SimpleMailMessage toReturn = null;
         for (SimpleMailMessage msg : messages) {
-            logger.debug("{} from:{} to:{}" , msg.getSubject(), msg.getFrom(), msg.getTo());
+            logger.debug("{} from:{} to:{}", msg.getSubject(), msg.getFrom(), msg.getTo());
             if (msg.getText().contains(text)) {
                 toReturn = msg;
             }
@@ -930,5 +945,59 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public void setAuthorizedUserDao(AuthorizedUserDao authorizedUserDao) {
         this.authorizedUserDao = authorizedUserDao;
+    }
+
+    protected InformationResourceFileVersion makeFileVersion(File name, long id) throws IOException {
+        long infoId = (long) (Math.random() * 10000);
+        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
+        version.setId(id);
+        filestore.store(ObjectType.RESOURCE, name, version);
+        version.setTransientFile(name);
+        return version;
+    }
+
+    public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
+        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
+        assertTrue("text file exists", storedFile.exists());
+        DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
+        converter.execute();
+        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(), converter.getTableNames().toArray(new String[0])));
+        return converter;
+    }
+
+    static Long spitalIrId = (long) (Math.random() * 10000);
+
+    public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
+        spitalIrId++;
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
+        return converter;
+    }
+
+    @Autowired
+    @Qualifier("tdarDataImportDataSource")
+    public void setIntegrationDataSource(DataSource dataSource) {
+        tdarDataImportDatabase.setDataSource(dataSource);
+    }
+
+    String[] dataImportTables = new String[0];
+
+    public String[] getDataImportTables() {
+        return dataImportTables;
+    }
+
+    public void setDataImportTables(String[] dataImportTables) {
+        this.dataImportTables = dataImportTables;
+    }
+
+    @Before
+    public void dropDataImportDatabaseTables() throws Exception {
+        for (String table : getDataImportTables()) {
+            try {
+                tdarDataImportDatabase.dropTable(table);
+            } catch (Exception ignored) {
+            }
+        }
+
     }
 }
