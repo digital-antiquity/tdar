@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;

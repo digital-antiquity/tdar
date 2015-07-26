@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.struts.action.api.integration.IntegrationPersistanceAction;
 
