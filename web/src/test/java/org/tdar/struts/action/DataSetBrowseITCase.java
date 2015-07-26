@@ -35,9 +35,9 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
     private static final int RESULTS_PER_PAGE = 2;
 
-    private static final String SRC_TEST_RESOURCES_DATA_INTEGRATION_TESTS_EMPTY_ACCDB = "src/test/resources/data_integration_tests/empty.accdb";
-    private static final String DOUBLE_DATASET = "src/test/resources/coding sheet/double_translation_test_dataset.xlsx";
-    private static final String TEXT_DATASET = "src/test/resources/coding sheet/csvCodingSheetText.csv";
+    private static final String SRC_TEST_RESOURCES_DATA_INTEGRATION_TESTS_EMPTY_ACCDB = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/empty.accdb";
+    private static final String DOUBLE_DATASET = TestConstants.TEST_ROOT_DIR + "/coding sheet/double_translation_test_dataset.xlsx";
+    private static final String TEXT_DATASET = TestConstants.TEST_ROOT_DIR + "/coding sheet/csvCodingSheetText.csv";
 
     @Autowired
     private DatasetService datasetService;

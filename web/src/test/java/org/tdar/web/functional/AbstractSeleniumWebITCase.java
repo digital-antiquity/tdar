@@ -150,7 +150,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
         Properties props = new Properties();
-        props.load(new FileReader(new File("src/test/resources/crowd.properties")));
+        props.load(new FileReader(new File(TestConstants.TEST_ROOT_DIR + "/crowd.properties")));
         CrowdRestDao crowdRestDao = new CrowdRestDao(props);
         crowdRestDao.deleteUser(user);
     }

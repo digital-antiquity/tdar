@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.TestConstants;
 
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
@@ -16,7 +17,7 @@ import com.healthmarketscience.jackcess.Table;
 public class BufferUnderflowTestCase {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String TEST_FOLDER = "src/test/resources/data_integration_tests";
+    private static final String TEST_FOLDER = TestConstants.TEST_DATA_INTEGRATION_DIR;
     private static final String TEST_FILE = "buffer-underflow-example.mdb";
     private static final String TABLE_NAME = "Site File";
 

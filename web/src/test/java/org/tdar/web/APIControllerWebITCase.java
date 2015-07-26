@@ -123,7 +123,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
         builder.addTextBody("record", text);
         builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE)));
         builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE2)));

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.OntologyNode;
 
+import org.tdar.TestConstants;
 /**
  * $Id$
  * 

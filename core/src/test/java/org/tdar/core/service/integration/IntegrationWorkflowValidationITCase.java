@@ -16,6 +16,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.utils.MessageHelper;
+import org.tdar.TestConstants;
 
 public class IntegrationWorkflowValidationITCase extends AbstractIntegrationTestCase {
 
@@ -28,7 +29,7 @@ public class IntegrationWorkflowValidationITCase extends AbstractIntegrationTest
     @Autowired
     private SerializationService serializationService;
 
-    private static final String DIR = "src/test/resources/data_integration_tests/json/";
+    private static final String DIR = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/json/";
     private String testJson = DIR + "test-integration.json";
     private String badTable = DIR + "test-bad-table.json";
     private String badDataTableColumn = DIR + "test-bad-data-table-column.json";

@@ -12,7 +12,7 @@ public interface TestConstants {
     public static Long TEST_INSTITUTION_ID = 12088L;
     // public final static int DEFAULT_PORT = 8180;
     // public final static int DEFAULT_SECURE_PORT = 8143;
-    public final static String TEST_ROOT_DIR = "src/test/resources/";
+    public final static String TEST_ROOT_DIR = "target/test-resources/";//src/test/resources/";
 
     public static String FILESTORE_PATH = "target/generated/filestore/";
 
@@ -62,6 +62,7 @@ public interface TestConstants {
 
     public static String FAULTY_ARCHIVE = "broken.zip";
     public static String GOOD_ARCHIVE = "good.zip";
+    public static String SPITAL_DB_NAME = "Spital Abone database.mdb";
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "document.description";

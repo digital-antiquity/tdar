@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -57,7 +58,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     public void testFilteredNodesSurviveHierarchy() throws Exception {
         Ontology taxonOntology = setupAndLoadResource("fauna-taxon---tag-uk-updated---default-ontology-draft.owl", Ontology.class);
         logger.trace("{}", taxonOntology.getOntologyNodes());
-        Dataset spitalDb = setupAndLoadResource(SPITAL_DB_NAME, Dataset.class);
+        Dataset spitalDb = setupAndLoadResource(TestConstants.SPITAL_DB_NAME, Dataset.class);
         DataTable spitalTable = spitalDb.getDataTableByGenericName("spital_abone_database_mdb_main_table");
         DataTableColumn spitalSpeciesColumn = spitalTable.getColumnByName(SPECIES_COMMON_NAME_COL);
         ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
@@ -130,7 +131,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     public void testIntegrationProcess() throws Exception {
         // load datasets
         Dataset alexandriaDb = setupAndLoadResource(ALEXANDRIA_DB_NAME, Dataset.class);
-        Dataset spitalDb = setupAndLoadResource(SPITAL_DB_NAME, Dataset.class);
+        Dataset spitalDb = setupAndLoadResource(TestConstants.SPITAL_DB_NAME, Dataset.class);
         assertNotNull(spitalDb);
         assertNotNull(alexandriaDb);
 
@@ -326,7 +327,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     public void testHierarchicalIntegrationProcess() throws Exception {
         // load datasets
         Dataset alexandriaDb = setupAndLoadResource(ALEXANDRIA_DB_NAME, Dataset.class);
-        Dataset spitalDb = setupAndLoadResource(SPITAL_DB_NAME, Dataset.class);
+        Dataset spitalDb = setupAndLoadResource(TestConstants.SPITAL_DB_NAME, Dataset.class);
         assertNotNull(spitalDb);
         assertNotNull(alexandriaDb);
 

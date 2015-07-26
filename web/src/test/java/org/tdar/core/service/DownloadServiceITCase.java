@@ -22,10 +22,12 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.download.DownloadFile;
 import org.tdar.core.service.download.DownloadPdfFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
+import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.utils.MessageHelper;
@@ -33,7 +35,7 @@ import org.tdar.utils.MessageHelper;
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
     private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
-
+    private Filestore filestore = TdarConfiguration.getInstance().getFilestore();
     // don't need injection (yet)
     @Autowired
     DownloadService downloadService;

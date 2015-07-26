@@ -319,7 +319,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
-        String filename = SPITAL_DB_NAME;
+        String filename = TestConstants.SPITAL_DB_NAME;
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());

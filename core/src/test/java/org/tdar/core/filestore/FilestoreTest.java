@@ -223,12 +223,14 @@ public class FilestoreTest {
     @Rollback(true)
     public void testStorageAndRetrievalDeleted() throws IOException {
         cleanup();
+        File file = new File(TEST_IMAGE);
+        assertTrue(String.format("%s exists", file.getCanonicalFile()),file.exists());
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_IMAGE_NAME);
         version.getInformationResourceFile().setLatestVersion(2);
         version.setVersion(2);
         version.setFileVersionType(VersionType.UPLOADED);
-        store.store(ObjectType.RESOURCE, new File(TEST_IMAGE), version);
+        store.store(ObjectType.RESOURCE, file, version);
         assertTrue(store.verifyFile(ObjectType.RESOURCE, version));
         File f = new File(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());

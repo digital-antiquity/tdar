@@ -145,7 +145,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     private TransactionCallback verifyTransactionCallback;
     private TransactionTemplate transactionTemplate;
 
-    public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
+    public static final String SPITAL_DB_NAME = TestConstants.SPITAL_DB_NAME;
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
     @Autowired
@@ -216,7 +216,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         genericService.delete(genericService.findAll(Email.class));
         sendEmailProcess.setAllIds(null);
         ((MockMailSender) emailService.getMailSender()).getMessages().clear();
-        String base = "src/test/resources/schemaCache";
+        String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));

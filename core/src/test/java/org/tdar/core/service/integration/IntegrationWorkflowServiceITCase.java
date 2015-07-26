@@ -14,6 +14,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.utils.MessageHelper;
+import org.tdar.TestConstants;
 
 public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCase {
 
@@ -23,7 +24,7 @@ public class IntegrationWorkflowServiceITCase extends AbstractIntegrationTestCas
     @Autowired
     private SerializationService serializationService;
 
-    private String testJson = "src/test/resources/data_integration_tests/json/test-integration.json";
+    private String testJson = TestConstants.TEST_ROOT_DIR + "data_integration_tests/json/test-integration.json";
 
     @Test
     public void testIntegrationWorkflowData() throws IOException, IntegrationDeserializationException {

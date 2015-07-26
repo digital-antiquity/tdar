@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
 
-    private static final String TEST_PATH = "src/test/resources/data_integration_tests/json/";
+    private static final String TEST_PATH = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/json/";
 
     @Autowired
     DataTableService dataTableService;

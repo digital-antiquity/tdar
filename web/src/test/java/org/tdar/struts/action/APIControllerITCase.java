@@ -237,7 +237,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
     public void testNewConfidentialRecord() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
         Project project = genericService.findAll(Project.class, 1).get(0);
         BillingAccount account = setupAccountForPerson(getUser());
         controller.setRecord(text);
@@ -257,7 +257,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     public void testMimbres() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        String text = FileUtils.readFileToString(new File("src/test/resources/xml/mimbres.xml"));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/mimbres.xml"));
         controller.setRecord(text);
         String uploadStatus = controller.upload();
         assertEquals(Action.SUCCESS, uploadStatus);
@@ -268,7 +268,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testDataset() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        String text = FileUtils.readFileToString(new File("src/test/resources/xml/dataset.xml"));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR +  "/xml/dataset.xml"));
         controller.setRecord(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Workbook1.csv")));
         controller.setUploadFileFileName(Arrays.asList("Workbook1.csv"));
@@ -283,7 +283,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testDatasetWithMappings() throws Exception {
 
         APIController controller = generateNewInitializedController(APIController.class);
-        String text = FileUtils.readFileToString(new File("src/test/resources/xml/datasetmapping.xml"));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/datasetmapping.xml"));
         controller.setRecord(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Workbook1.csv")));
         controller.setUploadFileFileName(Arrays.asList("Workbook1.csv"));

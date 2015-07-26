@@ -21,7 +21,7 @@ import com.opensymphony.xwork2.Action;
 
 public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
-    private static final String TEST_DATASET = "src/test/resources/data_integration_tests/england_woods.xlsx";
+    private static final String TEST_DATASET = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/england_woods.xlsx";
     private RowViewAction controller;
     private Dataset dataset;
 
