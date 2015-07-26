@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>tdar</groupId>
-    <artifactId>tdar-parent</artifactId>
+    <groupId>org.tdar</groupId>
+    <artifactId>parent</artifactId>
     <version>14-NEOLITHIC-SNAPSHOT</version>
-    <name>tdar-parent</name>
+    <name>parent</name>
     <packaging>pom</packaging>
     <modules>
         <module>test-resources</module>
@@ -15,25 +15,154 @@
 
 
 	<properties>
+	    <version>14-NEOLITHIC-SNAPSHOT</version>
 	    <spring.framework.version>4.1.6.RELEASE</spring.framework.version>
 	    <postgresql.jdbc.version>9.4-1201-jdbc41</postgresql.jdbc.version>
 	    <servlet.api.version>3.0.1</servlet.api.version>
 	    <liquibase.version>3.3.2</liquibase.version>
+	    <jvm.args>-Xms256m -Xmx3072m</jvm.args>
+	    <use.test.classpath>false</use.test.classpath>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+	    <skipTestLiquibase>true</skipTestLiquibase>
+	    <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
+	    <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
+	    <!-- Following points to the profile directory to use for filtering 
+	        resources -->
+	    <!-- override by redefining in a profile. don't forget to 'clean' 
+	        when redefining -->
+	    <!-- Be warned: Eclipse may have a different active profile in play 
+	        to the command line -->
+	    <build.profile.id>default</build.profile.id>
+	    <clover.version>4.0.4</clover.version>
+	    <clover.dir>${project.build.directory}</clover.dir>
+		<clover.license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
+		                        mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
+		                        rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
+		                        umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
+		                        mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+		                        bZloaUUnmm]]></clover.license>
+	    <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath>-->
 	</properties>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+
+	<prerequisites>
+	    <maven>3.1.0</maven>
+	</prerequisites>
+	<organization>
+	    <name>The Digital Archaeological Record</name>
+	    <url>http://www.tdar.org</url>
+	</organization>
+	<repositories>
+	    <repository>
+	        <id>virtualcommons.internal</id>
+	        <name>ASU Archiva Proxy</name>
+	        <url>http://dev.commons.asu.edu/archiva/repository/internal/</url>
+	    </repository>
+	    <repository>
+	        <id>imageJ</id>
+	        <name>ImageJ Repository</name>
+	        <url>http://maven.imagej.net/content/repositories/releases</url>
+	        <releases>
+	            <enabled>true</enabled>
+	        </releases>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	    </repository>
+	    <repository>
+	        <id>jboss</id>
+	        <name>JBoss Maven Repository</name>
+	        <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+	    </repository>
+	    <repository>
+	        <id>codehaus</id>
+	        <name>Codehaus Repository</name>
+	        <url>http://repository.codehaus.org/</url>
+	    </repository>
+	    <repository>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	        <id>central</id>
+	        <name>libs-release</name>
+	        <url>http://repo.springsource.org/libs-release</url>
+	    </repository>
+	    <repository>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	        <id>jcenter</id>
+	        <url>http://dl.bintray.com/abrin/maven/</url>
+	    </repository>
+	    <repository>
+	        <id>repository.springframework.milestone</id>
+	        <name>Spring Framework Maven Milestone Repository</name>
+	        <url>http://maven.springframework.org/milestone</url>
+	    </repository>
+	    <repository>
+	        <id>com.springsource.repository.libraries.external</id>
+	        <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+	        <url>http://repository.springsource.com/maven/libraries/external</url>
+	    </repository>
+	    <repository>
+	        <id>spring-release</id>
+	        <url>http://maven.springframework.org/release</url>
+	    </repository>
+	    <repository>
+	        <id>org.jboss.repository.nexus.public</id>
+	        <name>Hibernate Public repository</name>
+	        <url>https://repository.jboss.org/nexus/content/repositories/public/</url>
+	    </repository>
+	    <repository>
+	        <id>atlassian-m2-repository</id>
+	        <url>https://m2proxy.atlassian.com/repository/public</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	            <updatePolicy>always</updatePolicy>
+	        </snapshots>
+	        <releases>
+	            <enabled>true</enabled>
+	        </releases>
+	    </repository>
+	    <repository>
+	        <id>dataone.org</id>
+	        <url>http://dev-testing.dataone.org/maven</url>
+	        <releases>
+	            <enabled>true</enabled>
+	        </releases>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
+
+
+	    <repository>
+	        <id>osgeo</id>
+	        <name>Open Source Geospatial Foundation Repository</name>
+	        <url>http://download.osgeo.org/webdav/geotools/</url>
+	    </repository>
+	    <!-- To pull Log4J e-mail throttler: https://github.com/reaktor/log4j-email-throttle -->
+	    <repository>
+	        <id>Laughing Panda</id>
+	        <url>http://maven.laughingpanda.org/maven2</url>
+	    </repository>
+	    <!-- <repository> <id>dataone.org</id> <url>http://dev-testing.dataone.org/maven</url>
+	        <releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled>
+	        </snapshots> </repository> -->
+	</repositories>
+	<pluginRepositories>
+	    <pluginRepository>
+	        <id>maven.java.net</id>
+	        <name>Java.net Maven2 Repository</name>
+	        <url>http://download.java.net/maven/2</url>
+	    </pluginRepository>
+	    <pluginRepository>
+	        <name>oss.sonatype.org - github-releases</name>
+	        <id>oss.sonatype.org-github-releases</id>
+	        <url>http://oss.sonatype.org/content/repositories/github-releases</url>
+	    </pluginRepository>
+	</pluginRepositories>
 
 	<dependencyManagement>
 	<dependencies>
@@ -64,4 +193,657 @@
 
     <dependencies>
     </dependencies>
+	
+	<profiles>
+	    <profile>
+	        <id>test</id>
+	        <build>
+	            <defaultGoal>surefire:test</defaultGoal>
+	            <filters>
+	                <filter>src/test/resources/hibernate.properties</filter>
+	                <filter>src/main/resources/liquibase.properties</filter>
+	            </filters>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.codehaus.mojo</groupId>
+	                    <artifactId>properties-maven-plugin</artifactId>
+	                    <version>1.0-alpha-2</version>
+	                    <executions>
+	                        <execution>
+	                            <phase>initialize</phase>
+	                            <goals>
+	                                <goal>read-project-properties</goal>
+	                            </goals>
+	                            <configuration>
+	                                <files>
+	                                    <file>src/test/resources/hibernate.properties</file>
+	                                </files>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
+	        <properties>
+	            <jetty.port>8180</jetty.port>
+	            <jetty.ssl.port>8143</jetty.ssl.port>
+	            <jetty.stop.port>12920</jetty.stop.port>
+	            <use.test.classpath>true</use.test.classpath>
+	            <webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
+	            <setupDb>true</setupDb>
+	            <skipTestLiquibase>false</skipTestLiquibase>
+	        </properties>
+	    </profile>
+		
+	    <profile>
+	        <id>clover</id>
+	        <properties>
+	            <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
+	            <use.test.classpath>true</use.test.classpath>
+	            <clover.dir>/home/bamboo/clover/</clover.dir>
+	        </properties>
+	        <build>
+	            <plugins>
+	                <plugin>
+	                    <groupId>com.atlassian.maven.plugins</groupId>
+	                    <artifactId>maven-clover2-plugin</artifactId>
+	                    <configuration>
+	                        <cloverDatabase>${clover.dir}/database/</cloverDatabase>
+	                        <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
+	                        <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
+	                    </configuration>
+	                    <executions>
+	                        <execution>
+	                            <id>generate</id>
+	                            <phase>generate-sources</phase>
+	                            <goals>
+	                              <goal>setup</goal>
+	                              <goal>optimize</goal>
+	                              <goal>optimizeIntegration</goal>
+	                              <goal>snapshot</goal>
+	                              <goal>clover</goal>
+	                            </goals>
+	                        </execution>
+	                        <execution>
+	                            <id>report</id>
+	                            <phase>post-integration-test</phase>
+	                            <goals>
+	                                <goal>clover</goal>
+	                            </goals>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
+	        <dependencies>
+	            <dependency>
+	                <groupId>com.atlassian.clover</groupId>
+	                <artifactId>clover</artifactId>
+	                <version>${clover.version}</version>
+	            </dependency>
+	        </dependencies>
+	    </profile>
+	    <profile>
+	        <id>checkVersions</id>
+	        <build>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.codehaus.mojo</groupId>
+	                    <artifactId>versions-maven-plugin</artifactId>
+	                </plugin>
+	            </plugins>
+	        </build>
+	    </profile>
+	    <profile>
+	        <id>setup-new-instance</id>
+	        <build>
+	            <plugins>
+	                <plugin>
+	                    <artifactId>maven-antrun-plugin</artifactId>
+	                    <executions>
+	                        <execution>
+	                            <phase>compile</phase>
+	                            <goals>
+	                                <goal>run</goal>
+	                            </goals>
+	                            <configuration>
+	                                <target>
+	                                    <copy
+	                                        file="src/main/resources/crowd.properties.template"
+	                                        tofile="src/main/resources/crowd.properties" />
+	                                    <copy
+	                                        file="src/main/resources/ldap.properties.template"
+	                                        tofile="src/main/resources/ldap.properties" />
+	                                    <copy
+	                                        file="src/main/resources/hibernate.properties.template"
+	                                        tofile="src/main/resources/hibernate.properties" />
+	                                    <copy
+	                                        file="src/main/resources/log4j2.xml.template"
+	                                        tofile="src/main/resources/log4j2.xml" />
+	                                    <copy
+	                                        file="src/main/resources/tdar.properties.template"
+	                                        tofile="src/main/resources/tdar.properties" />
+	                                    <copy
+	                                        file="src/main/resources/struts-local-settings.xml.template"
+	                                        tofile="src/main/resources/struts-local-settings.xml" />
+	                                    <copy
+	                                        file="src/main/resources/spring-local-settings.xml.template"
+	                                        tofile="src/main/resources/spring-local-settings.xml" />
+	                                    <copy
+	                                        file="src/main/resources/hibernate-ehcache.xml.template"
+	                                        tofile="src/main/resources/hibernate-ehcache.xml" />
+	                                    <echo
+	                                        message="the following can be used to grab all of the config files into a tar from an existing repo" />
+	                                    <echo
+	                                        message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
+	                                </target>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
+	    </profile>
+	    <profile>
+	        <id>liquibase-export</id>
+		            <!--  mvn -Pliquibase-export clean compile  -->
+			<build>
+				<defaultGoal>liquibase:generateChangeLog</defaultGoal>
+				<resources>
+					<resource>
+						<!-- switch filtering off for all but the desired set -->
+						<filtering>false</filtering>
+						<directory>${basedir}/src/main/resources</directory>
+						<excludes>
+							<exclude>tdar.properties</exclude>
+							<exclude>crowd.properties</exclude>
+							<exclude>hibernate.properties</exclude>
+							<exclude>local-wro-config.properties</exclude>
+							<exclude>struts-local-settings.xml</exclude>
+							<exclude>common.json</exclude>
+							<exclude>liquibase.properties</exclude>
+						</excludes>
+					</resource>
+					<resource>
+						<!-- And on for the set of files -->
+						<!-- Having to do it as mutually exclusive but that's how Maven works -->
+						<!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+						<filtering>true</filtering>
+						<directory>${basedir}/src/main/resources</directory>
+						<includes>
+							<include>liquibase.properties</include>
+							<include>hibernate.properties</include>
+						</includes>
+					</resource>
+				</resources>
+				<filters>
+					<filter>src/main/resources/hibernate.properties</filter>
+					<filter>src/main/resources/liquibase.properties</filter>
+				</filters>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>properties-maven-plugin</artifactId>
+						<version>1.0-alpha-2</version>
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>read-project-properties</goal>
+								</goals>
+								<configuration>
+									<files>
+										<file>src/main/resources/hibernate.properties</file>
+									</files>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.liquibase</groupId>
+						<artifactId>liquibase-maven-plugin</artifactId>
+						<configuration>
+							<username>${javax.persistence.jdbc.user}</username>
+							<password>${javax.persistence.jdbc.password}</password>
+							<url>${javax.persistence.jdbc.url}</url>
+							<driver>${javax.persistence.jdbc.driver}</driver>
+							<outputChangeLogFile>liquibase-test/changelog-setup.xml</outputChangeLogFile>
+							<diffTypes>tables,views,columns, indexes, foreignkeys, primarykeys,
+								uniqueconstraints,data,sequence</diffTypes>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>generateChangeLog</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+	    </profile>
+		
+
+	    <profile>
+	        <id>maven-scm-branch</id>
+	        <activation>
+	            <!-- always run (except when told not to) -->
+	            <property>
+	                <name>!skipMavenMercurialSetup</name>
+	          </property>
+	        </activation>
+	          <build>
+	        <plugins>
+	        <plugin>
+	            <artifactId>maven-antrun-plugin</artifactId>
+	            <version>1.7</version>
+	            <executions>
+	                <execution>
+	                    <phase>validate</phase>
+	                    <goals>
+	                        <goal>run</goal>
+	                    </goals>
+	                    <configuration>
+	                        <exportAntProperties>true</exportAntProperties>
+	                        <target>
+	                            <mkdir dir="target" />
+	                            <mkdir dir="target/generated" />
+	                            <mkdir dir="target/generated/db" />
+	                            <mkdir dir="target/generated/webapp" />
+	                            <mkdir
+	                                dir="target/generated/webapp-test" />
+	                            <!--<rmdir dir="src/main/webapp/wro" 
+	                                /> -->
+	                            <condition property="hg.location"
+	                                value="/usr/local/bin/hg">
+	                                <available file="/usr/local/bin/hg" />
+	                            </condition>
+	                            <condition property="hg.location"
+	                                value="/usr/bin/hg">
+	                                <available file="/usr/bin/hg" />
+	                            </condition>
+	                            <property name="hg.location"
+	                                value="hg" />
+	                            <echo
+	                                message=" using mercurial from: ${hg.location}" />
+	                            <mkdir dir="target/classes" />
+	                            <exec output="target/classes/version.txt"
+	                                executable="${hg.location}">
+	                                <arg line="id -n" />
+	                            </exec>
+	                            <exec output="target/classes/branch.txt"
+	                                executable="${hg.location}">
+	                                <arg line="branch" />
+	                            </exec>
+	                            <loadfile property="hg.version"
+	                                srcFile="target/classes/version.txt" />
+	                            <loadfile property="hg.branch"
+	                                srcFile="target/classes/branch.txt" >
+	                                <filterchain>
+	                                    <tokenfilter>
+	                                        <replaceregex pattern="-" replace="_" flags="gi"/>
+	                                    </tokenfilter>
+	                                    <deletecharacters
+	                                        chars="\t\r\n+" />
+	                                </filterchain>
+	                            </loadfile>
+	                            <loadfile property="hg.version.as_dir"
+	                                srcFile="target/classes/version.txt">
+	                                <filterchain>
+	                                    <deletecharacters
+	                                        chars="\t\r\n+" />
+	                                </filterchain>
+	                            </loadfile>
+	                            <echo
+	                                message=" ${hg.branch}: ${hg.version.as_dir}" />
+	                        </target>
+	                    </configuration>
+	                </execution>
+	                </executions>
+	                </plugin>
+	        </plugins>
+	        </build>
+	    </profile>
+	    <profile>
+	        <id>liquibase-setup-dev-instance</id>
+	                <!--  mvn -Pliquibase-setup-dev-instance clean compile  -->
+	        <build>
+	            <defaultGoal>liquibase:update</defaultGoal>
+	            <resources>
+	                <resource>
+	                    <!-- switch filtering off for all but the desired set -->
+	                    <filtering>false</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <excludes>
+	                        <exclude>tdar.properties</exclude>
+	                        <exclude>crowd.properties</exclude>
+	                        <exclude>hibernate.properties</exclude>
+	                        <exclude>local-wro-config.properties</exclude>
+	                        <exclude>struts-local-settings.xml</exclude>
+	                        <exclude>common.json</exclude>
+	                        <exclude>liquibase.properties</exclude>
+	                    </excludes>
+	                </resource>
+	                <resource>
+	                    <!-- And on for the set of files -->
+	                    <!-- Having to do it as mutually exclusive but that's how Maven works -->
+	                    <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+	                    <filtering>true</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <includes>
+	                        <include>liquibase.properties</include>
+	                        <include>hibernate.properties</include>
+	                    </includes>
+	                </resource>
+	            </resources>
+	            <filters>
+	                <filter>src/main/resources/hibernate.properties</filter>
+	                <filter>src/main/resources/liquibase.properties</filter>
+	            </filters>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.codehaus.mojo</groupId>
+	                    <artifactId>properties-maven-plugin</artifactId>
+	                    <version>1.0-alpha-2</version>
+	                    <executions>
+	                        <execution>
+	                            <phase>initialize</phase>
+	                            <goals>
+	                                <goal>read-project-properties</goal>
+	                            </goals>
+	                            <configuration>
+	                                <files>
+	                                    <file>src/main/resources/hibernate.properties</file>
+	                                </files>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	                <plugin>
+	                    <groupId>org.liquibase</groupId>
+	                    <artifactId>liquibase-maven-plugin</artifactId>
+	                    <configuration>
+	                        <username>${javax.persistence.jdbc.user}</username>
+	                        <password>${javax.persistence.jdbc.password}</password>
+	                        <url>${javax.persistence.jdbc.url}</url>
+	                        <driver>${javax.persistence.jdbc.driver}</driver>
+	                        <changeLogFile>liquibase-test/setup-dev-instance.xml</changeLogFile>
+	                    </configuration>
+	                    <executions>
+	                        <execution>
+	                            <phase>process-resources</phase>
+	                            <goals>
+	                                <goal>update</goal>
+	                            </goals>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
+	    </profile>
+	    <profile>
+	        <id>liquibase-setup-production-instance</id>
+	                <!--  mvn -Pliquibase-export clean compile  -->
+	        <build>
+	            <defaultGoal>liquibase:update</defaultGoal>
+	            <resources>
+	                <resource>
+	                    <!-- switch filtering off for all but the desired set -->
+	                    <filtering>false</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <excludes>
+	                        <exclude>tdar.properties</exclude>
+	                        <exclude>crowd.properties</exclude>
+	                        <exclude>hibernate.properties</exclude>
+	                        <exclude>local-wro-config.properties</exclude>
+	                        <exclude>struts-local-settings.xml</exclude>
+	                        <exclude>common.json</exclude>
+	                        <exclude>liquibase.properties</exclude>
+	                    </excludes>
+	                </resource>
+	                <resource>
+	                    <!-- And on for the set of files -->
+	                    <!-- Having to do it as mutually exclusive but that's how Maven works -->
+	                    <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+	                    <filtering>true</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <includes>
+	                        <include>liquibase.properties</include>
+	                        <include>hibernate.properties</include>
+	                    </includes>
+	                </resource>
+	            </resources>
+	            <filters>
+	                <filter>src/main/resources/hibernate.properties</filter>
+	                <filter>src/main/resources/liquibase.properties</filter>
+	            </filters>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.codehaus.mojo</groupId>
+	                    <artifactId>properties-maven-plugin</artifactId>
+	                    <version>1.0-alpha-2</version>
+	                    <executions>
+	                        <execution>
+	                            <phase>initialize</phase>
+	                            <goals>
+	                                <goal>read-project-properties</goal>
+	                            </goals>
+	                            <configuration>
+	                                <files>
+	                                    <file>src/main/resources/hibernate.properties</file>
+	                                </files>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	                <plugin>
+	                    <groupId>org.liquibase</groupId>
+	                    <artifactId>liquibase-maven-plugin</artifactId>
+	                    <configuration>
+	                        <username>${javax.persistence.jdbc.user}</username>
+	                        <password>${javax.persistence.jdbc.password}</password>
+	                        <url>${javax.persistence.jdbc.url}</url>
+	                        <driver>${javax.persistence.jdbc.driver}</driver>
+	                        <changeLogFile>liquibase/setup-production-instance.xml</changeLogFile>
+	                    </configuration>
+	                    <executions>
+	                        <execution>
+	                            <phase>process-resources</phase>
+	                            <goals>
+	                                <goal>update</goal>
+	                            </goals>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
+	    </profile>
+
+	<profile>
+	<!-- this profile is "temporary" and is not run in isolation. It should 
+	    be run along with jetty:run which will setup the properties files correctly. 
+	    Eventually, this will be built into the default "jetty" launch process and 
+	    "deploy" process. 
+
+	    Enabling this profile activates the liquibase.properties 
+	    and sets skipUpgradeLiquibase=false which means that liquibase is processed 
+	    during the setup process. -->
+	    <id>liquibase</id>
+	        <build>
+	            <resources>
+	                <resource>
+	                    <!-- switch filtering off for all but the desired set -->
+	                    <filtering>false</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <excludes>
+	                        <exclude>tdar.properties</exclude>
+	                        <exclude>crowd.properties</exclude>
+	                        <exclude>hibernate.properties</exclude>
+	                        <exclude>local-wro-config.properties</exclude>
+	                        <exclude>struts-local-settings.xml</exclude>
+	                        <exclude>common.json</exclude>
+	                        <exclude>liquibase.properties</exclude>
+	                    </excludes>
+	                </resource>
+	                <resource>
+	                    <!-- And on for the set of files -->
+	                    <!-- Having to do it as mutually exclusive but that's how Maven works -->
+	                    <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+	                    <filtering>true</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <includes>
+	                        <include>liquibase.properties</include>
+	                        <include>hibernate.properties</include>
+	                    </includes>
+	                </resource>
+	            </resources>
+	            <filters>
+	                <filter>src/main/resources/hibernate.properties</filter>
+	                <filter>src/main/resources/liquibase.properties</filter>
+	            </filters>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.codehaus.mojo</groupId>
+	                    <artifactId>properties-maven-plugin</artifactId>
+	                    <version>1.0-alpha-2</version>
+	                    <executions>
+	                        <execution>
+	                            <phase>initialize</phase>
+	                            <goals>
+	                                <goal>read-project-properties</goal>
+	                            </goals>
+	                            <configuration>
+	                                <files>
+	                                    <file>src/main/resources/hibernate.properties</file>
+	                                </files>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
+	    <properties>
+	        <skipUpgradeLiquibase>false</skipUpgradeLiquibase>
+	    </properties>
+	</profile>
+
+	<profile>
+	<!-- this profile is intended to reset liquibase's change log (if something gets out of sync)
+
+	    Enabling this profile activates the liquibase.properties 
+	    and sets skipUpgradeLiquibase=false which means that liquibase is processed 
+	    during the setup process. -->
+	    <id>changelogSync</id>
+	   <build>
+	            <defaultGoal>liquibase:changelogSync</defaultGoal>
+	            <resources>
+	                <resource>
+	                    <!-- switch filtering off for all but the desired set -->
+	                    <filtering>false</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <excludes>
+	                        <exclude>tdar.properties</exclude>
+	                        <exclude>crowd.properties</exclude>
+	                        <exclude>hibernate.properties</exclude>
+	                        <exclude>local-wro-config.properties</exclude>
+	                        <exclude>struts-local-settings.xml</exclude>
+	                        <exclude>common.json</exclude>
+	                        <exclude>liquibase.properties</exclude>
+	                    </excludes>
+	                </resource>
+	                <resource>
+	                    <!-- And on for the set of files -->
+	                    <!-- Having to do it as mutually exclusive but that's how Maven works -->
+	                    <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+	                    <filtering>true</filtering>
+	                    <directory>${basedir}/src/main/resources</directory>
+	                    <includes>
+	                        <include>liquibase.properties</include>
+	                        <include>hibernate.properties</include>
+	                    </includes>
+	                </resource>
+	            </resources>
+	            <filters>
+	                <filter>src/main/resources/hibernate.properties</filter>
+	                <filter>src/main/resources/liquibase.properties</filter>
+	            </filters>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.codehaus.mojo</groupId>
+	                    <artifactId>properties-maven-plugin</artifactId>
+	                    <version>1.0-alpha-2</version>
+	                    <executions>
+	                        <execution>
+	                            <phase>initialize</phase>
+	                            <goals>
+	                                <goal>read-project-properties</goal>
+	                            </goals>
+	                            <configuration>
+	                                <files>
+	                                    <file>src/main/resources/hibernate.properties</file>
+	                                </files>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	                <plugin>
+	                    <groupId>org.liquibase</groupId>
+	                    <artifactId>liquibase-maven-plugin</artifactId>
+	                    <configuration>
+	                        <username>${javax.persistence.jdbc.user}</username>
+	                        <password>${javax.persistence.jdbc.password}</password>
+	                        <url>${javax.persistence.jdbc.url}</url>
+	                        <driver>${javax.persistence.jdbc.driver}</driver>
+	                        <changeLogFile>liquibase/changelog.xml</changeLogFile>
+	                        <clearCheckSums>true</clearCheckSums>
+	                    </configuration>
+	                    <executions>
+	                        <execution>
+	                            <phase>process-resources</phase>
+	                            <goals>
+	                                <goal>changelogSync</goal>
+	                            </goals>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
+	    <properties>
+	<!--             <skipUpgradeLiquibase>false</skipUpgradeLiquibase>
+	-->        </properties>
+	</profile>
+	</profiles>
+
+	<scm>
+	    <url>https://bitbucket.org/tdar/tdar.src/</url>
+	    <connection>scm:hg:https://bitbucket.org/tdar/tdar.src/</connection>
+	    <developerConnection>scm:hg:https://bitbucket.org/tdar/tdar.src/</developerConnection>
+	</scm>
+	<issueManagement>
+	    <system>JIRA</system>
+	    <url>http://dev.tdar.org/jira/</url>
+	</issueManagement>
+	<licenses>
+	    <license>
+	        <name>The Apache Software License, Version 2.0</name>
+	        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	        <distribution>repo</distribution>
+	        <comments>A business-friendly OSS license</comments>
+	    </license>
+	</licenses>
+	<ciManagement>
+	    <system>Bamboo</system>
+	    <url>http://build.tdar.org/bamboo</url>
+	</ciManagement>
+	<mailingLists>
+	    <mailingList>
+	        <name>Developer Discussion List</name>
+	        <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-dev</archive>
+	    </mailingList>
+	    <mailingList>
+	        <name>Developer Notification / Commit List</name>
+	        <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-svn</archive>
+	    </mailingList>
+	</mailingLists>
 </project>
