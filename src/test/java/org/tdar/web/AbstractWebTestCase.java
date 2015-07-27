@@ -127,7 +127,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     public static final String ACCOUNT_ID = "accountId";
     public static final String INVOICE_ID = "invoiceId";
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_24);
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_31);
     protected Page internalPage;
     protected HtmlPage htmlPage;
     private HtmlForm _internalForm;
