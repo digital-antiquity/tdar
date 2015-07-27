@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -48,6 +49,11 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
         Dataset newDoc = importService.cloneResource(dataset, getAdminUser());
         genericService.synchronize();
         logger.debug(serializationService.convertToXML(newDoc));
-
     }
+    
+    @Override
+    protected String getTestFilePath() {
+        return TestConstants.TEST_DATA_INTEGRATION_DIR;
+    }
+
 }
