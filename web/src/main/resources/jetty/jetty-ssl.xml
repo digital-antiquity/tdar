@@ -13,10 +13,10 @@
   <!-- Create a TLS (SSL) Context Factory  for later reuse           -->
   <!-- ============================================================= -->
   <New id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
-    <Set name="KeyStorePath"><Property name="jetty.base" default="." />/<Property name="jetty.keystore" default="src/main/resources/jetty/jetty-ssl.keystore"/></Set>
+    <Set name="KeyStorePath"><Property name="maven.rootDir" default="." />/src/main/resources/jetty/<Property name="jetty.keystore" default="jetty-ssl.keystore"/></Set>
      <Set name="KeyStorePassword"><Property name="jetty.keystore.password" default="jetty6"/></Set>
     <Set name="KeyManagerPassword"><Property name="jetty.keymanager.password" default="jetty6"/></Set> 
-    <Set name="TrustStorePath"><Property name="jetty.base" default="." />/<Property name="jetty.truststore" default="src/main/resources/jetty/jetty-ssl.keystore"/></Set>
+    <Set name="TrustStorePath"><Property name="maven.rootDir" default="." />/src/main/resources/jetty/<Property name="jetty.truststore" default="jetty-ssl.keystore"/></Set>
      <Set name="TrustStorePassword"><Property name="jetty.truststore.password" default="jetty6"/></Set>
     <Set name="EndpointIdentificationAlgorithm"></Set>
     <Set name="NeedClientAuth"><Property name="jetty.ssl.needClientAuth" default="false"/></Set>

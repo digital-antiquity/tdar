@@ -801,10 +801,14 @@
                     <jettyXml>${basedir}/src/main/resources/jetty/jetty.xml,${basedir}/src/main/resources/jetty/jetty-ssl.xml,${basedir}/src/main/resources/jetty/jetty-https.xml,${basedir}/src/main/resources/jetty/jetty-http.xml</jettyXml>
                      <contextXml>${basedir}/src/main/resources/jetty/jetty-context.xml</contextXml>
                      <systemProperties>
-                          <systemProperty>
-                           <name>jetty.ssl.port</name>
-                           <value>${jetty.ssl.port}</value>
-                         </systemProperty>
+                           <systemProperty>
+                            <name>jetty.ssl.port</name>
+                            <value>${jetty.ssl.port}</value>
+                          </systemProperty>
+                           <systemProperty>
+ 					       <name>maven.rootDir</name>
+                            <value>${basedir}</value>
+                          </systemProperty>
                         <systemProperty>
                             <name>jetty.port</name>
                             <value>${jetty.port}</value>
