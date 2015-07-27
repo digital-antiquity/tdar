@@ -436,4 +436,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertEquals(276, empty);
         assertTrue(seenElementNull);
     }
+
+    @Override
+    protected String getTestFilePath() {
+        return TestConstants.TEST_DATA_INTEGRATION_DIR;
+    }
 }

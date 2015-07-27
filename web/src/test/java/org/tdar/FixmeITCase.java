@@ -25,6 +25,8 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.utils.MessageHelper;
+import org.tdar.TestConstants;
+
 
 @Ignore
 public class FixmeITCase extends AbstractAdminControllerITCase {
@@ -92,4 +94,8 @@ public class FixmeITCase extends AbstractAdminControllerITCase {
         }
     }
 
+    @Override
+    protected String getTestFilePath() {
+        return TestConstants.TEST_DATA_INTEGRATION_DIR;
+    }
 }
