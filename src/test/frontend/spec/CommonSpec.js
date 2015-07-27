@@ -27,9 +27,7 @@ describe("TDAR.common: edit page tests", function() {
       form = document.getElementById('metadataForm');
       var result = TDAR.common.initFormValidation(form);
    });
-
-
-})
+});
 
 describe("TDAR.common: miscellaneaous tests", function() {
 
