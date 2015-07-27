@@ -1,10 +1,10 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.struts.data.AntiSpamHelper;
-import org.tdar.struts.data.UserAuthData;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 /**
  * Created by jimdevos on 6/17/14.
@@ -45,7 +45,7 @@ public class UserLogin extends UserAuthData {
         this.loginPassword = loginPassword;
     }
 
-    public ErrorTransferObject validate(AuthorizationService authService, RecaptchaService recaptchaService) {
+    public ErrorTransferObject validate(AuthorizationService authService, RecaptchaService recaptchaService, String remoteHost) {
 
         ErrorTransferObject errors = new ErrorTransferObject();
 
@@ -57,7 +57,7 @@ public class UserLogin extends UserAuthData {
             errors.addFieldError(getPrefix() + "loginPassword", "loginController.error_choose_password");
         }
 
-        checkForSpammers(errors, true, recaptchaService);
+        checkForSpammers(errors, true, recaptchaService, remoteHost);
         return errors;
     }
 

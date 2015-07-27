@@ -14,8 +14,9 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 
-public class ArchiveITCase extends AbstractIntegrationTestCase {
+public class ArchiveITCase extends AbstractIntegrationControllerTestCase {
 
     public Archive generateArchiveFileAndUser(String archive) {
         setIgnoreActionErrors(true);

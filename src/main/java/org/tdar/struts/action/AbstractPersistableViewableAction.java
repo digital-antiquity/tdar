@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,15 +23,14 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
-import org.tdar.core.service.GenericService;
+import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
-import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
 
@@ -62,9 +60,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
 
     private static final long serialVersionUID = -5126488373034823160L;
 
-    @Autowired
-    private transient RecaptchaService recaptchaService;
-
     private AntiSpamHelper h = new AntiSpamHelper();
     private Long startTime = -1L;
     private P persistable;
@@ -79,10 +74,12 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    @Autowired
-    private transient GenericService genericService;
+
     @Autowired
     private transient AuthorizationService authorizationService;
+    @Autowired
+    private transient FileSystemResourceService fileSystemResourceService;
+    
     private boolean redirectBadSlug;
     private String slug;
     private String slugSuffix;
@@ -360,13 +357,8 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
      * @param filename
      * @return
      */
-    protected boolean checkHostedFileAvailable(String filename) {
-        File baseFolder = new File(getTdarConfiguration().getHostedFileStoreLocation());
-        File pairTreeRoot = new File(baseFolder, PairtreeFilestore.toPairTree(getId()));
-        File file = new File(pairTreeRoot, filename);
-        boolean exists = file.exists();
-        getLogger().debug("checkPublicFile({})\t -> {}", filename, exists);
-        return exists;
+    protected boolean checkHostedFileAvailable(String filename, Long id) {
+        return fileSystemResourceService.checkHostedFileAvailable(filename, ObjectType.COLLECTION, id);
     }
 
 }

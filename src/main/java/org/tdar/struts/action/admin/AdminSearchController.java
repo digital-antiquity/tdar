@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -21,7 +22,6 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 @Component

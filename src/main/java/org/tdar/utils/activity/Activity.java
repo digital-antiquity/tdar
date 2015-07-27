@@ -6,12 +6,11 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.web.SessionData;
+import org.tdar.core.service.external.session.SessionData;
 
 public class Activity implements Serializable {
 
@@ -61,9 +60,8 @@ public class Activity implements Serializable {
         return qs;
     }
 
-    public Activity(HttpServletRequest httpServletRequest, TdarUser user) {
+    public Activity(HttpServletRequest request, TdarUser user) {
         this();
-        HttpServletRequest request = ServletActionContext.getRequest();
         this.setShortName(String.format("%s:%s%s", request.getMethod(), request.getServletPath(), getQueryString(request)));
         this.name = String.format("%s [%s]", getShortName(), request.getHeader(USER_AGENT));
 

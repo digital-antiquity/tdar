@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.FileAccessRestriction;
-import org.tdar.core.service.external.UserRegistration;
+import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.web.functional.util.WebElementSelection;
 
 /**

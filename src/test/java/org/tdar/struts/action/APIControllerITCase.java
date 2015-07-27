@@ -117,8 +117,16 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         fake.setInheritingNoteInformation(true);
         fake.setInheritingMaterialInformation(true);
         addAuthorizedUser(fake, getUser(), GeneralPermissions.MODIFY_RECORD);
-
-        // fake.getResourceCollections().addAll(getSomeResourceCollections());
+        ResourceCollection coll = new ResourceCollection(CollectionType.SHARED);
+        coll.setHidden(true);
+        coll.setName("hidden");
+        coll.markUpdated(getAdminUser());
+        fake.getResourceCollections().add(coll);
+        ResourceCollection coll2 = new ResourceCollection(CollectionType.SHARED);
+        coll2.setHidden(false);
+        coll2.setName("visible");
+        coll2.markUpdated(getAdminUser());
+        fake.getResourceCollections().add(coll2);
 
         fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
         // fake.getResourceCollections().clear();
@@ -173,6 +181,15 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertTrue("field should be inherited", importedRecord.isInheritingNoteInformation());
         assertFalse("field should be inherited", importedRecord.isInheritingCollectionInformation());
         genericKeywordService.delete(importedRecord);
+        for (ResourceCollection rc : importedRecord.getSharedResourceCollections()) {
+            logger.debug("{} - {}", rc.getName(), rc.isHidden());
+            if (rc.getName().equals("hidden")) {
+                assertTrue(rc.isHidden());
+            } else {
+                assertFalse(rc.isHidden());
+                
+            }
+        }
 
     }
 

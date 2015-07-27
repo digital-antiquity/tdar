@@ -19,7 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.RecaptchaService;
-import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
@@ -119,7 +119,7 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     @Override
     public void prepare() throws Exception {
-        h.checkForSpammers(recaptchaService, true);
+        h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost());
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);
         resource = genericService.find(Resource.class, resourceId);

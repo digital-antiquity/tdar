@@ -14,6 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.web.WebFileSystemResourceService;
 
 /**
  * Created by jimdevos on 2/26/15.
@@ -21,7 +22,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 public class FileSystemResourceServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    private FileSystemResourceService service;
+    private WebFileSystemResourceService service;
 
     @Test
     public void sanityTest() {

@@ -15,16 +15,13 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.api.ApiAuthenticationController;
-import org.tdar.struts.result.TdarResultHeader;
 
 import com.opensymphony.xwork2.ActionInvocation;
 
 @XmlRootElement(name = "resultContainer")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "resultContainer")
-public class JaxbResultContainer implements Serializable, TdarResultHeader {
+public class JaxbResultContainer implements Serializable, APIParameters {
 
     private static final long serialVersionUID = -8255546475402578411L;
     private List<String> errors = new ArrayList<>();
@@ -43,30 +40,29 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
 
     public void convert(Map<String, Object> object_, ActionInvocation invocation) {
 
-        String username_ = (String) object_.get(ApiAuthenticationController.USERNAME);
+        String username_ = (String) object_.get(USERNAME);
         if (StringUtils.isNotBlank(username_)) {
             username = username_;
         }
 
-        String message_ = (String) object_.get(ApiAuthenticationController.MESSAGE);
+        String message_ = (String) object_.get(MESSAGE);
         if (StringUtils.isNotBlank(message_)) {
             setMessage(message_);
             ;
         }
-        String apiKey_ = (String) object_.get(ApiAuthenticationController.API_TOKEN);
+        String apiKey_ = (String) object_.get(API_TOKEN);
         if (StringUtils.isNotBlank(apiKey_)) {
             apiToken = apiKey_;
         }
 
-        String sessionKeyName_ = (String) object_.get(ApiAuthenticationController.API_TOKEN_KEY_NAME);
+        String sessionKeyName_ = (String) object_.get(API_TOKEN_KEY_NAME);
         if (StringUtils.isNotBlank(sessionKeyName_)) {
             sessionKeyName = sessionKeyName_;
         }
 
-        if (invocation.getAction() instanceof TdarActionSupport) {
-            TdarActionSupport tas = (TdarActionSupport) invocation.getAction();
+            ActionErrorWrapper tas = (ActionErrorWrapper) invocation.getAction();
             if (tas.hasActionErrors()) {
-                for (String actionError : tas.getActionErrors()) {
+                for (String actionError : tas.getErrorMessages()) {
                     errors.add(tas.getText(actionError));
                 }
             }
@@ -77,7 +73,6 @@ public class JaxbResultContainer implements Serializable, TdarResultHeader {
                             entry.getKey(), StringUtils.join(entry.getValue(), ";")));
                 }
             }
-        }
     }
 
     public List<String> getErrors() {

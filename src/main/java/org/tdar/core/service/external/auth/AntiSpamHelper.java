@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.service.external.auth;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -80,9 +80,9 @@ public class AntiSpamHelper implements Serializable {
         this.reCaptchaText = reCaptchaText;
     }
 
-    public boolean checkRecaptcha(RecaptchaService recaptchaService) {
+    public boolean checkRecaptcha(RecaptchaService recaptchaService, String remoteHost) {
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            final boolean reCaptchaResponse = recaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
+            final boolean reCaptchaResponse = recaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field(), remoteHost);
             if (reCaptchaResponse == false) {
                 throw new TdarRecoverableRuntimeException("userAccountController.captcha_not_valid");
             }
@@ -90,11 +90,11 @@ public class AntiSpamHelper implements Serializable {
         return true;
     }
 
-    public boolean checkForSpammers(RecaptchaService recaptchaService, boolean ignoreTimecheck) {
+    public boolean checkForSpammers(RecaptchaService recaptchaService, boolean ignoreTimecheck, String remoteHost) {
         long now = System.currentTimeMillis();
         checkUserInfo();
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            checkRecaptcha(recaptchaService);
+            checkRecaptcha(recaptchaService, remoteHost);
         }
 
         if (StringUtils.isNotBlank(getComment())) {

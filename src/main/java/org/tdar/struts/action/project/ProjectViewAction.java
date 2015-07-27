@@ -20,6 +20,7 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.search.SearchService;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -28,7 +29,6 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
 @Component

@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -434,5 +435,10 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertEquals(332, ulna);
         assertEquals(276, empty);
         assertTrue(seenElementNull);
+    }
+
+    @Override
+    protected String getTestFilePath() {
+        return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
 }

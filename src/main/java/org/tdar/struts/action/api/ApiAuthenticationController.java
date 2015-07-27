@@ -25,14 +25,15 @@ import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
-import org.tdar.core.service.external.UserLogin;
+import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.jaxb.APIParameters;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -60,8 +61,6 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient EntityService entityService;
-    @Autowired
-    private transient GenericService genericService;
 
     @Action(value = "login",
             results = {
@@ -127,7 +126,7 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = getUserLogin().validate(authorizationService, recaptchaService);
+        ErrorTransferObject errors = getUserLogin().validate(authorizationService, recaptchaService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
         if (!isPostRequest()) {

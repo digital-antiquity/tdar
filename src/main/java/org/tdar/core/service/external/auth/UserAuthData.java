@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.core.service.external.auth;
 
 import java.io.Serializable;
 
@@ -16,7 +16,7 @@ public abstract class UserAuthData implements Serializable {
     private AntiSpamHelper h;
     private TdarUser person = new TdarUser();
 
-    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, RecaptchaService recaptchaService) {
+    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, RecaptchaService recaptchaService, String remoteHost) {
         // SPAM CHECKING
         // 1 - check for whether the "bogus" comment field has data
         // 2 - check whether someone is adding characters that should not be there
@@ -25,7 +25,7 @@ public abstract class UserAuthData implements Serializable {
             if (getPerson() != null) {
                 getH().setPerson(getPerson());
             }
-            getH().checkForSpammers(recaptchaService, ignoreTimecheck);
+            getH().checkForSpammers(recaptchaService, ignoreTimecheck, remoteHost);
         } catch (TdarRecoverableRuntimeException tre) {
             errors.getActionErrors().add(tre.getMessage());
         }

@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -31,10 +32,9 @@ import org.tdar.db.conversion.converters.ExcelConverter;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
+public class ExcelConverterITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback

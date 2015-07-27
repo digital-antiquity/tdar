@@ -2,7 +2,6 @@ package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -10,6 +9,8 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.struts.action.browse.BrowseKeywordController;
+
+import junit.framework.Assert;
 
 public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
 

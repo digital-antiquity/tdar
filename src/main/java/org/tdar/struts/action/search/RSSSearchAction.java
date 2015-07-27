@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @Namespace("/search")

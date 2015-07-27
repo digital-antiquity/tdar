@@ -3,7 +3,6 @@ package org.tdar.core.dao;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,22 +22,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.PairtreeFilestore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import ro.isdc.wro.config.Context;
-import ro.isdc.wro.manager.WroManager;
-import ro.isdc.wro.manager.factory.standalone.DefaultStandaloneContextAwareManagerFactory;
-import ro.isdc.wro.manager.factory.standalone.StandaloneContext;
-import ro.isdc.wro.model.WroModel;
-import ro.isdc.wro.model.WroModelInspector;
-import ro.isdc.wro.model.group.Group;
-import ro.isdc.wro.model.resource.ResourceType;
-
-import com.hp.hpl.jena.util.FileUtils;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -52,31 +43,6 @@ public class FileSystemResourceDao {
     private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/ROOT/";
     private XPathFactory xPathFactory = XPathFactory.newInstance();
 
-    private String wroTempDirName;
-
-    public static Boolean wroExists = null;
-
-    public boolean testWRO() {
-        if (wroExists != null) {
-            return wroExists;
-        }
-        try {
-            String wroFile = getWroDir() + "/default.js";
-            logger.debug("wroFile: {}", wroFile);
-            Resource resource = resourceLoader.getResource(wroFile);
-            wroExists = resource.exists();
-            
-            if (wroExists) {
-                logger.debug("WRO found? true");
-            }
-            return wroExists;
-
-        } catch (Exception e) {
-            logger.error("{}", e);
-        }
-        logger.debug("WRO found? false");
-        return false;
-    }
 
     // helper to load the PDF Template for the cover page
     public File loadTemplate(String path) throws IOException, FileNotFoundException {
@@ -145,76 +111,23 @@ public class FileSystemResourceDao {
         return toReturn;
     }
 
-    public String getWroDir() {
-        if (wroTempDirName != null) {
-            return wroTempDirName;
+    public boolean checkHostedFileAvailable(String filename, ObjectType type, Long id) {
+        if (getHostedFile(filename, type, id) != null) {
+            return true;
         }
-        try {
-            String file = FileUtils.readWholeFileAsUTF8(getClass().getClassLoader().getResourceAsStream("version.txt"));
-            file = StringUtils.replace(file, "+", "");
-            wroTempDirName = "/wro/" + file.trim();
-            return wroTempDirName;
-        } catch (Exception e) {
-            logger.error("{}", e);
+        
+        return false;
+    }
+
+    public File getHostedFile(String filename, ObjectType type, Long id) {
+        File baseFolder = new File(TdarConfiguration.getInstance().getHostedFileStoreLocation());
+        File pairTreeRoot = new File(baseFolder, PairtreeFilestore.toPairTree(id));
+        File file = new File(pairTreeRoot, filename);
+        logger.debug(file.getAbsolutePath());
+        if (file.exists()) {
+            return file;
         }
         return null;
-    }
-
-    /**
-     * Create and setup a model insepector
-     * 
-     * @return
-     * @throws URISyntaxException
-     */
-    public WroModelInspector getWroInspector() throws URISyntaxException {
-        WroManager wroManager = getManagerFactory().create();
-        WroModel wroModel = wroManager.getModelFactory().create();
-        WroModelInspector wroModelInspector = new WroModelInspector(wroModel);
-        return wroModelInspector;
-    }
-
-    /**
-     * Setup the WRO Context
-     * 
-     * @return
-     * @throws URISyntaxException
-     */
-    private StandaloneContext createStandaloneContext() throws URISyntaxException {
-        Context.set(Context.standaloneContext());
-        final StandaloneContext runContext = new StandaloneContext();
-        runContext.setWroFile(new File(getClass().getClassLoader().getResource("wro.xml").toURI()));
-        return runContext;
-    }
-
-    /**
-     * Create the WRO Manager Factory
-     * 
-     * @return
-     * @throws URISyntaxException
-     */
-    private DefaultStandaloneContextAwareManagerFactory getManagerFactory() throws URISyntaxException {
-        DefaultStandaloneContextAwareManagerFactory managerFactory = new DefaultStandaloneContextAwareManagerFactory();
-        managerFactory.initialize(createStandaloneContext());
-        DefaultStandaloneContextAwareManagerFactory dcsaf = new DefaultStandaloneContextAwareManagerFactory();
-        dcsaf.initialize(createStandaloneContext());
-        return dcsaf;
-    }
-
-    public List<String> fetchGroupUrls(String groupName, ResourceType type) {
-        List<String> srcList = new ArrayList<>();
-        try {
-        WroModelInspector wroModelInspector = getWroInspector();
-
-        Group group = wroModelInspector.getGroupByName(groupName);
-        for (ro.isdc.wro.model.resource.Resource resource : group.getResources()) {
-            if (type == null || type == resource.getType()) {
-                srcList.add(resource.getUri());
-            }
-        }
-        } catch (URISyntaxException uriEx) {
-            logger.error("could not find wro.xml", uriEx);
-        }
-        return srcList;
     }
 
 }

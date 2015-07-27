@@ -21,10 +21,10 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.Accessible;
+import org.tdar.core.service.external.session.SessionData;
+import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.odata.bean.AbstractDataRecord;
 import org.tdar.utils.MessageHelper;
-import org.tdar.web.SessionData;
-import org.tdar.web.SessionDataAware;
 
 /**
  * Provide core methods needed to support the OData Data editing protocol

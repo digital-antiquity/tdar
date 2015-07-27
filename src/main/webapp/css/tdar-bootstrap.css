@@ -1001,6 +1001,10 @@ h3.collection-mid-black:before {
     margin-bottom: -2px;
 }
 
+h3>a {
+    color:inherit;
+}
+
 .small {
     font-size: 70%;
 }

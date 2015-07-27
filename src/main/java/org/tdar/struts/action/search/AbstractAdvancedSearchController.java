@@ -34,6 +34,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.search.SearchFieldType;
 import org.tdar.core.service.search.SearchParameters;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;

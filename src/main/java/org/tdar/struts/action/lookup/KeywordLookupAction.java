@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -26,7 +27,6 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.json.JsonLookupFilter;
 
 /**

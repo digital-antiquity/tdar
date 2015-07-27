@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
@@ -35,7 +33,6 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.struts.action.cart.CartApiController;
 import org.tdar.struts.action.cart.CartApiPollingAction;
@@ -46,6 +43,8 @@ import org.tdar.struts.action.cart.InvoiceController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
 import com.opensymphony.xwork2.Action;
+
+import junit.framework.Assert;
 
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 
@@ -266,7 +265,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = checkMailAndGetLatest("Transaction Status");
+
         assertTrue(received.getSubject().contains("Billing Transaction"));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

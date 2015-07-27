@@ -21,12 +21,13 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.lookup.PersonLookupAction;
 import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 import com.opensymphony.xwork2.Action;
 
-public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
+public class PersonLookupControllerITCase extends AbstractIntegrationControllerTestCase {
 
     @Autowired
     ObfuscationService obfuscationService;

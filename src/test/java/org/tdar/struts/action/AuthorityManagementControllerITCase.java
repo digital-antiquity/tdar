@@ -20,7 +20,6 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.MockMailSender;
 import org.tdar.utils.MessageHelper;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
@@ -101,7 +100,8 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         evictCache();
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = checkMailAndGetLatest("Records Merged");
+
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

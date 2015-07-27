@@ -376,4 +376,8 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         }
     }
 
+    @Override
+    protected String getTestFilePath() {
+        return TestConstants.TEST_DATA_INTEGRATION_DIR;
+    }
 }

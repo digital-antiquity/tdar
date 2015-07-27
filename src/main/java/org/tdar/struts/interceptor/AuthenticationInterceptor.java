@@ -19,11 +19,11 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.session.SessionData;
+import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.web.SessionData;
-import org.tdar.web.SessionDataAware;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;

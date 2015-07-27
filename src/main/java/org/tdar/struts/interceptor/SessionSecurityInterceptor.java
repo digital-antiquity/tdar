@@ -13,12 +13,12 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.external.session.SessionData;
+import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.web.SessionData;
-import org.tdar.web.SessionDataAware;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;

@@ -12,9 +12,9 @@ import org.tdar.URLConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.UserRegistration;
+import org.tdar.core.service.external.auth.CartUserRegistration;
+import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.CartUserRegistration;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -49,7 +49,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
         }
         getLogger().debug("validating registration request");
         // a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
-        ErrorTransferObject errors = registrationInfo.validate(authenticationService, recaptchaService);
+        ErrorTransferObject errors = registrationInfo.validate(authenticationService, recaptchaService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
 

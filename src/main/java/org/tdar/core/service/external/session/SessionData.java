@@ -1,4 +1,4 @@
-package org.tdar.web;
+package org.tdar.core.service.external.session;
 
 import java.io.Serializable;
 import java.util.ArrayList;

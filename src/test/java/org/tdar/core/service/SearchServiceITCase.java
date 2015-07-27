@@ -16,6 +16,7 @@ import org.hibernate.search.FullTextQuery;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -23,10 +24,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 
 @SuppressWarnings("unchecked")
-public class SearchServiceITCase extends AbstractSearchControllerITCase {
+public class SearchServiceITCase extends AbstractWithIndexIntegrationTestCase {
 
     private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
 
@@ -105,7 +105,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     @Before
     public void prepare() {
-        reindex();
+        setupIndex();
     }
 
     @BeforeClass
@@ -180,7 +180,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     public void testAllSortFields() throws ParseException {
 
         for (SortTestStruct sortTestInfo : sortTests) {
-            searchIndexService.indexAll(getAdminUser(), sortTestInfo.type);
+            getSearchIndexService().indexAll(getAdminUser(), sortTestInfo.type);
             for (Map.Entry<SortOption, Comparator<?>> entry : sortTestInfo.comparators.entrySet()) {
                 // assumption: an empty queryBuilder returns alldocs
                 SortOption sortOption = entry.getKey();

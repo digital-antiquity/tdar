@@ -147,4 +147,8 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         return image;
     }
 
+    @Override
+    protected String getTestFilePath() {
+        return TestConstants.TEST_DATA_INTEGRATION_DIR;
+    }
 }

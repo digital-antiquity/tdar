@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -30,7 +31,7 @@ import org.tdar.struts.action.AbstractControllerITCase;
  * @author Adam Brin
  * 
  */
-public class CodingSheetServiceITCase extends AbstractControllerITCase {
+public class CodingSheetServiceITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
     CodingSheetService codingSheetService;

@@ -1,8 +1,9 @@
-/** top level namespace for tDAR javascript libraries */
-//FIXME: remove this if-wrapper once TDAR-3830 is complete
-if(typeof TDAR === "undefined") {
-    var TDAR =  {};
-}
+(function(console, window) {
+'use strict';
+
+//define global TDAR object if not defined already
+var TDAR = window['TDAR'] || {};
+window.TDAR = TDAR;
 
 /**
  * Returns the namespace specified and creates it if it doesn't exist  (e.g. "TDAR.maps.controls",  "TDAR.stringutils")
@@ -20,7 +21,6 @@ TDAR.namespace = function () {
             o = o[d[j]];
         }
     }
-
     return o;
 };
 
@@ -55,7 +55,7 @@ TDAR.loadScript = function (url) {
     script.src = _url;
     head.appendChild(script);
     return promise;
-}
+};
 
 /**
  * Scan the DOM for SCRIPT nodes of type "application/json", parse their content, and return a map of the parsed objects (keyed by script.id).  Useful
@@ -72,8 +72,16 @@ TDAR.loadDocumentData = function _loadDocumentData() {
         map[key] = val;
     });
     return map;
-}
+};
 
+//define TDAR.uri(). Note, if deploying app in other than root context,  you must set <base href="${request.contextPath}">
+TDAR.uri = function(path) {
+    var uri = window.location.origin  + '/'
+    if(path) {
+        uri += path;
+    }
+    return uri;
+};
 
 /**
  * Define dummy console + log methods if not defined by browser.
@@ -82,13 +90,13 @@ if (!window.console) {
     console = {};
 }
 
-(function(console) {
-    var _noop = function(){};
-    console.log = console.log || _noop;
-    console.info = console.info || console.log;
-    console.error = console.error || console.log;
-    console.warn = console.warn || console.log;
-    console.debug = console.debug || console.log;
-    console.table = console.table || console.log;
-})(console);
+var _noop = function(){};
+console.log = console.log || _noop;
+console.info = console.info || console.log;
+console.error = console.error || console.log;
+console.warn = console.warn || console.log;
+console.debug = console.debug || console.log;
+console.table = console.table || console.log;
 
+
+})(console, window);

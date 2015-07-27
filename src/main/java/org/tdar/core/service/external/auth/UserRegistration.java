@@ -1,4 +1,4 @@
-package org.tdar.core.service.external;
+package org.tdar.core.service.external.auth;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.struts.data.AntiSpamHelper;
-import org.tdar.struts.data.UserAuthData;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 /**
  * Created by jimdevos on 6/17/14.
@@ -45,7 +45,7 @@ public class UserRegistration extends UserAuthData {
         setH(h);
     }
 
-    public ErrorTransferObject validate(AuthenticationService authService, RecaptchaService recaptchService) {
+    public ErrorTransferObject validate(AuthenticationService authService, RecaptchaService recaptchService, String remoteHost) {
 
         ErrorTransferObject errors = new ErrorTransferObject();
 
@@ -114,7 +114,7 @@ public class UserRegistration extends UserAuthData {
             errors.getActionErrors().add("userAccountController.error_passwords_dont_match");
         }
 
-        checkForSpammers(errors, false, recaptchService);
+        checkForSpammers(errors, false, recaptchService,remoteHost);
         return errors;
     }
 

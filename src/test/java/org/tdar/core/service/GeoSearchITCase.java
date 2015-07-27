@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
@@ -30,9 +31,8 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
-import org.tdar.struts.action.AbstractAdminControllerITCase;
 
-public class GeoSearchITCase extends AbstractAdminControllerITCase {
+public class GeoSearchITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private GeoSearchService geoSearchService;

@@ -19,19 +19,20 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.service.UrlService;
-import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 
 /**
  * @author Adam Brin
  * 
  */
-public class EZIDITCase extends AbstractSearchControllerITCase {
+public class EZIDITCase extends AbstractIntegrationTestCase {
     // public static final String EZID_URL = "https://n2t.net/ezid";
     // public static final String SHOULDER = "doi:10.5072/FK2";
 
@@ -75,7 +76,7 @@ public class EZIDITCase extends AbstractSearchControllerITCase {
     @Test
     public void testCreateAndDelete() {
         try {
-            Resource r = resourceService.find(DOCUMENT_INHERITING_CULTURE_ID);
+            Resource r = resourceService.find(TestConstants.DOCUMENT_INHERITING_CULTURE_ID);
             ezidDao.connect();
             String absoluteUrl = urlService.absoluteUrl(r);
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);

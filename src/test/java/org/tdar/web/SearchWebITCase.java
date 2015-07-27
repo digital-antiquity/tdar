@@ -18,9 +18,9 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.search.SearchFieldType;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.query.SortOption;
-import org.tdar.struts.action.search.SearchFieldType;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;

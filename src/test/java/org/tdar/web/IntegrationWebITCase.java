@@ -1,9 +1,10 @@
 package org.tdar.web;
 
 import static org.junit.Assert.assertNotNull;
-import net.sf.json.JSONObject;
 
 import org.junit.Test;
+
+import net.sf.json.JSONObject;
 
 /**
  * Created by jimdevos on 12/1/14.

@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -31,11 +32,13 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -45,7 +48,6 @@ import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
@@ -67,8 +69,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private static final long serialVersionUID = 5126290300997389535L;
 
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
-
-    public static final String SEARCH_HEADER_FILENAME = "search-header.jpg";
 
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
@@ -463,7 +463,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     public boolean isSearchHeaderLogoAvailable() {
         // for now, we just look in hosted + collection ID
-        return checkHostedFileAvailable(SEARCH_HEADER_FILENAME);
+        return checkHostedFileAvailable(WhiteLabelFiles.SEARCH_HEADER_FILENAME, getId());
     }
 
     /**

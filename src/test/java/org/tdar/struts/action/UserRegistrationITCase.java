@@ -21,14 +21,13 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.MockMailSender;
-import org.tdar.core.service.external.UserLogin;
+import org.tdar.core.service.external.auth.UserLogin;
+import org.tdar.core.service.external.session.SessionData;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.login.LoginController;
 import org.tdar.struts.action.resource.ResourceController;
 import org.tdar.utils.MessageHelper;
-import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.Action;
 import com.vividsolutions.jts.util.Assert;
@@ -265,11 +264,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
         sendEmailProcess.execute();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
-        // we assume that the message sent was the registration one. If it wasn't we will soon find out...
-        assertTrue("Registration email was not sent - " + messages.size(), messages.size() == 1);
-        String messageText = messages.get(0).getText();
-        assertTrue(StringUtils.isNotBlank(messageText));
+        SimpleMailMessage received = checkMailAndGetLatest("Your user name");
     }
 
     @Test

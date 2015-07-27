@@ -14,6 +14,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -23,13 +24,12 @@ import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.resource.CodingSheetService;
-import org.tdar.struts.action.AbstractControllerITCase;
 
 /**
  * @author Adam Brin
  * 
  */
-public class CachingServiceITCase extends AbstractControllerITCase {
+public class CachingServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private RebuildHomepageCache cacheRebuilder;

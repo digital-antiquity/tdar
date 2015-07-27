@@ -11,9 +11,10 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.lookup.KeywordLookupAction;
 
-public class KeywordLookupControllerITCase extends AbstractIntegrationTestCase {
+public class KeywordLookupControllerITCase extends AbstractIntegrationControllerTestCase {
 
     private KeywordLookupAction controller;
 

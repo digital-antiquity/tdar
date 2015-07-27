@@ -21,11 +21,11 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
@@ -34,7 +34,7 @@ import org.tdar.struts.action.document.DocumentViewAction;
  * @author Adam Brin
  * 
  */
-public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
+public class ObfuscationServiceITCase extends AbstractIntegrationControllerTestCase {
 
     @Autowired
     ObfuscationService obfuscationService;

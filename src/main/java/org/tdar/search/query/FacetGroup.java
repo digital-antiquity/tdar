@@ -1,4 +1,4 @@
-package org.tdar.struts.data;
+package org.tdar.search.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.search.query.FacetValue;
 
 @SuppressWarnings("rawtypes")
 public class FacetGroup<C extends Enum> implements Serializable {
