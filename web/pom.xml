@@ -565,7 +565,7 @@
         </filters>
         <testResources>
             <testResource>
-                <directory>src/main/webapp</directory>
+                <directory>${basedir}/src/main/webapp</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>wsdl/*</include>
@@ -575,7 +575,7 @@
             <!-- <testResource> <directory>src/main/resources</directory>
                 <filtering>true</filtering> </testResource> -->
             <testResource>
-                <directory>src/test/resources</directory>
+                <directory>${basedir}/src/test/resources</directory>
             </testResource>
         </testResources>
         <plugins>
@@ -640,7 +640,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <keystore>src/main/resources/jetty/jetty-ssl.keystore</keystore>
+                    <keystore>${basedir}/src/main/resources/jetty/jetty-ssl.keystore</keystore>
                     <dname>cn=localhost</dname>
                     <keypass>jetty6</keypass>
                     <skipIfExist>true</skipIfExist>
@@ -795,7 +795,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
                 <configuration>
-                    <testClassesDirectory>src/test/resources/</testClassesDirectory>
+                    <testClassesDirectory>${basedir}/src/test/resources/</testClassesDirectory>
                     <useTestClasspath>${use.test.classpath}</useTestClasspath>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <jettyXml>${basedir}/src/main/resources/jetty/jetty.xml,${basedir}/src/main/resources/jetty/jetty-ssl.xml,${basedir}/src/main/resources/jetty/jetty-https.xml,${basedir}/src/main/resources/jetty/jetty-http.xml</jettyXml>
@@ -819,13 +819,13 @@
                         </systemProperty>
                      </systemProperties>
                      <contextPath>/</contextPath>
-                      <webDefaultXml>src/main/resources/jetty/webdefault.xml</webDefaultXml>
+                      <webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>
                      <scanIntervalSeconds>0</scanIntervalSeconds>
                     <stopKey>tdar</stopKey>
                     <webApp>
                         <baseResource
                             implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-                            <resourcesAsCSV>src/main/webapp,${project.build.directory}/generated/webapp</resourcesAsCSV>
+                            <resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/generated/webapp</resourcesAsCSV>
                         </baseResource>
                     </webApp>
                     <stopPort>${jetty.stop.port}</stopPort>
@@ -1194,7 +1194,7 @@
                             <minimize>true</minimize>
                             <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}</destinationFolder>
                             <contextFolder>${basedir}/src/main/webapp/</contextFolder>
-                            <wroFile>src/main/resources/wro.xml</wroFile>
+                            <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
                             <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
                             <ignoreMissingResources>false</ignoreMissingResources>
                         </configuration>
