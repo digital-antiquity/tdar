@@ -1771,7 +1771,36 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 -->                    <!-- LICENSE: APACHE 2.0 -->
         </dependencies>
     </profile>
-
-</profiles>
+    <profile>
+        <id>test</id>
+        <build>
+            <defaultGoal>surefire:test</defaultGoal>
+            <filters>
+                <filter>src/test/resources/hibernate.properties</filter>
+                <filter>src/main/resources/liquibase.properties</filter>
+            </filters>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>1.0-alpha-2</version>
+                    <executions>
+                        <execution>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>read-project-properties</goal>
+                            </goals>
+                            <configuration>
+                                <files>
+                                    <file>src/test/resources/hibernate.properties</file>
+                                </files>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+	</profiles>
 
 </project>

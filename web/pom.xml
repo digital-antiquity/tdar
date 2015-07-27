@@ -798,8 +798,8 @@
                     <testClassesDirectory>src/test/resources/</testClassesDirectory>
                     <useTestClasspath>${use.test.classpath}</useTestClasspath>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <jettyXml>src/main/resources/jetty/jetty.xml,src/main/resources/jetty/jetty-ssl.xml,src/main/resources/jetty/jetty-https.xml,src/main/resources/jetty/jetty-http.xml</jettyXml>
-                     <contextXml>src/main/resources/jetty/jetty-context.xml</contextXml>
+                    <jettyXml>${basedir}/src/main/resources/jetty/jetty.xml,${basedir}/src/main/resources/jetty/jetty-ssl.xml,${basedir}/src/main/resources/jetty/jetty-https.xml,${basedir}/src/main/resources/jetty/jetty-http.xml</jettyXml>
+                     <contextXml>${basedir}/src/main/resources/jetty/jetty-context.xml</contextXml>
                      <systemProperties>
                           <systemProperty>
                            <name>jetty.ssl.port</name>
@@ -918,7 +918,41 @@
                         -DenableContextSwitchingConfig=true</argLine>
                     <excludes>
                         <exclude>**/experimental/*.java</exclude>
+						<exclude>**/*SeleniumWebITCase.java</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.17</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <runOrder>alphabetical</runOrder>
+                    <systemPropertyVariables>
+                        <display.port>${display.port}</display.port>
+                    </systemPropertyVariables>
+                    <argLine>${jvm.args}
+                        -DenableContextSwitchingConfig=true</argLine>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
+					<includes>
+						<include>**/*SeleniumWebITCase.java</include>
+					</includes>
                 </configuration>
             </plugin>
             <plugin>
@@ -1283,6 +1317,33 @@
         </profile>
 		<profile>
 			<id>test</id>
+	        <build>
+	            <defaultGoal>surefire:test</defaultGoal>
+	            <filters>
+	                <filter>src/test/resources/hibernate.properties</filter>
+	                <filter>src/main/resources/liquibase.properties</filter>
+	            </filters>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.codehaus.mojo</groupId>
+	                    <artifactId>properties-maven-plugin</artifactId>
+	                    <version>1.0-alpha-2</version>
+	                    <executions>
+	                        <execution>
+	                            <phase>initialize</phase>
+	                            <goals>
+	                                <goal>read-project-properties</goal>
+	                            </goals>
+	                            <configuration>
+	                                <files>
+	                                    <file>src/test/resources/hibernate.properties</file>
+	                                </files>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
 			<properties>
             <jetty.port>8180</jetty.port>
             <jetty.ssl.port>8143</jetty.ssl.port>
