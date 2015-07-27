@@ -1,35 +1,38 @@
 /* global describe, it, expect, loadFixtures */
-describe("tests for TDAR.common methods", function() {  
+describe("TDAR.common: edit page tests", function() {  
 
-xit("should work when we call initEditPage", function() {
-   var form = null;
-   var props = {
-            formSelector: "#metadataForm",
-            includeInheritance : true,
-            acceptFileTypes : /\.(pdf|doc|docx|rtf|txt)$/i,
-            multipleUpload : true,
-            validExtensions : "pdf|doc|docx|rtf|txt",
-            validExtensionsWarning : "Please enter a valid file (pdf, doc, docx, rtf, txt)",
-            ableToUpload : true,
-             dataTableEnabled : false
-         };
-   
-   loadFixtures("document-add-form.html");
-   var $form = $j("#metadataForm");
-   expect($form).toExist();
-   var result = TDAR.common.initEditPage(form, props);
-   
-   
-});
+   it("initializes the edit page", function() {
+      var form = null;
+      var props = {
+               formSelector: "#metadataForm",
+               includeInheritance : true,
+               acceptFileTypes : /\.(pdf|doc|docx|rtf|txt)$/i,
+               multipleUpload : true,
+               validExtensions : "pdf|doc|docx|rtf|txt",
+               validExtensionsWarning : "Please enter a valid file (pdf, doc, docx, rtf, txt)",
+               ableToUpload : true,
+                dataTableEnabled : false
+            };
+      
+      loadFixtures("document-add-form.html", "fileupload-templates.html");
+      expect($j("#template-upload")).toHaveLength(1);
+      expect($j("#metadataForm")).toHaveLength(1);
+      form = document.getElementById('metadataForm');
+      var result = TDAR.common.initEditPage(form, props);
 
-xit("should work when we call initFormValidation", function() {
-   var form = null;
-   var expectedVal = null;
+   });
 
-   //var result = TDAR.common.initFormValidation(form);
-   expect(true).toBe(false); //fixme: implement this test
+   it("initializes form validation", function() {
+      loadFixtures("document-add-form.html", "fileupload-templates.html");
+      form = document.getElementById('metadataForm');
+      var result = TDAR.common.initFormValidation(form);
+   });
 
-});
+
+})
+
+describe("TDAR.common: miscellaneaous tests", function() {
+
 
 xit("should work when we call applyTreeviews", function() {
    var expectedVal = null;

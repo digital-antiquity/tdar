@@ -56,11 +56,17 @@ module.exports = function(config) {
                 //static files: served by karma webserver but not included on page
                 {pattern: "src/main/webapp/images/**/*", served:true, included:false, watched:false},
 
+
+                //static files: images used by js libraries, e.g. jquery-ui, jquery-file-upload
+                {pattern: "src/main/webapp/includes/**/images/**/*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
+
             ]),
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
         proxies: {
-            '/images/': '/base/src/main/webapp/images/'
+            '/images/': '/base/src/main/webapp/images/',
+            '/includes/': '/base/src/main/webapp/includes/'
         },
 
 
