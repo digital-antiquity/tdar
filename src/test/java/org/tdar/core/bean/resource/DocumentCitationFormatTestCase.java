@@ -3,6 +3,8 @@ package org.tdar.core.bean.resource;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -10,13 +12,15 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 
 public class DocumentCitationFormatTestCase {
 
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    
     @Test
     public void testBook() {
         Document doc = new Document();
         setupDocumentWithAllFields(doc, DocumentType.BOOK);
         assertEquals("publisherLocation: publisher. 1234", doc.getFormattedSourceInformation());
     }
-
+    
     @Test
     public void testBookChapter() {
         Document doc = new Document();
