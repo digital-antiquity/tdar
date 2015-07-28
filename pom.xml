@@ -45,6 +45,10 @@
         <http-client.version>4.5</http-client.version>
         <display.port></display.port>
         <warfile.name>ROOT</warfile.name>
+        
+        <skipWebTests>false</skipWebTests>
+        <skipSeleniumTests>false</skipSeleniumTests>
+        
         <!--
         
         For parallel-deployment when enabled
@@ -1907,6 +1911,7 @@
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
+                            <skip>${skipWebTests}</skip>
                         </configuration>
                     </execution>
                     <execution>
@@ -1916,6 +1921,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipSeleniumTests}</skip>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/selenium</reportsDirectory>
                             <excludes>
