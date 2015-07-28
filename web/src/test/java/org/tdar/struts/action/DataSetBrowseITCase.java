@@ -36,10 +36,10 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
     private static final int RESULTS_PER_PAGE = 2;
 
-    private static final String SRC_TEST_RESOURCES_DATA_INTEGRATION_TESTS_EMPTY_ACCDB = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/empty.accdb";
-    private static final String DOUBLE_DATASET = TestConstants.TEST_ROOT_DIR + "/coding sheet/double_translation_test_dataset.xlsx";
-    private static final String TEXT_DATASET = TestConstants.TEST_ROOT_DIR + "/coding sheet/csvCodingSheetText.csv";
-
+    private static final String SRC_TEST_EMPTY_ACCDB = "data_integration_tests/empty.accdb";
+    private static final String DOUBLE_DATASET = "coding sheet/double_translation_test_dataset.xlsx";
+    private static final String TEXT_DATASET = "coding sheet/csvCodingSheetText.csv";
+    
     @Autowired
     private DatasetService datasetService;
 
@@ -125,7 +125,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
     public void testTranslate() throws IOException, TdarActionException, IllegalAccessException, InstantiationException, InvocationTargetException,
             NoSuchMethodException {
         // load datasets
-        Dataset dataset = setupAndLoadResource(SRC_TEST_RESOURCES_DATA_INTEGRATION_TESTS_EMPTY_ACCDB, Dataset.class);
+        Dataset dataset = setupAndLoadResource(SRC_TEST_EMPTY_ACCDB, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         datasetService.createTranslatedFile(dataset);

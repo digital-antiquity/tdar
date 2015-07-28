@@ -199,7 +199,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     Long uploadFile(String path, String name) {
         String path_ = path;
         String name_ = name;
-        if (name_.contains("src/test/")) {
+        if (name_.contains("src/test/") || name_.contains("target/test-resources")) {
             path_ = FilenameUtils.getPath(name_);
             name_ = FilenameUtils.getName(name_);
         }

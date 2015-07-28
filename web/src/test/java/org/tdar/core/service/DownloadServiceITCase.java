@@ -34,7 +34,7 @@ import org.tdar.utils.MessageHelper;
 
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
-    private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
+    private static final File ROOT_SRC = new File("src/test/resources");
     private Filestore filestore = TdarConfiguration.getInstance().getFilestore();
     // don't need injection (yet)
     @Autowired
