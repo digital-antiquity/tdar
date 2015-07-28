@@ -67,7 +67,6 @@ import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.FormEncodingType;
 import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.InteractivePage;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ScriptException;
 import com.gargoylesoftware.htmlunit.TextPage;
@@ -128,7 +127,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     public static final String ACCOUNT_ID = "accountId";
     public static final String INVOICE_ID = "invoiceId";
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_24);
     protected Page internalPage;
     protected HtmlPage htmlPage;
     private HtmlForm _internalForm;
@@ -874,26 +873,24 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
 
             @Override
-            public void scriptException(InteractivePage page, ScriptException scriptException) {
-                logger.error("JS load exception: {} {}", page.getUrl(), scriptException);
+            public void timeoutError(HtmlPage arg0, long arg1, long arg2) {
+                logger.error("JS timeoutError");
             }
 
             @Override
-            public void timeoutError(InteractivePage page, long allowedTime, long executionTime) {
-                logger.error("timeout exception: {} {}", page.getUrl(), allowedTime);
-                
+            public void scriptException(HtmlPage arg0, ScriptException arg1) {
+                logger.error("JS exception: {}", arg1);
             }
 
             @Override
-            public void malformedScriptURL(InteractivePage page, String url, MalformedURLException malformedURLException) {
-                logger.error("malformed script URL exception: {} {}", page.getUrl(), malformedURLException);
-                
+            public void malformedScriptURL(HtmlPage arg0, String arg1, MalformedURLException arg2) {
+                logger.error("JS malformed exception: {} {}", arg1, arg2);
             }
 
             @Override
-            public void loadScriptError(InteractivePage page, URL scriptUrl, Exception exception) {
-                logger.error("load script Error: {} {}", scriptUrl, exception);
-                
+            public void loadScriptError(HtmlPage arg0, URL arg1, Exception arg2) {
+                logger.error("JS load exception: {} {}", arg1, arg2);
+
             }
         });
         webClient.setCssErrorHandler(new ErrorHandler() {
