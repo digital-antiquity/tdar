@@ -38,8 +38,6 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.EntityService;
-import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
@@ -48,7 +46,6 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileService;
-import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
@@ -61,6 +58,7 @@ import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.ResourceCitationFormatter;
 
 /**
  * $Id$
@@ -109,11 +107,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ObfuscationService obfuscationService;
 
-    @Autowired
-    private EntityService entityService;
-
-    @Autowired
-    private GenericKeywordService genericKeywordService;
+//    @Autowired
+//    private EntityService entityService;
+//
+//    @Autowired
+//    private GenericKeywordService genericKeywordService;
 
     @Autowired
     public ResourceCollectionService resourceCollectionService;
@@ -121,8 +119,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private BillingAccountService accountService;
 
-    @Autowired
-    private InformationResourceService informationResourceService;
+//    @Autowired
+//    private InformationResourceService informationResourceService;
 
     @Autowired
     private ResourceService resourceService;
@@ -133,6 +131,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
     private List<ResourceCreatorProxy> contactProxies;
+    private ResourceCitationFormatter resourceCitation;
 
     private List<ResourceCollection> viewableResourceCollections;
 
@@ -223,6 +222,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         if (getResource() == null) {
             return ERROR;
         }
+        setResourceCitation(new ResourceCitationFormatter(getResource()));
         loadBasicViewMetadata();
         loadCustomViewMetadata();
         resourceService.updateTransientAccessCount(getResource());
@@ -520,6 +520,14 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     public String getWhiteLabelLogoUrl() {
         return String.format("/files/collection/lg/%s/logo", getWhiteLabelCollection().getId());
+    }
+
+    public ResourceCitationFormatter getResourceCitation() {
+        return resourceCitation;
+    }
+
+    public void setResourceCitation(ResourceCitationFormatter resourceCitation) {
+        this.resourceCitation = resourceCitation;
     }
 
 }

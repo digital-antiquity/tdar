@@ -48,6 +48,7 @@ import org.tdar.core.service.pdf.PdfFontHelper;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.AsciiTransliterator;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.ResourceCitationFormatter;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -224,11 +225,12 @@ public class PdfService {
 
         cursorPositionFromBottom = writeOnPage(content, document.getTitle(), PdfFontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
         cursorPositionFromBottom = writeOnPage(content, "", PdfFontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
-        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.authors"), document.getFormattedAuthorList(),
+        ResourceCitationFormatter formatter = new ResourceCitationFormatter(document);
+        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.authors"), formatter.getFormattedAuthorList(),
                 PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
-        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.published"), document.getFormattedSourceInformation(),
+        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.published"), formatter.getFormattedSourceInformation(),
                 PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);

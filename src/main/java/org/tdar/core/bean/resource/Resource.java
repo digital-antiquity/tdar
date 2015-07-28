@@ -1692,34 +1692,6 @@ public class Resource implements Persistable,
         return null;
     }
 
-    public String getFormattedAuthorList() {
-        StringBuilder sb = new StringBuilder();
-        for (ResourceCreator creator : getPrimaryCreators()) {
-            if ((creator.getRole() == ResourceCreatorRole.AUTHOR) || (creator.getRole() == ResourceCreatorRole.CREATOR)) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
-            }
-        }
-        for (ResourceCreator creator : getEditors()) {
-            if (creator.getRole() == ResourceCreatorRole.EDITOR) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
-            }
-        }
-        return sb.toString();
-    }
-
-    public String getFormattedTitleInfo() {
-        StringBuilder sb = new StringBuilder();
-        appendIfNotBlank(sb, getTitle(), "", "");
-        return sb.toString();
-    }
-
-    // FIXME: ADD IS?N
-
-    public String getFormattedSourceInformation() {
-        StringBuilder sb = new StringBuilder();
-        return sb.toString();
-    }
-
     @Field(name = QueryFieldNames.CREATOR_ROLE_IDENTIFIER, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
     @IndexedEmbedded
     @ElementCollection
@@ -1747,20 +1719,6 @@ public class Resource implements Persistable,
         }
         creators.add(getSubmitter());
         return creators;
-    }
-
-    protected StringBuilder appendIfNotBlank(StringBuilder sb, String str,
-            String prefixIfNotAtStart, String textPrefixIfNotBlank) {
-        if (StringUtils.isNotBlank(str)) {
-            if (sb.length() > 0) {
-                sb.append(prefixIfNotAtStart).append(" ");
-            }
-            if (StringUtils.isNotBlank(textPrefixIfNotBlank)) {
-                sb.append(textPrefixIfNotBlank);
-            }
-            sb.append(str);
-        }
-        return sb;
     }
 
     @XmlTransient

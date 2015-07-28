@@ -50,6 +50,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.odata.server.MetaData.EntitySet;
 import org.tdar.odata.server.MetaData.Property;
+import org.tdar.utils.ResourceCitationFormatter;
 
 /**
  * References:
@@ -166,7 +167,8 @@ public class TDarODataProducer implements ODataProducer {
         Dataset dataset = dataTable.getDataset();
         if (dataset != null)
         {
-            authors = dataset.getFormattedAuthorList();
+            ResourceCitationFormatter formatter = new ResourceCitationFormatter(dataset);
+            authors = formatter.getFormattedAuthorList();
             dateUpdated = dataset.getDateUpdated();
         }
         String displayName = dataTable.getDisplayName() == null ? dataTable.getName() : dataTable.getDisplayName();
@@ -216,7 +218,9 @@ public class TDarODataProducer implements ODataProducer {
         // TODO RR: check that these dataset fields are the relevant fields for the Atom feed.
         String description = dataset.getShortenedDescription();
         String summary = description == null ? (dataset.getName() + ": none") : description;
-        OAtomEntity atomEntity = createAtomEntity(dataset.getFormattedAuthorList(), dataset.getDateUpdated(), dataset.getTitle(), summary);
+        ResourceCitationFormatter formatter = new ResourceCitationFormatter(dataset);
+
+        OAtomEntity atomEntity = createAtomEntity(formatter.getFormattedAuthorList(), dataset.getDateUpdated(), dataset.getTitle(), summary);
         return OEntities.create(entitySet, entityKey, properties, links, atomEntity);
     }
 

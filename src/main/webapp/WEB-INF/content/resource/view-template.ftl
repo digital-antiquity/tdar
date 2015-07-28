@@ -93,7 +93,7 @@
     <@common.description resource.description />
 
 <hr/>
-<@view.resourceCitation resource />
+<@view.resourceCitationSection resource />
 
     <#if authenticatedUser?has_content>
      <div id="email-form"  class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
