@@ -1,5 +1,10 @@
 package org.tdar.struts.action.admin;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -28,11 +33,16 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
             @Action(value = "denied", results = { @Result(name = SUCCESS, params = { "contentType", "text/plain" }, type = FREEMARKER,
                     location = "../../errors/access-denied.ftl") })
     })
-    public String execute() {
+    public String execute() throws URISyntaxException, IOException {
         getLogger().trace(System.getProperty("enableContextSwitchingConfig"));
         if ((getConfigurationFile() != null) && System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("true")) {
             getLogger().info("switching tDarConfig to:" + getConfigurationFile());
-            TdarConfiguration.getInstance().setConfigurationFile(configurationFile);
+            File requestFile = new File(configurationFile);
+            String name = requestFile.getName();
+            URL url = getClass().getClassLoader().getResource(name);
+            File configFile = new File(url.toURI());
+            getLogger().debug("configFIle: {}", configFile);
+            TdarConfiguration.getInstance().setConfigurationFile(configFile);
         } else {
             getLogger().warn(CONTEXT_WARNING);
             if (!TdarConfiguration.getInstance().isProductionEnvironment()) {

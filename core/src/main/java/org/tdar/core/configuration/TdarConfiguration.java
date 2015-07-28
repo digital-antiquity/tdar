@@ -908,4 +908,13 @@ public class TdarConfiguration {
     public int getDownloadBufferSize() {
         return assistant.getIntProperty("download.buffer_size",2048);
     }
+
+    @Deprecated
+    public void setConfigurationFile(File configFile) {
+        assistant = new ConfigurationAssistant();
+        assistant.loadProperties(configFile);
+        this.configurationFile = configFile.getName();
+        filestore = loadFilestore();
+        initPersonalFilestorePath();
+    }
 }

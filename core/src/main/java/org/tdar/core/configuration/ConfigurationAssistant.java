@@ -3,6 +3,7 @@ package org.tdar.core.configuration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -61,6 +62,17 @@ public class ConfigurationAssistant implements Serializable {
 
         }
         IOUtils.closeQuietly(stream);
+    }
+
+    public void loadProperties(File file) {
+        try {
+            FileReader reader = new FileReader(file);
+            properties.load(reader);
+            IOUtils.closeQuietly(reader);
+        } catch (IOException e) {
+            // FIXME: try to load them manually, not via loadFromXML?
+            logger.warn("Unable to load properties normally, trying loadFromXML", e);
+        }
     }
 
     @SuppressWarnings("resource")

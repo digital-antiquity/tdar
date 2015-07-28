@@ -21,6 +21,9 @@
         <odata4j.version>0.7.0</odata4j.version>
         <display.port></display.port>
         <warfile.name>ROOT</warfile.name>
+        <skipWebTests>false</skipWebTests>
+        <skipSeleniumTests>false</skipSeleniumTests>
+
     </properties>
 	<parent>
 	    <groupId>org.tdar</groupId>
@@ -904,13 +907,58 @@
                         <id>integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
                             <goal>verify</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/experimental/*.java</exclude>
+                                <exclude>**/functional/**</exclude>
+                                <exclude>**/web/*</exclude>
+                            </excludes>
+                            <includes>
+                            <include>**/DownloadServiceITCase.java</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-web</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/experimental/*.java</exclude>
+                                <exclude>**/functional/**</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/web/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
+                            <skip>${skipWebTests}</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-selenium</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipSeleniumTests}</skip>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/selenium</reportsDirectory>
+                            <excludes>
+                                <exclude>**/experimental/*.java</exclude>
+                                <exclude>**/web/*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/functional/**</include>
+                            </includes>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
@@ -920,9 +968,6 @@
                     </systemPropertyVariables>
                     <argLine>${jvm.args}
                         -DenableContextSwitchingConfig=true</argLine>
-                    <excludes>
-                        <exclude>**/experimental/*.java</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
