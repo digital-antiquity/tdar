@@ -24,10 +24,6 @@ import com.opensymphony.xwork2.Preparable;
 public class UnauthenticatedDownloadAction extends AbstractDownloadController implements Preparable {
 
     private static final long serialVersionUID = 3682702108165100228L;
-    @Autowired
-    private transient DownloadService downloadService;
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Actions(value = {
             @Action(value = "download/{informationResourceId}/{informationResourceFileVersionId}",
