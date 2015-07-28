@@ -22,11 +22,15 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -34,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Service;
@@ -41,6 +46,7 @@ import org.springframework.util.ReflectionUtils;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -61,13 +67,13 @@ import com.opensymphony.xwork2.ActionProxy;
 public class ReflectionService {
 
     private static final String EXECUTE = "execute";
-    private static final String ORG_TDAR2 = "org/tdar/";
+    // private static final String ORG_TDAR2 = "org/tdar/";
     private static final String SET = "set";
     private static final String GET = "get";
     private static final String ORG_TDAR = "org.tdar.";
     private transient Logger logger = LoggerFactory.getLogger(getClass());
     private static transient Logger staticLogger = LoggerFactory.getLogger(ReflectionService.class);
-    private Map<String, Class<Persistable>> persistableLookup;
+    private Map<String, Class<? extends Persistable>> persistableLookup;
 
     @Autowired
     private GenericDao genericDao;
@@ -292,10 +298,10 @@ public class ReflectionService {
      * @throws NoSuchBeanDefinitionException
      * @throws ClassNotFoundException
      */
-    public Class<Persistable> getMatchingClassForSimpleName(String name) throws ClassNotFoundException {
+    public Class<? extends Persistable> getMatchingClassForSimpleName(String name) throws ClassNotFoundException {
         logger.trace("scanning for: {}", name);
         scanForPersistables();
-        logger.trace("scanning in: {}", persistableLookup);
+//        logger.trace("scanning for {} in: {}", name, persistableLookup);
         return persistableLookup.get(name);
     }
 
@@ -311,12 +317,13 @@ public class ReflectionService {
             return;
         }
 
-        Set<BeanDefinition> findCandidateComponents = findClassesThatImplement(Persistable.class);
+        Set<Class<? extends Persistable>> findCandidateComponents = findClassesThatImplement(Persistable.class);
         persistableLookup = new HashMap<>();
-        for (BeanDefinition bd : findCandidateComponents) {
-            String beanClassName = bd.getBeanClassName();
-            Class cls = Class.forName(beanClassName);
+        for (Class<? extends Persistable> cls : findCandidateComponents) {
             logger.trace("{} - {} ", cls.getSimpleName(), cls);
+            if (StringUtils.isBlank(cls.getSimpleName()) || StringUtils.equalsIgnoreCase("base", cls.getSimpleName())) {
+                continue;
+            }
             if (persistableLookup.containsKey(cls.getSimpleName())) {
                 throw new TdarRecoverableRuntimeException("reflectionService.jaxb_mapping", Arrays.asList(cls.getSimpleName()));
             }
@@ -325,18 +332,23 @@ public class ReflectionService {
 
     }
 
+    private static final ClassLoader classLoader = Document.class.getClassLoader();
+
     /**
      * Find all classes that implement the identified Class
      * 
      * @param cls
      * @return
      */
-    public static Set<BeanDefinition> findClassesThatImplement(Class<?> cls) {
-        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AssignableTypeFilter(cls));
-        String basePackage = ORG_TDAR2;
-        Set<BeanDefinition> findCandidateComponents = scanner.findCandidateComponents(basePackage);
-        return findCandidateComponents;
+    public static <C> Set<Class<? extends C>> findClassesThatImplement(Class<C> cls) {
+        Reflections reflection = new Reflections(ORG_TDAR);
+       return  reflection.getSubTypesOf(cls);
+//        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+//        scanner.addIncludeFilter(new AssignableTypeFilter(cls));
+//        String basePackage = ORG_TDAR;
+//        scanner.setResourceLoader(new PathMatchingResourcePatternResolver(classLoader));
+//        Set<BeanDefinition> findCandidateComponents = scanner.findCandidateComponents(basePackage);
+//        return reflection.get;
     }
 
     private static Map<String, Boolean> annotationLookupCache = new ConcurrentHashMap<String, Boolean>();
@@ -429,18 +441,21 @@ public class ReflectionService {
      */
     @SafeVarargs
     public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws ClassNotFoundException {
-        List<Class<?>> toReturn = new ArrayList<>();
-        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+
+        Reflections reflections = new Reflections(ORG_TDAR);
+        Set<Class<?>> annotated = new HashSet<Class<?>>();
         for (Class<? extends Annotation> annot : annots) {
-            scanner.addIncludeFilter(new AnnotationTypeFilter(annot));
+            annotated.addAll(reflections.getTypesAnnotatedWith(annot));
         }
-        String basePackage = ORG_TDAR2;
-        for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
-            String beanClassName = bd.getBeanClassName();
-            Class<?> cls = Class.forName(beanClassName);
-            toReturn.add(cls);
+        Iterator<Class<?>> iter = annotated.iterator();
+        while (iter.hasNext()) {
+            Class<?> next = iter.next();
+            if (next == null || next.getCanonicalName() == null || next.getSimpleName().contains("$1") || next.getCanonicalName().contains("$1")) {
+                staticLogger.trace("removing: {}",next);
+                iter.remove();
+            }
         }
-        return toReturn.toArray(new Class<?>[0]);
+        return annotated.toArray(new Class<?>[0]);
     }
 
     /**

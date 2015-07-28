@@ -111,6 +111,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </exclusions>
     </dependency>
     <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.10</version>
+    </dependency>
+    
+    <dependency>
         <!-- declared dependency with excludes for DataOne and maven 
             version management -->
         <artifactId>foresite</artifactId>

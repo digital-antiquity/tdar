@@ -48,10 +48,9 @@ public class LocalizationTestCase {
 
     @Test
     public void testLocalization() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(Localizable.class);
+        Set<Class<? extends Localizable>> findClassesThatImplement = ReflectionService.findClassesThatImplement(Localizable.class);
         Set<String> badKeys = new HashSet<>();
-        for (BeanDefinition bean : findClassesThatImplement) {
-            Class<?> cls = Class.forName(bean.getBeanClassName());
+        for (Class<? extends Localizable> cls: findClassesThatImplement) {
             logger.debug("{} {}", cls, cls.getEnumConstants());
             for (Object obj : cls.getEnumConstants()) {
                 String key = String.format("%s.%s", cls.getSimpleName(), obj);
@@ -71,9 +70,8 @@ public class LocalizationTestCase {
 
     @Test
     public void testJavaLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
-        Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(LocalizableException.class);
-        for (BeanDefinition bean : findClassesThatImplement) {
-            Class<?> cls = Class.forName(bean.getBeanClassName());
+        Set<Class<? extends LocalizableException>> findClassesThatImplement = ReflectionService.findClassesThatImplement(LocalizableException.class);
+        for (Class<? extends LocalizableException> cls : findClassesThatImplement) {
             if (exceptionRegex.length() > 0) {
                 exceptionRegex += "|";
             }

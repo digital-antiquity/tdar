@@ -40,7 +40,7 @@ public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters
             return null;
         }
         String[] split = id.split(":");
-        Class<Persistable> cls = reflectionService.getMatchingClassForSimpleName(split[0]);
+        Class<? extends Persistable> cls = reflectionService.getMatchingClassForSimpleName(split[0]);
         return genericService.find(cls, Long.valueOf(split[1]));
     }
 }

@@ -28,9 +28,8 @@ public class ReflectionServiceTest {
 
     @Test
     public void testHasLabel() throws ClassNotFoundException {
-        Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(HasLabel.class);
-        for (BeanDefinition bean : findClassesThatImplement) {
-            Class<?> cls = Class.forName(bean.getBeanClassName());
+        Set<Class<? extends HasLabel>> findClassesThatImplement = ReflectionService.findClassesThatImplement(HasLabel.class);
+        for (Class<? extends HasLabel> cls : findClassesThatImplement) {
             if (cls.isEnum()) {
                 for (Object obj : cls.getEnumConstants()) {
                     String label = ((HasLabel) obj).getLabel();

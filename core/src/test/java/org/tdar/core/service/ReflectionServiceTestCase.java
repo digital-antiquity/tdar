@@ -17,7 +17,7 @@ public class ReflectionServiceTestCase {
     public void testMarshallSupport() throws NoSuchBeanDefinitionException, ClassNotFoundException {
         ReflectionService reflectionService = new ReflectionService();
         String test = "Document";
-        Class<Persistable> document = reflectionService.getMatchingClassForSimpleName(test);
+        Class<? extends Persistable> document = reflectionService.getMatchingClassForSimpleName(test);
         logger.debug("{}", document);
         assertEquals(Document.class, document);
     }

@@ -922,41 +922,7 @@
                         -DenableContextSwitchingConfig=true</argLine>
                     <excludes>
                         <exclude>**/experimental/*.java</exclude>
-						<exclude>**/*SeleniumWebITCase.java</exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.17</version>
-                <executions>
-                    <execution>
-                        <id>integration-test-selenium</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>verify-selenium</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <runOrder>alphabetical</runOrder>
-                    <systemPropertyVariables>
-                        <display.port>${display.port}</display.port>
-                    </systemPropertyVariables>
-                    <argLine>${jvm.args}
-                        -DenableContextSwitchingConfig=true</argLine>
-                    <excludes>
-                        <exclude>**/experimental/*.java</exclude>
-                    </excludes>
-					<includes>
-						<include>**/*SeleniumWebITCase.java</include>
-					</includes>
                 </configuration>
             </plugin>
             <plugin>
