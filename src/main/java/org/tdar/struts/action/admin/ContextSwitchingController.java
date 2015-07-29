@@ -41,7 +41,6 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
             String name = requestFile.getName();
             URL url = getClass().getClassLoader().getResource(name);
             File configFile = new File(url.toURI());
-            getLogger().debug("configFIle: {}", configFile);
             TdarConfiguration.getInstance().setConfigurationFile(configFile);
         } else {
             getLogger().warn(CONTEXT_WARNING);

@@ -865,6 +865,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         webClient.getOptions().setUseInsecureSSL(true);
         // webClient.getOptions().setThrowExceptionOnScriptError(false);
         webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.getCurrentWindow().setInnerWidth(1024);
+        // if you enable css, then we need to figure out how to deal with CSS Responsive issues (hidden-phone-portrait) on UPLOAD Button 
+        webClient.getOptions().setCssEnabled(false);
         CookieManager cookieMan = new CookieManager();
         cookieMan = webClient.getCookieManager();
         cookieMan.setCookiesEnabled(true);
@@ -1273,7 +1276,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         try {
             WebWindow openWindow = webClient.openWindow(null, "polling" + System.currentTimeMillis());
             Page page = openWindow.getWebClient().getPage(new WebRequest(polingUrl, HttpMethod.POST));
-            logger.debug(page.toString());
+            logger.debug(page.toString() + "--\n" + page.getWebResponse().getContentAsString());
             return page.getWebResponse().getContentAsString();
         } catch (Exception e) {
             logger.error("error in polling", e);
