@@ -42,8 +42,13 @@
         <slf4j.version>1.7.12</slf4j.version>
         <!--  note, needs htmlunit 2.18 -->
         <http-components.version>4.4.1</http-components.version>
+        <http-client.version>4.5</http-client.version>
         <display.port></display.port>
         <warfile.name>ROOT</warfile.name>
+        
+        <skipWebTests>false</skipWebTests>
+        <skipSeleniumTests>false</skipSeleniumTests>
+        
         <!--
         
         For parallel-deployment when enabled
@@ -124,11 +129,6 @@
             <id>jboss</id>
             <name>JBoss Maven Repository</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>codehaus</id>
-            <name>Codehaus Repository</name>
-            <url>http://repository.codehaus.org/</url>
         </repository>
         <repository>
             <snapshots>
@@ -703,19 +703,19 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>${http-components.version}</version>
+            <version>${http-client.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${http-components.version}</version>
+            <version>${http-client.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient-cache</artifactId>
-            <version>${http-components.version}</version>
+            <version>${http-client.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -1880,13 +1880,58 @@
                         <id>integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
                             <goal>verify</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/experimental/*.java</exclude>
+                                <exclude>**/functional/**</exclude>
+                                <exclude>**/web/*</exclude>
+                            </excludes>
+                            <includes>
+                            <include>**/DownloadServiceITCase.java</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-web</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/experimental/*.java</exclude>
+                                <exclude>**/functional/**</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/web/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
+                            <skip>${skipWebTests}</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-selenium</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipSeleniumTests}</skip>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/selenium</reportsDirectory>
+                            <excludes>
+                                <exclude>**/experimental/*.java</exclude>
+                                <exclude>**/web/*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/functional/**</include>
+                            </includes>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
@@ -1896,9 +1941,6 @@
                     </systemPropertyVariables>
                     <argLine>${jvm.args}
                         -DenableContextSwitchingConfig=true</argLine>
-                    <excludes>
-                        <exclude>**/experimental/*.java</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

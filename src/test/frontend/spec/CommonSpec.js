@@ -1,41 +1,48 @@
 /* global describe, it, expect, loadFixtures */
-describe("tests for TDAR.common methods", function() {  
+describe("TDAR.common: edit page tests", function() {  
 
-xit("should work when we call initEditPage", function() {
-   var form = null;
-   var props = {
-            formSelector: "#metadataForm",
-            includeInheritance : true,
-            acceptFileTypes : /\.(pdf|doc|docx|rtf|txt)$/i,
-            multipleUpload : true,
-            validExtensions : "pdf|doc|docx|rtf|txt",
-            validExtensionsWarning : "Please enter a valid file (pdf, doc, docx, rtf, txt)",
-            ableToUpload : true,
-             dataTableEnabled : false
-         };
-   
-   loadFixtures("document-add-form.html");
-   var $form = $j("#metadataForm");
-   expect($form).toExist();
-   var result = TDAR.common.initEditPage(form, props);
-   
-   
+   it("initializes the edit page", function() {
+      var form = null;
+      var props = {
+               formSelector: "#metadataForm",
+               includeInheritance : true,
+               acceptFileTypes : /\.(pdf|doc|docx|rtf|txt)$/i,
+               multipleUpload : true,
+               validExtensions : "pdf|doc|docx|rtf|txt",
+               validExtensionsWarning : "Please enter a valid file (pdf, doc, docx, rtf, txt)",
+               ableToUpload : true,
+                dataTableEnabled : false
+            };
+      
+      loadFixtures("document-add-form.html", "fileupload-templates.html");
+      expect($j("#template-upload")).toHaveLength(1);
+      expect($j("#metadataForm")).toHaveLength(1);
+      form = document.getElementById('metadataForm');
+      var result = TDAR.common.initEditPage(form, props);
+
+   });
+
+   it("initializes form validation", function() {
+      loadFixtures("document-add-form.html", "fileupload-templates.html");
+      form = document.getElementById('metadataForm');
+      var result = TDAR.common.initFormValidation(form);
+   });
 });
 
-xit("should work when we call initFormValidation", function() {
-   var form = null;
-   var expectedVal = null;
+describe("TDAR.common: miscellaneaous tests", function() {
 
-   //var result = TDAR.common.initFormValidation(form);
-   expect(true).toBe(false); //fixme: implement this test
 
-});
+it("should work when we call applyTreeviews", function() {
 
-xit("should work when we call applyTreeviews", function() {
-   var expectedVal = null;
+   loadFixtures('treeview.html');
+   //before calling treeview, none of the lists are decorated
+   expect($j(".hitarea, .treeview")).toHaveLength(0);
+   
+   var result = TDAR.common.applyTreeviews();
 
-   //var result = TDAR.common.applyTreeviews();
-   expect(true).toBe(false); //fixme: implement this test
+   //after treeview(), parent nodes will have .hitarea and the top-level node will have .treeview class
+   expect($j(".hitarea")).toHaveLength(1);
+   expect($j(".treeview")).toHaveLength(1);
 });
 
 xit("should work when we call initializeView", function() {

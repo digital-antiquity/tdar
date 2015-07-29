@@ -31,7 +31,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartWithAccountFilling() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "user124");
+        setupBasicUser(personmap, "user"+ System.currentTimeMillis());
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH);
         assertTextPresent("Start a new Project");
