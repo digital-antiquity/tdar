@@ -247,12 +247,12 @@ View freemarker macros
     </div>
     </#macro>
 
-<#macro resourceCitation resource>
+<#macro resourceCitationSection resource>
 <h2>Cite this Record</h2>
 <div class="citeMe">
     <#assign citation>
 ${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}.</#if>
-${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})  <#if resource.externalId?has_content>; ${resource.externalId}</#if>
+${resourceCitation.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})  <#if resource.externalId?has_content>; ${resource.externalId}</#if>
     </#assign>
     <p class="sml">
         <#noescape>${citation}</#noescape>

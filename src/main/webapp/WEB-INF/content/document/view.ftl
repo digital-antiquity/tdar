@@ -42,7 +42,10 @@
             <li>
                 <strong>Pages</strong><br>
                 <#assign showParen = false/>
-                <#if resource.documentType.partOfLargerDocument>${resource.pageRange}
+                <#if resource.documentType.partOfLargerDocument>
+                    <#if resource.startPage?has_content && resource.endPage?has_content>
+                    ${resource.startPage} - ${resource.endPage}
+                    </#if>
                     <#assign showParen = true/>
                 </#if>
             </#if>
