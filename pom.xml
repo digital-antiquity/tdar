@@ -1888,9 +1888,6 @@
                                 <exclude>**/functional/**</exclude>
                                 <exclude>**/web/*</exclude>
                             </excludes>
-                            <includes>
-                            <include>**/DownloadServiceITCase.java</include>
-                            </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
                         </configuration>
