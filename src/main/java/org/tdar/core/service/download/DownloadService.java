@@ -114,10 +114,12 @@ public class DownloadService {
 
     public void releaseDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
         InformationResourceFileVersion[] array = new InformationResourceFileVersion[0];
-        if (versionsToDownload != null) {
-            array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
+
+        if (CollectionUtils.isEmpty(versionsToDownload)) {
+            return;
         }
-        if (isUnauthenticatedOrThumbnail(authenticatedUser, array)) {
+
+        if (shouldNotCountInDownloadLock(authenticatedUser, versionsToDownload)) {
             return;
         }
         Long key = authenticatedUser.getId();
@@ -132,23 +134,25 @@ public class DownloadService {
     }
 
     public void enforceDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
-        InformationResourceFileVersion[] array = new InformationResourceFileVersion[0];
-        if (versionsToDownload != null) {
-            array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
-        }
-        if (isUnauthenticatedOrThumbnail(authenticatedUser, array)) {
+        if (CollectionUtils.isEmpty(versionsToDownload)) {
             return;
         }
+
+        if (shouldNotCountInDownloadLock(authenticatedUser, versionsToDownload)) {
+            return;
+        }
+
         Long key = authenticatedUser.getId();
         List<Integer> list = downloadLock.getIfPresent(key);
         if (list == null) {
             list = new ArrayList<>();
         }
-        if (list.contains(array.hashCode())) {
+
+        if (list.contains(versionsToDownload.hashCode())) {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
             } else {
-                logger.error("too many concurrent downloads of the same file {} by one user: {}", array, authenticatedUser);
+                logger.error("too many concurrent downloads of the same file {} by one user: {}", versionsToDownload, authenticatedUser);
             }
         }
 
@@ -164,8 +168,17 @@ public class DownloadService {
         downloadLock.put(key, list);
     }
 
-    private boolean isUnauthenticatedOrThumbnail(TdarUser authenticatedUser, InformationResourceFileVersion[] irFileVersions) {
-        return PersistableUtils.isNullOrTransient(authenticatedUser) || CollectionUtils.size(irFileVersions) == 1 && irFileVersions[0].isThumbnail();
+    private boolean shouldNotCountInDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> irFileVersions) {
+        if (CollectionUtils.isEmpty(irFileVersions)) {
+            return true;
+        }
+        boolean ret = false;
+        for (InformationResourceFileVersion version : irFileVersions) {
+            if (PersistableUtils.isNullOrTransient(authenticatedUser) || version.isDerivative()) {
+                ret = true;
+            }
+        }
+        return ret;
     }
 
     private String addFileToDownload(InformationResourceFileVersion irFileVersion, DownloadTransferObject dto) {

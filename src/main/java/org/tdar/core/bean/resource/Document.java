@@ -10,7 +10,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -265,63 +264,8 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    @Override
-    public String getFormattedTitleInfo() {
-        StringBuilder sb = new StringBuilder();
-        appendIfNotBlank(sb, getTitle(), "", "");
-        appendIfNotBlank(sb, getEdition(), ",", "");
-        return sb.toString();
-    }
-
     // FIXME: ADD IS?N
 
-    @Override
-    // TODO: refactor using MessageFormat or with a freemarker template
-    public String getFormattedSourceInformation() {
-        StringBuilder sb = new StringBuilder();
-        switch (getDocumentType()) {
-            case BOOK:
-                appendIfNotBlank(sb, getPublisherLocation(), "", "");
-                appendIfNotBlank(sb, getPublisherName(), ":", "");
-                break;
-            case BOOK_SECTION:
-                appendIfNotBlank(sb, getBookTitle(), "", "In ");
-                appendIfNotBlank(sb, getPageRange(), ".", "Pp. ");
-                appendIfNotBlank(sb, getPublisherLocation(), ".", "");
-                appendIfNotBlank(sb, getPublisherName(), ":", "");
-                break;
-            case CONFERENCE_PRESENTATION:
-                appendIfNotBlank(sb, getPublisherName(), "", "Presented at ");
-                appendIfNotBlank(sb, getPublisherLocation(), ",", "");
-                break;
-            case JOURNAL_ARTICLE:
-                appendIfNotBlank(sb, getJournalName(), "", "");
-                if (StringUtils.isNotBlank(getJournalNumber()) || StringUtils.isNotBlank(getVolume())) {
-                    sb.append(".");
-                }
-                appendIfNotBlank(sb, getVolume(), "", "");
-                if (StringUtils.isNotBlank(getJournalNumber())) {
-                    appendIfNotBlank(sb, "(" + getJournalNumber() + ")", "", "");
-                }
-                appendIfNotBlank(sb, getPageRange(), ":", "");
-                break;
-            case OTHER:
-                break;
-            case THESIS:
-                String degreetext = "";
-                if (getDegree() != null) {
-                    degreetext = getDegree().getLabel();
-                }
-                appendIfNotBlank(sb, degreetext + ".", "", "");
-                appendIfNotBlank(sb, getPublisherName(), "", "");
-                appendIfNotBlank(sb, getPublisherLocation(), ",", "");
-                break;
-        }
-        if ((getDate() != null) && (getDate() != -1)) {
-            appendIfNotBlank(sb, getDate().toString(), ".", "");
-        }
-        return sb.toString();
-    }
 
     @Override
     public String getAdditonalKeywords() {
@@ -332,12 +276,6 @@ public class Document extends InformationResource {
         return sb.toString();
     }
 
-    public String getPageRange() {
-        StringBuilder sb = new StringBuilder();
-        appendIfNotBlank(sb, getStartPage(), "", "");
-        appendIfNotBlank(sb, getEndPage(), "-", "");
-        return sb.toString().replaceAll("\\s", "");
-    }
 
     public DegreeType getDegree() {
         return degree;
