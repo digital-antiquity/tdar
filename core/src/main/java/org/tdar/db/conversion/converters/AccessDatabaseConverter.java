@@ -191,7 +191,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             @SuppressWarnings("unused")
                             com.vividsolutions.jts.geom.Geometry g = null;
                             try {
-                                g = new WKBReader(factory).read(Hex.encodeHexString(data).getBytes());
+                                String encoded = new String(Hex.encodeHex(data));
+                                g = new WKBReader(factory).read(encoded.getBytes());
                             } catch (Exception e) {
                                 // logger.error("{}", e);
                             }

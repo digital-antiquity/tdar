@@ -261,7 +261,7 @@ public interface Filestore {
         }
 
         protected String formatDigest(MessageDigest digest) {
-            return Hex.encodeHexString(digest.digest());
+            return new String(Hex.encodeHex(digest.digest()));
         }
 
         @Override

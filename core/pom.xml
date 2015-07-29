@@ -27,8 +27,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <jersey.version>1.19</jersey.version>
     <jackson.version>2.5.3</jackson.version>
     <slf4j.version>1.7.12</slf4j.version>
-    <!--  note, needs htmlunit 2.18 -->
     <http-components.version>4.4.1</http-components.version>
+    <http-client.version>4.5</http-client.version>
 </properties>
 <parent>
     <groupId>org.tdar</groupId>
@@ -243,6 +243,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <!-- LICENSE: APACHE 2.0 -->
     </dependency>
     <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.10</version>
+    </dependency>
+    <dependency>
         <groupId>org.atteo</groupId>
         <artifactId>evo-inflector</artifactId>
         <version>1.2.1</version>
@@ -385,29 +390,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </dependency>
     <!-- Junit -->
     <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-all</artifactId>
-        <version>1.3</version>
-        <!-- LICENSE: BSD -->
-    </dependency>
-    <dependency>
-        <groupId>org.jmock</groupId>
-        <artifactId>jmock-junit4</artifactId>
-        <version>2.5.1</version>
-        <exclusions>
-            <exclusion>
-                <artifactId>junit</artifactId>
-                <groupId>junit</groupId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>org.jmock</groupId>
-        <artifactId>jmock-legacy</artifactId>
-        <version>2.5.1</version>
-        <!-- LICENSE: MIT/BSD VARIENT -->
-    </dependency>
-    <dependency>
         <groupId>org.apache.jena</groupId>
         <artifactId>jena-core</artifactId>
         <version>${jena.version}</version>
@@ -509,23 +491,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <version>1.6</version>
         <!-- LICENSE: BSD -->
     </dependency>
-    <dependency>
-        <groupId>net.sourceforge.htmlunit</groupId>
-        <artifactId>htmlunit</artifactId>
-        <version>2.15</version>
-        <scope>test</scope>
-        <!-- LICENSE: APACHE 2.0 -->
-        <exclusions>
-            <exclusion>
-                <artifactId>httpclient</artifactId>
-                <groupId>org.apache.httpcomponents</groupId>
-            </exclusion>
-            <exclusion>
-                <artifactId>httpmime</artifactId>
-                <groupId>org.apache.httpcomponents</groupId>
-            </exclusion>
-        </exclusions>
-    </dependency>
     <!-- needed for ANDSPidClient -->
     <dependency>
 		<groupId>commons-httpclient</groupId>
@@ -536,19 +501,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>${http-components.version}</version>
+        <version>${http-client.version}</version>
         <!-- LICENSE: APACHE 2.0 -->
     </dependency>
     <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>${http-components.version}</version>
+        <version>${http-client.version}</version>
         <!-- LICENSE: APACHE 2.0 -->
     </dependency>
     <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient-cache</artifactId>
-        <version>${http-components.version}</version>
+        <version>${http-client.version}</version>
         <!-- LICENSE: APACHE 2.0 -->
     </dependency>
     <dependency>
@@ -750,9 +715,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <artifactId>spring-aop</artifactId>
         <!-- LICENSE: APACHE 2.0 -->
     </dependency>
-    <!-- <dependency> <!- needed by spring for @Transactional calls -> 
-        <groupId>cglib</groupId> <artifactId>cglib-nodep</artifactId> <version>3.1</version> 
-        <!- LICENSE: APACHE 1.1 -> </dependency> -->
     <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>jta</artifactId>
