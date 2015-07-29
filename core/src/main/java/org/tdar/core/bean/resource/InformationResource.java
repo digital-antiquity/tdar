@@ -448,22 +448,6 @@ public abstract class InformationResource extends Resource {
         this.lastUploaded = lastUploaded;
     }
 
-    // public Set<Document> getRelatedCitations() {
-    // return relatedCitations;
-    // }
-    //
-    // public void setRelatedCitations(Set<Document> relatedCitations) {
-    // this.relatedCitations = relatedCitations;
-    // }
-    //
-    // public Set<Document> getSourceCitations() {
-    // return sourceCitations;
-    // }
-    //
-    // public void setSourceCitations(Set<Document> sourceCitations) {
-    // this.sourceCitations = sourceCitations;
-    // }
-
     public int getTotalNumberOfFiles() {
         return informationResourceFiles.size();
     }
@@ -477,20 +461,6 @@ public abstract class InformationResource extends Resource {
             count++;
         }
         return count;
-    }
-
-    @Override
-    public String getFormattedSourceInformation() {
-        StringBuilder sb = new StringBuilder();
-
-        appendIfNotBlank(sb, getPublisherLocation(), ".", "");
-        appendIfNotBlank(sb, getPublisherName(), ":", "");
-
-        if ((getDate() != null) && (getDate().intValue() != -1)) {
-            appendIfNotBlank(sb, getDate().toString(), ".", "");
-        }
-        appendIfNotBlank(sb, getCopyLocation(), ".", "");
-        return sb.toString();
     }
 
     @XmlElementWrapper(name = "informationResourceFiles")

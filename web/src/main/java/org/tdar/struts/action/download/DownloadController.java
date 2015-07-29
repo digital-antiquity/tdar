@@ -12,6 +12,7 @@ import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.ResourceCitationFormatter;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -29,6 +30,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
     private boolean forceAttachment = false;
 
+    private ResourceCitationFormatter resourceCitation;
     @Actions(value = {
             @Action(value = "confirm/{informationResourceId}/{informationResourceFileVersionId}",
                     results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) }),
@@ -46,6 +48,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
                     isCoverPageIncluded(), this, null, false));
         }
         setInformationResource(getDownloadTransferObject().getInformationResource());
+        setResourceCitation(new ResourceCitationFormatter(getInformationResource()));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return ERROR;
         }
@@ -102,5 +105,13 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
     public void setForceAttachment(boolean forceAttachment) {
         this.forceAttachment = forceAttachment;
+    }
+
+    public ResourceCitationFormatter getResourceCitation() {
+        return resourceCitation;
+    }
+
+    public void setResourceCitation(ResourceCitationFormatter resourceCitation) {
+        this.resourceCitation = resourceCitation;
     }
 }

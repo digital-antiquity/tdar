@@ -24,6 +24,12 @@ describe("TDAR.common: edit page tests", function() {
 
    it("initializes form validation", function() {
       loadFixtures("document-add-form.html", "fileupload-templates.html");
+      var $mapdiv = $j(jasmine.getFixtures().read("map-div.html"))
+
+      //add a mapdiv to implicitly load gmap api and perform init
+      $j("#divSpatialInformation").append($mapdiv);
+      
+      expect($j('#divSpatialInformation .google-map')).toHaveLength(1);
       form = document.getElementById('metadataForm');
       var result = TDAR.common.initFormValidation(form);
    });

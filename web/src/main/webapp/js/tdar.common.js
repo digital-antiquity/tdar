@@ -690,7 +690,7 @@ TDAR.common = function (TDAR, fileupload) {
         
 
         //register maps, if any
-        if ($('#divSpatialInformation').length) {
+        if ($('#divSpatialInformation .google-map').length) {
             $(function () {
                 //fixme: implicitly init when necessary
                 TDAR.maps.initMapApi();
