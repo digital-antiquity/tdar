@@ -31,12 +31,12 @@ file.store.class=org.tdar.filestore.PairtreeFilestore
 base.url=http://core.tdar.org/
 about.url=http://www.tdar.org
 comment.url=mailto:comments@tdar.org
-bugreport.url=http://dev.tdar.org/jira
-help.url=http://dev.tdar.org/confluence/display/TDAR/User+Documentation
-help.url.cultural=http://dev.tdar.org/confluence/display/TDAR/Cultural+Terms
-help.url.investigation=http://dev.tdar.org/confluence/display/TDAR/Investigation+Types
-help.url.material=http://dev.tdar.org/confluence/display/TDAR/Material+Types
-help.url.site=http://dev.tdar.org/confluence/display/TDAR/Site+Types
+bugreport.url=https://issues.tdar.org
+help.url=https://docs.tdar.org/display/TDAR/Documentation+Home
+help.url.cultural=https://docs.tdar.org/display/TDAR/Cultural+Terms
+help.url.investigation=https://docs.tdar.org/display/TDAR/Investigation+Types
+help.url.material=https://docs.tdar.org/display/TDAR/Material+Types
+help.url.site=https://docs.tdar.org/display/TDAR/Site+Types
 #
 #   Search Settings
 #

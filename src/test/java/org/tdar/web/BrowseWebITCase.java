@@ -108,15 +108,9 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testViewErrorBadRequest() {
-        // Ideally, this would be a "Bad Request", but it's acceptable that it's a 404 due to the struts type mapping not matching the id as a String
         int statusCode = gotoPageWithoutErrorCheck("/dataset/pay_no_attention_to_this_url");
         logger.debug("STATUS CODE: {}", statusCode);
-        // was 400 prior
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, statusCode);
-        // assertTextPresent("cannot be found");
-        // FIXME: status code will be 200 instead, see http://dev.tdar.org/jira/browse/TDAR-1842 for more details
-        // assertEquals("invalid id should 404: ", HttpStatus.SC_NOT_FOUND, statusCode);
-        // assertEquals("expecting bad request error", HttpStatus.SC_BAD_REQUEST, statusCode);
     }
 
     @Test

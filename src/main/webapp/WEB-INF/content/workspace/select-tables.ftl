@@ -138,10 +138,10 @@
 
             <p>After you have mapped data sets to ontologies, you can then filter the results to create the integrated data set. You simply select the
                 columns you want to appear in the final set. You can read more about data integration <a
-                        href="https://dev.tdar.org/confluence/display/TDAR/Data+Integration">here</a>.
+                        href="https://docs.tdar.org/display/TDAR/Data+Integration">here</a>.
             <ul>
                 <li><a href="<@s.url value="/search/results?integratableOptions=YES&startRecord=0"/>">Find Data Sets</a></li>
-                <li><a href="https://dev.tdar.org/confluence/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">How to Bookmark Data Sets</a></li>
+                <li><a href="https://docs.tdar.org/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">How to Bookmark Data Sets</a></li>
             </ul>
         </div>
         <div class="span6">

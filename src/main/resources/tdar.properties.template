@@ -138,23 +138,23 @@ comment.url=mailto:comments@tdar.org
 
 # the report a bug URL
 # default: http://dev.tdar.org/jira
-bugreport.url=http://dev.tdar.org/jira
+bugreport.url=https://issues.tdar.org
 
 # the help / documentation url
-# default: http://dev.tdar.org/confluence/display/TDAR/User+Documentation
-help.url=http://dev.tdar.org/confluence/display/TDAR/User+Documentation
+# default: https://docs.tdar.org/display/TDAR/User+Documentation
+help.url=https://docs.tdar.org/display/TDAR/User+Documentation
 
 # the URL for more contextual help for cultural keywords
-help.url.cultural=http://dev.tdar.org/confluence/display/TDAR/Cultural+Terms
+help.url.cultural=https://docs.tdar.org/display/TDAR/Cultural+Terms
 
 # the URL for more contextual help for investigation types
-help.url.investigation=http://dev.tdar.org/confluence/display/TDAR/Investigation+Types
+help.url.investigation=https://docs.tdar.org/display/TDAR/Investigation+Types
 
 # the URL for more contextual help for material keywords
-help.url.material=http://dev.tdar.org/confluence/display/TDAR/Material+Types
+help.url.material=https://docs.tdar.org/display/TDAR/Material+Types
 
 # the URL for more contextual help for site names
-help.url.site=http://dev.tdar.org/confluence/display/TDAR/Site+Types
+help.url.site=https://docs.tdar.org/display/TDAR/Site+Types
 
 #####################################
 ##   Hibernate and Search Settings

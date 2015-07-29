@@ -2752,7 +2752,7 @@
     </scm>
     <issueManagement>
         <system>JIRA</system>
-        <url>http://dev.tdar.org/jira/</url>
+        <url>https://issues.tdar.org</url>
     </issueManagement>
     <licenses>
         <license>

@@ -133,10 +133,6 @@ public class UserAccountController extends AuthenticationAware.Base implements V
             addActionError(getText("userAccountController.email_invalid"));
             return INPUT;
         }
-
-        // use crowd to handle user management? post to
-        // http://dev.tdar.org/crowd/console/forgottenpassword!default.action
-        // or just redirect there?
         addActionError(getText("userAccountController.not_implemented"));
         return SUCCESS;
     }

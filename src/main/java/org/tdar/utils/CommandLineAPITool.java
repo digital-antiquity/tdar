@@ -83,7 +83,7 @@ public class CommandLineAPITool {
     private static final int EXIT_ARGUMENT_ERROR = -1;
     private static final int EXIT_OK = 0;
     private static final String SITE_ACRONYM = "TDAR/FAIMS";
-    private static final String TOOL_URL = "https://dev.tdar.org/confluence/display/TDAR/CommandLine+API+Tool";
+    private static final String TOOL_URL = "https://docs.tdar.org/display/TDAR/CommandLine+API+Tool";
     private static final String OPTION_HELP = "help";
     private static final String OPTION_FILE = "file";
     private static final String OPTION_CONFIG = "config";
