@@ -842,4 +842,17 @@
             <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-svn</archive>
         </mailingList>
     </mailingLists>
+	
+	<distributionManagement>
+	    <repository>
+	      <id>archiva.internal</id>
+	      <name>Internal Release Repository</name>
+	      <url>https://dev.tdar.org/archiva/repository/internal/</url>
+	    </repository>
+	    <snapshotRepository>
+	      <id>archiva.snapshots</id>
+	      <name>Internal Snapshot Repository</name>
+	      <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+	    </snapshotRepository>
+	  </distributionManagement>
 </project>
