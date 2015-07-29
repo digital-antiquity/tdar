@@ -32,11 +32,17 @@ describe("TDAR.common: edit page tests", function() {
 describe("TDAR.common: miscellaneaous tests", function() {
 
 
-xit("should work when we call applyTreeviews", function() {
-   var expectedVal = null;
+it("should work when we call applyTreeviews", function() {
 
-   //var result = TDAR.common.applyTreeviews();
-   expect(true).toBe(false); //fixme: implement this test
+   loadFixtures('treeview.html');
+   //before calling treeview, none of the lists are decorated
+   expect($j(".hitarea, .treeview")).toHaveLength(0);
+   
+   var result = TDAR.common.applyTreeviews();
+
+   //after treeview(), parent nodes will have .hitarea and the top-level node will have .treeview class
+   expect($j(".hitarea")).toHaveLength(1);
+   expect($j(".treeview")).toHaveLength(1);
 });
 
 xit("should work when we call initializeView", function() {
