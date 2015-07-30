@@ -223,7 +223,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>/home/bamboo/clover/</clover.dir>
+                <clover.dir>/home/bamboo/clover/${hg.branch}</clover.dir>
             </properties>
             <build>
                 <plugins>
@@ -240,11 +240,10 @@
                                 <id>generate</id>
                                 <phase>generate-sources</phase>
                                 <goals>
-                                    <goal>setup</goal>
-                                    <goal>optimize</goal>
-                                    <goal>optimizeIntegration</goal>
-                                    <goal>snapshot</goal>
-                                    <goal>clover</goal>
+                                  <goal>setup</goal>
+                                  <goal>optimize</goal>
+                                  <goal>optimizeIntegration</goal>
+                                  <goal>snapshot</goal>
                                 </goals>
                             </execution>
                             <execution>
