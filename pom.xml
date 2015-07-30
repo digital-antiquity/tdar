@@ -2346,7 +2346,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>/home/bamboo/clover/</clover.dir>
+                <clover.dir>/home/bamboo/clover/${hg.branch}</clover.dir>
             </properties>
             <build>
                 <plugins>
@@ -2367,7 +2367,6 @@
                                   <goal>optimize</goal>
                                   <goal>optimizeIntegration</goal>
                                   <goal>snapshot</goal>
-                                  <goal>clover</goal>
                                 </goals>
                             </execution>
                             <execution>
@@ -3070,7 +3069,7 @@
     </scm>
     <issueManagement>
         <system>JIRA</system>
-        <url>http://dev.tdar.org/jira/</url>
+        <url>https://issues.tdar.org</url>
     </issueManagement>
     <licenses>
         <license>

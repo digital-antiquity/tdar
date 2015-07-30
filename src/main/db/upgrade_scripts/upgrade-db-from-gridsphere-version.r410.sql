@@ -308,7 +308,7 @@ alter table dcmi_type add column label varchar(255);
 alter table dcmi_type add column active bool;
 update dcmi_type set label=name;
 update dcmi_type set label='Document' where name='Text';
--- according to https://dev.tdar.org/jira/browse/TDAR-300 only enable the
+-- according to https://issues.tdar.org/browse/TDAR-300 only enable the
 -- following dcmi types
 update dcmi_type set active=true where name in ('Dataset', 'Moving Image', 'Still
 Image', 'Text');

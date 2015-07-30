@@ -362,4 +362,24 @@
         <renameColumn tableName="pos_billing_activity" oldColumnName="groupname" newColumnName="group_name"/>
         <renameColumn tableName="pos_billing_activity" oldColumnName="enabled" newColumnName="active"/>
     </changeSet>
+
+    <changeSet id="munsell-28" author="jtdevos">
+        <comment>
+            Changing whitelabel collection ID from SERIAL to BIGINT.  Note that SERIAL is just a BIGINT with  a
+            default value to a dynamically-generated sequence.
+        </comment>
+        <dropDefaultValue tableName="whitelabel_collection" columnName="id"/>
+        <dropSequence sequenceName="whitelabel_collection_id_seq" />
+    </changeSet>
+
+
+    <changeSet id="munsell-29" author="abrin">
+        <comment>
+        Adding Download Count to TdarUser
+        </comment>
+        <addColumn tableName="tdar_user">
+        <column name="total_downloads" defaultValue="0" type="bigint"/></addColumn>
+    </changeSet>
+
+
 </databaseChangeLog>

@@ -81,9 +81,15 @@ public class DownloadService {
     }
 
     @Transactional(readOnly = false)
-    public void registerDownload(List<FileDownloadStatistic> stats) {
+    public void registerDownload(List<FileDownloadStatistic> stats, TdarUser user) {
         if (CollectionUtils.isNotEmpty(stats)) {
             genericService.saveOrUpdate(stats);
+            if (PersistableUtils.isNotNullOrTransient(user)) {
+                TdarUser writeableUser = genericService.markWritableOnExistingSession(user);
+                writeableUser.setTotalDownloads(writeableUser.getTotalDownloads() + stats.size());
+                logger.debug("totalDownloadForUser: {} {}",writeableUser.getId(),  writeableUser.getTotalDownloads());
+                genericService.saveOrUpdate(writeableUser);
+            }
         }
     }
 
@@ -283,12 +289,12 @@ public class DownloadService {
             return dto;
         }
 
-        logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
         dto.setVersionsToDownload(versionsToDownload);
         try {
             constructDownloadTransferObject(dto);
+            logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
             if (countDownload) {
-                registerDownload(dto.getStatistics());
+                registerDownload(dto.getStatistics(), authenticatedUser);
             }
         } catch (TdarRecoverableRuntimeException tre) {
             logger.error("ERROR IN Download: {}", tre);

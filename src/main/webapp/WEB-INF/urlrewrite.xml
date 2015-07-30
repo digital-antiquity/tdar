@@ -10,7 +10,7 @@
             URI to a page where the namespace is currently documented. If location of the documentation changes, the &lt;to&gt; element below should be updated to follow it.
         </note>
         <from>/namespace</from>
-        <to type="temporary-redirect">http://dev.tdar.org/confluence/display/TDAR/tDAR+XML+namespace
+        <to type="temporary-redirect">https://docs.tdar.org/display/DEV/tDAR+XML+namespace
         </to>
     </rule>
 
