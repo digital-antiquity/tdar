@@ -43,7 +43,6 @@ module.exports = function(config) {
             ],
             //files specified in wro.xml 
             wroFiles,
-
             [
                 // specs
                 "src/test/frontend/spec/**/*.js",
@@ -79,10 +78,10 @@ module.exports = function(config) {
         preprocessors: {
             //converts html to js strings and stores them in window.__html__
 			
-            //caveat: files declared here cannot also be used as jasmine fixtures (known bug)
+            //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js'],
-			'src/main/webapp/js/**/*.js': ['coverage']
+			'src/main/webapp/js/**.js': ['coverage']
         },
 
         // test results reporter to use
@@ -96,7 +95,7 @@ module.exports = function(config) {
 
 	    coverageReporter: {
 	        type : 'html',
-	        dir : 'target/coverage/'
+	        dir : 'target/karma/coverage/'
 	    },
         // web server port
         port: 9876,

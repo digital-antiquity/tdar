@@ -57,7 +57,7 @@ describe("TDAR.common: miscellaneaous tests", function () {
         $expect('.active').toBeInDOM();
     });
 
-    it("initializes a a map on view page", function (done) {
+    xit("initializes a a map on view page", function (done) {
         loadFixtures('searchheader.html', 'map-div.html');
         var result = TDAR.common.initializeView();
         var mapInitialized = false;
