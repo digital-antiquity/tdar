@@ -1277,6 +1277,40 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </testResources>
     <plugins>
         <plugin>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>1.5</version>
+          <executions>
+              <execution>
+                <id>process-test-resources</id>
+                <goals>
+                  <goal>process</goal>
+                </goals>
+                <configuration>
+  				<attachToTest>true</attachToTest>
+				<attachToMain>false</attachToMain>
+  			    <outputDirectory>target/test-resources</outputDirectory>
+                  <resourceBundles>
+                    <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
+                  </resourceBundles>
+                </configuration>
+              </execution>
+              <execution>
+                <id>process-database-resources</id>
+                <goals>
+                  <goal>process</goal>
+                </goals>
+                <configuration>
+   				 <attachToMain>true</attachToMain>
+	  			  <attachToTest>false</attachToTest>
+				  <outputDirectory>target</outputDirectory>
+                  <resourceBundles>
+                    <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
+                  </resourceBundles>
+                </configuration>
+              </execution>
+          </executions>
+        </plugin>		
+        <plugin>
             <groupId>com.atlassian.maven.plugins</groupId>
             <artifactId>maven-clover2-plugin</artifactId>
             <configuration>
