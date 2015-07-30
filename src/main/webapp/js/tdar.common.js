@@ -9,18 +9,16 @@
  * Returns a copy of a string, terminated by ellipsis if input string exceeds max length
  * @param str input string
  * @param maxlength maximum length of the copy string.
+ * @param useWordBoundary should we ellipsify in the middle of a word?
  * @returns {*} copy of string no longer than maxlength.
  */
-TDAR.ellipsify = function (str, maxlength) {
-    if (!str) {
-        return;
+TDAR.ellipsify = function _ellipsify(text, n, useWordBoundary) {
+        /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
+        var toLong = text.length > n, s_ = toLong ? text.substr(0, n - 1) : text;
+        s_ = useWordBoundary && toLong ? s_.substr(0, s_.lastIndexOf(' ')) : s_;
+        return  toLong ? s_ + '...' : s_;
     }
-    var newString = str;
-    if (str.length > maxlength) {
-        newString = str.substring(0, maxlength - 3) + "...";
-    }
-    return newString;
-};
+
 
 jQuery.extend({
     /**
@@ -318,11 +316,11 @@ TDAR.common = function (TDAR, fileupload) {
                 },
                 password: {
                     required: "Please enter a password.",
-                    minlength: jQuery.format("Your password must be at least {0} characters.")
+                    minlength: $.validator.format("Your password must be at least {0} characters.")
                 },
                 confirmPassword: {
                     required: "Please confirm your password.",
-                    minlength: jQuery.format("Your password must be at least {0} characters."),
+                    minlength: $.validator.format("Your password must be at least {0} characters."),
                     equalTo: "Please make sure your passwords match."
                 }
             }, submitHandler: function (f) {
@@ -874,13 +872,6 @@ TDAR.common = function (TDAR, fileupload) {
         return width > 1200 ? 'responsive-large-desktop' : width > 979 ? 'responsive-desktop' : width > 767 ? 'responsive-tablet' : width > 500 ? 'responsive-phone' : width > 1 ? 'responsive-phone-portrait' : '';
     }
 
-    function _elipsify(text, n, useWordBoundary) {
-        /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
-        var toLong = text.length > n, s_ = toLong ? text.substr(0, n - 1) : text;
-        s_ = useWordBoundary && toLong ? s_.substr(0, s_.lastIndexOf(' ')) : s_;
-        return  toLong ? s_ + '...' : s_;
-    }
-
     /**
      * Click event handler used when user clicks on the "bookmark" icon beside a resource. If the resource is
      * "bookmarked" it is  tagged as a potential integration source on the "integrate" page.  This function shows the
@@ -1301,7 +1292,6 @@ TDAR.common = function (TDAR, fileupload) {
         "initializeView": _initializeView,
         "initRegformValidation": _initRegformValidation,
         "determineResponsiveClass": _determineResponsiveClass,
-        "elipsify": _elipsify,
         "populateTarget": _populateTarget,
         "prepareDateFields": _prepareDateFields,
         "setAdhocTarget": _setAdhocTarget,
