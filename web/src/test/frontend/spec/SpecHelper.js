@@ -1,6 +1,7 @@
 //custom jasmine matchers and common setup/teardown go here
 /* global describe, it, expect, beforeEach, jasmine */
-(function() {
+
+(function(self) {
     "use strict";
     
     /**
@@ -8,6 +9,9 @@
      * have a url of localhost:9876/base/src/test/frontend/fixtures
      */
     jasmine.getFixtures().fixturesPath = "base/src/test/frontend/fixtures";
-     
 
-})();
+    self.$expect = function(selector){
+        return expect($j(selector));
+    }
+
+})(this);
