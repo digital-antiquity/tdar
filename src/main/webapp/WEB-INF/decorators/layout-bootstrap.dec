@@ -77,7 +77,7 @@ ${head}
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
-      <#if ngApplicationName?has_content>ng-cloak</#if>>
+      <#if ngApplicationName?has_content>ng-cloak</#if> data-leaflet-id="examples.map-i875mjb7">
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">

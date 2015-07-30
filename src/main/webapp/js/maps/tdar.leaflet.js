@@ -1,9 +1,13 @@
 TDAR.leaflet = {};
 TDAR.leaflet = (function(console, $, ctx) {
 
-    L.drawLocal.draw.toolbar.buttons.rectangle = 'Create Bounding Box';
+    L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
-    
+    L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
+    L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
+    L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
+    var $body = $('body');
+
     var _defaults = {
             isGeoLocationToBeUsed: false,
             center: {
@@ -25,16 +29,22 @@ TDAR.leaflet = (function(console, $, ctx) {
      * Init the leaflet map, and bind it to the element
      */
     function _initMap(elem) {
+        var $elem = $(elem);
         var map = L.map(elem).setView([ _defaults.center.lat, _defaults.center.lng ], _defaults.zoomLevel);
-
         map.setMaxBounds([[-85,-180.0],[85,180.0]]);
+        
+        var mapId = $body.data('leaflet-id');
+        if ($elem.data('leaflet-id')) {
+            mapId = $elem.data('leaflet-id');
+        }
+        
         var tile = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
             maxZoom : 17,
             minZoom : 2,
             attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
                 + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
                 + 'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-                id : 'examples.map-i875mjb7'
+                id : mapId
         });
         tile.addTo(map);
 		//FIXME: WARN if DIV DOM HEIGHT IS EMPTY
@@ -152,7 +162,6 @@ TDAR.leaflet = (function(console, $, ctx) {
     function _initEditableMaps() {
         $(".leaflet-map-editable").each(function(){
             var $el = $(this);
-
             // we create a div just before the div and copy the styles from the container. This is so that we can bind to class seletion for the fields.
             // Currently, this is a bit of overkill but it would enable multiple forms on the same page
             
@@ -161,8 +170,9 @@ TDAR.leaflet = (function(console, $, ctx) {
            // copy styles
            div.setAttribute("style",$el.attr("style"));
            $el.attr("style","");
-           if ($(div).height() == 0) {
-               $(div).height(400);
+           var $mapDiv = $(div);
+           if ($mapDiv.height() == 0) {
+               $mapDiv.height(400);
            }
            $el.before(div);
            var map = _initMap(div);
@@ -210,7 +220,7 @@ TDAR.leaflet = (function(console, $, ctx) {
             _dc = drawControl;
             _updateLayerFromFields($el,map,drawnItems);
             map.addLayer(drawnItems);
-            
+
             /**
              * Assumption of only one bounding box
              */
@@ -223,7 +233,7 @@ TDAR.leaflet = (function(console, $, ctx) {
                 var bnds = _setValuesFromBounds($el, b);
                 layer.setBounds(bnds);
                 map.addLayer(layer);
-                _disableRectangleCreate();
+                _disableRectangleCreate($mapDiv);
             });
             
             /**
@@ -255,23 +265,31 @@ TDAR.leaflet = (function(console, $, ctx) {
                     $(".d_maxx",$el).val('');
                     $(".d_maxy",$el).val('');
                 });
-                _enableRectangleCreate();
+                _enableRectangleCreate($mapDiv);
             });
         });
     }
 
-    function _enableRectangleCreate() {
-        var $drawRec = $(".leaflet-draw-draw-rectangle");
+    function _enableRectangleCreate($el) {
+        var $drawRec = $(".leaflet-draw-draw-rectangle",$el);
         $drawRec.fadeTo(1,1);
-// $drawRec.click($drawRec.clickHandler);
-        
+        $(".disable-draw-rect", $el).remove();
     }
     
     
-    function _disableRectangleCreate() {
-        var $drawRec = $(".leaflet-draw-draw-rectangle");
+    function _disableRectangleCreate($el) {
+        var $drawRec = $(".leaflet-draw-draw-rectangle",$el);
         $drawRec.fadeTo(1,.5);
-// $drawRec.off("click");
+        var disableCreateDiv = document.createElement("div");
+        disableCreateDiv.setAttribute("style","z-index:1000000");
+        disableCreateDiv.setAttribute("class","disable-draw-rect");
+        var $dcd = $(disableCreateDiv);
+        var $dr = $(".leaflet-draw-draw-rectangle",$el);
+        console.log($dr);
+        $dcd.width($dr.width());
+        $dcd.height($dr.height());
+        $el.append($dcd);
+        $dcd.offset($dr.offset());
     }
     
     /**
