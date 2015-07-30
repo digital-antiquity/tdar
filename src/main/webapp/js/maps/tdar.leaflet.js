@@ -1,5 +1,8 @@
 TDAR.leaflet = {};
 TDAR.leaflet = (function(console, $, ctx) {
+
+    L.drawLocal.draw.toolbar.buttons.rectangle = 'Create Bounding Box';
+    L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
     
     var _defaults = {
             isGeoLocationToBeUsed: false,
