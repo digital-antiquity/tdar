@@ -100,12 +100,27 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect(TDAR.ellipsify(text, n, useWordBoundary)).toBe("It's...");
     });
 
-    xit("should work when we call populateTarget", function () {
-        var obj = null;
-        var expectedVal = null;
+    //note use of $j and $ is intentional
+    it("should work when we call populateTarget", function () {
+        var obj = {id:'12345', title:'a parent title'};
 
-        //var result = TDAR.common.populateTarget(obj);
-        expect(true).toBe(false); //fixme: implement this test
+        var $container = $j('<div id="adhocTarget"></div>');
+        $container.append($j('<input type="hidden" name="parentId" value="">'
+            + '<input type="text" name="parentTitle" value="">'));
+        $j('body').append($container);
+        //sanity check: did we really add this to dom?
+        $expect('input').toHaveLength(2);
+
+        $('body').data('adhocTarget', $container[0]);
+        expect($container).toHaveLength(1);
+        TDAR.common.populateTarget(obj);
+
+        expect($container.find('[type=hidden]').val()).toBe(obj.id);
+        expect($container.find('[type=text]').val()).toBe(obj.title);
+    });
+
+    it("shouldn't leak data when run our populateTarget test", function() {
+        expect($j('body').data("adhocTarget")).not.toBeDefined();
     });
 
     xit("should work when we call prepareDateFields", function () {
