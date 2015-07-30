@@ -258,7 +258,7 @@ TDAR.datatable = function() {
      */
     function fnRenderTitleAndDescription(oObj) {
         var objResource = oObj.aData;
-        return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.common.elipsify(objResource.description, 80)) + '</p>';
+        return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.ellipsify(objResource.description, 80)) + '</p>';
     }
 
     /**

@@ -68,30 +68,36 @@ describe("TDAR.common: miscellaneaous tests", function () {
         });
     });
 
-    xit("should work when we call initRegformValidation", function () {
-        var form = null;
-        var expectedVal = null;
+    it("should register the validation form when we call initRegformValidation", function () {
+        loadFixtures("registration-form.html");
+        var form = document.getElementById('accountForm')
 
-        //var result = TDAR.common.initRegformValidation(form);
-        expect(true).toBe(false); //fixme: implement this test
+        var result = TDAR.common.initRegformValidation(form);
+        var validator = $(form).validate();
+        //before we validate we should have no errors
+        expect(validator.errorList).toHaveLength(0);
+
+        //since all fields are blank, we should have at least a couple validation errors
+        $(form).valid();
+        expect(validator.errorList.length).toBeGreaterThan(0);
     });
 
-    xit("should work when we call determineResponsiveClass", function () {
-        var width = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.determineResponsiveClass(width);
-        expect(true).toBe(false); //fixme: implement this test
+    it("should work when we call determineResponsiveClass", function () {
+        var f =  TDAR.common.determineResponsiveClass.bind(TDAR.common);
+        expect(f(1200 + 1)).toBe('responsive-large-desktop');
+        expect(f(979 + 1)).toBe('responsive-desktop');
+        expect(f(767 + 1)).toBe('responsive-tablet');
+        expect(f(500 + 1)).toBe('responsive-phone');
+        expect(f(1 + 1)).toBe('responsive-phone-portrait');
     });
 
-    xit("should work when we call elipsify", function () {
-        var text = null;
-        var n = null;
-        var useWordBoundary = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.elipsify(text, n, useWordBoundary);
-        expect(true).toBe(false); //fixme: implement this test
+    it("should work when we call ellipsify", function () {
+        var text = "It's Monty Pythons Flying circus";
+        var n = 6;
+        var useWordBoundary = false;
+        expect(TDAR.ellipsify(text, n, useWordBoundary)).toBe("It's ..."); 
+        var useWordBoundary = true;
+        expect(TDAR.ellipsify(text, n, useWordBoundary)).toBe("It's...");
     });
 
     xit("should work when we call populateTarget", function () {
