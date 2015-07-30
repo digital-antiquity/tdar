@@ -1,4 +1,4 @@
-package org.tdar.tag;
+package org.tdar.web.tag;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,13 +16,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.resource.Resource;
+import org.tdar.tag.GetXsltTemplate;
+import org.tdar.tag.GetXsltTemplateResponse;
+import org.tdar.tag.Query;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
+import org.tdar.tag.ResultType;
+import org.tdar.tag.SearchResults;
 import org.tdar.tag.SearchResults.Meta;
+import org.tdar.tag.SubjectType;
+import org.tdar.tag.TagGateway;
+import org.tdar.tag.TagGatewayPort;
+import org.tdar.tag.TagGatewayService;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 import org.w3c.dom.Element;
 
 /**
@@ -31,7 +39,7 @@ import org.w3c.dom.Element;
  * @author abrin
  *
  */
-public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
+public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "services/TagGatewayService?wsdl";
     private static final String SERVICE_NAMESPACE = "http://archaeologydataservice.ac.uk/tag/schema";
@@ -43,7 +51,6 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Before
     public void setupServiceClient() throws MalformedURLException {
-        getSearchIndexService().indexAll(getAdminUser(), Resource.class);
         // use this to run the TAG Gateway with a direct connection, not a socket connection
         boolean runLocal = false;
         if (!runLocal) {
@@ -51,6 +58,9 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
                     new URL(WSDL_LOCATION),
                     new QName(SERVICE_NAMESPACE, SERVICE_NAME));
             port = service.getTagGateway();
+            logger.debug("loc:{}", WSDL_LOCATION);
+            logger.debug("port:{}", port);
+
         } else {
             port = gateway;
         }
@@ -72,13 +82,15 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         GetXsltTemplate params = new GetXsltTemplate();
         GetXsltTemplateResponse resp = port.getXsltTemplate(params);
         Element xslt = (Element) resp.getAny();
-        assertEquals("stylesheet", xslt.getLocalName());
+        logger.debug("XSLT: {}", xslt.getOwnerDocument().getDocumentElement().getTagName());
+        assertTrue(xslt.getTagName().contains("stylesheet"));
     }
 
     @Test
     @Rollback(true)
     public void getTopRecords() {
-
+        reindex();
+        logout();
         SearchResults results;
         Meta meta;
 
@@ -88,6 +100,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         query.setFreetext("*:*");
 
         results = port.getTopRecords(sessionId, query, 5);
+        logger.debug("results: {} ({})", results, results.getResults());
         meta = results.getMeta();
         assertEquals(sessionId, meta.getSessionID());
         assertTrue(meta.getTotalRecords() > 0); // we are absolutely 100% positive that there are maybe some records that should come back.

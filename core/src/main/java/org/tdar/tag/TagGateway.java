@@ -1,5 +1,7 @@
 package org.tdar.tag;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,7 +86,10 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document d = db.parse(TagGateway.class.getResourceAsStream("/wsdl/tagPortal.xsl"));
+            URL url = TagGateway.class.getClassLoader().getResource("wsdl/tagPortal.xsl");
+            File configFile = new File(url.toURI());
+
+            Document d = db.parse(configFile);
             XSLT = d.getDocumentElement();
         } catch (Exception e) {
             String msg = "Could not initialize the TagGateway service. " +

@@ -195,13 +195,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <!-- SUN Binary Code License Agreement -->
     </dependency>
     <dependency>
-        <groupId>jtidy</groupId>
-        <artifactId>jtidy</artifactId>
-        <version>4aug2000r7-dev</version>
-        <!-- LICENSE: MIT VARIENT -->
-    </dependency>
-
-    <dependency>
         <groupId>net.tanesha.recaptcha4j</groupId>
         <artifactId>recaptcha4j</artifactId>
         <version>0.0.7</version>
@@ -625,26 +618,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <groupId>javax.el</groupId>
         <artifactId>javax.el-api</artifactId>
         <version>2.2.4</version>
-    </dependency>
-    <dependency>
-	    <groupId>nu.validator</groupId>
-	    <artifactId>validator</artifactId>
-	    <version>15.6.29</version>
-	    <exclusions>
-	    	<exclusion>
-	    		<artifactId>httpcore</artifactId>
-	    		<groupId>org.apache.httpcomponents</groupId>
-	    	</exclusion>
-	    	<exclusion>
-	    		<artifactId>httpclient</artifactId>
-	    		<groupId>org.apache.httpcomponents</groupId>
-	    	</exclusion>
-	    </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>org.glassfish.web</groupId>
-        <artifactId>javax.el</artifactId>
-        <version>2.2.6</version>
     </dependency>
     <dependency>
         <groupId>org.slf4j</groupId>
@@ -1303,40 +1276,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </testResource>
     </testResources>
     <plugins>
-        <plugin>
-          <artifactId>maven-remote-resources-plugin</artifactId>
-          <version>1.5</version>
-          <executions>
-              <execution>
-                <id>process-test-resources</id>
-                <goals>
-                  <goal>process</goal>
-                </goals>
-                <configuration>
-  				<attachToTest>true</attachToTest>
-				<attachToMain>false</attachToMain>
-  			    <outputDirectory>target/test-resources</outputDirectory>
-                  <resourceBundles>
-                    <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
-                  </resourceBundles>
-                </configuration>
-              </execution>
-              <execution>
-                <id>process-database-resources</id>
-                <goals>
-                  <goal>process</goal>
-                </goals>
-                <configuration>
-   				 <attachToMain>true</attachToMain>
-	  			  <attachToTest>false</attachToTest>
-				  <outputDirectory>target</outputDirectory>
-                  <resourceBundles>
-                    <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
-                  </resourceBundles>
-                </configuration>
-              </execution>
-          </executions>
-        </plugin>		
         <plugin>
             <groupId>com.atlassian.maven.plugins</groupId>
             <artifactId>maven-clover2-plugin</artifactId>

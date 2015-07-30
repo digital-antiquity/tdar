@@ -28,6 +28,7 @@
         <skipTestLiquibase>true</skipTestLiquibase>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
+        <indexDir>${basedir}/target</indexDir>
         <!-- Following points to the profile directory to use for filtering 
             resources -->
         <!-- override by redefining in a profile. don't forget to 'clean' 
@@ -207,6 +208,47 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>process-test-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <attachToTest>true</attachToTest>
+                            <attachToMain>false</attachToMain>
+                            <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                            <outputDirectory>target/test-resources</outputDirectory>
+                            <resourceBundles>
+                                <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>process-database-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <attachToMain>true</attachToMain>
+                            <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                            <attachToTest>false</attachToTest>
+                            <outputDirectory>target</outputDirectory>
+                            <resourceBundles>
+                                <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>test</id>
@@ -240,10 +282,10 @@
                                 <id>generate</id>
                                 <phase>generate-sources</phase>
                                 <goals>
-                                  <goal>setup</goal>
-                                  <goal>optimize</goal>
-                                  <goal>optimizeIntegration</goal>
-                                  <goal>snapshot</goal>
+                                    <goal>setup</goal>
+                                    <goal>optimize</goal>
+                                    <goal>optimizeIntegration</goal>
+                                    <goal>snapshot</goal>
                                 </goals>
                             </execution>
                             <execution>
@@ -842,17 +884,17 @@
             <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-svn</archive>
         </mailingList>
     </mailingLists>
-	
-	<distributionManagement>
-	    <repository>
-	      <id>archiva.internal</id>
-	      <name>Internal Release Repository</name>
-	      <url>https://dev.tdar.org/archiva/repository/internal/</url>
-	    </repository>
-	    <snapshotRepository>
-	      <id>archiva.snapshots</id>
-	      <name>Internal Snapshot Repository</name>
-	      <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
-	    </snapshotRepository>
-	  </distributionManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+        </repository>
+        <snapshotRepository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

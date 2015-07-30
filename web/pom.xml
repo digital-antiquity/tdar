@@ -116,24 +116,11 @@
             <version>1.0.30</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <!-- Junit -->
-        <dependency>
-            <groupId>com.google.code</groupId>
-            <artifactId>sitemapgen4j</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-            <version>fork-1.2.0</version>
-        </dependency>
         <dependency>
             <groupId>stax</groupId>
             <artifactId>stax-api</artifactId>
             <version>1.0.1</version>
             <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>xmlunit</groupId>
-            <artifactId>xmlunit</artifactId>
-            <version>1.6</version>
-            <!-- LICENSE: BSD -->
         </dependency>
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
@@ -197,18 +184,6 @@
             <artifactId>freemarker</artifactId>
             <version>2.3.22</version>
             <!-- LICENSE: BSD -->
-        </dependency>
-        <dependency>
-            <groupId>org.owasp.antisamy</groupId>
-            <artifactId>antisamy</artifactId>
-            <version>1.5.3</version>
-            <!-- LICENSE: BSD -->
-            <exclusions>
-            	<exclusion>
-            		<artifactId>commons-httpclient</artifactId>
-            		<groupId>commons-httpclient</groupId>
-            	</exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>
@@ -503,7 +478,7 @@
             </testResource>
         </testResources>
         <plugins>
-	        <plugin>
+<!-- 	        <plugin>
 	          <artifactId>maven-remote-resources-plugin</artifactId>
 	          <version>1.5</version>
 	          <executions>
@@ -537,7 +512,7 @@
 	              </execution>
 	          </executions>
 	        </plugin>	
-            <plugin>
+ -->            <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
                 <version>3.1.1</version>
