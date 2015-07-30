@@ -373,4 +373,13 @@
     </changeSet>
 
 
+    <changeSet id="munsell-29" author="abrin">
+        <comment>
+        Adding Download Count to TdarUser
+        </comment>
+        <addColumn tableName="tdar_user">
+        <column name="total_downloads" defaultValue="0" type="bigint"/></addColumn>
+    </changeSet>
+
+
 </databaseChangeLog>

@@ -74,6 +74,9 @@ public class TdarUser extends Person {
     @Column(name = "total_login")
     private Long totalLogins = 0L;
 
+    @Column(name = "total_downloads")
+    private Long totalDownloads = 0L;
+
     // can this user contribute resources?
     @Column(name = "contributor", nullable = false, columnDefinition = "boolean default FALSE")
     private Boolean contributor = Boolean.FALSE;
@@ -259,6 +262,14 @@ public class TdarUser extends Person {
 
     public void setNewResourceSavedAsDraft(Boolean newResourceSavedAsDraft) {
         this.newResourceSavedAsDraft = newResourceSavedAsDraft;
+    }
+
+    public Long getTotalDownloads() {
+        return totalDownloads;
+    }
+
+    public void setTotalDownloads(Long totalDownloads) {
+        this.totalDownloads = totalDownloads;
     }
 
 }

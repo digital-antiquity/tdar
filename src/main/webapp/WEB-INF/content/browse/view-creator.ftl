@@ -144,7 +144,7 @@
                         <td>
                             <#if showAdminInfo>
                             <#if (creator.lastLogin)?has_content>
-                                <@_datefield "Last Login"  creator.lastLogin />
+                                <@_datefield "Last Login"  creator.lastLogin /><#if editor> (total: ${creator.totalLogins!0}; Downloads: ${creator.totalDownloads!0})</#if>
                             <#else>
                                 <@_textfield "Last Login"  "No record" />
                             </#if>
