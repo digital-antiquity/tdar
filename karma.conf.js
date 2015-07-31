@@ -96,7 +96,7 @@ module.exports = function(config) {
 
 	    coverageReporter: {
 	        type : 'html',
-	        dir : 'target/coverage/'
+	        dir : 'target/karma/coverage/'
 	    },
         // web server port
         port: 9876,
