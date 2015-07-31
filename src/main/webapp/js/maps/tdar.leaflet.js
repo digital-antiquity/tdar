@@ -125,7 +125,7 @@ TDAR.leaflet = (function(console, $, ctx) {
     /**
      * Updates a leaflet layer (removes/adds) based on the .minx, .miny, .maxx, .maxy vals
      */
-    function _updateLayerFromFields($el,map,drawnItems) {
+    function _updateLayerFromFields($el,map,drawnItems,$mapDiv) {
         var $minx = parseFloat($(".minx",$el).val());
         var $miny = parseFloat($(".miny",$el).val());
         var $maxx = parseFloat($(".maxx",$el).val());
@@ -141,7 +141,7 @@ TDAR.leaflet = (function(console, $, ctx) {
 		var rectangle = _initRectangle(map, $minx,$miny,$maxx,$maxy,_rectangleDefaults);
 		
 		if (rectangle != undefined) {
-            _disableRectangleCreate();
+            _disableRectangleCreate($mapDiv);
             drawnItems.addLayer(rectangle);
 		} else {
 		    _enableRectangleCreate();
@@ -171,6 +171,7 @@ TDAR.leaflet = (function(console, $, ctx) {
            div.setAttribute("style",$el.attr("style"));
            $el.attr("style","");
            var $mapDiv = $(div);
+		   $mapDiv.data("leaflet-id",$el.data("leaflet-id"));
            if ($mapDiv.height() == 0) {
                $mapDiv.height(400);
            }
@@ -178,9 +179,6 @@ TDAR.leaflet = (function(console, $, ctx) {
            var map = _initMap(div);
 
            var drawnItems = new L.FeatureGroup();
-            $(".locateCoordsButton",$el).click(function(){
-                var rec = _updateLayerFromFields($el,map,drawnItems);
-            });
 
             // bind ids
             var $dmx = $(".d_maxx",$el);
@@ -218,7 +216,7 @@ TDAR.leaflet = (function(console, $, ctx) {
             var drawControl = new L.Control.Draw(options);
             map.addControl(drawControl);
             _dc = drawControl;
-            _updateLayerFromFields($el,map,drawnItems);
+            _updateLayerFromFields($el,map,drawnItems, $mapDiv);
             map.addLayer(drawnItems);
 
             /**
@@ -267,6 +265,12 @@ TDAR.leaflet = (function(console, $, ctx) {
                 });
                 _enableRectangleCreate($mapDiv);
             });
+			
+			
+            $(".locateCoordsButton",$el).click(function(){
+                var rec = _updateLayerFromFields($el,map,drawnItems,$mapDiv);
+            });
+			
         });
     }
 
@@ -285,7 +289,7 @@ TDAR.leaflet = (function(console, $, ctx) {
         disableCreateDiv.setAttribute("class","disable-draw-rect");
         var $dcd = $(disableCreateDiv);
         var $dr = $(".leaflet-draw-draw-rectangle",$el);
-        console.log($dr);
+        
         $dcd.width($dr.width());
         $dcd.height($dr.height());
         $el.append($dcd);

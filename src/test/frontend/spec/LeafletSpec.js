@@ -46,4 +46,42 @@ describe("LeafletSpec", function() {
         // assert that a result map has items
      });
 
+     it("initLeafletMaps:validResultsSetup", function() {
+         loadFixtures("leaflet-results.html");
+         TDAR.leaflet.initResultsMaps();
+         var options = null;
+         var expectedVal = null;
+         //var result = TDAR.leaflet.adminUsageStats(options);
+         console.log(TDAR.leaflet.initialized());
+         //https://www.npmjs.com/package/jasmine-jquery-matchers
+         expect(TDAR.leaflet.initialized()).toBeGreaterThan(-1); //fixme: implement this test
+         expect($(".leaflet-container")).toHaveLength(1);
+		 // 1 rectangle and 4 place-holders
+		 expect($(".leaflet-clickable")).toHaveLength(4);
+		 expect($("div.marker-cluster")).toHaveLength(2);
+		 expect($("img.leaflet-marker-icon")).toHaveLength(1);
+		 // $("img.leaflet-marker-icon").click();
+		 // var popup = $(".leaflet-popup-content");
+		 // expect(popup).toHaveLength(1);
+		 // console.log(popup);
+      });
+
+
+      it("initLeafletMaps:validEdit", function() {
+          loadFixtures("leaflet-edit.html");
+          TDAR.leaflet.initEditableLeafletMaps();
+          var options = null;
+          var expectedVal = null;
+          //var result = TDAR.leaflet.adminUsageStats(options);
+          console.log(TDAR.leaflet.initialized());
+          //https://www.npmjs.com/package/jasmine-jquery-matchers
+          expect(TDAR.leaflet.initialized()).toBeGreaterThan(-1); //fixme: implement this test
+          expect($(".leaflet-container")).toHaveLength(1);
+ 		  // 1 rectangle and 4 place-holders
+ 		  expect($(".leaflet-clickable")).toHaveLength(1);
+		 
+       });
+
+
+
 });
