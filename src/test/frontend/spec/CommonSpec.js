@@ -62,10 +62,13 @@ describe("TDAR.common: miscellaneaous tests", function () {
         var result = TDAR.common.initializeView();
         var mapInitialized = false;
         var promise = TDAR.maps.mapPromise;
-        promise.done(function(api){
-            expect(api).toBeDefined();
-            done();
-        });
+        promise
+            .done(function(api){
+                expect(api).toBeDefined();
+                done();})
+            .fail(function(err){
+                fail('Received error message from mapPromise:' + err);
+            });
     });
 
     it("should register the validation form when we call initRegformValidation", function () {
