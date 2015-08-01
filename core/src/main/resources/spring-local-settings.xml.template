@@ -46,7 +46,6 @@
  
   
     <!-- Site specific labels -->
-    <import resource="spring-tag.xml" />
     <!-- <import resource="spring-tag-ahad.xml" /> -->
 
 
