@@ -54,6 +54,9 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		setupOpenSessionInViewFilter(container);
 		configureOaiServlet(container);
 
+        configureCxfForTag(container);
+        configureFreemarker(container);
+
 		configureStrutsAndSiteMeshFilters(container);
 
 		if (!configuration.isStaticContentEnabled()) {
