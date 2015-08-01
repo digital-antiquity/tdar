@@ -17,7 +17,8 @@ import org.odata4j.exceptions.ForbiddenException;
 import org.odata4j.exceptions.NotFoundException;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.odata.DataRecord;
 import org.tdar.odata.bean.MetaData.EntitySet;
 import org.tdar.odata.service.RepositoryService;
 
@@ -84,7 +85,7 @@ public class TDarODataProducerUpdateTest {
         Dataset dataset = AbstractFitTest.createTestDataset();
         final DataTable dataTable = dataset.getDataTables().iterator().next();
         dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
+        final AbstractDataRecord dataRecord = new DataRecord(1234L, dataTable);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
 
 public interface RepositoryService {
 

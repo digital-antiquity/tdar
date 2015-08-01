@@ -1,37 +1,50 @@
-package org.tdar.odata.bean;
+package org.tdar.odata;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
 
 // TODO RR: need some unit tests on this.
 
 // Not abstract in a Java class sense.
 // Abstract in the sense that it can be used to represent any entity 
 // derived from EntitySet.T_DATA_RECORDS.
-public class AbstractDataRecord {
+public class DataRecord implements AbstractDataRecord {
 
     private Long id;
     private DataTable dataTable;
     private Map<String, Object> values = new HashMap<String, Object>();
 
-    public AbstractDataRecord(final Long id, DataTable dataTable) {
+    public DataRecord(final Long id, DataTable dataTable) {
         super();
         this.id = id;
         this.dataTable = dataTable;
     }
 
-    public Long getId() {
+    /* (non-Javadoc)
+	 * @see org.tdar.db.model.abstracts.ADR#getId()
+	 */
+    @Override
+	public Long getId() {
         return id;
     }
 
-    public String getTableName() {
+    /* (non-Javadoc)
+	 * @see org.tdar.db.model.abstracts.ADR#getTableName()
+	 */
+    @Override
+	public String getTableName() {
         return dataTable.getName();
     }
 
-    public DataTable getDataTable() {
+    /* (non-Javadoc)
+	 * @see org.tdar.db.model.abstracts.ADR#getDataTable()
+	 */
+    @Override
+	public DataTable getDataTable() {
         return dataTable;
     }
 
@@ -58,12 +71,20 @@ public class AbstractDataRecord {
         values.put(name, value);
     }
 
-    public Set<String> propertyNames()
+    /* (non-Javadoc)
+	 * @see org.tdar.db.model.abstracts.ADR#propertyNames()
+	 */
+    @Override
+	public Set<String> propertyNames()
     {
         return values.keySet();
     }
 
-    public Map<?, ?> asMap() {
+    /* (non-Javadoc)
+	 * @see org.tdar.db.model.abstracts.ADR#asMap()
+	 */
+    @Override
+	public Map<?, ?> asMap() {
         return values;
     }
 
@@ -88,7 +109,7 @@ public class AbstractDataRecord {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        AbstractDataRecord other = (AbstractDataRecord) obj;
+        DataRecord other = (DataRecord) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;

@@ -23,7 +23,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <geotools.version>13.1</geotools.version>
     <tika.version>1.9</tika.version>
     <batik.version>1.7</batik.version>
-    <odata4j.version>0.7.0</odata4j.version>
     <jersey.version>1.19</jersey.version>
     <jackson.version>2.5.3</jackson.version>
     <slf4j.version>1.7.12</slf4j.version>
@@ -938,42 +937,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <version>1.9.2</version>
         <!-- LICENSE: APACHE 2.0 -->
     </dependency>
-    <!-- OData (odata4j) Stuff: Begin -->
-    <dependency>
-        <groupId>org.odata4j</groupId>
-        <artifactId>odata4j-core</artifactId>
-        <version>${odata4j.version}</version>
-        <!-- LICENSE: APACHE 2.0 -->
-        <exclusions>
-            <exclusion>
-                <artifactId>javax.persistence</artifactId>
-                <groupId>org.eclipse.persistence</groupId>
-            </exclusion>
-            <exclusion>
-                <artifactId>eclipselink</artifactId>
-                <groupId>org.eclipse.persistence</groupId>
-            </exclusion>
-            <exclusion>
-                <artifactId>joda-time</artifactId>
-                <groupId>joda-time</groupId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>org.odata4j</groupId>
-        <artifactId>odata4j-jersey</artifactId>
-        <version>${odata4j.version}</version>
-        <!-- LICENSE: APACHE 2.0 -->
-    </dependency>
-    <dependency>
-        <groupId>org.odata4j</groupId>
-        <artifactId>odata4j-fit</artifactId>
-        <version>${odata4j.version}</version>
-        <!-- LICENSE: APACHE 2.0 -->
-    </dependency>
-    <!-- OData REST Infrastructure -->
-    <!-- REMOVED: GPL 2.0 <dependency> <groupId>com.sun.net.httpserver</groupId>
-        <artifactId>http</artifactId> <version>20070405</version> </dependency> -->
     <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-server</artifactId>

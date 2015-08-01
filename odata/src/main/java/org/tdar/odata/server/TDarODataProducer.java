@@ -49,7 +49,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.odata.DataRecord;
 import org.tdar.odata.bean.MetaData.EntitySet;
 import org.tdar.odata.bean.MetaData.Property;
 import org.tdar.odata.service.RepositoryService;
@@ -428,7 +429,7 @@ public class TDarODataProducer implements ODataProducer {
     }
 
     protected AbstractDataRecord createDataRecord(Long id, List<OProperty<?>> oProperties, DataTable dataTable) {
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(id, dataTable);
+        final DataRecord dataRecord = new DataRecord(id, dataTable);
         for (OProperty<?> oProperty : oProperties)
         {
             String name = oProperty.getName();

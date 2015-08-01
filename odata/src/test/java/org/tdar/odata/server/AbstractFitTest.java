@@ -11,13 +11,13 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -86,7 +86,7 @@ public abstract class AbstractFitTest {
     }
 
     protected void verifyResponseIsReturned(HttpResponse exchange) throws InterruptedException, IOException {
-        Assert.assertEquals(HttpStatus.OK_200, exchange.getStatusLine().getStatusCode());
+        Assert.assertEquals(HttpStatus.SC_OK, exchange.getStatusLine().getStatusCode());
         Assert.assertTrue(IOUtils.toString(exchange.getEntity().getContent()).length() > 0);
     }
 

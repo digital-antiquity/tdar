@@ -42,8 +42,6 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		}
 		setupContainer(container);
 
-		configureOdata(container);
-
 		configureUrlRewriteRule(container);
 
 		if (configuration.getContentSecurityPolicyEnabled()) {
@@ -110,15 +108,6 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		cxf.addMapping("/services/*");
 	}
 
-	private void configureOdata(ServletContext container) {
-		if (configuration.isOdataEnabled()) {
-			ServletRegistration.Dynamic oData = container.addServlet("odata", SpringServlet.class);
-			oData.setLoadOnStartup(1);
-			oData.addMapping("/odata.svc/*");
-			oData.setInitParameter("javax.ws.rs.Application", "org.odata4j.jersey.producer.resources.ODataApplication");
-			oData.setInitParameter("odata4j.producerfactory", "org.tdar.odata.server.TDarProducerFactory");
-		}
-	}
 
 	private void configureUrlRewriteRule(ServletContext container) {
 		Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);

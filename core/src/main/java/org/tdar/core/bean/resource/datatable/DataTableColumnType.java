@@ -8,7 +8,6 @@ package org.tdar.core.bean.resource.datatable;
 
 import java.sql.Types;
 
-import org.odata4j.edm.EdmSimpleType;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
@@ -23,21 +22,19 @@ public enum DataTableColumnType implements HasLabel, Localizable {
 
     // See: http://msdn.microsoft.com/en-us/library/bb896344.aspx for EdmSimpleTypes
 
-    BOOLEAN(Types.BOOLEAN, EdmSimpleType.BOOLEAN),
-    VARCHAR(Types.VARCHAR, EdmSimpleType.STRING),
-    BIGINT(Types.BIGINT, EdmSimpleType.INT64),
-    DOUBLE(Types.DOUBLE, EdmSimpleType.DOUBLE),
-    TEXT(Types.CLOB, EdmSimpleType.STRING),
-    DATE(Types.DATE, EdmSimpleType.DATETIME),
-    DATETIME(Types.TIMESTAMP, EdmSimpleType.DATETIME),
-    BLOB(Types.BLOB, EdmSimpleType.BINARY);
+    BOOLEAN(Types.BOOLEAN),
+    VARCHAR(Types.VARCHAR),
+    BIGINT(Types.BIGINT),
+    DOUBLE(Types.DOUBLE),
+    TEXT(Types.CLOB),
+    DATE(Types.DATE),
+    DATETIME(Types.TIMESTAMP), 
+    BLOB(Types.BLOB);
 
     private final int sqlType;
-    private final EdmSimpleType<?> edmSimpleType;
 
-    private DataTableColumnType(int sqlType, EdmSimpleType<?> simpleType) {
+    private DataTableColumnType(int sqlType) {
         this.sqlType = sqlType;
-        this.edmSimpleType = simpleType;
     }
 
     /**
@@ -150,9 +147,5 @@ public enum DataTableColumnType implements HasLabel, Localizable {
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
-    }
-
-    public EdmSimpleType<?> getEdmSimpleType() {
-        return edmSimpleType;
     }
 }

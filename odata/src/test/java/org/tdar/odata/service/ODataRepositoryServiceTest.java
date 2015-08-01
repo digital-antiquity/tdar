@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.odata.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,11 +23,12 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.Accessible;
 import org.tdar.core.service.external.session.SessionData;
-import org.tdar.odata.bean.AbstractDataRecord;
-import org.tdar.odata.service.ODataRepositoryService;
-import org.tdar.odata.service.RowOperations;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.db.model.abstracts.RowOperations;
+import org.tdar.odata.DataRecord;
 
 @RunWith(JMock.class)
 @Ignore
@@ -399,8 +400,8 @@ public class ODataRepositoryServiceTest {
             }
         });
 
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
-        final Set<AbstractDataRecord> dataRecords = new HashSet<AbstractDataRecord>();
+        final DataRecord dataRecord = new DataRecord(1234L, dataTable);
+        final Set<DataRecord> dataRecords = new HashSet<DataRecord>();
         dataRecords.add(dataRecord);
 
         final RowOperations databaseService = context.mock(RowOperations.class);
@@ -459,8 +460,8 @@ public class ODataRepositoryServiceTest {
             }
         });
 
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
-        final Set<AbstractDataRecord> dataRecords = new HashSet<AbstractDataRecord>();
+        final DataRecord dataRecord = new DataRecord(1234L, dataTable);
+        final Set<DataRecord> dataRecords = new HashSet<DataRecord>();
         dataRecords.add(dataRecord);
 
         final RowOperations databaseService = context.mock(RowOperations.class);
@@ -511,8 +512,8 @@ public class ODataRepositoryServiceTest {
             }
         });
 
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
-        final Set<AbstractDataRecord> dataRecords = new HashSet<AbstractDataRecord>();
+        final DataRecord dataRecord = new DataRecord(1234L, dataTable);
+        final Set<DataRecord> dataRecords = new HashSet<DataRecord>();
         dataRecords.add(dataRecord);
 
         final RowOperations databaseService = context.mock(RowOperations.class);
@@ -560,8 +561,8 @@ public class ODataRepositoryServiceTest {
             }
         });
 
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
-        final Set<AbstractDataRecord> dataRecords = new HashSet<AbstractDataRecord>();
+        final DataRecord dataRecord = new DataRecord(1234L, dataTable);
+        final Set<DataRecord> dataRecords = new HashSet<DataRecord>();
         dataRecords.add(dataRecord);
 
         final RowOperations databaseService = context.mock(RowOperations.class);
@@ -612,7 +613,7 @@ public class ODataRepositoryServiceTest {
             }
         });
 
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
+        final DataRecord dataRecord = new DataRecord(1234L, dataTable);
 
         final RowOperations databaseService = context.mock(RowOperations.class);
         context.checking(new Expectations() {
@@ -660,7 +661,7 @@ public class ODataRepositoryServiceTest {
             }
         });
 
-        final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
+        final DataRecord dataRecord = new DataRecord(1234L, dataTable);
 
         final RowOperations databaseService = context.mock(RowOperations.class);
         context.checking(new Expectations() {

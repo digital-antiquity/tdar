@@ -1,10 +1,9 @@
-package org.tdar.odata.service;
+package org.tdar.db.model.abstracts;
 
 import java.util.Map;
 import java.util.Set;
 
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.odata.bean.AbstractDataRecord;
 
 /**
  * Abstract out the backend databased connection for tdardata for use by the MockDaos

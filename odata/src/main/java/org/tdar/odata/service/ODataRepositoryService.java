@@ -23,7 +23,8 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.Accessible;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
-import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.db.model.abstracts.RowOperations;
 import org.tdar.utils.MessageHelper;
 
 /**

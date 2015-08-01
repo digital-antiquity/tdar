@@ -12,6 +12,7 @@
         <module>core</module>
         <module>web</module>
         <module>dataone</module>
+        <module>odata</module>
     </modules>
 
 

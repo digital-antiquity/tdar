@@ -23,7 +23,8 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.odata.bean.AbstractDataRecord;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.odata.DataRecord;
 import org.tdar.odata.bean.MetaData.EntitySet;
 import org.tdar.odata.service.RepositoryService;
 
@@ -413,7 +414,7 @@ public class TDarODataProducerTest {
 
         final DataTable dataTable = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
 
-        AbstractDataRecord dataRecord = new AbstractDataRecord(12345L, dataTable);
+        AbstractDataRecord dataRecord = new DataRecord(12345L, dataTable);
         ownedDataRecords.add(dataRecord);
 
         ownedDataTables.add(dataTable);
@@ -447,10 +448,10 @@ public class TDarODataProducerTest {
         final List<DataTable> ownedDataTables = new ArrayList<DataTable>();
         final DataTable dataTable = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
 
-        AbstractDataRecord dataRecord0 = new AbstractDataRecord(12345L, dataTable);
+        AbstractDataRecord dataRecord0 = new DataRecord(12345L, dataTable);
         ownedDataRecords.add(dataRecord0);
 
-        AbstractDataRecord dataRecord1 = new AbstractDataRecord(45678L, dataTable);
+        AbstractDataRecord dataRecord1 = new DataRecord(45678L, dataTable);
         ownedDataRecords.add(dataRecord1);
 
         ownedDataTables.add(dataTable);
@@ -492,7 +493,7 @@ public class TDarODataProducerTest {
         // };
         // dataTable.setDataTableColumns(Arrays.asList(dataTableColumn));
 
-        AbstractDataRecord dataRecord0 = new AbstractDataRecord(12345L, dataTable);
+        AbstractDataRecord dataRecord0 = new DataRecord(12345L, dataTable);
 
         ownedDataTables.add(dataTable);
 
@@ -520,7 +521,7 @@ public class TDarODataProducerTest {
 
         final DataTable dataTable = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
 
-        AbstractDataRecord dataRecord0 = new AbstractDataRecord(12345L, dataTable) {
+        AbstractDataRecord dataRecord0 = new DataRecord(12345L, dataTable) {
             {
                 put("title", "Hand axe 4321");
             }
@@ -564,7 +565,7 @@ public class TDarODataProducerTest {
             }
         });
 
-        AbstractDataRecord dataRecord = new AbstractDataRecord(76543L, dataTable);
+        AbstractDataRecord dataRecord = new DataRecord(76543L, dataTable);
 
         MetaDataBuilder metaDataBuilder = new MetaDataBuilder("tDAR", repositoryService);
         EdmDataServices metaData = metaDataBuilder.build();

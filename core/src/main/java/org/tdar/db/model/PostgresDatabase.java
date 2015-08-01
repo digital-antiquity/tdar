@@ -66,9 +66,9 @@ import org.tdar.db.builder.WhereCondition;
 import org.tdar.db.builder.WhereCondition.Condition;
 import org.tdar.db.builder.WhereCondition.ValueCondition;
 import org.tdar.db.conversion.analyzers.DateAnalyzer;
+import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.db.model.abstracts.RowOperations;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.odata.bean.AbstractDataRecord;
-import org.tdar.odata.service.RowOperations;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 

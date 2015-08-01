@@ -29,7 +29,7 @@ public abstract class AbstractServletConfiguration {
     EnumSet<DispatcherType> allDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
     EnumSet<DispatcherType> strutsDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR);
 
-    TdarConfiguration configuration = TdarConfiguration.getInstance();
+    protected TdarConfiguration configuration = TdarConfiguration.getInstance();
 	private String failureMessage;
 
     public AbstractServletConfiguration(String msg) {
