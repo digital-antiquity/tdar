@@ -13,19 +13,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
-import org.tdar.web.AbstractWebTestCase;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
-public class DataOneWebITCase extends AbstractWebTestCase {
+public class DataOneWebITCase extends AbsractWebTest {
 
     private static final String TEST_DOI = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
     private static final String TEST_DOI_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;
 
-    @Test
-    public void ping() {
-        Assert.assertEquals(200,gotoPage("/dataone/v1/monitor/ping"));
-    }
     @Test
     public void replica() throws ClientProtocolException, IOException {
         getRecord("/dataone/v1/replica/" + TEST_DOI);
@@ -39,6 +34,11 @@ public class DataOneWebITCase extends AbstractWebTestCase {
         logger.debug(getPageCode());
         Assert.assertEquals(200, gotoPage("/dataone/v1/node"));
         logger.debug(getPageCode());
+    }
+
+    public String getPageCode() {
+        String content = internalPage.getWebResponse().getContentAsString();
+        return content;
     }
 
     @Test

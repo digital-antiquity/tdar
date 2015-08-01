@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,7 +46,6 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
-import org.tdar.struts.TdarServletConfiguration;
 import org.tdar.struts.WROProfile;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
@@ -56,12 +54,13 @@ import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.jaxb.ActionErrorWrapper;
+import org.tdar.web.TdarServletConfiguration;
 import org.tdar.web.WebFileSystemResourceService;
-
-import ro.isdc.wro.model.resource.ResourceType;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import ro.isdc.wro.model.resource.ResourceType;
 
 /**
  * $Id$
