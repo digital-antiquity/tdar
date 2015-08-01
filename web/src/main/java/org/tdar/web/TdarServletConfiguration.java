@@ -11,12 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter;
 import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
+import org.apache.struts2.dispatcher.ng.listener.StrutsListener;
 import org.apache.struts2.sitemesh.FreemarkerDecoratorServlet;
 import org.ebaysf.web.cors.CORSFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
+import org.tdar.web.StaticContentServlet;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
@@ -41,6 +43,7 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 			onDevStartup(container);
 		}
 		setupContainer(container);
+        container.addListener(StrutsListener.class);
 
 		configureUrlRewriteRule(container);
 
@@ -58,8 +61,7 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		configureStrutsAndSiteMeshFilters(container);
 
 		if (!configuration.isStaticContentEnabled()) {
-			ServletRegistration.Dynamic staticContent = container.addServlet("static-content",
-					StaticContentServlet.class);
+            ServletRegistration.Dynamic staticContent = container.addServlet("static-content", StaticContentServlet.class);
 			staticContent.setInitParameter("default_encoding", "UTF-8");
 			staticContent.setLoadOnStartup(1);
 			staticContent.addMapping(HOSTED_CONTENT_BASE_URL + "/*");
