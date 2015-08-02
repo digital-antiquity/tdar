@@ -4,7 +4,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.tdar</groupId>
     <artifactId>web</artifactId>
     <packaging>war</packaging>
     <name>The Digital Archaeological Record (web)</name>
@@ -487,7 +486,7 @@
 	                <configuration>
 	  				<attachToTest>true</attachToTest>
 					<attachToMain>false</attachToMain>
-	  			    <outputDirectory>target/test-resources</outputDirectory>
+	  			    <outputDirectory>tmp/test-resources</outputDirectory>
 	                  <resourceBundles>
 	                    <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
 	                  </resourceBundles>
@@ -501,7 +500,7 @@
 	                <configuration>
 	   				 <attachToMain>true</attachToMain>
 		  			  <attachToTest>false</attachToTest>
-					  <outputDirectory>target</outputDirectory>
+					  <outputDirectory>tmp/</outputDirectory>
 	                  <resourceBundles>
 	                    <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
 	                  </resourceBundles>

@@ -68,4 +68,4 @@ syntax: regexp
 ^(.+)/src/main/resources/log4j\.xml
 ^(.+)/src/main/resources/log4j2\.xml
 ^(.+)/src/main/webapp/bower_components
-^(.+)/(indexes|target|logs|bin|node|node_modules)
+^(.+)/(indexes|target|logs|bin|node|node_modules|tmp)

@@ -12,7 +12,7 @@ public interface TestConstants {
     public static Long TEST_INSTITUTION_ID = 12088L;
     // public final static int DEFAULT_PORT = 8180;
     // public final static int DEFAULT_SECURE_PORT = 8143;
-    public final static String TEST_ROOT_DIR = "target/test-resources/";//src/test/resources/";
+    public final static String TEST_ROOT_DIR = "tmp/test-resources/";//src/test/resources/";
 
     public static String FILESTORE_PATH = "target/generated/filestore/";
 
