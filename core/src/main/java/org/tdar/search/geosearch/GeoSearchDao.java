@@ -6,7 +6,6 @@
  */
 package org.tdar.search.geosearch;
 
-import java.sql.SQLXML;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

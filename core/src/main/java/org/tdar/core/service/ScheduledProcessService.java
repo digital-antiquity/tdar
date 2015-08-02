@@ -34,8 +34,8 @@ import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.core.service.processes.NullProcessManager;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
-import org.tdar.core.service.processes.ProcessManager;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SalesforceSyncProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
@@ -83,12 +83,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private transient final GenericService genericService;
     private transient final RssService rssService;
     private transient final AuthenticationService authenticationService;
-    private transient final ProcessManager manager;
+    private transient final NullProcessManager manager;
 
     @Autowired
     public ScheduledProcessService(SearchIndexService sis, 
 			@Qualifier("genericService") GenericService gs, RssService rss, AuthenticationService auth, 
-			@Qualifier("processManager") ProcessManager pm) {
+			@Qualifier("processManager") NullProcessManager pm) {
     	this.searchIndexService = sis;
     	this.genericService = gs;
     	this.rssService = rss;
@@ -376,7 +376,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         }
     }
 
-	public ProcessManager getManager() {
+	public NullProcessManager getManager() {
 		return manager;
 	}
 

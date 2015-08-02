@@ -1,35 +1,16 @@
 package org.tdar.core.service.processes;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.configuration.TdarConfiguration;
 
 
-public class ProcessManager implements Serializable {
+public class AutowiredProcessManager extends NullProcessManager {
 
 	private static final long serialVersionUID = 7333013043608786215L;
-
-	
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-	private LinkedHashSet<ScheduledProcess> startupTasks = new LinkedHashSet<>();
-    private Map<Class<? extends ScheduledProcess>, ScheduledProcess> scheduledProcessMap = new HashMap<Class<? extends ScheduledProcess>, ScheduledProcess>();
-
-	public LinkedHashSet<ScheduledProcess> upgradeTasks(){ 
-		return startupTasks;
-	}
-
-	public Map<Class<? extends ScheduledProcess>, ScheduledProcess> allTasks() {
-		return scheduledProcessMap;
-	}
-	
-	/**
+    /**
      * Autowiring of Scheduled Processes, filter by those enabled and have not run. Also use @link TdarConfiguration to check whether the client supports
      * running them
      * 

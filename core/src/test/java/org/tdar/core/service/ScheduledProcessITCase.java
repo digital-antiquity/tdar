@@ -10,7 +10,6 @@ import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
