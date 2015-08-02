@@ -307,7 +307,7 @@
 						<configuration>
 							<attachToTest>true</attachToTest>
 							<attachToMain>false</attachToMain>
-							<outputDirectory>tmp/test-resources</outputDirectory>
+							<outputDirectory>target/test-resources</outputDirectory>
 							<resourceBundles>
 								<resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
 							</resourceBundles>
@@ -321,7 +321,7 @@
 						<configuration>
 							<attachToMain>true</attachToMain>
 							<attachToTest>false</attachToTest>
-							<outputDirectory>tmp/</outputDirectory>
+							<outputDirectory>target</outputDirectory>
 							<resourceBundles>
 								<resourceBundle>org.tdar:database:${project.version}</resourceBundle>
 							</resourceBundles>

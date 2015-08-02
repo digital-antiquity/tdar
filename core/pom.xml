@@ -1181,8 +1181,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                   <goal>process</goal>
                 </goals>
                 <configuration>
-  				<attachToTest>true</attachToTest>
+  				<attachToTest>false</attachToTest>
 				<attachToMain>false</attachToMain>
+				<includeScope>test</includeScope>
   			    <outputDirectory>tmp/test-resources</outputDirectory>
                   <resourceBundles>
                     <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
@@ -1195,9 +1196,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                   <goal>process</goal>
                 </goals>
                 <configuration>
-   				 <attachToMain>true</attachToMain>
+   				 <attachToMain>false</attachToMain>
 	  			  <attachToTest>false</attachToTest>
-				  <outputDirectory>tmp/</outputDirectory>
+				  <outputDirectory>target</outputDirectory>
                   <resourceBundles>
                     <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
                   </resourceBundles>
