@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
+import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.web.StaticContentServlet;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
@@ -35,7 +36,7 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 	}
 	
 	@Override
-	public Class<?> getConfigurationClass() {
+	public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
 		return TdarWebAppConfiguration.class;
 	}
 

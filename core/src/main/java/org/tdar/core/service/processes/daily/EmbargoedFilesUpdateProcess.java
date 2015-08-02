@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.daily;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
@@ -13,9 +14,11 @@ import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.resource.InformationResourceFileService;
 
 @Component
+@Scope("prototype")
 public class EmbargoedFilesUpdateProcess extends AbstractScheduledBatchProcess<InformationResourceFile> {
 
     private static final String SITE_ACRONYM = TdarConfiguration.getInstance().getSiteAcronym();

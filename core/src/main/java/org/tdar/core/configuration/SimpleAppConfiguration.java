@@ -25,7 +25,8 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
 import org.tdar.core.service.external.session.SessionData;
-import org.tdar.core.service.processes.ProcessManager;
+import org.tdar.core.service.processes.manager.BaseProcessManager;
+import org.tdar.core.service.processes.manager.ProcessManager;
 
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -71,6 +72,6 @@ public class SimpleAppConfiguration implements Serializable {
 
 	@Bean(name="processManager")
 	public ProcessManager processManager() {
-		return null;
+		return new BaseProcessManager();
 	}
 }

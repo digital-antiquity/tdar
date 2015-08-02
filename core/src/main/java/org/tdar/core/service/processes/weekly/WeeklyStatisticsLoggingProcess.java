@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.weekly;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.keyword.KeywordType;
@@ -20,9 +21,11 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.resource.ResourceService;
 
 @Component
+@Scope("prototype")
 public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 6866081834770368244L;

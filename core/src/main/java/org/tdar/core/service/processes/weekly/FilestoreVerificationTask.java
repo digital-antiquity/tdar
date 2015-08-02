@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.weekly;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

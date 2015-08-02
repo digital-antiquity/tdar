@@ -39,17 +39,17 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
-import org.tdar.core.service.processes.DailyEmailProcess;
-import org.tdar.core.service.processes.DailyTimedAccessRevokingProcess;
-import org.tdar.core.service.processes.EmbargoedFilesUpdateProcess;
-import org.tdar.core.service.processes.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
-import org.tdar.core.service.processes.OverdrawnAccountUpdate;
-import org.tdar.core.service.processes.RebuildHomepageCache;
-import org.tdar.core.service.processes.SalesforceSyncProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
-import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
+import org.tdar.core.service.processes.daily.DailyEmailProcess;
+import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
+import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
+import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
+import org.tdar.core.service.processes.daily.RebuildHomepageCache;
+import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
+import org.tdar.core.service.processes.upgradeTasks.LegacyObfuscateLatLongProcess;
+import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 
 /**
  * $Id$
@@ -150,8 +150,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         fsp.execute();
         setupQueue(SendEmailProcess.class, sep);
         scheduledProcessService.queue(SendEmailProcess.class);
-        scheduledProcessService.runNextScheduledProcessesInQueue();
-        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
+        int count = 0;
+        while (!scheduledProcessService.getScheduledProcessQueue().isEmpty() && count < 100) {
+        	scheduledProcessService.runNextScheduledProcessesInQueue();
+        	count++;
+        };
+        SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
@@ -201,9 +205,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     }
 
 	private void setupQueue(Class<? extends ScheduledProcess> cls, ScheduledProcess proc) {
-		Map<Class<? extends ScheduledProcess>, ScheduledProcess> allTasks = scheduledProcessService.getManager().allTasks();
-		allTasks.clear();;
-		allTasks.put(cls, proc);
+		scheduledProcessService.getManager().reset();
+		scheduledProcessService.getManager().addProcess(cls);
 	}
 
     @Test

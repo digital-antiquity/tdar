@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.daily;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
@@ -17,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.resource.ResourceService;
 
 import com.redfin.sitemapgenerator.ChangeFreq;
@@ -26,6 +28,7 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import com.redfin.sitemapgenerator.WebSitemapUrl;
 
 @Component
+@Scope("prototype")
 public class SitemapGeneratorProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 561910508692901053L;

@@ -1,11 +1,13 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.daily;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.processes.AbstractScheduledProcess;
 
 /**
  * $Id$
@@ -18,6 +20,7 @@ import org.tdar.core.service.StatisticService;
  */
 
 @Component
+@Scope("prototype")
 public class DailyStatisticsUpdate extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 840474044233878010L;

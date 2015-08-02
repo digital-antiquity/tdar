@@ -3,6 +3,7 @@ package org.tdar.core.service.processes;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.AccountUsageHistory;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -16,6 +17,7 @@ import org.tdar.utils.PersistableUtils;
  *
  */
 @Component
+@Scope("prototype")
 public class AccountUsageHistoryLoggingTask extends AbstractScheduledBatchProcess<BillingAccount> {
 
     private static final long serialVersionUID = -6773975693075576122L;

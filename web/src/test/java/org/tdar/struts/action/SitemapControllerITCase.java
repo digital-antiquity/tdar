@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.service.processes.SitemapGeneratorProcess;
+import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 
 import com.ibm.wsdl.util.IOUtils;
 

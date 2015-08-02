@@ -19,7 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.core.service.processes.daily.DoiProcess;
 import org.tdar.utils.MessageHelper;
 
 import au.csiro.doiclient.AndsDoiClient;

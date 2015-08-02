@@ -1,7 +1,8 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.upgradeTasks;
 
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 /**

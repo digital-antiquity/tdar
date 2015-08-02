@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.weekly;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
@@ -12,6 +12,7 @@ import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
@@ -22,12 +23,14 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
 
 @Component
+@Scope("prototype")
 public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
     public static final String PROBLEM_FILES_REPORT = "Problem Files Report";

@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.daily;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
@@ -18,6 +19,7 @@ import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.processes.AbstractScheduledProcess;
 
 /**
  * $Id$
@@ -30,6 +32,7 @@ import org.tdar.core.service.external.EmailService;
  */
 
 @Component
+@Scope("prototype")
 public class DailyEmailProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = -1945086550963254634L;

@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.service.external.EmailService;
@@ -21,6 +22,7 @@ import org.tdar.core.service.external.EmailService;
  */
 
 @Component
+@Scope("prototype")
 public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
 
     private static final long serialVersionUID = 6711790499277412427L;

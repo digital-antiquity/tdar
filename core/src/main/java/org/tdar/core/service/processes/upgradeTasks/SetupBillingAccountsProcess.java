@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.upgradeTasks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +26,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption;
+import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.resource.ResourceService;
 
 /**

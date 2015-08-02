@@ -234,6 +234,7 @@
                         <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>maven-clover2-plugin</artifactId>
                         <configuration>
+		                    <license>${clover.license}</license>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>

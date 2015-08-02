@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.daily;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
@@ -21,6 +22,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
+import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 
@@ -37,6 +39,7 @@ import org.tdar.core.service.resource.ResourceService;
  */
 
 @Component
+@Scope("prototype")
 public class RebuildHomepageCache extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 7987123045870435222L;

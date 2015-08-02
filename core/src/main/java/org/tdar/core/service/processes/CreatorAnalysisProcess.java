@@ -9,6 +9,7 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.InformationResource;
@@ -24,6 +25,7 @@ import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.MessageHelper;
 
 @Component
+@Scope("prototype")
 public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 
     private static final long serialVersionUID = 581887107336388520L;

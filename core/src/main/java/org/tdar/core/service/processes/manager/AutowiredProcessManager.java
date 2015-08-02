@@ -1,13 +1,13 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.manager;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.processes.ScheduledProcess;
 
 
-public class AutowiredProcessManager extends NullProcessManager {
+public class AutowiredProcessManager extends BaseProcessManager {
 
 	private static final long serialVersionUID = 7333013043608786215L;
     /**
@@ -18,8 +18,11 @@ public class AutowiredProcessManager extends NullProcessManager {
      */
     @Autowired
     public void setAllScheduledProcesses(List<ScheduledProcess> processes) {
-        for (ScheduledProcess process : processes) {
-            // if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
+    	 if (!TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
+    		 return;
+    	 }
+
+    	 for (ScheduledProcess process : processes) {
             // scheduledProcessMap.clear();
             // logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
             // return;
@@ -34,11 +37,11 @@ public class AutowiredProcessManager extends NullProcessManager {
             }
             else {
                 // allScheduledProcesses.add(process);
-                scheduledProcessMap.put(process.getClass(), process);
+                scheduledProcessMap.add(process.getClass());
             }
         }
 
-        logger.debug("ALL ENABLED SCHEDULED PROCESSES: {}", scheduledProcessMap.values());
+        logger.debug("ALL ENABLED SCHEDULED PROCESSES: {}", scheduledProcessMap);
     }
 
 

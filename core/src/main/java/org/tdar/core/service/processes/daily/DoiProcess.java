@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.core.service.processes.daily;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
@@ -23,9 +24,11 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.utils.Pair;
 
 @Component
+@Scope("prototype")
 public class DoiProcess extends AbstractScheduledBatchProcess<InformationResource> {
 
     public static final String SUBJECT = " DOI Creation Info";

@@ -57,8 +57,8 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private Statistics sessionStatistics;
     private Boolean scheduledProcessesEnabled;
 
-    private List<ScheduledProcess> allScheduledProcesses;
-    private Collection<ScheduledProcess> scheduledProcessQueue;
+    private List<Class<? extends ScheduledProcess>> allScheduledProcesses;
+    private Collection<Class<? extends ScheduledProcess>> scheduledProcessQueue;
 
     private List<Activity> activityList = new ArrayList<Activity>();
 
@@ -82,7 +82,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
     public String execute() {
         setScheduledProcessesEnabled(TdarConfiguration.getInstance().shouldRunPeriodicEvents());
         setSessionStatistics(getGenericService().getSessionStatistics());
-        setAllScheduledProcesses(scheduledProcessService.getAllScheduledProcesses());
+        setAllScheduledProcesses(scheduledProcessService.getManager().getAllTasks());
         setScheduledProcessQueue(scheduledProcessService.getScheduledProcessQueue());
         getActivityList().addAll(ActivityManager.getInstance().getActivityQueueClone());
         Collections.sort(getActivityList(), new Comparator<Activity>() {
@@ -137,20 +137,20 @@ public class AdminActivityController extends AuthenticationAware.Base {
         getMoreInfo().put("system load", osBean.getSystemLoadAverage());
     }
 
-    public Collection<ScheduledProcess> getScheduledProcessQueue() {
+    public Collection<Class<? extends ScheduledProcess>> getScheduledProcessQueue() {
         return scheduledProcessQueue;
     }
 
-    public void setScheduledProcessQueue(Set<ScheduledProcess> scheduledProcessQueue) {
+    public void setScheduledProcessQueue(Set<Class<? extends ScheduledProcess>> scheduledProcessQueue) {
         this.scheduledProcessQueue = scheduledProcessQueue;
     }
 
-    public List<ScheduledProcess> getAllScheduledProcesses() {
+    public List<Class<? extends ScheduledProcess>> getAllScheduledProcesses() {
         return allScheduledProcesses;
     }
 
-    public void setAllScheduledProcesses(List<ScheduledProcess> allScheduledProcesses) {
-        this.allScheduledProcesses = allScheduledProcesses;
+    public void setAllScheduledProcesses(Collection<Class<? extends ScheduledProcess>> allScheduledProcesses) {
+        this.allScheduledProcesses = new ArrayList<>(allScheduledProcesses);
     }
 
     public Statistics getSessionStatistics() {

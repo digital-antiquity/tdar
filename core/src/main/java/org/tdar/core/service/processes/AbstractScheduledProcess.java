@@ -2,8 +2,10 @@ package org.tdar.core.service.processes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.tdar.core.configuration.TdarConfiguration;
 
+@Scope("prototype")
 public abstract class AbstractScheduledProcess implements ScheduledProcess {
 
     private static final long serialVersionUID = 38507177698911172L;

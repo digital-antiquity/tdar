@@ -20,8 +20,8 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.tdar.core.configuration.TdarAppConfiguration;
-import org.tdar.core.service.processes.EmptyProcessManager;
-import org.tdar.core.service.processes.AutowiredProcessManager;
+import org.tdar.core.service.processes.manager.AutowiredProcessManager;
+import org.tdar.core.service.processes.manager.ProcessManager;
 
 @EnableAsync
 @EnableCaching
@@ -53,7 +53,7 @@ public class TdarWebAppConfiguration extends TdarAppConfiguration implements Sch
 	}
 	
 	@Bean(name="processManager")
-	public EmptyProcessManager processManager() {
+	public ProcessManager processManager() {
 		return new AutowiredProcessManager();
 	}
 

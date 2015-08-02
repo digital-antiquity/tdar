@@ -22,7 +22,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.resource.CodingSheetService;
 
 /**

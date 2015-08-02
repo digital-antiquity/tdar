@@ -74,7 +74,7 @@
     <#if scheduledProcessesEnabled??>
     <ol>
         <#list scheduledProcessQueue as process>
-            <li>${process} - current id: ${(process.lastId!-1)?c}</li>
+            <li>${process}</li>
         </#list>
     </ol>
     <#else>
