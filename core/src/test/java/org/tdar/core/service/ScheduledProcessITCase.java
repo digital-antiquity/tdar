@@ -10,8 +10,10 @@ import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
@@ -46,6 +48,7 @@ import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SalesforceSyncProcess;
+import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 
@@ -137,14 +140,17 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         dailyEmailProcess.execute();
 
     }
+    
+    @Autowired
+    SendEmailProcess sep;
 
     @Test
     @Rollback
     public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
-        scheduledProcessService.getScheduledProcessQueue().clear();
         Document document = generateDocumentWithFileAndUseDefaultUser();
         fsp.execute();
-        scheduledProcessService.queueTask(SendEmailProcess.class);
+        setupQueue(SendEmailProcess.class, sep);
+        scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
@@ -154,6 +160,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
 
+    @Autowired
+    EmbargoedFilesUpdateProcess efup;
+    
     @Test
     @Rollback
     public void testEmbargo() throws InstantiationException, IllegalAccessException {
@@ -161,34 +170,42 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         Document doc = generateDocumentWithFileAndUser();
         long id = doc.getId();
 
+        setupQueue(EmbargoedFilesUpdateProcess.class, efup);
+        
         InformationResourceFile irf = doc.getFirstInformationResourceFile();
         irf.setRestriction(FileAccessRestriction.EMBARGOED_SIX_MONTHS);
         irf.setDateMadePublic(DateTime.now().minusDays(1).toDate());
         genericService.saveOrUpdate(irf);
         irf = null;
         doc = null;
-        scheduledProcessService.queueTask(EmbargoedFilesUpdateProcess.class);
+        scheduledProcessService.queue(EmbargoedFilesUpdateProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         // queue the email task
         doc = genericService.find(Document.class, id);
         assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.PUBLIC);
 
         // FIXME: add tests for checking email
-        scheduledProcessService.queueTask(SendEmailProcess.class);
+        scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
         doc.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         doc.getFirstInformationResourceFile().setDateMadePublic(DateTime.now().toDate());
         genericService.saveOrUpdate(doc.getFirstInformationResourceFile());
-        scheduledProcessService.queueTask(EmbargoedFilesUpdateProcess.class);
+        scheduledProcessService.queue(EmbargoedFilesUpdateProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         // queue the email task
         doc = genericService.find(Document.class, id);
         assertTrue(doc.getFirstInformationResourceFile().getRestriction() == FileAccessRestriction.EMBARGOED_FIVE_YEARS);
-        scheduledProcessService.queueTask(SendEmailProcess.class);
+        scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
     }
+
+	private void setupQueue(Class<? extends ScheduledProcess> cls, ScheduledProcess proc) {
+		Map<Class<? extends ScheduledProcess>, ScheduledProcess> allTasks = scheduledProcessService.getManager().allTasks();
+		allTasks.clear();;
+		allTasks.put(cls, proc);
+	}
 
     @Test
     @Rollback

@@ -7,9 +7,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
+import org.tdar.core.configuration.IntegrationAppConfiguration;
+import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.web.AbstractServletConfiguration;
 
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
@@ -23,6 +23,12 @@ public class OdataServletConfiguration extends AbstractServletConfiguration
 	public OdataServletConfiguration() {
 		super("Initializing tDAR Odata Servlet");
 	}
+	
+    @Override
+	public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+		return IntegrationAppConfiguration.class;
+	}
+
 
 	@Override
 	public void onStartup(ServletContext container) throws ServletException {

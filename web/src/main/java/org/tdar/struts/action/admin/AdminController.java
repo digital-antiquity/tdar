@@ -146,7 +146,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String runWeekly() throws IOException {
-        scheduledProcessService.queueTask(WeeklyStatisticsLoggingProcess.class);
+        scheduledProcessService.queue(WeeklyStatisticsLoggingProcess.class);
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }
@@ -155,8 +155,8 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String rebuildCaches() {
-        scheduledProcessService.queueTask(SitemapGeneratorProcess.class);
-        scheduledProcessService.queueTask(RebuildHomepageCache.class);
+        scheduledProcessService.queue(SitemapGeneratorProcess.class);
+        scheduledProcessService.queue(RebuildHomepageCache.class);
         getActionMessages().add("Scheduled... check admin activity controller to test");
         return SUCCESS;
     }
@@ -165,7 +165,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String logAccounts() {
-        scheduledProcessService.queueTask(AccountUsageHistoryLoggingTask.class);
+        scheduledProcessService.queue(AccountUsageHistoryLoggingTask.class);
         getActionMessages().add("Scheduled... check admin activity controller to test");
         return SUCCESS;
     }
@@ -175,7 +175,7 @@ public class AdminController extends AuthenticationAware.Base {
     })
     public String buildCreators() {
         getLogger().debug("manually running 'build creator'");
-        scheduledProcessService.queueTask(CreatorAnalysisProcess.class);
+        scheduledProcessService.queue(CreatorAnalysisProcess.class);
         return SUCCESS;
     }
 

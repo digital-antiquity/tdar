@@ -33,6 +33,11 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 	public TdarServletConfiguration() {
 		super("Initializing tDAR Servlet");
 	}
+	
+	@Override
+	public Class<?> getConfigurationClass() {
+		return TdarWebAppConfiguration.class;
+	}
 
 	@Override
 	public void onStartup(ServletContext container) throws ServletException {

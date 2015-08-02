@@ -42,7 +42,7 @@ import org.tdar.utils.PersistableUtils;
  * @author Adam Brin
  * @version $Revision$
  */
-@Service
+@Service("genericService")
 public class GenericService {
 
     @Autowired

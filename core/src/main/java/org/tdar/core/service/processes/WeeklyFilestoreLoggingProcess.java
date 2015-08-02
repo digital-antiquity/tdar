@@ -36,9 +36,6 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
     private static final long serialVersionUID = -6196804675468219433L;
 
     @Autowired
-    private transient GenericService genericService;
-
-    @Autowired
     private transient InformationResourceFileService informationResourceFileService;
 
     @Autowired

@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate4.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -51,10 +52,13 @@ public abstract class AbstractServletConfiguration {
 		this.failureMessage = failureMessage;
 	}
 
+	public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+		return TdarAppConfiguration.class;
+	}
 
 	protected void setupContainer(ServletContext container) {
 		AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        rootContext.register(TdarAppConfiguration.class);
+        rootContext.register(getConfigurationClass());
         container.addListener(new ContextLoaderListener(rootContext));
         container.addListener(RequestContextListener.class);
 

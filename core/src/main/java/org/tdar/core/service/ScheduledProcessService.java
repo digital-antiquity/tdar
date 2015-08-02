@@ -9,16 +9,15 @@ package org.tdar.core.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,6 +35,7 @@ import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
+import org.tdar.core.service.processes.ProcessManager;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SalesforceSyncProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
@@ -44,6 +44,8 @@ import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.search.SearchIndexService;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * 
@@ -77,30 +79,36 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     TdarConfiguration config = TdarConfiguration.getInstance();
 
-    @Autowired
-    private transient SearchIndexService searchIndexService;
-    @Autowired
-    private transient GenericService genericService;
-    @Autowired
-    private transient RssService rssService;
-    @Autowired
-    private transient AuthenticationService authenticationService;
+    private transient final SearchIndexService searchIndexService;
+    private transient final GenericService genericService;
+    private transient final RssService rssService;
+    private transient final AuthenticationService authenticationService;
+    private transient final ProcessManager manager;
 
+    @Autowired
+    public ScheduledProcessService(SearchIndexService sis, 
+			@Qualifier("genericService") GenericService gs, RssService rss, AuthenticationService auth, 
+			@Qualifier("processManager") ProcessManager pm) {
+    	this.searchIndexService = sis;
+    	this.genericService = gs;
+    	this.rssService = rss;
+    	this.authenticationService = auth;
+    	this.manager = pm;
+    }
+    
     private final Logger logger = LoggerFactory.getLogger(getClass());
+	private Set<ScheduledProcess> scheduledProcessQueue = new LinkedHashSet<>();
 
-    // all scheduled processes configured on the system
-    private Map<Class<?>, ScheduledProcess> scheduledProcessMap = new HashMap<Class<?>, ScheduledProcess>();
-    // scheduled processes currently set to run in batches when spare cycles are available
-    private LinkedHashSet<ScheduledProcess> scheduledProcessQueue = new LinkedHashSet<ScheduledProcess>();
-    private boolean hasRunStartupProcesses;
 
+    
+    
     /**
      * Once a week, on Sundays, generate some static, cached stats for use by the admin area and general system
      */
     @Scheduled(cron = "12 0 0 * * SUN")
     public void cronGenerateWeeklyStats() {
-        queue(scheduledProcessMap.get(WeeklyStatisticsLoggingProcess.class));
-        queue(scheduledProcessMap.get(CreatorAnalysisProcess.class));
+        queue(WeeklyStatisticsLoggingProcess.class);
+        queue(CreatorAnalysisProcess.class);
     }
 
     /**
@@ -109,8 +117,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "0 1 0 * * *")
     public void cronDailyEmail() {
         logger.info("updating Daily Emails");
-        queue(scheduledProcessMap.get(DailyEmailProcess.class));
-        queue(scheduledProcessMap.get(SalesforceSyncProcess.class));
+        queue(DailyEmailProcess.class);
+        queue(SalesforceSyncProcess.class);
     }
 
     /**
@@ -119,8 +127,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "0 15 0 * * *")
     public void cronDailyStats() {
         logger.info("updating Daily stats");
-        queue(scheduledProcessMap.get(OccurranceStatisticsUpdateProcess.class));
-        queue(scheduledProcessMap.get(DailyStatisticsUpdate.class));
+        queue(OccurranceStatisticsUpdateProcess.class);
+        queue(DailyStatisticsUpdate.class);
     }
 
     /**
@@ -154,7 +162,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void cronQueueEmail() {
-        queue(scheduledProcessMap.get(SendEmailProcess.class));
+        queue(SendEmailProcess.class);
     }
 
     /**
@@ -163,7 +171,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "16 15 0 * * *")
     public void cronUpdateDois() {
         logger.info("updating DOIs");
-        queue(scheduledProcessMap.get(DoiProcess.class));
+        queue(DoiProcess.class);
     }
 
     /**
@@ -173,7 +181,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "0 1 1 1 * *")
     public void cronUpdateAccountUsageHistory() {
         logger.info("updating account usage history");
-        queue(scheduledProcessMap.get(AccountUsageHistoryLoggingTask.class));
+        queue(AccountUsageHistoryLoggingTask.class);
     }
 
     /**
@@ -182,7 +190,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "20 15 0 * * *")
     public void cronUpdateSitemap() {
         logger.info("updating Sitemaps");
-        queue(scheduledProcessMap.get(SitemapGeneratorProcess.class));
+        queue(SitemapGeneratorProcess.class);
     }
 
     /**
@@ -190,7 +198,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      */
     @Scheduled(cron = "1 15 0 * * *")
     public void cronUpdateHomepage() {
-        queue(scheduledProcessMap.get(RebuildHomepageCache.class));
+        queue(RebuildHomepageCache.class);
     }
 
     /**
@@ -200,39 +208,9 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      */
     @Scheduled(cron = "50 0 0 * * SUN")
     public void cronVerifyTdarFiles() throws IOException {
-        queue(scheduledProcessMap.get(WeeklyFilestoreLoggingProcess.class));
+        queue(WeeklyFilestoreLoggingProcess.class);
     }
 
-    /**
-     * Autowiring of Scheduled Processes, filter by those enabled and have not run. Also use @link TdarConfiguration to check whether the client supports
-     * running them
-     * 
-     * @param processes
-     */
-    @Autowired
-    public void setAllScheduledProcesses(List<ScheduledProcess> processes) {
-        for (ScheduledProcess process : processes) {
-            // if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
-            // scheduledProcessMap.clear();
-            // logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
-            // return;
-            // }
-            if (!process.isEnabled()) {
-                logger.warn("skipping disabled process {}", process);
-                continue;
-            }
-            if (config.shouldRunPeriodicEvents() && process.isSingleRunProcess()) {
-                logger.debug("adding {} to the process queue {}", process.getDisplayName(), scheduledProcessQueue);
-                queue(process);
-            }
-            else {
-                // allScheduledProcesses.add(process);
-                scheduledProcessMap.put(process.getClass(), process);
-            }
-        }
-
-        logger.debug("ALL ENABLED SCHEDULED PROCESSES: {}", scheduledProcessMap.values());
-    }
 
     /**
      * Scheduled processes have two separate flavors.
@@ -247,19 +225,19 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(fixedDelay = 10000)
     @Transactional(readOnly = false, noRollbackFor = { TdarRecoverableRuntimeException.class })
     public void cronScheduledProcesses() {
-        if (CollectionUtils.isEmpty(scheduledProcessQueue)) {
+        if (CollectionUtils.isEmpty(getScheduledProcessQueue())) {
             return;
         }
         runNextScheduledProcessesInQueue();
     }
 
     protected void runNextScheduledProcessesInQueue() {
-        logger.debug("processes in Queue: {}", scheduledProcessQueue);
-        if (scheduledProcessQueue.size() <= 0) {
+        logger.debug("processes in Queue: {}", getScheduledProcessQueue());
+        if (getScheduledProcessQueue().size() <= 0) {
             return;
         }
 
-        ScheduledProcess process = scheduledProcessQueue.iterator().next();
+        ScheduledProcess process = getScheduledProcessQueue().iterator().next();
         // FIXME: merge UpgradeTask and ScheduledProcess at some point, so that UpgradeTask-s are
         // created / added / managed within a ScheduledProcess.execute()
         if (process == null) {
@@ -270,7 +248,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         UpgradeTask upgradeTask = checkIfRun(process.getDisplayName());
         if (process.isSingleRunProcess() && upgradeTask.hasRun()) {
             logger.debug("process has already run once, removing {}", process);
-            scheduledProcessQueue.remove(process);
+            getScheduledProcessQueue().remove(process);
             return;
         }
         if (genericService.getActiveSessionCount() > config.getSessionCountLimitForBackgroundTasks()) {
@@ -295,9 +273,9 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         if (process.isCompleted()) {
             process.cleanup();
             completedSuccessfully(upgradeTask);
-            scheduledProcessQueue.remove(process);
+            getScheduledProcessQueue().remove(process);
         }
-        logger.trace("processes in Queue: {}", scheduledProcessQueue);
+        logger.trace("processes in Queue: {}", getScheduledProcessQueue());
     }
 
     /**
@@ -340,11 +318,16 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @param process
      * @return
      */
-    public boolean queue(ScheduledProcess process) {
+    public boolean queue(Class<? extends ScheduledProcess> cls) {
+    	if (manager == null) {
+    		return false;
+    	}
+    	
+    	ScheduledProcess process = manager.allTasks().get(cls);
         if ((process == null) || !TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
             return false;
         }
-        return scheduledProcessQueue.add(process);
+        return getScheduledProcessQueue().add(process);
     }
 
     /**
@@ -353,7 +336,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @return
      */
     public Set<ScheduledProcess> getScheduledProcessQueue() {
-        return scheduledProcessQueue;
+        return scheduledProcessQueue ;
     }
 
     /**
@@ -361,8 +344,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * 
      * @return
      */
-    public List<ScheduledProcess> getAllScheduledProcesses() {
-        return new ArrayList<ScheduledProcess>(scheduledProcessMap.values());
+    @SuppressWarnings("unchecked")
+	public List<ScheduledProcess> getAllScheduledProcesses() {
+    	if (manager == null) {
+    		return Collections.emptyList();
+    	}
+        return new ArrayList<ScheduledProcess>(manager.allTasks().values());
     }
 
     /**
@@ -383,27 +370,14 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         logger.debug("received app context event: " + event);
-        if (hasRunStartupProcesses) {
+        if (manager != null && CollectionUtils.isNotEmpty(manager.upgradeTasks())) {
             logger.trace("already run startup processes, aborting");
             return;
         }
-        // FIXME: disabling for the interim, re-enable if we ever have processes that really do need to run at startup.
-        // for (ScheduledProcess<Persistable> process: scheduledProcessMap.values()) {
-        // if (process.shouldRunAtStartup()) {
-        // logger.debug("executing startup process: " + process);
-        // process.execute();
-        // }
-        // }
-        hasRunStartupProcesses = true;
-
     }
 
-    @Transactional
-    public void queueTask(Class<? extends ScheduledProcess> class1) {
-        ScheduledProcess process = scheduledProcessMap.get(class1);
-        if (process != null) {
-            scheduledProcessQueue.add(process);
-        }
-    }
+	public ProcessManager getManager() {
+		return manager;
+	}
 
 }
