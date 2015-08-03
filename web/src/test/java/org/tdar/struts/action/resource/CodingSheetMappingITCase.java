@@ -77,9 +77,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     private static final String DOUBLE_DATASET = "double_translation_test_dataset.xlsx";
     private static final String BASIC_CSV = "csvCodingSheetText.csv";
 
-    // TEST ME: http://dev.tdar.org/jira/browse/TDAR-587
-    // TEST ME: http://dev.tdar.org/jira/browse/TDAR-581
-
     private static final String PATH = TestConstants.TEST_CODING_SHEET_DIR;
 
     @Test

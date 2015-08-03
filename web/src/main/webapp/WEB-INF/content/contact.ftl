@@ -5,7 +5,7 @@
     If you encounter a bug in the application, please feel free to report it using
     our <a href='${bugReportUrl}'>issue tracker</a>. Tutorials and
     documentation are available on the <a
-        href='http://dev.tdar.org/confluence'>${siteAcronym!'site'} wiki</a>. We also maintain a frequently
+        href='https://docs.tdar.org'>${siteAcronym!'site'} wiki</a>. We also maintain a frequently
     monitored <a href='http://lists.asu.edu/cgi-bin/wa?A0=TDAR-DEV'>mailing
     list</a> where you can ask questions pertaining to the development or usage of
     the tDAR software platform. If you have any other comments, suggestions, or questions, you can also email us at
