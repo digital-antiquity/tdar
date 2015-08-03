@@ -57,17 +57,31 @@
         <url>http://www.tdar.org</url>
     </organization>
     <repositories>
-            <repository>
-                <id>archiva.internal</id>
-                <name>Internal Release Repository</name>
-                <url>https://dev.tdar.org/archiva/repository/internal/</url>
-            </repository>
-    
-        <!-- <repository>
-            <id>virtualcommons.internal</id>
-            <name>ASU Archiva Proxy</name>
-            <url>http://dev.commons.asu.edu/archiva/repository/internal/</url>
-        </repository> -->
+        <repository>
+            <id>internal</id>
+            <name>Archiva Managed Internal Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>Archiva Managed Snapshot Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- <repository> <id>virtualcommons.internal</id> <name>ASU Archiva 
+            Proxy</name> <url>http://dev.commons.asu.edu/archiva/repository/internal/</url> 
+            </repository> -->
         <repository>
             <id>imageJ</id>
             <name>ImageJ Repository</name>
@@ -240,7 +254,7 @@
                         <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>maven-clover2-plugin</artifactId>
                         <configuration>
-		                    <license>${clover.license}</license>
+                            <license>${clover.license}</license>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
