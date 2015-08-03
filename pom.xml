@@ -57,6 +57,12 @@
         <url>http://www.tdar.org</url>
     </organization>
     <repositories>
+            <repository>
+                <id>archiva.internal</id>
+                <name>Internal Release Repository</name>
+                <url>https://dev.tdar.org/archiva/repository/internal/</url>
+            </repository>
+    
         <!-- <repository>
             <id>virtualcommons.internal</id>
             <name>ASU Archiva Proxy</name>
