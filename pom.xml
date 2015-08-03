@@ -39,7 +39,6 @@
             to the command line -->
         <build.profile.id>default</build.profile.id>
         <clover.version>4.0.4</clover.version>
-        <clover.dir>${project.build.directory}</clover.dir>
         <clover.license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
 		                        mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
 		                        rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
