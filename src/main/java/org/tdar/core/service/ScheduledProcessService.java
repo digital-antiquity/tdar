@@ -7,6 +7,9 @@
 package org.tdar.core.service;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -275,6 +278,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         }
         if (genericService.getActiveSessionCount() > config.getSessionCountLimitForBackgroundTasks()) {
             logger.debug("SKIPPING SCHEDULED PROCESSES, TOO MANY ACTIVE PROCESSES");
+            logCurrentState();
             return;
         }
         if (process instanceof AbstractPersistableScheduledProcess) {
@@ -299,6 +303,31 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         }
         logger.trace("processes in Queue: {}", scheduledProcessQueue);
     }
+
+	private void logCurrentState() {
+		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+		long[] allThreadIds = threadMXBean.getAllThreadIds();
+		ThreadInfo[] threadInfo = threadMXBean.getThreadInfo(allThreadIds);
+		long totalTime = 0;
+		Map<Long,Long> totals = new HashMap<>();
+		for (ThreadInfo info : threadInfo) {
+			long id = info.getThreadId();
+			long threadCpuTime = threadMXBean.getThreadUserTime(id);
+			totalTime += threadCpuTime;
+			totals.put(id, threadCpuTime);
+		}
+		for (ThreadInfo info : threadInfo) {
+			long id = info.getThreadId();
+			long percent = (100 * totals.get(id) ) / totalTime;
+			if (percent > 0) {
+				logger.debug("{} :: CPU: {}% {} ({})", id ,percent, info.getThreadName() , info.getThreadState());
+				StackTraceElement[] st = info.getStackTrace();
+				for (StackTraceElement t : st) {
+					logger.debug("\t{} ",t);
+				}
+			}
+		}
+	}
 
     /**
      * Mark an @link UpgradeTask as having been run successfully
