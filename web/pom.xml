@@ -484,7 +484,7 @@
 	                  <goal>process</goal>
 	                </goals>
 	                <configuration>
-	  				<attachToTest>true</attachToTest>
+	  				<attachToTest>false</attachToTest>
 					<attachToMain>false</attachToMain>
 	  			    <outputDirectory>target/test-resources</outputDirectory>
 	                  <resourceBundles>

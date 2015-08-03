@@ -1184,7 +1184,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   				<attachToTest>false</attachToTest>
 				<attachToMain>false</attachToMain>
 				<includeScope>test</includeScope>
-  			    <outputDirectory>tmp/test-resources</outputDirectory>
+  			    <outputDirectory>target/test-resources</outputDirectory>
                   <resourceBundles>
                     <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
                   </resourceBundles>
@@ -1198,7 +1198,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                 <configuration>
    				 <attachToMain>false</attachToMain>
 	  			  <attachToTest>false</attachToTest>
-				  <outputDirectory>target</outputDirectory>
+				  <outputDirectory>target/</outputDirectory>
                   <resourceBundles>
                     <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
                   </resourceBundles>
@@ -1295,7 +1295,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                  <!--  in the "test" context, drop the database contents, and reload it -->
                  <id>test-liquibase</id>
                  <configuration>
-                     <changeLogFile>liquibase-test/changelog.xml</changeLogFile>
+                     <changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
                      <skip>${skipTestLiquibase}</skip>
                  </configuration>
                      <phase>pre-integration-test</phase>
@@ -1308,7 +1308,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                  <id>upgrade-liquibase</id>
                  <!--  if the liquibase profile is active (default context) run the upgrade  -->
                  <configuration>
-                     <changeLogFile>liquibase/changelog.xml</changeLogFile>
+                     <changeLogFile>target/liquibase/changelog.xml</changeLogFile>
                      <skip>${skipUpgradeLiquibase}</skip>
                  </configuration>
                     <phase>process-resources</phase>

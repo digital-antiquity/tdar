@@ -57,11 +57,11 @@
         <url>http://www.tdar.org</url>
     </organization>
     <repositories>
-        <repository>
+        <!-- <repository>
             <id>virtualcommons.internal</id>
             <name>ASU Archiva Proxy</name>
             <url>http://dev.commons.asu.edu/archiva/repository/internal/</url>
-        </repository>
+        </repository> -->
         <repository>
             <id>imageJ</id>
             <name>ImageJ Repository</name>
