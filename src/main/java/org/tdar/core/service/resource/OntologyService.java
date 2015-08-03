@@ -35,8 +35,8 @@ import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.filestore.Filestore.ObjectType;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  * Transactional service providing persistence access to OntologyS as well as OWL access to Ontology files.
