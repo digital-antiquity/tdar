@@ -270,7 +270,7 @@
          */
         init: function (formId, settings) {
             var self = this;
-            console.debug("init");
+            //console.debug("init");
             var errs = [];
             this.fileupload = $("#" + formId)[0];
 
@@ -342,7 +342,7 @@
                                 "file": null,
                                 "message": message(0)
                             };
-                            console.dir(error);
+                            //console.dir(error);
                             self.errors.push(error);
                             if (rule.suggestion) {
                                 self.suggestions.push(error);
@@ -359,7 +359,7 @@
                                     "file": file,
                                     "message": message(file.filename, file.base, file.ext, idx)
                                 };
-                                console.dir(error);
+                                //console.dir(error);
                                 self.errors.push(error);
                                 if (rule.suggestion) {
                                     self.suggestions.push(error);
@@ -461,7 +461,7 @@
          * @returns {{methodName: *, method: *, settings: (*|{}), message: *, suggestion: boolean}}
          */
         addRule: function (methodName, settings, customMessage) {
-            console.debug("add rule: %s", methodName);
+            //console.debug("add rule: %s", methodName);
             var message = this.messages[methodName];
             if (customMessage) {
                 message = $.validator.format(customMessage);

@@ -201,7 +201,7 @@ TDAR.fileupload = (function (TDAR, $) {
         //pre-populate the files table with any previously-uploaded files
         if (TDAR.filesJson) {
             var files = _translateIrFiles(TDAR.filesJson);
-            console.debug("files.length: %s", files.length);
+            // console.debug("files.length: %s", files.length);
             // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
             if (files.length) {
                 $("#fileProxyUploadBody").empty();
@@ -326,7 +326,7 @@ TDAR.fileupload = (function (TDAR, $) {
      */
     var _updateReminder = function (e, data) {
         var $filesTable = $(data.context).closest("tbody.files");
-        console.debug("$filesTable.length: %s", $filesTable.length);
+        // console.debug("$filesTable.length: %s", $filesTable.length);
         if ($filesTable.length > 0) {
             $("#reminder").hide();
         } else {
@@ -426,7 +426,7 @@ TDAR.fileupload = (function (TDAR, $) {
      */
     var _registerReplaceButton = function (fileuploadSelector) {
 
-        console.debug("registering replace button")
+        //console.debug("registering replace button")
 
         //invoke the fileupload widget's "send" method
         $(fileuploadSelector).on("change", ".replace-file", function (e) {
