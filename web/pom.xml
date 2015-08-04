@@ -484,7 +484,7 @@
                      <!--  in the "test" context, drop the database contents, and reload it -->
                      <id>test-liquibase</id>
                      <configuration>
-                         <changeLogFile>liquibase-test/changelog.xml</changeLogFile>
+                         <changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
                          <skip>${skipTestLiquibase}</skip>
                      </configuration>
                          <phase>pre-integration-test</phase>
@@ -497,7 +497,7 @@
                      <id>upgrade-liquibase</id>
                      <!--  if the liquibase profile is active (default context) run the upgrade  -->
                      <configuration>
-                         <changeLogFile>liquibase/changelog.xml</changeLogFile>
+                         <changeLogFile>target/liquibase/changelog.xml</changeLogFile>
                          <skip>${skipUpgradeLiquibase}</skip>
                      </configuration>
                         <phase>process-resources</phase>

@@ -174,7 +174,7 @@
 			<!-- declared dependency with excludes for DataOne and maven version management -->
 			<artifactId>foresite</artifactId>
 			<groupId>org.digitalantiquity.foresite-toolkit</groupId>
-			<version>0.2.1</version>
+			<version>0.2</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jena</artifactId>
@@ -305,7 +305,7 @@
 							<goal>process</goal>
 						</goals>
 						<configuration>
-							<attachToTest>true</attachToTest>
+							<attachToTest>false</attachToTest>
 							<attachToMain>false</attachToMain>
 							<outputDirectory>target/test-resources</outputDirectory>
 							<resourceBundles>
@@ -319,9 +319,9 @@
 							<goal>process</goal>
 						</goals>
 						<configuration>
-							<attachToMain>true</attachToMain>
+							<attachToMain>false</attachToMain>
 							<attachToTest>false</attachToTest>
-							<outputDirectory>target</outputDirectory>
+							<outputDirectory>target/</outputDirectory>
 							<resourceBundles>
 								<resourceBundle>org.tdar:database:${project.version}</resourceBundle>
 							</resourceBundles>
@@ -430,7 +430,7 @@
 							it -->
 						<id>test-liquibase</id>
 						<configuration>
-							<changeLogFile>liquibase-test/changelog.xml</changeLogFile>
+							<changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
 							<skip>${skipTestLiquibase}</skip>
 						</configuration>
 						<phase>pre-integration-test</phase>
@@ -443,7 +443,7 @@
 						<id>upgrade-liquibase</id>
 						<!-- if the liquibase profile is active (default context) run the upgrade -->
 						<configuration>
-							<changeLogFile>liquibase/changelog.xml</changeLogFile>
+							<changeLogFile>target/liquibase/changelog.xml</changeLogFile>
 							<skip>${skipUpgradeLiquibase}</skip>
 						</configuration>
 						<phase>process-resources</phase>

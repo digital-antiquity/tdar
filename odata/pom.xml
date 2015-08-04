@@ -268,40 +268,40 @@
 			</testResource>
 		</testResources>
 		<plugins>
-			<plugin>
-				<artifactId>maven-remote-resources-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>process-test-resources</id>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<attachToTest>true</attachToTest>
-							<attachToMain>false</attachToMain>
-							<outputDirectory>target/test-resources</outputDirectory>
-							<resourceBundles>
-								<resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-					<execution>
-						<id>process-database-resources</id>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<attachToMain>true</attachToMain>
-							<attachToTest>false</attachToTest>
-							<outputDirectory>target</outputDirectory>
-							<resourceBundles>
-								<resourceBundle>org.tdar:database:${project.version}</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+	        <plugin>
+	          <artifactId>maven-remote-resources-plugin</artifactId>
+	          <version>1.5</version>
+	          <executions>
+	              <execution>
+	                <id>process-test-resources</id>
+	                <goals>
+	                  <goal>process</goal>
+	                </goals>
+	                <configuration>
+	  				<attachToTest>false</attachToTest>
+					<attachToMain>false</attachToMain>
+	  			    <outputDirectory>target/test-resources</outputDirectory>
+	                  <resourceBundles>
+	                    <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
+	                  </resourceBundles>
+	                </configuration>
+	              </execution>
+	              <execution>
+	                <id>process-database-resources</id>
+	                <goals>
+	                  <goal>process</goal>
+	                </goals>
+	                <configuration>
+	   				 <attachToMain>false</attachToMain>
+		  			  <attachToTest>false</attachToTest>
+					  <outputDirectory>target/</outputDirectory>
+	                  <resourceBundles>
+	                    <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
+	                  </resourceBundles>
+	                </configuration>
+	              </execution>
+	          </executions>
+	        </plugin>
 			<plugin>
 				<groupId>org.glassfish</groupId>
 				<artifactId>maven-embedded-glassfish-plugin</artifactId>
@@ -415,7 +415,7 @@
 							it -->
 						<id>test-liquibase</id>
 						<configuration>
-							<changeLogFile>liquibase-test/changelog.xml</changeLogFile>
+							<changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
 							<skip>${skipTestLiquibase}</skip>
 						</configuration>
 						<phase>pre-integration-test</phase>
@@ -428,7 +428,7 @@
 						<id>upgrade-liquibase</id>
 						<!-- if the liquibase profile is active (default context) run the upgrade -->
 						<configuration>
-							<changeLogFile>liquibase/changelog.xml</changeLogFile>
+							<changeLogFile>target/liquibase/changelog.xml</changeLogFile>
 							<skip>${skipUpgradeLiquibase}</skip>
 						</configuration>
 						<phase>process-resources</phase>
