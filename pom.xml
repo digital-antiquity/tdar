@@ -1109,6 +1109,12 @@
             <version>1.8.10</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>preflight</artifactId>
+            <version>1.8.10</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
 
         <dependency>
             <groupId>org.apache.tika</groupId>
