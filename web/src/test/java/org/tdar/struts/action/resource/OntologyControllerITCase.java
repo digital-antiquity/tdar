@@ -8,6 +8,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -55,8 +60,8 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     @Autowired
     private OntologyService ontologyService;
 
-    public final static String TAB_ONTOLOGY_FILE = "/ontology/tabOntologyFile.txt";
-    public final static String UPDATED_TAB_ONTOLOGY_FILE = "/ontology/updatedTabOntologyFile.txt";
+    public final static String TAB_ONTOLOGY_FILE = TestConstants.TEST_ROOT_DIR + "/ontology/tabOntologyFile.txt";
+    public final static String UPDATED_TAB_ONTOLOGY_FILE = TestConstants.TEST_ROOT_DIR + "/ontology/updatedTabOntologyFile.txt";
 
     @Test
     @Rollback
@@ -67,7 +72,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         ont.setTitle("test ontology for ordering");
         ont.setDescription("test");
         ont.markUpdated(getUser());
-        String ontText = IOUtils.toString(getClass().getResourceAsStream(TAB_ONTOLOGY_FILE));
+        String ontText = readToText(TAB_ONTOLOGY_FILE);
         assertNotNull("input should be the same", ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
@@ -98,7 +103,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testOntologyWithReservedChars() throws Exception {
-        String ontText = IOUtils.toString(getClass().getResourceAsStream("/ontology/nodes_with_bad_chars_and_weird_percents.txt"));
+        String ontText = readToText(TestConstants.TEST_ROOT_DIR + "/ontology/nodes_with_bad_chars_and_weird_percents.txt");
         Long id = loadOntologyFromText(ontText);
         Ontology ont = ontologyService.find(id);
         Map<String, OntologyNode> map = new HashMap<String, OntologyNode>();
@@ -119,7 +124,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testOntologyWithSpaces() throws Exception {
-        String ontText = IOUtils.toString(getClass().getResourceAsStream("/ontology/degenerate_spaces_taxon.txt"));
+        String ontText =readToText(TestConstants.TEST_ROOT_DIR +"/ontology/degenerate_spaces_taxon.txt");
         setIgnoreActionErrors(true);
         Long id = loadOntologyFromText(ontText);
         assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
@@ -128,7 +133,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testOntologyWithDegenerateTree() throws Exception {
-        String ontText = IOUtils.toString(getClass().getResourceAsStream("/ontology/degenerate_tree_taxon.txt"));
+        String ontText = readToText(TestConstants.TEST_ROOT_DIR +"/ontology/degenerate_tree_taxon.txt");
         setIgnoreActionErrors(true);
         Long id = loadOntologyFromText(ontText);
         assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
@@ -137,7 +142,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback(false)
     public void testMappedOntologyUpdate() throws Exception {
-        String ontText = IOUtils.toString(getClass().getResourceAsStream(TAB_ONTOLOGY_FILE));
+        String ontText = readToText(TAB_ONTOLOGY_FILE);
         final int originalFileLength = ontText.split("([\r\n]+)").length;
         final Long id = loadOntologyFromText(ontText);
         Ontology ont = ontologyService.find(id);
@@ -152,7 +157,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         controller.setId(id);
         controller.prepare();
         ont = controller.getOntology();
-        ontText = IOUtils.toString(getClass().getResourceAsStream(UPDATED_TAB_ONTOLOGY_FILE));
+        ontText = readToText(UPDATED_TAB_ONTOLOGY_FILE);
         final int updatedFileLength = ontText.split("([\r\n]+)").length;
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
@@ -231,7 +236,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         ont.setTitle("test ontology for ordering");
         ont.setDescription("test");
         ont.markUpdated(getUser());
-        String ontText = IOUtils.toString(getClass().getResourceAsStream(TAB_ONTOLOGY_FILE));
+        String ontText = readToText(TAB_ONTOLOGY_FILE);
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
@@ -249,7 +254,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         controller.setId(id);
         controller.prepare();
         ont = controller.getOntology();
-        ontText = IOUtils.toString(getClass().getResourceAsStream(UPDATED_TAB_ONTOLOGY_FILE));
+        ontText = readToText(UPDATED_TAB_ONTOLOGY_FILE);
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
@@ -330,7 +335,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         ont.setTitle("test ontology for ordering");
         ont.setDescription("test");
         ont.markUpdated(getUser());
-        String ontText = IOUtils.toString(getClass().getResourceAsStream(TAB_ONTOLOGY_FILE));
+        String ontText = readToText(TAB_ONTOLOGY_FILE);
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
@@ -373,4 +378,9 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(i, ontologyNodes.size());
     }
 
+	private String readToText(String filename) throws IOException, FileNotFoundException {
+		File file = new File(filename);
+        String text = IOUtils.toString(new FileReader(file)).trim();
+		return text;
+	}
 }

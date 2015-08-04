@@ -13,6 +13,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +71,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     private static final File PERIOD_1 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period.csv");
     private static final File PERIOD_2 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period2.csv");
     private static final String EXCEL_FILE_PATH2 = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME2;
-    private String codingSheetFileName = "/coding sheet/csvCodingSheetText.csv";
+    private String codingSheetFileName = TestConstants.TEST_ROOT_DIR + "/coding sheet/csvCodingSheetText.csv";
 
     private InformationResourceFile tranlatedIRFile;
 
@@ -112,7 +114,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
         controller.setId(codingSheet.getId());
         controller.prepare();
-        String text = (IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName))).trim();
+        String text = readToText(codingSheetFileName);
         text = text.substring(0, text.lastIndexOf("\n"));
         controller.setFileInputMethod("text");
         assertNotNull(text);
@@ -131,6 +133,12 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             }
         }
     }
+
+	private String readToText(String filename) throws IOException, FileNotFoundException {
+		File file = new File(filename);
+        String text = IOUtils.toString(new FileReader(file)).trim();
+		return text;
+	}
 
     @Test
     @Rollback
@@ -197,7 +205,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         codingSheet.setTitle("test coding sheet");
         codingSheet.setDescription("test description");
         controller.setFileInputMethod("text");
-        String codingText = IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName));
+        String codingText = readToText(codingSheetFileName);
         assertNotNull(codingText);
         controller.setFileTextInput(codingText);
         controller.setServletRequest(getServletPostRequest());
@@ -257,7 +265,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         codingSheet.setTitle("test coding sheet");
         codingSheet.setDescription("test description");
         controller.setFileInputMethod("text");
-        String codingText = IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName));
+        String codingText = readToText(codingSheetFileName);
         assertNotNull(codingText);
         controller.setFileTextInput(codingText);
         codingSheet.setDate(1243);
@@ -272,7 +280,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         codingSheet.setTitle("test coding sheet");
         codingSheet.setDescription("test description");
         controller.setFileInputMethod("text");
-        codingText = IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName));
+        codingText = readToText(codingSheetFileName);
         assertNotNull(codingText);
         controller.setFileTextInput(codingText);
         controller.setServletRequest(getServletPostRequest());
