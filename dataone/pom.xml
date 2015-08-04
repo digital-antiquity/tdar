@@ -356,6 +356,7 @@
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
+				<version>${clover.version}</version>
 				<configuration>
 					<license>${clover.license}</license>
 					<!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
