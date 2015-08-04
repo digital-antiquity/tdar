@@ -29,12 +29,6 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +71,12 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /*
  * class to help with marshalling and unmarshalling of resources
@@ -336,7 +336,7 @@ public class SerializationService {
     public void generateFOAF(Creator creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
-        org.apache.jena.rdf.model.Resource rdf = null;
+        com.hp.hpl.jena.rdf.model.Resource rdf = null;
         switch (creator.getCreatorType()) {
             case INSTITUTION:
                 rdf = addInstitution(model, baseUrl, (Institution) creator);
@@ -350,7 +350,7 @@ public class SerializationService {
         }
 
         for (RelatedInfoLogPart part : log.getCollaboratorLogPart()) {
-            org.apache.jena.rdf.model.Resource res = model.createResource();
+            com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             if (part.getSimpleClassName().equals(INSTITUTION)) {
                 res.addProperty(RDF.type, FOAF.Organization);
             } else {
@@ -364,7 +364,7 @@ public class SerializationService {
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEDIAN), log.getCreatorMedian().toString());
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEAN), log.getCreatorMean().toString());
         for (RelatedInfoLogPart part : log.getKeywordLogPart()) {
-            org.apache.jena.rdf.model.Resource res = model.createResource();
+            com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             res.addProperty(RDF.type, part.getSimpleClassName());
             res.addLiteral(FOAF.name, part.getName());
             // res.addProperty(RDFS.seeAlso,String.format("%s/browse/creators/%s/rdf", baseUrl, part.getId()));
@@ -391,8 +391,8 @@ public class SerializationService {
      * @param institution
      * @return
      */
-    private org.apache.jena.rdf.model.Resource addInstitution(Model model, String baseUrl, Institution institution) {
-        org.apache.jena.rdf.model.Resource institution_ = model.createResource();
+    private com.hp.hpl.jena.rdf.model.Resource addInstitution(Model model, String baseUrl, Institution institution) {
+        com.hp.hpl.jena.rdf.model.Resource institution_ = model.createResource();
         institution_.addProperty(RDF.type, FOAF.Organization);
         institution_.addLiteral(FOAF.name, institution.getName());
         institution_.addProperty(RDFS.seeAlso, String.format(S_BROWSE_CREATORS_S_RDF, baseUrl, institution.getId()));
@@ -407,8 +407,8 @@ public class SerializationService {
      * @param person
      * @return
      */
-    private org.apache.jena.rdf.model.Resource addPerson(Model model, String baseUrl, Person person) {
-        org.apache.jena.rdf.model.Resource person_ = model.createResource(FOAF.NS);
+    private com.hp.hpl.jena.rdf.model.Resource addPerson(Model model, String baseUrl, Person person) {
+        com.hp.hpl.jena.rdf.model.Resource person_ = model.createResource(FOAF.NS);
         person_.addProperty(RDF.type, FOAF.Person);
         person_.addProperty(FOAF.firstName, person.getFirstName());
         person_.addProperty(FOAF.family_name, person.getLastName());
