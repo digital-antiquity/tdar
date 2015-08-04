@@ -13,7 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import org.apache.jena.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import ro.isdc.wro.config.Context;
 import ro.isdc.wro.manager.WroManager;
