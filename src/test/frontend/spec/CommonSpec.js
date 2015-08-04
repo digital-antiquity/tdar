@@ -129,12 +129,38 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect($j('body').data("adhocTarget")).not.toBeDefined();
     });
 
-    xit("should work when we call prepareDateFields", function () {
-        var selectElem = null;
-        var expectedVal = null;
+    it("should work when we call prepareDateFields", function () {
+        var $form = $('<form>' + read('coverage-dates.html') + '</form>');
+        var sel = $form.find('select')[0];
+        var validator = $form.validate();
+        $('body').append($form);
 
-        //var result = TDAR.common.prepareDateFields(selectElem);
-        expect(true).toBe(false); //fixme: implement this test
+        //validation: everything blank - no errors 
+        $(sel).val('NONE');
+        TDAR.common.prepareDateFields(sel);
+        $form.valid();
+        expect(validator.errorList.length).toBe(0);
+        
+        //validation: coverage date incomplete 
+        $(sel).val('CALENDAR_DATE');
+        TDAR.common.prepareDateFields(sel);
+        $form.find('.coverageStartYear').val('2001');
+        $form.valid();
+        expect(validator.errorList.length).toBeGreaterThan(0);
+
+        //validation: 2001-1999 is an invalid calendar date...
+        $(sel).val('CALENDAR_DATE');
+        TDAR.common.prepareDateFields(sel);
+        $form.find('.coverageStartYear').val('2001');
+        $form.find('.coverageEndYear').val('1999');
+        $form.valid();
+        expect(validator.errorList.length).toBeGreaterThan(0);
+
+        //validation: ...but it's a valid radiocarbon date
+        $(sel).val('RADIOCARBON_DATE');
+        TDAR.common.prepareDateFields(sel);
+        $form.valid();
+        expect(validator.errorList.length).toBe(0);
     });
 
     xit("should work when we call setAdhocTarget", function () {

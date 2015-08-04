@@ -158,7 +158,6 @@ TDAR.common = function (TDAR, fileupload) {
             return;
         }
 
-        console.log("populateTarget called.   adHocTarget:%s", adhocTarget);
         $('input[type=hidden]', adhocTarget).val(obj.id);
         $('input[type=text]', adhocTarget).val(obj.title);
         $body.removeData("adhocTarget");
@@ -737,7 +736,7 @@ TDAR.common = function (TDAR, fileupload) {
      * specific page are not addressed by this funtion.
      */
     var _initializeView = function () {
-        console.debug('initialize view');
+        //console.debug('initialize view');
         var mapdiv, $divSearchContext = $("#divSearchContext");
 
         if ($('#large-google-map').length) {
