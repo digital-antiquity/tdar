@@ -13,7 +13,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import com.hp.hpl.jena.util.FileUtils;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 
 import ro.isdc.wro.config.Context;
 import ro.isdc.wro.manager.WroManager;
@@ -71,7 +72,7 @@ public class WebFileSystemResourceService {
             return wroTempDirName;
         }
         try {
-            String file = FileUtils.readWholeFileAsUTF8(getClass().getClassLoader().getResourceAsStream("version.txt"));
+            String file = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("version.txt"),Charsets.UTF_8);
             file = StringUtils.replace(file, "+", "");
             wroTempDirName = "/wro/" + file.trim();
             return wroTempDirName;

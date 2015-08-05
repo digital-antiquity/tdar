@@ -110,6 +110,28 @@
     </dependencyManagement>
     <repositories>
         <repository>
+            <id>internal</id>
+            <name>Archiva Managed Internal Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>Archiva Managed Snapshot Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>virtualcommons.internal</id>
             <name>ASU Archiva Proxy</name>
             <url>http://dev.commons.asu.edu/archiva/repository/internal/</url>
@@ -854,7 +876,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.1.2.FINAL</version>
+            <version>5.2.1.FINAL</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <dependency>
@@ -1090,6 +1112,12 @@
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
+            <version>1.8.10</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>preflight</artifactId>
             <version>1.8.10</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
@@ -1361,7 +1389,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.46.0</version>
+            <version>2.47.1</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>

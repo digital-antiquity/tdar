@@ -1,4 +1,4 @@
-/* global describe, it, expect, loadFixtures */
+/* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach */
 describe("TDAR.common: edit page tests", function () {
 
     it("initializes the edit page", function () {
@@ -57,15 +57,21 @@ describe("TDAR.common: miscellaneaous tests", function () {
         $expect('.active').toBeInDOM();
     });
 
+    //fixme: this  passes on my  osx,  windows instances but fails on bamboo (due to timeout). Skipping for now.  
+    // I suspect that ajax requests to the google api/tile server are failing (or are blocked?) on build.tdar.org for some reason.
+    // todo: narrow the scope of the test by performing an async load of a locally hosted file (e.g. notification.gif )
     xit("initializes a a map on view page", function (done) {
         loadFixtures('searchheader.html', 'map-div.html');
         var result = TDAR.common.initializeView();
         var mapInitialized = false;
         var promise = TDAR.maps.mapPromise;
-        promise.done(function(api){
-            expect(api).toBeDefined();
-            done();
-        });
+        promise
+            .done(function(api){
+                expect(api).toBeDefined();
+                done();})
+            .fail(function(err){
+                fail('Received error message from mapPromise:' + err);
+            });
     });
 
     it("should register the validation form when we call initRegformValidation", function () {
@@ -107,7 +113,7 @@ describe("TDAR.common: miscellaneaous tests", function () {
         var $container = $j('<div id="adhocTarget"></div>');
         $container.append($j('<input type="hidden" name="parentId" value="">'
             + '<input type="text" name="parentTitle" value="">'));
-        $j('body').append($container);
+        setFixtures($container);
         //sanity check: did we really add this to dom?
         $expect('input').toHaveLength(2);
 
@@ -123,31 +129,77 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect($j('body').data("adhocTarget")).not.toBeDefined();
     });
 
-    xit("should work when we call prepareDateFields", function () {
-        var selectElem = null;
-        var expectedVal = null;
+    it("should work when we call prepareDateFields", function () {
+        var $form = $('<form>' + readFixtures('coverage-dates.html') + '</form>');
+        var sel = $form.find('select')[0];
+        var validator = $form.validate();
+        setFixtures($form);
 
-        //var result = TDAR.common.prepareDateFields(selectElem);
-        expect(true).toBe(false); //fixme: implement this test
+        //validation: everything blank - no errors 
+        $(sel).val('NONE');
+        TDAR.common.prepareDateFields(sel);
+        $form.valid();
+        expect(validator.errorList.length).toBe(0);
+        
+        //validation: coverage date incomplete 
+        $(sel).val('CALENDAR_DATE');
+        TDAR.common.prepareDateFields(sel);
+        $form.find('.coverageStartYear').val('2001');
+        $form.valid();
+        expect(validator.errorList.length).toBeGreaterThan(0);
+
+        //validation: 2001-1999 is an invalid calendar date...
+        $(sel).val('CALENDAR_DATE');
+        TDAR.common.prepareDateFields(sel);
+        $form.find('.coverageStartYear').val('2001');
+        $form.find('.coverageEndYear').val('1999');
+        $form.valid();
+        expect(validator.errorList.length).toBeGreaterThan(0);
+
+        //validation: ...but it's a valid radiocarbon date
+        $(sel).val('RADIOCARBON_DATE');
+        TDAR.common.prepareDateFields(sel);
+        $form.valid();
+        expect(validator.errorList.length).toBe(0);
     });
 
-    xit("should work when we call setAdhocTarget", function () {
-        var elem = null;
-        var selector = null;
-        var expectedVal = null;
+    it("should set setAdhocTarget", function () {
 
-        //var result = TDAR.common.setAdhocTarget(elem, selector);
-        expect(true).toBe(false); //fixme: implement this test
+        var $container = $j('<div id="adhocTarget"></div>');
+        $container.append(
+            $j('<input type="hidden" id="hiddenParentId" name="parentId" value="">'
+            + '<input type="text" name="parentTitle" value="">'));
+        setFixtures($container);
+
+        var selector = "#adhocTarget"
+        TDAR.common.setAdhocTarget($('#hiddenParentId')[0], selector )
+
+        expect($('body').data()).toBeDefined()
+        expect($('body').data('adhocTarget').html()).toBe($container.html())
     });
 
-    xit("should work when we call changeSubcategory", function () {
-        var categoryIdSelect = null;
-        var subCategoryIdSelect = null;
-        var expectedVal = null;
+    describe("TDAR.common functions that utilize ajax", function() {
 
-        //var result = TDAR.common.changeSubcategory(categoryIdSelect, subCategoryIdSelect);
-        expect(true).toBe(false); //fixme: implement this test
+        beforeEach(function() {
+            jasmine.Ajax.install();
+        });
+
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
+        });
+
+        it("updates th subcategory options when you select a category", function () {
+
+            var $categoryIdSelect = $j('<select id="cat"></select>');
+            var $subCategoryIdSelect = $j('<select id="subcat"></select>');
+            setFixtures($categoryIdSelect);
+            appendSetFixtures($subCategoryIdSelect);
+
+            //TDAR.common.changeSubcategory
+            $expect('select').toHaveLength(2);
+        });
     });
+
 
     xit("should work when we call registerDownload", function () {
         var url = null;
