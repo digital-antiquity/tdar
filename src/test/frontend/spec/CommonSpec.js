@@ -163,13 +163,19 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect(validator.errorList.length).toBe(0);
     });
 
-    xit("should work when we call setAdhocTarget", function () {
-        var elem = null;
-        var selector = null;
-        var expectedVal = null;
+    it("should set setAdhocTarget", function () {
 
-        //var result = TDAR.common.setAdhocTarget(elem, selector);
-        expect(true).toBe(false); //fixme: implement this test
+        var $container = $j('<div id="adhocTarget"></div>');
+        $container.append(
+            $j('<input type="hidden" id="hiddenParentId" name="parentId" value="">'
+            + '<input type="text" name="parentTitle" value="">'));
+        $j('body').append($container);
+
+        var selector = "#adhocTarget"
+        TDAR.common.setAdhocTarget($('#hiddenParentId')[0], selector )
+
+        expect($('body').data()).toBeDefined()
+        expect($('body').data('adhocTarget').html()).toBe($container.html())
     });
 
     xit("should work when we call changeSubcategory", function () {
@@ -180,6 +186,7 @@ describe("TDAR.common: miscellaneaous tests", function () {
         //var result = TDAR.common.changeSubcategory(categoryIdSelect, subCategoryIdSelect);
         expect(true).toBe(false); //fixme: implement this test
     });
+
 
     xit("should work when we call registerDownload", function () {
         var url = null;
