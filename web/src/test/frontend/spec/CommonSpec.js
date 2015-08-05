@@ -1,4 +1,4 @@
-/* global describe, it, expect, loadFixtures */
+/* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach */
 describe("TDAR.common: edit page tests", function () {
 
     it("initializes the edit page", function () {
@@ -113,7 +113,7 @@ describe("TDAR.common: miscellaneaous tests", function () {
         var $container = $j('<div id="adhocTarget"></div>');
         $container.append($j('<input type="hidden" name="parentId" value="">'
             + '<input type="text" name="parentTitle" value="">'));
-        $j('body').append($container);
+        setFixtures($container);
         //sanity check: did we really add this to dom?
         $expect('input').toHaveLength(2);
 
@@ -130,10 +130,10 @@ describe("TDAR.common: miscellaneaous tests", function () {
     });
 
     it("should work when we call prepareDateFields", function () {
-        var $form = $('<form>' + read('coverage-dates.html') + '</form>');
+        var $form = $('<form>' + readFixtures('coverage-dates.html') + '</form>');
         var sel = $form.find('select')[0];
         var validator = $form.validate();
-        $('body').append($form);
+        setFixtures($form);
 
         //validation: everything blank - no errors 
         $(sel).val('NONE');
@@ -163,23 +163,43 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect(validator.errorList.length).toBe(0);
     });
 
-    xit("should work when we call setAdhocTarget", function () {
-        var elem = null;
-        var selector = null;
-        var expectedVal = null;
+    it("should set setAdhocTarget", function () {
 
-        //var result = TDAR.common.setAdhocTarget(elem, selector);
-        expect(true).toBe(false); //fixme: implement this test
+        var $container = $j('<div id="adhocTarget"></div>');
+        $container.append(
+            $j('<input type="hidden" id="hiddenParentId" name="parentId" value="">'
+            + '<input type="text" name="parentTitle" value="">'));
+        setFixtures($container);
+
+        var selector = "#adhocTarget"
+        TDAR.common.setAdhocTarget($('#hiddenParentId')[0], selector )
+
+        expect($('body').data()).toBeDefined()
+        expect($('body').data('adhocTarget').html()).toBe($container.html())
     });
 
-    xit("should work when we call changeSubcategory", function () {
-        var categoryIdSelect = null;
-        var subCategoryIdSelect = null;
-        var expectedVal = null;
+    describe("TDAR.common functions that utilize ajax", function() {
 
-        //var result = TDAR.common.changeSubcategory(categoryIdSelect, subCategoryIdSelect);
-        expect(true).toBe(false); //fixme: implement this test
+        beforeEach(function() {
+            jasmine.Ajax.install();
+        });
+
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
+        });
+
+        it("updates th subcategory options when you select a category", function () {
+
+            var $categoryIdSelect = $j('<select id="cat"></select>');
+            var $subCategoryIdSelect = $j('<select id="subcat"></select>');
+            setFixtures($categoryIdSelect);
+            appendSetFixtures($subCategoryIdSelect);
+
+            //TDAR.common.changeSubcategory
+            $expect('select').toHaveLength(2);
+        });
     });
+
 
     xit("should work when we call registerDownload", function () {
         var url = null;
