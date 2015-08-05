@@ -13,7 +13,5 @@
     self.$expect = function(selector){
         return expect($j(selector));
     }
-    
-    self.read = jasmine.getFixtures().read.bind(jasmine.getFixtures());
 
 })(this);
