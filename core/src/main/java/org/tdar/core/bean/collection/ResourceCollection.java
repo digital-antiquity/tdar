@@ -72,6 +72,7 @@ import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Slugable;
@@ -129,7 +130,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
