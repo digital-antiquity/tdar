@@ -27,7 +27,12 @@ public class DataOneWebITCase extends AbsractWebTest {
         getRecord("/dataone/v1/replica/" + TEST_DOI_META);
 
     }
-    
+
+    @Test
+    public void ping() {
+        Assert.assertEquals(200,gotoPage("/dataone/v1/monitor/ping"));
+    }
+
     @Test
     public void systemInfo() {
         Assert.assertEquals(200, gotoPage("/dataone/v1/"));

@@ -125,11 +125,6 @@ public abstract class AbsractWebTest {
         });
     }
     
-    @Test
-    public void ping() {
-        Assert.assertEquals(200,gotoPage("/dataone/v1/monitor/ping"));
-    }
-    
     /**
      * Go to the specified page, with explicit assertions that the server did not return with a 500 error or contain any inline exception text
      * 
