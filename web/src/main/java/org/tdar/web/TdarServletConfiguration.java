@@ -59,7 +59,6 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		}
 
 		setupOpenSessionInViewFilter(container);
-		configureOaiServlet(container);
 
         configureCxfForTag(container);
         configureFreemarker(container);
@@ -100,14 +99,6 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		freemarker.setInitParameter("default_encoding", "UTF-8");
 		freemarker.setLoadOnStartup(1);
 		freemarker.addMapping("*.dec");
-	}
-
-	private void configureOaiServlet(ServletContext container) {
-		// http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
-		ServletRegistration.Dynamic oaiPmh = container.addServlet("oaipmh", SpringServlet.class);
-		oaiPmh.setLoadOnStartup(1);
-		oaiPmh.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.oai.server");
-		oaiPmh.addMapping("/oai-pmh/*");
 	}
 
 	private void configureCxfForTag(ServletContext container) {

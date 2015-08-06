@@ -1,4 +1,4 @@
-package org.tdar.web;
+package org.tdar.oai;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -26,17 +26,17 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class OAIWebITCase extends AbstractWebTest {
 
     @Autowired
-    SearchIndexService indexService;
+    GenericService genericService;
 
     private XpathEngine xpathEngine;
     private String repositoryNamespaceIdentifier;
@@ -48,11 +48,6 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
-        if (!indexed) {
-            reindex();
-            gotoPage("/logout");
-            indexed = true;
-        }
         // establish namespace bindings for the XPath tests
         HashMap<String, String> namespaceBindings = new HashMap<>();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
@@ -192,7 +187,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTextPresentInCode(TdarConfiguration.getInstance().getSystemAdminEmail());
         // set these in the src/test/resources/tdar.properties
-//        assertTextPresentInCode(TdarConfiguration.getInstance().getSystemDescription());
+        // assertTextPresentInCode(TdarConfiguration.getInstance().getSystemDescription());
         assertTextPresentInCode(TdarConfiguration.getInstance().getRepositoryName());
     }
 

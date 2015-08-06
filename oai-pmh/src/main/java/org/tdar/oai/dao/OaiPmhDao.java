@@ -45,7 +45,7 @@ public class OaiPmhDao {
 		Query query = genericDao.getNamedQuery(qn);
 		// TODO Auto-generated method stub
 		if (recordType== OAIRecordType.RESOURCE) {
-			query.setLong("collectionId",collectionId);
+//			query.setLong("collectionId",collectionId);
 		}
 		setupQuery(query, effectiveFrom, effectiveUntil);
 		search.setTotalRecords(query.list().size());
@@ -53,7 +53,7 @@ public class OaiPmhDao {
 		query = genericDao.getNamedQuery(qn);
 		setupQuery(query, effectiveFrom, effectiveUntil);
 		if (recordType== OAIRecordType.RESOURCE) {
-			query.setLong("collectionId",collectionId);
+//			query.setLong("collectionId",collectionId);
 		}
 
 		query.setMaxResults(search.getRecordsPerPage());

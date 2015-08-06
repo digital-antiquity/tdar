@@ -1,11 +1,11 @@
 @org.hibernate.annotations.NamedQueries({
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.resources",
-            query = "from Resource res where (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' and NULL=:collectionId order by dateUpdated asc"
+            query = "from Resource res where (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' order by dateUpdated asc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.collections",
-            query = "from ResourceCollection c where (c.dateUpdated between :start and :end or c.dateCreated between :start and :end) and hidden=false order by dateUpdated asc"
+            query = "from ResourceCollection c where c.type!='INTERNAL' and (c.dateUpdated between :start and :end or c.dateCreated between :start and :end) and hidden=false order by dateUpdated asc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.people",
