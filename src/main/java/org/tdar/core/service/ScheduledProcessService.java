@@ -308,12 +308,18 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 		long totalTime = 0;
 		Map<Long,Long> totals = new HashMap<>();
 		for (ThreadInfo info : threadInfo) {
+			if (info == null) {
+				continue;
+			}
 			long id = info.getThreadId();
 			long threadCpuTime = threadMXBean.getThreadUserTime(id);
 			totalTime += threadCpuTime;
 			totals.put(id, threadCpuTime);
 		}
 		for (ThreadInfo info : threadInfo) {
+			if (info == null) {
+				continue;
+			}
 			long id = info.getThreadId();
 			long percent = (100 * totals.get(id) ) / totalTime;
 			if (percent > 0) {
