@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.exception.OAIException;
+import org.tdar.oai.exception.OAIException;
 import org.tdar.core.service.GenericService;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.bean.OAIResumptionToken;

@@ -27,7 +27,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.exception.OAIException;
+import org.tdar.oai.exception.OAIException;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;

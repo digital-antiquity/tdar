@@ -7,8 +7,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.tdar.core.exception.OAIException;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
+import org.tdar.oai.exception.OAIException;
 import org.tdar.utils.MessageHelper;
 
 /**

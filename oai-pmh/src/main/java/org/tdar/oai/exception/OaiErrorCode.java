@@ -1,4 +1,4 @@
-package org.tdar.core.exception;
+package org.tdar.oai.exception;
 
 public enum OaiErrorCode {
     BAD_ARGUMENT("badArgument"),
