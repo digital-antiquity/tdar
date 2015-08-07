@@ -75,6 +75,9 @@ ${head}
 
         </script>
     </#if>
+    <#if base != ''>
+    <base href="<@s.url value=''/>">
+    </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
       <#if ngApplicationName?has_content>ng-cloak</#if>>

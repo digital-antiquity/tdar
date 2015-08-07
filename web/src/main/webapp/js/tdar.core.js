@@ -76,7 +76,12 @@ TDAR.loadDocumentData = function _loadDocumentData() {
 
 //define TDAR.uri(). Note, if deploying app in other than root context,  you must set <base href="${request.contextPath}">
 TDAR.uri = function(path) {
-    var uri = window.location.origin  + '/'
+    var base = window.location.origin;
+    var baseElems = document.getElementsByTagName('base');
+    if(baseElems.length) {
+        base = baseElems[0].href;
+    }
+    var uri = base  + '/'
     if(path) {
         uri += path;
     }
