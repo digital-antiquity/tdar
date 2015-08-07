@@ -21,40 +21,23 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.document.DocumentController;
-import org.tdar.struts.action.document.DocumentViewAction;
 
 /**
  * @author Adam Brin
  * 
  */
-public class ObfuscationServiceITCase extends AbstractIntegrationControllerTestCase {
+public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     ObfuscationService obfuscationService;
 
     private List<Long> authorizedUserIds = new ArrayList<Long>();
     private Long collectionId = null;
-
-    @Test
-    public void testAOPInterceptor() throws TdarActionException {
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
-        controller.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
-        controller.prepare();
-        controller.getProject();
-        controller.getId();
-        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class, getBasicUser());
-        rva.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
-        rva.prepare();
-        rva.view();
-        ((Document) rva.getResource()).getProject();
-    }
 
     @Test
     @Rollback(false)

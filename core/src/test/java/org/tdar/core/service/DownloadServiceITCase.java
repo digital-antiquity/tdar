@@ -16,23 +16,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.TestConstants;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.download.DownloadFile;
-import org.tdar.core.service.download.DownloadPdfFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-import org.tdar.utils.MessageHelper;
 
-public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
+public class DownloadServiceITCase extends AbstractIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
     private static final File ROOT_SRC = new File("src/test/resources");
     private Filestore filestore = TdarConfiguration.getInstance().getFilestore();
@@ -83,34 +78,6 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         assertTrue("file should have been created", dest.exists());
         assertTrue("file should be non-empty", dest.length() > 0);
         assertArchiveContents(files, dest);
-    }
-
-    // get some files from the test dir and put them into an archive stream
-    @Test
-    @Rollback
-    public void testDownloadPdf() throws Exception {
-        DownloadTransferObject dto = new DownloadTransferObject(downloadService);
-        dto.setAuthenticatedUser(getBillingUser());
-        List<File> files = new ArrayList<>();
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + "sample_pdf_formats/volume1-encrypted-test.pdf");
-        InformationResourceFileVersion version = generateAndStoreVersion(Document.class, file.getName(), file, filestore);
-        Document document = (Document) version.getInformationResourceFile().getInformationResource();
-        document.setTitle("test");
-        document.setDescription("test");
-        document.setDocumentType(DocumentType.BOOK);
-        filestore.store(ObjectType.RESOURCE, file, version);
-        DownloadPdfFile downloadPdfFile = new DownloadPdfFile(document, version, pdfService, getAdminUser(), MessageHelper.getInstance(), null);
-        downloadPdfFile.setFile(file);
-        dto.getDownloads().add(downloadPdfFile);
-
-        File dest = new File(ROOT_DEST, "test.pdf");
-        InputStream inputStream = dto.getInputStream();
-        IOUtils.copy(inputStream, new FileOutputStream(dest));
-        IOUtils.closeQuietly(inputStream);
-        logger.debug("{}", dest);
-
-        assertTrue("file should have been created", dest.exists());
-        assertTrue("file should be non-empty", dest.length() > 0);
     }
 
     // get some files from the test dir and put them into an archive stream

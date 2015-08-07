@@ -14,12 +14,10 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 
-public class ArchiveITCase extends AbstractIntegrationControllerTestCase {
+public class ArchiveITCase extends AbstractIntegrationTestCase {
 
     public Archive generateArchiveFileAndUser(String archive) {
-        setIgnoreActionErrors(true);
 
         Archive result = createAndSaveNewInformationResource(Archive.class, false);
         assertTrue(result.getResourceType() == ResourceType.ARCHIVE);
@@ -70,7 +68,6 @@ public class ArchiveITCase extends AbstractIntegrationControllerTestCase {
     @Test
     @Rollback(true)
     public void testReprocessFaultyArchive() throws Exception {
-        setIgnoreActionErrors(true);
         InformationResource ir = generateArchiveFileAndUser(TestConstants.FAULTY_ARCHIVE);
         final Set<InformationResourceFile> irFiles = ir.getInformationResourceFiles();
         assertEquals(irFiles.size(), 1);

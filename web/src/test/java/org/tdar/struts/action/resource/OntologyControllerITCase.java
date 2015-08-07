@@ -9,11 +9,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,7 @@ import java.util.regex.Matcher;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +45,14 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.utils.Pair;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * $Id$
@@ -62,6 +69,71 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 
     public final static String TAB_ONTOLOGY_FILE = TestConstants.TEST_ROOT_DIR + "/ontology/tabOntologyFile.txt";
     public final static String UPDATED_TAB_ONTOLOGY_FILE = TestConstants.TEST_ROOT_DIR + "/ontology/updatedTabOntologyFile.txt";
+
+
+    @Test
+    @Rollback
+    public void testDegenerateOntologyDuplicates() throws Exception {
+        setIgnoreActionErrors(true);
+        OntologyController controller = generateNewInitializedController(OntologyController.class);
+        controller.prepare();
+        controller.getOntology().setTitle("test");
+        controller.getOntology().setDescription("test");
+        controller.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
+        String ontologyText = IOUtils.toString(new FileInputStream(new File(TestConstants.TEST_ONTOLOGY_DIR, "degenerateTabOntologyFile.txt")));
+        controller.setFileTextInput(ontologyText);
+        controller.setServletRequest(getServletPostRequest());
+        assertEquals(Action.INPUT, controller.save());
+        Throwable e = null;
+        try {
+            ontologyService.toOwlXml(-1L, ontologyText);
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            e = ex;
+        }
+        assertTrue(e instanceof TdarRecoverableRuntimeException);
+        assertTrue(e.getMessage().contains("unique"));
+    }
+
+    @Test
+    @Rollback
+    public void testProperParsing() throws Exception {
+        OntologyController controller = generateNewInitializedController(OntologyController.class);
+        controller.prepare();
+        controller.getOntology().setTitle("test");
+        controller.getOntology().setDescription("test");
+        controller.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
+        String ontologyText = IOUtils.toString(new FileInputStream(new File(TestConstants.TEST_CODING_SHEET_DIR, "fauna-element-ontology.txt")));
+        controller.setFileTextInput(ontologyText);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        Ontology ontology = controller.getOntology();
+        List<OntologyNode> nodes = ontology.getOntologyNodes();
+        Collections.sort(nodes, new Comparator<OntologyNode>() {
+            @Override
+            public int compare(OntologyNode o1, OntologyNode o2) {
+                return ObjectUtils.compare(o1.getImportOrder(), o2.getImportOrder());
+
+            }
+        });
+        for (OntologyNode node : ontology.getOntologyNodes()) {
+            logger.info("{} : {} ({}); {} [{} - {}]", node.getImportOrder(), node.getDisplayName(), node.getId(), node.getIri(), node.getIntervalStart(),
+                    node.getIntervalEnd());
+        }
+        OntologyNode node0 = nodes.get(0);
+        assertEquals("Articulated Skeleton", node0.getDisplayName());
+        assertEquals("description", node0.getDescription());
+        OntologyNode node1 = nodes.get(1);
+        assertEquals("Articulated Skeleton Complete", node1.getDisplayName());
+        assertEquals(2, node1.getNumberOfParents());
+        assertEquals(node0.getIndex() + "." + node1.getIntervalStart(), node1.getIndex());
+        assertEquals("Articulated Skeleton Nearly Complete", nodes.get(2).getDisplayName());
+        assertEquals("another description", nodes.get(2).getDescription());
+        assertTrue(nodes.get(2).getSynonyms().contains("ASNC"));
+        assertEquals("Articulated Skeleton Partial", nodes.get(3).getDisplayName());
+        assertEquals("Articulated Skeleton Anterior Portion", nodes.get(4).getDisplayName());
+        assertEquals("Not Recorded", nodes.get(nodes.size() - 1).getDisplayName());
+    }
 
     @Test
     @Rollback
