@@ -25,9 +25,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.oai.exception.OAIException;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
@@ -56,8 +54,8 @@ import org.tdar.oai.bean.generated.oai._2_0.SetType;
 import org.tdar.oai.bean.generated.oai_identifier._2_0.OaiIdentifierType;
 import org.tdar.oai.bean.generated.oai_identifier._2_0.ObjectFactory;
 import org.tdar.oai.dao.OaiPmhDao;
-import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.SortOption;
+import org.tdar.oai.dao.OaiSearchResult;
+import org.tdar.oai.exception.OAIException;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
@@ -68,7 +66,7 @@ import edu.asu.lib.dc.DublinCoreDocument;
 @Service
 public class OaiPmhService {
 
-	TdarConfiguration config = TdarConfiguration.getInstance();
+	OaiPmhConfiguration config = OaiPmhConfiguration.getInstance();
 
 	private boolean enableEntities = config.getEnableEntityOai();
 
@@ -154,20 +152,18 @@ public class OaiPmhService {
 		// now actually build the queries and execute them
 
 
-		SearchResult persons = null;
-		SearchResult institutions = null;
+		OaiSearchResult persons = null;
+		OaiSearchResult institutions = null;
 		int maxResults = 0;
 		if (enableEntities && !Objects.equals(metadataFormat, OAIMetadataFormat.MODS)) {
 			// list people
-			persons = populateResult(OAIRecordType.PERSON, metadataFormat, effectiveFrom,
-					effectiveUntil, startRecord, response, null);
+			persons = populateResult(OAIRecordType.PERSON, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, null);
 
 			if (persons.getTotalRecords() > maxResults) {
 				maxResults = persons.getTotalRecords();
 			}
 
-			institutions = populateResult(OAIRecordType.INSTITUTION, metadataFormat,
-					effectiveFrom, effectiveUntil, startRecord, response, null);
+			institutions = populateResult(OAIRecordType.INSTITUTION, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, null);
 
 			if (institutions.getTotalRecords() > maxResults) {
 				maxResults = institutions.getTotalRecords();
@@ -175,8 +171,7 @@ public class OaiPmhService {
 		}
 
 		// list the resources
-		SearchResult resources = populateResult(OAIRecordType.RESOURCE, metadataFormat,
-				effectiveFrom, effectiveUntil, startRecord, response, collectionId);
+		OaiSearchResult resources = populateResult(OAIRecordType.RESOURCE, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, collectionId);
 
 		if (resources.getTotalRecords() > maxResults) {
 			maxResults = resources.getTotalRecords();
@@ -228,22 +223,19 @@ public class OaiPmhService {
 	 * @throws ParseException
 	 * @throws OAIException
 	 */
-	private SearchResult populateResult(OAIRecordType recordType, 
+	private OaiSearchResult populateResult(OAIRecordType recordType, 
 			OAIMetadataFormat metadataFormat, Date effectiveFrom, Date effectiveUntil, int startRecord,
 			ListResponse response, Long collectionId) throws ParseException, OAIException {
 		boolean includeRecords = false;
 		if (response instanceof ListRecordsType) {
 			includeRecords = true;
 		}
-		SearchResult search = new SearchResult();
-		search.setMode("OAI");
+		OaiSearchResult search = new OaiSearchResult();
 		search.setStartRecord(startRecord);
-		search.setSortField(SortOption.DATE_UPDATED);
 
 		List<RecordType> records = new ArrayList<>();
 		try {
-			List<? extends OaiDcProvider> results = oaiDao.handleSearch(recordType, search, effectiveFrom, effectiveUntil, collectionId);
-			for (OaiDcProvider resource : results) {
+			for (OaiDcProvider resource : oaiDao.handleSearch(recordType, search, effectiveFrom, effectiveUntil, collectionId)) {
 				// create OAI metadata for the record
 				records.add(createRecord(resource, recordType, metadataFormat, includeRecords));
 			}
@@ -481,7 +473,7 @@ public class OaiPmhService {
 		// http://docs.jboss.org/hibernate/search/3.4/reference/en-US/html_single/#d0e3510
 		// but in OAI-PMH, date parameters are ISO8601 dates, so we must remove
 		// the punctuation.
-		SearchResult search = new SearchResult();
+		OaiSearchResult search = new OaiSearchResult();
 		ListSetsType response = new ListSetsType();
 		Date effectiveFrom = from;
 		Date effectiveUntil = until;
@@ -495,9 +487,6 @@ public class OaiPmhService {
 			effectiveUntil = resumptionToken.getEffectiveUntil(until);
 		}
 		OAIMetadataFormat metadataFormat = null;
-
-		search.setSortField(SortOption.DATE_UPDATED);
-
 		// now actually build the queries and execute them
 		int total = 0;
 		Collection<SetType> setList = new ArrayList<>();

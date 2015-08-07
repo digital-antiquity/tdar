@@ -1,15 +1,15 @@
 package org.tdar.oai.bean;
 
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 import org.tdar.oai.exception.OAIException;
+import org.tdar.oai.service.OaiPmhConfiguration;
 import org.tdar.utils.MessageHelper;
 
 public class OaiIdentifier {
 
     private static final String SEPARATOR = ":";
     private static final String OAI = "oai:";
-    private String repositoryNamespaceIdentifier = TdarConfiguration.getInstance().getRepositoryNamespaceIdentifier();
+    private String repositoryNamespaceIdentifier = OaiPmhConfiguration.getInstance().getRepositoryNamespaceIdentifier();
     private OAIRecordType recordType;
     private Long id;
 

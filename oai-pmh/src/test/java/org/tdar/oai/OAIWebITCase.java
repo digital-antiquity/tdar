@@ -25,17 +25,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.oai.bean.OAIMetadataFormat;
+import org.tdar.oai.service.OaiPmhConfiguration;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class OAIWebITCase extends AbstractWebTest {
 
-    @Autowired
+    private static final OaiPmhConfiguration CONFIG = OaiPmhConfiguration.getInstance();
+
+	@Autowired
     GenericService genericService;
 
     private XpathEngine xpathEngine;
@@ -185,10 +187,10 @@ public class OAIWebITCase extends AbstractWebTest {
         logger.debug(getPageCode());
         testValidOAIResponse();
 
-        assertTextPresentInCode(TdarConfiguration.getInstance().getSystemAdminEmail());
+        assertTextPresentInCode(CONFIG.getSystemAdminEmail());
         // set these in the src/test/resources/tdar.properties
         // assertTextPresentInCode(TdarConfiguration.getInstance().getSystemDescription());
-        assertTextPresentInCode(TdarConfiguration.getInstance().getRepositoryName());
+        assertTextPresentInCode(CONFIG.getRepositoryName());
     }
 
     @Test
@@ -228,7 +230,7 @@ public class OAIWebITCase extends AbstractWebTest {
         getRecord("mods", firstPersonIdentifier);
         assertXpathExists("oai:OAI-PMH/oai:error[@code='cannotDisseminateFormat']");
 
-        if (TdarConfiguration.getInstance().getEnableEntityOai()) {
+        if (CONFIG.getEnableEntityOai()) {
             // get a person in tDAR format
             getRecord("tdar", firstPersonIdentifier);
             logger.info(getPageCode());

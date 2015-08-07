@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.TransactionStatus;
@@ -50,6 +51,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -102,6 +104,7 @@ import net.sf.json.JSONSerializer;
  * @author Adam Brin
  * 
  */
+@ContextConfiguration(classes = TdarAppConfiguration.class)
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";

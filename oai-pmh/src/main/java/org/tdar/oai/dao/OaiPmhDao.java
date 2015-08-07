@@ -1,5 +1,6 @@
 package org.tdar.oai.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.oai.bean.OAIRecordType;
-import org.tdar.search.query.SearchResult;
 
 @Component
 public class OaiPmhDao {
@@ -25,7 +25,7 @@ public class OaiPmhDao {
 	@Autowired
 	private GenericDao genericDao;
 
-	public List<? extends OaiDcProvider> handleSearch(OAIRecordType recordType, SearchResult search, Date effectiveFrom,
+	public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom,
 			Date effectiveUntil, Long collectionId) {
 		String qn = "query.oai.collections";
 		if (recordType != null) {
@@ -35,33 +35,31 @@ public class OaiPmhDao {
 				break;
 			case PERSON:
 				qn = "query.oai.people";
+				break;
 			case RESOURCE:
 				qn = "query.oai.resources";
+				break;
 			default:
 				break;
 			}
 		}
 
 		Query query = genericDao.getNamedQuery(qn);
-		// TODO Auto-generated method stub
-		if (recordType== OAIRecordType.RESOURCE) {
-//			query.setLong("collectionId",collectionId);
-		}
-		setupQuery(query, effectiveFrom, effectiveUntil);
+		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
 		search.setTotalRecords(query.list().size());
 
 		query = genericDao.getNamedQuery(qn);
-		setupQuery(query, effectiveFrom, effectiveUntil);
-		if (recordType== OAIRecordType.RESOURCE) {
-//			query.setLong("collectionId",collectionId);
-		}
+		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
 
 		query.setMaxResults(search.getRecordsPerPage());
 		query.setFirstResult(search.getStartRecord());
-		return query.list();
+		List<OaiDcProvider> results = new ArrayList<>();
+		results.addAll(query.list());
+		search.setResults(results);
+		return results;
 	}
 
-	void setupQuery(Query query, Date effectiveFrom, Date effectiveUntil) {
+	void setupQuery(Query query, Date effectiveFrom, Date effectiveUntil, OAIRecordType recordType, Long collectionId) {
 		Date to = DateTime.now().toDate();
 		Date from = new DateTime(1900).toDate();
 		if (effectiveFrom != null) {
@@ -72,6 +70,13 @@ public class OaiPmhDao {
 		}
 		query.setParameter("start", from);
 		query.setParameter("end", to);
+		Long id = -1L;
+		if (collectionId != null && collectionId > -1L) {
+			id = collectionId;
+		}
+		if (recordType == OAIRecordType.RESOURCE) {
+			query.setParameter("collectionId", id);
+		}
 
 	}
 }

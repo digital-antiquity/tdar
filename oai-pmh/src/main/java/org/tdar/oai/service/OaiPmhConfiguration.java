@@ -1,4 +1,4 @@
-package org.tdar.dataone.service;
+package org.tdar.oai.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +16,11 @@ import org.tdar.core.exception.ConfigurationFileException;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public class DataOneConfiguration extends AbstractConfigurationFile {
-    private final transient static Logger logger = LoggerFactory.getLogger(DataOneConfiguration.class);
+public class OaiPmhConfiguration extends AbstractConfigurationFile {
+    private final transient static Logger logger = LoggerFactory.getLogger(OaiPmhConfiguration.class);
 
     private ConfigurationAssistant assistant;
-    private final static DataOneConfiguration INSTANCE = new DataOneConfiguration();
+    private final static OaiPmhConfiguration INSTANCE = new OaiPmhConfiguration();
 
     private String configurationFile;
 
@@ -29,24 +29,26 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
         return configurationFile;
     }
 
-    private DataOneConfiguration() {
-        this("/dataOne.properties");
+    private OaiPmhConfiguration() {
+        this("/oai-pmh.properties");
     }
 
-    private DataOneConfiguration(String configurationFile) {
+    private OaiPmhConfiguration(String configurationFile) {
         System.setProperty("java.awt.headless", "true");
         setConfigurationFile(configurationFile);
     }
-    String TDAR_DOI = "doi:10.6067";
-    String MN_NAME = "urn:node:tdar";
-    String MN_NAME_TEST = "urn:node:tdar_test";
 
-    public String getMemberNodeIdentifier() {
-        return assistant.getStringProperty("member.node.id", MN_NAME);
+
+    public boolean enableTdarFormatInOAI() {
+        return assistant.getBooleanProperty("oai.repository.enableTdarMetadataFormat", true);
     }
 
-    public String getDoiPrefix() {
-        return assistant.getStringProperty("tdar.doi.prefix", TDAR_DOI);
+    public String getRepositoryNamespaceIdentifier() {
+        return assistant.getStringProperty("oai.repository.namespace-identifier", "tdar.org");
+    }
+
+    public boolean getEnableEntityOai() {
+        return assistant.getBooleanProperty("oai.repository.enableEntities", false);
     }
 
     @Deprecated
@@ -62,12 +64,12 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
         }
     }
 
-    public static DataOneConfiguration getInstance() {
+    public static OaiPmhConfiguration getInstance() {
         return INSTANCE;
     }
 
-	@Override
-	protected ConfigurationAssistant getAssistant() {
-		return assistant;
-	}
+    @Override
+    protected ConfigurationAssistant getAssistant() {
+    	return assistant;
+    }
 }

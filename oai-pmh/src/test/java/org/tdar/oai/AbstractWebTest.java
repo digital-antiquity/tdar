@@ -32,11 +32,16 @@ import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.TestConstants;
+import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.service.SerializationService;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
@@ -53,7 +58,8 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 
-public abstract class AbstractWebTest {
+@ContextConfiguration(classes = SimpleAppConfiguration.class)
+public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
 
 	protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
 	protected Page internalPage;
@@ -74,14 +80,7 @@ public abstract class AbstractWebTest {
 
     @Before
     public void prepare() {
-        // FIXME: This is far less than ideal, but there's a problem with how
-        // the MAC is handling memory
-        // and appears to be 'leaking' with jwebunit and gooogle maps. Hence, we
-        // need to disable javascript
-        // testing on the mac :(
-        // if (System.getProperty("os.name").toLowerCase().contains("mac os x"))
         initializeAndConfigureWebClient();
-        // reset encoding error exclusions for each test
     }
 
     private void initializeAndConfigureWebClient() {
@@ -380,7 +379,10 @@ public abstract class AbstractWebTest {
                 "schemaCache/oai-identifier.xsd"));
 
         try {
-            addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", serializationService.generateSchema());
+        	logger.debug("{}",serializationService);
+        	File schema = serializationService.generateSchema();
+			logger.debug("{}",schema);
+            addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", schema);
         } catch (Exception e) {
             logger.error("an error occured creating the schema", e);
             assertTrue(false);

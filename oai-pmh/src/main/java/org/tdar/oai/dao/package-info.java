@@ -1,19 +1,19 @@
 @org.hibernate.annotations.NamedQueries({
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.resources",
-            query = "from Resource res where (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' order by dateUpdated asc"
-    ),
+            query = "select res from Resource res left join res.resourceCollections as rc left join rc.parentIds parentId where (res.dateUpdated between :start and :end or res.dateCreated between :start and :end) and res.status='ACTIVE' and (:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) order by res.dateUpdated asc"
+    		),
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.collections",
-            query = "from ResourceCollection c where c.type!='INTERNAL' and (c.dateUpdated between :start and :end or c.dateCreated between :start and :end) and hidden=false order by dateUpdated asc"
+            query = "select c from ResourceCollection c where c.type!='INTERNAL' and (c.dateUpdated between :start and :end or c.dateCreated between :start and :end) and hidden=false order by c.dateUpdated asc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.people",
-            query = "from Person p where (p.dateUpdated between :start and :end or p.dateCreated between :start and :end) and hidden=false and status='ACTIVE' order by dateUpdated asc"
+            query = "select p from Person p where (p.dateUpdated between :start and :end or p.dateCreated between :start and :end) and hidden=false and status='ACTIVE' order by p.dateUpdated asc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.institutions",
-            query = "from Institution i where (i.dateUpdated between :start and :end or i.dateCreated between :start and :end) and hidden=false and status='ACTIVE' order by i.dateUpdated asc"
+            query = "select i from Institution i where (i.dateUpdated between :start and :end or i.dateCreated between :start and :end) and hidden=false and status='ACTIVE' order by i.dateUpdated asc"
     )
 })
 

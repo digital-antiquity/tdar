@@ -8,9 +8,9 @@ import java.util.Arrays;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.oai.bean.generated.oai._2_0.OAIPMHerrorcodeType;
 import org.tdar.oai.exception.OAIException;
+import org.tdar.oai.service.OaiPmhConfiguration;
 import org.tdar.utils.MessageHelper;
 
 
@@ -53,7 +53,7 @@ public enum OAIRecordType {
     }
 
     public void checkCanDisseminateFormat(OAIMetadataFormat format) throws OAIException {
-        if ((format != OAIMetadataFormat.TDAR) || TdarConfiguration.getInstance().enableTdarFormatInOAI()) {
+        if ((format != OAIMetadataFormat.TDAR) || OaiPmhConfiguration.getInstance().enableTdarFormatInOAI()) {
             for (OAIMetadataFormat validFormat : metadataFormats) {
                 if (validFormat.equals(format)) {
                     return;

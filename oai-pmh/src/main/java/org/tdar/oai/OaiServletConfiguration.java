@@ -1,4 +1,4 @@
-package org.tdar.dataone;
+package org.tdar.oai;
 
 import java.io.Serializable;
 
@@ -15,8 +15,9 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 public class OaiServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {
 
+	private static final long serialVersionUID = -4414884961889682778L;
 
-    public OaiServletConfiguration() {
+	public OaiServletConfiguration() {
         super("Initializing OAI Servlet");
     }
 
