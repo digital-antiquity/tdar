@@ -26,7 +26,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
@@ -239,8 +238,6 @@ public class OaiPmhService {
 				// create OAI metadata for the record
 				records.add(createRecord(resource, recordType, metadataFormat, includeRecords));
 			}
-		} catch (SearchPaginationException spe) {
-			logger.debug("an pagination exception happened .. {} ", spe.getMessage());
 		} catch (TdarRecoverableRuntimeException e) {
 			// this is expected as the cursor follows the "max" results for
 			// person/inst/resource so, whatever the max is
@@ -506,8 +503,6 @@ public class OaiPmhService {
 				set.setSetSpec(Long.toString(coll.getId()));
 				setList.add(set);
 			}
-		} catch (SearchPaginationException spe) {
-			logger.debug("an pagination exception happened .. {} ", spe.getMessage());
 		} catch (TdarRecoverableRuntimeException e) {
 			// this is expected as the cursor follows the "max" results for
 			// person/inst/resource so, whatever the max is
