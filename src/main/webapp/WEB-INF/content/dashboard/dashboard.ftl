@@ -157,19 +157,21 @@
     <div>
             <h2>At a glance</h2>
 
-            <div class="piechart">
-                <@common.generatePieJson statusCountForUser "statusForUser" />
-                <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=250 context=true graphLabel="Resources By Status"/>
+            <div class="pieChart" id="statusChart"  data-columns="#statusTypeData" >
             </div>
-            <div class="piechart">
-                <@common.generatePieJson resourceCountForUser "resourceCountForUser" />
-                <script>
-                    var pcconfig = {
-                        legend: { show: true, location: 's', rendererOptions: {numberColumns: 3} }
-                    };
-                </script>
-                <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphWidth="100%" graphHeight=280 context=true config="pcconfig" graphLabel="Resources By Type"/>
+            
+            <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData">
             </div>
+            
+            <#noescape>
+            <script id='statusTypeData'>
+            ${statusData}
+			</script>
+
+            <script id='resourceTypeData'>
+            ${resourceTypeData}
+            </script>
+            </#noescape>
     </div>
 
     </#macro>

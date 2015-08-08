@@ -79,7 +79,7 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
      * Returns a Map of Extensions and count() for Files in the filestore
      */
     @Transactional
-    public Map<String, Float> getAdminFileExtensionStats() {
+    public Map<String, Long> getAdminFileExtensionStats() {
         return getDao().getAdminFileExtensionStats();
     }
 

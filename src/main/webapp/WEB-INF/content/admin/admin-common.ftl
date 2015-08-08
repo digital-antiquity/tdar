@@ -46,11 +46,11 @@
     <div class="glide">
         <h3>${header}</h3>
 
-        <div id="graph${cssid}" style="height:${height}px"></div>
+        <div id="graph${cssid}" style="height:${height}px" class="lineGraph" data-table="#table${cssid}"></div>
         <#assign statsObjKeys = statsObj?keys?sort?reverse />
         <#assign numSets = 0/>
         <#assign totalRows = 0/>
-        <table class="tableFormat table">
+        <table class="tableFormat table" id="table${cssid}">
             <#assign first = true/>
             <#list statsObjKeys as key>
                 <#assign vals = statsObj.get(key) />
@@ -75,7 +75,7 @@
                 <#assign first = false/>
                 <tr class="<#if (totalRows > 15)>hidden</#if>">
                     <td>
-                    ${key?date}
+                    ${key?iso_utc}
                     </td>
 
                     <#list valsKeys as key_>
@@ -99,37 +99,6 @@
 
         </table>
 
-        <#noescape>
-            <script>
-
-                    <#list 0..numSets as i>
-                        var d${cssid}${i} = [];
-                    </#list>
-                    <#assign ticks = "" />
-                    <#assign total = (totalRows / 10 )?ceiling />
-
-                    <#list statsObjKeys as key>
-                        <#assign vals = statsObj.get(key) />
-                        <#assign valsKeys = vals?keys />
-                        <#list valsKeys as key_>
-                            d${cssid}${key__index}.push(["${key?string("yyyy-MM-dd")}", ${vals.get(key_)?default("0")?c}]);
-                            d${cssid}${key__index}.label = "${key_.label}";
-                        </#list>
-                    </#list>
-
-                    var labels${cssid} = [<#list 0..numSets as i><#if i != 0>,</#if>d${cssid}${i}.label</#list> ];
-                    var data${cssid} = [<#list 0..numSets as i><#if i != 0>,</#if>d${cssid}${i}</#list> ];
-                    var props${cssid} = {
-                        seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-                        xaxis: "date",
-                        title: "${header?js_string}"
-                    };
-                $(function () {
-                    TDAR.charts.lineChart(props${cssid}, labels${cssid}, data${cssid},"${cssid}");
-                    
-                });
-            </script>
-        </#noescape>
     </div>
 
     </#macro>

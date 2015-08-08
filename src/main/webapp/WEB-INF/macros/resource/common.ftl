@@ -280,21 +280,15 @@ with that datapoint -->
 
 <#-- Emit the container and script for a bar graph -->
     <#macro resourceBarGraph>
-    <script>
-        var resourceGraphData = [];
-            <#local seen=false />
-            <#list homepageResourceCountCache as cache>
-                <#if (cache.count > 0)>
-                    <#local seen=true />
-                    <#noescape>
-                    resourceGraphData.push(["${cache.resourceType.plural?replace("(?<=[\\w\\:]) (?=[\\w])","<br>","r")?js_string}",${(cache.count!0)?c}, "${cache.resourceType?js_string}",${(cache.count!0)?c}]);
-                    </#noescape>
-                </#if>
-            </#list>
-    </script>
-        <#if seen>
-            <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354 yaxis="log" context=false />
-        </#if>
+		<div id="resourceBarGraph" style="height:400px" data-source="#homepageResourceCountCache" class="barChart"
+		data-x="label" data-values="count">
+		</div>
+		<#noescape>
+		<script id="homepageResourceCountCache">
+		${homepageResourceCountCache}
+		</script>
+		</#noescape>
+	
     </#macro>
 
 <#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->

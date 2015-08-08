@@ -21,19 +21,11 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
 import org.tdar.core.cache.HomepageGeographicCache;
-import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
-import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.EntityService;
-import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchFieldType;
@@ -71,13 +63,13 @@ public class ExploreController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
-    private List<BrowseDecadeCountCache> timelineData;
+    private String timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private String mapJson;
 
-    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
+    private String homepageResourceCountCache;
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
 
@@ -85,31 +77,13 @@ public class ExploreController extends AbstractLookupController {
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     @Autowired
-    private transient BillingAccountService accountService;
-
-    @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
-    private transient AuthenticationService authenticationService;
-
-    @Autowired
     private transient SerializationService serializationService;
     
-    @Autowired
-    private transient EntityService entityService;
-
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
     @Autowired
     private transient SearchService searchService;
-
-    @Autowired
-    private transient FileSystemResourceService fileSystemResourceService;
 
     @Autowired
     private transient ResourceService resourceService;
@@ -118,13 +92,13 @@ public class ExploreController extends AbstractLookupController {
     private transient InformationResourceService informationResourceService;
 
     @Action(EXPLORE)
-    public String explore() {
-        setHomepageResourceCountCache(resourceService.getResourceCounts());
+    public String explore() throws IOException {
+        setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));
         setMaterialTypes(genericKeywordService.findAllWithCache(MaterialKeyword.class));
         setInvestigationTypes(genericKeywordService.findAllWithCache(InvestigationType.class));
         setCultureKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
-        setTimelineData(informationResourceService.findResourcesByDecade());
+        setTimelineData(serializationService.convertToJson(informationResourceService.findResourcesByDecade()));
         setScholarData(informationResourceService.findResourceCountsByYear());
 
         List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
@@ -184,11 +158,11 @@ public class ExploreController extends AbstractLookupController {
         this.alphabet = alphabet;
     }
 
-    public List<BrowseDecadeCountCache> getTimelineData() {
+    public String getTimelineData() {
         return timelineData;
     }
 
-    public void setTimelineData(List<BrowseDecadeCountCache> list) {
+    public void setTimelineData(String list) {
         this.timelineData = list;
     }
 
@@ -208,12 +182,12 @@ public class ExploreController extends AbstractLookupController {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
+    public String getHomepageResourceCountCache() {
         return homepageResourceCountCache;
     }
 
-    public void setHomepageResourceCountCache(List<HomepageResourceCountCache> homepageResourceCountCache) {
-        this.homepageResourceCountCache = homepageResourceCountCache;
+    public void setHomepageResourceCountCache(String string) {
+        this.homepageResourceCountCache = string;
     }
 
     @Override

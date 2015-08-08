@@ -40,7 +40,10 @@
 </table>
 <#if (total > 0)>
     <#noescape>
-    <script>
+    <script id="usageStats">
+    	${jsonStats}
+</script>
+<script>
         $(function () {
             var usageStats = (${jsonStats});
             

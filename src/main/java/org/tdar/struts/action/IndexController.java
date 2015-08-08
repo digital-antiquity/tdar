@@ -58,7 +58,7 @@ public class IndexController extends AuthenticationAware.Base {
 
     private Project featuredProject;
 
-    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
+    private String homepageResourceCountCache;
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private ResourceCollection featuredCollection;
 
@@ -199,14 +199,12 @@ public class IndexController extends AuthenticationAware.Base {
     
     @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = FREEMARKER,
             params = { "contentType", "text/html" }) })
-    public String resourceStats() {
-        setHomepageResourceCountCache(getGenericService().findAllWithL2Cache(HomepageResourceCountCache.class));
-        Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().getResourceType().isSupporting()) {
-                iterator.remove();
-            }
-        }
+    public String resourceStats()  {
+    	try {
+        setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));
+    	} catch (Exception e) {
+    		getLogger().error("cannot serialize xml",e);
+    	}
         return SUCCESS;
     }
 
@@ -218,11 +216,11 @@ public class IndexController extends AuthenticationAware.Base {
         this.featuredProject = featuredProject;
     }
 
-    public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
+    public String getHomepageResourceCountCache() {
         return homepageResourceCountCache;
     }
 
-    public void setHomepageResourceCountCache(List<HomepageResourceCountCache> homepageResourceCountCache) {
+    public void setHomepageResourceCountCache(String homepageResourceCountCache) {
         this.homepageResourceCountCache = homepageResourceCountCache;
     }
 

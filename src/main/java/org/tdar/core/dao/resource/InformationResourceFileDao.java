@@ -48,12 +48,11 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         return findByProperty("filestoreId", filestoreId);
     }
 
-    public Map<String, Float> getAdminFileExtensionStats() {
+    public Map<String, Long> getAdminFileExtensionStats() {
         Query query = getCurrentSession().getNamedQuery(QUERY_KEYWORD_COUNT_FILE_EXTENSION);
         query.setParameterList("internalTypes", Arrays.asList(VersionType.ARCHIVAL,
                 VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL));
-        Map<String, Float> toReturn = new HashMap<String, Float>();
-        Long total = 0l;
+        Map<String, Long> toReturn = new HashMap<>();
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
@@ -62,15 +61,10 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
                 }
                 // 0 == extension
                 // 1 == count
-                toReturn.put(String.format("%s (%s)", objs[0], objs[1]), ((Long) objs[1]).floatValue());
-                total += (Long) objs[1];
+                toReturn.put((String)objs[0], (Long)objs[1]);
             } catch (Exception e) {
                 logger.debug("exception get admin file extension stats", e);
             }
-        }
-
-        for (String key : toReturn.keySet()) {
-            toReturn.put(key, (toReturn.get(key) * 100) / total.floatValue());
         }
 
         return toReturn;
