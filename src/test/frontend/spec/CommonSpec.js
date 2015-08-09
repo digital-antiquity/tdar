@@ -189,17 +189,28 @@ describe("TDAR.common: miscellaneaous tests", function () {
         });
 
         it("updates th subcategory options when you select a category", function () {
-
-            var $categoryIdSelect = $j('<select id="cat"></select>');
+            //create a simple cat/subcat form.
+            var $categoryIdSelect = $j('<select id="cat"><option>foo</option></select>');
             var $subCategoryIdSelect = $j('<select id="subcat"></select>');
-            setFixtures($categoryIdSelect);
-            appendSetFixtures($subCategoryIdSelect);
 
-            //TDAR.common.changeSubcategory
+            //user selects the 'foo' category
+            setFixtures($categoryIdSelect);
+            $categoryIdSelect.val('foo');
+            appendSetFixtures($subCategoryIdSelect);
             $expect('select').toHaveLength(2);
+            TDAR.common.changeSubcategory($categoryIdSelect, $subCategoryIdSelect);
+
+            //server responsds with array containing the 'bar' subcategory
+            jasmine.Ajax.requests.mostRecent().respondWith({
+                status: 200,
+                contentType: 'text/json',
+                responseText: JSON.stringify([{id:123, label:'bar'}])
+            });
+
+            expect($subCategoryIdSelect.val()).toBe('123');
+            expect($subCategoryIdSelect.find('option').text()).toBe('bar');
         });
     });
-
 
     xit("should work when we call registerDownload", function () {
         var url = null;
