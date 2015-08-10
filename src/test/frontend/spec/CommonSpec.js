@@ -35,7 +35,52 @@ describe("TDAR.common: edit page tests", function () {
     });
 });
 
+
+    describe("TDAR.common functions that utilize ajax", function() {
+
+        beforeEach(function() {
+            jasmine.Ajax.install();
+        });
+
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
+        });
+
+        it("updates th subcategory options when you select a category", function () {
+            //create a simple cat/subcat form.
+            var $categoryIdSelect = $j('<select id="cat"><option>foo</option></select>');
+            var $subCategoryIdSelect = $j('<select id="subcat"></select>');
+
+            //user selects the 'foo' category
+            setFixtures($categoryIdSelect);
+            $categoryIdSelect.val('foo');
+            appendSetFixtures($subCategoryIdSelect);
+            $expect('select').toHaveLength(2);
+            TDAR.common.changeSubcategory($categoryIdSelect, $subCategoryIdSelect);
+
+            //server responsds with array containing the 'bar' subcategory
+            jasmine.Ajax.requests.mostRecent().respondWith({
+                status: 200,
+                contentType: 'text/json',
+                responseText: JSON.stringify([{id:123, label:'bar'}])
+            });
+
+            expect($subCategoryIdSelect.val()).toBe('123');
+            expect($subCategoryIdSelect.find('option').text()).toBe('bar');
+        });
+    });
+
+
 describe("TDAR.common: miscellaneaous tests", function () {
+    beforeEach(function(){
+        window._gaq = [];
+    });
+
+    afterEach(function(){
+        delete(window_gaq);
+    });
+
+
     it("should work when we call applyTreeviews", function () {
 
         loadFixtures('treeview.html');
@@ -55,23 +100,6 @@ describe("TDAR.common: miscellaneaous tests", function () {
         $expect('.active').not.toBeInDOM();
         $j(".searchbox").focus();
         $expect('.active').toBeInDOM();
-    });
-
-    //fixme: this  passes on my  osx,  windows instances but fails on bamboo (due to timeout). Skipping for now.  
-    // I suspect that ajax requests to the google api/tile server are failing (or are blocked?) on build.tdar.org for some reason.
-    // todo: narrow the scope of the test by performing an async load of a locally hosted file (e.g. notification.gif )
-    xit("initializes a a map on view page", function (done) {
-        loadFixtures('searchheader.html', 'map-div.html');
-        var result = TDAR.common.initializeView();
-        var mapInitialized = false;
-        var promise = TDAR.maps.mapPromise;
-        promise
-            .done(function(api){
-                expect(api).toBeDefined();
-                done();})
-            .fail(function(err){
-                fail('Received error message from mapPromise:' + err);
-            });
     });
 
     it("should register the validation form when we call initRegformValidation", function () {
@@ -178,81 +206,62 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect($('body').data('adhocTarget').html()).toBe($container.html())
     });
 
-    describe("TDAR.common functions that utilize ajax", function() {
-
-        beforeEach(function() {
-            jasmine.Ajax.install();
-        });
-
-        afterEach(function() {
-            jasmine.Ajax.uninstall();
-        });
-
-        it("updates th subcategory options when you select a category", function () {
-            //create a simple cat/subcat form.
-            var $categoryIdSelect = $j('<select id="cat"><option>foo</option></select>');
-            var $subCategoryIdSelect = $j('<select id="subcat"></select>');
-
-            //user selects the 'foo' category
-            setFixtures($categoryIdSelect);
-            $categoryIdSelect.val('foo');
-            appendSetFixtures($subCategoryIdSelect);
-            $expect('select').toHaveLength(2);
-            TDAR.common.changeSubcategory($categoryIdSelect, $subCategoryIdSelect);
-
-            //server responsds with array containing the 'bar' subcategory
-            jasmine.Ajax.requests.mostRecent().respondWith({
-                status: 200,
-                contentType: 'text/json',
-                responseText: JSON.stringify([{id:123, label:'bar'}])
-            });
-
-            expect($subCategoryIdSelect.val()).toBe('123');
-            expect($subCategoryIdSelect.find('option').text()).toBe('bar');
-        });
-    });
-
-    xit("should work when we call registerDownload", function () {
-        var url = null;
-        var tdarId = null;
+    it("registers download links", function () {
+        var url = 'http://insanity.today';
+        var tdarId = 110102;
         var expectedVal = null;
 
-        //var result = TDAR.common.registerDownload(url, tdarId);
-        expect(true).toBe(false); //fixme: implement this test
+        //ignore '_trackEvent failed'; we only care that the message is put on the queue
+        var result = TDAR.common.registerDownload(url, tdarId); 
+        expect(_gaq).toHaveLength(1);
     });
 
-    xit("should work when we call registerShare", function () {
-        var service = null;
-        var url = null;
-        var tdarId = null;
+    it("registers 'share' buttons", function () {
+        var service = 'instagram';
+        var url = 'http://insane.solutions';
+        var tdarId = 1234;
+        //ignore '_trackEvent failed'; we only care that the message is put on the queue
+        var result = TDAR.common.registerShare(service, url, tdarId);
+        expect(_gaq).toHaveLength(1);
+        expect(_gaq[0][1]).toBe(service);
+    });
+
+    it("queues google analytics events", function () {
         var expectedVal = null;
 
-        //var result = TDAR.common.registerShare(service, url, tdarId);
-        expect(true).toBe(false); //fixme: implement this test
+        //ignore '_trackEvent failed'; we only care that the message is put on the queue
+        var result = TDAR.common.gaevent('one', 'two', 'three');
+        expect(_gaq[0][1]).toBe('one');
+        expect(_gaq[0][2]).toBe('two');
+        expect(_gaq[0][3]).toBe('three');
+
     });
 
-    xit("should work when we call gaevent", function () {
+    it("registers outbound link clicks", function () {
+        var elem = document.createElement('A');
+        elem.href = 'http://www.cnn.com'
         var expectedVal = null;
 
-        //var result = TDAR.common.gaevent();
-        expect(true).toBe(false); //fixme: implement this test
+        //ignore '_trackEvent failed'; we only care that the message is put on the queue
+        var result = TDAR.common.outboundLink(elem);
+        expect(_gaq).toHaveLength(1);
+        expect(_gaq[0][2]).toBe(elem.href);
     });
 
-    xit("should work when we call outboundLink", function () {
-        var elem = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.outboundLink(elem);
-        expect(true).toBe(false); //fixme: implement this test
-    });
-
-    xit("should work when we call setupSupportingResourceForm", function () {
+    it("should initialize the coding-sheet / ontology  validation rules", function () {
         var totalNumberOfFiles = null;
         var rtype = null;
         var expectedVal = null;
+        var form = $j('<form></form>');
+        form.append(readFixtures('supporting-resource-upload.html'));
+        setFixtures(form);
 
-        //var result = TDAR.common.setupSupportingResourceForm(totalNumberOfFiles, rtype);
-        expect(true).toBe(false); //fixme: implement this test
+        TDAR.common.initEditPage(form);
+        TDAR.common.setupSupportingResourceForm(0, 'coding-sheet');
+    });
+
+    xit("should apply coding-sheet & ontology validation rules", function() {
+        expect(true).toBe(false);
     });
 
     xit("should work when we call switchType", function () {
