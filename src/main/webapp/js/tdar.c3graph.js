@@ -120,7 +120,7 @@ TDAR.c3graph = (function(console, $, ctx) {
 					},
 				},
 				legend: {
-					hide: true
+					hide: false
 				},
 				tooltip: {
 					show: true

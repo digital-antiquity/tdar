@@ -22,6 +22,7 @@ describe("TDAR.common: edit page tests", function () {
 
     });
 
+    // FIXME: this does nothing in the leaflet world
     it("initializes form validation", function () {
         loadFixtures("document-add-form.html", "fileupload-templates.html");
         var $mapdiv = $j(jasmine.getFixtures().read("map-div.html"))

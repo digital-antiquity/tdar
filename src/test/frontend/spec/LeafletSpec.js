@@ -10,7 +10,7 @@ describe("LeafletSpec", function() {
 	});
 
     it("initLeafletMaps:validSetup", function() {
-        loadFixtures("leaflet-view.html");
+        loadFixtures("leaflet/leaflet-view.html");
 //      $(".leaflet-map").data("maxy","");
         TDAR.leaflet.initLeafletMaps();
         var options = null;
@@ -30,7 +30,7 @@ describe("LeafletSpec", function() {
      });
 
     it("initLeafletMaps:invalidSetup", function() {
-        loadFixtures("leaflet-view.html");
+        loadFixtures("leaflet/leaflet-view.html");
       $(".leaflet-map").data("maxy","");
         TDAR.leaflet.initLeafletMaps();
         var options = null;
@@ -47,7 +47,7 @@ describe("LeafletSpec", function() {
      });
 
      it("initLeafletMaps:validResultsSetup", function() {
-         loadFixtures("leaflet-results.html");
+         loadFixtures("leaflet/leaflet-results.html");
          TDAR.leaflet.initResultsMaps();
          var options = null;
          var expectedVal = null;
@@ -68,7 +68,7 @@ describe("LeafletSpec", function() {
 
 
       it("initLeafletMaps:validEdit", function() {
-          loadFixtures("leaflet-edit.html");
+          loadFixtures("leaflet/leaflet-edit.html");
           TDAR.leaflet.initEditableLeafletMaps();
           var options = null;
           var expectedVal = null;
