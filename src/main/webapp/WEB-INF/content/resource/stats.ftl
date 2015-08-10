@@ -43,16 +43,6 @@
     <script id="usageStats">
     	${jsonStats}
 </script>
-<script>
-        $(function () {
-            var usageStats = (${jsonStats});
-            
-            TDAR.charts.adminUsageStats({
-                rawData: usageStats,
-                label: "Views & Downloads"
-            });
-        });
-    </script>
     </#noescape>
 <#else>
 	<style>
