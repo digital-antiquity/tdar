@@ -409,6 +409,10 @@
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-core</artifactId>
 		  </dependency>
+          <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+          </dependency>
             <!-- LICENSE: APACHE 2.0 -->
 <!--             <exclusions>
                 <exclusion>
@@ -1817,11 +1821,7 @@
                             <name>jetty.port</name>
                             <value>${jetty.port}</value>
                         </systemProperty>
-<!--                         <systemProperty>
-                            <name>log4j.configuration</name>
-                            <value>file:${basedir}/src/main/resources/log4j.xml</value>
-                        </systemProperty>
- -->                        <systemProperty>
+                        <systemProperty>
                             <name>slf4j</name>
                             <value>true</value>
                         </systemProperty>
