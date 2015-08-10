@@ -1,27 +1,24 @@
 TDAR.c3graph = {};
+/**
+ * This library is designed to provide a pass-through translation between the c3 graphing library and tDAR.  In general, all configuration is done through data attributes on DIV elements
+ * 
+ * look at _initJSON for detailed configuration options.  But, in general, the most important data attributes are:
+ *  data-table -- the ID of a table to use for the data from the graph
+ *  data-json -- the ID of an element that has an array of JSON data that can be used along with a set of keys to produce graphs from raw json.
+ *  (customized JSON options)
+ *  
+ *  data-rows -- the ID of an element that has JSON that should be used for row-based data
+ *  data-columns -- the ID of an element that has the json that should be used for column-based data
+ * 
+ * 
+ */
 TDAR.c3graph = (function(console, $, ctx) {
 
+    /**
+     * To create a bar-graph, look for a class of "barChart" on divs.  
+     */
 	var _initBarChart = function() {
 		$(".barChart").each(function() {
-			// function convertHomepageData(input) {
-			// var data = new Array();
-			//
-			// for (var key in input) {
-			//     if (!input.hasOwnProperty(key)) {
-			// 		continue;
-			// 	}
-			// 	var val = input[key];
-			//     var row = new Array();
-			// console.log(val.count + " - " + val.label);
-			// 	if (parseInt(val.count) < 1) { continue;}
-			// 	row.push(val.label);
-			// 	row.push(parseInt(val.count));
-			// 	data.push(row);
-			// }
-			// console.log(data);
-			// return data;
-			// }
-
 			var $parent = $(this);
 			var $table = $($parent.data("table"));
 
@@ -61,8 +58,6 @@ TDAR.c3graph = (function(console, $, ctx) {
 					width: {
 						ratio: .8 // this makes bar width 50% of length between ticks
 					}
-					// or
-					//width: 100 // this makes bar width 100px
 				}
 			};
 			_initJson($parent, cdata);
@@ -70,6 +65,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 		});
 	};
 
+	/**
+	 * Create area chart
+	 */
 	var _initAreaGraph = function() {
 		$(".areaChart").each(function() {
 			var $parent = $(this);
