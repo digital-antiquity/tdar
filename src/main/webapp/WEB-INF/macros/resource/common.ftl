@@ -281,7 +281,7 @@ with that datapoint -->
 <#-- Emit the container and script for a bar graph -->
     <#macro resourceBarGraph>
 		<div id="resourceBarGraph" style="height:400px" data-source="#homepageResourceCountCache" class="barChart"
-		data-x="label" data-values="count">
+		data-x="label" data-values="count" data-click="resourceBarGraphClick">
 		</div>
 		<#noescape>
 		<script id="homepageResourceCountCache">

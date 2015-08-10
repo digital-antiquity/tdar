@@ -55,6 +55,7 @@
         <js>/js/tdar.bulk.js</js>
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
+        <js>/js/tdar.c3graphsupport.js</js>
         <js>/js/tdar.c3graph.js</js>
         <js>/js/tdar.datatable.js</js>
         <js>/js/tdar.dataset-metadata.js</js>

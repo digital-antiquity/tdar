@@ -34,10 +34,6 @@ TDAR.c3graph = (function(console, $, ctx) {
 						show: false
 					},
 					labels: true,
-					onclick: function(d, element) {
-						var source = JSON.parse($($parent.data("source")).html());
-						window.location.href = "/search/results?resourceTypes=" + source[d.x].key
-					}
 				},
 				legend: {
 					hide: true
@@ -186,6 +182,17 @@ TDAR.c3graph = (function(console, $, ctx) {
 			cdata.data.json = source;
 			cdata.data.keys = {};
 			cdata.data.keys.x = $parent.data('x');
+			
+			var clickname = $parent.data("click");
+			if ($.isFunction(window[clickname])) {
+			    console.log(window[clickname]);
+			    cdata.data.onclick = window[clickname];
+			}
+			
+            if ($.isFunction(TDAR.c3graphsupport[clickname])) {
+                cdata.data.onclick = TDAR.c3graphsupport[clickname];
+            }
+			
 			if ($parent.data('values')) {
 				cdata.data.keys.value = $parent.data('values').split(",");
 			}
