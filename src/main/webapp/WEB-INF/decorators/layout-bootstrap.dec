@@ -31,20 +31,13 @@
     </#if>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
-    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}">
+    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
+    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}" />
 
 <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
-    <#if useCDN>
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
-    <#else>
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${staticHost}/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
-    </#if>
+        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print" />
+        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css' />
 
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
     <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
@@ -295,15 +288,9 @@ ${head}
 
     </footer>
 
-    <#if useCDN>
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js"></script>
         <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <#else>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
-        <script src="${staticHost}/includes/bootstrap-2.32/js/bootstrap.js"></script>
-    </#if>
 
 
     <script type="text/javascript">
