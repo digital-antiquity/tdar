@@ -192,15 +192,14 @@ TDAR.common = function (TDAR, fileupload) {
 
     
     var _validateProfileImage = function() {
-        var $profileElement = $(".profileImage");
-        if ($profileElement.length > 0) {
-            $profileElement.rules("add", {
+        $(".profileImage").each(function(i, profileElement){
+            $(profileElement).rules("add", {
                 extension: "jpg,tiff,jpeg,png",
                 messages: {
                     extension: "please upload a JPG, TIFF, or PNG file for a profile image"
                 }
             });
-        }
+        });
     }
     
     /**

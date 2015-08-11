@@ -439,11 +439,12 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect(result).toBe('Hello world');
     });
 
-    xit("should work when we call validateProfileImage", function () {
-        var expectedVal = null;
-
-        //var result = TDAR.common.validateProfileImage();
-        expect(true).toBe(false); //fixme: implement this test
+    it("should add image extension validation to profile image uploads validateProfileImage", function () {
+        setFixtures('<form><input type="file" name="fileupload" class="profileImage"></form>');
+        $('form').validate()
+        TDAR.common.validateProfileImage()
+        console.log($('input[type=file]').rules())
+        expect(Object.keys($('input[type=file]').rules())).toContain('extension');
     });
 
     xit("should work when we call collectionTreeview", function () {
