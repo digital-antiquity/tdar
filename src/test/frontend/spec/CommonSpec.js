@@ -1,4 +1,4 @@
-/* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach */
+/* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
 describe("TDAR.common: edit page tests", function () {
 
     it("initializes the edit page", function () {
@@ -407,28 +407,36 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect(TDAR.common.htmlDoubleEncode('&')).toBe('&amp;amp;');
     });
 
-    xit("should work when we call coordinatesCheckboxClicked", function () {
-        var elem = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.coordinatesCheckboxClicked(elem);
-        expect(true).toBe(false); //fixme: implement this test
+    it("should work when we call coordinatesCheckboxClicked", function () {
+        setFixtures('<input type="checkbox" id="cb" name="cb">' + 
+            '<div id="explicitCoordinatesDiv">hi</div>');
+        expect($('#explicitCoordinatesDiv')).toBeVisible();
+        TDAR.common.coordinatesCheckboxClicked($('#cb')[0]);
+        expect($('#explicitCoordinatesDiv')).not.toBeVisible();
     });
 
-    xit("should work when we call refreshInputDisplay", function () {
-        var expectedVal = null;
-
-        //var result = TDAR.common.refreshInputDisplay();
-        expect(true).toBe(false); //fixme: implement this test
+    it("should work when we call refreshInputDisplay", function () {
+        $form = $('<form><input type="text" id="inputMethodId">'  
+            + '<div id="uploadFileDiv">file</div>' 
+            + '<div id="textInputDiv">text</div>'
+            + '</form>');
+        setFixtures($form);
+        $('#inputMethodId').val('file');
+        TDAR.common.refreshInputDisplay();
+        expect($('#uploadFileDiv')).toBeVisible();
+        expect($('#textInputDiv')).not.toBeVisible();
+        
+        $('#inputMethodId').val('text');
+        TDAR.common.refreshInputDisplay();
+        expect($('#uploadFileDiv')).not.toBeVisible();
+        expect($('#textInputDiv')).toBeVisible();
     });
 
-    xit("should work when we call tmpl", function () {
-        var a = null;
-        var c = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.tmpl(a, c);
-        expect(true).toBe(false); //fixme: implement this test
+    it("should work when we call tmpl", function () {
+        var fmt = 'Hello {%=o.title%}'
+        var obj = {title:'world'};
+        var result = TDAR.common.tmpl(fmt, obj);
+        expect(result).toBe('Hello world');
     });
 
     xit("should work when we call validateProfileImage", function () {
