@@ -180,67 +180,6 @@ Common macros used in multiple contexts
         </#if>
     </#macro>
 
-<#--FIXME: the controller should gnerate this json (part of TDAR-3415) -->
-<#-- Emit script tag that defines the js object used for the home page resource piechartenerate the json for pie -->
-<#-- @param ilist:map<string, number>  map of datapoints  -->
-<#-- @param name:string  name of the global varialble to define that contains the object defined by this instance -->
-    <#macro generatePieJson ilist name>
-    <script>
-            <#assign ikeys=ilist?keys />
-            <#noescape>
-            var ${name} =
-            [
-                <#assign first = true/>
-                <#assign legend = true>
-                <#list ikeys as ikey>
-                    <#assign val = ilist.get(ikey) />
-                    <#assign label = ikey />
-                    <#if ikey.label??><#assign label=ikey.label ></#if>
-                    <#if (val?? && val > 0)>
-                        <#if !first>,</#if>["${label?replace(":",":<br/>")}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
-
-                        <#assign first=false/>
-                    </#if>
-                    <#if (ikey_index > settings.barColors?size)>
-                        <#assign legend = true>
-                    </#if>
-                </#list>
-            ];
-            </#noescape>
-    </script>
-    </#macro>
-
-<#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
-<#-- Emit the DIV container for a piechart and the, and emit a document.onready script that renders the piechart
-in the container.  If the user clicks on a datapoint, the click handler redirects the browser to a search page associated
-with that datapoint -->
-<#-- @param data:string? name of the global object that contains the data for the chart (see #generatePieJson) -->
-<#-- @param searchKey:string? name of the datapoint key querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-<#-- @param graphWidth:number? width of chart container in pixels -->
-<#-- @param graphHeight:number? height of chart container in pixels -->
-<#-- @param context:boolean? value of the 'context'  querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-<#-- @param config:string?  json containing specific parameters to use for the jqPlot initialization function -->
-<#-- @param graphLabel:string? title for this graph -->
-    <#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="" graphLabel="">
-        <#local id= "${data}Id">
-    <div id="graph${id}" style="width:${graphWidth}px;height:${graphHeight}px;"></div>
-
-    <script>
-            var props = {
-            seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-            title: "${graphLabel?js_string}",
-            searchKey:"${searchKey}",
-            context:"${context?string}"
-        };
-
-        $(document).ready(function () {
-            TDAR.charts.pieChart(props, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
-        });
-
-    </script>
-
-    </#macro>
-
 <#--emit the specified string, truncating w/ ellipses if length exceeds specified max -->
 <#-- @param text:string the text to render -->
 <#-- @param len:number? maximum length of the string-->
@@ -290,47 +229,6 @@ with that datapoint -->
 		</#noescape>
 	
     </#macro>
-
-<#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
-<#-- Emit the container and script for a line graph -->
-<#-- @param data:string? name of the global object that contains the data for the chart (see #generatePieJson) -->
-<#-- @param graphWidth:number? width of chart container in pixels -->
-<#-- @param graphHeight:number? height of chart container in pixels -->
-<#-- @param graphLabel:string? title for this graph -->
-<#-- @param labelRotation:number? number of degrees to rotate the graph label
-<#-- @param minWidth:numbeer? minimum width of the graph container DIV, in pixels -->
-<#-- @param searchKey:string? name of the datapoint key querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-<#-- @param id:string? value of the ID attribute for the graph container DIV -->
-<#-- @param config:string  json containing specific parameters to use for the jqPlot initialization function -->
-<#-- @param context:boolean? value of the 'context'  querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-    <#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false rotate=0 xaxis="" yaxis="">
-        <#if id == "">
-            <#local id=data+"id" />
-        </#if>
-    <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" data-title="${graphLabel?html}">
-       <script>
-            var props${id} = {
-            seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-            xaxis: "${xaxis}",
-            yaxis: "${yaxis}",
-            rotate: "${rotate}",
-            title: "${graphLabel?js_string}",
-            searchKey: "${searchKey}",
-            context: "${context?string}",
-            baseUrl: "${baseUrl}"
-        };
-        $(document).ready(function () {
-            TDAR.charts.barGraph(props${id}, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
-        });
-        <#nested />
-        
-        </script>        
-        </div>
-
-    </#macro>
-
-
-
 
 <#-- Emit container div and script for the worldmap control. The worldmap control shows the number of registeresd
  resources for a country as the user hovers their mouse over a country.  If the user clicks on a country,

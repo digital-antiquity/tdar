@@ -157,10 +157,10 @@
     <div>
             <h2>At a glance</h2>
 
-            <div class="pieChart" id="statusChart"  data-columns="#statusTypeData" style="width:150px;height:200px">
+            <div class="pieChart" id="statusChart"  data-columns="#statusTypeData" style="width:150px;height:200px" data-click="dashboardStatusPieChartClick">
             </div>
             
-            <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="width:150px;height:200px">
+            <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="width:150px;height:200px" data-click="dashboardResourcePieChartClick">
             </div>
             
             <#noescape>

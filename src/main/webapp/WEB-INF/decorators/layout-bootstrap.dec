@@ -363,6 +363,9 @@ ${head}
     <script src="/test/js<#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
     </#if>
 </#if>
-
+    <#import "/${themeDir}/settings.ftl" as settings />
+<script id="c3colors">
+ [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+</script>
 </body>
 </html>

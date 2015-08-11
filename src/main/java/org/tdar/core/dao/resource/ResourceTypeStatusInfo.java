@@ -60,6 +60,7 @@ public class ResourceTypeStatusInfo implements Serializable {
 			toReturn.add(list);
 			list.add(MessageHelper.getMessage(stat.getLocaleKey()));
 			list.add(imap.get(stat));
+			list.add(stat);
 		}
 		return toReturn;
 	}

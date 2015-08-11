@@ -177,21 +177,28 @@ TDAR.c3graph = (function(console, $, ctx) {
 		}
 		var id = "#" + $parent.attr("id");
 		cdata.bindto = id;
+		
+		var c3colors = $("#c3colors");
+		if (c3colors.length > 0) {
+			var c3colorsobj = JSON.parse(c3colors.html());
+			cdata.color = {};
+			cdata.color.pattern = c3colorsobj;
+		}
+
+		var clickname = $parent.data("click");
+		if ($.isFunction(window[clickname])) {
+			console.log(window[clickname]);
+			cdata.data.onclick = window[clickname];
+		}
+		
+		if ($.isFunction(TDAR.c3graphsupport[clickname])) {
+			cdata.data.onclick = TDAR.c3graphsupport[clickname];
+		}
 		if ($parent.data("source")) {
 			var source = JSON.parse($($parent.data("source")).html());
 			cdata.data.json = source;
 			cdata.data.keys = {};
 			cdata.data.keys.x = $parent.data('x');
-			
-			var clickname = $parent.data("click");
-			if ($.isFunction(window[clickname])) {
-			    console.log(window[clickname]);
-			    cdata.data.onclick = window[clickname];
-			}
-			
-            if ($.isFunction(TDAR.c3graphsupport[clickname])) {
-                cdata.data.onclick = TDAR.c3graphsupport[clickname];
-            }
 			
 			if ($parent.data('values')) {
 				cdata.data.keys.value = $parent.data('values').split(",");
