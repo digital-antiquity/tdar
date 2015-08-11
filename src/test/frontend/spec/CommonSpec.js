@@ -46,7 +46,7 @@ describe("TDAR.common: edit page tests", function () {
             jasmine.Ajax.uninstall();
         });
 
-        it("updates th subcategory options when you select a category", function () {
+        it("updates the subcategory options when you select a category", function () {
             //create a simple cat/subcat form.
             var $categoryIdSelect = $j('<select id="cat"><option>foo</option></select>');
             var $subCategoryIdSelect = $j('<select id="subcat"></select>');
@@ -68,8 +68,72 @@ describe("TDAR.common: edit page tests", function () {
             expect($subCategoryIdSelect.val()).toBe('123');
             expect($subCategoryIdSelect.find('option').text()).toBe('bar');
         });
+
+        it("updates the server when you add/remove a bookmark", function () {
+            var $elem = $('<span resource-id="12345" bookmark-state="bookmark">click me</span>');
+            var $elem2 = $('<span resource-id="12345" bookmark-state="bookmarked">click me</span>');
+            setFixtures($elem);
+
+            TDAR.common.applyBookmarks.call($elem);
+            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/bookmarkAjax?resourceId=12345');            
+
+            TDAR.common.applyBookmarks.call($elem2);
+            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/removeBookmarkAjax?resourceId=12345');            
+        });
     });
 
+describe("TDAR.common: session timeout tests", function() {
+    var sessionTimeout;
+    beforeEach(function(){
+        //intercept calls to setTimeout() and $.fn.dialog(). Confirm that our function called them later. 
+        spyOn(window, 'setTimeout');
+        spyOn($.fn, 'dialog');
+        setFixtures('<div id="timeoutDialog"></div>');
+        sessionTimeout = TDAR.common.sessionTimeout;
+    });
+
+    afterEach(function() {
+        TDAR.common.sessionTimeout = sessionTimeout;
+    });
+
+    it("shows a warning when you your session has nearly expired", function() {
+        TDAR.common.sessionTimeout = 960;
+        TDAR.common.currentTime =  600;
+        TDAR.common.sessionTimeoutWarning();
+        expect($.fn.dialog).toHaveBeenCalled();
+        expect(window.setTimeout).toHaveBeenCalled();
+
+    });
+
+    it("notifies user when session has timed out", function () {
+        TDAR.common.sessionTimeout = 90 * 60;
+        TDAR.common.currentTime =  90 * 60;
+        TDAR.common.sessionTimeoutWarning();
+        expect($('#timeoutDialog').text()).toContain('Your Session has timed out');
+        expect(window.setTimeout).not.toHaveBeenCalled();
+    });
+
+});
+
+describe("TDAR.common: tests that override Modernizer", function() {
+    var placeholder;
+
+    beforeEach(function(){
+        var placeholder = Modernizr.input.placeholder;
+    });
+
+    afterEach(function(){
+        Modernizr.input.placeholder = placeholder
+    });
+
+    it("applies watermarks using jquery when not supported by browser", function () {
+        Modernizr.input.placeholder = false;
+        setFixtures('<input type="text" placeholder="howdy" value="" name="field1">');
+        spyOn($.fn, 'watermark');
+        TDAR.common.applyWatermarks();
+        expect($.fn.watermark).toHaveBeenCalledWith('howdy');
+    });
+});
 
 describe("TDAR.common: miscellaneaous tests", function () {
     beforeEach(function(){
@@ -249,88 +313,98 @@ describe("TDAR.common: miscellaneaous tests", function () {
     });
 
     it("should initialize the coding-sheet / ontology  validation rules", function () {
-        var totalNumberOfFiles = null;
-        var rtype = null;
-        var expectedVal = null;
         var form = $j('<form></form>');
         form.append(readFixtures('supporting-resource-upload.html'));
         setFixtures(form);
+        $('form').validate();
+        TDAR.common.setupSupportingResourceForm(1, 'coding-sheet');
+    });
 
-        TDAR.common.initEditPage(form);
+    it("should apply coding-sheet & ontology validation rules", function() {
+        setFixtures('<form>' + readFixtures('supporting-resource-upload.html') + '</form>');
+        var validator = $('form').validate();
+        TDAR.common.setupSupportingResourceForm(1, 'coding-sheet');
+        $('form').valid()
+        expect(validator.errorList).toHaveLength(0);
+
         TDAR.common.setupSupportingResourceForm(0, 'coding-sheet');
+        $('form').valid()
+        expect(validator.errorList).toHaveLength(2);
     });
 
-    xit("should apply coding-sheet & ontology validation rules", function() {
-        expect(true).toBe(false);
+    it("field visibility changes depending on documenttype", function () {
+        var $form = $('<form></form>');
+        var $container = $('<div id="divContainer"></div>');
+        $form
+            .append('<input id="fakeRadio" type="hidden" name="documentType" value="">')
+            .append($container);
+        $container
+            .append('<div class="typeToggle type1">type1</div>')
+            .append('<div class="typeToggle type2">type2</div>')
+            .append('<div class="typeToggle type3">type3</div>')
+            .append('<div class="typeToggle type4 type5 type6">type456</div>');
+        setFixtures($form);
+        var $fakeRadio = $('#fakeRadio');
+
+        for(var i = 1; i <= 6; i++) {
+            $fakeRadio.val('type' + i);
+            TDAR.common.switchType($fakeRadio, $container);
+            if(i < 4) {
+                //if section doesn't have a class that corresponds to selected doctype that section should be invisible.
+                expect($('.typeToggle:visible').length).toBe(1);
+                expect($('.typeToggle:not(visible)').length).toBe(4);
+
+            } else {
+                //doctype fields are not mutually exclusive.  a section may be visible for more than one doctype
+                expect($('.typeToggle:visible')).toHaveClass('type4');
+                expect($('.typeToggle:visible')).toHaveClass('type5');
+                expect($('.typeToggle:visible')).toHaveClass('type6');
+            }
+        }
     });
 
-    xit("should work when we call switchType", function () {
-        var radio = null;
-        var container = null;
-        var expectedVal = null;
+    it("sets up the documentType switcher", function () {
+        var $form = $('<form class="doctype" id="citationInformation"></form>');
+        var $container = $('<div id="divContainer"></div>');
+        $form
+            .append('<input type="radio" class="" name="dts" value="type1">opt1 ' + 
+                '<input type="radio" class="" name="dts" value="type2" checked="checked">')
+            .append($container);
+        $container
+            .append('<div class="doctypeToggle type1">type1</div>')
+            .append('<div class="doctypeToggle type2">type2</div>');
+        setFixtures($form);
 
-        //var result = TDAR.common.switchType(radio, container);
-        expect(true).toBe(false); //fixme: implement this test
+        TDAR.common.setupDocumentEditForm();
+        expect($('.doctypeToggle:visible')).toHaveLength(1);
+        expect($('.doctypeToggle:visible')).toHaveText('type2');
     });
 
-    xit("should work when we call setupDocumentEditForm", function () {
-        var expectedVal = null;
 
-        //var result = TDAR.common.setupDocumentEditForm();
-        expect(true).toBe(false); //fixme: implement this test
+
+    it("expands template strings with sprintf()", function () {
+
+        var format = "Hello {0}, good {1}! How are things in {0}-land?"
+        var result = TDAR.common.sprintf(format, 'bob', 'morning');
+        expect(result).toBe("Hello bob, good morning! How are things in bob-land?")
+
     });
 
-    xit("should work when we call sessionTimeoutWarning", function () {
-        var expectedVal = null;
-
-        //var result = TDAR.common.sessionTimeoutWarning();
-        expect(true).toBe(false); //fixme: implement this test
+    it("decodes html strings", function () {
+        expect(TDAR.common.htmlDecode('&amp;')).toBe('&'); 
     });
 
-    xit("should work when we call applyBookmarks", function () {
-        var expectedVal = null;
+    it("encode strings into html", function () {
 
-        //var result = TDAR.common.applyBookmarks();
-        expect(true).toBe(false); //fixme: implement this test
+        expect(TDAR.common.htmlEncode('&')).toBe('&amp;'); 
     });
 
-    xit("should work when we call sprintf", function () {
-        var expectedVal = null;
-
-        //var result = TDAR.common.sprintf();
-        expect(true).toBe(false); //fixme: implement this test
-    });
-
-    xit("should work when we call htmlDecode", function () {
-        var value = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.htmlDecode(value);
-        expect(true).toBe(false); //fixme: implement this test
-    });
-
-    xit("should work when we call htmlEncode", function () {
-        var value = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.htmlEncode(value);
-        expect(true).toBe(false); //fixme: implement this test
-    });
-
-    xit("should work when we call htmlDoubleEncode", function () {
+    it("should work when we call htmlDoubleEncode", function () {
         var value = null;
         var expectedVal = null;
 
         //var result = TDAR.common.htmlDoubleEncode(value);
-        expect(true).toBe(false); //fixme: implement this test
-    });
-
-    xit("should work when we call applyWatermarks", function () {
-        var context = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.applyWatermarks(context);
-        expect(true).toBe(false); //fixme: implement this test
+        expect(TDAR.common.htmlDoubleEncode('&')).toBe('&amp;amp;');
     });
 
     xit("should work when we call coordinatesCheckboxClicked", function () {

@@ -1040,11 +1040,10 @@ TDAR.common = function (TDAR, fileupload) {
         var type = (typeof val !== 'undefined') ? val.toLowerCase() : "SWITCHTYPEDEFAULT";
         type = "." + type;
 
-        console.debug('switchType:start:' + type);
+        //console.debug('switchType:start:' + type);
         var $container = $(container);
         $container.find(".typeToggle").hide();
         $container.find(type).show();
-
     }
 
     //FIXME: can switchType and switchDocType be refactored? at very least they need better names (TDAR-3989)
@@ -1058,14 +1057,13 @@ TDAR.common = function (TDAR, fileupload) {
     var _switchDocType = function (el) {
         var doctype = $(el).val().toLowerCase();
 
-        console.debug('switchType:start:' + doctype);
+        //console.debug('switchType:start:' + doctype);
         var $citeInfo = $("#citationInformation");
         $(".doctypeToggle", $citeInfo).hide();
         $($("." + doctype), $citeInfo).show();
 
         _switchLabel($("#publisher-hints"), doctype);
         _switchLabel($("#publisherLocation-hints"), doctype);
-
     }
 
     /**
