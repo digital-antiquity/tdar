@@ -82,6 +82,12 @@
 			<artifactId>log4j-email-throttle</artifactId>
 			<version>1.0.0</version>
 			<!-- LICENSE: APACHE 2.0 -->
+			<exclusions>
+			    <exclusion>
+			        <artifactId>log4j</artifactId>
+			        <groupId>log4j</groupId>
+			    </exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
@@ -219,6 +225,17 @@
 		</dependency>
 		<!-- <dependency> <groupId>ro.isdc.wro4j</groupId> <artifactId>wro4j-extensions</artifactId> 
 			<version>${wro4j.version}</version> </dependency> -->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		    <version>1.7.6</version>
+		    <exclusions>
+		        <exclusion>
+		            <artifactId>log4j</artifactId>
+		            <groupId>log4j</groupId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
 	</dependencies>
 
 	<build>

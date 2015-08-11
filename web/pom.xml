@@ -55,6 +55,12 @@
 			<groupId>org.tdar</groupId>
 			<artifactId>core</artifactId>
 			<version>${version}</version>
+			<exclusions>
+			    <exclusion>
+			        <artifactId>log4j</artifactId>
+			        <groupId>log4j</groupId>
+			    </exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.tdar</groupId>
@@ -108,6 +114,12 @@
 			<artifactId>log4j-email-throttle</artifactId>
 			<version>1.0.0</version>
 			<!-- LICENSE: APACHE 2.0 -->
+			<exclusions>
+			    <exclusion>
+			        <artifactId>log4j</artifactId>
+			        <groupId>log4j</groupId>
+			    </exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- ANDS PID Client -->
@@ -116,6 +128,12 @@
 			<artifactId>ands-pid-client</artifactId>
 			<version>1.0.30</version>
 			<!-- LICENSE: APACHE 2.0 -->
+			<exclusions>
+			    <exclusion>
+			        <artifactId>log4j</artifactId>
+			        <groupId>log4j</groupId>
+			    </exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>stax</groupId>
@@ -203,6 +221,10 @@
 				<exclusion>
 					<artifactId>httpclient</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+				<exclusion>
+				    <artifactId>log4j</artifactId>
+				    <groupId>log4j</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
