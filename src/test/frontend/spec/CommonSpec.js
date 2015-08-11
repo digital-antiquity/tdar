@@ -80,7 +80,15 @@ describe("TDAR.common: edit page tests", function () {
             expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/bookmarkAjax?resourceId=12345');            
 
             TDAR.common.applyBookmarks.call($elem2);
-            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/removeBookmarkAjax?resourceId=12345');            
+            jasmine.Ajax.requests.mostRecent().respondWith({
+                status:200,
+                contentType: 'text/json',
+                responseText: '{"success": true}'    
+            });
+            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/removeBookmarkAjax?resourceId=12345');
+
+
+
         });
 
         it("registers the global ajax status indicator", function () {
@@ -435,15 +443,10 @@ describe("TDAR.common: miscellaneaous tests", function () {
     });
 
     it("encode strings into html", function () {
-
         expect(TDAR.common.htmlEncode('&')).toBe('&amp;'); 
     });
 
     it("should work when we call htmlDoubleEncode", function () {
-        var value = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.htmlDoubleEncode(value);
         expect(TDAR.common.htmlDoubleEncode('&')).toBe('&amp;amp;');
     });
 
@@ -453,6 +456,22 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect($('#explicitCoordinatesDiv')).toBeVisible();
         TDAR.common.coordinatesCheckboxClicked($('#cb')[0]);
         expect($('#explicitCoordinatesDiv')).not.toBeVisible();
+    });
+
+    it("initializes image galleries", function() {
+        setFixtures('<div class="image-carousel"> '
+            + '<img class="thumbnailLink" data-src="/images/add.gif" data-url="/images/book.png" data-access-rights="awesome"> '
+            + '<img id="bigImage">'
+            + '<span id="confidentialLabel"> </span>'
+            + '</div>')
+        TDAR.common.initImageGallery();
+        expect($j('img').get(0).src).toContain('/images/add.gif');
+
+        //clicking on a thumbnail should update the featured image and label
+        $(".thumbnailLink").click();
+        expect($j('#confidentialLabel')).toHaveText('This file is awesome but you have rights to it');
+        expect($j('#bigImage').get(0).src).toContain('/images/book.png');
+
     });
 
     it("should work when we call refreshInputDisplay", function () {
@@ -500,6 +519,7 @@ describe("TDAR.common: miscellaneaous tests", function () {
     });
 
     it("displays friendly file sizes ", function () {
+        expect(TDAR.common.humanFileSize(5)).toBe('5 B');
         ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'].forEach(function(unit, i) {
             var bytes = 1 * Math.pow(10, 3 * (i+1));
             expect(TDAR.common.humanFileSize(bytes)).toBe('1.0 ' + unit);

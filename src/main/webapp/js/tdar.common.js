@@ -1269,7 +1269,7 @@ TDAR.common = function (TDAR, fileupload) {
      * doesn't require initialization, but we do extra stuff such as lazy-loading of thumbnails for 
      * big lists, and binding of analytics events.
      * @private
-     */
+     */ 
     function _initImageGallery() {
         //init bootstrap image gallery (if found)
         $(".image-carousel").each(function(idx, divGallery) {
