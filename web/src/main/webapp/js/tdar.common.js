@@ -39,10 +39,8 @@ jQuery.extend({
         if (typeof ignoreOrder === 'undefined') {
             ignoreOrder = true;
         }
-        var a = arrayA, b = arrayB;
+        var a = arrayA.concat(), b = arrayB.concat();
         if (ignoreOrder) {
-            a = jQuery.extend(true, [], arrayA);
-            b = jQuery.extend(true, [], arrayB);
             a.sort();
             b.sort();
         }
@@ -439,6 +437,8 @@ TDAR.common = function (TDAR, fileupload) {
      * @param $form jQuery selection containing the form that will suppress keypress submissions.
      */
     var _suppressKeypressFormSubmissions = function($form) {
+        /* phantomjs does not suppport KeyEvents */
+        /* istanbul ignore next */
         $form.find('input,select').keypress(function (event) {
             if(event.keyCode === $.ui.keyCode.ENTER) {
                 event.preventDefault();
@@ -761,20 +761,6 @@ TDAR.common = function (TDAR, fileupload) {
     };
 
     /**
-     * Initialize the bootstrap image gallery specified by divGallery.  Bootstrap Gallery typically doesn't require initialization, but we do extra stuff
-     * such as lazy-loading of thumbnails for big lists, and binding of analytics events.
-     * @param divGallery
-     * @private
-     */
-    var _initImageGallery = function(divGallery) {
-        //for big galleries, defer the loading of thumbnails that can't be seen yet
-        $(divGallery).find(".thumbnailLink[data-src]").each(function(idx, elem){
-            elem.src = $(elem).data("src");
-        });
-    }
-
-
-    /**
      * Custom  ajax filter (enable by calling $.ajaxPrefilter(_customAjaxPrefilter). JQuery executes this prefilter
      * prior to any ajax call.
      *
@@ -799,7 +785,7 @@ TDAR.common = function (TDAR, fileupload) {
             timeoutMessage: "request timed out"
         };
 
-        var settings = $.extend({}, options.statusContainer, defaults);
+        var settings = $.extend({}, defaults, options);
         if(settings.enabled) {
             $container = $(settings.selector);
             $label = $container.find("strong");
@@ -895,7 +881,7 @@ TDAR.common = function (TDAR, fileupload) {
         $this.prepend($waitingElem);
         var $icon = $(".bookmark-icon", $this);
         $icon.hide();
-        console.log(resourceId + ": " + state);
+        //console.log(resourceId + ": " + state);
         var oldclass = "tdar-icon-" + state;
         var newtext = "un-bookmark";
         var newstate = "bookmarked";
@@ -1236,14 +1222,21 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
     /**
-     * format number w/ comma grouping
+     * Format number w/ comma grouping. If num is fractional, display fractional to two places.
      * @param num
      * @returns {string}
      */
     function _formatNumber(num) {
-        var numparts = num.toString().split('.');
+        var numparts = Math.floor(num).toString().split('.');
+        var r = num % 1;
         var str = numparts[0].split('').reverse().join('').replace(/(\d{3})\B/g, '$1,').split('').reverse().join('');
         str += numparts[1] ? '.'  + numparts[1] : '';
+
+        if(r > 0) {
+            str += '.' + r.toFixed(2).replace('0.', '');
+        }
+
+
         return str;
     }
 
@@ -1254,14 +1247,14 @@ TDAR.common = function (TDAR, fileupload) {
      * @param si true if description should be in SI units (e.g. kilobyte, megabyte) vs. IEC (e.g. kibibyte, mebibyte)
      * @returns {string} size as human readable equivalent of specified bytecount
      */
-    function _humanFileSize(bytes, si) {
-        var thresh = si ? 1000 : 1024;
+    function _humanFileSize(bytes) {
+        var thresh = 1000;
         if (bytes < thresh) {
             return bytes + ' B';
         }
         //jtd: IEC names would be less ambiguous, but JEDEC names are more consistent with what we show elsewhere on the site
         //var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-        var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] :  ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        var units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         var u = -1;
         do {
             bytes /= thresh;
@@ -1270,10 +1263,20 @@ TDAR.common = function (TDAR, fileupload) {
         return bytes.toFixed(1) + ' ' + units[u];
     };
 
-    function _initImageGalleryForView() {
+
+    /**
+     * Initialize bootstrap galleries that have .image-carousel class.  Bootstrap Gallery typically 
+     * doesn't require initialization, but we do extra stuff such as lazy-loading of thumbnails for 
+     * big lists, and binding of analytics events.
+     * @private
+     */ 
+    function _initImageGallery() {
         //init bootstrap image gallery (if found)
-        $(".image-carousel").each(function(idx, elem) {
-            _initImageGallery(elem);
+        $(".image-carousel").each(function(idx, divGallery) {
+            //for big galleries, defer the loading of thumbnails that can't be seen yet
+            $(divGallery).find(".thumbnailLink[data-src]").each(function(idx, elem){
+                elem.src = $(elem).data("src");
+            });
         })
 
         $(".thumbnailLink").click(function () {
@@ -1289,6 +1292,8 @@ TDAR.common = function (TDAR, fileupload) {
             $this.parent().addClass("thumbnail-border-selected");
         });
     }
+
+
 
     $.extend(self, {
         "initEditPage": _initEditPage,
@@ -1324,7 +1329,7 @@ TDAR.common = function (TDAR, fileupload) {
         "validateProfileImage" : _validateProfileImage,
         "collectionTreeview": _collectionTreeview,
         "humanFileSize": _humanFileSize,
-        "initImageGallery": _initImageGalleryForView,
+        "initImageGallery": _initImageGallery,
         "formatNumber": _formatNumber,
         "registerAjaxStatusContainer": _registerAjaxStatusContainer,
         "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions

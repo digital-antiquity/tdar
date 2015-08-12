@@ -1,5 +1,6 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
 describe("TDAR.common: edit page tests", function () {
+    "use strict";
 
     it("initializes the edit page", function () {
         var form = null;
@@ -30,13 +31,14 @@ describe("TDAR.common: edit page tests", function () {
         $j("#divSpatialInformation").append($mapdiv);
 
         expect($j('#divSpatialInformation .google-map')).toHaveLength(1);
-        form = document.getElementById('metadataForm');
+        var form = document.getElementById('metadataForm');
         var result = TDAR.common.initFormValidation(form);
     });
 });
 
 
     describe("TDAR.common functions that utilize ajax", function() {
+        "use strict";
 
         beforeEach(function() {
             jasmine.Ajax.install();
@@ -78,7 +80,51 @@ describe("TDAR.common: edit page tests", function () {
             expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/bookmarkAjax?resourceId=12345');            
 
             TDAR.common.applyBookmarks.call($elem2);
-            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/removeBookmarkAjax?resourceId=12345');            
+            jasmine.Ajax.requests.mostRecent().respondWith({
+                status:200,
+                contentType: 'text/json',
+                responseText: '{"success": true}'    
+            });
+            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/removeBookmarkAjax?resourceId=12345');
+
+
+
+        });
+
+        it("registers the global ajax status indicator", function () {
+            var cb = function(arg){};
+            setFixtures('<div id="ajaxIndicator"><strong> </strong><span> </span>');
+            var $ajaxIndicator = $('#ajaxIndicator')
+            var $label = $ajaxIndicator.find('strong');
+            var $message = $ajaxIndicator.find('span');
+            TDAR.common.registerAjaxStatusContainer();
+            var ajaxSettings = {
+                url: '/foo/bar',
+                dataType: "json",
+                success: cb,
+                error: cb,
+                waitMessage: 'waitmsg',
+                doneMessage: 'done',
+                failMessage: 'error'
+
+            };
+
+            //indicator should show wait message while request is in flight
+            $.ajax(ajaxSettings);
+            expect($message).toHaveText('waitmsg');
+
+            //after respose, indicator shows 'done' message'
+            jasmine.Ajax.requests.mostRecent().respondWith( {
+                status: 200,
+                contentType: 'text/json',
+                responseText: JSON.stringify([{id:123, label:'bar'}])
+            });
+            expect($message).toHaveText('done');
+
+            //after an error the indicator should show an error message
+            $.ajax(ajaxSettings);
+            jasmine.Ajax.requests.mostRecent().responseError();
+            expect($message).toHaveText('error');
         });
     });
 
@@ -136,12 +182,14 @@ describe("TDAR.common: tests that override Modernizer", function() {
 });
 
 describe("TDAR.common: miscellaneaous tests", function () {
+    "use strict";
+
     beforeEach(function(){
         window._gaq = [];
     });
 
     afterEach(function(){
-        delete(window_gaq);
+        delete window._gaq;
     });
 
 
@@ -395,15 +443,10 @@ describe("TDAR.common: miscellaneaous tests", function () {
     });
 
     it("encode strings into html", function () {
-
         expect(TDAR.common.htmlEncode('&')).toBe('&amp;'); 
     });
 
     it("should work when we call htmlDoubleEncode", function () {
-        var value = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.htmlDoubleEncode(value);
         expect(TDAR.common.htmlDoubleEncode('&')).toBe('&amp;amp;');
     });
 
@@ -415,8 +458,24 @@ describe("TDAR.common: miscellaneaous tests", function () {
         expect($('#explicitCoordinatesDiv')).not.toBeVisible();
     });
 
+    it("initializes image galleries", function() {
+        setFixtures('<div class="image-carousel"> '
+            + '<img class="thumbnailLink" data-src="/images/add.gif" data-url="/images/book.png" data-access-rights="awesome"> '
+            + '<img id="bigImage">'
+            + '<span id="confidentialLabel"> </span>'
+            + '</div>')
+        TDAR.common.initImageGallery();
+        expect($j('img').get(0).src).toContain('/images/add.gif');
+
+        //clicking on a thumbnail should update the featured image and label
+        $(".thumbnailLink").click();
+        expect($j('#confidentialLabel')).toHaveText('This file is awesome but you have rights to it');
+        expect($j('#bigImage').get(0).src).toContain('/images/book.png');
+
+    });
+
     it("should work when we call refreshInputDisplay", function () {
-        $form = $('<form><input type="text" id="inputMethodId">'  
+        var $form = $('<form><input type="text" id="inputMethodId">'  
             + '<div id="uploadFileDiv">file</div>' 
             + '<div id="textInputDiv">text</div>'
             + '</form>');
@@ -443,54 +502,58 @@ describe("TDAR.common: miscellaneaous tests", function () {
         setFixtures('<form><input type="file" name="fileupload" class="profileImage"></form>');
         $('form').validate()
         TDAR.common.validateProfileImage()
-        console.log($('input[type=file]').rules())
         expect(Object.keys($('input[type=file]').rules())).toContain('extension');
     });
 
-    xit("should work when we call collectionTreeview", function () {
-        var expectedVal = null;
+    it("initializes collection lists  when we call collectionTreeview", function () {
+        loadFixtures('treeview.html');
+        //before calling treeview, none of the lists are decorated
+        expect($j(".hitarea, .treeview")).toHaveLength(0);
 
-        //var result = TDAR.common.collectionTreeview();
-        expect(true).toBe(false); //fixme: implement this test
+        TDAR.common.collectionTreeview()
+
+        //after treeview(), parent nodes will have .hitarea and the top-level node will have .treeview class
+        expect($j(".hitarea")).toHaveLength(1);
+        expect($j(".treeview")).toHaveLength(1);
+
     });
 
-    xit("should work when we call humanFileSize", function () {
-        var bytes = null;
-        var si = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.humanFileSize(bytes, si);
-        expect(true).toBe(false); //fixme: implement this test
+    it("displays friendly file sizes ", function () {
+        expect(TDAR.common.humanFileSize(5)).toBe('5 B');
+        ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'].forEach(function(unit, i) {
+            var bytes = 1 * Math.pow(10, 3 * (i+1));
+            expect(TDAR.common.humanFileSize(bytes)).toBe('1.0 ' + unit);
+            expect(TDAR.common.humanFileSize(bytes * 1.33333)).toBe('1.3 ' + unit);
+        });
     });
 
-    xit("should work when we call initImageGallery", function () {
-        var expectedVal = null;
+    it("formats large & fractional numbers", function () {
+        var formatNumber = TDAR.common.formatNumber.bind(TDAR.common);
 
-        //var result = TDAR.common.initImageGallery();
-        expect(true).toBe(false); //fixme: implement this test
+        expect(formatNumber( 1)).toBe('1'); 
+        expect(formatNumber( 1.1)).toBe('1.10');
+        expect(formatNumber( 10/3)).toBe('3.33');
+        expect(formatNumber( 1234567)).toBe('1,234,567');
     });
 
-    xit("should work when we call formatNumber", function () {
-        var num = null;
-        var expectedVal = null;
+    it("compares arrays",  function(){
+        //empty arrays are always equal
+        expect($.compareArray([], [])).toBe(true);
 
-        //var result = TDAR.common.formatNumber(num);
-        expect(true).toBe(false); //fixme: implement this test
+        //comparison ignoring order
+        expect($.compareArray([1, 2, 3], [3, 2, 1], true)).toBe(true);
+
+        //comparing order 
+        expect($.compareArray([1, 2, 3], [3, 2, 1], false)).toBe(false);
+
     });
 
-    xit("should work when we call registerAjaxStatusContainer", function () {
-        var expectedVal = null;
-
-        //var result = TDAR.common.registerAjaxStatusContainer();
-        expect(true).toBe(false); //fixme: implement this test
-    });
-
-    xit("should work when we call suppressKeypressFormSubmissions", function () {
-        var $form = null;
-        var expectedVal = null;
-
-        //var result = TDAR.common.suppressKeypressFormSubmissions($form);
-        expect(true).toBe(false); //fixme: implement this test
+    it("doesn't modify input arguments when comparing arrays", function(){
+        var array1 = [1,2,3];
+        var array2 = [3,2,1];
+        var array2Copy = [3,2,1];
+        $.compareArray(array1, array2);
+        expect(array2).toEqual(array2Copy);
     });
 
 });
