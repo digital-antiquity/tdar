@@ -32,9 +32,6 @@ describe("form navigate tests", function() {
         $('form input').val('hi').change();
         $('#btn').click();
         expect(status()).toBe('clean');
-
-
-
     });
 
 

@@ -74,3 +74,30 @@ xit("should work when we call addBound", function() {
 });
 
 });
+
+describe("latlong tests", function(){
+   var RADIUS_EARTH = 6371;
+   var RADIUS_MARS = 3389.28;
+   var PI = Math.PI;
+   var PI2 = 2 * Math.PI;
+
+   function ll(lat, lon, r) {
+      return new LatLon(lat, lon, r);
+   }
+
+
+   it('creates new instance', function() {
+      var pEarth  = ll(0,0)
+      var pMars  = ll(0,0, RADIUS_MARS);
+   });
+
+
+
+   it('measures distance', function() {
+      var p1 = new ll(0,0)
+      var p2 = new ll(180,0);
+      var d1 = p1.distanceTo(p2);
+      expect(Math.abs(d1 - 40075.017/2)).toBeLessThan(20);
+   })
+
+});
