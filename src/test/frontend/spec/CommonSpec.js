@@ -210,13 +210,16 @@ describe("TDAR.common: miscellaneaous tests", function () {
         loadFixtures('searchheader.html');
         var result = TDAR.common.initializeView();
         $expect('.active').not.toBeInDOM();
-        $j(".searchbox").focus();
-        $expect('.active').toBeInDOM();
+        console.log('---', $j('.searchbox').length);
+
+        $(".searchbox").focus(); //workaround for ff issue. test fails unless focus event triggered twice
+        $(".searchbox").focus();
+        expect($j('#divSearchContext')).toHaveClass('active');
     });
 
     it("should register the validation form when we call initRegformValidation", function () {
         loadFixtures("registration-form.html");
-        var form = document.getElementById('accountForm')
+        var form = document.getElementById('accountForm');
 
         var result = TDAR.common.initRegformValidation(form);
         var validator = $(form).validate();

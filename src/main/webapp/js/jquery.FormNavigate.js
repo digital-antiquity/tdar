@@ -76,7 +76,7 @@
             });
 
             var _eventHandler = function (evt) {
-                console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
+                //console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
                 $this.data(DATA_FIELD, false);
             };
 
