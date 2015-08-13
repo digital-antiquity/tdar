@@ -1,5 +1,4 @@
-TDAR.leaflet = {};
-TDAR.leaflet = (function(console, $, ctx) {
+TDAR.leaflet = (function(console, $, ctx, L) {
 
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
@@ -8,44 +7,72 @@ TDAR.leaflet = (function(console, $, ctx) {
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
     var $body = $('body');
 
+    var _tileProviders = {
+        osm: {
+            url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            attribution : '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        },
+
+        mapbox: {
+            //fixme: I assume we need a api token? If so perhaps we define this in data-attr of container elem?
+            url: "https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png",
+            //fixme: consider pulling attribution html from hidden div or script[type=text/html]
+            attribution:
+            'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
+            + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
+            + 'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        }
+
+    };
+
     var _defaults = {
             isGeoLocationToBeUsed: false,
             center: {
                 lat: 0,
                 lng: 0
             },
-            zoomLevel: 4
-    }
-    
+            zoomLevel: 4,
+            tileProvider: 'osm',
+            maxBounds: [[[-85,-180.0],[85,180.0]]],
+            minZoom: 2,
+            maxZoom: 17
+
+    };
+
     var _rectangleDefaults = {
             fitToBounds : true
-    }
+    };
+
     // -1 -- not initialized ; -2 -- bad rectangle ; 1 -- initialized ; 2 -- rectangle setup
 	var _initialized = -1;
-	
     var _map;
     var _dc;
+
     /**
      * Init the leaflet map, and bind it to the element
      */
     function _initMap(elem) {
+        // create effective settings from defaults, then body data-attrs, then elem data-attrs.
         var $elem = $(elem);
-        var map = L.map(elem).setView([ _defaults.center.lat, _defaults.center.lng ], _defaults.zoomLevel);
-        map.setMaxBounds([[-85,-180.0],[85,180.0]]);
+        var _elemData =  $elem.data();
+        // bootstrap stores a lot of data in BODY. We only want a subset
+        var _bodyData = {leafletId: $('body').data().leafletId};
+        var settings = $.extend({}, _defaults, _bodyData, _elemData);
+
+        console.log('creating L.map');
+        var map = L.map(elem).setView([ settings.center.lat, settings.center.lng ], settings.zoomLevel);
+        map.setMaxBounds(settings.maxBounds);
         
-        var mapId = $body.data('leaflet-id');
-        if ($elem.data('leaflet-id')) {
-            mapId = $elem.data('leaflet-id');
-        }
-        
-        var tile = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
-            maxZoom : 17,
-            minZoom : 2,
-            attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
-                + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
-                + 'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-                id : mapId
+        var mapId = settings.leafletId;
+
+        var tp = _tileProviders[settings.tileProvider];
+        var tile = L.tileLayer(tp.url, {
+            maxZoom : settings.maxZoom,
+            minZoom : settings.minZoom,
+            attribution : tp.attribution,
+            id : mapId
         });
+        console.log('adding tile to map');
         tile.addTo(map);
 		//FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _map = map;
@@ -164,21 +191,28 @@ TDAR.leaflet = (function(console, $, ctx) {
             var $el = $(this);
             // we create a div just before the div and copy the styles from the container. This is so that we can bind to class seletion for the fields.
             // Currently, this is a bit of overkill but it would enable multiple forms on the same page
-            
-            // we're using raw javascript because jquery didn't like the prepend or "before" method.
-           var div = document.createElement("div");
-           // copy styles
-           div.setAttribute("style",$el.attr("style"));
-           $el.attr("style","");
-           var $mapDiv = $(div);
-		   $mapDiv.data("leaflet-id",$el.data("leaflet-id"));
-           if ($mapDiv.height() == 0) {
-               $mapDiv.height(400);
-           }
-           $el.before(div);
-           var map = _initMap(div);
 
-           var drawnItems = new L.FeatureGroup();
+            // An 'editable' map container needs two child nodes.
+            // - The first child node is a container for the latlong box form fields. Designate this node with
+            //   the .latlong-fields css class
+            //
+            // - The second child node contains the actual leaflet map (e.g. the mapdiv). Designate this node with
+            //   the .mapdiv css class.
+            var div = $el.find('div.mapdiv')[0];
+            //var div = document.createElement("div");
+            //$el.append(div);
+
+            // copy styles
+            div.setAttribute("style",$el.attr("style"));
+            $el.attr("style","");
+            var $mapDiv = $(div);
+		    $mapDiv.data("leaflet-id",$el.data("leaflet-id"));
+            if ($mapDiv.height() == 0) {
+                 $mapDiv.height(400);
+            }
+            var map = _initMap(div);
+
+            var drawnItems = new L.FeatureGroup();
 
             // bind ids
             var $dmx = $(".d_maxx",$el);
@@ -340,7 +374,7 @@ TDAR.leaflet = (function(console, $, ctx) {
         map : _getMap,
         dc : _getDc
     }
-})(console, jQuery, window);
+})(console, jQuery, window, L);
 $(function() {
     TDAR.leaflet.initLeafletMaps();
     TDAR.leaflet.initEditableLeafletMaps();

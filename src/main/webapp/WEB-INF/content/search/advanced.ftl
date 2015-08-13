@@ -61,12 +61,13 @@
 
 <script>
     $(document).ready(function () {
-        //switch to the correct tab if coming from collection search
 
         TDAR.advancedSearch.serializeFormState();
 
         if ($("#autosave").val() !== '') {
+            console.log("restoring from autosave");
             $("#searchGroups").html($("#autosave").val());
+            $("#searchGroups").find(".mapdiv").empty();
             $('.add-another-control').remove();
         }
         TDAR.advancedSearch.initAdvancedSearch();

@@ -98,12 +98,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                     ></div>
 -->
         <div id='large-map' style="height:300px" class="leaflet-map-editable span9">
-
-
-
-
-            <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip">
-                <br/>
+            <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
                 <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
                 <div id='explicitCoordinatesDiv' style='text-align:center;'>
                     <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;">
@@ -138,9 +133,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                         </tr>
                     </table>
                 </div>
-</div>
-                <@helptext.manualGeo />
             </div>
+            <div class="mapdiv"></div>
+                <@helptext.manualGeo />
+        </div>
             <#if switchableMapObfuscation>
                 <@helptext.showExactLocationTip />
                     <div class="" id="showExactLocation" data-tiplabel="Reveal location to public users?" data-tooltipcontent="#showExactLocationHelpDiv" >

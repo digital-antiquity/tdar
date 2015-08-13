@@ -1,4 +1,3 @@
-TDAR.worldmap = {};
 TDAR.worldmap = (function(console, $, ctx) {
     "use strict";
 
