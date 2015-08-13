@@ -13,5 +13,4 @@
     self.$expect = function(selector){
         return expect($j(selector));
     }
-
 })(this);
