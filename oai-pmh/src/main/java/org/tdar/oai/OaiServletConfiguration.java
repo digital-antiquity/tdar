@@ -7,11 +7,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.web.WebApplicationInitializer;
 import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.web.AbstractServletConfiguration;
-
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 public class OaiServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {
 
@@ -36,8 +35,9 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
 		setupOpenSessionInViewFilter(container);
 
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
-        ServletRegistration.Dynamic oaiPmh = container.addServlet("oaipmh", SpringServlet.class);
+        ServletRegistration.Dynamic oaiPmh = container.addServlet("oaipmh", ServletContainer.class);
         oaiPmh.setLoadOnStartup(1);
+        oaiPmh.setInitParameter("javax.ws.rs.Application", "org.tdar.oai.server.JerseyResourceInitializer");
         oaiPmh.setInitParameter("jersey.config.server.provider.packages", "org.tdar.oai.server");
         oaiPmh.addMapping("/oai-pmh/*");
     }

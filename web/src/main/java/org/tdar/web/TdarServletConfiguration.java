@@ -22,7 +22,6 @@ import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.web.StaticContentServlet;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 public class TdarServletConfiguration extends AbstractServletConfiguration
 		implements Serializable, WebApplicationInitializer {

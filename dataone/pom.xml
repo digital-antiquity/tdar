@@ -74,12 +74,6 @@
 			<artifactId>log4j-email-throttle</artifactId>
 			<version>1.0.0</version>
 			<!-- LICENSE: APACHE 2.0 -->
-			<exclusions>
-			    <exclusion>
-			        <artifactId>log4j</artifactId>
-			        <groupId>log4j</groupId>
-			    </exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>stax</groupId>
@@ -101,10 +95,6 @@
 				<exclusion>
 					<artifactId>httpmime</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-				    <artifactId>commons-logging</artifactId>
-				    <groupId>commons-logging</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -230,10 +220,6 @@
 					<artifactId>httpclient</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
 				</exclusion>
-				<exclusion>
-				    <artifactId>log4j</artifactId>
-				    <groupId>log4j</groupId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- Servlet & Jsp -->
@@ -270,33 +256,15 @@
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-log4j12</artifactId>
 		    <version>1.7.6</version>
-		    <exclusions>
-		        <exclusion>
-		            <artifactId>log4j</artifactId>
-		            <groupId>log4j</groupId>
-		        </exclusion>
-		    </exclusions>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-jcl</artifactId>
-		    <exclusions>
-		        <exclusion>
-		            <artifactId>commons-logging</artifactId>
-		            <groupId>commons-logging</groupId>
-		        </exclusion>
-		    </exclusions>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-dbcp2</artifactId>
 		    <version>2.1.1</version>
-		    <exclusions>
-		        <exclusion>
-		            <artifactId>commons-logging</artifactId>
-		            <groupId>commons-logging</groupId>
-		        </exclusion>
-		    </exclusions>
 		</dependency>
 	</dependencies>
 

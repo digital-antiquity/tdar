@@ -18,7 +18,6 @@
         <warfile.name>ROOT</warfile.name>
         <skipWebTests>false</skipWebTests>
         <skipSeleniumTests>false</skipSeleniumTests>
-        <jersey.version>1.19</jersey.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -51,12 +50,6 @@
             <groupId>org.tdar</groupId>
             <artifactId>core</artifactId>
             <version>${version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
@@ -79,12 +72,6 @@
             <artifactId>log4j-email-throttle</artifactId>
             <version>1.0.0</version>
             <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>stax</groupId>
@@ -205,17 +192,6 @@
                 </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.6</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 

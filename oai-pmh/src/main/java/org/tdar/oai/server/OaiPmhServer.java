@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -53,8 +54,6 @@ public class OaiPmhServer {
     @Autowired
     private GenericService genericService;
 
-    @Context
-    UriInfo uriInfo;
 
     private OAIVerb verb;
 
@@ -83,7 +82,9 @@ public class OaiPmhServer {
      */
     @Produces("application/xml")
     @GET
-    public Response executeOaiPmhRequest(@QueryParam("verb") String verb_,
+    public Response executeOaiPmhRequest(
+            @Context HttpServletRequest servletRequest,
+            @QueryParam("verb") String verb_,
             @QueryParam("identifier") String identifier_,
             @QueryParam("metadataPrefix") String metadataPrefix_,
             @QueryParam("set") String set,
@@ -93,7 +94,7 @@ public class OaiPmhServer {
         genericService.markReadOnly();
         OAIPMHtype response = new OAIPMHtype();
 
-        RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_);
+        RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_, servletRequest);
         response.setRequest(request);
         ObjectFactory factory = new ObjectFactory();
 
@@ -129,7 +130,8 @@ public class OaiPmhServer {
      * @param resumptionToken_
      * @return
      */
-    private RequestType createRequest(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_) {
+    private RequestType createRequest(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_,
+            HttpServletRequest servletRequest) {
         RequestType request = new RequestType();
         if (identifier_ != null) {
             request.setIdentifier(identifier_);
@@ -149,9 +151,10 @@ public class OaiPmhServer {
         if (from_ != null) {
             request.setFrom(from_);
         }
-        request.setValue(uriInfo.getRequestUri().toString());
+        logger.debug("request:{}",servletRequest);
+        request.setValue(servletRequest.getRequestURI());
         request.setVerb(VerbType.fromValue(verb_));
-        logger.debug(">>> {}", uriInfo.getRequestUri().toString());
+        logger.debug(">>> {}", servletRequest.getRequestURI());
         return request;
     }
 

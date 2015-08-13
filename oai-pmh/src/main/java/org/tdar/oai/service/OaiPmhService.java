@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
@@ -89,7 +90,7 @@ public class OaiPmhService {
 	 * 
 	 * @return
 	 */
-	// @Transactional(readOnly = true)
+	 @Transactional(readOnly = true)
 	public IdentifyType getIdentifyResponse() {
 		IdentifyType ident = new IdentifyType();
 		ident.setBaseURL(config.getBaseUrl() + "/oai-pmh/oai");
@@ -357,7 +358,7 @@ public class OaiPmhService {
 	 * @return
 	 * @throws OAIException
 	 */
-	// @Transactional(readOnly = true)
+	 @Transactional(readOnly = true)
 	public ListMetadataFormatsType listMetadataFormats(OaiIdentifier identifier) throws OAIException {
 		ListMetadataFormatsType formats = new ListMetadataFormatsType();
 
@@ -389,7 +390,7 @@ public class OaiPmhService {
 	 * @return
 	 * @throws OAIException
 	 */
-	// @Transactional(readOnly = true)
+	 @Transactional(readOnly = true)
 	public GetRecordType getGetRecordResponse(OaiIdentifier identifier, OAIMetadataFormat requestedFormat)
 			throws OAIException {
 		// check that this kind of record can be disseminated in the requested
@@ -418,7 +419,7 @@ public class OaiPmhService {
 	 * @throws OAIException
 	 * @throws ParseException
 	 */
-	// @Transactional(readOnly = true)
+	 @Transactional(readOnly = true)
 	public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat,
 			OAIResumptionToken resumptionToken) throws OAIException, ParseException {
 		ListRecordsType response = new ListRecordsType();
@@ -439,7 +440,7 @@ public class OaiPmhService {
 	 * @throws OAIException
 	 * @throws ParseException
 	 */
-	// @Transactional(readOnly = true)
+	 @Transactional(readOnly = true)
 	public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat,
 			OAIResumptionToken resumptionToken) throws OAIException, ParseException {
 		ListIdentifiersType response = new ListIdentifiersType();
@@ -459,7 +460,7 @@ public class OaiPmhService {
 	 * @return
 	 * @throws OAIException
 	 */
-	// @Transactional(readOnly = true)
+	 @Transactional(readOnly = true)
 	public ListSetsType listSets(Date from, Date until, OAIMetadataFormat requestedFormat,
 			OAIResumptionToken resumptionToken) throws OAIException {
 		// Sort results by dateUpdated ascending and filter by dates, either
