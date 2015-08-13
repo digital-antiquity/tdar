@@ -38,7 +38,7 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
         ServletRegistration.Dynamic oaiPmh = container.addServlet("oaipmh", SpringServlet.class);
         oaiPmh.setLoadOnStartup(1);
-        oaiPmh.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.oai.server");
+        oaiPmh.setInitParameter("jersey.config.server.provider.packages", "org.tdar.oai.server");
         oaiPmh.addMapping("/oai-pmh/*");
     }
 

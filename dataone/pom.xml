@@ -34,6 +34,17 @@
 		<name>The Digital Archaeological Record</name>
 		<url>http://www.tdar.org</url>
 	</organization>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>2.9.1</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 	<!-- 3rd party dependencies and libraries -->
 	<dependencies>
@@ -91,28 +102,28 @@
 					<artifactId>httpmime</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
 				</exclusion>
+				<exclusion>
+				    <artifactId>commons-logging</artifactId>
+				    <groupId>commons-logging</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>${jersey.version}</version>
-			<!-- LICENSE: CDDL / GPL 2.0 -->
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-core</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-spring</artifactId>
-			<version>${jersey.version}</version>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+            <!-- LICENSE: CDDL / GPL 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-spring3</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -263,6 +274,27 @@
 		        <exclusion>
 		            <artifactId>log4j</artifactId>
 		            <groupId>log4j</groupId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-jcl</artifactId>
+		    <exclusions>
+		        <exclusion>
+		            <artifactId>commons-logging</artifactId>
+		            <groupId>commons-logging</groupId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-dbcp2</artifactId>
+		    <version>2.1.1</version>
+		    <exclusions>
+		        <exclusion>
+		            <artifactId>commons-logging</artifactId>
+		            <groupId>commons-logging</groupId>
 		        </exclusion>
 		    </exclusions>
 		</dependency>

@@ -39,7 +39,7 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
         ServletRegistration.Dynamic dataOne = container.addServlet("dataone", SpringServlet.class);
         dataOne.setLoadOnStartup(1);
-        dataOne.setInitParameter("com.sun.jersey.config.property.packages", "org.tdar.dataone.server");
+        dataOne.setInitParameter("jersey.config.server.provider.packages", "org.tdar.dataone.server");
         dataOne.addMapping("/dataone/*");
     }
 
