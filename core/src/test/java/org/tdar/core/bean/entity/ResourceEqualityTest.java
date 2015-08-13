@@ -1,7 +1,6 @@
 package org.tdar.core.bean.entity;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
@@ -22,7 +21,7 @@ public class ResourceEqualityTest {
 
         assertNotSame("objects are not identical", r1, r2);
         r1.equals(r2);
-        assertNotEquals("base implementation states that two objects are only equal if they are identical", r1, r2);
+        assertNotSame("base implementation states that two objects are only equal if they are identical", r1, r2);
         assertEquals("per equals() 'contract' an object must be equal to itself", r1, r1);
         assertEquals("per equals() 'contract' an object must be equal to itself", r2, r2);
 

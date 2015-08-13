@@ -63,12 +63,12 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(lng, lat, lng, lat);
         double min = llb.getMinObfuscatedLatitude().doubleValue();
         double max = llb.getMaxObfuscatedLatitude().doubleValue();
-        Assert.assertNotEquals(llb.getMinimumLatitude().doubleValue(), min);
-        Assert.assertNotEquals(lat.doubleValue(), max);
-        Assert.assertNotEquals(lat.doubleValue(), llb.getMinObfuscatedLongitude().doubleValue());
-        Assert.assertNotEquals(lat.doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
-        Assert.assertNotEquals(max, min);
-        Assert.assertNotEquals(llb.getMinObfuscatedLongitude().doubleValue(), llb.getMaxObfuscatedLongitude().doubleValue());
+        Assert.assertFalse(llb.getMinimumLatitude().doubleValue() == min);
+        Assert.assertFalse(lat.doubleValue() == max);
+        Assert.assertFalse(lat.doubleValue() == llb.getMinObfuscatedLongitude().doubleValue());
+        Assert.assertFalse(lat.doubleValue() == llb.getMaxObfuscatedLongitude().doubleValue());
+        Assert.assertFalse(max == min);
+        Assert.assertFalse(llb.getMinObfuscatedLongitude().doubleValue() == llb.getMaxObfuscatedLongitude().doubleValue());
         logger.debug("{} <-> {}", max, min);
         logger.debug("{} <--> {}", max - min, ONE_MILE_IN_DEGREE_MINUTES);
         Assert.assertFalse(abs(abs(max) - abs(min)) < ONE_MILE_IN_DEGREE_MINUTES);

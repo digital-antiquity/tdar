@@ -193,7 +193,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
             case MARK_DUPS_ONLY:
                 Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
                 Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
-                Assert.assertNotEquals("authority should have replaced dupe", authority, rc.getCreator());
+                Assert.assertNotSame("authority should have replaced dupe", authority, rc.getCreator());
                 // Assert.assertNotEquals("authority should have replaced dupe", authority, d1.getSubmitter());
                 // Assert.assertNotEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
                 // Assert.assertNotEquals("authority should have replaced dupe", authority, user1.getUser());
