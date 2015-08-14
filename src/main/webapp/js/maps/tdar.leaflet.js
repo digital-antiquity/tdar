@@ -6,6 +6,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
     var $body = $('body');
+	var _maps = new Array();
 
     var _tileProviders = {
         osm: {
@@ -73,8 +74,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         });
         console.log('adding tile to map');
         tile.addTo(map);
+		_maps.push(map);
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
-        _map = map;
         _initialized = 0;
         return map;
     }
@@ -158,7 +159,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var $maxy = parseFloat($(".maxy", $el).val());
         // Initialise the FeatureGroup to store editable layers
         var layers = drawnItems.getLayers();
-
         // remove the old layer
         if (layers.length > 0) {
             drawnItems.removeLayer(layers[0]);
@@ -291,6 +291,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
              */
             map.on('draw:deleted', function(e) {
                 var layers = e.layers;
+				console.log("DELETING");
                 layers.eachLayer(function(layer) {
                     drawnItems.removeLayer(layer);
                     // the change() watch deosn't always pay attention to these explicit calls
@@ -367,6 +368,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     function _getDc() {
         return _dc;
     }
+	
+	function _getMaps() {
+		return _maps;
+	}
 
     return {
         initLeafletMaps: _initLeafletMaps,
@@ -374,6 +379,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         initResultsMaps: _initResultsMaps,
         initialized: _isIntialized,
         defaults: _defaults,
+		getMaps : _getMaps,
         dc: _getDc
     }
 })(console, jQuery, window, L);
