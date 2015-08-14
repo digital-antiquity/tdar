@@ -227,7 +227,7 @@ TDAR.advancedSearch = (function () {
             });
 
             //don't persist dom elements created by google map api
-            console.log("clearing map information")
+            //console.log("clearing map information")
             $('#large-google-map').removeData();
             $('#large-google-map').empty("div");
 
@@ -258,10 +258,10 @@ TDAR.advancedSearch = (function () {
             var $elem = $(elem);
             if ($elem.prop(booleanPropertyName)) {
                 $elem.attr(booleanPropertyName, booleanPropertyName);
-                console.log("setting %s attribute for elem:%s", booleanPropertyName, elem);
+                //console.log("setting %s attribute for elem:%s", booleanPropertyName, elem);
             } else {
                 $elem.removeAttr(booleanPropertyName);
-                console.log("removing %s attribute for elem:%s", booleanPropertyName, elem);
+                //console.log("removing %s attribute for elem:%s", booleanPropertyName, elem);
             }
         });
     }
