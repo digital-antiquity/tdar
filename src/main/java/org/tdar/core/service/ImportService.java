@@ -41,10 +41,12 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -440,6 +442,16 @@ public class ImportService {
             for (Persistable value : values) {
                 value.setId(null);
                 actual.add(value);
+                if (value instanceof CodingRule) {
+                    CodingRule rule = (CodingRule)value;
+                    CodingSheet sheet = (CodingSheet)rec;
+                    rule.setCodingSheet(sheet);
+                }
+                if (value instanceof OntologyNode) {
+                    OntologyNode rule = (OntologyNode)value;
+                    Ontology sheet = (Ontology)rec;
+                    rule.setOntology(sheet);
+                }
                 if (value instanceof DataTable) {
                     DataTable dataTable = (DataTable) value;
                     Dataset dataset = (Dataset) rec;
