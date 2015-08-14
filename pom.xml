@@ -2544,7 +2544,12 @@
         </profile>
         <profile>
             <id>setup-new-instance</id>
+            <activation>
+                <!-- activate this profile vital property files missing (assume new setup) -->
+                <file><missing>src/main/resources/tdar.properties</missing></file>
+            </activation>
             <build>
+                <defaultGoal>compile</defaultGoal>
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
