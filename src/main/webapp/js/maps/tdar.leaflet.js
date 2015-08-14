@@ -166,17 +166,17 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
         var rectangle = _initRectangle(map, $minx, $miny, $maxx, $maxy, _rectangleDefaults);
 
-        if (rectangle != undefined) {
-            _disableRectangleCreate($mapDiv);
-            drawnItems.addLayer(rectangle);
-        } else {
+        //if rectangle is invalid, remove all rectangles and re-enable rectangle create
+        if (typeof rectangle === "undefined") {
             _enableRectangleCreate();
             for (var i = 0; i > drawnItems.getLayers().length; i++) {
                 drawnItems.removeLayer(drawnItems.getLayer(i));
             }
+        } else {
+            _disableRectangleCreate($mapDiv);
+            drawnItems.addLayer(rectangle);
         }
         return rectangle;
-
     }
 
     /**
@@ -291,7 +291,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
              */
             map.on('draw:deleted', function(e) {
                 var layers = e.layers;
-				console.log("DELETING");
                 layers.eachLayer(function(layer) {
                     drawnItems.removeLayer(layer);
                     // the change() watch deosn't always pay attention to these explicit calls
