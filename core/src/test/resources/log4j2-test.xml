@@ -33,8 +33,7 @@
         <Logger name="org.hibernate.util.JDBCExceptionReporter"
             level="debug" />
         <Logger name="org.liquibase" level="error" />
-        <Logger name="org.tdar" level="DEBUG">
-        </Logger>
+        <Logger name="org.tdar" level="DEBUG" />
         <Logger name="uk.org" level="debug" />
 
         <!--// log parameterized SQL statements -->
