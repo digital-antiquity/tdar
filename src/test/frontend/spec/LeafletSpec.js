@@ -76,19 +76,47 @@ describe("LeafletSpec", function() {
 
     });
 	
-	//
-	// it("edit:fireCreate",function(){
+
+	it("edit:fireCreate",function(){
+	        loadFixtures("leaflet/leaflet-edit.html");
+	        TDAR.leaflet.initEditableLeafletMaps();
+
+		var bounds = [[53.912257, 27.581640], [53.902257, 27.561640]];
+		var $el = $("#large-map");
+		var map = $(".mapdiv",$el).data('map');
+		var rect = L.rectangle(bounds, {color: 'blue', weight: 1});
+		var event = $.Event("draw:created");
+		event.type = "draw:created";
+		event.layer = rect;
+		map.fireEvent(event.type,event);
+	    expect(parseFloat($(".minx", $el).val())).toEqual(bounds[1][1]);
+	    expect(parseFloat($(".miny", $el).val())).toEqual(bounds[1][0]);
+	    expect(parseFloat($(".maxx", $el).val())).toEqual(bounds[0][1]);
+	    expect(parseFloat($(".maxy", $el).val())).toEqual(bounds[0][0]);
+	});
+
+
+	// it("edit:fireDelete",function(){
 	//         loadFixtures("leaflet/leaflet-edit.html");
-	//         TDAR.leaflet.initEditableLeafletMaps();
 	//
+	// 	var $el = $("#large-map");
 	// 	var bounds = [[53.912257, 27.581640], [53.902257, 27.561640]];
-	// 	var map = $(".mapdiv",$("#large-map")).data('map');
+	//     $(".minx", $el).val(bounds[1][1]);
+	//     $(".miny", $el).val(bounds[1][0]);
+	//     $(".maxx", $el).val(bounds[0][1]);
+	//     $(".maxy", $el).val(bounds[0][0]);
+	//         TDAR.leaflet.initEditableLeafletMaps();
+	// 	var map = $(".mapdiv",$el).data('map');
 	// 	console.log("!--- " + map);
-	// 	var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).addTo(map);
-	// 	var event = $.Event("draw:created");
-	// 	event.type = "rectangle";
-	// 	event.layer = rect;
-	// 	$(map).trigger(event);
-	//
+	// 	// var rect = L.rectangle(bounds, {color: 'blue', weight: 1});
+	// 	map.eachLayer(function (layer) {
+	// 		if (layer instanceof L.rectangle) {
+	//  			    console.log(layer);
+	// 		}
+	// 	});
+	// 	var event = $.Event("draw:deleted");
+	// 	event.type = "draw:deleted";
+	// 	// event.layer = rect;
+	// 	map.fireEvent(event.type,event);
 	// });
 });

@@ -58,7 +58,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _bodyData = {leafletId: $('body').data().leafletId};
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
 
-        console.log('creating L.map');
+        console.log('creating L.map:');
         var map = L.map(elem).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
 		$elem.data("map",map);
@@ -266,7 +266,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             map.on('draw:created', function(e) {
                 var type = e.layerType,
                     layer = e.layer;
-				console.log("ADDDED");
                 drawnItems.addLayer(layer);
                 var b = layer.getBounds();
                 var bnds = _setValuesFromBounds($el, b);
