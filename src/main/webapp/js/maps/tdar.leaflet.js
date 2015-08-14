@@ -61,7 +61,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         console.log('creating L.map');
         var map = L.map(elem).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
-
+		$elem.data("map",map);
         var mapId = settings.leafletId;
 
         var tp = _tileProviders[settings.tileProvider];
@@ -266,7 +266,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             map.on('draw:created', function(e) {
                 var type = e.layerType,
                     layer = e.layer;
-
+				console.log("ADDDED");
                 drawnItems.addLayer(layer);
                 var b = layer.getBounds();
                 var bnds = _setValuesFromBounds($el, b);
@@ -365,10 +365,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         return _initialized;
     }
 
-    function _getMap() {
-        return _map;
-    }
-
     function _getDc() {
         return _dc;
     }
@@ -379,7 +375,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         initResultsMaps: _initResultsMaps,
         initialized: _isIntialized,
         defaults: _defaults,
-        map: _getMap,
         dc: _getDc
     }
 })(console, jQuery, window, L);

@@ -23,6 +23,7 @@ describe("LeafletSpec", function() {
 
     });
 
+
     it("initLeafletMaps:invalidSetup", function() {
         loadFixtures("leaflet/leaflet-view.html");
         $(".leaflet-map").data("maxy", "");
@@ -74,4 +75,20 @@ describe("LeafletSpec", function() {
         expect($(".leaflet-clickable")).toHaveLength(1);
 
     });
+	
+	//
+	// it("edit:fireCreate",function(){
+	//         loadFixtures("leaflet/leaflet-edit.html");
+	//         TDAR.leaflet.initEditableLeafletMaps();
+	//
+	// 	var bounds = [[53.912257, 27.581640], [53.902257, 27.561640]];
+	// 	var map = $(".mapdiv",$("#large-map")).data('map');
+	// 	console.log("!--- " + map);
+	// 	var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).addTo(map);
+	// 	var event = $.Event("draw:created");
+	// 	event.type = "rectangle";
+	// 	event.layer = rect;
+	// 	$(map).trigger(event);
+	//
+	// });
 });
