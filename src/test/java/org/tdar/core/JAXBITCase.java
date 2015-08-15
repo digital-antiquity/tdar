@@ -26,6 +26,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
@@ -111,7 +112,12 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     @Rollback(false)
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
-
+        ResourceCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
+        collection.getResources().add(project);
+        project.getResourceCollections().add(collection);
+        genericService.saveOrUpdate(project);
+        genericService.saveOrUpdate(collection);
+        final int totalShared = project.getSharedResourceCollections().size();
         final String xml = serializationService.convertToXML(project);
         logger.info(xml);
         genericService.detachFromSession(project);
@@ -121,14 +127,22 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
             @Override
             public Project doInTransaction(TransactionStatus arg0) {
                 boolean exception = false;
+                Integer size = -1;
+                Project newProject = null;
                 try {
-                    Project newProject = (Project) serializationService.parseXml(new StringReader(xml));
+                    newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
                     newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
+                    logger.debug("collections:{}",newProject.getResourceCollections());
+                     size = newProject.getSharedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);
+                } finally {
+//                    genericService.delete(newProject.getResourceCollections());
+//                    genericService.delete(newProject);
                 }
+                assertEquals(totalShared, size.intValue());
                 assertFalse(exception);
                 return null;
             }

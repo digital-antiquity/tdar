@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -130,7 +132,9 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.jaxb.converters.JAXBPersistableRef;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
@@ -1469,9 +1473,21 @@ public class Resource implements Persistable,
     /**
      * @return the resourceCollections
      */
+    /**
+     * This is a way to try and clean-up our XML serialization to provide better XML handling.  
+     *  * If we're dealing with a SHARED ResourceCollection, this will return a resourceCollectionRef
+     *  * If we're dealing with an INTERNAL ResourceCollection, this will return a ResourceCollection
+     *  
+     *  The latter behavior means that the internal collection will be fully logged to XML, but the reference will be logged otherwise.
+     *  Note, this is both for terseness as well as performance (large collections). 
+     * @return
+     */
     @XmlElementWrapper(name = "resourceCollections")
-    @XmlElement(name = "resourceCollectionRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlElementRefs({
+        @XmlElementRef(name="resourceCollection", type=ResourceCollection.class,required=false),
+        @XmlElementRef(name="resourceCollectionRef",type=JAXBPersistableRef.class, required=false)
+    })
+    @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
     public Set<ResourceCollection> getResourceCollections() {
         if (resourceCollections == null) {
             resourceCollections = new LinkedHashSet<ResourceCollection>();
@@ -1492,7 +1508,7 @@ public class Resource implements Persistable,
         return collections;
     }
 
-    @XmlElement(name = "internalCollection")
+    @Transient
     public ResourceCollection getInternalResourceCollection() {
         for (ResourceCollection collection : getResourceCollections()) {
             if (collection.getType() == CollectionType.INTERNAL) {
