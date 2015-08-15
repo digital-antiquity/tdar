@@ -51,6 +51,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -182,7 +184,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private String adminDescription;
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @ManyToMany(fetch= FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
@@ -834,23 +837,23 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return UrlUtils.slugify(getName());
     }
 
-    @Field(name = QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES)
-    @XmlTransient
-    public boolean isVisibleInSearch() {
-        if (hidden) {
-            return false;
-        }
-        boolean contents = false;
-        for (Resource resource : getResources()) {
-            contents = true;
-            // if we have 1 active item, return true
-            if (resource.isActive()) {
-                return true;
-            }
-        }
-        // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
-        return !contents;
-    }
+//    @Field(name = QueryFieldNames.COLLECTION_HIDDEN)
+//    @XmlTransient
+//    public boolean isVisibleInSearch() {
+//        if (hidden) {
+//            return false;
+//        }
+//        boolean contents = false;
+//        for (Resource resource : getResources()) {
+//            contents = true;
+//            // if we have 1 active item, return true
+//            if (resource.isActive()) {
+//                return true;
+//            }
+//        }
+//        // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
+//        return !contents;
+//    }
 
     @XmlTransient
     public boolean isWhiteLabelCollection() {

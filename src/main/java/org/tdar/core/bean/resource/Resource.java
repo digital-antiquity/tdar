@@ -58,6 +58,8 @@ import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -195,11 +197,6 @@ public class Resource implements Persistable,
     private transient boolean viewable;
     @Transient
     private transient Long transientAccessCount;
-    // TODO: anything that gets returned in a tdar search should be included in
-    // json results
-    // properties in resourceType
-    // properties in submitter (Person)
-    // "firstName", "lastName", "institution", "email","label","submitter",
     protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
 
     public Resource() {
@@ -440,6 +437,7 @@ public class Resource implements Persistable,
 
     // FIXME: do we really want cascade all here? even delete?
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
@@ -1472,7 +1470,8 @@ public class Resource implements Persistable,
      * @return the resourceCollections
      */
     @XmlElementWrapper(name = "resourceCollections")
-    @XmlElement(name = "resourceCollection")
+    @XmlElement(name = "resourceCollectionRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<ResourceCollection> getResourceCollections() {
         if (resourceCollections == null) {
             resourceCollections = new LinkedHashSet<ResourceCollection>();
@@ -1493,7 +1492,7 @@ public class Resource implements Persistable,
         return collections;
     }
 
-    @Transient
+    @XmlElement(name = "internalCollection")
     public ResourceCollection getInternalResourceCollection() {
         for (ResourceCollection collection : getResourceCollections()) {
             if (collection.getType() == CollectionType.INTERNAL) {
