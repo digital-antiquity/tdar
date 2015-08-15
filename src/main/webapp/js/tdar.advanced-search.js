@@ -13,7 +13,7 @@ TDAR.advancedSearch = (function () {
         $('#searchGroups').on('change', '.searchType', function (evt) {
             "use strict";
 
-            console.log("change event on %s", this.id);
+            //console.log("change event on %s", this.id);
             var $select = $(this);
             var searchType = $select.val();
             var $controlGroup = $select.parent();
@@ -275,7 +275,7 @@ TDAR.advancedSearch = (function () {
                 prefix = "?";
             }
             url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage').val();
-            window.location = url;
+            TDAR.windowLocation(url);
         });
 
         $("#sortField").change(function () {
@@ -286,7 +286,7 @@ TDAR.advancedSearch = (function () {
                 prefix = "?";
             }
             url = prefix + url + "&sortField=" + $('#sortField').val();
-            window.location = url;
+            TDAR.windowLocation(url);
         });
 
     }
@@ -297,3 +297,4 @@ TDAR.advancedSearch = (function () {
         "initializeResultsPage" : _initializeResultsPage
     };
 })();
+
