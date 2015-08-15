@@ -339,42 +339,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional
     public void saveSharedResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
             TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling) {
-        Collection<ResourceCollection> incoming_ = incoming;
+
         logger.debug("incoming ResourceCollections: {} ({})", incoming, incoming.size());
         logger.debug("current ResourceCollections: {} ({})", current, current.size());
-        if (incoming == current && !CollectionUtils.isEmpty(incoming)) {
-            incoming_ = new ArrayList<ResourceCollection>();
-            incoming_.addAll(incoming);
-            current.clear();
-        }
 
-        Iterator<ResourceCollection> inc = incoming_.iterator();
-        while (inc.hasNext()) {
-            if (inc.next() == null) {
-                inc.remove();
-            }
-        }
-        List<ResourceCollection> toRemove = new ArrayList<ResourceCollection>();
-        Iterator<ResourceCollection> iterator = current.iterator();
-        while (iterator.hasNext()) {
-            ResourceCollection resourceCollection = iterator.next();
-
-            // retain internal collections, but remove any existing shared collections that don't exist in the incoming list of shared collections
-            if (!incoming_.contains(resourceCollection) && resourceCollection.isShared()) {
-                toRemove.add(resourceCollection);
-
-                logger.trace("removing unmatched: {}", resourceCollection);
-            }
-        }
-
-        logger.info("collections to remove: {}", toRemove);
-        for (ResourceCollection collection : toRemove) {
+        ResourceCollectionSaveHelper helper = new ResourceCollectionSaveHelper(incoming, current, CollectionType.SHARED);
+        logger.info("collections to remove: {}", helper.getToDelete());
+        for (ResourceCollection collection : helper.getToDelete()) {
             current.remove(collection);
             collection.getResources().remove(resource);
             resource.getResourceCollections().remove(collection);
         }
 
-        for (ResourceCollection collection : incoming_) {
+        for (ResourceCollection collection : helper.getToAdd()) {
             addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection);
         }
         logger.debug("after save: {} ({})", current, current.size());
