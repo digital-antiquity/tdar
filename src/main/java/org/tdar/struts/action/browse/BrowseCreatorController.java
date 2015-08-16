@@ -21,6 +21,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -40,8 +41,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
-import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -141,12 +140,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private transient EntityService entityService;
 
     @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-
-    @Autowired
-    private transient GenericKeywordService genericKeywordService;
-
-    @Autowired
     private transient SearchService searchService;
 
     @Autowired
@@ -169,6 +162,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                     }
             )
     })
+    @SkipValidation
     public String creatorRdf() throws FileNotFoundException {
         try {
             FileStoreFile object = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
@@ -226,6 +220,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             @Action(value = "{id}"),
             @Action(value = "{id}/{slug}")
     })
+    @SkipValidation
     public String browseCreators() throws ParseException, TdarActionException {
         if (isRedirectBadSlug()) {
             return BAD_SLUG;
@@ -388,6 +383,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         try {
             collaborators = fileSystemResourceService.parseCreatorInfoLog("*/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
                     dom);
+            
         } catch (TdarRecoverableRuntimeException trre) {
             getLogger().warn(trre.getLocalizedMessage());
         }

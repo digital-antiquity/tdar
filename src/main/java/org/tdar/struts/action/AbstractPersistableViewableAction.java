@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
@@ -80,8 +81,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     @Autowired
-    private transient GenericService genericService;
-    @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
@@ -108,6 +107,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
             @Action(value = "{id}/"),
             @Action(value = "{id}")
     })
+    @SkipValidation
     public String view() throws TdarActionException {
         if (isRedirectBadSlug()) {
             return BAD_SLUG;
