@@ -453,7 +453,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     
     @Deprecated
     public void setMappedOntology(Ontology ont) {
-        logger.error("setting mappedOntology does nothing...");
+        logger.warn("setting mappedOntology does nothing...");
     }
 
     @JsonView(JsonIntegrationDetailsFilter.class)
