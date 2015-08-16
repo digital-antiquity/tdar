@@ -49,7 +49,7 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
     @Override
     public ResourceCollection unmarshal(Persistable ref_) throws Exception {
         if (ref_ instanceof ResourceCollection) {
-            return genericService.merge((ResourceCollection)ref_);
+            return (ResourceCollection)ref_;
         }
         
         if (ref_ == null || !(ref_ instanceof JAXBPersistableRef)) {
@@ -58,7 +58,11 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
         JAXBPersistableRef ref = (JAXBPersistableRef)ref_;
         Class<Persistable> cls = reflectionService.getMatchingClassForSimpleName(ref.getType());
         ResourceCollection rc = (ResourceCollection) genericService.find(cls, ref.getId());
-        return rc;
+        ResourceCollection rc_ = new ResourceCollection();
+        rc_.setType(rc.getType());
+        rc_.setId(ref.getId());
+        rc = null;
+        return rc_;
     }
 
 

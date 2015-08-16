@@ -881,6 +881,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return resourceIds;
     }
 
+    @Transient
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
     }

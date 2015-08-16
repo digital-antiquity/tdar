@@ -31,6 +31,7 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
@@ -78,6 +79,22 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         logger.info(xml);
         serializationService.parseXml(FileProxies.class, new StringReader(xml));
 
+    }
+    
+    @Test
+    @Rollback
+    public void exportResourceCollection() throws Exception {
+        ResourceCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
+        for (Resource r : genericService.findRandom(Resource.class, 10)) {
+            collection.getResources().add(r);
+            r.getResourceCollections().add(collection);
+        }
+        genericService.saveOrUpdate(collection);
+        genericService.synchronize();
+        genericService.refresh(collection);
+        String convertToXML = serializationService.convertToXML(collection);
+        logger.debug(convertToXML);
+        
     }
 
     @Test

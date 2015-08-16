@@ -80,7 +80,7 @@ import org.tdar.utils.PersistableUtils;
 @Service
 public class ImportService {
 
-    public static final String _ = "_";
+    public static final String UNDERSCORE = "_";
     public static final String _NEW_ID = "_NEW_ID_";
     public static final String COPY = " (Copy)";
     @Autowired
@@ -360,10 +360,10 @@ public class ImportService {
 
         // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed
         // Long oldId = resource.getId();
+        
         String xml = serializationService.convertToXML(resource);
         @SuppressWarnings("unchecked")
         R rec = (R) serializationService.parseXml(new StringReader(xml));
-
         rec.setId(null);
         rec.setTitle(rec.getTitle() + COPY);
         rec.setDateCreated(new Date());
@@ -385,6 +385,7 @@ public class ImportService {
         }
 
         // obfuscate LatLong and clear collections if no permissions to resource
+        ResourceCollection irc = rec.getInternalResourceCollection();
         if (!canEditResource) {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
@@ -393,11 +394,10 @@ public class ImportService {
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
+            irc = null;
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            ResourceCollection irc = rec.getInternalResourceCollection();
             if (irc != null) {
-                irc.setId(null);
                 for (AuthorizedUser au : irc.getAuthorizedUsers()) {
                     au.setId(null);
                 }
@@ -406,6 +406,12 @@ public class ImportService {
                 rc.getResources().add(rec);
             }
         }
+        genericService.detachFromSession(rec);
+        if (irc != null) {
+            genericService.detachFromSession(irc);
+            irc.setId(null);
+        }
+
         // reset one-to-many IDs so that new versions are generated for this resource and not the orignal clone
         resetOneToManyPersistableIds(rec);
 
@@ -417,8 +423,8 @@ public class ImportService {
             Dataset dataset = (Dataset) rec;
             for (DataTable dt : dataset.getDataTables()) {
                 String name = dt.getName();
-                int index1 = name.indexOf(_);
-                int index2 = name.indexOf(_, index1 + 1);
+                int index1 = name.indexOf(UNDERSCORE);
+                int index2 = name.indexOf(UNDERSCORE, index1 + 1);
                 name = name.substring(0, index1) + "_0_" + name.substring(index2 + 1);
                 dt.setName(name);
             }
@@ -508,8 +514,7 @@ public class ImportService {
             if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
                 // making sure that the collection's creators and other things are on the sessions properly too
-                collection.setOwner(entityService.findOrSaveCreator(collection.getOwner()));
-                collection.setUpdater(entityService.findOrSaveCreator(collection.getUpdater()));
+                resetOwnerOnSession(collection);
                 collection.getResources().add((Resource) resource);
                 ((Resource) resource).getResourceCollections().add(collection);
             }
@@ -579,6 +584,11 @@ public class ImportService {
             }
         }
         return toReturn;
+    }
+
+    private void resetOwnerOnSession(ResourceCollection collection) {
+        collection.setOwner(entityService.findOrSaveCreator(collection.getOwner()));
+        collection.setUpdater(entityService.findOrSaveCreator(collection.getUpdater()));
     }
 
     /**
