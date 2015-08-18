@@ -781,19 +781,24 @@ public class SearchService {
             queryBuilder.append(new GeneralSearchQueryPart(allFields));
         }
         queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
-
-        QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
-        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES, "true"));
+        
+        // either it's not hidden and you can see it, or it is hidden but you have rights to it.
+        
+        QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
+        rightsPart.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
-            // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
+            QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
+            qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "true"));
             if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+                // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
-            } else {
-                qpg.clear();
+                rightsPart.append(qpg);
+            }  else {
+                // if we're admin, drop the hidden check
+                rightsPart.clear();
             }
-        }
-
-        queryBuilder.append(qpg);
+        } 
+        queryBuilder.append(rightsPart);
     }
 
 }

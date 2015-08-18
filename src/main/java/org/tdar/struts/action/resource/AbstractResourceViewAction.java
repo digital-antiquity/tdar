@@ -107,20 +107,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ObfuscationService obfuscationService;
 
-//    @Autowired
-//    private EntityService entityService;
-//
-//    @Autowired
-//    private GenericKeywordService genericKeywordService;
-
     @Autowired
     public ResourceCollectionService resourceCollectionService;
 
     @Autowired
     private BillingAccountService accountService;
-
-//    @Autowired
-//    private InformationResourceService informationResourceService;
 
     @Autowired
     private ResourceService resourceService;
@@ -196,11 +187,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         }
 
         return sw.toString();
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
     }
 
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even

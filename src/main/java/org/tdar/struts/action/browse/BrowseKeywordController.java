@@ -9,6 +9,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -132,6 +133,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             @Action(value = "{keywordPath}/{id}"),
             @Action(value = "{keywordPath}/{id}/{slug}")
     })
+    @SkipValidation
     public String view() {
         if (redirectBadSlug) {
             return BAD_SLUG;

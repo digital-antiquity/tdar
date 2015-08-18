@@ -13,6 +13,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.service.SerializationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.utils.MessageHelper;
@@ -62,6 +63,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsAdmin() throws InstantiationException, IllegalAccessException {
+//        searchIndexService.purgeAll();
         ResourceCollection collection = setupCollection(true, getAdminUser());
         assertTrue(controller.getResults().contains(collection));
     }

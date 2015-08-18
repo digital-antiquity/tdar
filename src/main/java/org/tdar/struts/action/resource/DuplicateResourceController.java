@@ -22,6 +22,8 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 public class DuplicateResourceController extends AuthenticationAware.Base implements Preparable {
 
+    private static final String DUPLICATE_ERROR_FTL = "duplicate-error.ftl";
+
     @Autowired
     private transient ImportService importService;
 
@@ -35,7 +37,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
 
     @Action(value = "duplicate", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "confirm-duplicate.ftl"),
-            @Result(name = INPUT, type = FREEMARKER, location = "duplicate-error.ftl")
+            @Result(name = INPUT, type = FREEMARKER, location = DUPLICATE_ERROR_FTL)
     })
     public String execute() {
         if (!getAuthenticatedUser().isContributor()) {
@@ -49,7 +51,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
             // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/edit?id=${copy.id}"),
-                    @Result(name = INPUT, type = FREEMARKER, location = "duplicate_error.ftl")
+                    @Result(name = INPUT, type = FREEMARKER, location = DUPLICATE_ERROR_FTL)
             })
     @PostOnly
     public String duplicate() {

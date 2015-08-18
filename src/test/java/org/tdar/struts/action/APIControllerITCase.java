@@ -103,37 +103,14 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     public void testAPIController() throws Exception {
         Document fake = resourceService.find(TEST_ID);
-        // setup a fake record, with some new fields off the session
-        genericService.markReadOnly(fake);
-        fake.setDescription(fake.getTitle());
-        fake.getInvestigationTypes().clear();
-        fake.getInvestigationTypes().add(genericKeywordService.find(InvestigationType.class, 1L));
+        setupFakeRecord(fake);
+        String docXml = serializationService.convertToXML(fake);
+        logger.info(docXml);
         resourceService.updateTransientAccessCount(fake);
         final Long viewCount = fake.getTransientAccessCount();
         final Date creationDate = fake.getDateCreated();
-        fake.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "test"));
-        fake.setInheritingCollectionInformation(false);
-        fake.setInheritingCulturalInformation(true);
-        fake.setInheritingNoteInformation(true);
-        fake.setInheritingMaterialInformation(true);
-        addAuthorizedUser(fake, getUser(), GeneralPermissions.MODIFY_RECORD);
-        ResourceCollection coll = new ResourceCollection(CollectionType.SHARED);
-        coll.setHidden(true);
-        coll.setName("hidden");
-        coll.markUpdated(getAdminUser());
-        fake.getResourceCollections().add(coll);
-        ResourceCollection coll2 = new ResourceCollection(CollectionType.SHARED);
-        coll2.setHidden(false);
-        coll2.setName("visible");
-        coll2.markUpdated(getAdminUser());
-        fake.getResourceCollections().add(coll2);
 
-        fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
-        // fake.getResourceCollections().clear();
-        removeInvalidFields(fake);
-        String docXml = serializationService.convertToXML(fake);
-        logger.info(docXml);
-
+        
         // revert back
         Document old = resourceService.find(TEST_ID);
         genericService.markReadOnly(old);
@@ -159,6 +136,12 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(StatusCode.UPDATED, controller.getStatus());
 
         Document importedRecord = resourceService.find(TEST_ID);
+        assertImportedRecordMatches(viewCount, creationDate, oldSubmitter, investigationTypesSize, resourceNotesSize, oldId, importedRecord);
+
+    }
+
+    private void assertImportedRecordMatches(final Long viewCount, final Date creationDate, final Person oldSubmitter, final int investigationTypesSize,
+            final int resourceNotesSize, final Long oldId, Document importedRecord) {
         assertNotNull(importedRecord);
         assertEquals(1, investigationTypesSize);
         assertEquals(investigationTypesSize, importedRecord.getInvestigationTypes().size());
@@ -190,7 +173,38 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
                 
             }
         }
+    }
 
+    private void setupFakeRecord(Document fake) {
+        addAuthorizedUser(fake, getUser(), GeneralPermissions.MODIFY_RECORD);
+        // setup a fake record, with some new fields off the session
+        genericService.saveOrUpdate(fake);
+        genericService.synchronize();
+        
+        
+        genericService.markReadOnly(fake);
+        fake.setDescription(fake.getTitle());
+        fake.getInvestigationTypes().clear();
+        fake.getInvestigationTypes().add(genericKeywordService.find(InvestigationType.class, 1L));
+        fake.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "test"));
+        fake.setInheritingCollectionInformation(false);
+        fake.setInheritingCulturalInformation(true);
+        fake.setInheritingNoteInformation(true);
+        fake.setInheritingMaterialInformation(true);
+        ResourceCollection coll = new ResourceCollection(CollectionType.SHARED);
+        coll.setHidden(true);
+        coll.setName("hidden");
+        coll.markUpdated(getAdminUser());
+        fake.getResourceCollections().add(coll);
+        ResourceCollection coll2 = new ResourceCollection(CollectionType.SHARED);
+        coll2.setHidden(false);
+        coll2.setName("visible");
+        coll2.markUpdated(getAdminUser());
+        fake.getResourceCollections().add(coll2);
+
+        fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
+        // fake.getResourceCollections().clear();
+        removeInvalidFields(fake);        
     }
 
     @Test
