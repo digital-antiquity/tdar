@@ -28,7 +28,6 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -58,8 +57,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient ProjectService projectService;
     @Autowired
     private transient SearchIndexService searchIndexService;
-    @Autowired
-    private transient SearchService searchService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired

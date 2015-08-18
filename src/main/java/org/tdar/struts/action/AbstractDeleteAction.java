@@ -64,8 +64,12 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
                 return CONFIRM;
             }
             logAction("DELETING");
-
+            try {
             delete(persistable);
+            } catch (Exception e) {
+                addActionErrorWithException(getText("abstractPersistableController.cannot_delete"),e);
+                return INPUT;
+            }
             return SUCCESS;
         }
 

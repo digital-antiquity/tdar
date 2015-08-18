@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -458,7 +459,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public List<GeneralPermissions> getAvailablePermissions() {
         List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
         for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) || getPersistable().getClass().isAssignableFrom(permission.getContext())) {
+            if ((permission.getContext() == null) ||  ClassUtils.isAssignable(permission.getContext(), getPersistableClass())) {
                 permissions.add(permission);
             }
         }
