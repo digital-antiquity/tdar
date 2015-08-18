@@ -39,7 +39,7 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
-                {pattern: "/Users/jim/develop/tdar.src/src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false}
+                {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false}
 
 
             ],
