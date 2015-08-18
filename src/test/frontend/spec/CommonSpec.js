@@ -211,7 +211,6 @@ describe("TDAR.common: miscellaneaous tests", function () {
         loadFixtures('searchheader.html');
         var result = TDAR.common.initializeView();
         $expect('.active').not.toBeInDOM();
-        console.log('---', $j('.searchbox').length);
 
         $(".searchbox").focus(); //workaround for ff issue. test fails unless focus event triggered twice
         $(".searchbox").focus();

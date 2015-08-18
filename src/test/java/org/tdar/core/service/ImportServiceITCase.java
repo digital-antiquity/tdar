@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageDate;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
@@ -56,4 +57,15 @@ public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
         return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
 
+    @Test
+    @Rollback
+    public void testCodingSheet() throws Exception {
+        Long id = 43000L;
+        CodingSheet cs = genericService.find(CodingSheet.class, id);
+        genericService.synchronize();
+        CodingSheet newDoc = importService.cloneResource(cs, getAdminUser());
+        genericService.synchronize();
+        logger.debug(serializationService.convertToXML(newDoc));
+
+    }
 }

@@ -13,6 +13,7 @@ describe("latlong tests", function () {
         return Math.abs(a-b) < _ff;
     }
 
+    //FIXME:  RTFM Jim, you may learn something: https://github.com/jasmine/jasmine/blob/master/src/core/matchers/toBeCloseTo.js
     // Custom matcher that assumes that any two points/magnitudes within 20km of each other are 'approximately'
     // the same. This is helpful for calculations that introduce minor differences due to floating point precision.
     var latlonMatchers = {

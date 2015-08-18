@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -114,6 +115,7 @@ public class IndexController extends AuthenticationAware.Base {
                     @Result(name = SUCCESS, location = "robots.ftl", type = FREEMARKER, params = { "contentType", "text/plain" })
             })
     })
+    @SkipValidation
     public String robots() {
         File file = new File(getTdarConfiguration().getSitemapDir(), sitemapFile);
         if (!file.exists()) {
@@ -133,6 +135,7 @@ public class IndexController extends AuthenticationAware.Base {
             @Action("contact")
     })
     @Override
+    @SkipValidation
     public String execute() {
         return SUCCESS;
     }
@@ -140,6 +143,7 @@ public class IndexController extends AuthenticationAware.Base {
     @Actions(value={
             @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") })
     })
+    @SkipValidation
     @HttpOnlyIfUnauthenticated
     public String about() {
 
@@ -160,6 +164,7 @@ public class IndexController extends AuthenticationAware.Base {
     }
 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
+    @SkipValidation
     public String worldMap() {
         List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
         try {
@@ -173,6 +178,7 @@ public class IndexController extends AuthenticationAware.Base {
 
     @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = FREEMARKER,
             params = { "contentType", "text/html" }) })
+    @SkipValidation
     public String featuredItems() {
         try {
             for (Resource key : informationResourceService.getFeaturedItems()) {
@@ -199,6 +205,7 @@ public class IndexController extends AuthenticationAware.Base {
     
     @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = FREEMARKER,
             params = { "contentType", "text/html" }) })
+    @SkipValidation
     public String resourceStats()  {
     	try {
         setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));

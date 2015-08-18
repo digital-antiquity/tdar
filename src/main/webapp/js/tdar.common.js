@@ -1080,7 +1080,7 @@ TDAR.common = function (TDAR, fileupload) {
         args.unshift('_trackEvent');
         var errcount = _gaq.push(args);
         if (errcount) {
-            console.warn("_trackEvent failed:%s", args[1]);
+            //console.warn("_trackEvent failed:%s", args[1]);
         }
         return true;
     }

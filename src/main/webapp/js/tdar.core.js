@@ -88,6 +88,16 @@ TDAR.uri = function(path) {
     return uri;
 };
 
+    /* istanbul ignore next */
+    /**
+     * Wrapper for window.location setter
+     * @param url
+     */
+    TDAR.windowLocation = function(url) {
+        window.location = url;
+    };
+
+
 /**
  * Define dummy console + log methods if not defined by browser.
  */

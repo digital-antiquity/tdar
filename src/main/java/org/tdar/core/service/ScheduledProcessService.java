@@ -173,7 +173,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Log Account Usage History
      */
     // * Spring scheduling cron expressions: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
-    @Scheduled(cron = "0 1 1 1 * *")
+    @Scheduled(cron = "0 1 1 * * *")
     public void cronUpdateAccountUsageHistory() {
         logger.info("updating account usage history");
         queue(scheduledProcessMap.get(AccountUsageHistoryLoggingTask.class));
@@ -227,8 +227,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             if (config.shouldRunPeriodicEvents() && process.isSingleRunProcess()) {
                 logger.debug("adding {} to the process queue {}", process.getDisplayName(), scheduledProcessQueue);
                 queue(process);
-            }
-            else {
+            } else {
                 // allScheduledProcesses.add(process);
                 scheduledProcessMap.put(process.getClass(), process);
             }
@@ -304,30 +303,36 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         logger.trace("processes in Queue: {}", scheduledProcessQueue);
     }
 
-	private void logCurrentState() {
-		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-		long[] allThreadIds = threadMXBean.getAllThreadIds();
-		ThreadInfo[] threadInfo = threadMXBean.getThreadInfo(allThreadIds);
-		long totalTime = 0;
-		Map<Long,Long> totals = new HashMap<>();
-		for (ThreadInfo info : threadInfo) {
-			long id = info.getThreadId();
-			long threadCpuTime = threadMXBean.getThreadUserTime(id);
-			totalTime += threadCpuTime;
-			totals.put(id, threadCpuTime);
-		}
-		for (ThreadInfo info : threadInfo) {
-			long id = info.getThreadId();
-			long percent = (100 * totals.get(id) ) / totalTime;
-			if (percent > 0) {
-				logger.debug("{} :: CPU: {}% {} ({})", id ,percent, info.getThreadName() , info.getThreadState());
-				StackTraceElement[] st = info.getStackTrace();
-				for (StackTraceElement t : st) {
-					logger.debug("\t{} ",t);
-				}
-			}
-		}
-	}
+    private void logCurrentState() {
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        long[] allThreadIds = threadMXBean.getAllThreadIds();
+        ThreadInfo[] threadInfo = threadMXBean.getThreadInfo(allThreadIds);
+        long totalTime = 0;
+        Map<Long, Long> totals = new HashMap<>();
+        for (ThreadInfo info : threadInfo) {
+            if (info == null) {
+                continue;
+            }
+            long id = info.getThreadId();
+            long threadCpuTime = threadMXBean.getThreadUserTime(id);
+            totalTime += threadCpuTime;
+            totals.put(id, threadCpuTime);
+        }
+        for (ThreadInfo info : threadInfo) {
+            if (info == null) {
+                continue;
+            }
+            long id = info.getThreadId();
+            long percent = (100 * totals.get(id)) / totalTime;
+            if (percent > 0) {
+                logger.debug("{} :: CPU: {}% {} ({})", id, percent, info.getThreadName(), info.getThreadState());
+                StackTraceElement[] st = info.getStackTrace();
+                for (StackTraceElement t : st) {
+                    logger.debug("\t{} ", t);
+                }
+            }
+        }
+    }
 
     /**
      * Mark an @link UpgradeTask as having been run successfully
@@ -357,8 +362,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties, FindOptions.FIND_ALL);
         if ((tasks.size() > 0) && (tasks.get(0) != null)) {
             return tasks.get(0);
-        }
-        else {
+        } else {
             return upgradeTask;
         }
     }

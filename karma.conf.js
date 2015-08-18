@@ -38,7 +38,9 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/jquery-ui-1.8.23/themes/base/minified/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false}
+                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
+                {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false}
+
 
             ],
             //files specified in wro.xml 

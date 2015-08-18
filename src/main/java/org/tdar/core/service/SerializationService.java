@@ -58,6 +58,7 @@ import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.LatLongGeoJsonSerializer;
 import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
+import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -106,6 +107,9 @@ public class SerializationService {
 
     @Autowired
     private JaxbPersistableConverter persistableConverter;
+
+    @Autowired
+    private JaxbResourceCollectionRefConverter collectionRefConverter;
 
     @Autowired
     private ObfuscationService obfuscationService;
@@ -301,7 +305,8 @@ public class SerializationService {
 
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         unmarshaller.setSchema(schema);
-        unmarshaller.setAdapter(persistableConverter);
+        unmarshaller.setAdapter(JaxbResourceCollectionRefConverter.class, collectionRefConverter);
+        unmarshaller.setAdapter(JaxbPersistableConverter.class, persistableConverter);
 
         final List<JaxbValidationEvent> errors = new ArrayList<>();
         unmarshaller.setEventHandler(new ValidationEventHandler() {
