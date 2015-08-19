@@ -1115,6 +1115,7 @@ public abstract class AbstractSeleniumWebITCase {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        waitFor((WebDriver driver) -> driver.findElement(id("fileAsyncUpload")).isEnabled());
         find(id("fileAsyncUpload")).sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
         find("#proxy0_conf").val(restriction.name());
