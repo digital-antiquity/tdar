@@ -145,7 +145,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         String path = getDriver().getCurrentUrl();
 
         path = getDriver().getCurrentUrl();
-        logger.trace(find("body").getText());
+        logger.debug(find("body").getText());
         assertFalse("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
         assertFalse("no errors present", getText().toLowerCase().contains("error"));
