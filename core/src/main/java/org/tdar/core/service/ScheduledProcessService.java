@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -53,8 +53,6 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.search.SearchIndexService;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * 
@@ -190,7 +188,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 	 */
 	// * Spring scheduling cron expressions: Seconds Minutes Hours Day-of-Month
 	// Month Day-of-Week Year (optional field)
-	@Scheduled(cron = "0 1 1 1 * *")
+    @Scheduled(cron = "0 1 1 * * *")
 	public void cronUpdateAccountUsageHistory() {
 		logger.info("updating account usage history");
 		queue(AccountUsageHistoryLoggingTask.class);

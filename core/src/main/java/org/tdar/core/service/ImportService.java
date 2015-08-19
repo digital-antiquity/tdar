@@ -41,10 +41,12 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -78,7 +80,7 @@ import org.tdar.utils.PersistableUtils;
 @Service
 public class ImportService {
 
-    public static final String _ = "_";
+    public static final String UNDERSCORE = "_";
     public static final String _NEW_ID = "_NEW_ID_";
     public static final String COPY = " (Copy)";
     @Autowired
@@ -146,6 +148,7 @@ public class ImportService {
         incomingResource.markUpdated(blessedAuthorizedUser);
 
         reconcilePersistableChildBeans(blessedAuthorizedUser, incomingResource);
+//        reflectionService.walkObject(incomingResource);
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(blessedAuthorizedUser));
         incomingResource = genericService.merge(incomingResource);
         if (incomingResource instanceof InformationResource) {
@@ -357,10 +360,10 @@ public class ImportService {
 
         // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed
         // Long oldId = resource.getId();
+        
         String xml = serializationService.convertToXML(resource);
         @SuppressWarnings("unchecked")
         R rec = (R) serializationService.parseXml(new StringReader(xml));
-
         rec.setId(null);
         rec.setTitle(rec.getTitle() + COPY);
         rec.setDateCreated(new Date());
@@ -382,6 +385,7 @@ public class ImportService {
         }
 
         // obfuscate LatLong and clear collections if no permissions to resource
+        ResourceCollection irc = rec.getInternalResourceCollection();
         if (!canEditResource) {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
@@ -390,11 +394,10 @@ public class ImportService {
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
+            irc = null;
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            ResourceCollection irc = rec.getInternalResourceCollection();
             if (irc != null) {
-                irc.setId(null);
                 for (AuthorizedUser au : irc.getAuthorizedUsers()) {
                     au.setId(null);
                 }
@@ -403,6 +406,12 @@ public class ImportService {
                 rc.getResources().add(rec);
             }
         }
+        genericService.detachFromSession(rec);
+        if (irc != null) {
+            genericService.detachFromSession(irc);
+            irc.setId(null);
+        }
+
         // reset one-to-many IDs so that new versions are generated for this resource and not the orignal clone
         resetOneToManyPersistableIds(rec);
 
@@ -414,8 +423,8 @@ public class ImportService {
             Dataset dataset = (Dataset) rec;
             for (DataTable dt : dataset.getDataTables()) {
                 String name = dt.getName();
-                int index1 = name.indexOf(_);
-                int index2 = name.indexOf(_, index1 + 1);
+                int index1 = name.indexOf(UNDERSCORE);
+                int index2 = name.indexOf(UNDERSCORE, index1 + 1);
                 name = name.substring(0, index1) + "_0_" + name.substring(index2 + 1);
                 dt.setName(name);
             }
@@ -440,6 +449,16 @@ public class ImportService {
             for (Persistable value : values) {
                 value.setId(null);
                 actual.add(value);
+                if (value instanceof CodingRule) {
+                    CodingRule rule = (CodingRule)value;
+                    CodingSheet sheet = (CodingSheet)rec;
+                    rule.setCodingSheet(sheet);
+                }
+                if (value instanceof OntologyNode) {
+                    OntologyNode rule = (OntologyNode)value;
+                    Ontology sheet = (Ontology)rec;
+                    rule.setOntology(sheet);
+                }
                 if (value instanceof DataTable) {
                     DataTable dataTable = (DataTable) value;
                     Dataset dataset = (Dataset) rec;
@@ -486,12 +505,16 @@ public class ImportService {
      */
     @SuppressWarnings("unchecked")
     public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException {
-        P toReturn = property;
         // if we're not transient, find by id...
         if (PersistableUtils.isNotNullOrTransient(property)) {
-            toReturn = (P) findById(property.getClass(), property.getId());
+            Class<? extends Persistable> cls = property.getClass();
+            Long id = property.getId();
+            property = null;
+            P toReturn = (P) findById(cls, id);
             if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
+                // making sure that the collection's creators and other things are on the sessions properly too
+                resetOwnerOnSession(collection);
                 collection.getResources().add((Resource) resource);
                 ((Resource) resource).getResourceCollections().add(collection);
             }
@@ -501,63 +524,71 @@ public class ImportService {
                     ((Person) toReturn).setInstitution(findById(Institution.class, inst.getId()));
                 }
             }
+            
+            return toReturn;
         }
-        else // otherwise, reconcile appropriately
-        {
-            if (property instanceof Keyword) {
-                Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
-                if (property instanceof ControlledKeyword) {
-                    Keyword findByLabel = genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
-                    if (findByLabel == null) {
-                        throw new APIException("importService.unsupported_keyword", Arrays.asList(property.getClass().getSimpleName()),
-                                StatusCode.FORBIDDEN);
-                    }
-                } else {
-                    toReturn = (P) genericKeywordService.findOrCreateByLabel(kwdCls, ((Keyword) property).getLabel());
+
+        P toReturn = property;
+
+        if (property instanceof Keyword) {
+            Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
+            if (property instanceof ControlledKeyword) {
+                Keyword findByLabel = genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
+                if (findByLabel == null) {
+                    throw new APIException("importService.unsupported_keyword", Arrays.asList(property.getClass().getSimpleName()),
+                            StatusCode.FORBIDDEN);
                 }
+            } else {
+                toReturn = (P) genericKeywordService.findOrCreateByLabel(kwdCls, ((Keyword) property).getLabel());
             }
-            if (property instanceof ResourceCreator) {
-                ResourceCreator creator = (ResourceCreator) property;
-                entityService.findOrSaveResourceCreator(creator);
-                creator.isValidForResource((Resource) resource);
-            }
+        }
+        if (property instanceof ResourceCreator) {
+            ResourceCreator creator = (ResourceCreator) property;
+            entityService.findOrSaveResourceCreator(creator);
+            creator.isValidForResource((Resource) resource);
+        }
 
-            if (property instanceof Creator) {
-                Creator creator = (Creator) property;
-                toReturn = (P) entityService.findOrSaveCreator(creator);
-            }
+        if (property instanceof Creator) {
+            Creator creator = (Creator) property;
+            toReturn = (P) entityService.findOrSaveCreator(creator);
+            logger.debug("findOrSaveCreator:{}", creator);
+        }
 
-            if (property instanceof ResourceCollection && resource instanceof Resource) {
-                ResourceCollection collection = (ResourceCollection) property;
-                collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getResourceCollections(),
-                        authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
-                toReturn = null;
-            }
+        if (property instanceof ResourceCollection && resource instanceof Resource) {
+            ResourceCollection collection = (ResourceCollection) property;
+            collection = reconcilePersistableChildBeans(authenticatedUser, collection);
+            resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getResourceCollections(),
+                    authenticatedUser, true,
+                    ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
+            toReturn = null;
+        }
 
-            if (property instanceof ResourceAnnotation) {
-                ResourceAnnotationKey incomingKey = ((ResourceAnnotation) property).getResourceAnnotationKey();
-                ResourceAnnotationKey resolvedKey = genericService.findByExample(ResourceAnnotationKey.class, incomingKey, FindOptions.FIND_FIRST_OR_CREATE)
-                        .get(0);
-                ((ResourceAnnotation) property).setResourceAnnotationKey(resolvedKey);
-            }
+        if (property instanceof ResourceAnnotation) {
+            ResourceAnnotationKey incomingKey = ((ResourceAnnotation) property).getResourceAnnotationKey();
+            ResourceAnnotationKey resolvedKey = genericService.findByExample(ResourceAnnotationKey.class, incomingKey, FindOptions.FIND_FIRST_OR_CREATE)
+                    .get(0);
+            ((ResourceAnnotation) property).setResourceAnnotationKey(resolvedKey);
+        }
 
-            if (property instanceof Validatable && !(property instanceof Resource)) {
-                if (!((Validatable) property).isValidForController()) {
-                    if (property instanceof Project) {
-                        toReturn = (P) Project.NULL;
-                    } else if ((property instanceof Creator) && ((Creator) property).hasNoPersistableValues()) {
-                        toReturn = null;
-                    } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property).isInternal()) {
-                        toReturn = property;
-                    } else {
-                        throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
-                    }
+        if (property instanceof Validatable && !(property instanceof Resource)) {
+            if (!((Validatable) property).isValidForController()) {
+                if (property instanceof Project) {
+                    toReturn = (P) Project.NULL;
+                } else if ((property instanceof Creator) && ((Creator) property).hasNoPersistableValues()) {
+                    toReturn = null;
+                } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property).isInternal()) {
+                    toReturn = property;
+                } else {
+                    throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
                 }
             }
         }
         return toReturn;
+    }
+
+    private void resetOwnerOnSession(ResourceCollection collection) {
+        collection.setOwner(entityService.findOrSaveCreator(collection.getOwner()));
+        collection.setUpdater(entityService.findOrSaveCreator(collection.getUpdater()));
     }
 
     /**

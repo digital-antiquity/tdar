@@ -427,6 +427,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
      * 
      * @return
      */
+    @Deprecated
     public boolean isActuallyMapped() {
         if (PersistableUtils.isNullOrTransient(getMappedOntology()) && PersistableUtils.isNullOrTransient(getDefaultCodingSheet())) {
             return false;
@@ -442,11 +443,17 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @XmlElement(name = "mappedOntologyRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Deprecated()
     public Ontology getMappedOntology() {
         if (getDefaultCodingSheet() != null && getDefaultCodingSheet().getDefaultOntology() != null) {
             return getDefaultCodingSheet().getDefaultOntology();
         }
         return null;
+    }
+    
+    @Deprecated
+    public void setMappedOntology(Ontology ont) {
+        logger.warn("setting mappedOntology does nothing...");
     }
 
     @JsonView(JsonIntegrationDetailsFilter.class)

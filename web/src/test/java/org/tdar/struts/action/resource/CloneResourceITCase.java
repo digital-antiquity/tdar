@@ -9,7 +9,7 @@ import org.tdar.core.service.ImportService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
-public class CloneDatasetITCase extends AbstractDataIntegrationTestCase {
+public class CloneResourceITCase extends AbstractDataIntegrationTestCase {
 
     @Autowired
     SerializationService serializationService;
@@ -29,6 +29,19 @@ public class CloneDatasetITCase extends AbstractDataIntegrationTestCase {
         Long id = dataset.getId();
         genericService.synchronize();
         Dataset newDoc = importService.cloneResource(dataset, getAdminUser());
+        genericService.synchronize();
+        logger.debug(serializationService.convertToXML(newDoc));
+
+    }
+
+
+    @Test
+    @Rollback
+    public void testCodingSheet() throws Exception {
+        Long id = 43000L;
+        CodingSheet cs = genericService.find(CodingSheet.class, id);
+        genericService.synchronize();
+        CodingSheet newDoc = importService.cloneResource(cs, getAdminUser());
         genericService.synchronize();
         logger.debug(serializationService.convertToXML(newDoc));
 

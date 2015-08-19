@@ -1,15 +1,15 @@
-hibernate.search.default.indexBase=indexes
+hibernate.search.default.indexBase=indexes/${hg.branch}
 hibernate.search.analyzer=org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer
 hibernate.generate_statistics=true
 tdar.database.host=localhost:5432
 
 javax.persistence.jdbc.user=tdar
 javax.persistence.jdbc.password=
-javax.persistence.jdbc.url=jdbc:postgresql://${tdar.database.host}/tdarmetadata
+javax.persistence.jdbc.url=jdbc:postgresql://${tdar.database.host}/tdarmetadata_${hg.branch}
 javax.persistence.jdbc.driver=org.postgresql.Driver
 hibernate.dialect=org.hibernate.dialect.PostgreSQL9Dialect
 
-tdardata.connection.url=jdbc:postgresql://${tdar.database.host}/tdardata
+tdardata.connection.url=jdbc:postgresql://${tdar.database.host}/tdardata_${hg.branch}
 
 
 tdar.database.maxIdleTimeForConnection=600

@@ -51,6 +51,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -142,9 +145,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     // private transient boolean readyToIndex = true;
     public enum CollectionType {
-        INTERNAL("Internal"),
-        SHARED("Shared"),
-        PUBLIC("Public");
+        INTERNAL("Internal"), SHARED("Shared"), PUBLIC("Public");
 
         private String label;
 
@@ -165,10 +166,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Column
     @JsonView(JsonLookupFilter.class)
     @Fields({
-            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
+            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class) ),
             @Field(name = QueryFieldNames.COLLECTION_NAME),
             @Field(name = QueryFieldNames.COLLECTION_NAME_PHRASE, norms = Norms.NO, store = Store.NO,
-                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) ),
     })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
@@ -184,8 +185,21 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
+
+    /**
+     * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
+     * field when it only really needs to get at the Ids for proper logging.
+     * 
+     * @return
+     */
+    @ElementCollection
+    @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id") )
+    @Column(name = "resource_id")
+    @Immutable
+    private Set<Long> resourceIds;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
@@ -237,7 +251,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private ResourceCollection parent;
 
     @ElementCollection()
-    @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id"))
+    @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id") )
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
 
@@ -289,7 +303,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Fields({
             @Field,
             @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
-                    impl = TdarCaseSensitiveStandardAnalyzer.class))
+                    impl = TdarCaseSensitiveStandardAnalyzer.class) )
     })
     @Override
     @JsonView(JsonLookupFilter.class)
@@ -301,12 +315,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.description = description;
     }
 
-    @XmlElementWrapper(name = "resources")
-    @XmlElement(name = "resourceRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    //if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could crash tDAR if > 100,000)
+    @XmlTransient
     public Set<Resource> getResources() {
         return resources;
     }
+
 
     public void setResources(Set<Resource> resources) {
         this.resources = resources;
@@ -612,7 +626,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Fields({
             @Field,
             @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
-                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) )
     })
     // @Boost(1.5f)
     @Override
@@ -704,8 +718,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     /**
-     * Remove entries from provided list of AuthorizedUsers that contain duplicate User values.  Retained
+     * Remove entries from provided list of AuthorizedUsers that contain duplicate User values. Retained
      * AuthorizedUsers will always have equal or greater permissions relative to the removed duplicate items.
+     * 
      * @param authorizedUsers
      */
     public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
@@ -794,8 +809,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Fields({
-            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
-            @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) ),
+            @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class) ) })
     public String getAllFieldSearch() {
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
@@ -837,24 +852,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return UrlUtils.slugify(getName());
     }
 
-    @Field(name = QueryFieldNames.COLLECTION_HIDDEN_WITH_RESOURCES)
-    @XmlTransient
-    public boolean isVisibleInSearch() {
-        if (hidden) {
-            return false;
-        }
-        boolean contents = false;
-        for (Resource resource : getResources()) {
-            contents = true;
-            // if we have 1 active item, return true
-            if (resource.isActive()) {
-                return true;
-            }
-        }
-        // if the collection is completely empty show, this is a fallback with the assumption that the collection has children
-        return !contents;
-    }
-
     @XmlTransient
     public boolean isWhiteLabelCollection() {
         return false;
@@ -873,6 +870,23 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @XmlTransient
     public boolean isSubCollection() {
         return parent != null;
+    }
+
+    /**
+     * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
+     * field when it only really needs to get at the Ids for proper logging.
+     * 
+     * @return
+     */
+    @XmlElementWrapper(name = "resources")
+    @XmlElement(name = "resourceId")
+    public Set<Long> getResourceIds() {
+        return resourceIds;
+    }
+
+    @Transient
+    public void setResourceIds(Set<Long> resourceIds) {
+        this.resourceIds = resourceIds;
     }
 
 }

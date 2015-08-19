@@ -27,10 +27,12 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
@@ -78,6 +80,22 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         serializationService.parseXml(FileProxies.class, new StringReader(xml));
 
     }
+    
+    @Test
+    @Rollback
+    public void exportResourceCollection() throws Exception {
+        ResourceCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
+        for (Resource r : genericService.findRandom(Resource.class, 10)) {
+            collection.getResources().add(r);
+            r.getResourceCollections().add(collection);
+        }
+        genericService.saveOrUpdate(collection);
+        genericService.synchronize();
+        genericService.refresh(collection);
+        String convertToXML = serializationService.convertToXML(collection);
+        logger.debug(convertToXML);
+        
+    }
 
     @Test
     public void testJsonExport() throws Exception {
@@ -111,7 +129,12 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Rollback(false)
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
-
+        ResourceCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
+        collection.getResources().add(project);
+        project.getResourceCollections().add(collection);
+        genericService.saveOrUpdate(project);
+        genericService.saveOrUpdate(collection);
+        final int totalShared = project.getSharedResourceCollections().size();
         final String xml = serializationService.convertToXML(project);
         logger.info(xml);
         genericService.detachFromSession(project);
@@ -121,14 +144,22 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
             @Override
             public Project doInTransaction(TransactionStatus arg0) {
                 boolean exception = false;
+                Integer size = -1;
+                Project newProject = null;
                 try {
-                    Project newProject = (Project) serializationService.parseXml(new StringReader(xml));
+                    newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
                     newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
+                    logger.debug("collections:{}",newProject.getResourceCollections());
+                     size = newProject.getSharedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);
+                } finally {
+//                    genericService.delete(newProject.getResourceCollections());
+//                    genericService.delete(newProject);
                 }
+                assertEquals(totalShared, size.intValue());
                 assertFalse(exception);
                 return null;
             }

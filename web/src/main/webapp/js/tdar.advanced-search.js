@@ -13,7 +13,7 @@ TDAR.advancedSearch = (function () {
         $('#searchGroups').on('change', '.searchType', function (evt) {
             "use strict";
 
-            console.log("change event on %s", this.id);
+            //console.log("change event on %s", this.id);
             var $select = $(this);
             var searchType = $select.val();
             var $controlGroup = $select.parent();
@@ -227,7 +227,7 @@ TDAR.advancedSearch = (function () {
             });
 
             //don't persist dom elements created by google map api
-            console.log("clearing map information")
+            //console.log("clearing map information")
             $('#large-google-map').removeData();
             $('#large-google-map').empty("div");
 
@@ -258,10 +258,10 @@ TDAR.advancedSearch = (function () {
             var $elem = $(elem);
             if ($elem.prop(booleanPropertyName)) {
                 $elem.attr(booleanPropertyName, booleanPropertyName);
-                console.log("setting %s attribute for elem:%s", booleanPropertyName, elem);
+                //console.log("setting %s attribute for elem:%s", booleanPropertyName, elem);
             } else {
                 $elem.removeAttr(booleanPropertyName);
-                console.log("removing %s attribute for elem:%s", booleanPropertyName, elem);
+                //console.log("removing %s attribute for elem:%s", booleanPropertyName, elem);
             }
         });
     }
@@ -275,7 +275,7 @@ TDAR.advancedSearch = (function () {
                 prefix = "?";
             }
             url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage').val();
-            window.location = url;
+            TDAR.windowLocation(url);
         });
 
         $("#sortField").change(function () {
@@ -286,7 +286,7 @@ TDAR.advancedSearch = (function () {
                 prefix = "?";
             }
             url = prefix + url + "&sortField=" + $('#sortField').val();
-            window.location = url;
+            TDAR.windowLocation(url);
         });
 
     }
@@ -297,3 +297,4 @@ TDAR.advancedSearch = (function () {
         "initializeResultsPage" : _initializeResultsPage
     };
 })();
+

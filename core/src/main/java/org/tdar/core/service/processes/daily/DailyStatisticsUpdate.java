@@ -1,11 +1,14 @@
 package org.tdar.core.service.processes.daily;
 
+import org.hibernate.stat.Statistics;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 
@@ -30,6 +33,9 @@ public class DailyStatisticsUpdate extends AbstractScheduledProcess {
     @Autowired
     private transient StatisticService statisticService;
 
+    @Autowired
+    private transient GenericService genericService;
+
     @Override
     public String getDisplayName() {
         return "Daily statistics service";
@@ -47,6 +53,8 @@ public class DailyStatisticsUpdate extends AbstractScheduledProcess {
 
     @Override
     public void execute() {
+        Statistics sessionStatistics = genericService.getSessionStatistics();
+        sessionStatistics.clear();
         logger.info("adding statistics");
         statisticService.generateAggregateDailyResourceData(DateTime.now().minusDays(1).toDate());
         statisticService.generateAggregateDailyDownloadData(DateTime.now().minusDays(1).toDate());
