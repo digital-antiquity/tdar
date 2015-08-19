@@ -56,7 +56,7 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
             return null;
         }
         JAXBPersistableRef ref = (JAXBPersistableRef)ref_;
-        Class<Persistable> cls = reflectionService.getMatchingClassForSimpleName(ref.getType());
+        Class<? extends Persistable> cls = reflectionService.getMatchingClassForSimpleName(ref.getType());
         ResourceCollection rc = (ResourceCollection) genericService.find(cls, ref.getId());
         ResourceCollection rc_ = new ResourceCollection();
         rc_.setType(rc.getType());
