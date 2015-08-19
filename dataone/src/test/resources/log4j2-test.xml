@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN" monitorInterval="30">
+<Configuration status="ERROR" monitorInterval="30">
         <Appenders>
                 <Console name="Console" target="SYSTEM_OUT">
                         <PatternLayout pattern="%-5p %d %-4r [%t %x] (%F:%L) %c - %m%n" />
@@ -26,15 +26,12 @@
                 </Routing>
  -->        </Appenders>
         <Loggers>
-                <Root level="WARN">
+                <Root level="ERROR">
                     <AppenderRef ref="Console" />
                 </Root>
                 <Logger name="org.hibernate.util.JDBCExceptionReporter" level="debug" />
                 <Logger name="org.liquibase" level="error" />
-                <Logger name="org.tdar" level="DEBUG">
-                        <AppenderRef ref="RollingFile" />
-                        <AppenderRef ref="Console" />
-                </Logger>
+                <Logger name="org.tdar" level="DEBUG"/>
                 <Logger name="uk.org" level="debug" />
 
                 <!--// log parameterized SQL statements -->

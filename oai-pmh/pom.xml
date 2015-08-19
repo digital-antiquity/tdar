@@ -72,6 +72,12 @@
             <artifactId>log4j-email-throttle</artifactId>
             <version>1.0.0</version>
             <!-- LICENSE: APACHE 2.0 -->
+			<exclusions>
+			    <exclusion>
+			        <artifactId>log4j</artifactId>
+			        <groupId>log4j</groupId>
+			    </exclusion>
+			</exclusions>
         </dependency>
         <dependency>
             <groupId>stax</groupId>
@@ -94,6 +100,10 @@
                     <artifactId>httpmime</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+	                <exclusion>
+	                    <groupId>commons-logging</groupId>
+	                    <artifactId>commons-logging</artifactId>
+	                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -161,6 +171,10 @@
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
                 </exclusion>
+	                <exclusion>
+	                    <groupId>commons-logging</groupId>
+	                    <artifactId>commons-logging</artifactId>
+	                </exclusion>
             </exclusions>
         </dependency>
         <!-- Servlet & Jsp -->
