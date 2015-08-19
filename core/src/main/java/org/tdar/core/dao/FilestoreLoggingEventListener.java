@@ -1,6 +1,10 @@
 package org.tdar.core.dao;
 
+import org.hibernate.event.spi.AbstractEvent;
 import org.hibernate.event.spi.EventSource;
+import org.hibernate.event.spi.PostCommitDeleteEventListener;
+import org.hibernate.event.spi.PostCommitInsertEventListener;
+import org.hibernate.event.spi.PostCommitUpdateEventListener;
 import org.hibernate.event.spi.PostDeleteEvent;
 import org.hibernate.event.spi.PostDeleteEventListener;
 import org.hibernate.event.spi.PostInsertEvent;
@@ -11,11 +15,10 @@ import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.XmlLoggable;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 public class FilestoreLoggingEventListener implements PostInsertEventListener,
-        PostUpdateEventListener, PostDeleteEventListener {
+        PostUpdateEventListener, PostDeleteEventListener, PostCommitUpdateEventListener, PostCommitInsertEventListener, PostCommitDeleteEventListener {
 
     private static final long serialVersionUID = -2773973927518207238L;
 
@@ -28,14 +31,15 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
 
     @Override
     public void onPostDelete(PostDeleteEvent event) {
-        if (testSession(event.getSession())) {
-            logger.error("trying to logToXML: {} but session is closed", event.getEntity());
-            return;
-        }
-        logToXml(event.getEntity());
+        logToXml(event, event.getEntity());
     }
 
-    private void logToXml(Object obj) {
+    private void logToXml(AbstractEvent event, Object obj) {
+        if (testSession(event.getSession())) {
+            logger.error("trying to logToXML: {} but session is closed", obj);
+            return;
+        }
+
         if (obj == null) {
             return;
         }
@@ -51,19 +55,7 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
 
     @Override
     public void onPostUpdate(PostUpdateEvent event) {
-        if (testSession(event.getSession())) {
-            logger.error("trying to logToXML: {} but session is closed", event.getEntity());
-            return;
-        }
-
-        Object obj = event.getEntity();
-        // only skip on updates
-        if (obj instanceof XmlLoggable && !((XmlLoggable) obj).isReadyToStore()) {
-            logger.debug("skipping xml logging for: {}", obj);
-            return;
-        }
-
-        logToXml(obj);
+        logToXml(event, event.getEntity());
     }
 
     private boolean testSession(EventSource session) {
@@ -72,16 +64,27 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
 
     @Override
     public void onPostInsert(PostInsertEvent event) {
-        if (testSession(event.getSession())) {
-            logger.error("trying to logToXML: {} but session is closed", event.getEntity());
-            return;
-        }
-        logToXml(event.getEntity());
+        logToXml(event, event.getEntity());
     }
 
     @Override
     public boolean requiresPostCommitHanding(EntityPersister persister) {
         return false;
+    }
+
+    @Override
+    public void onPostUpdateCommitFailed(PostUpdateEvent event) {
+        logger.error("logging to filestore failed: {}", event);
+    }
+
+    @Override
+    public void onPostDeleteCommitFailed(PostDeleteEvent event) {
+        logger.error("logging to filestore failed: {}", event);
+    }
+
+    @Override
+    public void onPostInsertCommitFailed(PostInsertEvent event) {
+        logger.error("logging to filestore failed: {}", event);
     }
 
 }
