@@ -52,6 +52,12 @@
 			<groupId>org.tdar</groupId>
 			<artifactId>core</artifactId>
 			<version>${version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.tdar</groupId>
@@ -59,8 +65,13 @@
 			<version>${version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>keytool-api</artifactId>
@@ -102,6 +113,11 @@
 					<artifactId>httpmime</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
 				</exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                
 			</exclusions>
 		</dependency>
         <dependency>
@@ -174,7 +190,14 @@
 					<artifactId>foresite</artifactId>
 					<groupId>com.googlecode.foresite-toolkit</groupId>
 				</exclusion>
-
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
 			</exclusions>
 		</dependency>
 		<!-- <dependency> <groupId>org.dataone</groupId> <artifactId>d1_libclient_java</artifactId> 
@@ -205,6 +228,19 @@
 					<artifactId>xalan</artifactId>
 					<groupId>xalan</groupId>
 				</exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                
 			</exclusions>
 		</dependency>
 
@@ -226,6 +262,14 @@
 					<artifactId>httpclient</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
 				</exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
 			</exclusions>
 		</dependency>
 		<!-- Servlet & Jsp -->
