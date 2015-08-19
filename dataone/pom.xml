@@ -16,8 +16,6 @@
 		<jetty.ssl.port>8443</jetty.ssl.port>
 		<jetty.stop.port>12919</jetty.stop.port>
 		<warfile.name>ROOT</warfile.name>
-		<skipWebTests>false</skipWebTests>
-		<skipSeleniumTests>false</skipSeleniumTests>
 	    <jersey.version>1.19</jersey.version>
 	</properties>
 	<parent>
@@ -52,12 +50,6 @@
 			<groupId>org.tdar</groupId>
 			<artifactId>core</artifactId>
 			<version>${version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.tdar</groupId>
@@ -65,12 +57,6 @@
 			<version>${version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
@@ -239,8 +225,7 @@
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
                     <groupId>org.slf4j</groupId>
-                </exclusion>
-                
+                </exclusion>                
 			</exclusions>
 		</dependency>
 
@@ -282,25 +267,6 @@
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>2.2</version>
-		</dependency>
-		<!-- CXF for web-services endpoint -->
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>${apache.cxf.version}</version>
-			<!-- LICENSE: APACHE 2.0 -->
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>${apache.cxf.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>asm</artifactId>
-					<groupId>asm</groupId>
-				</exclusion>
-			</exclusions>
-			<!-- LICENSE: APACHE 2.0 -->
 		</dependency>
 	</dependencies>
 

@@ -30,19 +30,23 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@ComponentScan(basePackages = { "org.tdar" }, excludeFilters= {})
+@ComponentScan(basePackages = { "org.tdar" }, excludeFilters = {})
 @ImportResource(value = { "classpath:/spring-local-settings.xml" })
 public class SimpleAppConfiguration implements Serializable {
 
-	private static final long serialVersionUID = 2190713147269025044L;
-	public transient Logger logger = LoggerFactory.getLogger(getClass());
+    private static final long serialVersionUID = 2190713147269025044L;
+    public transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    public SimpleAppConfiguration() {
+        System.setProperty("org.jboss.logging.provider", "slf4j");
+    }
 
     @Bean(name = "sessionFactory")
     public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) {
         Properties properties = new Properties();
 
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
-        builder.scanPackages(new String[] { "org.tdar"});
+        builder.scanPackages(new String[] { "org.tdar" });
         builder.addProperties(properties);
         return builder.buildSessionFactory();
     }
@@ -53,14 +57,12 @@ public class SimpleAppConfiguration implements Serializable {
         sender.setHost(hostname);
         return sender;
     }
-    
 
     @Bean(name = "sessionData")
     @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public SessionData getSessionData() {
         return new SessionData();
     }
-
 
     @Bean
     @Primary
@@ -69,9 +71,8 @@ public class SimpleAppConfiguration implements Serializable {
         return hibernateTransactionManager;
     }
 
-
-	@Bean(name="processManager")
-	public ProcessManager processManager() {
-		return new BaseProcessManager();
-	}
+    @Bean(name = "processManager")
+    public ProcessManager processManager() {
+        return new BaseProcessManager();
+    }
 }
