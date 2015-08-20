@@ -361,7 +361,7 @@ public class TdarConfiguration {
     }
 
     public String getHelpUrl() {
-        return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/Documentation+Home");
+        return assistant.getStringProperty("help.url", getDocRoot() + "Documentation+Home");
     }
 
     public String getAboutUrl() {
@@ -573,19 +573,19 @@ public class TdarConfiguration {
     }
 
     public String getCulturalTermsHelpURL() {
-        return assistant.getStringProperty("help.url.cultural", "https://docs.tdar.org/display/TDAR/Cultural+Terms");
+        return assistant.getStringProperty("help.url.cultural", getDocRoot() + "Cultural+Terms");
     }
 
     public String getInvestigationTypesHelpURL() {
-        return assistant.getStringProperty("help.url.investigation", "https://docs.tdar.org/display/TDAR/Investigation+Types");
+        return assistant.getStringProperty("help.url.investigation", getDocRoot() + "Investigation+Types");
     }
 
     public String getMaterialTypesHelpURL() {
-        return assistant.getStringProperty("help.url.material", "https://docs.tdar.org/display/TDAR/Material+Types");
+        return assistant.getStringProperty("help.url.material", getDocRoot() + "Material+Types");
     }
 
     public String getSiteTypesHelpURL() {
-        return assistant.getStringProperty("help.url.site", "https://docs.tdar.org/display/TDAR/Site+Types");
+        return assistant.getStringProperty("help.url.site", getDocRoot() + "Site+Types");
     }
 
     /*
@@ -597,8 +597,21 @@ public class TdarConfiguration {
         return assistant.getLongProperty("featured.collection.id", -1);
     }
 
+    public String getDocRoot() {
+        return assistant.getStringProperty("help.root", "https://docs.tdar.org/display/TDAR/");
+    }
+
     public String getDocumentationUrl() {
-        return assistant.getStringProperty("help.baseurl", "https://docs.tdar.org/display/TDAR/Documentation+Home");
+        return assistant.getStringProperty("help.baseurl", getDocRoot() + "Documentation+Home");
+    }
+
+    public String getResourceCreatorRoleDocumentationUrl() {
+        return assistant.getStringProperty("help.resourceCreatorRole", getDocRoot() + "Resource+Creator+Roles");
+    }
+
+    
+    public String getIntegrationDocumentationUrl() {
+        return assistant.getStringProperty("help.integrationUrl", getDocRoot() + "Documentation+Home");
     }
 
     public String getBugReportUrl() {
@@ -917,4 +930,5 @@ public class TdarConfiguration {
         filestore = loadFilestore();
         initPersonalFilestorePath();
     }
+
 }

@@ -18,7 +18,7 @@
 <p>
     If you have other concerns or questions or would like additional information, there are
     tutorials and documentation available on the <a
-        href='https://docs.tdar.org'>${siteAcronym!'site'} wiki</a>. We also maintain a frequently
+        href='${documentationUrl}'>${siteAcronym!'site'} wiki</a>. We also maintain a frequently
     monitored <a href='http://lists.asu.edu/cgi-bin/wa?A0=TDAR-DEV'>mailing list</a>
     where you can ask questions pertaining to the development or usage of the tDAR
     software platform.
