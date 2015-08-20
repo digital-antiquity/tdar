@@ -49,6 +49,10 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkWithText("edit");
         setInput("projectId", projectId.toString());
         submitForm();
+        try {
+            wait(600);
+        } catch (Exception e) {
+        }
         gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
         assertTextNotPresent(resourceName);
         gotoPage("/project/" + projectId.toString());
@@ -57,6 +61,10 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkWithText("edit");
         setInput("projectId", "-1");
         submitForm();
+        try {
+            wait(600);
+        } catch (Exception e) {
+        }
         assertTextNotPresent(PROJECT_NAME);
         gotoPage("/project/" + projectId.toString());
         assertTextNotPresent(resourceName);
