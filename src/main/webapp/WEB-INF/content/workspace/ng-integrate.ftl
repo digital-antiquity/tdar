@@ -468,7 +468,7 @@ ${categoriesJson}
 
             <div class="row-fluid">
                 <div class="span12">
-                    <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
+                    <a type="button" class="btn" ng-href="<@s.url value="/workspace/download?ticketId={{download.ticketId}}"/>">Download</a>
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                 </div>
             </div>

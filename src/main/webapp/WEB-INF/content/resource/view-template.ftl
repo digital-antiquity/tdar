@@ -207,7 +207,7 @@
                 </div>
             </div>
                 <#if tdarConfiguration.xmlExportEnabled>
-                <p class="faims_xml_logo"><a href="/dataset/xml?dataTableId=${dataTable.id?c}" target="_blank">XML</a></p>
+                <p class="faims_xml_logo"><a href="<@s.url value="/dataset/xml?dataTableId=${dataTable.id?c}"/>" target="_blank">XML</a></p>
                 </#if>
             </#if>
 
@@ -537,7 +537,7 @@
             <#if (authenticatedUser.id)?has_content>
                     <a href="#" id="emailButton" class="">${txt}</a>
             <#else>
-                    <a href="/login?url=${currentUrl}?showEmail">${txt} (requires login)</a>
+                    <a href="<@s.url value="/login?url=${currentUrl}?showEmail"/>">${txt} (requires login)</a>
             </#if>
             </div>
             </li>

@@ -287,7 +287,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                 <div class="row">
                     <div class="span5">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-edit.png" width="60" alt="edit" title="edit"></a>
+                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-edit.png"/>" width="60" alt="edit" title="edit"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Create &amp; Edit Metadata
@@ -300,7 +300,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     </div>
                     <div class="span5">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-institution.png" width="60" alt="institution" title="institution"></a>
+                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-institution.png"/>" width="60" alt="institution" title="institution"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Agency &amp; CRM Ready
@@ -315,7 +315,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                 <div class="row topspace">
                     <div class="span5">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-cloud.png" width="60" alt="upload" title="upload"></a>
+                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-cloud.png"/>" width="60" alt="upload" title="upload"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Easy Upload
@@ -328,7 +328,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     </div>
                     <div class="span5">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-share.png" width="60" alt="share" title="share"></a>
+                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-share.png"/>" width="60" alt="share" title="share"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Share &amp; Cite
@@ -343,7 +343,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                 <div class="row topspace">
                     <div class="span5">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-lock.png" width="60" alt="secure" title="secure"></a>
+                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-lock.png"/>" width="60" alt="secure" title="secure"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Confidential &amp; Secure
@@ -356,7 +356,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     </div>
                     <div class="span5">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="/images/r4/icn-safe.png" width="60" alt="preserve" title="preserve"></a>
+                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-safe.png"/>" width="60" alt="preserve" title="preserve"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Preserve

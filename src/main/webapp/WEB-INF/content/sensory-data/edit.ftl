@@ -357,20 +357,20 @@
                 <ul id="ulTemplateList">
                     <li class="phase_based time_of_flight" id="liTofPhase">
                   <span class="inlineblock">
-                      <a target="_blank" href="/includes/sensory-data/scan_metadata_tof_phase.xlsx"><i class="icon-file"></i> scan_metadata_tof.xlsx</a>
+                      <a target="_blank" href="<@s.url value="/includes/sensory-data/scan_metadata_tof_phase.xlsx"/>"><i class="icon-file"></i> scan_metadata_tof.xlsx</a>
                           best for time-of-flight and phase-based scans
                   </span>
                     </li>
 
                     <li class="triangulation" id="liTriangulation">
                   <span class="inlineblock">
-                      <a target="_blank" href="/includes/sensory-data/scan_metadata_triangulation.xlsx"><i class="icon-file"></i>
+                      <a target="_blank" href="<@s.url value="/includes/sensory-data/scan_metadata_triangulation.xlsx"/>"><i class="icon-file"></i>
                           scan_metadata_triangulation.xlsx</a>
                           best for triangulation scans
                   </span>
                     </li>
                     <li class="combined" id="liCombined">
-                  <span class="inlineblock"><a target="_blank" href="/includes/sensory-data/scan_metadata_combined.xlsx"><i class="icon-file"></i>
+                  <span class="inlineblock"><a target="_blank" href="<@s.url value="/includes/sensory-data/scan_metadata_combined.xlsx"/>"><i class="icon-file"></i>
                       scan_metadata_combined.xlsx</a>
                           best for scans that involve multiple scan technologies
                   </span>
