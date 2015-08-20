@@ -77,7 +77,7 @@ TDAR.fileupload = (function (TDAR, $) {
 
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
-            maxNumberOfFiles: TDAR.maxUploadFiles,
+            maxNumberOfFiles: $(document).data("maxUploadFiles"),
             getNumberOfFiles: function () {
                 return this.filesContainer.children().not(".deleted-file, .hidden, .replace-target").length;
             },

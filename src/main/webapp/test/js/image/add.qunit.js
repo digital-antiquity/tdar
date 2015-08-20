@@ -124,7 +124,7 @@
     }
 
     $(function () {
-        TDAR.maxUploadFiles = 2;
+        $(document).data("maxUploadFiles", 2);
         module("FILE UPLOAD", fileuploadModule);
         test("sanity check", function () {
             fileuploadModule.fillOutRequiredFields();

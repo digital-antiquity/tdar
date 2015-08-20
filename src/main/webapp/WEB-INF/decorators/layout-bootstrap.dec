@@ -86,6 +86,8 @@ ${head}
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
+    data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
+      <#if authenticatedUser?has_content>data-currentTime="1" </#if>
       <#if ngApplicationName?has_content>ng-cloak</#if>>
     <#if qunit>
     <div id="qunit"></div>
@@ -231,41 +233,19 @@ ${head}
     </#if>
 
 
-    <script type="text/javascript">
-        //functionality for "welcome back, so-and-so!" (pulled from main.js)
-        //FIXME: needs refactoring
-        $(function () {
-            $("#welcome-menu a").click(function () {
-                $(".welcome-drop").toggle();
-                return false;
-            });
-
-            // for the last 60 pixels of the searchboxes, make it submit the parent form
-            $(".searchbox").click(function (e) {
-                var $t = $(e.target);
-                var ar = $(e.target).offset().left + $t.width() - 60;
-                if (e.pageX > ar) {
-                    $t.parents("form").submit();
-                }
-            });
-            $(document).click(function () {
-                $('.welcome-drop').hide();
-            });
-
-            TDAR.common.applyWatermarks($('form.searchheader, form[name=searchheader]'));
-        });
-    </script>
     <@header.scripts ( webFilePreprocessingEnabled) />
     <script type="text/javascript">
         TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
         TDAR.maps.defaults.center.lat = ${mapDefaultLat};
         TDAR.maps.defaults.center.lng = ${mapDefaultLng};
         TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
-        TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
-        TDAR.common.sessionTimeout = ${sessionTimeout?c};
+        <#--
+         TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
+         TDAR.common.sessionTimeout = ${sessionTimeout?c};
             <#if authenticatedUser?has_content>
             TDAR.common.currentTime = 1;
             </#if>
+            -->
     </script>
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>
