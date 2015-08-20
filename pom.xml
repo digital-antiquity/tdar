@@ -66,7 +66,7 @@
         <!-- Be warned: Eclipse may have a different active profile in play 
             to the command line -->
         <build.profile.id>default</build.profile.id>
-        <clover.version>4.0.2</clover.version>
+        <clover.version>4.0.4</clover.version>
         <clover.dir>${project.build.directory}</clover.dir>
 		<clover.license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
 		                        mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
@@ -2409,7 +2409,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>/home/bamboo/clover/${hg.branch}</clover.dir>
+                <clover.dir>${user.home}/clover/${hg.branch}</clover.dir>
             </properties>
             <build>
                 <plugins>
