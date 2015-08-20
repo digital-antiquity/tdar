@@ -37,7 +37,7 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testChangingProject() {
-        String resourceName = "changing project resource";
+        String resourceName = "changing project resource " + System.currentTimeMillis();
         Long projectId = createResourceFromType(ResourceType.PROJECT, PROJECT_NAME);
         setupDocumentWithProject(resourceName);
         String url = getCurrentUrlPath();
