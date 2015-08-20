@@ -56,6 +56,7 @@ public class AuthenticationServiceTest {
         assertThat(service.isPossibleValidUsername("bob"),  is (true));
         assertThat(service.isPossibleValidUsername("bobb"),  is (true));
         assertThat(service.isPossibleValidUsername("bobby"),  is (true));
+        assertThat(service.isPossibleValidUsername("jim"), is(true));
     }
 
     @Test
