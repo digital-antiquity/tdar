@@ -25,13 +25,7 @@ import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
-import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.EntityService;
-import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchFieldType;
 import org.tdar.core.service.search.SearchService;
@@ -82,28 +76,10 @@ public class ExploreController extends AbstractLookupController {
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     @Autowired
-    private transient BillingAccountService accountService;
-
-    @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
-    private transient AuthenticationService authenticationService;
-
-    @Autowired
-    private transient EntityService entityService;
-
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-
-    @Autowired
     private transient GenericKeywordService genericKeywordService;
 
     @Autowired
     private transient SearchService searchService;
-
-    @Autowired
-    private transient FileSystemResourceService fileSystemResourceService;
 
     @Autowired
     private transient ResourceService resourceService;
@@ -117,7 +93,7 @@ public class ExploreController extends AbstractLookupController {
         setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
-        resourceService.setupWorldMap(worldMapData);
+        worldMapData = resourceService.setupWorldMap();
 
         int count = 10;
         getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));

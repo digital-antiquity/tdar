@@ -690,7 +690,8 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional
-    public void setupWorldMap(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
+    public HashMap<String, HomepageGeographicKeywordCache> setupWorldMap() {
+        HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
         Long countryTotal = 0l;
         Double countryLogTotal = 0d;
         for (HomepageGeographicKeywordCache item : findAllWithL2Cache(HomepageGeographicKeywordCache.class)) {
@@ -708,6 +709,7 @@ public class ResourceService extends GenericService {
             entrySet.getValue().setTotalCount(countryTotal);
             entrySet.getValue().setTotalLogCount(countryLogTotal);
         }
+        return worldMapData;
     }
 
     @Transactional(readOnly = true)

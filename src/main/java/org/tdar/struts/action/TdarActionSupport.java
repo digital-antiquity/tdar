@@ -900,4 +900,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return true;
     }
     
+    public boolean isNavSearchBoxVisible() {
+        return true;
+    }
+    
 }

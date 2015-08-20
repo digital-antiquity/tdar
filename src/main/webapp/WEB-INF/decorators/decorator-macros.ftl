@@ -1,3 +1,5 @@
+<#escape _untrusted as _untrusted?html>
+
 <#macro layout_header>
 
 <#include "/${themeDir}/header.dec" />
@@ -41,36 +43,38 @@
 
 <nav>
     <ul class="hidden-phone-portrait">
-    <#include "/${themeDir}/nav-items.dec" />
+        <#include "${themeDir}/nav-items.dec" />
         <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
-    <#if ((authenticatedUser.contributor)!true)>
-        <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
+        <#if ((authenticatedUser.contributor)!true)>
+            <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
+        <li>
+            <#if navSearchBoxVisible>
+                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet  screen">
+                    <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
+                <#--<input type="hidden" name="_tdar.searchType" value="simple">-->
+                ${(page.properties["div.divSearchContext"])!""}
+                </form>
+            </#if>
+        </li>
     </ul>
 
 </nav>
+
+
 </#macro>
 
-<#macro searchHeader>
-<#if !searchHeaderEnabled><#return></#if>
-<#assign subtitle = (resourceCollection.subtitle!(resourceCollection.institution.name)!'')>
-<div class="searchheader">
-    <div class="hero">
-        <div class="container">
-            <div class="pull-right whitelabel-login-menu" ><@common.loginMenu false/></div>
-            <h2 class="color-title">${title}</h2>
-            <#if subtitle?has_content>
-            <p class="color-subtitle">${subtitle}</p>
-            </#if>
-            <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
-                <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
-                <a href="/search/advanced?collectionId=${resourceCollection.id?c}">advanced</a>
-                <input type="hidden" name="_tdar.searchType" value="simple">
-                <input type="hidden" name="collectionId" value="${resourceCollection.id}">
-            </form>
-
+<#macro homepageHeader>
+    <div class="row">
+        <div class="hero">
+            <#include "${themeDir}/homepage-banner.dec" />
+        <@common.loginMenu true/>
         </div>
+        <ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
     </div>
-</div>
+
+
+    <#include "${themeDir}/homepage-column-one.dec" />
+
 </#macro>
 
 <#macro subnav>
@@ -100,3 +104,5 @@
 </div>
 </#if>
 </#macro>
+
+</#escape>

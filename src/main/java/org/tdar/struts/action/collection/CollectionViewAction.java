@@ -104,6 +104,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
+    private boolean showNavSearchBox = true;
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -210,10 +211,15 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     })
     public String view() throws TdarActionException {
         String result = super.view();
-        if (SUCCESS.equals(result) && getPersistable().isWhiteLabelCollection()) {
+        if (SUCCESS.equals(result) && isWhiteLabelCollection()) {
+            showNavSearchBox = false;
             result = CollectionViewAction.SUCCESS_WHITELABEL;
         }
         return result;
+    }
+
+    private boolean isWhiteLabelCollection() {
+        return getPersistable().isWhiteLabelCollection();
     }
 
     private void buildLuceneSearch() throws TdarActionException {
@@ -500,4 +506,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return baseUrl;
     }
 
+    
+    @Override
+    public boolean isNavSearchBoxVisible() {
+        return showNavSearchBox;
+    }
 }
