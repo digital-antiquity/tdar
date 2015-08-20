@@ -38,6 +38,13 @@ public class SimpleAppConfiguration implements Serializable {
     public transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public SimpleAppConfiguration() {
+        /*
+         * tDAR primarily uses the SLF4j fascade for all logging of the application, but then filters that through to log4j2 on the backend.
+         * This does produce some complexities with Hibernate. These issues are related to the following:
+         * * hibernate tries to auto-discover the logging source
+         * * some versions of jboss-logging will introduce their own custom versions of log4j
+         * * commons-logging and other logging options can also produce conflicts.
+         */
         System.setProperty("org.jboss.logging.provider", "slf4j");
     }
 

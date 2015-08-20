@@ -16,7 +16,6 @@
 		<jetty.ssl.port>8443</jetty.ssl.port>
 		<jetty.stop.port>12919</jetty.stop.port>
 		<warfile.name>ROOT</warfile.name>
-	    <jersey.version>1.19</jersey.version>
 	</properties>
 	<parent>
 		<groupId>org.tdar</groupId>

@@ -574,34 +574,23 @@
 					<jettyXml>${basedir}/src/main/resources/jetty/jetty.xml,${basedir}/src/main/resources/jetty/jetty-ssl.xml,${basedir}/src/main/resources/jetty/jetty-https.xml,${basedir}/src/main/resources/jetty/jetty-http.xml</jettyXml>
 					<contextXml>${basedir}/src/main/resources/jetty/jetty-context.xml</contextXml>
 					<systemProperties>
-						      
 						<systemProperty>
-							       
 							<name>jetty.ssl.port</name>
-							       
 							<value>${jetty.ssl.port}</value>
-							     
 						</systemProperty>
-						      
 						<systemProperty>
-							       
 							<name>maven.rootDir</name>
-							       
 							<value>${basedir}</value>
-							     
 						</systemProperty>
 						<systemProperty>
 							<name>jetty.port</name>
 							<value>${jetty.port}</value>
 						</systemProperty>
-						<!-- <systemProperty> <name>log4j.configuration</name> <value>file:${basedir}/src/main/resources/log4j.xml</value> 
-							</systemProperty> -->
 						<systemProperty>
 							<name>slf4j</name>
 							<value>true</value>
 						</systemProperty>
 					</systemProperties>
-					<contextPath>/</contextPath>
 					<webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
 					<stopKey>tdar</stopKey>

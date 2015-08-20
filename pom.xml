@@ -237,12 +237,9 @@
             <version>${slf4j.version}</version>
             <!-- LICENSE: MIT -->
         </dependency>
-<!--         <dependency>
-            HIBERNATE-SPRING - LOGGER (log4j)
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency> -->
+        <!-- <dependency> HIBERNATE-SPRING - LOGGER (log4j) <groupId>org.slf4j</groupId> 
+            <artifactId>slf4j-log4j12</artifactId> <version>${slf4j.version}</version> 
+            </dependency> -->
         <dependency>
             <groupId>com.mattbertolini</groupId>
             <artifactId>liquibase-slf4j</artifactId>
@@ -363,12 +360,6 @@
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
-        <!-- <dependency> -->
-        <!-- <groupId>org.hibernate</groupId> -->
-        <!-- <artifactId>hibernate-entitymanager</artifactId> -->
-        <!-- <version>${hibernate.version}</version> -->
-        <!-- LICENSE: LGPL 2.1 -->
-        <!-- </dependency> -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-ehcache</artifactId>
@@ -382,11 +373,13 @@
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <dependency>
+            <!-- this attempts to use the META-INF/ configuraiton for the 
+                right logging source; this allows us to pipe hibernate into slf4j -->
             <groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-        	<version>3.1.4.GA</version>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.1.4.GA</version>
         </dependency>
-		
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-search</artifactId>
