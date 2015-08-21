@@ -57,6 +57,10 @@
             return this.each(function () {
                 $(this).data(DATA_FIELD, true);
             });
+        }  else if (options === "dirty") {
+            return this.each(function () {
+                $(this).data(DATA_FIELD, false);
+            });
         }
 
         var _options = {customEvents: null, message: "Your changes have not been saved.", cleanOnSubmit: true};
