@@ -41,7 +41,7 @@ public class ContextualSeachSeleniumITCase extends AbstractEditorSeleniumWebITCa
     }
 
     @Test
-    public void testProjectResults2() {
+    public void testProjectResults() {
         basicTest(format("/project/%s/new-philadelphia-archaeology-project", PROJECT_ID), PROJECT_QUERY);
     }
 

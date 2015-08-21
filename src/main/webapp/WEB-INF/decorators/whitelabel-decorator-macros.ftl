@@ -1,5 +1,3 @@
-<#escape _untrusted as _untrusted?html>
-
 <#macro searchHeader>
 <#if !searchHeaderEnabled><#return></#if>
 <#assign subtitle = (resourceCollection.subtitle!(resourceCollection.institution.name)!'')>
@@ -22,5 +20,3 @@
     </div>
 </div>
 </#macro>
-
-</#escape>

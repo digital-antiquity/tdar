@@ -1,5 +1,3 @@
-<#escape _untrusted as _untrusted?html>
-
 <#macro layout_header>
 
 <#include "/${themeDir}/header.dec" />
@@ -105,5 +103,3 @@
 </div>
 </#if>
 </#macro>
-
-</#escape>
