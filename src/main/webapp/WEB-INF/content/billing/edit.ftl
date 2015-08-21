@@ -22,6 +22,23 @@
         <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
         <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
 
+
+        <#if billingManager>
+            <div class="control-group" id="divSubmitter">
+                <label class="control-label">Owner</label>
+
+                <div class="controls controls-row">
+                    <#if owner?has_content>
+                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
+                    prefix="owner" includeRights=false includeRepeatRow=false />
+	 	        <#else>
+                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
+                        prefix="owner" includeRights=false includeRepeatRow=false />
+                    </#if>
+                </div>
+            </div>
+        </#if>
+
 <#--
         <#if billingManager>
             <label class="">Status</label>
