@@ -101,11 +101,11 @@ ${head}
         </div>
         <#if homepage??>
             <@dec.homepageHeader />
-        <#else>
-            <@dec.subnav />
+        </#if>
+
+        <@dec.subnav />
             <!-- BEGIN-TDAR-CONTENT -->
 
-        </#if>
         <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
             <!-- toolbar -->
             <div class="row">
