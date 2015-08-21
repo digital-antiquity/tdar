@@ -18,7 +18,9 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 public class FilestoreLoggingEventListener implements PostInsertEventListener,
-        PostUpdateEventListener, PostDeleteEventListener, PostCommitUpdateEventListener, PostCommitInsertEventListener, PostCommitDeleteEventListener {
+        PostUpdateEventListener, PostDeleteEventListener
+//        , PostCommitUpdateEventListener, PostCommitInsertEventListener, PostCommitDeleteEventListener 
+        {
 
     private static final long serialVersionUID = -2773973927518207238L;
 
@@ -67,24 +69,24 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
         logToXml(event, event.getEntity());
     }
 
-    @Override
-    public boolean requiresPostCommitHanding(EntityPersister persister) {
-        return false;
-    }
-
-    @Override
-    public void onPostUpdateCommitFailed(PostUpdateEvent event) {
-        logger.error("logging to filestore failed: {}", event);
-    }
-
-    @Override
-    public void onPostDeleteCommitFailed(PostDeleteEvent event) {
-        logger.error("logging to filestore failed: {}", event);
-    }
-
-    @Override
-    public void onPostInsertCommitFailed(PostInsertEvent event) {
-        logger.error("logging to filestore failed: {}", event);
-    }
+//    @Override
+//    public boolean requiresPostCommitHanding(EntityPersister persister) {
+//        return false;
+//    }
+//
+//    @Override
+//    public void onPostUpdateCommitFailed(PostUpdateEvent event) {
+//        logger.error("logging to filestore failed: {}", event);
+//    }
+//
+//    @Override
+//    public void onPostDeleteCommitFailed(PostDeleteEvent event) {
+//        logger.error("logging to filestore failed: {}", event);
+//    }
+//
+//    @Override
+//    public void onPostInsertCommitFailed(PostInsertEvent event) {
+//        logger.error("logging to filestore failed: {}", event);
+//    }
 
 }
