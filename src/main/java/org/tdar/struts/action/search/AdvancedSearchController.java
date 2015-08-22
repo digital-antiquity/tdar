@@ -180,6 +180,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     })
     @Override
     public String execute() {
+        searchBoxVisible = false;
         return SUCCESS;
     }
 
@@ -271,6 +272,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     List<MaterialKeyword> allMaterialKeywords;
 
     private Keyword exploreKeyword;
+    private boolean searchBoxVisible = true;
 
     public List<MaterialKeyword> getAllMaterialKeywords() {
 
@@ -420,4 +422,10 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     public List<Status> getAllStatuses() {
         return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
+    
+    @Override
+    public boolean isNavSearchBoxVisible() {
+        return searchBoxVisible;
+    }
+
 }

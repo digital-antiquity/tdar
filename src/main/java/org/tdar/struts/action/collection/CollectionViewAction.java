@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -105,6 +104,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
+    private boolean showNavSearchBox = true;
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -211,10 +211,15 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     })
     public String view() throws TdarActionException {
         String result = super.view();
-        if (SUCCESS.equals(result) && getPersistable().isWhiteLabelCollection()) {
+        if (SUCCESS.equals(result) && isWhiteLabelCollection()) {
+            showNavSearchBox = false;
             result = CollectionViewAction.SUCCESS_WHITELABEL;
         }
         return result;
+    }
+
+    private boolean isWhiteLabelCollection() {
+        return getPersistable().isWhiteLabelCollection();
     }
 
     private void buildLuceneSearch() throws TdarActionException {
@@ -501,4 +506,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return baseUrl;
     }
 
+    
+    @Override
+    public boolean isNavSearchBoxVisible() {
+        return showNavSearchBox;
+    }
 }

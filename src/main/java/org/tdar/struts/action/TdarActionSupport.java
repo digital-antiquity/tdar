@@ -312,6 +312,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getDocumentationUrl();
     }
 
+    public String getIntegrationDocumentationUrl() {
+        return getTdarConfiguration().getIntegrationDocumentationUrl();
+    }
     public boolean isProduction() {
         return getTdarConfiguration().getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
     }
@@ -898,6 +901,14 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * */
     public boolean isSubnavEnabled() {
         return true;
+    }
+    
+    public boolean isNavSearchBoxVisible() {
+        return true;
+    }
+ 
+    public String getResourceCreatorRoleDocumentationUrl() {
+        return getTdarConfiguration().getResourceCreatorRoleDocumentationUrl();
     }
     
 }

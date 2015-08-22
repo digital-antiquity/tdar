@@ -107,7 +107,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         doc1.setTitle(title1);
         return doc1;
     }
-
+    
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testDeleteCollection() {
@@ -133,8 +133,10 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(currentUrlPath);
         clickLinkOnPage("delete");
         submitForm("delete");
-        gotoPage(currentUrlPath);
-        assertFalse(getPageText().contains("my fancy collection"));
+        logger.debug("currentPage: " + currentUrlPath);
+        gotoPageWithoutErrorCheck(currentUrlPath);
+        logger.debug("{}",internalPage);
+        assertFalse(getPageCode().contains("my fancy collection"));
 
     }
 

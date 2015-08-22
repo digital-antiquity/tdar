@@ -2,13 +2,10 @@ package org.tdar.struts.action.billing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -37,7 +34,6 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
@@ -54,10 +50,8 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     public static final String VIEW_ID = "${id}";
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
-    private static final String LIST_INVOICES = "listInvoices";
     private Long invoiceId;
     private List<BillingAccount> accounts = new ArrayList<>();
-    private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
 
     private BillingAccountGroup accountGroup;
@@ -117,28 +111,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return SUCCESS;
     }
 
-    @Override
-    public void loadListData() {
-        if (authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
-            getAccounts().addAll(accountService.findAll());
-        }
-    }
-
-    @SkipValidation
-    @RequiresTdarUserGroup(TdarGroup.TDAR_BILLING_MANAGER)
-    @Action(value = LIST_INVOICES, results = { @Result(name = SUCCESS, location = "list-invoices.ftl") })
-    public String listInvoices() {
-        if (authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
-            getInvoices().addAll(getGenericService().findAll(Invoice.class));
-            Collections.sort(getInvoices(), new Comparator<Invoice>() {
-                @Override
-                public int compare(Invoice o1, Invoice o2) {
-                    return ObjectUtils.compare(o2.getDateCreated(), o1.getDateCreated());
-                }
-            });
-        }
-        return SUCCESS;
-    }
 
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
@@ -325,14 +297,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public List<Invoice> getInvoices() {
-        return invoices;
-    }
-
-    public void setInvoices(List<Invoice> invoices) {
-        this.invoices = invoices;
     }
 
     @Override

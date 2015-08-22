@@ -132,7 +132,8 @@ color: #7d7a77;
 
 
                 <h2>Preservation Packages
-                <span><a class="button pull-right" href="/cart/add">Start Now</a>&nbsp;<a class="button pull-right" style="margin-left: 5px;margin-right:5px" href="/cart/add">Redeem Voucher</a></span></h2>
+                <span><a class="button pull-right" href="<@s.url value="/cart/add"/>">Start Now</a>&nbsp;<a class="button pull-right" style="margin-left: 5px;margin-right:5px" 
+                href="<@s.url value="/cart/add"/>">Redeem Voucher</a></span></h2>
                 <div class="row">
                     <div class="span2"></div>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='/cart/process-choice'>

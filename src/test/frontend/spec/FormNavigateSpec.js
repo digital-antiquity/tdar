@@ -34,5 +34,19 @@ describe("form navigate tests", function() {
         expect(status()).toBe('clean');
     });
 
+    it('can force clean/dirty state programmatically', function(){
+        expect(status()).toBe('not initialized');
+        $('form').FormNavigate();
+        expect(status()).toBe('clean');
+
+        //now make it dirty by fiat
+        $('form').FormNavigate('dirty');
+        expect(status()).toBe('dirty');
+
+        //now set back to clean
+        $('form').FormNavigate('clean');
+        expect(status()).toBe('clean');
+    });
+
 
 })

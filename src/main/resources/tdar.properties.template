@@ -137,7 +137,7 @@ google.analytics
 comment.url=mailto:comments@tdar.org
 
 # the report a bug URL
-# default: http://dev.tdar.org/jira
+# default: http://issues.tdar.org/
 bugreport.url=https://issues.tdar.org
 
 # the help / documentation url

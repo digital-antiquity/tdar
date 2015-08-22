@@ -16,6 +16,7 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.external.AuthorizationService;
@@ -64,8 +65,15 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
                 return CONFIRM;
             }
             logAction("DELETING");
-
+            try {
             delete(persistable);
+            } catch (FilestoreLoggingException fsl) {
+                logger.error("Could not log to filestore",fsl);
+                return SUCCESS;
+            } catch (Exception e) {
+                addActionErrorWithException(getText("abstractPersistableController.cannot_delete"),e);
+                return INPUT;
+            }
             return SUCCESS;
         }
 

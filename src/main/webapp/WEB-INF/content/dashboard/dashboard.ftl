@@ -51,14 +51,14 @@
                 </div>
                     <#if (showBuy)>
                     <div class="item">
-                        <a href="/cart/add">
+                        <a href="<@s.url value="/cart/add"/>">
                             <img class="" src="<@s.url value="/images/dashboard/upload.png"/>" width=120 height=150 alt="Purchase Space"/>
                                 Buy tDAR now
                         </a>
                     </div>
                     </#if>
                 <div class="item">
-                        <a href="/browse/explore">
+                        <a href="<@s.url value="/browse/explore"/>">
                             <img class="" src="<@s.url value="/images/dashboard/explore.png"/>" width=120 height=150 alt="Explore"/>
                                 Explore Content now
                         </a>

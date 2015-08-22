@@ -35,7 +35,18 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         tileProvider: 'osm',
         maxBounds: [[[-85, -180.0], [85, 180.0]]],
         minZoom: 2,
-        maxZoom: 17
+        maxZoom: 17,
+        
+        // config for leaflet.sleep
+        sleep: true,
+        // time(ms) for the map to fall asleep upon mouseout
+        sleepTime: 750,
+        // time(ms) until map wakes on mouseover
+        wakeTime: 750,
+        // defines whether or not the user is prompted oh how to wake map
+        sleepNote: false,
+        // should hovering wake the map? (clicking always will)
+        hoverToWake: true
 
     };
 

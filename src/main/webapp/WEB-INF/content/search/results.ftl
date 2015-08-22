@@ -101,7 +101,7 @@
                 <li>Bookmark datasets you'd like to integrate</li>
                 <li>Visit your workspace to begin the integration process</li>
             </ol>
-            <a href="https://docs.tdar.org/display/TDAR/Data+Integration">visit ${siteAcronym} documentation for more details</a>
+            <a href="${integrationDocumentationUrl}">visit ${siteAcronym} documentation for more details</a>
         </div>
         </#if>
 
