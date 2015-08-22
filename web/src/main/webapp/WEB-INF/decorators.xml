@@ -21,6 +21,6 @@ vim:sts=2:sw=2:
         <pattern>/*</pattern>
     </decorator>
     <!--whitelabel has no lookup pattern; to use, explicitly declare in request attributes or in META tag on to-be-decorated page -->
-    <decorator name="whitelabel" page="/WEB-INF/decorator/layout-whitelabel.dec" />
+<!--     <decorator name="whitelabel" page="/WEB-INF/decorator/layout-whitelabel.dec" /> -->
 </decorators>
 

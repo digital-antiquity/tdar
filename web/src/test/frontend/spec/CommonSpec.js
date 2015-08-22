@@ -135,16 +135,16 @@ describe("TDAR.common: session timeout tests", function() {
         spyOn(window, 'setTimeout');
         spyOn($.fn, 'dialog');
         setFixtures('<div id="timeoutDialog"></div>');
-        sessionTimeout = TDAR.common.sessionTimeout;
+        sessionTimeout = $(document).data("sessionTimeout");
     });
 
     afterEach(function() {
-        TDAR.common.sessionTimeout = sessionTimeout;
+        $(document).data("sessionTimeout", sessionTimeout);
     });
 
     it("shows a warning when you your session has nearly expired", function() {
-        TDAR.common.sessionTimeout = 960;
-        TDAR.common.currentTime =  600;
+        $(document).data("sessionTimeout", 960);
+        $(document).data("currentTime", 600);
         TDAR.common.sessionTimeoutWarning();
         expect($.fn.dialog).toHaveBeenCalled();
         expect(window.setTimeout).toHaveBeenCalled();
@@ -152,8 +152,8 @@ describe("TDAR.common: session timeout tests", function() {
     });
 
     it("notifies user when session has timed out", function () {
-        TDAR.common.sessionTimeout = 90 * 60;
-        TDAR.common.currentTime =  90 * 60;
+        $(document).data("sessionTimeout", 90 * 60);
+        $(document).data("currentTime", 90 * 60);
         TDAR.common.sessionTimeoutWarning();
         expect($('#timeoutDialog').text()).toContain('Your Session has timed out');
         expect(window.setTimeout).not.toHaveBeenCalled();

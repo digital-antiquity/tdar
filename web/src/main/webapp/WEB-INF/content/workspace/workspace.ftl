@@ -52,12 +52,7 @@
         <#if workflows?size != 0>
             <@learn />
         </#if>
-            <img src="/images/r4/data_integration.png" class="responsive-image" alt="integrate" title="Integrate" />
-        </div>
-    </div>
-    <div class="row">
-		<div class="span12">
-        <p><a href="/workspace/select-tables">Click here to use the Legacy Integration tool</a></p>
+            <img src="<@s.url value="/images/r4/data_integration.png"/>" class="responsive-image" alt="integrate" title="Integrate" />
         </div>
     </div>
 </body>

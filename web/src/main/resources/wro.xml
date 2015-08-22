@@ -81,6 +81,7 @@
         <js>/js/tdar.pricing.js</js>
         <js>/js/tdar.heightevents.js</js>
         <js>/js/tdar.contexthelp.js</js>
+        <js>/js/tdar.menu.js</js>
         <js>/js/tdar.formValidateExtensions.js</js>
         <js>/includes/bindWithDelay.js</js>
         <!-- LICENSE: MIT -->

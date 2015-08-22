@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -28,7 +29,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
@@ -56,7 +56,6 @@ import com.opensymphony.xwork2.Preparable;
 public abstract class AbstractPersistableController<P extends Persistable & Updatable> extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<P> {
 
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
-    public static final String LIST = "list";
     public static final String DRAFT = "draft";
     protected long epochTimeUpdated = 0L;
 
@@ -85,8 +84,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    @Autowired
-    private transient GenericService genericService;
+
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -129,15 +127,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         return null;
     }
 
-    protected void loadListData() {
-    }
-
-    @SkipValidation
-    @Action(value = LIST)
-    public String list() {
-        loadListData();
-        return SUCCESS;
-    }
 
     /**
      * Returns true if form is considered 'obsolete', otherwise false.  By default, this method considers a form obsolete if it refers to a persistable
@@ -488,7 +477,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public List<GeneralPermissions> getAvailablePermissions() {
         List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
         for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) || getPersistable().getClass().isAssignableFrom(permission.getContext())) {
+            if ((permission.getContext() == null) ||  ClassUtils.isAssignable(permission.getContext(), getPersistableClass())) {
                 permissions.add(permission);
             }
         }

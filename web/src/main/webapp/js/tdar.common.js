@@ -975,9 +975,13 @@ TDAR.common = function (TDAR, fileupload) {
     var _sessionTimeoutWarning = function () {
         // I RUN ONCE A MINUTE
         // sessionTimeout in seconds
-        if (parseInt(TDAR.common.currentTime)) {
-            TDAR.common.currentTime += 60;
-            var remainingTime = TDAR.common.sessionTimeout - TDAR.common.currentTime;
+        var $doc =  $(document);
+        var sessionTimeout = $doc.data("sessionTimeout");
+        var currentTime = $doc.data("currentTime");
+        if (parseInt(currentTime)) {
+            currentTime += 60;
+            $doc.data("currentTime",currentTime);
+            var remainingTime = sessionTimeout - currentTime;
             if (remainingTime % 300 == 0) {
                 console.log("remaining time in session:" + remainingTime);
             }

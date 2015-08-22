@@ -420,7 +420,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>/home/bamboo/clover/${hg.branch}</clover.dir>
+                <clover.dir>${user.home}/clover/${hg.branch}</clover.dir>
             </properties>
             <build>
                 <plugins>
