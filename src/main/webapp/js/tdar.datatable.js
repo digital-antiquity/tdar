@@ -723,6 +723,24 @@ TDAR.datatable = function() {
 
     }
 
+
+    /**
+     *
+     * @param url
+     * @param dataTableId
+     * @returns {*} promise of array of columnInfo objects
+     * @private
+     */
+    function _loadDatasetTableMetadata(url, dataTableId)  {
+        var data =  {
+            id: dataTableId,
+            startRecord: 0,
+            recordsPerPage: 1
+        };
+        var promise = $.get(url, data, "jsonp");
+        return promise;
+    }
+
     /**
      * add item to array if not found in array. returns undef
      * @param arr
@@ -758,6 +776,27 @@ TDAR.datatable = function() {
         checkAllToggle : _checkAllToggle,
         registerChild : _registerChild,
         initalizeResourceDatasetDataTable : _initalizeResourceDatasetDataTable,
-        registerAddRemoveSection : _initializeCollectionAddRemove
+        registerAddRemoveSection : _initializeCollectionAddRemove,
+        initDataTableBrowser: function() {
+            var config = $('#dataTable').data();
+            var dataTableId = config.defaultDataTableId;
+
+            if(!dataTableId) return;
+            var columnsPromise = $.get('/datatable/browse', {
+                id: dataTableId,
+                startRecord: 0,
+                recordsPerPage: 1
+            }, 'jsonp');
+            columnsPromise.done(function(data) {
+                console.log("got some data");
+                console.log(data);
+                var columns = data.fields.map(function(item){
+                   return {simpleName: item.name, displayName: item.displayName};
+                });
+                _initalizeResourceDatasetDataTable(columns, true, dataTableId, 'datatable', dataTableId);
+            })
+
+
+        }
     };
 }();

@@ -190,7 +190,7 @@
                 <#if (resource.dataTables?size > 1)>
                 <form>
                     <label for="table_select">Choose Table:</label>
-                    <select id="table_select" name="dataTableId" onChange="window.location =  '?dataTableId=' + $(this).val()">
+                    <select id="table_select" name="dataTableId">
                         <#list resource.dataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>
@@ -203,7 +203,7 @@
 
             <div class="row">
                 <div class="span9">
-                    <table id="dataTable" class="dataTable table tableFormat table-striped table-bordered"></table>
+                    <table id="dataTable" data-data-table-selector="#table_select" data-default-data-table-id="${dataTable.id?c}" class="dataTable table tableFormat table-striped table-bordered"></table>
                 </div>
             </div>
                 <#if tdarConfiguration.xmlExportEnabled>
@@ -608,16 +608,14 @@
     $(function () {
         'use strict';
         TDAR.common.initializeView();
-        <#if dataTableColumnJson?has_content && (dataTable.id)?has_content>
-        <#noescape>
-        var columns = ${dataTableColumnJson};
-        </#noescape>
-        TDAR.datatable.initalizeResourceDatasetDataTable(columns, ${viewRowSupported?string},${resource.id?c}, "${resource.urlNamespace}", ${dataTable.id?c});
-        </#if>
 
-        <#if local_.localJavascript?? && local_.localJavascript?is_macro>
-            <@local_.localJavascript />
-        </#if>
+        //TDAR.datatable.initalizeResourceDatasetDataTable(columns, ${viewRowSupported?string},${resource.id?c}, "${resource.urlNamespace}", ${dataTable.id?c});
+
+        TDAR.datatable.initDataTableBrowser();
+
+        if(window._localJavaScript) {
+            _localJavaScript();
+        }
 
         TDAR.internalEmailForm.init();    
     });
