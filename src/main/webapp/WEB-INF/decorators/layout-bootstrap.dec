@@ -223,7 +223,7 @@ ${head}
 
 
     <@header.scripts ( webFilePreprocessingEnabled) />
-    </script>
+
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>
         <span class="statusMessage"></span>
