@@ -40,7 +40,7 @@
 </table>
 <#if (total > 0)>
     <#noescape>
-    <script id="usageStats">
+    <script id="usageStats" type="application/json">
     	${jsonStats}
 </script>
     </#noescape>

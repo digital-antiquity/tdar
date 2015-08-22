@@ -159,9 +159,9 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testIsGeoLocationToBeUsed() {
         gotoPage("/document/add");
         if (TdarConfiguration.getInstance().isGeoLocationToBeUsed()) {
-            assertTextPresentInCode("TDAR.leaflet.defaults.isGeoLocationToBeUsed = true;");
+            assertTextPresentInCode("data-useGeoLoc\"true\"");
         } else {
-            assertTextPresentInCode("TDAR.leaflet.defaults.isGeoLocationToBeUsed = false;");
+            assertTextPresentInCode("data-useGeoLoc\"false\"");
         }
     }
 
