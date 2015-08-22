@@ -323,4 +323,8 @@ public class DataTable extends Persistable.Base {
         return columns;
     }
 
+    public Object getJsSimpleName() {
+        return getName().replaceAll("[\\s\\,\"\']", "_");
+    }
+
 }

@@ -14,7 +14,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
-import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.utils.PersistableUtils;
@@ -26,9 +25,6 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
     private InputStream xmlStream;
     private DataTable dataTable;
     private String dataTableColumnJson;
-
-    @Autowired
-    private transient DatasetService datasetService;
 
     @Autowired
     private transient DataTableService dataTableService;
@@ -46,8 +42,19 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomViewMetadata();
-        List<Map<String, Object>> result = new ArrayList<>();
-        if (PersistableUtils.isNotNullOrTransient(getDataTable())) {
+        createJsonDataTableStructure();
+    }
+
+    private void createJsonDataTableStructure() {
+        List<Map<String,Object>> tables = new ArrayList<>();
+        for (DataTable dataTable : getPersistable().getDataTables()) {
+            Map<String, Object> table = new HashMap<>();
+            table.put("simpleName", dataTable.getJsSimpleName());
+            table.put("displayName", dataTable.getDisplayName());
+            table.put("tableId",dataTable.getId());
+            table.put("datasetId", getId());
+            List<Map<String, Object>> result = new ArrayList<>();
+            table.put("columns", result);
             for (DataTableColumn dtc : getDataTable().getSortedDataTableColumnsByImportOrder()) {
                 Map<String, Object> col = new HashMap<>();
                 col.put("simpleName", dtc.getJsSimpleName());
@@ -56,7 +63,7 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
             }
         }
         try {
-            setDataTableColumnJson(serializationService.convertToJson(result));
+            setDataTableColumnJson(serializationService.convertToJson(tables));
         } catch (Exception e) {
             getLogger().error("cannot convert to JSON: {}", e);
         }
