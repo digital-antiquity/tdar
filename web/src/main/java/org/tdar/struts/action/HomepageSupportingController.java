@@ -1,7 +1,6 @@
 package org.tdar.struts.action;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,7 +26,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.RssService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore.ObjectType;
@@ -53,7 +51,8 @@ import com.rometools.rome.feed.synd.SyndEntry;
 @Results({
         @Result(name = "authenticated", type = "redirect", location = "/")
 })
-public class IndexController extends AuthenticationAware.Base {
+//FIXME: better name
+public class HomepageSupportingController extends AuthenticationAware.Base {
     private static final long serialVersionUID = -9216882130992021384L;
 
     private Project featuredProject;
@@ -75,9 +74,6 @@ public class IndexController extends AuthenticationAware.Base {
     private ObfuscationService obfuscationService;
     @Autowired
     private transient AuthorizationService authorizationService;
-
-    @Autowired
-    private RssService rssService;
 
     private List<SyndEntry> rssEntries;
 
@@ -133,33 +129,11 @@ public class IndexController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Actions(value={
-            @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") })
-    })
-    @SkipValidation
-    @HttpOnlyIfUnauthenticated
-    public String about() {
-
-        try {
-            worldMap();
-            featuredItems();
-            resourceStats();
-            featuredCollection();
-        } catch (Exception e) {
-            getLogger().error("exception in setting up homepage: {}", e,e);
-        }
-        try {
-            setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
-        } catch (Exception e) {
-            getLogger().warn("RssParsingException happened", e);
-        }
-        return SUCCESS;
-    }
 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
     @SkipValidation
     public String worldMap() {
-        resourceService.setupWorldMap(worldMapData);
+        worldMapData = resourceService.setupWorldMap();
         return SUCCESS;
     }
 
@@ -268,4 +242,12 @@ public class IndexController extends AuthenticationAware.Base {
         return checkLogoAvailable(ObjectType.COLLECTION, getFeaturedCollection().getId(), VersionType.WEB_SMALL);
     }
 
+    @Override
+    public boolean isNavSearchBoxVisible() {
+        return false;
+    }
+    
+    public boolean isHomepage() {
+        return true;
+    }
 }
