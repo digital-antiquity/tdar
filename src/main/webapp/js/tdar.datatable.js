@@ -779,6 +779,9 @@ TDAR.datatable = function() {
         registerAddRemoveSection : _initializeCollectionAddRemove,
         initDataTableBrowser: function() {
             var config = $('#dataTable').data();
+            if (!config) {
+                return;
+            }
             var dataTableId = config.defaultDataTableId;
 
             if(!dataTableId) return;
