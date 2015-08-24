@@ -609,9 +609,8 @@
         'use strict';
         TDAR.common.initializeView();
 
-<#--         //TDAR.datatable.initalizeResourceDatasetDataTable(columns, ${viewRowSupported?string},${resource.id?c}, "${resource.urlNamespace}", ${dataTable.id?c});
--->if ($("#dataTable")){
-        TDAR.datatable.initDataTableBrowser();
+        if ($("#dataTable")){
+                TDAR.datatable.initDataTableBrowser();
 }
         if(window._localJavaScript) {
             _localJavaScript();
