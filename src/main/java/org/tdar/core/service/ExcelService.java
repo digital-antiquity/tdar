@@ -505,7 +505,14 @@ public class ExcelService {
             int num = 2; // suffix to use for uniqueifying the name - keep incrementing until it doesn't exist in the workbook
             while (workbook.getSheet(name) != null) {
                 String suffix = "_" + Integer.toString(num++);
+                // NOTE: this could be a regexp, but with the escaping it's less readable then would be preferred
                 name = name.replace("/", "-");
+                name = name.replace("\\", "-");
+                name = name.replace("[", "-");
+                name = name.replace("]", "-");
+                name = name.replace("*", "-");
+                name = name.replace("?", "-");
+                name = name.replace(":", "-");
                 name = name.substring(0, name.length() - suffix.length()) + suffix;
             }
         }
