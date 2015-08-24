@@ -214,7 +214,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_EXTERNAL_ID_SYNC,
-                query = "select distinct res.id from InformationResource res inner join res.informationResourceFiles where res.dateUpdated > :updatedDate or res.externalId is null"
+                query = "select distinct res.id from Resource res left join res.informationResourceFiles irf where (irf.id > 0 or resourceType='PROJECT')  and (res.dateUpdated > :updatedDate or res.externalId is null)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RECENT,
