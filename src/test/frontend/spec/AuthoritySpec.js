@@ -362,6 +362,27 @@ describe("tests for TDAR.authority methods", function() {
         expect($("#divInstitutionSearchControl")).toBeVisible();
     });
 
+    it("lists selected dupes", function(){
+        TDAR.authority.initAuthTable();
+        var request = jasmine.Ajax.requests.mostRecent();
+        var response = jsonpEncode(responses['/lookup/institution'], request);
+        jasmine.Ajax.requests.mostRecent().respondWith({
+            status:200,
+            contentType: 'text/json',
+            responseText: response
+        });
+
+        expect($('input[type=checkbox]').length).toBeGreaterThan(8);
+
+        //select all the rows
+        $('#dupe_datatable input[type=checkbox]').click();
+        var checkboxCount = $('#dupe_datatable input[type=checkbox]').length;
+
+        expect(Object.keys($('#dupe_datatable').data('selectedRows')).length).toBe(checkboxCount);
+
+
+    });
+
     xit("should work when we call clearDupeList", function() {
         TDAR.authority.initAuthTable();
         //var result = TDAR.authority.clearDupeList();
