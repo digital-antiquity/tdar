@@ -719,45 +719,10 @@ TDAR.datatable = function() {
         }
         if (size > 0) {
             return TDAR.datatable.registerLookupDataTable(options);
-
         }
 
     }
 
-    function _initDataTableBrowser() {
-        var config = $('#dataTable').data();
-        if(!config) return;
-        var $select = $(config.dataTableSelector);
-        var $dataTable = $('#dataTable');
-        if(!$select.length) {return;}
-
-        var dataTableWidget = null;
-
-        $select.change(function(){
-            var dataTableId = $select.val();
-            console.log("new dataTable: %s", dataTableId);
-            //get the column schema for the default dataTable
-            var columnsPromise = $.get('/datatable/browse', {
-                id: dataTableId,
-                startRecord: 0,
-                recordsPerPage: 1
-            }, 'jsonp');
-
-
-            columnsPromise.done(function(data) {
-                var columns = data.fields.map(function(item){
-                    return {simpleName: item.name, displayName: item.displayName};
-                });
-                if(dataTableWidget) {
-                    dataTableWidget.fnDestroy();
-                    $dataTable.empty();
-                }
-                dataTableWidget = _initalizeResourceDatasetDataTable(columns, true, config.resourceId, 'datatable', dataTableId);
-            })
-
-        }).change();
-
-    }
 
     /**
      *
@@ -801,6 +766,41 @@ TDAR.datatable = function() {
         }
     }
 
+    function _initDataTableBrowser() {
+        var config = $('#dataTable').data();
+        if(!config) return;
+        var $select = $(config.dataTableSelector);
+        var $dataTable = $('#dataTable');
+        if(!$select.length) {return;}
+
+        var dataTableWidget = null;
+
+        $select.change(function(){
+            var dataTableId = $select.val();
+            console.log("new dataTable: %s", dataTableId);
+            //get the column schema for the default dataTable
+            var columnsPromise = $.get('/datatable/browse', {
+                id: dataTableId,
+                startRecord: 0,
+                recordsPerPage: 1
+            }, 'jsonp');
+
+
+            columnsPromise.done(function(data) {
+                var columns = data.fields.map(function(item){
+                    return {simpleName: item.name, displayName: item.displayName};
+                });
+                if(dataTableWidget) {
+                    dataTableWidget.fnDestroy();
+                    $dataTable.empty();
+                }
+                dataTableWidget = _initalizeResourceDatasetDataTable(columns, true, config.resourceId, 'datatable', dataTableId);
+            })
+
+        }).change();
+
+    }
+
     return {
         extendSorting : _extendSorting,
         registerLookupDataTable : _registerLookupDataTable,
@@ -812,6 +812,6 @@ TDAR.datatable = function() {
         registerChild : _registerChild,
         initalizeResourceDatasetDataTable : _initalizeResourceDatasetDataTable,
         registerAddRemoveSection : _initializeCollectionAddRemove,
-        initDataTableBrowser:  _initDataTableBrowser
+        initDataTableBrowser: _initDataTableBrowser
     };
 }();

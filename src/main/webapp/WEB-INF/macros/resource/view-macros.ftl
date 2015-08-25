@@ -702,11 +702,11 @@ ${resourceCitation.formattedSourceInformation!''} (${siteAcronym} ID: ${resource
     </#macro>
 
 
-
+<#--
     <#macro datatableChildJavascript>
     TDAR.datatable.registerChild(${resource.id?c},"${resource.title?js_string}");
     </#macro>
-
+-->
 <#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
     <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
