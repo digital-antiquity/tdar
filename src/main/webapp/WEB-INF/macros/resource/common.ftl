@@ -245,7 +245,7 @@ Common macros used in multiple contexts
             });
         </script>
 
-             <div id="worldmap" style="height:300px" class="span5">
+             <div id="worldmap" style="height:350px" class="span6">
              </div>
 
         <div id="map_legend">

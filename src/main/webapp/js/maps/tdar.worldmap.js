@@ -5,11 +5,12 @@ TDAR.worldmap = (function(console, $, ctx) {
     var hlayer;
     var geodata = {};
     var map;
+    var OUTLINE = "#777777";
     // note no # (leaflet doesn't use jquery selectors)
     var mapId = "worldmap";
 
     var myStyle = {
-        "strokeColor": "#ff7800",
+        "color": OUTLINE,
         "weight": 1,
         "fillOpacity": 1
     }
@@ -21,7 +22,18 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (document.getElementById(mapId) == undefined) {
             return;
         }
-        map = L.map(mapId);
+        map = L.map(mapId,{
+        // config for leaflet.sleep
+        sleep: true,
+        // time(ms) for the map to fall asleep upon mouseout
+        sleepTime: 750,
+        // time(ms) until map wakes on mouseover
+        wakeTime: 750,
+        // defines whether or not the user is prompted oh how to wake map
+        sleepNote: false,
+        // should hovering wake the map? (clicking always will)
+        hoverToWake: true
+        });
         _resetView();
         for (var i = 0; i < mapdata.length; i++) {
             if (mapdata[i].resourceType == undefined) {
@@ -29,6 +41,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             }
         }
 
+        // load map data
         $.getJSON("/js/maps/world.json", function(data) {
             hlayer = new L.GeoJSON(data, {
                 style: myStyle,
@@ -42,32 +55,48 @@ TDAR.worldmap = (function(console, $, ctx) {
             }).addTo(map);
 
             hlayer.eachLayer(function(layer) {
+                var color = _getColor(geodata[layer.feature.id]);
                 if (typeof layer._path != 'undefined') {
                     layer._path.id = layer.feature.id;
-                    layer.options.color = _getColor(geodata[layer.feature.id]);
-                    layer._path.style.fill = _getColor(geodata[layer.feature.id]);
-                    layer._path.style.opacity = 1;
-                    layer.options.opacity = 1;
-
-                    layer.redraw();
-
+                    _redrawLayer(layer, color,1);
                 } else {
                     layer.eachLayer(function(layer2) {
                         layer2._path.id = layer.feature.id;
-                        layer2.options.fill = _getColor(geodata[layer.feature.id]);
-                        layer2.options.opacity = 1;
-                        layer2.options.color = _getColor(geodata[layer.feature.id]);
-                        layer2._path.style.color = _getColor(geodata[layer.feature.id]);
-                        layer2._path.style.fill = _getColor(geodata[layer.feature.id]);
-                        layer2._path.style.opacity = 1;
-                        layer2.redraw();
+                        _redrawLayer(layer2, color,1);
                     });
                 }
 
             });
         });
         map.on('click', _resetView);
+        
+        var legend = L.control({position: 'bottomright'});
 
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend');
+            $(div).append("<div id='data'></div>");
+
+            var grades = [0, 1, 2, 5, 10,  20, 100, 1000];
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            for (var i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                '<i style="width:10px;height:10px;display:inline-block;background:' + _getColor(grades[i] + 1) + '">&nbsp;</i> ';
+            }
+            return div;
+        };
+
+        legend.addTo(map);
+    }
+    
+    function _redrawLayer(layer, fillColor, opacity, id) {
+        layer.options.fill = fillColor;
+        layer.options.opacity = 1;
+        layer.options.color = OUTLINE;
+        layer._path.style.fill = fillColor;
+        layer._path.style.opacity = 1;
+        layer.redraw();
     }
 
     var stateLayer = undefined;
@@ -78,7 +107,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (stateLayer != undefined) {
             map.removeLayer(stateLayer);
         }
-
+        
         if (event.target.feature.id == 'USA') {
             var usStyle = {
                 "strokeColor": "#ff7800",
@@ -92,8 +121,10 @@ TDAR.worldmap = (function(console, $, ctx) {
                 "fillOpacity": .1
             });
         }
-        map.fitBounds(event.target.getBounds());
-        overlay = true;
+        if (event.target.feature.id != 'RUS') {
+            map.fitBounds(event.target.getBounds());
+            overlay = true;
+        }
     }
 
     function _resetView() {
@@ -101,9 +132,14 @@ TDAR.worldmap = (function(console, $, ctx) {
         overlay = false;
         if (hlayer != undefined) {
             hlayer.setStyle({
-                "fillOpacity": 1
-            });
+            "fillOpacity": 1
+        });
         }
+        map.eachLayer(function(l) {
+            if (typeof l.redraw === "function") {
+                l.redraw();
+            }
+        });
         if (stateLayer != undefined) {
             map.removeLayer(stateLayer);
         }
@@ -114,8 +150,11 @@ TDAR.worldmap = (function(console, $, ctx) {
 
         var cnt = 0;
         if (layer.feature.id != undefined) {
-            cnt = geodata[layer.feature.id];
+            if (geodata[layer.feature.id] != undefined) {
+                cnt = geodata[layer.feature.id];
+            }
         }
+
         $("#data").html(layer.feature.properties.name + ": " + cnt);
         if (overlay === true) {
             return false;
