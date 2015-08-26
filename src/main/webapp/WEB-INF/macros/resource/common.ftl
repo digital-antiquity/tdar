@@ -242,7 +242,7 @@ Common macros used in multiple contexts
 			<#noescape>${mapJson}</#noescape>
         </script>
 
-             <div id="worldmap" style="height:350px">
+             <div id="worldmap" style="height:350px" data-max="">
              </div>
     </div>
 

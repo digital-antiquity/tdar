@@ -1504,3 +1504,24 @@ tr.DELETED {
     text-align:center;
     padding-right: 20px;
 }
+
+#worldmap.leaflet-container {
+    background-color: #D5F0FD !important;
+    border: 1px solid #AAA;
+}
+#worldmap .info {
+    background-color:#fff;
+    opacity:.8;
+    padding:2px;
+}
+
+#worldmap .legend {
+    background-color:#fff;
+    float:right;
+}
+
+
+#worldmap .leaflet-control-attribution {
+    display:none;
+    
+}
