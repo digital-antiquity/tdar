@@ -1490,3 +1490,17 @@ tr.DELETED {
 .disable-map .leaflet-container, .leaflet-container.disable-map {
 	opacity:.5;
 }
+
+#mapgraphdata {
+    z-index: 1000;
+    width: 200px;
+    position: absolute;
+    top: 0px;
+    background-color: #FFF;
+    border-right: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+    border-top: 1px solid #AAA;
+    padding: 5px;
+    text-align:center;
+    padding-right: 20px;
+}

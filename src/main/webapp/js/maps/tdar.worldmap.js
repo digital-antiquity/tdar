@@ -141,11 +141,11 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 		var $div = $("#mapgraphdata");
 		if ($div.length == 0) {
-			$div = $("<div id='mapgraphdata' style='z-index:1000;height:350px;width:200px;position:absolute;left:"+$mapDiv.width()+"px'></div>");
+			$div = $("<div id='mapgraphdata' style='left:"+$mapDiv.width()+"px;height:"+$mapDiv.height()+"px'></div>");
 			$mapDiv.parent().append($div);
 		}
-		console.log(event.target.feature.properties.name);
 		$div.html("<h5>" + event.target.feature.properties.name + "</h5><div id='mapgraphpie'></div>");
+        var mapdata = _getMapdata($mapDiv.parent());
 		var filter = mapdata.filter(function(d) {return d.code == event.target.feature.id});
 		var data = [];
 		filter.forEach(function(row){
@@ -154,6 +154,9 @@ TDAR.worldmap = (function(console, $, ctx) {
 			}
 		});
 
+		$(".mapcontainer").mouseleave(function(){
+			$("#mapgraphdata").remove();
+		});
 		var obj = {
 			bindto: '#mapgraphpie',
 		    data: {
