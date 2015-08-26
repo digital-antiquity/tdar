@@ -170,4 +170,9 @@ public class IndexAction extends AuthenticationAware.Base {
     public void setMapJson(String mapJson) {
         this.mapJson = mapJson;
     }
+    
+    @Override
+    public boolean isSubnavEnabled() {
+        return false;
+    }
 }

@@ -6,7 +6,4 @@
     <hr/>
     </#macro>
 
-    <#macro localJavascript>
-        <@view.datatableChildJavascript />
-    </#macro>
 </#escape>

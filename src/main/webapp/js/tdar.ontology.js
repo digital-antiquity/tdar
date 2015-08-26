@@ -28,12 +28,11 @@
     /**
      * init the ontology view by displaying the ontology 'org chart' and registering necessary click events
      */
-    function _view() {
-        _registerOrgChart($("#ontology-nodes-root"));
+    function _view($showMore) {
 
         //register the 'show hidden nodes' feature
-        $('#btnOntologyShowMore').click(function () {
-            $('#divOntologyShowMore').hide();
+        $showMore.click(function () {
+            $showMore.hide();
             $('#ontology-nodes .hidden-nodes').removeClass("hidden-nodes");
             return false;
         });
@@ -55,3 +54,13 @@
     };
 
 })(TDAR, jQuery);
+$(document).ready(function() {
+    var $root = $("#ontology-nodes-root");
+    if ($root) {
+        TDAR.ontology.registerOrgChart($root);
+    }
+    var $showMore = $("#btnOntologyShowMore");
+    if ($showMore) {
+        TDAR.ontology.view($showMore);
+    }
+});

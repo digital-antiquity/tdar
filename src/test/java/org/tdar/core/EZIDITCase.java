@@ -22,11 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.processes.DoiProcess;
 
 /**
  * @author Adam Brin
@@ -45,6 +47,29 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
     @Autowired
     UrlService urlService;
 
+
+    @Autowired
+    DoiProcess doiProcess;                
+
+    @Test
+    public void testDoiList() {
+        boolean seenProject = false;
+        boolean seenResource = false;
+        for (Long id : doiProcess.findAllIds()) {
+            Resource r = genericService.find(Resource.class, id);
+            if (r.getResourceType().isProject()) {
+                seenProject = true;
+            }
+            if (r instanceof InformationResource) {
+                InformationResource ir = (InformationResource)r;
+                if (ir.getInformationResourceFiles().size() > 0) {
+                    seenResource = true;
+                }
+            }
+        }
+        assertTrue("should see at least one project", seenProject);
+        assertTrue("should see at least one resource with file", seenResource);
+    }
     @Test
     public void testLogin() {
         try {

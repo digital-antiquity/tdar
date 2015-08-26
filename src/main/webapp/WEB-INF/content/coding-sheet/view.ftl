@@ -20,7 +20,4 @@
         </@common.codingRules>
     </#macro>
 
-    <#macro localJavascript>
-        <@view.datatableChildJavascript />
-    </#macro>
 </#escape>

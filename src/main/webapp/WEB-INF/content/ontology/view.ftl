@@ -48,14 +48,9 @@
     </div>
         <@view.ontology />
 
-
     </#macro>
 
 
-    <#macro localJavascript>
-        <@view.datatableChildJavascript />
-    TDAR.ontology.view();
-    </#macro>
 
     <#macro footer>
     </#macro>

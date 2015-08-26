@@ -64,6 +64,8 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     private Long numberOfFiles = 0L;
     private Long numberOfMb = 0L;
     private Date expires = new DateTime().plusYears(1).toDate();
+    private String ownerProperName;
+    private TdarUser owner;
 
     @Autowired
     private transient BillingAccountService accountService;
@@ -120,11 +122,16 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     protected String save(BillingAccount persistable) {
         getLogger().info("invoiceId {}", getInvoiceId());
         setSaveSuccessPath("billing");
-
+        setupOwnerField();
         // if we're coming from "choose" and we want a "new account"
         if (PersistableUtils.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
             getAccount().setName(getName());
             getAccount().setDescription(getDescription());
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(getOwner())) {
+            TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
+            getPersistable().setOwner(uploader);
         }
 
         if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
@@ -301,6 +308,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     @Override
     public String loadEditMetadata() throws TdarActionException {
+        setupOwnerField();
         return SUCCESS;
     }
 
@@ -316,4 +324,31 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return Arrays.asList(Status.ACTIVE, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE, Status.DELETED);
     }
 
+    
+    private void setupOwnerField() {
+        if (PersistableUtils.isNotNullOrTransient(getOwner()) && StringUtils.isNotBlank(getOwner().getProperName())) {
+            if (getOwner().getFirstName() != null && getOwner().getLastName() != null)
+                setOwnerProperName(getOwner().getProperName());
+        } else {
+            setOwnerProperName(getAuthenticatedUser().getProperName());
+        }
+    }
+
+    public String getOwnerProperName() {
+        return ownerProperName;
+    }
+
+    public void setOwnerProperName(String ownerProperName) {
+        this.ownerProperName = ownerProperName;
+    }
+
+    public TdarUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(TdarUser owner) {
+        this.owner = owner;
+    }
+
+    
 }

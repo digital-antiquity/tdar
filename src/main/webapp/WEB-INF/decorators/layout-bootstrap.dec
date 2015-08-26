@@ -94,7 +94,7 @@ ${head}
                 <@dec.layout_header />
             </header>
         </div>
-        <#if homepage??>
+        <#if (homepage!false)>
             <@dec.homepageHeader />
         </#if>
 

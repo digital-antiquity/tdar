@@ -44,8 +44,8 @@ import org.tdar.utils.PersistableUtils;
 @Service
 public class AuthenticationService {
 
-    public static final String USERNAME_REGEX = "^[a-zA-Z0-9+@\\.\\-_]";
-    public static final String USERNAME_VALID_REGEX = USERNAME_REGEX + "{5,255}$";
+    public static final String LEGACY_USERNAME_VALID_REGEX = "^\\w[a-zA-Z0-9+@._\\-\\s]{0,253}\\w$";
+    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{5,255}$";
     public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,255}$";
     private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
@@ -283,7 +283,7 @@ public class AuthenticationService {
             return false;
         }
 
-        return username.matches(USERNAME_REGEX + "{2,255}$");
+        return username.matches(LEGACY_USERNAME_VALID_REGEX);
     }
 
     /*
