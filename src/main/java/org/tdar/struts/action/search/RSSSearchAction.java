@@ -37,11 +37,12 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
     // contentLength for excel download requests
     private Long contentLength;
     private InputStream inputStream;
-
+    private int statusCode = 200;
     @Action(value = "rss", results = { @Result(name = SUCCESS, type = "stream", params = {
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
             "inputStream", "contentType", "application/rss+xml",
-            "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }) })
+            "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }),
+            @Result(name=ERROR, type=HTTPHEADER, params= {"error", "${statusCode}"})})
     public String viewRss() throws TdarActionException {
         try {
             setDefaultSort(SortOption.ID_REVERSE);
@@ -60,10 +61,13 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
                 setInputStream(new ByteArrayInputStream("".getBytes()));
             }
         } catch (TdarActionException tdae) {
-            return tdae.getResponse();
+            statusCode = tdae.getStatusCode();
+            return ERROR;
         } catch (Exception e) {
             getLogger().error("rss error", e);
-            addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
+//            addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
+            setStatusCode(500);
+            return ERROR;
         }
         return SUCCESS;
     }
@@ -91,6 +95,14 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
     }
 
 }
