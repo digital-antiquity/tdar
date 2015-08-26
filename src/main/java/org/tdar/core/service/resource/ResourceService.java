@@ -816,6 +816,15 @@ public class ResourceService extends GenericService {
             Collection<Resource> toEvaluate = Arrays.asList(resource);
             accountDao.updateTransientAccountOnResources(toEvaluate);
             BillingAccount account = resource.getAccount();
+            if (account == null) {
+                // if we're null, we'll assign it to the "first" account
+                List<BillingAccount> accountsForUser = accountDao.findAccountsForUser(authUser);
+                if (CollectionUtils.isNotEmpty(accountsForUser)) {
+                    account = accountsForUser.get(0);
+                    account.getResources().add(resource);
+                    resource.setAccount(account);
+                }
+            }
             account = markWritableOnExistingSession(account);
             accountDao.updateQuota(account, toEvaluate);
             saveOrUpdate(account);
