@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="munsell-05" author="abrin">
+        <addColumn tableName="creator">
+            <column name="browse_occurrence" defaultValue="0"
+                type="int8"></column>
+            <column name="hidden" defaultValue="false" type="boolean"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="lithic-1" author="abrin">
+            <dropColumn tableName="institution" columnName="email" />
+    </changeSet>
+    <changeSet id="munsell-03" author="abrin">
+
+        <addColumn tableName="resource_access_day_agg">
+            <column name="month" type="INT4" />
+        </addColumn>
+        <addColumn tableName="file_download_day_agg">
+            <column name="month" type="INT4" />
+        </addColumn>
+        <createIndex indexName="agg_res_month" tableName="resource_access_day_agg"
+            unique="false">
+            <column name="month" />
+        </createIndex>
+        <createIndex indexName="agg_dwnld_month" tableName="file_download_day_agg"
+            unique="false">
+            <column name="month" />
+        </createIndex>
+        <createIndex indexName="agg_res_month_year"
+            tableName="resource_access_day_agg" unique="false">
+            <column name="year" />
+            <column name="month" />
+        </createIndex>
+        <createIndex indexName="agg_dwnld_month_year"
+            tableName="file_download_day_agg" unique="false">
+            <column name="year" />
+            <column name="month" />
+        </createIndex>
+
+        <update tableName="resource_access_day_agg">
+            <column name="month" valueNumeric="date_part('month',date_accessed)" />
+        </update>
+        <update tableName="file_download_day_agg">
+            <column name="month" valueNumeric="date_part('month',date_accessed)" />
+        </update>
+    </changeSet>
+</databaseChangeLog>
