@@ -1,0 +1,410 @@
+#############################
+##	Basic System Settings
+#############################
+
+# Is the server running in production mode (less debuging data, and optimized JavaScript and CSS)
+# default: test
+server.environment=test
+
+# the hostname of the server
+# default: core.tdar.org
+app.hostname=localhost
+
+# the default port for the server (http)
+# default: 80
+app.port=8080
+
+# Whether HTTPS is enabled
+# default: false
+https.enabled = false
+
+# What the default port for https should be
+# default: 443
+https.port=8443
+
+# The short name of the site
+# default: tDAR
+site.acronym=tDAR
+
+# The name of the organization running the site (may be the same as the acronym)
+# default: Digital Antiquity
+service.provider=Digital Antiquity
+
+
+# The full name of the site
+# default: the Digital Archaeological Record
+site.name=the Digital Archaeological Record
+
+# tDAR can optionally use a "theme" with different headers and footers and css
+# this tells tDAR what directgory to use
+# default: includes/themes/tdar/
+app.theme.dir=/WEB-INF/themes/tdar/
+
+###########################
+##   Email Settings
+###########################
+
+# the hostname to use as part of the reply-to email, could be different from the server hostname, or the SMTP server
+# default: app.hostname
+app.email.hostname=
+
+# the SMTP server hostname
+# default: localhost
+mail.smtp.host=localhost
+
+# The email address for the sysadmin, tDAR uses this to send notifications about problems or for users to report issues to
+# default: tdar-svn@lists.asu.edu
+#sysadmin.email=
+
+# the email address used for "contacting the service"
+# default: info@digitalantiquity.org
+app.contact.email=info@digitalantiquity.org
+
+# should the system send emails to the "from" address instead of the to (for testing)
+# default: false
+#email.to.tester=
+
+####################################
+## Billing and Purchasing Settings
+####################################
+
+# whether payments are enabled
+pay.per.contribution.enabled=false
+
+# email address of the Billing Admin
+#billing.admin.email
+
+# the file to be used for values for the coupon codes
+#coupon.codes.file
+
+
+#############################
+## Homepage settings
+#############################
+
+# the ID of the collection that should be used to find featured items
+#featured.colletion.id=-1
+
+# the URL for the "news" webpage
+#news.url
+
+# the URL for the "news" RSS Feed
+#news.rssFeed
+
+
+
+################################
+##	File & Filestore Locations
+################################
+
+# the temporary directory to use when processing media and making PDFs
+# default: java.io.tmpdir
+tmp.dir=/tmp
+
+# where the filestore lives that all archived materials are stored
+# default: ${user.home}/data/tdar_${hg.branch}/filestore
+file.store.location=${user.home}/data/tdar_${hg.branch}/filestore
+
+# what type of filestore should be used (deprecated)
+# default: org.tdar.filestore.PairtreeFilestore
+file.store.class=org.tdar.filestore.PairtreeFilestore
+
+# where should the personal filestore live (used for information about people, for things they create, and temporary storage)
+# default: ${user.home}/data/tdar_${hg.branch}/personal-filestore
+personal.file.store.location=${user.home}/data/tdar_${hg.branch}/personal-filestore
+
+# path to the '/hosted/' virtual directory.  This only applies in a non-production setting
+# default: ${personal.file.store.location}/hosted
+hosted.file.store.location=${user.home}/data/tdar_${hg.branch}/hosted-filestore
+
+
+# Freemarker template directory (where custom freemarker templates are stored for emails and other tasks (Not web pages))
+# freemarker.templatedir
+
+###############################################
+##	Configurable Navigation Menu Components
+###############################################
+
+# the link for the "about this service"
+# default: http://www.tdar.org
+about.url=http://www.tdar.org
+
+google.analytics
+
+
+# the comments link
+# default: mailto:comments@tdar.org
+comment.url=mailto:comments@tdar.org
+
+# the report a bug URL
+# default: http://issues.tdar.org/
+bugreport.url=https://issues.tdar.org
+
+# the help / documentation url
+# default: https://docs.tdar.org/display/TDAR/User+Documentation
+help.url=https://docs.tdar.org/display/TDAR/User+Documentation
+
+# the URL for more contextual help for cultural keywords
+help.url.cultural=https://docs.tdar.org/display/TDAR/Cultural+Terms
+
+# the URL for more contextual help for investigation types
+help.url.investigation=https://docs.tdar.org/display/TDAR/Investigation+Types
+
+# the URL for more contextual help for material keywords
+help.url.material=https://docs.tdar.org/display/TDAR/Material+Types
+
+# the URL for more contextual help for site names
+help.url.site=https://docs.tdar.org/display/TDAR/Site+Types
+
+#####################################
+##   Hibernate and Search Settings
+#####################################
+
+# how many results to grab at a time when working through result sets
+scrollableResult.fetchSize=100
+
+# path to the file that should be used for words that should be ignored in searches (the, of, ...)
+#lucene.stop.words.file=
+
+# how often to flush the lucene indexes from memory into files
+tdar.indexer.flushEvery=500
+
+################################
+##   Export Settings
+################################
+
+# the maximum number of resources to be able to export, too many of these will cause the export to be slow or memory issues
+search.excel.export.recordMax=1000
+
+# #used in testing to allow us to "break" excel's max by setting it too low
+excel.export.rowMax=-1
+
+################################
+##   Scheduling Settings
+################################
+
+# Tells tDAR whether it should run scheduled tasks or not
+# default: true
+run.periodic.events=false
+
+# Tells the ScheduledProcess Service how many records to process at a time
+scheduled.batchSize=100
+
+# Tells the ScheduledProcess Service how many processes are too many when running scheduled tasks (trying to managing load)
+scheduled.maxProcess=6
+
+# if tDAR has to be restarted, what ID to start with
+scheduled.startId=0
+
+# if tDAR has to be restarted, what ID to end with
+scheduled.endId=400000
+
+################################
+##   Message Queue Settings [DEPRECATED]
+################################
+message.queue.enabled=false
+message.queue.server=dev.tdar.org
+message.queue.user=
+message.queue.pwd=
+message.queue.prefix=
+
+################################
+##	OAI Settings
+################################
+
+# the name of the repository
+oai.repository.name=the Digital Archaeological Record
+
+# the description of the OAI Server
+oai.repository.description=tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.
+
+# whether people or institutions should be included in the OAI results
+oai.repository.enableEntities=false
+
+# the namespace prefix (oftn the domain name)
+oai.repository.namespace-identifier=tdar.org
+
+# whether the raw tDAR Metadata should be exposed by the OAI server
+oai.repository.enableTdarMetadataFormat=true
+
+################################
+##	Google Maps
+################################
+
+# the Google Maps API Key
+googlemaps.apikey=
+
+# the default Latitude for centering maps
+google.map.defaultLatitude=40.00
+
+# the default Longitude  for centering maps
+google.map.defaultLongitude=-97.00
+
+# should the google maps use geolocation to center the map?
+is.geolocation.to.be.used=false
+
+#################################################
+##	Global Copyright License & Privacy Controls
+#################################################
+
+# Should the Copyright fields be shown on the edit forms
+copyright.fields.enabled=false
+
+# whether users should be prompted for the LicenseType of an InformationResource
+licenses.enabled=false
+
+# the default LicenseType to use
+#default.license.type
+
+# Should the user be allowed to expose their email and phone number to anonymous users
+privacy.controls.enabled=false
+
+################################
+##   Recaptcha
+################################
+
+# The hostname of the recaptcha server
+recaptcha.host=
+
+# the recaptcha private key
+recaptcha.privateKey=
+
+# the recaptcha public key
+recaptcha.publicKey=
+
+
+################################
+##   Obfuscation
+################################
+
+# is map de-obfuscation enabled
+switchable.map.obfuscation=false
+
+# is the Obfuscation Interceptor enabled? (or should we just obfuscate manually)
+obfuscation.interceptor.disabled= false
+
+##########################################
+##   Terms of Service & Contributor 
+##########################################
+
+# terms of service URL
+# default: http://www.tdar.org/about/policies/terms-of-use/
+tos.url=http://www.tdar.org/about/policies/terms-of-use/
+
+# terms of service version
+#tos.version
+
+# Contributors agreement URL
+# default: http://www.tdar.org/about/policies/contributors-agreement/
+contributor.url=http://www.tdar.org/about/policies/contributors-agreement/
+
+# contributor agreement version
+contributor.agreement.version
+
+################################
+##   Web File Processing
+################################
+
+# merge and pre-process web-files (CSS & Javascript)
+use.WebFilePreprocessing = false
+
+# whether the static content is served on another server
+static.content.enabled=false
+
+# the hostname of the static content server
+#static.content.host
+
+# the default http port for static content
+#static.content.port
+
+# the ssl http port for static content
+#static.content.sslPort
+
+# content security policy enabled
+#default = true
+content.security.policy.enabled = false
+
+# the additions to the content security policy headers
+# http://www.html5rocks.com/en/tutorials/security/content-security-policy/
+content.security.policy.additions = ""
+
+#whether to use a CDN for javascript and css
+use.cdn=true
+
+###################################
+## SPECIAL USER SETTINGS
+###################################
+
+#User IDs to ignore when processing large tasks like creator analysis (use for things like a system user used to load data)
+userids.to.ignore
+
+# Is there a "guest" user, if so, what is the ID
+# The guest user can only modify things in "DRAFT" mode
+guest.user.id
+
+# whether the user should be able to enter an RPA number
+rpa.enabled=true
+
+
+###################################
+## AUTHORITY MANAGEMENT SETTINGS
+###################################
+
+# the maximum number of records that are allowed to be merged
+tdar.authorityManagement.maxAffectedRecords
+
+# the maximum number of records that are displayed to user
+tdar.authorityManagement.dupeListMaxSize
+
+################################
+##   Experimental/Advanced
+################################
+featureEnabled.leftJoinDataIntegration=false
+
+# show view rows in tDAR
+view.row.suppported=true
+
+# Show jira report a bug link
+jira.link.show=true
+
+
+# is JAI-ImageJ enabled
+jai.imagej.enabled=true
+
+# Cultural Terms label
+# default: Cultural Terms
+#cultural.terms.label
+
+# Creator Analytics Scanning (how many of the previous days to scan when looking for creators to generate)
+# default: 10
+creator.analytics.days.to.process=10
+
+#kettle input path: the directory that the kettle ETL tool will scan for input (for loading FAIMS data)
+kettle.input.path=
+
+odata.enabled=false
+
+embargo.period=5
+
+upload.maxFilesPerResource=50
+
+archive.enabled=false
+video.enabled=false
+xml.export.enabled=false
+
+# URL Rewrite Filter refresh rate
+# how often to re-read the URL Rewrite Filter
+# default: -1 (never)
+#urlRewrite.refresh= 
+
+# Allow non-admin users to login to the system -- useful for system maintenance to limit modifications
+# default:true
+#allow.authentication=false
+
+# Specify userids that are admins (for use above)
+# default:(none)
+# allow.authentication.admin.users=user1,user2
+
+# force the JSON to be "pretty" i.e. not one line
+#
+use.verbose.json=false
