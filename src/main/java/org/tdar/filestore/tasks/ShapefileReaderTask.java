@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
@@ -15,9 +16,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.kml.KMLConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
+import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
@@ -43,7 +46,7 @@ public class ShapefileReaderTask extends AbstractTask {
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
         }
-
+        
         String extension = FilenameUtils.getExtension(file.getName());
         switch (extension) {
             case "jpg":
@@ -55,8 +58,8 @@ public class ShapefileReaderTask extends AbstractTask {
                 // Hints hints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, gtf.getDefaultCRS());
                 GridCoverageReader reader = gtf.getReader(workingOriginal);// , hints
                 // getLogger().info("subname: {} ", reader.getCurrentSubname());
-                getLogger()
-                        .info("format: {} ({}) -- {} ", reader.getFormat().getVendor(), reader.getFormat().getVersion(), reader.getFormat().getDescription());
+                Format format = reader.getFormat();
+                getLogger().info("format: {} ({}) -- {} ", format.getVendor(), format.getVersion(), format.getDescription());
                 // getLogger().info("more coverages: {} ", reader.hasMoreGridCoverages());
                 GridCoverage tiffCov = reader.read(null); // We do not use any parametery here.
                 if (ArrayUtils.isNotEmpty(reader.getMetadataNames())) {
@@ -72,6 +75,12 @@ public class ShapefileReaderTask extends AbstractTask {
                 getLogger().info("Geom {} ", tiffCov.getGridGeometry().toString());
                 getLogger().info("overviews {} ", tiffCov.getNumOverviews());
                 List<GridCoverage> sources = tiffCov.getSources();
+
+                FeatureJSON fjson = new FeatureJSON();
+                StringWriter writer = new StringWriter();
+                fjson.writeCRS(tiffCov.getCoordinateReferenceSystem(), writer);
+
+                getLogger().debug(writer.toString());
 
                 getLogger().info(" {} ", sources);
                 // GeoTiffReader rdr = (GeoTiffReader) ((new GeoTiffFormat()).getReader(file));

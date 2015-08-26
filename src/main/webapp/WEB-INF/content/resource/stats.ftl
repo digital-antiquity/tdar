@@ -40,16 +40,9 @@
 </table>
 <#if (total > 0)>
     <#noescape>
-    <script>
-        $(function () {
-            var usageStats = (${jsonStats});
-            
-            TDAR.charts.adminUsageStats({
-                rawData: usageStats,
-                label: "Views & Downloads"
-            });
-        });
-    </script>
+    <script id="usageStats" type="application/json">
+    	${jsonStats}
+</script>
     </#noescape>
 <#else>
 	<style>

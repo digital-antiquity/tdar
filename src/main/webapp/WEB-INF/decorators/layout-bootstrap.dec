@@ -33,20 +33,13 @@
     </#if>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
-    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}">
+    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
+    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}" />
 
 <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
-    <#if useCDN>
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
-    <#else>
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${staticHost}/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
-    </#if>
+        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print" />
+        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css' />
 
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
     <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
@@ -86,9 +79,11 @@ ${head}
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
+	 data-leaflet-id="examples.map-i875mjb7" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc"${geoLocationToBeUsed?string("true", "false")}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
       <#if authenticatedUser?has_content>data-currentTime="1" </#if>
       <#if ngApplicationName?has_content>ng-cloak</#if>>
+
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
@@ -222,31 +217,13 @@ ${head}
 
     </footer>
 
-    <#if useCDN>
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js"></script>
         <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <#else>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
-        <script src="${staticHost}/includes/bootstrap-2.32/js/bootstrap.js"></script>
-    </#if>
 
 
     <@header.scripts ( webFilePreprocessingEnabled) />
-    <script type="text/javascript">
-        TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
-        TDAR.maps.defaults.center.lat = ${mapDefaultLat};
-        TDAR.maps.defaults.center.lng = ${mapDefaultLng};
-        TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
-        <#--
-         TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
-         TDAR.common.sessionTimeout = ${sessionTimeout?c};
-            <#if authenticatedUser?has_content>
-            TDAR.common.currentTime = 1;
-            </#if>
-            -->
-    </script>
+
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>
         <span class="statusMessage"></span>
@@ -268,6 +245,9 @@ ${head}
     <script src="/test/js<#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
     </#if>
 </#if>
-
+    <#import "/${themeDir}/settings.ftl" as settings />
+<script id="c3colors">
+ [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+</script>
 </body>
 </html>

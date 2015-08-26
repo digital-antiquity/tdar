@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.BrowseDecadeCountCache;
-import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.cache.BrowseDecadeCountCache;
+import org.tdar.core.cache.BrowseYearCountCache;
 
 /**
  * $Id$
@@ -47,18 +47,14 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
         return findRandomFeaturedResource(restrictToFiles, collections, null, maxResults);
     }
 
-    public List<BrowseDecadeCountCache> findResourcesByDecade(Status[] statuses) {
+    @SuppressWarnings("unchecked")
+    public List<BrowseDecadeCountCache> findResourcesByDecade(Status ... statuses) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_BY_DECADE);
         query.setParameterList("statuses", statuses);
-        List<BrowseDecadeCountCache> result = new ArrayList<BrowseDecadeCountCache>();
-        for (Object obj : query.list()) {
-            Object[] row = (Object[]) obj;
-            result.add(new BrowseDecadeCountCache(((Number) row[0]).intValue(), ((Number) row[1]).longValue()));
-        }
-        return result;
+        return query.list();
     }
 
-    public List<BrowseYearCountCache> findResourcesByYear(Status[] statuses) {
+    public List<BrowseYearCountCache> findResourcesByYear(Status ... statuses) {
         Query query = getCurrentSession().createSQLQuery(QUERY_SQL_RESOURCES_BY_YEAR);
         List<BrowseYearCountCache> result = new ArrayList<BrowseYearCountCache>();
         for (Object obj : query.list()) {

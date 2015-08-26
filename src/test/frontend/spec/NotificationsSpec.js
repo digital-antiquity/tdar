@@ -4,7 +4,7 @@ describe("tests for TDAR.notifications methods", function() {
 xit("should work when we call init", function() {
    var expectedVal = null;
 
-   //var result = TDAR.notifications.init();
+   //var result = TDAR.notifications.inxit();
    expect(true).toBe(false); //fixme: implement this test
 });
 

@@ -273,7 +273,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     }
 
     protected void updateDisplayOrientationBasedOnSearchResults() {
-
     }
 
     // this is a no-op if basic search not detected

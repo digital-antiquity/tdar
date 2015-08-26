@@ -685,16 +685,6 @@ TDAR.common = function (TDAR, fileupload) {
         
         
 
-        //register maps, if any
-        if ($('#divSpatialInformation .google-map').length) {
-            $(function () {
-                //fixme: implicitly init when necessary
-                TDAR.maps.initMapApi();
-                var mapdiv = $('#editmapv3')[0];
-                var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
-                TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
-            });
-        }
 
         if (props.includeInheritance) {
             TDAR.inheritance.applyInheritance(props.formSelector);
@@ -736,20 +726,7 @@ TDAR.common = function (TDAR, fileupload) {
      */
     var _initializeView = function () {
         //console.debug('initialize view');
-        var mapdiv, $divSearchContext = $("#divSearchContext");
-
-        if ($('#large-google-map').length) {
-            mapdiv = $('#large-google-map')[0];
-        }
-        ;
-        if ($(".google-map").length) {
-            mapdiv = $('.google-map')[0];
-        }
-        if (mapdiv != undefined) {
-            var inputContainer = $("#divCoordContainer")[0];
-            TDAR.maps.initMapApi();
-            TDAR.maps.setupMap(mapdiv, inputContainer);
-        }
+        var $divSearchContext = $("#divSearchContext");
 
         if ($divSearchContext.length === 1) {
             $(".searchbox").focus(function () {

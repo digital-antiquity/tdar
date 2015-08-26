@@ -435,7 +435,11 @@
     </div>
 
     <div class="row">
-        <div id='large-google-map' class="google-map span9"></div>
+        <div id='large-map' style="height:300px" class="leaflet-map span9" 
+        data-maxy="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" 
+        data-minx="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}"
+        data-maxx="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}"
+        data-miny="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"></div>
     </div>
     <div id="divCoordContainer" style="display:none">
         <input type="hidden" class="ne-lat" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy"/>

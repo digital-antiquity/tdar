@@ -42,7 +42,7 @@ public class AdminFileInfoAction extends AuthenticationAware.Base {
     @Autowired
     private transient StatisticService statisticService;
 
-    private Map<String, Float> extensionStats;
+    private Map<String, Long> extensionStats;
     private List<InformationResourceFile> files;
     private Map<String, List<Number>> fileAverageStats;
     private Map<String, Long> fileStats;
@@ -59,11 +59,11 @@ public class AdminFileInfoAction extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    public Map<String, Float> getExtensionStats() {
+    public Map<String, Long> getExtensionStats() {
         return extensionStats;
     }
 
-    public void setExtensionStats(Map<String, Float> map) {
+    public void setExtensionStats(Map<String, Long> map) {
         this.extensionStats = map;
     }
 
