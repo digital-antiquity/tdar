@@ -5,6 +5,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     var hlayer;
     var geodata = {};
     var map;
+	var $mapDiv;
     var OUTLINE = "#777777";
     // note no # (leaflet doesn't use jquery selectors)
     var mapId = "worldmap";
@@ -19,12 +20,13 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (mapId_ != undefined) {
             mapId = mapId_;
         }
+		$mapDiv = $("#"+mapId);
         if (document.getElementById(mapId) == undefined) {
             return;
         }
         map = L.map(mapId,{
         // config for leaflet.sleep
-        sleep: true,
+        sleep: false,
         // time(ms) for the map to fall asleep upon mouseout
         sleepTime: 750,
         // time(ms) until map wakes on mouseover
@@ -121,6 +123,36 @@ TDAR.worldmap = (function(console, $, ctx) {
                 "fillOpacity": .1
             });
         }
+		var $div = $("#mapgraphdata");
+		if ($div.length == 0) {
+			$div = $("<div id='mapgraphdata' style='z-index:1000;height:350px;width:200px;position:absolute;left:"+$mapDiv.width()+"px'></div>");
+			$mapDiv.parent().append($div);
+		}
+		console.log(event.target.feature.properties.name);
+		$div.html("<h5>" + event.target.feature.properties.name + "</h5><div id='mapgraphpie'></div>");
+		var filter = mapdata.filter(function(d) {return d.code == event.target.feature.id});
+		var data = [];
+		filter.forEach(function(row){
+			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
+				data.push([row.label, row.count]);				
+			}
+		});
+
+		var obj = {
+			bindto: '#mapgraphpie',
+		    data: {
+		        columns: data,
+		        type : 'pie',
+		    }			
+		};
+		var c3colors = $("#c3colors");
+		if (c3colors.length > 0) {
+			var c3colorsobj = JSON.parse(c3colors.html());
+			obj.color = {};
+			obj.color.pattern = c3colorsobj;
+		}
+		
+		setTimeout(100,  c3.generate(obj));
         if (event.target.feature.id != 'RUS') {
             map.fitBounds(event.target.getBounds());
             overlay = true;

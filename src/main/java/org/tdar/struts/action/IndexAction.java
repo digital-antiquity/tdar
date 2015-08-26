@@ -62,10 +62,6 @@ public class IndexAction extends AuthenticationAware.Base {
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    @Autowired
-    private ResourceService resourceService;
-
-
     private List<SyndEntry> rssEntries;
 
     private String mapJson;

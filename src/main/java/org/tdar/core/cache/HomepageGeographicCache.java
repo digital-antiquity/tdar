@@ -14,12 +14,14 @@ public class HomepageGeographicCache implements Serializable {
     private String code;
     private ResourceType resourceType;
     private Integer count;
+    private String label;
     private Long id;
 
-    public HomepageGeographicCache(String code, ResourceType resourceType, Integer count, Long id) {
+    public HomepageGeographicCache(String code, ResourceType resourceType, String label, Integer count, Long id) {
         this.code = code;
         this.resourceType = resourceType;
         this.count = count;
+        this.setLabel(label);
         this.id = id;
     }
 
@@ -53,6 +55,14 @@ public class HomepageGeographicCache implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

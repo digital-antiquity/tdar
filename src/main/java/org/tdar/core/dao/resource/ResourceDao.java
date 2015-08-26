@@ -44,6 +44,7 @@ import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -185,7 +186,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 				String code = (String) objs[0];
 				Integer count = ((Number) objs[2]).intValue();
 				BigInteger bigint = (BigInteger) objs[3];
-				cache.add(new HomepageGeographicCache(code, ResourceType.valueOf((String) objs[1]), count,
+				ResourceType resourceType = ResourceType.valueOf((String) objs[1]);
+                cache.add(new HomepageGeographicCache(code, resourceType, MessageHelper.getInstance().getText(resourceType.getLocaleKey()),count,
 						bigint.longValue()));
 				if (!totals.containsKey(code)) {
 					totals.put(code, 0);
@@ -196,7 +198,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 			}
 		}
 		for (String code : totals.keySet()) {
-			cache.add(new HomepageGeographicCache(code, null, totals.get(code), null));
+			cache.add(new HomepageGeographicCache(code, null, null, totals.get(code), null));
 		}
 		return cache;
 	}
