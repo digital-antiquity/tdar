@@ -601,7 +601,7 @@ TDAR.datatable = function() {
             }
         };
 
-        TDAR.datatable.registerLookupDataTable(settings);
+        return TDAR.datatable.registerLookupDataTable(settings);
     }
 
     function _checkAllToggle() {
@@ -622,7 +622,7 @@ TDAR.datatable = function() {
                 _windowOpener = window.opener.TDAR.common.adhocTarget;
             }
         } catch (ex) {
-            console.log("window parent not available - skipping adhoctarget check");
+            //console.log("window parent not available - skipping adhoctarget check");
         }
 
         if (_windowOpener) {
@@ -718,9 +718,27 @@ TDAR.datatable = function() {
             }
         }
         if (size > 0) {
-            TDAR.datatable.registerLookupDataTable(options);
+            return TDAR.datatable.registerLookupDataTable(options);
         }
 
+    }
+
+
+    /**
+     *
+     * @param url
+     * @param dataTableId
+     * @returns {*} promise of array of columnInfo objects
+     * @private
+     */
+    function _loadDatasetTableMetadata(url, dataTableId)  {
+        var data =  {
+            id: dataTableId,
+            startRecord: 0,
+            recordsPerPage: 1
+        };
+        var promise = $.get(url, data, "jsonp");
+        return promise;
     }
 
     /**
@@ -748,6 +766,57 @@ TDAR.datatable = function() {
         }
     }
 
+
+    /**
+     * Initialize dataset datatable browser.  This method accepts no arguments, but requires configuration data
+     * from data-attributes.  Requirements:
+     *
+     * - <table> must have have ID of 'dataTable'
+     * - attribute data-data-table-selector:   selector to <select> dropdown that specifies the ID of the
+     *   dataTable to render. Will update on change events.
+     * - attribute data-default-data-table-id: ID of dataTable to render if no <select> dropdown exists
+     *
+     *
+     * @private
+     */
+    function _initDataTableBrowser() {
+        var config = $('#dataTable').data();
+        if(!config) return;
+        var $select = $(config.dataTableSelector);
+        var $dataTable = $('#dataTable');
+
+        var dataTableWidget = null;
+
+        var _loadThenInit = function(dataTableId){
+            //get the column schema for the default dataTable
+            var columnsPromise = _loadDatasetTableMetadata('/datatable/browse', dataTableId);
+            columnsPromise.done(function(data) {
+                var columns = data.fields.map(function(item){
+                    return {simpleName: item.name, displayName: item.displayName};
+                });
+
+                if(dataTableWidget) {
+                    dataTableWidget.fnDestroy();
+                    $dataTable.empty();
+                }
+                dataTableWidget = _initalizeResourceDatasetDataTable(columns, true, config.resourceId, 'datatable', dataTableId);
+            });
+
+        }
+
+        //if dataset has many tables, load & init the table every time user changes the dropdown
+        if($select.length) {
+            $select.change(function() {
+                _loadThenInit($select.val());
+            }).change();
+        }
+        // if only one dataset,  just load+init the table once
+        else {
+            _loadThenInit(config.defaultDataTableId);
+        }
+
+    }
+
     return {
         extendSorting : _extendSorting,
         registerLookupDataTable : _registerLookupDataTable,
@@ -758,6 +827,7 @@ TDAR.datatable = function() {
         checkAllToggle : _checkAllToggle,
         registerChild : _registerChild,
         initalizeResourceDatasetDataTable : _initalizeResourceDatasetDataTable,
-        registerAddRemoveSection : _initializeCollectionAddRemove
+        registerAddRemoveSection : _initializeCollectionAddRemove,
+        initDataTableBrowser: _initDataTableBrowser
     };
 }();

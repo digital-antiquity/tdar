@@ -690,7 +690,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         for (Resource resource : resourcesToAdd) {
-            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
+            if (!persistable.isPublic() && !authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
                 ineligibleToAdd.add(resource);
             } else {
                 resource.getResourceCollections().add(persistable);
@@ -699,7 +699,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
 
         for (Resource resource : resourcesToRemove) {
-            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
+            if (!persistable.isPublic() && !authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
                 ineligibleToAdd.add(resource);
             } else {
                 resource.getResourceCollections().remove(persistable);

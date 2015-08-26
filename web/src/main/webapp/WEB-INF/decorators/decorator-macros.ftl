@@ -77,7 +77,7 @@
 </#macro>
 
 <#macro subnav>
-<#if subnavEnabled??>
+<#if (subnavEnabled!true)>
 <div class="subnav-section">
     <div class="container">
         <div class="row">

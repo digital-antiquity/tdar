@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
@@ -29,7 +30,7 @@ import org.tdar.utils.Pair;
 
 @Component
 @Scope("prototype")
-public class DoiProcess extends AbstractScheduledBatchProcess<InformationResource> {
+public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
 
     public static final String SUBJECT = " DOI Creation Info";
 
@@ -69,8 +70,8 @@ public class DoiProcess extends AbstractScheduledBatchProcess<InformationResourc
     }
 
     @Override
-    public Class<InformationResource> getPersistentClass() {
-        return InformationResource.class;
+    public Class<Resource> getPersistentClass() {
+        return Resource.class;
     }
 
     @Override
@@ -91,7 +92,7 @@ public class DoiProcess extends AbstractScheduledBatchProcess<InformationResourc
     }
 
     @Override
-    public void process(InformationResource resource) throws Exception {
+    public void process(Resource resource) throws Exception {
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = provider.create(resource, urlService.absoluteUrl(resource));

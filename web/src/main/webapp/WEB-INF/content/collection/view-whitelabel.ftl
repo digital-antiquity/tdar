@@ -9,7 +9,6 @@
 <#--This is just an alias to help illustrate when we are using fields exclusive to whitelabel collections -->
     <#assign whitelabelCollection = resourceCollection>
 <head>
-    <meta name="decorator" content="whitelabel">
     <@search.headerLinks includeRss=false />
     <title>${resourceCollection.name!"untitled collection"}</title>
     <@view.canonical resourceCollection />

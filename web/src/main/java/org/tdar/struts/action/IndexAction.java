@@ -168,4 +168,9 @@ public class IndexAction extends AuthenticationAware.Base {
     public boolean isHomepage() {
         return true;
     }
+    
+    @Override
+    public boolean isSubnavEnabled() {
+        return false;
+    }
 }

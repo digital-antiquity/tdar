@@ -172,7 +172,7 @@ TDAR.authority = function () {
             }
             var $li = $('<li></li>').append('<input type="hidden" name="selectedDupeIds" value="' + idx + '" />').append('<span>' + label + ' (id:' + idx + ')</span>');
             $ul.append($li);
-            console.log('renderdupes:item:' + idx + ":" + data.name);
+            //console.log('renderdupes:item:' + idx + ":" + data.name);
         });
         $('#frmDupes').append($ul);
         $('#spanDupeCount').text(dupeCount);

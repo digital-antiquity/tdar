@@ -107,16 +107,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private SerializationService serializationService;
 
     @Autowired
-    private BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
     private transient AuthorizationService authorizationService;
 
     @Autowired
     private ObfuscationService obfuscationService;
-
-    @Autowired
-    private EntityService entityService;
 
     @Autowired
     private GenericKeywordService genericKeywordService;
@@ -126,9 +120,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Autowired
     private BillingAccountService accountService;
-
-    @Autowired
-    private InformationResourceService informationResourceService;
 
     @Autowired
     private ResourceService resourceService;
