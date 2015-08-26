@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.core.service.processes.daily.DoiProcess;
 
 /**
  * @author Adam Brin
