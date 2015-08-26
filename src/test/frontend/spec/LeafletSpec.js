@@ -41,6 +41,7 @@ describe("LeafletSpec", function() {
             // assert that a result map has items
         });
 
+
         it("initLeafletMaps:validResultsSetup", function() {
             loadFixtures("leaflet/leaflet-results.html");
             TDAR.leaflet.initResultsMaps();

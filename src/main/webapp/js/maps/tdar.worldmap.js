@@ -16,14 +16,28 @@ TDAR.worldmap = (function(console, $, ctx) {
         "fillOpacity": 1
     }
 
+    /**
+     * Look for embedded json in the specified container  and return the parsed result.  Embedded json should be
+     * tagged with a boolean attribute named 'data-mapdata'.  If no embedded json found, method returns null.
+     *
+     * @param containerElem
+     * @private
+     */
+    function _getMapdata(containerElem) {
+        var json = $(containerElem).find('script[data-mapdata]').text() || 'null';
+        return JSON.parse(json);
+    }
+
     function _initWorldMap(mapId_) {
         if (mapId_ != undefined) {
             mapId = mapId_;
         }
-		$mapDiv = $("#"+mapId);
         if (document.getElementById(mapId) == undefined) {
             return;
         }
+		$mapDiv = $("#"+mapId);
+        var mapdata = _getMapdata($mapDiv.parent());
+
         map = L.map(mapId,{
         // config for leaflet.sleep
         sleep: false,
@@ -44,6 +58,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 
         // load map data
+        //FIXME: consider embedding data for faster rendering
         $.getJSON("/js/maps/world.json", function(data) {
             hlayer = new L.GeoJSON(data, {
                 style: myStyle,
@@ -90,6 +105,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         };
 
         legend.addTo(map);
+        return map;
     }
     
     function _redrawLayer(layer, fillColor, opacity, id) {

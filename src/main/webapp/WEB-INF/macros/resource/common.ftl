@@ -237,15 +237,12 @@ Common macros used in multiple contexts
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false>
-    <div class="mapcontainer" style="">
-        <script type="text/javascript">
-			var mapdata = <#noescape>${mapJson}</#noescape>;
-            $(function () {
-                //TDAR.charts.worldMap();
-            });
+    <div class="mapcontainer">
+        <script type="application/json" data-mapdata>
+			<#noescape>${mapJson}</#noescape>
         </script>
 
-             <div id="worldmap" style="height:350px" class="span6">
+             <div id="worldmap" style="height:350px">
              </div>
     </div>
 

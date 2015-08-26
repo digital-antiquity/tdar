@@ -446,26 +446,15 @@ header .welcome-drop ul {
     margin: 0 0 13px 0;
 }
 
-#home .map h3 {
-    margin: 5px 0 30px 0;
-    float: left;
-}
-
-#home .map img.guide {
-    float: right;
-    margin-top: 18px;
-}
-
-#home .news h3 {
-    margin: 5px 0 20px 0;
-    float: left;
-}
-
 #home .news ul, #home .news li {
     margin: 0;
     padding: 0;
     list-style: none;
     clear: left;
+}
+
+#home .news li:first-child {
+    padding: 0 0 16px 60px;
 }
 
 #home .news li {
