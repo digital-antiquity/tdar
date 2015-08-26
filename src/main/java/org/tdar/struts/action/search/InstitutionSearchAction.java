@@ -9,14 +9,11 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -40,11 +37,6 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(Institution.class);
 
-    @Autowired
-    private transient AuthorizationService authorizationService;
-    @Autowired
-    private transient SearchService searchService;
-
     private String query;
 
     @Action(value = "institutions", results = {
@@ -58,8 +50,10 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
         InstitutionQueryBuilder iqb = new InstitutionQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
-        group.append(new GeneralCreatorQueryPart(new Institution(getQuery())));
-        iqb.append(group);
+        if (!isFindAll(getQuery())) {
+            group.append(new GeneralCreatorQueryPart(new Institution(getQuery())));
+            iqb.append(group);
+        }
         try {
             handleSearch(iqb);
         } catch (TdarRecoverableRuntimeException | ParseException trex) {
@@ -68,6 +62,7 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
         }
         return SUCCESS;
     }
+
 
     public List<SortOption> getSortOptions() {
         sortOptions.remove(SortOption.RESOURCE_TYPE);

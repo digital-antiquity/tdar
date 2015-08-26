@@ -590,4 +590,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public int getDefaultRecordsPerPage() {
         return DEFAULT_RESULT_SIZE;
     }
+
+    protected boolean isFindAll(String query) {
+        if (StringUtils.isBlank(query)) {
+            return true;
+        }
+        return StringUtils.equals(StringUtils.trim(query), "*");
+    }
 }

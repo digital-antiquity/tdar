@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SortOption;
@@ -36,8 +35,6 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(ResourceCollection.class);
 
-    @Autowired
-    private transient AuthorizationService authorizationService;
     @Autowired
     private transient SearchService searchService;
 
