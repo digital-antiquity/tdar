@@ -51,9 +51,14 @@ TDAR.worldmap = (function(console, $, ctx) {
         hoverToWake: true
         });
         _resetView();
+        var max = 0;
         for (var i = 0; i < mapdata.length; i++) {
             if (mapdata[i].resourceType == undefined) {
-                geodata[mapdata[i].code] = mapdata[i].count;
+                var val = mapdata[i].count;
+                geodata[mapdata[i].code] = val;
+                if (val > max) {
+                    max = val;
+                }
             }
         }
 
@@ -91,16 +96,20 @@ TDAR.worldmap = (function(console, $, ctx) {
 
         legend.onAdd = function (map) {
 
-            var div = L.DomUtil.create('div', 'info legend');
+            var div = L.DomUtil.create('div', 'info');
             $(div).append("<div id='data'></div>");
-
+            var legnd = L.DomUtil.create("div"," legend");
             var grades = [0, 1, 2, 5, 10,  20, 100, 1000];
 
             // loop through our density intervals and generate a label with a colored square for each interval
+            legnd.innerHTML += " <span>0</span> ";
             for (var i = 0; i < grades.length; i++) {
-                div.innerHTML +=
+                legnd.innerHTML +=
                 '<i style="width:10px;height:10px;display:inline-block;background:' + _getColor(grades[i] + 1) + '">&nbsp;</i> ';
             }
+            console.log(max);
+            legnd.innerHTML += " <span>"+max+"</span> ";
+            $(div).append(legnd);
             return div;
         };
 
@@ -141,10 +150,10 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 		var $div = $("#mapgraphdata");
 		if ($div.length == 0) {
-			$div = $("<div id='mapgraphdata' style='left:"+$mapDiv.width()+"px;height:"+$mapDiv.height()+"px'></div>");
+			$div = $("<div id='mapgraphdata' style='left:"+$mapDiv.width()+"px;height:"+($mapDiv.height() - 10)+"px'></div>");
 			$mapDiv.parent().append($div);
 		}
-		$div.html("<h5>" + event.target.feature.properties.name + "</h5><div id='mapgraphpie'></div>");
+		$div.html("<h5>" + event.target.feature.properties.name + "</h5><div id='mapgraphpie' style='height:"+($mapDiv.height() - 50)+"px'></div>");
         var mapdata = _getMapdata($mapDiv.parent());
 		var filter = mapdata.filter(function(d) {return d.code == event.target.feature.id});
 		var data = [];
@@ -238,6 +247,3 @@ TDAR.worldmap = (function(console, $, ctx) {
         initWorldMap: _initWorldMap
     }
 })(console, jQuery, window);
-$(function() {
-    TDAR.worldmap.initWorldMap();
-});

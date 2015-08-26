@@ -245,7 +245,11 @@ Common macros used in multiple contexts
              <div id="worldmap" style="height:350px" data-max="">
              </div>
     </div>
-
+	<script>
+	$(function() {
+    	TDAR.worldmap.initWorldMap();
+	});
+	</script>
     </#macro>
 
     <#macro cartouche persistable useDocumentType=false>

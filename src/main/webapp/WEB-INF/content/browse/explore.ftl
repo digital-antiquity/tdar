@@ -29,14 +29,17 @@
 </div>
 <br/>
 
-<div class="row">
-    <div class="span6">
-         <@common.resourceBarGraph /> 
-    </div>
-    <div class="span6 map">
+<div class="row">    
+    <div class="span9 map">
         <!-- fixme styling -->
         <h3 style="">${siteAcronym} Worldwide</h3>
         <@common.renderWorldMap />
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+         <@common.resourceBarGraph /> 
     </div>
 </div>
 
