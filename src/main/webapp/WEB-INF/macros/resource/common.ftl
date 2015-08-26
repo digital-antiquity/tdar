@@ -247,14 +247,6 @@ Common macros used in multiple contexts
 
              <div id="worldmap" style="height:350px" class="span6">
              </div>
-
-        <div id="map_legend">
-            <div><span class='legendText'>none</span>
-                <#list settings.mapColors as color>
-                    <span class="legendBox" style="background-color:#${color}"></span>
-                </#list>
-                <span class='legendText'>many</span></div>
-        </div>
     </div>
 
     </#macro>
