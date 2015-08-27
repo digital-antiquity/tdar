@@ -65,7 +65,7 @@ View freemarker macros
                 (<#t>
                 <#list ontologyNode.synonyms as synonym><#t>
                 ${synonym}<#t>
-                    <#if synonym_has_next>, </#if><#t>
+                    <#sep>, </#sep><#t>
                 </#list><#t>
                 )<#t>
             </#if><!-- (${ontologyNode.index})-->
@@ -395,7 +395,7 @@ ${resourceCitation.formattedSourceInformation!''} (${siteAcronym} ID: ${resource
         <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
             <#if !_keyword.deleted>
                 <@common.searchFor keyword=_keyword asList=false showOccurrence=false />
-                <#if _keyword_has_next>&bull;</#if> 
+                <#sep>&bull;</#sep> 
             </#if>
         </#list>
     </#macro>
