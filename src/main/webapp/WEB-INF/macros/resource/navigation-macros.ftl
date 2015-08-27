@@ -228,17 +228,4 @@ navigation freemarker macros
     </#macro>
 </#escape>
 
-<#-- Return the URL associated with the current form. The URL always includes the scheme & host,  if the application uses a nonstandard
- port for the current scheme  (e.g. the https port is not 443),  the URL include scheme, host, and port -->
-<#function getFormUrl absolutePath="/login/process" >
-    <#local actionMethod>${absolutePath}</#local>
-    <#local appPort = ""/>
-    <#if httpsEnabled>
-        <#if httpsPort != 443>
-            <#local  appPort= ":" + httpsPort?c/>
-        </#if>
-        <#local actionMethod="https://${hostName}${appPort}${absolutePath}" />
-    </#if>
-    <#return actionMethod>
-</#function>
 

@@ -33,15 +33,14 @@
                 <div class="searchgroup">
                     <h2>Choose Search Terms</h2>
                     <#assign currentIndex = 0 />
-                    <#if (g?size > 0) >
                         <#list g as group>
                             <#assign currentIndex = currentIndex + 1 />
 
                             <@searchGroup group_index group />
+
+		                    <#else>
+		                        <@searchGroup 0 "" />
                         </#list>
-                    <#else>
-                        <@searchGroup 0 "" />
-                    </#if>
                 </div>
 
                 <div class="glide" id="searchFilter">

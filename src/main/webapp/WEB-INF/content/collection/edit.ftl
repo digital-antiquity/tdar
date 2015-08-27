@@ -68,6 +68,22 @@
             </div>
 
 
+        <#if editor>
+            <div class="control-group" id="divSubmitter">
+                <label class="control-label">Owner</label>
+
+                <div class="controls controls-row">
+                    <#if owner?has_content>
+                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
+                    prefix="owner" includeRights=false includeRepeatRow=false />
+	 	        <#else>
+                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
+                        prefix="owner" includeRights=false includeRepeatRow=false />
+                    </#if>
+                </div>
+            </div>
+        </#if>
+
 
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge' title="Please enter the description " />

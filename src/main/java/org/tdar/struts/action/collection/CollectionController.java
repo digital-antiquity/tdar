@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -92,6 +94,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     private File file;
     private String fileContentType;
     private String fileFileName;
+    private String ownerProperName;
+    private TdarUser owner;
+
 
     @Override
     public boolean authorize() {
@@ -116,6 +121,13 @@ public class CollectionController extends AbstractPersistableController<Resource
     protected String save(ResourceCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
+        
+        setupOwnerField();
+        if (PersistableUtils.isNotNullOrTransient(getOwner())) {
+            TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
+            getPersistable().setOwner(uploader);
+        }
+
         ResourceCollection parent = resourceCollectionService.find(parentId);
         if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parent)
                 && (parent.getParentIds().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
@@ -179,6 +191,8 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public String loadEditMetadata() throws TdarActionException {
+        setOwner(getPersistable().getOwner());
+        setupOwnerField();
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
         for (AuthorizedUser au : getAuthorizedUsers()) {
             String name = null;
@@ -205,6 +219,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             }
         }
         prepareDataTableSection();
+        setupOwnerField();
         return SUCCESS;
     }
 
@@ -439,6 +454,16 @@ public class CollectionController extends AbstractPersistableController<Resource
         return ProjectionModel.RESOURCE_PROXY;
     }
 
+    
+    private void setupOwnerField() {
+        if (PersistableUtils.isNotNullOrTransient(getOwner()) && StringUtils.isNotBlank(getOwner().getProperName())) {
+            if (getOwner().getFirstName() != null && getOwner().getLastName() != null)
+                setOwnerProperName(getOwner().getProperName());
+        } else {
+            setOwnerProperName(getAuthenticatedUser().getProperName());
+        }
+    }
+
     /**
      * A hint to the view-layer that this resource collection is "big". The view-layer may choose to gracefully degrade the presentation to save on bandwidth
      * and/or
@@ -510,5 +535,21 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setFileContentType(String fileContentType) {
         this.fileContentType = fileContentType;
+    }
+
+    public String getOwnerProperName() {
+        return ownerProperName;
+    }
+
+    public void setOwnerProperName(String ownerProperName) {
+        this.ownerProperName = ownerProperName;
+    }
+
+    public TdarUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(TdarUser owner) {
+        this.owner = owner;
     }
 }

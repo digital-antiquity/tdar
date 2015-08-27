@@ -89,13 +89,17 @@
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 <hr class="dbl">
-    <h3>This Resource is Part of the Following Collections</h3>
-<p>    <ul class="inline">
-        <#list viewableResourceCollections as collection>
+    <#list viewableResourceCollections>
+	    <h3>This Resource is Part of the Following Collections</h3>
+		<p>
+	    <ul class="inline">
+		<#items as collection>
             <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
-            <#if collection_has_next>&nbsp;&nbsp;&bull;</#if></li>
-        </#list></ul>
-</p>
+            <#sep>&nbsp;&nbsp;&bull;</#sep></li>
+        </#items>
+		</ul>
+		</p>
+        </#list>
 <h2>Summary</h2>
     <@common.description resource.description />
 
@@ -404,18 +408,18 @@
         </#if>
     </#macro>
 
-    <#if resource.activeCoverageDates?has_content>
-    <h2>Temporal Coverage</h2>
-        <#list resource.activeCoverageDates as coverageDate>
+        <#list resource.activeCoverageDates>
+	    <h2>Temporal Coverage</h2>
+	    <#items as coverageDate>
             <#assign value>
                 <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to
                 <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
                 <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if>
             </#assign>
             <@view.kvp key=coverageDate.dateType.label val=value />
+			</#items>
+		    <hr/>
         </#list>
-    <hr/>
-    </#if>
 
 
     <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
@@ -454,10 +458,10 @@
     <hr/>
     </#if>
 
-    <#if (resource.activeResourceAnnotations)?has_content>
-    <h3>Record Identifiers</h3>
+        <#list allResourceAnnotationKeys>
+    	<h3>Record Identifiers</h3>
 
-        <#list allResourceAnnotationKeys as key>
+		<#items as key>
             <#assign contents = "" />
             <#list resource.activeResourceAnnotations as ra>
                 <#if key.id == ra.resourceAnnotationKey.id >
@@ -468,17 +472,17 @@
                 <#assign keyLabel><#noescape>${key.key}</#noescape>(s)</#assign>
                 <@view.kvp key=keyLabel val=contents noescape=true />
             </#if>
+			</#items>
         </#list>
-    </#if>
 
 
-    <#if resource.activeResourceNotes?has_content>
+	<#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber")>
     <h2>Notes</h2>
-        <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
+        <#items as resourceNote>
             <@view.kvp key=resourceNote.type.label val=resourceNote.note />
-        </#list>
+		</#items>
     <hr/>
-    </#if>
+        </#list>
 
     <@_relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
     <@_relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
@@ -486,14 +490,14 @@
     <hr/>
     </#if>
 <#-- display linked data <-> ontology nodes -->
-    <#if relatedResources?has_content>
-    <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
-    <ol style='list-style-position:inside'>
-        <#list relatedResources as related >
+        <#list relatedResources![]>
+	    <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
+	    <ol style='list-style-position:inside'>
+			<#items as related >
             <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${rtelated.title} </a></li>
-        </#list>
+			</#items>
     </ol>
-    </#if>
+        </#list>
 
     <@view.unapiLink resource />
     <#if viewableResourceCollections?has_content>
@@ -630,16 +634,16 @@
 
 <#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
     <#macro _relatedSimpleItem listitems label>
-        <#if listitems?has_content>
+        <#list listitems>
         <h3>${label}</h3>
         <table>
-            <#list listitems as citation>
+            <#items as citation>
                 <tr>
                     <td>${citation}</td>
                 </tr>
-            </#list>
+            </#items>
         </table>
-        </#if>
+        </#list>
     </#macro>
 
     <#macro _keywordSection label keywordList searchParam>

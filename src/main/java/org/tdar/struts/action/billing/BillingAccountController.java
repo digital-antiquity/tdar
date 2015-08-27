@@ -308,6 +308,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     @Override
     public String loadEditMetadata() throws TdarActionException {
+        setOwner(getPersistable().getOwner());
         setupOwnerField();
         return SUCCESS;
     }
