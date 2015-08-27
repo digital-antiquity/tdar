@@ -9,9 +9,11 @@ import java.net.URL;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,9 @@ public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Before
     public void setupServiceClient() throws MalformedURLException {
+        reindex();
+        logout();
+
         // use this to run the TAG Gateway with a direct connection, not a socket connection
         boolean runLocal = false;
         if (!runLocal) {
@@ -86,31 +91,41 @@ public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTrue(xslt.getTagName().contains("stylesheet"));
     }
 
+    public SearchResults getResults(Query query, String sessionId) {
+        for (int i = 0; i < 5; i++) {
+            try {
+                return port.getTopRecords(sessionId, query, 5);
+            } catch (SOAPFaultException sfe) {
+                logger.error("TagException: ", sfe);
+            }
+        }
+        Assert.fail("Tried 5 times and couldn't get past SOAP exception");
+        return null;
+
+    }
+
     @Test
-    @Rollback(true)
     public void getTopRecords() {
-        reindex();
-        logout();
-        SearchResults results;
-        Meta meta;
-
-        String sessionId = RandomStringUtils.random(10);
         Query query = new Query();
-
         query.setFreetext("*:*");
-
-        results = port.getTopRecords(sessionId, query, 5);
-        logger.debug("results: {} ({})", results, results.getResults());
-        meta = results.getMeta();
+        String sessionId = RandomStringUtils.random(10);
+        SearchResults results = getResults(query, sessionId);
+        Meta meta = results.getMeta();
         assertEquals(sessionId, meta.getSessionID());
         assertTrue(meta.getTotalRecords() > 0); // we are absolutely 100% positive that there are maybe some records that should come back.
         assertEquals(5, results.getResults().getResult().size());
+    }
 
+    @Test
+    public void testWhatQuery() {
         What domestic = new What();
+
+        Query query = new Query();
+        query.setFreetext("*:*");
+        String sessionId = RandomStringUtils.random(10);
         domestic.getSubjectTerm().add(SubjectType.DOMESTIC);
         query.setWhat(domestic);
-        results = port.getTopRecords(sessionId, query, 5);
-        meta = results.getMeta();
+        SearchResults results = getResults(query, sessionId);
         String[] ids = { "262", "1268", "2420", "3805" };
         boolean ok = false;
         for (ResultType result : results.getResults().getResult()) {
@@ -124,35 +139,50 @@ public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             // logger.info("saw: {}", result.identifier);
         }
         assertTrue("should see something, missed:" + ArrayUtils.toString(ids), ok);
-        query.setWhat(null);
+    }
 
+    @Test
+    public void testWhereQuery() {
+        Query query = new Query();
+        query.setFreetext("*:*");
+        String sessionId = RandomStringUtils.random(10);
         Where where = new Where(); // look in AZ and NM
         where.setMaxLatitude(BigDecimal.valueOf(37.14));
         where.setMinLatitude(BigDecimal.valueOf(31.86));
         where.setMinLongitude(BigDecimal.valueOf(-114.68));
         where.setMaxLongitude(BigDecimal.valueOf(-103.01));
         query.setWhere(where);
-        results = port.getTopRecords(sessionId, query, 5);
-        meta = results.getMeta();
+        SearchResults results = getResults(query, sessionId);
 
         assertTrue(titleInResults(results.getResults().getResult(),
                 "The Archaeology of Tuzigoot National Monument and Montezuma Castle National Monument"));
         query.setWhere(null);
+    }
 
+    @Test
+    public void testWhenQuery() {
         When when = new When();
         when.setMinDate(800);
         when.setMaxDate(1500);
+        Query query = new Query();
+        query.setFreetext("*:*");
+        String sessionId = RandomStringUtils.random(10);
         query.setWhen(when);
-        results = port.getTopRecords(sessionId, query, 5);
+        SearchResults results = getResults(query, sessionId);
         assertTrue(titleInResults(results.getResults().getResult(),
                 "Heshotauthla Archaeological Research Project (HARP)"));
-        query.setWhen(null);
+
+    }
+
+    @Test
+    public void testFreetextQuery() {
+        Query query = new Query();
+        String sessionId = RandomStringUtils.random(10);
 
         query.setFreetext("Rudd Creek");
-        results = port.getTopRecords(sessionId, query, 5);
+        SearchResults results = getResults(query, sessionId);
         assertTrue(titleInResults(results.getResults().getResult(),
                 "Rudd Creek Archaeological Project"));
-
     }
 
     private boolean titleInResults(List<ResultType> results, String title) {

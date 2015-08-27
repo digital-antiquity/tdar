@@ -256,24 +256,24 @@ bookmark indicator, etc..
 <#--list the author/editor/creators of a resource - part of the summary information included in a a search result item -->
     <#macro _listCreators resource_>
         <#assign showSubmitter=true/>
-        <#if resource_.primaryCreators?has_content>
+		<#list resource_.primaryCreators![]>
         <span class="authors">
-            <#list resource_.primaryCreators as creatr>
+            <#items as creatr>
                 <#assign showSubmitter=false/>
             ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
-            </#list>
+            </#items>
         </span>
-        </#if>
+        </#list>
 
-        <#if resource_.editors?has_content>
+		<#list resource_.editors![]>
         <span class="editors">
-            <#list resource_.editors as creatr>
+            <#items  as creatr>
                 <#assign showSubmitter=false/>
                 <#if creatr_index == 0><span class="editedBy">Edited by:</span></#if>
             ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
-            </#list>
+            </#items>
         </span>
-        </#if>
+		</#list>
 
         <#if showSubmitter && resource_.submitter?has_content>
             <#assign label = "Created" />

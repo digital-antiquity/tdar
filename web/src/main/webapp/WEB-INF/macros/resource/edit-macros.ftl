@@ -56,13 +56,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
     <div class="control-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
         <label class="control-label">${label}</label>
-        <#if keywordList.empty >
-            <@_keywordRow keywordField />
-        <#else>
-            <#list keywordList as keyword>
+        <#list keywordList as keyword>
                 <@_keywordRow keywordField keyword_index showDelete />
+			<#else>
+	            <@_keywordRow keywordField />
             </#list>
-        </#if>
     </div>
     </#macro>
     <#macro _keywordRow keywordField keyword_index=0 showDelete=true>
@@ -171,17 +169,17 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#-- emit the coverage dates section (temporal coverage, temporal keywords) -->
     <#macro _coverageDatesSection>
-        <#local _coverageDates=coverageDates />
-        <#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
         <@helptext.coverageDates />
     <div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" data-tiplabel="Coverage Dates"
          data-tooltipcontent="#coverageDatesTip">
         <label class="control-label">Coverage Dates</label>
 
-        <#list _coverageDates as coverageDate>
+        <#list coverageDates as coverageDate>
             <#if coverageDate??>
                 <@_dateRow coverageDate coverageDate_index/>
             </#if>
+			<#else>
+                <@_dateRow blankCoverageDate coverageDate_index/>
         </#list>
     </div>
     </#macro>
@@ -459,25 +457,25 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#-- emit related collections section-->
     <#macro relatedCollections showInherited=true>
-        <#local _sourceCollections = sourceCollections />
-        <#local _relatedComparativeCollections = relatedComparativeCollections />
-        <#if _sourceCollections.empty><#local _sourceCollections = [blankSourceCollection] /></#if>
-        <#if _relatedComparativeCollections.empty><#local _relatedComparativeCollections = [blankRelatedComparativeCollection] /></#if>
     <div class="well-alt" id="relatedCollectionsSectionGlide">
         <h2 id="relatedCollectionInfoSectionLabel">Museum or Archive Collections</h2>
         <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited sectionId='#relatedCollectionsSection'/>
         <div id="relatedCollectionsSection">
             <div id="divSourceCollectionControl" class="control-group repeatLastRow">
                 <label class="control-label">Source Collections</label>
-                <#list _sourceCollections as sourceCollection>
+                <#list sourceCollections as sourceCollection>
                     <@_sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
+					<#else>
+	                    <@_sourceCollectionRow blankSourceCollection "sourceCollection" sourceCollection_index/>
                 </#list>
             </div>
 
             <div id="divRelatedComparativeCitationControl" class="control-group repeatLastRow">
                 <label class="control-label">Related or Comparative Collections</label>
-                <#list _relatedComparativeCollections as relatedComparativeCollection>
+                <#list relatedComparativeCollections as relatedComparativeCollection>
                     <@_sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
+    				<#else>
+                    <@_sourceCollectionRow blankRelatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
                 </#list>
             </div>
             <@helptext.sourceRelatedCollection />
@@ -531,16 +529,14 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro resourceNoteSection showInherited=true>
     <div id="resourceNoteSectionGlide" data-tiplabel="Notes" data-tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example,
     a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document.">
-        <#local _resourceNotes = resourceNotes />
-        <#if _resourceNotes.empty >
-            <#local _resourceNotes = [blankResourceNote] />
-        </#if>
         <h2 id="notesInfoSectionLabel">Notes</h2>
         <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited sectionId='#resourceNoteSection'/>
         <div id="resourceNoteSection" class="control-group repeatLastRow">
             <label class="control-label">Type / Contents</label>
-            <#list _resourceNotes as resourceNote>
+            <#list resourceNotes as resourceNote>
                 <#if resourceNote??><@_noteRow resourceNote resourceNote_index/></#if>
+				<#else>
+				<@_noteRow blankResourceNote resourceNote_index/>
             </#list>
         </div>
     </div>
@@ -598,17 +594,17 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
       @pram  prefix:string prefix to append to form field 'name' attribute.  This gets passed to @creatorProxyRow
     -->
     <#macro resourceCreators sectionTitle proxies prefix>
-        <#local _proxies = proxies >
-        <#if proxies?size == 0><#local _proxies = [blankCreatorProxy]></#if>
     <div class="" data-tiplabel="${sectionTitle}"
          id="${prefix}Section"
          data-tooltipcontent="#divResourceCreatorsTip">
         <h2 id="${prefix}InfoSectionLabel">${sectionTitle}</h2>
         <#nested>
         <div id="${prefix}Table" class="table repeatLastRow creatorProxyTable">
-            <#list _proxies as proxy>
-        <@creatorProxyRow proxy  prefix proxy_index/>
-        </#list>
+            <#list proxies as proxy>
+        		<@creatorProxyRow proxy  prefix proxy_index/>
+				<#else>
+        		<@creatorProxyRow blankCreatorProxy  prefix 0/>
+	        </#list>
         </div>
     </div> <!-- section -->
     </#macro>
@@ -732,10 +728,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#-- emit the custom identifiers section of a resource edit page-->
     <#macro identifiers showInherited=true>
-        <#local _resourceAnnotations = resourceAnnotations />
-        <#if _resourceAnnotations.empty>
-            <#local _resourceAnnotations = [blankResourceAnnotation] />
-        </#if>
     <div id="divIdentifiersGlide" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
         <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
@@ -746,8 +738,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
                 <div class="controls">
                     <div id="resourceAnnotationsTable" addAnother="add another identifier">
-                        <#list _resourceAnnotations as annotation>
-                        <@_displayAnnotation annotation annotation_index/>
+                        <#list resourceAnnotations as annotation>
+                        	<@_displayAnnotation annotation annotation_index/>
+							<#else>
+                        	<@_displayAnnotation blankResourceAnnotation annotation_index/>
                         </#list>
                     </div>
                 </div>
@@ -771,7 +765,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro join sequence=[] delimiter=",">
         <#if sequence?has_content>
             <#list sequence as item>
-            ${item}<#if item_has_next><#noescape>${delimiter}</#noescape></#if><#t>
+            ${item}<#sep><#noescape>${delimiter}</#noescape></#sep><#t>
             </#list>
         </#if>
     </#macro>
@@ -832,12 +826,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             <#if fileProxy??>
                                 <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
                             </#if>
-                        </#list>
-                        <#if fileProxies.empty>
+						<#else>
                         <tr class="noFiles newRow">
                             <td><em>no files uploaded</em></td>
                         </tr>
-                        </#if>
+                        </#list>
                     </tbody>
                 </table>
             </#if>

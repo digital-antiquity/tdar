@@ -209,7 +209,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             ResultType res = new ResultType();
             res.setIdentifier(p.getId().toString());
             res.setTitle(p.getTitle());
-            res.setUrl(urlService.absoluteUrl(p));
+            res.setUrl(UrlService.absoluteUrl(p));
             Set<ResourceCreator> preparers = p.getResourceCreators(ResourceCreatorRole.PREPARER);
             if (preparers.isEmpty()) {
                 res.setPublisher("");
@@ -231,6 +231,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         ReservedSearchParameters reserved = new ReservedSearchParameters();
         reserved.setResourceTypes(Arrays.asList(ResourceType.PROJECT));
         reserved.setStatuses(Arrays.asList(Status.ACTIVE));
+        
         if (what != null) {
             List<String> terms = new ArrayList<String>();
             for (SubjectType type : what.getSubjectTerm()) {

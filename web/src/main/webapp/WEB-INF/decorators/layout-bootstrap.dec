@@ -20,9 +20,9 @@
     <#import "/WEB-INF/macros/header.ftl" as header>
     <#global qunit = (Parameters.qunit)??  && !production>
     <#assign uri = request.requestURI />
-    <#assign bodyid = 'home' />
-    <#if (uri != '' && uri != '/about' && uri != '/')>
-        <#assign bodyid = "alt" />
+    <#assign bodyid = 'alt' />
+    <#if (homepage!false)>
+        <#assign bodyid = "home" />
     </#if>
 
 <#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
@@ -38,9 +38,9 @@
 
 <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <#if useCDN>
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
     <#else>
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
@@ -48,8 +48,8 @@
         <link rel="stylesheet" type="text/css" href='${staticHost}/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
     </#if>
 
-    <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
-    <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
+    <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
+    <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
     <#if qunit>
         <link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css"></#if>
     <@header.css (webFilePreprocessingEnabled ) />
@@ -59,13 +59,13 @@
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
     <#if useCDN>
-        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
     <#else>
         <script src="${staticHost}/includes/jquery-${jquery_version}.js"></script>
         <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}/ui/minified/jquery-ui.min.js"></script>
     </#if>
-    <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
     <#include "/${themeDir}/head.dec" />
     <#if whiteLabelCollection??>  
         <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
@@ -223,9 +223,9 @@ ${head}
     </footer>
 
     <#if useCDN>
-        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
-        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js"></script>
-        <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <#else>
         <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
         <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
@@ -257,7 +257,7 @@ ${head}
 
     <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
         <script type="text/javascript">
-            TDAR.loadScript('${protocol}//${jiraScriptLink}');
+            TDAR.loadScript('https://${jiraScriptLink}');
         </script>
     </#if>
 

@@ -446,6 +446,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void setServletRequest(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
     }
+    
+    public String getContextPath() {
+        return getServletRequest().getContextPath();
+    }
 
     public HttpServletResponse getServletResponse() {
         return servletResponse;
@@ -498,7 +502,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getStaticHost() {
         if (!getTdarConfiguration().isStaticContentEnabled()) {
             // expecting that default requests are relative to root; so / becomes //
-            return "";
+            return getContextPath();
         }
 
         String port = "";

@@ -9,14 +9,11 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.QueryFieldNames;
@@ -40,11 +37,6 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(Person.class);
 
-    @Autowired
-    private transient AuthorizationService authorizationService;
-    @Autowired
-    private transient SearchService searchService;
-
     private String query;
 
     @Action(value = "people", results = {
@@ -58,9 +50,11 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
         PersonQueryBuilder pqb = new PersonQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
-        Person person = Person.fromName(getQuery());
-        group.append(new GeneralCreatorQueryPart(person));
-        pqb.append(group);
+        if (!isFindAll(getQuery())) {
+            Person person = Person.fromName(getQuery());
+            group.append(new GeneralCreatorQueryPart(person));
+            pqb.append(group);
+        }
         try {
             handleSearch(pqb);
         } catch (TdarRecoverableRuntimeException | ParseException trex) {

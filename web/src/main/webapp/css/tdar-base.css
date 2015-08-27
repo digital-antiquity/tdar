@@ -122,12 +122,12 @@ a.button:hover, .tdar-button:hover, input.tdar-button[type=submit]:hover {
 }
 
 #home {
-    background: url(/images/r4/bg-home.jpg) center 115px;
+    background: url(../images/r4/bg-home.jpg) center 115px;
     background-repeat: no-repeat;
 }
 
 #alt, #sub {
-    background: url(/images/r4/bg-sub.jpg) top center;
+    background: url(../images/r4/bg-sub.jpg) top center;
     background-repeat: no-repeat;
 }
 
@@ -155,7 +155,7 @@ header input.searchbox, /* this selector works fine, however */
 
 .hero input.searchbox {
     padding: 11px 0 13px 25px !important;
-    background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
+    background: url(../images/r4/bg-hero-search.png) 0 0 no-repeat !important;
     font-size: 16px !important;
     line-height: 16px !important;
     height: auto;
@@ -168,7 +168,7 @@ header form input.searchbox {
     font-size: 13px;
     line-height: 13px;
     border: 1px solid #dedede;
-    background: url(/images/r4/bg-search.png) 195px 50%;
+    background: url(../images/r4/bg-search.png) 195px 50%;
     background-repeat: no-repeat;
 
 }
@@ -270,7 +270,7 @@ header .welcome {
 /*
 header .welcome a {
 	 padding-right: 13px;
-	 background: url(/images/r4/bg-welcome.png) right 3px ; background-repeat: no-repeat;
+	 background: url(../images/r4/bg-welcome.png) right 3px ; background-repeat: no-repeat;
 }
 */
 
@@ -279,7 +279,7 @@ header .welcome-drop {
     top: 25px;
     right: -5px;
     width: 229px;
-    background: url(/images/r4/bg-welcome-drop.png) bottom center;
+    background: url(../images/r4/bg-welcome-drop.png) bottom center;
     background-repeat: no-repeat;
     padding-bottom: 12px;
     display: none;
@@ -287,7 +287,7 @@ header .welcome-drop {
 }
 
 header .welcome-drop p {
-    background: url(/images/r4/bg-welcome-top.png) 0 0;
+    background: url(../images/r4/bg-welcome-top.png) 0 0;
     background-repeat: no-repeat;
     margin: 0;
     padding: 30px 20px 0 20px;
@@ -304,7 +304,7 @@ header .welcome-drop ul {
 }
 
 #home {
-    background: url(/images/r4/bg-home.jpg) center 115px;
+    background: url(../images/r4/bg-home.jpg) center 115px;
     background-repeat: no-repeat;
 }
 
@@ -395,7 +395,7 @@ header .welcome-drop ul {
     display: block;
     width: 24px;
     height: 38px;
-    background: url(/images/r4/btns-slider.png) 0 0;
+    background: url(../images/r4/btns-slider.png) 0 0;
     background-repeat: no-repeat;
     text-indent: -999em;
     opacity: 0.5;
@@ -549,7 +549,7 @@ header .welcome-drop ul {
 }
 
 .subnav ul.subnav-lft li.current_page_item {
-    background: url(/images/r4/bg-subnav.png) bottom center;
+    background: url(../images/r4/bg-subnav.png) bottom center;
     background-repeat: no-repeat;
 }
 
@@ -904,7 +904,7 @@ h1 span, h4 span {
 }
 
 .why article.find {
-    background: url(/images/r4/bg-find.png) top right;
+    background: url(../images/r4/bg-find.png) top right;
     background-repeat: no-repeat;
     padding-bottom: 35px;
 }
@@ -915,7 +915,7 @@ h1 span, h4 span {
 
 .why article.preserve {
     padding: 43px 0 35px 0;
-    background: url(/images/r4/bg-preserve.png) 120px 30px;
+    background: url(../images/r4/bg-preserve.png) 120px 30px;
     background-repeat: no-repeat;
     border-top: 1px solid #dadada;
     border-bottom: 1px solid #dadada;
@@ -927,7 +927,7 @@ h1 span, h4 span {
 
 .why article.extend {
     padding-top: 40px;
-    background: url(/images/r4/bg-extend.png) 520px 55px;
+    background: url(../images/r4/bg-extend.png) 520px 55px;
     background-repeat: no-repeat;
 }
 
@@ -1087,7 +1087,7 @@ h2.totalRecords {
 
 footer {
     margin-top: 60px;
-    background: url(/images/r4/bg-footer.png) repeat;
+    background: url(../images/r4/bg-footer.png) repeat;
     padding: 50px 0;
 }
 
@@ -1153,7 +1153,7 @@ nav ul {
 }
 
 .view .sidebar, .dashboard .sidebar {
-    background: url(/images/r4/bg-cols-right.png) top left repeat-y;
+    background: url(../images/r4/bg-cols-right.png) top left repeat-y;
     margin-left: 0px;
     padding-left: 0px;
 }
@@ -1186,7 +1186,7 @@ span.cartouche {
 }
 
 .resource-nav li i, i.bookmark-icon {
-    background: url(/images/r4/resource-types-large.gif);
+    background: url(../images/r4/resource-types-large.gif);
     background-repeat: no-repeat;
     width: 18px;
     height: 14px;
