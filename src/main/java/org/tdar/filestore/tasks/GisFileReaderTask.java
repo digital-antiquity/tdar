@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 import org.xml.sax.SAXException;
 
-public class ShapefileReaderTask extends AbstractTask {
+public class GisFileReaderTask extends AbstractTask {
 
     /**
      * 
