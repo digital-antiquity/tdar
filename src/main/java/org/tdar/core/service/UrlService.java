@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /*

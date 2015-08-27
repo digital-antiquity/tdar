@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource;
+package org.tdar.core.bean.resource.file;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;

@@ -7,7 +7,7 @@ import java.io.InputStream;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.core.service.PdfService;
 

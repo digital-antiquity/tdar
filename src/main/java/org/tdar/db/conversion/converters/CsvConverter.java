@@ -1,6 +1,6 @@
 package org.tdar.db.conversion.converters;
 
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
 /**

@@ -3,8 +3,8 @@ package org.tdar.utils.json;
 import java.io.IOException;
 
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.UrlService;
 
 import com.fasterxml.jackson.core.JsonGenerationException;

@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource;
+package org.tdar.core.bean.resource.file;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * @version $Rev$
  */
 public enum VersionType {
-    UPLOADED, UPLOADED_TEXT, UPLOADED_ARCHIVAL, ARCHIVAL, WEB_SMALL, WEB_MEDIUM, WEB_LARGE,
+    UPLOADED, UPLOADED_TEXT, UPLOADED_ARCHIVAL, ARCHIVAL, WEB_SMALL, WEB_MEDIUM, WEB_LARGE, GEOJSON,
     TRANSLATED, INDEXABLE_TEXT, METADATA, LOG, RECORD;
 
     public boolean isDerivative() {
@@ -19,6 +19,7 @@ public enum VersionType {
             case WEB_MEDIUM:
             case WEB_LARGE:
             case METADATA:
+            case GEOJSON:
             case TRANSLATED:
                 return true;
             default:

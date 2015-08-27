@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource;
+package org.tdar.core.bean.resource.file;
 
 public enum FileType {
     IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, GEOSPATIAL, AUDIO, VIDEO, OTHER;

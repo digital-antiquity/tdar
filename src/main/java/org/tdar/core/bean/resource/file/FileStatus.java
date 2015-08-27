@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource;
+package org.tdar.core.bean.resource.file;
 
 public enum FileStatus {
     // whether or not the file is in the middle of a queued process

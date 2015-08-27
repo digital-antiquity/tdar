@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 
 @Entity
 @Table(name = "information_resource_file_download_statistics", indexes = {

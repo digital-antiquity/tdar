@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource;
+package org.tdar.core.bean.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.tdar.core.bean.HasLabel;
