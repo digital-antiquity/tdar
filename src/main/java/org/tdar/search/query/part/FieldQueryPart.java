@@ -274,6 +274,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         for (int i = 0; i < getFieldValues().size(); i++) {
             Object fieldValue = getFieldValues().get(i);
             StringBuilder builder = new StringBuilder();
+            if (fieldValue == null) {
+                continue;
+            }
             if (Resource.class.isAssignableFrom(fieldValue.getClass())) {
                 fieldValue = ((Resource) fieldValue).getTitle();
             } else if (ResourceCollection.class.isAssignableFrom(fieldValue.getClass())) {
