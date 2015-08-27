@@ -86,7 +86,7 @@ ${head}
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
-	 data-leaflet-id="examples.map-i875mjb7" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc"${geoLocationToBeUsed?string("true", "false")}"
+	 data-leaflet-api-key="${leafletApiKey}" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc"${geoLocationToBeUsed?string("true", "false")}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
       <#if authenticatedUser?has_content>data-currentTime="1" </#if>
       <#if ngApplicationName?has_content>ng-cloak</#if>>

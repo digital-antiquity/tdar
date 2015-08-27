@@ -15,9 +15,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         },
 
         mapbox: {
-            //fixme: I assume we need a api token? If so perhaps we define this in data-attr of container elem?
-            url: "https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png",
-            //fixme: consider pulling attribution html from hidden div or script[type=text/html]
+            url: "https://{s}.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={apiKey}",
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
             + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
             + 'Imagery © <a href="http://mapbox.com">Mapbox</a>'
@@ -32,11 +30,11 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             lng: 0
         },
         zoomLevel: 4,
-        tileProvider: 'osm',
+        tileProvider: 'mapbox',
         maxBounds: [[[-85, -180.0], [85, 180.0]]],
         minZoom: 2,
         maxZoom: 17,
-        
+        id: 'abrin.n9j4f56m',
         // config for leaflet.sleep
         sleep: true,
         // time(ms) for the map to fall asleep upon mouseout
@@ -67,21 +65,23 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var $elem = $(elem);
         var _elemData = $elem.data();
         // bootstrap stores a lot of data in BODY. We only want a subset
-        var _bodyData = {leafletId: $('body').data().leafletId};
+        var _bdata = $('body').data();
+        var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
+        console.log(settings.leaflettileprovider);
 
-        console.log('creating L.map:');
+        console.log('creating L.map:', settings);
         var map = L.map(elem).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
 		$elem.data("map",map);
-        var mapId = settings.leafletId;
 
         var tp = _tileProviders[settings.tileProvider];
         var tile = L.tileLayer(tp.url, {
             maxZoom: settings.maxZoom,
             minZoom: settings.minZoom,
             attribution: tp.attribution,
-            id: mapId
+            id: settings.id,
+            apiKey:settings.leafletApiKey
         });
         console.log('adding tile to map');
         tile.addTo(map);
@@ -216,7 +216,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             div.setAttribute("style", $el.attr("style"));
             $el.attr("style", "");
             var $mapDiv = $(div);
-            $mapDiv.data("leaflet-id", $el.data("leaflet-id"));
+            $mapDiv.data("leaflet-api-key", $el.data("leaflet-api-key"));
+            $mapDiv.data("tile-provider", $el.data("tile-provider"));
             if ($mapDiv.height() == 0) {
                 $mapDiv.height(400);
             }

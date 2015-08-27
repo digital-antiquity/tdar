@@ -913,5 +913,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getResourceCreatorRoleDocumentationUrl() {
         return getTdarConfiguration().getResourceCreatorRoleDocumentationUrl();
     }
-    
+ 
+    public String getLeafletApiKey() {
+        return getTdarConfiguration().getLeafletMapsApiKey();
+    }
 }
