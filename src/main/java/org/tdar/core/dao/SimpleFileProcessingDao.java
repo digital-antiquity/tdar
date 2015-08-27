@@ -15,7 +15,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ImageThumbnailTask;
 
@@ -45,9 +45,9 @@ public class SimpleFileProcessingDao {
         context.setOkToStoreInFilestore(false);
         context.setResourceType(ResourceType.IMAGE);
 
-        ObjectType type = ObjectType.CREATOR;
+        FilestoreObjectType type = FilestoreObjectType.CREATOR;
         if (persistable instanceof ResourceCollection) {
-            type = ObjectType.COLLECTION;
+            type = FilestoreObjectType.COLLECTION;
         }
 
         ImageThumbnailTask thumbnailTask = new ImageThumbnailTask();

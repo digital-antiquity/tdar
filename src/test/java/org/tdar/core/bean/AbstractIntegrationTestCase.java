@@ -122,7 +122,7 @@ import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
@@ -298,7 +298,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         irFile.getInformationResourceFileVersions().add(version);
         genericService.save(irFile);
         genericService.save(version);
-        filestore.store(ObjectType.RESOURCE, f, version);
+        filestore.store(FilestoreObjectType.RESOURCE, f, version);
         return version;
     }
 
@@ -951,14 +951,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         long infoId = (long) (Math.random() * 10000);
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
         version.setId(id);
-        filestore.store(ObjectType.RESOURCE, name, version);
+        filestore.store(FilestoreObjectType.RESOURCE, name, version);
         version.setTransientFile(name);
         return version;
     }
 
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
-        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();

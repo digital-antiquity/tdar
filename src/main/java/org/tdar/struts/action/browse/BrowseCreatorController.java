@@ -50,7 +50,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchFieldType;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -165,8 +165,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     @SkipValidation
     public String creatorRdf() throws FileNotFoundException {
         try {
-            FileStoreFile object = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
-            File file = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, object);
+            FileStoreFile object = new FileStoreFile(FilestoreObjectType.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
+            File file = getTdarConfiguration().getFilestore().retrieveFile(FilestoreObjectType.CREATOR, object);
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
                 setContentLength(file.length());
@@ -257,9 +257,9 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             getGenericService().saveOrUpdate(cvs);
         }
 
-        FileStoreFile personInfo = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, getId(), getId() + XML);
+        FileStoreFile personInfo = new FileStoreFile(FilestoreObjectType.CREATOR, VersionType.METADATA, getId(), getId() + XML);
         try {
-            File foafFile = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
+            File foafFile = getTdarConfiguration().getFilestore().retrieveFile(FilestoreObjectType.CREATOR, personInfo);
             if (foafFile.exists()) {
                 dom = fileSystemResourceService.openCreatorInfoLog(foafFile);
                 getKeywords();
@@ -504,7 +504,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     }
 
     public boolean isLogoAvailable() {
-        return checkLogoAvailable(ObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(FilestoreObjectType.CREATOR, getId(), VersionType.WEB_SMALL);
     }
 
     @Override

@@ -35,7 +35,7 @@ import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFileProxy;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.PersistableUtils;
@@ -101,7 +101,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
             for (InformationResourceFileVersion file : wrapper.getFilesToProcess()) {
                 proxies.add(file);
             }
-            config.getFilestore().markReadOnly(ObjectType.RESOURCE, proxies);
+            config.getFilestore().markReadOnly(FilestoreObjectType.RESOURCE, proxies);
         }
         if (ticketId != null) {
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
@@ -122,7 +122,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
                 continue;
             }
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
-            original.setTransientFile(config.getFilestore().retrieveFile(ObjectType.RESOURCE, original));
+            original.setTransientFile(config.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, original));
             latestVersions.add(original);
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
             while (iterator.hasNext()) {

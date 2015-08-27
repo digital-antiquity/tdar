@@ -27,7 +27,7 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore.BaseFilestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;
 
 public class FileProxyWrapper {
@@ -113,7 +113,7 @@ public class FileProxyWrapper {
             for (InformationResourceFile file : informationResource.getActiveInformationResourceFiles()) {
                 if (!irFiles.contains(file) && !file.isDeleted()) {
                     InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
-                    latestUploadedVersion.setTransientFile(CONFIG.getFilestore().retrieveFile(ObjectType.RESOURCE, latestUploadedVersion));
+                    latestUploadedVersion.setTransientFile(CONFIG.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, latestUploadedVersion));
                     filesToProcess.add(latestUploadedVersion);
                 }
             }
@@ -186,7 +186,7 @@ public class FileProxyWrapper {
         }
 
         irFile.addFileVersion(version);
-        TdarConfiguration.getInstance().getFilestore().store(ObjectType.RESOURCE, file, version);
+        TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, file, version);
         version.setTransientFile(file);
         datasetDao.save(version);
         datasetDao.saveOrUpdate(irFile);

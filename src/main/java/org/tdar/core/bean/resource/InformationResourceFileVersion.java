@@ -30,7 +30,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.filestore.FileStoreFileProxy;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 
 @Entity
 // making the assumption formally that there can only be one version of any type
@@ -480,8 +480,8 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     @Override
-    public ObjectType getType() {
-        return ObjectType.RESOURCE;
+    public FilestoreObjectType getType() {
+        return FilestoreObjectType.RESOURCE;
     }
 
     @Override

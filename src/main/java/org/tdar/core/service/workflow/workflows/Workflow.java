@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
 import org.tdar.filestore.tasks.Task;
@@ -85,7 +85,7 @@ public interface Workflow {
 
             try {
                 for (InformationResourceFileVersion version : workflowContext.getOriginalFiles()) {
-                    version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
+                    version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
                 }
             } catch (Exception e) {
                 workflowContext.addException(e);

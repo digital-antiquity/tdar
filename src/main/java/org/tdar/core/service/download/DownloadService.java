@@ -31,7 +31,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;
 
 import com.google.common.cache.Cache;
@@ -262,7 +262,7 @@ public class DownloadService {
 
             File resourceFile = null;
             try {
-                resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version);
+                resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version);
                 version.setTransientFile(resourceFile);
             } catch (FileNotFoundException e1) {
                 logNotFound(version, e1, null);
@@ -310,7 +310,7 @@ public class DownloadService {
         if (whiteLabelCollection == null || !whiteLabelCollection.isCustomDocumentLogoEnabled()) {
             return null;
         }
-        return fileSystemResourceDao.getHostedFile(WhiteLabelFiles.PDF_COVERPAGE_FILENAME, ObjectType.COLLECTION, whiteLabelCollection.getId());
+        return fileSystemResourceDao.getHostedFile(WhiteLabelFiles.PDF_COVERPAGE_FILENAME, FilestoreObjectType.COLLECTION, whiteLabelCollection.getId());
     }
 
     private void logNotFound(InformationResourceFileVersion version, FileNotFoundException e1, String path) {

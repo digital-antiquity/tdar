@@ -30,7 +30,7 @@ import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
@@ -123,12 +123,12 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         logger.info("versions: {} ", irFile.getInformationResourceFileVersions());
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
-            irfv.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irfv));
+            irfv.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, irfv));
             irfvids.add(irfv.getId());
         }
         assertTrue(map.containsKey(VersionType.INDEXABLE_TEXT));
         InformationResourceFileVersion fileVersion = map.get(VersionType.INDEXABLE_TEXT);
-        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, fileVersion));
+        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, fileVersion));
         assertTrue(text.contains("Grand Canyon Adjacent Lands Project"));
     }
 
@@ -255,7 +255,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion version = irFile.getCurrentVersion(type);
         assertNotNull(version);
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
-        File file = filestore.retrieveFile(ObjectType.RESOURCE, version);
+        File file = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
         version.setTransientFile(file);
         return version;
     }

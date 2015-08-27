@@ -70,7 +70,7 @@ import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 
@@ -248,7 +248,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         try {
             for (InformationResourceFile file : dataset.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
-                File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, latestUploadedVersion);
+                File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, latestUploadedVersion);
                 latestUploadedVersion.setTransientFile(transientFile);
                 latestVersions.add(latestUploadedVersion);
             }

@@ -20,7 +20,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.HomepageService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
 
@@ -207,7 +207,7 @@ public class HomepageSupportingController extends AuthenticationAware.Base {
         if (PersistableUtils.isNullOrTransient(getFeaturedCollection())) {
             return false;
         }
-        return checkLogoAvailable(ObjectType.COLLECTION, getFeaturedCollection().getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(FilestoreObjectType.COLLECTION, getFeaturedCollection().getId(), VersionType.WEB_SMALL);
     }
 
     @Override

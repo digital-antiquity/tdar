@@ -27,7 +27,7 @@ import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
@@ -360,7 +360,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
      * @return
      */
     protected boolean checkHostedFileAvailable(String filename, Long id) {
-        return fileSystemResourceService.checkHostedFileAvailable(filename, ObjectType.COLLECTION, id);
+        return fileSystemResourceService.checkHostedFileAvailable(filename, FilestoreObjectType.COLLECTION, id);
     }
 
 }

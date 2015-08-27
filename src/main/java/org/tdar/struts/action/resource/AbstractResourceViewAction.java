@@ -47,7 +47,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.filestore.Filestore;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -501,7 +501,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     public boolean isWhiteLabelLogoAvailable() {
         WhiteLabelCollection wlc = getWhiteLabelCollection();
-        return wlc != null && checkLogoAvailable(Filestore.ObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
+        return wlc != null && checkLogoAvailable(FilestoreObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 
     public String getWhiteLabelLogoUrl() {

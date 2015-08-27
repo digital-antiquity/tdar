@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.filestore.Filestore.ObjectType;
 
 public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
@@ -94,14 +93,14 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
         this.extension = extension;
     }
 
-    private ObjectType type;
+    private FilestoreObjectType type;
     private VersionType versionType;
 
     public FileStoreFile() {
 
     }
 
-    public FileStoreFile(ObjectType type, VersionType versionType, Long id, String filename) {
+    public FileStoreFile(FilestoreObjectType type, VersionType versionType, Long id, String filename) {
         this.persistableId = id;
         this.filename = filename;
         this.type = type;
@@ -208,11 +207,11 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
     }
 
     @Override
-    public ObjectType getType() {
+    public FilestoreObjectType getType() {
         return type;
     }
 
-    public void setType(ObjectType type) {
+    public void setType(FilestoreObjectType type) {
         this.type = type;
     }
 

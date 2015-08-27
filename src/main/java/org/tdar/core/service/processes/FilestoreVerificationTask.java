@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 
 @Component
 @Scope("prototype")
@@ -51,7 +51,7 @@ public class FilestoreVerificationTask implements Runnable {
     private void verify() {
         for (FileStoreFileProxy proxy : proxyList) {
             try {
-                if (!filestore.verifyFile(ObjectType.RESOURCE, proxy)) {
+                if (!filestore.verifyFile(FilestoreObjectType.RESOURCE, proxy)) {
                     tainted.add(proxy);
                 }
             } catch (FileNotFoundException e) {

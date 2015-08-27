@@ -3,7 +3,6 @@ package org.tdar.filestore;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,14 +19,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.FileType;
 import org.tdar.core.bean.resource.HasExtension;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.Workflow;
-import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -194,7 +191,7 @@ public class FileAnalyzer {
                 for (InformationResourceFileVersion version : filesToProcess) {
                     if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
                         // If we are re-processing, the transient file might not exist.
-                        version.setTransientFile(CONFIG.getFilestore().retrieveFile(ObjectType.RESOURCE, version));
+                        version.setTransientFile(CONFIG.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
                     }
                     processFile(version);
                 }

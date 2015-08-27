@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,7 +43,7 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.TdarServletConfiguration;
@@ -58,10 +57,10 @@ import org.tdar.utils.activity.Activity;
 import org.tdar.utils.jaxb.ActionErrorWrapper;
 import org.tdar.web.WebFileSystemResourceService;
 
-import ro.isdc.wro.model.resource.ResourceType;
-
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import ro.isdc.wro.model.resource.ResourceType;
 
 /**
  * $Id$
@@ -873,7 +872,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         throw new TdarActionException(statusCode, response, errorMessage);
     }
 
-    protected boolean checkLogoAvailable(ObjectType type, Long id, VersionType version) {
+    protected boolean checkLogoAvailable(FilestoreObjectType type, Long id, VersionType version) {
         try {
             FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
             File file = getTdarConfiguration().getFilestore().retrieveFile(type, proxy);

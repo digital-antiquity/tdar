@@ -26,7 +26,7 @@ import org.tdar.core.service.download.DownloadFile;
 import org.tdar.core.service.download.DownloadPdfFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.utils.MessageHelper;
 
@@ -96,7 +96,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         document.setTitle("test");
         document.setDescription("test");
         document.setDocumentType(DocumentType.BOOK);
-        filestore.store(ObjectType.RESOURCE, file, version);
+        filestore.store(FilestoreObjectType.RESOURCE, file, version);
         DownloadPdfFile downloadPdfFile = new DownloadPdfFile(document, version, pdfService, getAdminUser(), MessageHelper.getInstance(), null);
         downloadPdfFile.setFile(file);
         dto.getDownloads().add(downloadPdfFile);
