@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
 public class ConvertDatasetTask extends AbstractTask {
@@ -81,6 +82,13 @@ public class ConvertDatasetTask extends AbstractTask {
                 File indexedContents = databaseConverter.getIndexedContentsFile();
                 getLogger().trace("FILE:**** : " + indexedContents);
 
+                if (databaseConverter instanceof ShapeFileDatabaseConverter) {
+                    File geoJsonFile = ((ShapeFileDatabaseConverter) databaseConverter).getGeoJsonFile();
+                    if (geoJsonFile != null) {
+                        addDerivativeFile(versionToConvert, geoJsonFile, VersionType.GEOJSON);
+                    }
+                }
+                
                 if ((indexedContents != null) && (indexedContents.length() > 0)) {
                     addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
                 }
