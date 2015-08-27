@@ -256,7 +256,7 @@ bookmark indicator, etc..
 <#--list the author/editor/creators of a resource - part of the summary information included in a a search result item -->
     <#macro _listCreators resource_>
         <#assign showSubmitter=true/>
-		<#list resource_.primaryCreators>
+		<#list resource_.primaryCreators![]>
         <span class="authors">
             <#items as creatr>
                 <#assign showSubmitter=false/>
@@ -265,7 +265,7 @@ bookmark indicator, etc..
         </span>
         </#list>
 
-		<#list resource_.editors>
+		<#list resource_.editors![]>
         <span class="editors">
             <#items  as creatr>
                 <#assign showSubmitter=false/>
