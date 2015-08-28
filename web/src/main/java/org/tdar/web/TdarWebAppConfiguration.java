@@ -2,6 +2,7 @@ package org.tdar.web;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -10,7 +11,6 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.tdar.core.cache.Caches;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.service.processes.manager.AutowiredProcessManager;
 import org.tdar.core.service.processes.manager.ProcessManager;
@@ -31,20 +32,19 @@ public class TdarWebAppConfiguration extends TdarAppConfiguration implements Sch
 
 	private static final long serialVersionUID = 3444580855012578739L;
 
-	@Bean
-	public SimpleCacheManager cacheManager() {
-		SimpleCacheManager cacheManager = new SimpleCacheManager();
+	@Override
+	public Collection<? extends Cache> getCachesToLoad() {
 		List<Cache> caches = new ArrayList<>();
-		caches.add(cacheBean());
-		caches.add(new ConcurrentMapCache("rssFeed"));
-		cacheManager.setCaches(caches);
-		return cacheManager;
-	}
-
-	@Bean
-	public Cache cacheBean() {
-		Cache cache = new ConcurrentMapCache("default");
-		return cache;
+        caches.add(new ConcurrentMapCache("rssFeed"));
+        caches.add(new ConcurrentMapCache(Caches.RSS_FEED));
+        caches.add(new ConcurrentMapCache(Caches.BROWSE_DECADE_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.BROWSE_YEAR_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.DECADE_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_FEATURED_ITEM_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_MAP_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_RESOURCE_COUNT_CACHE));
+        caches.add(new ConcurrentMapCache(Caches.WEEKLY_POPULAR_RESOURCE_CACHE));
+		return caches;
 	}
 
 	@Override

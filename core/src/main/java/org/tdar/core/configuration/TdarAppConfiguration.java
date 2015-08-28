@@ -3,6 +3,7 @@ package org.tdar.core.configuration;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.cache.Cache;
@@ -69,23 +70,12 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
     @Bean
     public SimpleCacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
-        List<Cache> caches = new ArrayList<>();
-        caches.add(cacheBean());
-        caches.add(new ConcurrentMapCache(Caches.RSS_FEED));
-        caches.add(new ConcurrentMapCache(Caches.BROWSE_DECADE_COUNT_CACHE));
-        caches.add(new ConcurrentMapCache(Caches.BROWSE_YEAR_COUNT_CACHE));
-        caches.add(new ConcurrentMapCache(Caches.DECADE_COUNT_CACHE));
-        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_FEATURED_ITEM_CACHE));
-        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_MAP_CACHE));
-        caches.add(new ConcurrentMapCache(Caches.HOMEPAGE_RESOURCE_COUNT_CACHE));
-        caches.add(new ConcurrentMapCache(Caches.WEEKLY_POPULAR_RESOURCE_CACHE));
-        cacheManager.setCaches(caches);
+        cacheManager.setCaches(getCachesToLoad());
         return cacheManager;
     }
 
-    @Bean
-    public Cache cacheBean() {
-        Cache cache = new ConcurrentMapCache("default");
-        return cache;
+    protected Collection<? extends Cache> getCachesToLoad() {
+        return new ArrayList<>();
     }
+
 }
