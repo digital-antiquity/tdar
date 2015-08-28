@@ -9,6 +9,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.tdar.core.cache.Caches;
@@ -17,6 +18,7 @@ import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 
+@Configuration
 public class TdarAppConfiguration extends IntegrationAppConfiguration implements Serializable {
 
     private static final long serialVersionUID = 6038273491995542363L;
