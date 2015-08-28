@@ -45,7 +45,6 @@ module.exports = function(config) {
             ],
             //files specified in wro.xml 
             wroFiles,
-
             [
                 // specs
                 "src/test/frontend/spec/**/*.js",
@@ -63,15 +62,18 @@ module.exports = function(config) {
                 //static files: images used by js libraries, e.g. jquery-ui, jquery-file-upload
                 {pattern: "src/main/webapp/includes/**/images/**/*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/components/**/*.*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/js/maps/**/*.*", served:true, included:false, watched:false},
 
             ]),
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
         proxies: {
             '/images/': '/base/src/main/webapp/images/',
-            '/includes/': '/base/src/main/webapp/includes/'
+            '/includes/': '/base/src/main/webapp/includes/',
+            '/js/maps/': '/base/src/main/webapp/js/maps/'
         },
-
+            ///Users/jimdevos/develop/tdar.src/src/main/webapp/js/maps/world.json
 
         // list of files to exclude that would otherwise get picked up by the config.files patterns
         exclude: [],
@@ -81,7 +83,7 @@ module.exports = function(config) {
         preprocessors: {
             //converts html to js strings and stores them in window.__html__
 			
-            //caveat: files declared here cannot also be used as jasmine fixtures (known bug)
+            //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js'],
 			'src/main/webapp/js/**/*.js': ['coverage']

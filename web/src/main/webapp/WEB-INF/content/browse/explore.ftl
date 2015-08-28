@@ -23,42 +23,31 @@
             <#assign tdarYear = key.key?substring(3) />
             <li class="bullet"><a href="<@s.url value="/scholar/scholar?year=${key.key?c}"/>">${key.key?c}</a></li>
         </#list>
+
     </ul>
     <br/>
 </div>
 <br/>
 
-<div class="row">
-    <div class="span6">
-        <@common.resourceBarGraph />
-    </div>
-    <div class="span6 map">
+<div class="row">    
+    <div class="span9 map">
         <!-- fixme styling -->
         <h3 style="">${siteAcronym} Worldwide</h3>
         <@common.renderWorldMap />
     </div>
 </div>
 
-<h2>Browse By Decade</h2>
-<script>
-    var timelineData = [];
-        <#list timelineData as cache>
-            <#if (cache.count > 1 && cache.key != 0 && cache.key < 2500 )>
-                <#noescape>
-                timelineData.push(["${cache.key?c}",${(cache.count!0)?string("##0")}, "${cache.key?c}",${(cache.count!0)?string("##0")}]);
-                </#noescape>
-            </#if>
-        </#list>
+<div class="row">
+    <div class="span12">
+         <@common.resourceBarGraph /> 
+    </div>
+</div>
 
-    var timelineConfig = {
-        seriesDefaults: {
-            rendererOptions: {
-                varyBarColor: false
-            }
-        }
-    };
-</script>
-    <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig" rotate=-30  yaxis="log"/>
+<h2>Browse By Decade</h2>
+
+<div id="timelineGraph" style="height:400px" data-source="#timelineData" class="areaChart" data-x="label" data-values="count">
+
+</div>
 
 
 <div class="row">
@@ -123,3 +112,6 @@
     </#macro>
 </#escape>
 
+<script id="timelineData">
+${timelineData}
+</script>

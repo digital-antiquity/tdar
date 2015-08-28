@@ -2,7 +2,6 @@ package org.tdar.struts.action;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -14,17 +13,14 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.HomepageService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.RssService;
-import org.tdar.core.service.resource.ResourceService;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
 
@@ -50,9 +46,8 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private Project featuredProject;
 
-    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<>();
     private List<Resource> featuredResources = new ArrayList<>();
-    private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+
     private ResourceCollection featuredCollection;
 
     private String sitemapFile = "sitemap_index.xml";
@@ -66,11 +61,11 @@ public class IndexAction extends AuthenticationAware.Base {
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    @Autowired
-    private ResourceService resourceService;
-
-
     private List<SyndEntry> rssEntries;
+
+    private String mapJson;
+
+    private String homepageResourceCountCache;
 
 
     @Actions(value={
@@ -80,10 +75,10 @@ public class IndexAction extends AuthenticationAware.Base {
     @HttpOnlyIfUnauthenticated
     public String about() {
 
+        featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
+        setMapJson(homepageService.getMapJson());
+        setHomepageResourceCountCache(homepageService.getResourceCountsJson());
         try {
-            worldMapData = resourceService.setupWorldMap();
-            featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
-            homepageResourceCountCache = homepageService.resourceStats();
             setFeaturedCollection(resourceCollectionService.getRandomFeaturedCollection());        
         } catch (Exception e) {
             getLogger().error("exception in setting up homepage: {}", e,e);
@@ -105,11 +100,11 @@ public class IndexAction extends AuthenticationAware.Base {
         this.featuredProject = featuredProject;
     }
 
-    public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
+    public String getHomepageResourceCountCache() {
         return homepageResourceCountCache;
     }
 
-    public void setHomepageResourceCountCache(List<HomepageResourceCountCache> homepageResourceCountCache) {
+    public void setHomepageResourceCountCache(String homepageResourceCountCache) {
         this.homepageResourceCountCache = homepageResourceCountCache;
     }
 
@@ -127,14 +122,6 @@ public class IndexAction extends AuthenticationAware.Base {
 
     public void setRssEntries(List<SyndEntry> rssEntries) {
         this.rssEntries = rssEntries;
-    }
-
-    public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {
-        return worldMapData;
-    }
-
-    public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
-        this.worldMapData = worldMapData;
     }
 
     public String getSitemapFile() {
@@ -157,7 +144,7 @@ public class IndexAction extends AuthenticationAware.Base {
         if (PersistableUtils.isNullOrTransient(getFeaturedCollection())) {
             return false;
         }
-        return checkLogoAvailable(ObjectType.COLLECTION, getFeaturedCollection().getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(FilestoreObjectType.COLLECTION, getFeaturedCollection().getId(), VersionType.WEB_SMALL);
     }
 
     @Override
@@ -167,6 +154,16 @@ public class IndexAction extends AuthenticationAware.Base {
     
     public boolean isHomepage() {
         return true;
+    }
+
+
+    public String getMapJson() {
+        return mapJson;
+    }
+
+
+    public void setMapJson(String mapJson) {
+        this.mapJson = mapJson;
     }
     
     @Override

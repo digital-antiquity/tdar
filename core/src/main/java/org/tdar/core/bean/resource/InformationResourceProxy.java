@@ -20,6 +20,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileProxy;
 
 @Entity
 @Immutable

@@ -74,11 +74,7 @@ TDAR.inheritance = (function () {
             spatialInformation: {
                 geographicKeywords: $.map(rawJson.activeGeographicKeywords, function (v) {
                     return v.label;
-                }),
-                'p_maxy': null,
-                'p_minx': null,
-                'p_maxx': null,
-                'p_miny': null
+                })
             },
             temporalInformation: {
                 temporalKeywords: $.map(rawJson.activeTemporalKeywords, function (v) {
@@ -103,14 +99,19 @@ TDAR.inheritance = (function () {
             creditProxies: $.map(rawJson.activeIndividualAndInstitutionalCredit, _convertCreator)
         };
 
-        if (rawJson.firstActiveLatitudeLongitudeBox) {
-            obj.spatialInformation['minx'] = rawJson.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude;
-            obj.spatialInformation['maxx'] = rawJson.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude;
-            obj.spatialInformation['miny'] = rawJson.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude;
-            obj.spatialInformation['maxy'] = rawJson.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude;
+        if (rawJson.activeLatitudeLongitudeBoxes != undefined && rawJson.activeLatitudeLongitudeBoxes.length > 0) {
+            var llb = rawJson.activeLatitudeLongitudeBoxes[0];
+            obj.spatialInformation['minx'] = llb.minObfuscatedLongitude;
+            obj.spatialInformation['maxx'] = llb.maxObfuscatedLongitude;
+            obj.spatialInformation['miny'] = llb.minObfuscatedLatitude;
+            obj.spatialInformation['maxy'] = llb.maxObfuscatedLatitude;
+        } else{
+            obj.spatialInformation['minx'] = '';
+            obj.spatialInformation['maxx'] = '';
+            obj.spatialInformation['miny'] = '';
+            obj.spatialInformation['maxy'] = '';
         }
 
-        //now build out individual/institutional credit
         return obj;
     }
 
@@ -372,33 +373,19 @@ TDAR.inheritance = (function () {
 
     function _inheritSpatialInformation(formId, json) {
         console.log("inherit spatial information(%s, %s)", formId, json);
-        var mapdiv = $('#editmapv3')[0];
-        var mapReadyCallback = function () {
+        _clearFormSection('#divSpatialInformation');
+        TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
+        _populateSection(formId, json.spatialInformation);
+        _disableSection('#divSpatialInformation');
 
-            console.log("map ready callback");
-            _clearFormSection('#divSpatialInformation');
-            TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
-            _populateSection(formId, json.spatialInformation);
-            _disableSection('#divSpatialInformation');
+        // clear the existing redbox and draw new one;
+        _populateLatLongTextFields();
 
-            // clear the existing redbox and draw new one;
-            TDAR.maps.clearResourceRect(mapdiv);
-            _populateLatLongTextFields();
-
-            var si = json.spatialInformation;
-            if (si.miny != null && si.minx != null && si.maxy != null && si.maxx != null) {
-                TDAR.maps.updateResourceRect(mapdiv, si.miny, si.minx, si.maxy, si.maxx);
-            }
-
-            _disableMap();
-        };
-
-        //need to wait until map api is ready *and* this page's map is ready.
-        if (!$(mapdiv).data("gmap")) {
-            $(mapdiv).one("mapready", mapReadyCallback)
-        } else {
-            mapReadyCallback();
+        var si = json.spatialInformation;
+        if (si.miny != null && si.minx != null && si.maxy != null && si.maxx != null) {
+            $(".locateCoordsButton",$("#divSpatialInformation")).click();
         }
+        _disableMap();
 
     }
 
@@ -532,8 +519,6 @@ TDAR.inheritance = (function () {
         TDAR.inheritance.project = data;
         // if user picked blank option, then clear the sections
         if (!TDAR.inheritance.project.id || TDAR.inheritance.project.id == -1) {
-            TDAR.inheritance.project = _getBlankProject();
-        } else if (TDAR.inheritance.project.resourceType === 'INDEPENDENT_RESOURCES_PROJECT') {
             TDAR.inheritance.project = _getBlankProject();
         }
 
@@ -810,6 +795,7 @@ TDAR.inheritance = (function () {
         _enableSection('#divMaterialInformation');
         _enableSection('#divCulturalInformation');
         _enableSection('#divSpatialInformation');
+        _enableMap();
         _enableSection('#divTemporalInformation');
         _enableSection('#divOtherInformation');
         _enableSection('#divIdentifiers');
@@ -968,19 +954,14 @@ TDAR.inheritance = (function () {
     }
 
     function _disableMap() {
-        var $mapdiv = $('#editmapv3');
-        $mapdiv.addClass('opaque');
-        if ($mapdiv.data("resourceRect")) {
-            $mapdiv.data("resourceRect").setEditable(false);
-        }
+        var $mapdiv = $('#divSpatialInformation');
+        $mapdiv.addClass('disable-map');
     }
 
     function _enableMap() {
-        var $mapdiv = $('#editmapv3');
-        $mapdiv.removeClass('opaque');
-        if ($mapdiv.data("resourceRect")) {
-            $mapdiv.data("resourceRect").setEditable(true);
-        }
+        var $mapdiv = $('#divSpatialInformation');
+        console.log('enable-map');
+        $mapdiv.removeClass('disable-map');
     }
 
     /**

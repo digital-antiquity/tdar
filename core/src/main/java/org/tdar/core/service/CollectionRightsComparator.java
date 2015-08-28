@@ -13,7 +13,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.utils.PersistableUtils;
 
 /**

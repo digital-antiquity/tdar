@@ -27,9 +27,6 @@ import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
@@ -51,35 +48,6 @@ public interface Filestore {
             return rotations;
         }
 
-    }
-
-    public enum ObjectType {
-        LOG,
-        RESOURCE,
-        CREATOR,
-        COLLECTION;
-
-        public static ObjectType fromClass(Class<?> cls) {
-            if (Resource.class.isAssignableFrom(cls)) {
-                return RESOURCE;
-            }
-            if (ResourceCollection.class.isAssignableFrom(cls)) {
-                return COLLECTION;
-            }
-            if (Creator.class.isAssignableFrom(cls)) {
-                return CREATOR;
-            }
-            return null;
-        }
-
-        public String getRootDir() {
-            switch (this) {
-                case RESOURCE:
-                    return "";
-                default:
-                    return this.name().toLowerCase();
-            }
-        }
     }
 
     public enum LogType {
@@ -104,7 +72,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String store(ObjectType type, InputStream content, FileStoreFileProxy object) throws IOException;
+    String store(FilestoreObjectType type, InputStream content, FileStoreFileProxy object) throws IOException;
 
     long getSizeInBytes();
 
@@ -121,7 +89,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String storeAndRotate(ObjectType type, InputStream content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
+    String storeAndRotate(FilestoreObjectType type, InputStream content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
 
     /**
      * Write a file to the filestore.
@@ -130,9 +98,9 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String store(ObjectType type, File content, FileStoreFileProxy version) throws IOException;
+    String store(FilestoreObjectType type, File content, FileStoreFileProxy version) throws IOException;
 
-    String storeAndRotate(ObjectType type, File content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
+    String storeAndRotate(FilestoreObjectType type, File content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
 
     void storeLog(LogType type, String filename, String message);
 
@@ -144,7 +112,7 @@ public interface Filestore {
      * @return {@link File} associated with the given ID.
      * @throws {@link FileNotFoundException }
      */
-    File retrieveFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException;
+    File retrieveFile(FilestoreObjectType type, FileStoreFileProxy object) throws FileNotFoundException;
 
     /**
      * Delete the file with the given fileId.
@@ -153,13 +121,13 @@ public interface Filestore {
      *            file identifier
      * @throws {@link IOException }
      */
-    void purge(ObjectType type, FileStoreFileProxy object) throws IOException;
+    void purge(FilestoreObjectType type, FileStoreFileProxy object) throws IOException;
 
     String getFilestoreLocation();
 
     MessageDigest createDigest(File f);
 
-    boolean verifyFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException, TaintedFileException;
+    boolean verifyFile(FilestoreObjectType type, FileStoreFileProxy object) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
         private static final String MD5 = "MD5";
@@ -267,7 +235,7 @@ public interface Filestore {
         @Override
         public void storeLog(LogType type, String filename, String message) {
             File logdir = new File(FilenameUtils.concat(getFilestoreLocation(),
-                    String.format("%s/%s/%s", ObjectType.LOG.getRootDir(), type.getDir(), Calendar.getInstance().get(Calendar.YEAR))));
+                    String.format("%s/%s/%s", FilestoreObjectType.LOG.getRootDir(), type.getDir(), Calendar.getInstance().get(Calendar.YEAR))));
             if (!logdir.exists()) {
                 logdir.mkdirs();
             }
@@ -281,9 +249,9 @@ public interface Filestore {
 
         @Override
         public List<File> listLogFiles(LogType type, Integer year) {
-            String subdir = String.format("%s/%s", ObjectType.LOG.getRootDir(), type.getDir());
+            String subdir = String.format("%s/%s", FilestoreObjectType.LOG.getRootDir(), type.getDir());
             if (year != null) {
-                subdir = String.format("%s/%s/%s", ObjectType.LOG.getRootDir(), type.getDir(), year);
+                subdir = String.format("%s/%s/%s", FilestoreObjectType.LOG.getRootDir(), type.getDir(), year);
             }
             File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
             return Arrays.asList(logDir.listFiles());
@@ -291,13 +259,13 @@ public interface Filestore {
 
         @Override
         public File getLogFile(LogType type, Integer year, String filename) {
-            String subdir = String.format("%s/%s/%s/%s", ObjectType.LOG.getRootDir(), type.getDir(), year, filename);
+            String subdir = String.format("%s/%s/%s/%s", FilestoreObjectType.LOG.getRootDir(), type.getDir(), year, filename);
             File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
             return logDir;
         }
 
         @Override
-        public boolean verifyFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException {
+        public boolean verifyFile(FilestoreObjectType type, FileStoreFileProxy object) throws FileNotFoundException {
             File toVerify = retrieveFile(type, object);
             MessageDigest newDigest = createDigest(toVerify);
             String hex = formatDigest(newDigest);
@@ -392,5 +360,5 @@ public interface Filestore {
 
     }
 
-    void markReadOnly(ObjectType type, List<FileStoreFileProxy> filesToProcess);
+    void markReadOnly(FilestoreObjectType type, List<FileStoreFileProxy> filesToProcess);
 }

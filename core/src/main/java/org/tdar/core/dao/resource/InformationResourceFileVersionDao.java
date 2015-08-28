@@ -6,14 +6,14 @@ import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 
 @Component
 public class InformationResourceFileVersionDao extends HibernateBase<InformationResourceFileVersion> {
@@ -54,7 +54,7 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
 
     public void purgeFromFilestore(InformationResourceFileVersion file) {
         try {
-            filestore.purge(ObjectType.RESOURCE, file);
+            filestore.purge(FilestoreObjectType.RESOURCE, file);
         } catch (IOException e) {
             getLogger().warn("Problems purging file with filestoreID of {} from the filestore.", file.getFilename(), e);
         }

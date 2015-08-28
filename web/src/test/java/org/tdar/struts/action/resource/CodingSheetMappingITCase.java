@@ -37,18 +37,18 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.FileStatus;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.bean.resource.file.FileStatus;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
@@ -479,7 +479,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
             InformationResourceFile translatedFile = datasetService.createTranslatedFile(dataset);
             ExcelUnit excelUnit = new ExcelUnit();
-            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, translatedFile.getTranslatedFile()));
+            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, translatedFile.getTranslatedFile()));
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
 
             DownloadController dc = generateNewInitializedController(DownloadController.class);
@@ -499,7 +499,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         testCodingSheetMapping();
         assertNotNull("file proxy was null", tranlatedIRFile);
         ExcelUnit excelUnit = new ExcelUnit();
-        File retrieveFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, tranlatedIRFile.getTranslatedFile());
+        File retrieveFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, tranlatedIRFile.getTranslatedFile());
         excelUnit.open(retrieveFile);
 
         excelUnit.selectSheet("total_number_of_bones_per_perio");

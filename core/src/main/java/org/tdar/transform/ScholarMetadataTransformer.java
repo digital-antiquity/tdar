@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.UrlService;
 
 public class ScholarMetadataTransformer implements Serializable {

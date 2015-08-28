@@ -100,14 +100,13 @@ public class GeoSearchDao {
      */
 
     private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM \"%1$s\" where %3$s";
-    private final static String QUERY_ENVELOPE_WEBMER = "SELECT ST_Envelope(ST_Collect(st_transform(the_geom,2163))) as %2$s FROM \"%1$s\" where %3$s";
 
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
     // , concat('${',%1$s,'-style?default('''')}') as style
 
     public enum SpatialTables {
-        COUNTRY("country_wgs84", "long_name", "iso_2digit"),
+        COUNTRY("country_wgs84", "long_name", "iso_3digit"),
         COUNTY("us_counties_wgs84", "cnty_name", "state_name"),
         ADMIN("admin1_wgs84", "admin_name", "type_eng"),
         CONTINENT("continents_wgs84", "continent");

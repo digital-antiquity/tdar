@@ -39,6 +39,7 @@ node_modules
 clover.snapshot
 src/main/webapp/components
 log4j2.xml
+npm-debug.log
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 

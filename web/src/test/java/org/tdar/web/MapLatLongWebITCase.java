@@ -8,8 +8,8 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;

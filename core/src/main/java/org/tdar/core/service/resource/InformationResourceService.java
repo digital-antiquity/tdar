@@ -7,20 +7,23 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.cache.BrowseDecadeCountCache;
-import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.cache.BrowseDecadeCountCache;
+import org.tdar.core.cache.BrowseYearCountCache;
+import org.tdar.core.cache.Caches;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceDao;
@@ -32,8 +35,8 @@ import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFileProxy;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
-import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.PersistableUtils;
 
@@ -98,7 +101,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
             for (InformationResourceFileVersion file : wrapper.getFilesToProcess()) {
                 proxies.add(file);
             }
-            config.getFilestore().markReadOnly(ObjectType.RESOURCE, proxies);
+            config.getFilestore().markReadOnly(FilestoreObjectType.RESOURCE, proxies);
         }
         if (ticketId != null) {
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
@@ -119,7 +122,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
                 continue;
             }
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
-            original.setTransientFile(config.getFilestore().retrieveFile(ObjectType.RESOURCE, original));
+            original.setTransientFile(config.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, original));
             latestVersions.add(original);
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
             while (iterator.hasNext()) {
@@ -161,8 +164,9 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
      * @return
      */
     @Transactional(readOnly = true)
-    public List<BrowseDecadeCountCache> findResourcesByDecade(Status... statuses) {
-        return getDao().findResourcesByDecade(statuses);
+    @Cacheable(value = Caches.BROWSE_DECADE_COUNT_CACHE)
+    public List<BrowseDecadeCountCache> findResourcesByDecade() {
+        return getDao().findResourcesByDecade(Status.ACTIVE);
     }
 
     /**
@@ -186,7 +190,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
      *            how many to return
      * @return
      */
-    public <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, int maxResults) {
+    public <E extends Resource> List<E> findRandomFeaturedResource(boolean restrictToFiles, int maxResults) {
         return getDao().findRandomFeaturedResource(restrictToFiles, maxResults);
     }
 
@@ -198,7 +202,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
      * @param maxResults
      * @return
      */
-    public <E> List<E> findRandomFeaturedResourceInProject(boolean restrictToFiles, Project project, int maxResults) {
+    public <E extends Resource> List<E> findRandomFeaturedResourceInProject(boolean restrictToFiles, Project project, int maxResults) {
         return getDao().findRandomFeaturedResourceInProject(restrictToFiles, project, maxResults);
     }
 
@@ -210,7 +214,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
      * @param maxResults
      * @return
      */
-    public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
+    public <E extends Resource> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
         List<ResourceCollection> collections = null;
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
             collections = resourceCollectionDao.findCollectionsOfParent(collectionId, false, CollectionType.SHARED);
@@ -226,8 +230,16 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
      * @return
      */
     @Transactional(readOnly = true)
-    public List<BrowseYearCountCache> findResourcesByYear(Status... statuses) {
-        return getDao().findResourcesByYear(statuses);
+    @Cacheable(value = Caches.BROWSE_YEAR_COUNT_CACHE)
+    public List<BrowseYearCountCache> findResourceCountsByYear() {
+        return getDao().findResourcesByYear(Status.ACTIVE);
+    }
+
+    @Cacheable(value = Caches.HOMEPAGE_FEATURED_ITEM_CACHE)
+    @Transactional(readOnly=true)
+    public List<Resource> getFeaturedItems() {
+        Long featuredCollectionId = TdarConfiguration.getInstance().getFeaturedCollectionId();
+        return  findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5);
     }
 
     @Transactional(readOnly = true)

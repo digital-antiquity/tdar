@@ -12,7 +12,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;

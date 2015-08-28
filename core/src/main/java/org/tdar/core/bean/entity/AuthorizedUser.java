@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.Resolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
@@ -35,10 +33,6 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
-import org.tdar.utils.json.JsonLookupFilter;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin

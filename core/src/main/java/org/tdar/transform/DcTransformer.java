@@ -28,7 +28,6 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
@@ -36,6 +35,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
 

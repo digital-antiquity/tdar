@@ -5,7 +5,7 @@ xit("should work when we call init", function() {
    var formId = null;
    var expectedVal = null;
 
-   //var result = TDAR.datasetMetadata.init(formId);
+   //var result = TDAR.datasetMetadata.inxit(formId);
    expect(true).toBe(false); //fixme: implement this test
 });
 

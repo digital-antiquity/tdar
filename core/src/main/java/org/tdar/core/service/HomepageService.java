@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,13 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
-import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.cache.HomepageGeographicCache;
+import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 
 @Transactional
@@ -26,9 +28,13 @@ public class HomepageService {
     private transient Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
-    ResourceService resourceService;
+    private transient ResourceService resourceService;
     @Autowired
-    private ObfuscationService obfuscationService;
+    private transient InformationResourceService informationResourceService;
+    @Autowired
+    private transient ObfuscationService obfuscationService;
+    @Autowired
+    private transient SerializationService serializationService;
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -38,8 +44,7 @@ public class HomepageService {
     public Set<Resource> featuredItems(TdarUser authenticatedUser) {
         Set<Resource> featuredResources = new HashSet<>(); 
         try {
-            for (HomepageFeaturedItemCache cache : genericService.findAllWithL2Cache(HomepageFeaturedItemCache.class)) {
-                Resource key = cache.getKey();
+            for (Resource key : informationResourceService.getFeaturedItems()) {
                 if (key instanceof InformationResource) {
                     authorizationService.applyTransientViewableFlag(key, null);
                 }
@@ -64,6 +69,27 @@ public class HomepageService {
             }
         }
         return homepageResourceCountCache;
+    }
+
+
+    public String getMapJson() {
+        List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
+        try {
+            return serializationService.convertToJson(isoGeographicCounts);
+        } catch (IOException e) {
+            logger.error("error creating mapJson",e);
+        }
+        return null;
+    }
+
+
+    public String getResourceCountsJson() {
+        try {
+            return serializationService.convertToJson(resourceService.getResourceCounts());
+        } catch (IOException e) {
+            logger.error("error creating mapJson",e);
+        }
+        return null;
     }
 
 }

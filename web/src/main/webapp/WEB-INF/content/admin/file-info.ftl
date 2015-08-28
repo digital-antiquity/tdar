@@ -48,17 +48,13 @@ ${file.errorMessage!""}
 
 
 <div class="glide">
-    <h3># of Files by extension</h3>
-    <@common.generatePieJson extensionStats "extensionStats" />
-    <@common.pieChart  data="extensionStats" searchKey="extensions" graphHeight=600 graphWidth=400 />
-</div>
-
-
-<div class="glide">
     <h3>Uploaded File Usage by extension</h3>
-    <table class="tableFormat table">
+<div id="graphUsageByExtension" class="pieChart" data-table="#tableUsageByExtension" data-val="#" data-label="Extension">
+</div>
+    <table class="tableFormat table" id="tableUsageByExtension">
         <tr>
             <th>Extension</th>
+			<th>#</th>
             <th>Average</th>
             <th>Min</th>
             <th>Max</th>
@@ -66,6 +62,7 @@ ${file.errorMessage!""}
         <#list fileUploadedAverageStats?keys?sort as stat>
             <tr>
                 <td><b>${stat}</b></td>
+				<td>${(extensionStats[stat])!'' }</td>
                 <td><@common.convertFileSize fileUploadedAverageStats.get(stat)[0] /></td>
                 <td><@common.convertFileSize fileUploadedAverageStats.get(stat)[1] /></td>
                 <td><@common.convertFileSize fileUploadedAverageStats.get(stat)[2] /></td>

@@ -17,10 +17,10 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.VersionType;
 //import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
@@ -73,7 +73,7 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public String store(ObjectType type, InputStream content, FileStoreFileProxy version) throws IOException {
+    public String store(FilestoreObjectType type, InputStream content, FileStoreFileProxy version) throws IOException {
         StorageMethod rotate = StorageMethod.NO_ROTATION;
         return storeAndRotate(type, content, version, rotate);
     }
@@ -82,7 +82,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
     @Override
-    public String storeAndRotate(ObjectType type, InputStream content, FileStoreFileProxy version, StorageMethod rotate) throws IOException {
+    public String storeAndRotate(FilestoreObjectType type, InputStream content, FileStoreFileProxy version, StorageMethod rotate) throws IOException {
         OutputStream outputStream = null;
         String path = getAbsoluteFilePath(type, version);
 
@@ -102,7 +102,7 @@ public class PairtreeFilestore extends BaseFilestore {
                 throw new TdarRuntimeException(errorMessage);
             }
 
-            if (version.getType() == ObjectType.RESOURCE) {
+            if (version.getType() == FilestoreObjectType.RESOURCE) {
                 updateVersionInfo(outFile, version);
             }
 
@@ -169,7 +169,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String store(ObjectType type, File content, FileStoreFileProxy version) throws IOException {
+    public String store(FilestoreObjectType type, File content, FileStoreFileProxy version) throws IOException {
         return storeAndRotate(type, content, version, StorageMethod.NO_ROTATION);
     }
 
@@ -177,7 +177,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String storeAndRotate(ObjectType type, File content, FileStoreFileProxy version, StorageMethod rotations) throws IOException {
+    public String storeAndRotate(FilestoreObjectType type, File content, FileStoreFileProxy version, StorageMethod rotations) throws IOException {
         if ((content == null) || !content.isFile()) {
             logger.warn("Trying to store null or non-file content: {}", content);
             return "";
@@ -189,7 +189,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#retrieveFile(java.lang.String)
      */
     @Override
-    public File retrieveFile(ObjectType type, FileStoreFileProxy version) throws FileNotFoundException {
+    public File retrieveFile(FilestoreObjectType type, FileStoreFileProxy version) throws FileNotFoundException {
         String absoluteFilePath = getAbsoluteFilePath(type, version);
         File file = new File(absoluteFilePath);
         logger.trace("file requested: {}", file);
@@ -217,7 +217,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @param fileId
      * @return
      */
-    public String getResourceDirPath(ObjectType type, Number fileId) {
+    public String getResourceDirPath(FilestoreObjectType type, Number fileId) {
         String filePath = getFilestoreLocation() + File.separator + type.getRootDir() + File.separator;
         filePath = FilenameUtils.normalize(filePath + toPairTree(fileId));
         return filePath;
@@ -239,11 +239,11 @@ public class PairtreeFilestore extends BaseFilestore {
      * @param fileId
      * @return String
      */
-    public String getAbsoluteFilePath(ObjectType type, FileStoreFileProxy version) {
+    public String getAbsoluteFilePath(FilestoreObjectType type, FileStoreFileProxy version) {
         Long irID = version.getPersistableId();
         StringBuffer base = new StringBuffer();
         base.append(getResourceDirPath(type, irID));
-        if (version.getType() == ObjectType.RESOURCE) {
+        if (version.getType() == FilestoreObjectType.RESOURCE) {
             if (PersistableUtils.isNotNullOrTransient(version.getInformationResourceFileId())) {
                 append(base, version.getInformationResourceFileId());
                 append(base, "v" + version.getVersion());
@@ -299,9 +299,9 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#purge(java.lang.String)
      */
     @Override
-    public void purge(ObjectType type, FileStoreFileProxy version) throws IOException {
+    public void purge(FilestoreObjectType type, FileStoreFileProxy version) throws IOException {
         File file = new File(getAbsoluteFilePath(type, version));
-        if (version.getType() == ObjectType.RESOURCE) {
+        if (version.getType() == FilestoreObjectType.RESOURCE) {
             if (version.getVersionType().isDerivative() || version.getVersionType() == VersionType.TRANSLATED) {
                 FileUtils.deleteQuietly(file);
                 cleanEmptyParents(file.getParentFile());
@@ -347,7 +347,7 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public void markReadOnly(ObjectType type, List<FileStoreFileProxy> filesToProcess) {
+    public void markReadOnly(FilestoreObjectType type, List<FileStoreFileProxy> filesToProcess) {
         for (FileStoreFileProxy version : filesToProcess) {
             String absoluteFilePath = getAbsoluteFilePath(type, version);
             File file = new File(absoluteFilePath);

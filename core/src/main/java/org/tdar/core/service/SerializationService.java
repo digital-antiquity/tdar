@@ -42,13 +42,13 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLog;
 import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLogPart;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
@@ -56,9 +56,9 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.tdar.utils.json.LatLongGeoJsonSerializer;
 import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
-import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -383,8 +383,8 @@ public class SerializationService {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
-        FileStoreFile fsf = new FileStoreFile(ObjectType.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
-        TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
+        FileStoreFile fsf = new FileStoreFile(FilestoreObjectType.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
+        TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.CREATOR, file, fsf);
 
     }
 
@@ -439,9 +439,9 @@ public class SerializationService {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         convertToXML(log, writer);
         IOUtils.closeQuietly(writer);
-        ObjectType type = ObjectType.CREATOR;
+        FilestoreObjectType type = FilestoreObjectType.CREATOR;
         if (creator instanceof ResourceCollection) {
-            type = ObjectType.COLLECTION;
+            type = FilestoreObjectType.COLLECTION;
         }
 
         FileStoreFile fsf = new FileStoreFile(type, VersionType.METADATA, creator.getId(), file.getName());

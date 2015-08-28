@@ -16,11 +16,11 @@ import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.index.field.LazyReaderField;
 
 /**
@@ -55,7 +55,7 @@ public class PersistentReaderBridge implements FieldBridge {
                 }
                 try {
                     logger.trace("indexing file ... {}", version);
-                    input.add(filestore.retrieveFile(ObjectType.RESOURCE, version).toURI());
+                    input.add(filestore.retrieveFile(FilestoreObjectType.RESOURCE, version).toURI());
                 } catch (FileNotFoundException e) {
                     if (TdarConfiguration.getInstance().ignoreMissingFilesInFilestore()) {
                         logger.error("File does not exist", e);

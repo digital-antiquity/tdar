@@ -16,7 +16,7 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentCitationFormatTestCase;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.utils.MessageHelper;
 

@@ -85,16 +85,16 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.FileAccessRestriction;
-import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
+import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
@@ -126,7 +126,7 @@ import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
@@ -302,7 +302,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         irFile.getInformationResourceFileVersions().add(version);
         genericService.save(irFile);
         genericService.save(version);
-        filestore.store(ObjectType.RESOURCE, f, version);
+        filestore.store(FilestoreObjectType.RESOURCE, f, version);
         return version;
     }
 
@@ -955,14 +955,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         long infoId = (long) (Math.random() * 10000);
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
         version.setId(id);
-        filestore.store(ObjectType.RESOURCE, name, version);
+        filestore.store(FilestoreObjectType.RESOURCE, name, version);
         version.setTransientFile(name);
         return version;
     }
 
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
-        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();

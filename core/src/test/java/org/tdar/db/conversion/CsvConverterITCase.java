@@ -21,11 +21,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 
 public class CsvConverterITCase extends AbstractIntegrationTestCase {
@@ -78,7 +78,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     public void testCsvConverterMalformedFile()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "malformed_csv_dataset.csv"), 505);
-        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         try {
@@ -95,7 +95,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     public void testCsvConverterWordQuotedFile()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "word_formed_csv_dataset.csv"), 504);
-        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
@@ -111,7 +111,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     public void testCsvWithTooManyColumns()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "too_many_columns.tab"), 504);
-        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         Exception ex = null;
@@ -129,7 +129,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     public void testCsvConverterWithMultipleTables()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "Workbook1.csv"), 503);
-        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();

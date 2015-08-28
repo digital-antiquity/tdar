@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.resource.FileAccessRestriction;
-import org.tdar.core.bean.resource.FileAction;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.utils.HashQueue;
 

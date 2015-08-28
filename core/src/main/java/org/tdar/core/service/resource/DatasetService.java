@@ -38,19 +38,19 @@ import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.FileAction;
-import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.FileStatus;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
@@ -70,7 +70,7 @@ import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 
@@ -248,7 +248,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         try {
             for (InformationResourceFile file : dataset.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
-                File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, latestUploadedVersion);
+                File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, latestUploadedVersion);
                 latestUploadedVersion.setTransientFile(transientFile);
                 latestVersions.add(latestUploadedVersion);
             }

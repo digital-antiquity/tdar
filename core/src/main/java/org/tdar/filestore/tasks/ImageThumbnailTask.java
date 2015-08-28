@@ -3,12 +3,6 @@
  */
 package org.tdar.filestore.tasks;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.io.Opener;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
-
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,15 +15,20 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import net.sf.ij.jaiio.JAIReader;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.io.Opener;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
+import net.sf.ij.jaiio.JAIReader;
 
 /**
  * @author Adam Brin

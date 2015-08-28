@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ImageThumbnailTask;
 
@@ -45,9 +45,9 @@ public class SimpleFileProcessingDao {
         context.setOkToStoreInFilestore(false);
         context.setResourceType(ResourceType.IMAGE);
 
-        ObjectType type = ObjectType.CREATOR;
+        FilestoreObjectType type = FilestoreObjectType.CREATOR;
         if (persistable instanceof ResourceCollection) {
-            type = ObjectType.COLLECTION;
+            type = FilestoreObjectType.COLLECTION;
         }
 
         ImageThumbnailTask thumbnailTask = new ImageThumbnailTask();

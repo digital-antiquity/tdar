@@ -476,6 +476,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("googlemaps.apikey");
     }
 
+    public String getLeafletMapsApiKey() {
+        return assistant.getStringProperty("leaflet.apikey");
+    }
+
     public String getRecaptchaPrivateKey() {
         return assistant.getStringProperty("recaptcha.privateKey");
     }

@@ -1,5 +1,6 @@
 package org.tdar.struts.action.browse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,17 +16,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.cache.BrowseDecadeCountCache;
-import org.tdar.core.bean.cache.BrowseYearCountCache;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.cache.BrowseYearCountCache;
+import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchFieldType;
 import org.tdar.core.service.search.SearchService;
@@ -62,19 +63,22 @@ public class ExploreController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
-    private List<BrowseDecadeCountCache> timelineData;
+    private String timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+    private String mapJson;
 
-    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
+    private String homepageResourceCountCache;
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
 
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
+    @Autowired
+    private transient SerializationService serializationService;
+    
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
@@ -84,21 +88,30 @@ public class ExploreController extends AbstractLookupController {
     @Autowired
     private transient ResourceService resourceService;
 
+    @Autowired
+    private transient InformationResourceService informationResourceService;
+
     @Action(EXPLORE)
-    public String explore() {
-        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
+    public String explore() throws IOException {
+        setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));
         setMaterialTypes(genericKeywordService.findAllWithCache(MaterialKeyword.class));
         setInvestigationTypes(genericKeywordService.findAllWithCache(InvestigationType.class));
         setCultureKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
-        setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
-        setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
-        worldMapData = resourceService.setupWorldMap();
+        setTimelineData(serializationService.convertToJson(informationResourceService.findResourcesByDecade()));
+        setScholarData(informationResourceService.findResourceCountsByYear());
 
-        int count = 10;
-        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
+        List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
         try {
-            getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
+            setMapJson(serializationService.convertToJson(isoGeographicCounts));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
+        try {
+            getRecentResources().addAll(searchService.findMostRecentResources(10, getAuthenticatedUser(), this));
         } catch (ParseException pe) {
             getLogger().debug("parse exception", pe);
         }
@@ -145,11 +158,11 @@ public class ExploreController extends AbstractLookupController {
         this.alphabet = alphabet;
     }
 
-    public List<BrowseDecadeCountCache> getTimelineData() {
+    public String getTimelineData() {
         return timelineData;
     }
 
-    public void setTimelineData(List<BrowseDecadeCountCache> list) {
+    public void setTimelineData(String list) {
         this.timelineData = list;
     }
 
@@ -169,12 +182,12 @@ public class ExploreController extends AbstractLookupController {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
+    public String getHomepageResourceCountCache() {
         return homepageResourceCountCache;
     }
 
-    public void setHomepageResourceCountCache(List<HomepageResourceCountCache> homepageResourceCountCache) {
-        this.homepageResourceCountCache = homepageResourceCountCache;
+    public void setHomepageResourceCountCache(String string) {
+        this.homepageResourceCountCache = string;
     }
 
     @Override
@@ -238,12 +251,12 @@ public class ExploreController extends AbstractLookupController {
         this.viewCount = viewCount;
     }
 
-    public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {
-        return worldMapData;
+    public String getMapJson() {
+        return mapJson;
     }
 
-    public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
-        this.worldMapData = worldMapData;
+    public void setMapJson(String mapJson) {
+        this.mapJson = mapJson;
     }
 
 }
