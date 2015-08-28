@@ -19,7 +19,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.persistence.Transient;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -38,14 +37,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.core.service.pdf.PDFMergeTask;
 import org.tdar.core.service.pdf.PDFMergeWrapper;
 import org.tdar.core.service.pdf.PdfFontHelper;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.AsciiTransliterator;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.ResourceCitationFormatter;
@@ -107,7 +106,7 @@ public class PdfService {
 
                 // merge the two PDFs
                 logger.debug("calling merge on: {}", version);
-                return mergePDFs(template, CONFIG.getFilestore().retrieveFile(ObjectType.RESOURCE, version), coverPage);
+                return mergePDFs(template, CONFIG.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version), coverPage);
             } else {
                 logger.debug("IR: invalid type");
                 throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");

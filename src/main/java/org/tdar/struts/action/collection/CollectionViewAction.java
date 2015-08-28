@@ -25,7 +25,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
@@ -35,7 +35,7 @@ import org.tdar.core.service.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.search.SearchService;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
@@ -463,7 +463,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     public boolean isLogoAvailable() {
-        return checkLogoAvailable(ObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(FilestoreObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
     }
 
     public boolean isSearchHeaderLogoAvailable() {

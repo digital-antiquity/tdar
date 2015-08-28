@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +80,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -113,6 +115,7 @@ public abstract class AbstractSeleniumWebITCase {
     protected Dimension originalSize;
 
     private boolean screenshotsAllowed = true;
+    private Long previousScreenshotSize;
     // if true, ignore all javascript errors during page navigation events
     private boolean ignoreJavascriptErrors = false;
     // ignore javascript errors that match that match Patterns in this list
@@ -214,7 +217,7 @@ public abstract class AbstractSeleniumWebITCase {
         @Override
         public void onException(Throwable throwable, WebDriver driver) {
             if (!throwable.getMessage().contains("n is null")) {
-                logger.error("hey there was an error", throwable);
+                logger.error("hey there was an error", ExceptionUtils.getRootCause(throwable));
             }
             takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
         }
@@ -447,8 +450,14 @@ public abstract class AbstractSeleniumWebITCase {
         screenshotsAllowed = false;
         try {
             File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            String scrFilename = "target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName();
+            if (scrFile != null && Objects.equals(scrFile.length(), previousScreenshotSize)) {
+                logger.debug("skipping screenshot, size identical: {}", scrFilename);
+                return;
+            }
+            previousScreenshotSize = scrFile.length();
             // Now you can do whatever you need to do with it, for example copy somewhere
-            File dir = new File("target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName());
+            File dir = new File(scrFilename);
             dir.mkdirs();
             String finalFilename = screenshotFilename(filename, "png");
             logger.debug("saving screenshot: dir:{}, name:", dir, finalFilename);

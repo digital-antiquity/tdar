@@ -18,11 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.OntologySearchFilter;
@@ -33,7 +33,7 @@ import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -183,7 +183,7 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
             throw new TdarRecoverableRuntimeException("ontologyService.could_not_determine_which_file", Arrays.asList(size));
         }
         for (InformationResourceFileVersion irFile : files) {
-            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile);
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, irFile);
             if (file.exists()) {
                 OntModel ontologyModel = ModelFactory.createOntologyModel();
                 String url = ontology.getUrl();

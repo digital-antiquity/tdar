@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.ExceptionWrapper;

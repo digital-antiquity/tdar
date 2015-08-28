@@ -15,13 +15,13 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -53,7 +53,7 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
     private static final long serialVersionUID = 520143306023106607L;
     private String contentType;
     private String filename;
-    private ObjectType type;
+    private FilestoreObjectType type;
     private String typeString;
     private String versionString;
     private InputStream stream;
@@ -68,7 +68,7 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
     @Action("/creator/{versionString}/{id}/logo")
     public String creator() throws IOException {
         filename = "logo" + version.toPath() + ".jpg";
-        type = ObjectType.CREATOR;
+        type = FilestoreObjectType.CREATOR;
         FileStoreFile proxy = new FileStoreFile(type, version, getId(), getFilename());
         File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
         if (file != null) {
@@ -83,7 +83,7 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
     @Action("/collection/{versionString}/{id}/logo")
     public String collection() throws IOException {
         filename = "logo" + version.toPath() + ".jpg";
-        type = ObjectType.COLLECTION;
+        type = FilestoreObjectType.COLLECTION;
         FileStoreFile proxy = new FileStoreFile(type, version, getId(), getFilename());
         File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(type, proxy);
         if (file != null) {

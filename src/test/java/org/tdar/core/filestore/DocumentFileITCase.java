@@ -15,17 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.FileStatus;
-import org.tdar.core.bean.resource.FileType;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.FileStatus;
+import org.tdar.core.bean.resource.file.FileType;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.GenericDocumentWorkflow;
 import org.tdar.core.service.workflow.workflows.PDFWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 
 /**
@@ -77,7 +77,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
         InformationResourceFileVersion indexableVersion = informationResourceFile.getIndexableVersion();
         logger.info("version: {}", indexableVersion);
-        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, indexableVersion));
+        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, indexableVersion));
         logger.info(text);
         assertTrue(text.toLowerCase().contains("have fun digging"));
     }

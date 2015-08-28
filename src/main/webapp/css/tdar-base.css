@@ -446,26 +446,15 @@ header .welcome-drop ul {
     margin: 0 0 13px 0;
 }
 
-#home .map h3 {
-    margin: 5px 0 30px 0;
-    float: left;
-}
-
-#home .map img.guide {
-    float: right;
-    margin-top: 18px;
-}
-
-#home .news h3 {
-    margin: 5px 0 20px 0;
-    float: left;
-}
-
 #home .news ul, #home .news li {
     margin: 0;
     padding: 0;
     list-style: none;
     clear: left;
+}
+
+#home .news li:first-child {
+    padding: 0 0 16px 60px;
 }
 
 #home .news li {
@@ -1490,4 +1479,49 @@ tr.DELETED {
 .hidden {
     display:none;
     visibility:hidden;
+}
+
+/** leaflet maps - **/
+.disable-map .leaflet-draw {
+	display:none;
+	visibility:hidden;
+}
+
+.disable-map .leaflet-container, .leaflet-container.disable-map {
+	opacity:.5;
+}
+
+#mapgraphdata {
+    z-index: 1000;
+    width: 200px;
+    position: absolute;
+    top: 0px;
+    background-color: #FFF;
+    border-right: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+    border-top: 1px solid #AAA;
+    padding: 5px;
+    text-align:center;
+    padding-right: 20px;
+}
+
+#worldmap.leaflet-container {
+    background-color: #D5F0FD !important;
+    border: 1px solid #AAA;
+}
+#worldmap .info {
+    background-color:#fff;
+    opacity:.8;
+    padding:2px;
+}
+
+#worldmap .legend {
+    background-color:#fff;
+    float:right;
+}
+
+
+#worldmap .leaflet-control-attribution {
+    display:none;
+    
 }

@@ -3,7 +3,9 @@ package org.tdar.db.conversion.converters;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,16 +20,17 @@ import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.geojson.feature.FeatureJSON;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
@@ -39,6 +42,8 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+
+import liquibase.util.file.FilenameUtils;
 
 /**
  * The class reads an access db file, and converts it into other types of db
@@ -62,6 +67,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     }
 
     private List<InformationResourceFileVersion> versions = new ArrayList<>();
+    private File geoJsonFile;
 
     public ShapeFileDatabaseConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
@@ -114,6 +120,10 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         FeatureCollection<?, ?> collection = featureSource.getFeatures();
         FeatureIterator<?> iterator = collection.features();
         logger.debug("{}", dataStore.getNames());
+        
+        
+        dumpToGeoJson(collection);
+        
         // Filter filter = CQL.toFilter(text.getText());
         // SimpleFeatureCollection features = source.getFeatures(filter);
         // FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
@@ -141,6 +151,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         targetDatabase.createTable(dataTable);
         ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(dataTable.getDataTableColumns());
 
+        
         try {
             @SuppressWarnings("unused")
             int rowCount = collection.size();
@@ -174,11 +185,32 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         }
     }
 
+    private void dumpToGeoJson(FeatureCollection<?, ?> collection) {
+        FeatureJSON fjson = new FeatureJSON();
+        
+        try {
+            setGeoJsonFile(new File(System.getProperty("java.io.tmpdir"), FilenameUtils.getBaseName(getDatabaseFile().getName()) + ".json"));
+            FileWriter writer = new FileWriter(getGeoJsonFile());
+            fjson.writeFeatureCollection(collection, writer);
+            IOUtils.closeQuietly(writer);
+        } catch (IOException e) {
+            logger.error("could not convert dataset to GeoJSON", e);
+        }
+    }
+
     public File getDatabaseFile() {
         return databaseFile;
     }
 
     public void setDatabaseFile(File databaseFile) {
         this.databaseFile = databaseFile;
+    }
+
+    public File getGeoJsonFile() {
+        return geoJsonFile;
+    }
+
+    public void setGeoJsonFile(File geoJsonFile) {
+        this.geoJsonFile = geoJsonFile;
     }
 }

@@ -385,6 +385,40 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     }
 
     @Override
+    protected void updateDisplayOrientationBasedOnSearchResults() {
+        if (orientation != null) {
+            getLogger().debug("orientation is set to: {}", orientation);
+            return;
+        }
+
+        if (CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
+            boolean allImages = true;
+            for (FacetValue val : getResourceTypeFacets()) {
+                if (val.getCount() > 0 && !ResourceType.isImageName(val.getValue())) {
+                    allImages = false;
+                }
+            }
+            // if we're only dealing with images, and an orientation has not been set
+            if (allImages) {
+                setOrientation(DisplayOrientation.GRID);
+                getLogger().debug("switching to grid orientation");
+                return;
+            }
+        }
+        LatitudeLongitudeBox map = null;
+        try {
+            map = getG().get(0).getLatitudeLongitudeBoxes().get(0);
+        } catch (Exception e) {
+            // ignore
+        }
+        if (getMap() != null && getMap().isInitializedAndValid() || map != null && map.isInitializedAndValid()) {
+            getLogger().debug("switching to map orientation");
+            setOrientation(DisplayOrientation.MAP);
+        }
+    }
+    
+    
+    @Override
     public List<Status> getAllStatuses() {
         return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }

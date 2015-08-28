@@ -248,10 +248,10 @@ ${head}
     </script>
     <@header.scripts ( webFilePreprocessingEnabled) />
     <script type="text/javascript">
-        TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
-        TDAR.maps.defaults.center.lat = ${mapDefaultLat};
-        TDAR.maps.defaults.center.lng = ${mapDefaultLng};
-        TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
+//        TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
+        TDAR.leaflet.defaults.center.lat = ${mapDefaultLat};
+        TDAR.leaflet.defaults.center.lng = ${mapDefaultLng};
+        TDAR.leaflet.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
         TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
         TDAR.common.sessionTimeout = ${sessionTimeout?c};
             <#if authenticatedUser?has_content>

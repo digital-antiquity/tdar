@@ -33,8 +33,8 @@
     </#if>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
-    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}">
+    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
+    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}" />
 
 <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <#if useCDN>
@@ -86,9 +86,11 @@ ${head}
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
+	 data-leaflet-api-key="${leafletApiKey}" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc"${geoLocationToBeUsed?string("true", "false")}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
       <#if authenticatedUser?has_content>data-currentTime="1" </#if>
       <#if ngApplicationName?has_content>ng-cloak</#if>>
+
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
@@ -234,19 +236,7 @@ ${head}
 
 
     <@header.scripts ( webFilePreprocessingEnabled) />
-    <script type="text/javascript">
-        TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
-        TDAR.maps.defaults.center.lat = ${mapDefaultLat};
-        TDAR.maps.defaults.center.lng = ${mapDefaultLng};
-        TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
-        <#--
-         TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
-         TDAR.common.sessionTimeout = ${sessionTimeout?c};
-            <#if authenticatedUser?has_content>
-            TDAR.common.currentTime = 1;
-            </#if>
-            -->
-    </script>
+
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>
         <span class="statusMessage"></span>
@@ -268,6 +258,9 @@ ${head}
     <script src="/test/js<#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
     </#if>
 </#if>
-
+    <#import "/${themeDir}/settings.ftl" as settings />
+<script id="c3colors">
+ [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+</script>
 </body>
 </html>

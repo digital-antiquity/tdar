@@ -18,15 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.UrlService;
-import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.Filestore.StorageMethod;
+import org.tdar.filestore.FilestoreObjectType;
 import org.w3c.dom.Document;
 
 public class XMLFilestoreLogger implements Serializable {
@@ -62,7 +62,7 @@ public class XMLFilestoreLogger implements Serializable {
             StorageMethod rotate = StorageMethod.DATE;
             // rotate.setRotations(5);
             TdarConfiguration.getInstance().getFilestore()
-                    .storeAndRotate(ObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
+                    .storeAndRotate(FilestoreObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + resource, e);
             throw new FilestoreLoggingException("serializationService.could_not_save");

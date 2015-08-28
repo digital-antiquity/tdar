@@ -12,11 +12,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.workflows.Workflow;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -96,7 +96,7 @@ public interface Task extends Serializable {
 
             if (ctx.isOkToStoreInFilestore()) {
                 try {
-                    ctx.getFilestore().store(ObjectType.RESOURCE, f, version);
+                    ctx.getFilestore().store(FilestoreObjectType.RESOURCE, f, version);
                 } catch (IOException e) {
                     getLogger().warn("cannot store version", e);
                 }

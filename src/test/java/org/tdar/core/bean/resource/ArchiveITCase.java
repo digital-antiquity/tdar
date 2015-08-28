@@ -10,10 +10,12 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.resource.file.FileStatus;
+import org.tdar.core.bean.resource.file.FileType;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 
 public class ArchiveITCase extends AbstractIntegrationControllerTestCase {
@@ -48,7 +50,7 @@ public class ArchiveITCase extends AbstractIntegrationControllerTestCase {
         evictCache();
 
         // however, whatever caused the processing error is fixed
-        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile.getLatestUploadedVersion());
+        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, irFile.getLatestUploadedVersion());
         File sourceFile = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
         fileInStore.setWritable(true);
         org.apache.commons.io.FileUtils.copyFile(sourceFile, fileInStore);

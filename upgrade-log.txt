@@ -30,3 +30,11 @@
  - run mvn -PchangelogSync clean compile
  - uncomment "munsell.xml" in src/main/db/changelog.xml
  - run the usual src/main/release/deploy-production.sh
+ 
+ -----------
+ NEOLITHIC:
+ -----------
+ - remove the log4j.properties and replace it with a log4j2.properties
+ - change scripts that expect tdar-2015-* to expect tdar.log for current tomcat log
+ - move all resource folders in filestore to /filestore/resource/
+ 

@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.hibernate.annotations.Immutable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 
 //I don't know that the propOrder here is necessary, and it may complicate things in the future
 @Entity

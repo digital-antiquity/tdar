@@ -13,17 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.file.FileStatus;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
@@ -192,7 +192,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         InformationResourceFileVersion version = getLatestUploadedTextVersion();
         if (version != null) {
             try {
-                versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
+                versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
             } catch (IOException e) {
                 getLogger().debug("an error occurred when trying to load the text version of a file", e);
             }

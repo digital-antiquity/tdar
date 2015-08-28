@@ -27,13 +27,13 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.FreemarkerService;
-import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.FilestoreObjectType;
 
 /**
  * Converts a text formatted Ontology into an OWL XML ontology
@@ -98,7 +98,7 @@ public class OwlOntologyConverter {
      * @throws FileNotFoundException
      */
     public OWLOntology toOwlOntology(InformationResourceFileVersion file) throws FileNotFoundException {
-        File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, file);
+        File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, file);
         if ((file != null) && transientFile.exists()) {
             IRI iri = IRI.create(transientFile);
             return loadFromIRI(iri);

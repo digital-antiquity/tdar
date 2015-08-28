@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 
 import com.opensymphony.xwork2.TextProvider;

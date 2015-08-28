@@ -11,10 +11,10 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.struts.action.dataset.RowViewAction;
 
 import com.opensymphony.xwork2.Action;

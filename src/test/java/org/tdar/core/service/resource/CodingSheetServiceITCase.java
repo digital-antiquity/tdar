@@ -19,13 +19,12 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.parser.CodingSheetParserException;
-import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.filestore.FilestoreObjectType;
 
 /**
  * @author Adam Brin
@@ -59,7 +58,7 @@ public class CodingSheetServiceITCase extends AbstractWithIndexIntegrationTestCa
         version.setInformationResourceFile(irFile);
         version.setInformationResourceId(100L);
         version.setFileVersionType(VersionType.UPLOADED_TEXT);
-        TdarConfiguration.getInstance().getFilestore().store(ObjectType.RESOURCE, content, version);
+        TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, content, version);
         try {
             codingSheetService.parseUpload(sheet, version);
         } catch (Throwable ex) {

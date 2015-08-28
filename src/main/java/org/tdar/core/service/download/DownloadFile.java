@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 
 /**
  * Represents a file to be downloaded

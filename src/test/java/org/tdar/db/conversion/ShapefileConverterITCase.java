@@ -1,5 +1,7 @@
 package org.tdar.db.conversion;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import javax.sql.DataSource;
@@ -12,9 +14,11 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Geospatial;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
@@ -38,6 +42,9 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         ConvertDatasetTask task = new ConvertDatasetTask();
         WorkflowContext wc = new WorkflowContext();
+        wc.setFilestore(TdarConfiguration.getInstance().getFilestore());
+        wc.setInformationResourceId(12345L);
+        wc.setInformationResourceId(111L);
         wc.setResourceType(ResourceType.GEOSPATIAL);
         wc.setTargetDatabase(tdarDataImportDatabase);
         String name = "Occ_3l";
@@ -53,6 +60,13 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         task.setWorkflowContext(wc);
         task.run();
         Dataset dataset = (Dataset) wc.getTransientResource();
+        InformationResourceFileVersion geoJson = null;
+        for (InformationResourceFileVersion vers : wc.getVersions()) {
+            if (vers.getFileVersionType() == VersionType.GEOJSON) {
+                geoJson = vers;
+            }
+        }
+        assertTrue(geoJson != null);
         // wc.setOriginalFile(originalFile);
         // task.setWorkflowContext(wc);
         // task.run();
