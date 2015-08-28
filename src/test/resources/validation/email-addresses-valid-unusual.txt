@@ -1,0 +1,3 @@
+much.“more\ unusual”@example.com
+very.unusual.“@”.unusual.com@example.com
+very.“(),:;<>[]”.VERY.“very@\\ "very”.unusual@strange.example.com
