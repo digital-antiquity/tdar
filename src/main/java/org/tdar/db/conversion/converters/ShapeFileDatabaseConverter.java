@@ -43,6 +43,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+import liquibase.util.file.FilenameUtils;
+
 /**
  * The class reads an access db file, and converts it into other types of db
  * files.
@@ -187,7 +189,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         FeatureJSON fjson = new FeatureJSON();
         
         try {
-            setGeoJsonFile(File.createTempFile(getDatabaseFile().getName(), "json"));
+            setGeoJsonFile(new File(System.getProperty("java.io.tmpdir"), FilenameUtils.getBaseName(getDatabaseFile().getName()) + ".json"));
             FileWriter writer = new FileWriter(getGeoJsonFile());
             fjson.writeFeatureCollection(collection, writer);
             IOUtils.closeQuietly(writer);
