@@ -77,6 +77,16 @@ describe("LeafletSpec", function() {
 
         });
 
+        it("initLeafletMaps:effectiveSettings", function(){
+            //the default tile provider is 'mapbox'.  Confirm that we can override this setting in body[data-leaflet-tile-provider] 
+            loadFixtures("leaflet/leaflet-edit.html");
+            TDAR.leaflet.initEditableLeafletMaps();
+            console.log('---------------')
+            expect($('.mapdiv').data().map).toBeDefined()
+            expect($('.mapdiv').data().map.options.leafletTileProvider).toBe('osm')
+
+        });
+
 
     it("edit:fireCreate",function(){
             loadFixtures("leaflet/leaflet-edit.html");
@@ -107,12 +117,10 @@ describe("LeafletSpec", function() {
         $(".maxy", $el).val(bounds[0][0]);
         TDAR.leaflet.initEditableLeafletMaps();
         // console.log(TDAR.leaflet.getMaps().length);
-        // var mapDiv = $(".mapdiv",$el);
-        var map = TDAR.leaflet.getMaps()[5];
+        var map = $('.mapdiv').data().map
         // console.log("!--- " + map.constructor.name );
         // var rect = L.rectangle(bounds, {color: 'blue', weight: 1});
         var toDelete = [];
-        var mapDiv = $(".mapdiv",$el).data('map');
         map.eachLayer(function (layer) {
             if (layer instanceof L.Rectangle) {
                 toDelete.push(layer);
@@ -123,7 +131,6 @@ describe("LeafletSpec", function() {
         event.type = "draw:deleted";
         event.layers = toDelete;
         // console.log($el.length);
-        //mapDiv.data("map").fireEvent(event.type,event);
         map.fireEvent(event.type,event);
 
         //make sure that we deleted the rectangle layers
@@ -157,12 +164,10 @@ describe("LeafletSpec", function() {
 
 
         // console.log(TDAR.leaflet.getMaps().length);
-        // var mapDiv = $(".mapdiv",$el);
-        var map = TDAR.leaflet.getMaps()[6];
+        var map = $('.mapdiv').data().map
         // console.log("!--- " + map.constructor.name );
         // var rect = L.rectangle(bounds, {color: 'blue', weight: 1});
         var toEdit = [];
-        var mapDiv = $(".mapdiv",$el).data('map');
         map.eachLayer(function (layer) {
             if (layer instanceof L.Rectangle) {
                 layer.setBounds(newBounds);
@@ -175,7 +180,6 @@ describe("LeafletSpec", function() {
         event.type = "draw:edited";
         event.layers = toEdit;
         // console.log($el.length);
-        //mapDiv.data("map").fireEvent(event.type,event);
         map.fireEvent(event.type,event);
 
         //make sure that we deleted the rectangle layers

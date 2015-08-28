@@ -40,7 +40,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 
         map = L.map(mapId,{
         // config for leaflet.sleep
-        sleep: false,
+        sleep: true,
         // time(ms) for the map to fall asleep upon mouseout
         sleepTime: 750,
         // time(ms) until map wakes on mouseover
