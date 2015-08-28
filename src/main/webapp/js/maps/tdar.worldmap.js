@@ -75,20 +75,7 @@ TDAR.worldmap = (function(console, $, ctx) {
                     });
                 }
             }).addTo(map);
-
-            hlayer.eachLayer(function(layer) {
-                var color = _getColor(geodata[layer.feature.id]);
-                if (typeof layer._path != 'undefined') {
-                    layer._path.id = layer.feature.id;
-                    _redrawLayer(layer, color,1);
-                } else {
-                    layer.eachLayer(function(layer2) {
-                        layer2._path.id = layer.feature.id;
-                        _redrawLayer(layer2, color,1);
-                    });
-                }
-
-            });
+            _setupLayers(hlayer);
         });
         map.on('click', _resetView);
         
@@ -117,6 +104,22 @@ TDAR.worldmap = (function(console, $, ctx) {
         return map;
     }
     
+    function _setupLayers(lyr) {
+        lyr.eachLayer(function(layer) {
+            var color = _getColor(geodata[layer.feature.id]);
+            if (typeof layer._path != 'undefined') {
+                layer._path.id = layer.feature.id;
+                _redrawLayer(layer, color,1);
+            } else {
+                layer.eachLayer(function(layer2) {
+                    layer2._path.id = layer.feature.id;
+                    _redrawLayer(layer2, color,1);
+                });
+            }
+
+        });
+    }
+    
     function _redrawLayer(layer, fillColor, opacity, id) {
         layer.options.fill = fillColor;
         layer.options.opacity = 1;
@@ -128,26 +131,56 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     var stateLayer = undefined;
     var overlay = false;
+    
+    function _loadStateData() {
+        var usStyle = {
+            strokeColor: "#ff7800",
+            weight: .5,
+            fillColor:"#FEEFE",
+            fillOpacity: 1
+        };
+        $.getJSON("/js/maps/USA.json", function(data) {
+            stateLayer = new L.GeoJSON(data, {
+                style: usStyle,
+                onEachFeature: function(feature, layer_) {
+                    layer_.on({
+                        click: _clickWorldMapLayer,
+                        mouseover: _highlightFeature,
+                        mouseout: _resetHighlight
+                    });
+                }
+            }).addTo(map);
+            _setupLayers(stateLayer);
+
+        hlayer.setStyle({
+            "fillOpacity": .1
+        });
+        });
+        
+    }
 
     function _clickWorldMapLayer(event) {
         var ly = event.target.feature.geometry.coordinates[0];
-        if (stateLayer != undefined) {
-            map.removeLayer(stateLayer);
+        if (event.target.feature.id && event.target.feature.id.indexOf('USA') == -1) {
+            if (stateLayer != undefined) {
+                map.removeLayer(stateLayer);
+            }
         }
         
-        if (event.target.feature.id == 'USA') {
-            var usStyle = {
-                "strokeColor": "#ff7800",
-                "weight": .5,
-                "fillOpacity": 0
-            };
-            stateLayer = new L.GeoJSON(statesData, {
-                style: usStyle
-            }).addTo(map);
-            hlayer.setStyle({
-                "fillOpacity": .1
-            });
+        
+        if (event.target.feature.id == 'USA' && stateLayer == undefined) {
+//            _loadStateData();
         }
+
+        _drawDataGraph(event);
+		
+        if (event.target.feature.id != 'RUS') {
+            map.fitBounds(event.target.getBounds());
+            overlay = true;
+        }
+    }
+    
+    function _drawDataGraph(event) {
 		var $div = $("#mapgraphdata");
 		if ($div.length == 0) {
 			$div = $("<div id='mapgraphdata' style='left:"+$mapDiv.width()+"px;height:"+($mapDiv.height() - 10)+"px'></div>");
@@ -179,12 +212,8 @@ TDAR.worldmap = (function(console, $, ctx) {
 			obj.color = {};
 			obj.color.pattern = c3colorsobj;
 		}
-		
 		setTimeout(100,  c3.generate(obj));
-        if (event.target.feature.id != 'RUS') {
-            map.fitBounds(event.target.getBounds());
-            overlay = true;
-        }
+        
     }
 
     function _resetView() {
