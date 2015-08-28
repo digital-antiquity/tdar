@@ -321,6 +321,11 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 _enableRectangleCreate($mapDiv);
             });
 
+            //dirty the form if rectangle created, edited, or deleted
+            map.on('draw:created draw:edited draw:deleted', function(e){
+                $mapDiv.closest('form').FormNavigate('dirty');
+            });
+
 
             $(".locateCoordsButton", $el).click(function() {
                 var rec = _updateLayerFromFields($el, map, drawnItems, $mapDiv);
