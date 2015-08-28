@@ -73,12 +73,7 @@ public interface Filestore {
         }
 
         public String getRootDir() {
-            switch (this) {
-                case RESOURCE:
-                    return "";
-                default:
-                    return this.name().toLowerCase();
-            }
+            return this.name().toLowerCase();
         }
     }
 

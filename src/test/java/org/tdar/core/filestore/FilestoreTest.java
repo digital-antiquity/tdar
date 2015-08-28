@@ -99,8 +99,8 @@ public class FilestoreTest {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         String name = "abc.txt";
         InformationResourceFileVersion version = generateVersion(name);
-        String baseAssert = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1" + File.separator;
-        assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
+        String baseAssert = store.getFilestoreLocation() + File.separator + "resource" + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1" + File.separator;
+assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         version.setFileVersionType(VersionType.WEB_LARGE);
         assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         logger.info(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
@@ -198,7 +198,7 @@ public class FilestoreTest {
         store.store(ObjectType.RESOURCE, new File(TEST_DOCUMENT), version);
         File f = new File(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
-        String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1";
+        String expectedPath = store.getFilestoreLocation() + File.separator + "resource" + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1";
         assertEquals(expectedPath + File.separator + "archival" + File.separator + TEST_DOCUMENT_NAME, f.getAbsolutePath());
         try {
             store.purge(ObjectType.RESOURCE, version);
@@ -233,7 +233,7 @@ public class FilestoreTest {
         assertTrue(store.verifyFile(ObjectType.RESOURCE, version));
         File f = new File(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
-        String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v2";
+        String expectedPath = store.getFilestoreLocation() + File.separator + "resource" + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v2";
         assertEquals(expectedPath + File.separator + TEST_IMAGE_NAME, f.getAbsolutePath());
         try {
             store.purge(ObjectType.RESOURCE, version);
