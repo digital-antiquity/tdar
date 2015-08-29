@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
@@ -46,7 +45,6 @@ import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
 import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
-import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.upgradeTasks.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
@@ -62,9 +60,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     // private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
-
-    @Autowired
-    RebuildHomepageCache homepage;
 
     @Autowired
     private SendEmailProcess sendEmailProcess;
@@ -237,10 +232,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertFalse("ScheduledBatchProcess should be reset now", mock.isCompleted());
     }
 
-    @Test
-    public void testHomepageGen() {
-        homepage.execute();
-    }
 
     @Test
     public void testBatchProcessing() {
