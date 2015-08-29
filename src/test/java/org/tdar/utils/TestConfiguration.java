@@ -96,6 +96,10 @@ public class TestConfiguration {
         return assistant.getIntProperty("tdar.https.port", 8143);
     }
 
+    public String getContext() {
+        return assistant.getStringProperty("tdar.context.path", "/tdar");
+    }
+
     public int getPort() {
         return assistant.getIntProperty("tdar.http.port", 8180);
     }
@@ -150,10 +154,6 @@ public class TestConfiguration {
 
     public String getBaseUrl() {
         return String.format("http://%s:%s%s/", getHostName(), getPort(), getContext());
-    }
-
-    public String getContext() {
-        return "/tdar";
     }
 
     public String getUsername(String user) {

@@ -498,8 +498,14 @@ public abstract class AbstractSeleniumWebITCase {
      * @param path
      * @return
      */
-    public String absoluteUrl(String base, String path) throws MalformedURLException {
+    public String absoluteUrl(String base, final String path_) throws MalformedURLException {
         String abs = null;
+        String path = path_;
+        // if we have a "context" defined, then adjust absolute URL logic to use that as the starting point for the path
+        if (StringUtils.endsWith(base, CONFIG.getContext() +"/") && StringUtils.startsWith(path, "/")) {
+            path = path.substring(1);
+        }
+        
         URL context = new URL(base);
         URL url = new URL(context, path);
         abs = url.toString();
@@ -513,7 +519,7 @@ public abstract class AbstractSeleniumWebITCase {
         String scheme = https ? "https" : "http";
         String host = CONFIG.getHostName();
         int port = https ? CONFIG.getHttpsPort() : CONFIG.getPort();
-        String url = String.format("%s://%s:%s/", scheme, host, port);
+        String url = String.format("%s://%s:%s%s/", scheme, host, port, CONFIG.getContext());
         return url;
     }
 

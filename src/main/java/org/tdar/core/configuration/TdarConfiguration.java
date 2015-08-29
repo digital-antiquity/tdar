@@ -948,4 +948,8 @@ public class TdarConfiguration {
         initPersonalFilestorePath();
     }
 
+    public String getStaticContext() {
+        return assistant.getStringProperty("static.context", "/tdar");
+    }
+
 }

@@ -205,8 +205,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
                 localPath = localPath.substring(1);
             }
         }
+
         String url = prefix + localPath;
-        logger.debug(">>>>>>> " + url);
         return url;
     }
 
