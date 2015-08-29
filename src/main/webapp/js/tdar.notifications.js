@@ -13,7 +13,7 @@
     }
     
     function _dismiss(id) {
-            var url = "/notification/dismiss"; // the script where you handle the form input.
+            var url = TDAR.uri() + "/notification/dismiss"; // the script where you handle the form input.
             $.ajax({
                 type : "POST",
                 url : url,
