@@ -190,7 +190,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         String prefix = getBaseUrl();
         try {
             URL current = internalPage.getUrl();
-            prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+            prefix = String.format("%s://%s:%s%s", current.getProtocol(), current.getHost(), current.getPort(), TestConfiguration.getInstance().getContext());
             logger.info("SETTING URL TO {}{}", prefix, localPath);
         } catch (Exception e) {
             logger.trace("{}", e);
@@ -205,8 +205,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
                 localPath = localPath.substring(1);
             }
         }
-
         String url = prefix + localPath;
+        logger.debug(">>>>>>> " + url);
         return url;
     }
 
@@ -1109,7 +1109,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     private int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
         int code = 0;
         WebClient client = getWebClient();
-        String url = getBaseUrl() + "/upload/upload";
+        String url = getBaseUrl() + "upload/upload";
+        logger.debug("uploadUrl: {}", url);
         try {
             WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
             List<NameValuePair> parms = new ArrayList<NameValuePair>();
