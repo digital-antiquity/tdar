@@ -85,6 +85,10 @@ TDAR.uri = function(path) {
     if (uri.lastIndexOf("/") != uri.length-1)  {
         uri += "/";
     }
+    if (uri.lastIndexOf("/") == uri.length -1 && path != undefined && path.indexOf("/") == 0) {
+        uri = uri.substring(0,uri.lastIndexOf("/"));
+    }
+    
     if(path) {
         uri += path;
     }
