@@ -249,6 +249,7 @@
                         <configuration>
                             <attachToTest>false</attachToTest>
                             <attachToMain>false</attachToMain>
+                            <includeScope>test</includeScope>
                             <outputDirectory>target/test-resources</outputDirectory>
                             <resourceBundles>
                                 <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>

@@ -351,7 +351,7 @@ public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
             for (Object err : v.getSchemaErrors()) {
                 logger.error("*=> schema error: {} ", err.toString());
             }
-            assertTrue("Schema is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
+            assertTrue("Schema ("+schema +") is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
         }
     }
     private static Validator v;
