@@ -64,7 +64,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 
         // load map data
         //FIXME: consider embedding data for faster rendering
-        $.getJSON("/js/maps/world.json", function(data) {
+        $.getJSON(TDAR.uri("/js/maps/world.json"), function(data) {
             hlayer = new L.GeoJSON(data, {
                 style: myStyle,
                 onEachFeature: function(feature, layer_) {

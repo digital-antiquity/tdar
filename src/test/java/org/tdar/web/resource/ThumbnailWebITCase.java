@@ -43,7 +43,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String IMAGE_TITLE = "a thumb test";
     public static String DESCRIPTION = "this is a test";
 
-    public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+\\/(.+)$";
+    public static String REGEX_IMAGE_VIEW = "(.+)\\/image\\/\\d+\\/(.+)$";
 
     @Test
     // create image as confidential, then log out and see if we see the image.
@@ -82,7 +82,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // we're dealing with a confidential file, should not be there
         assertTextNotPresent("/img/sm");
         String pageCode = getPageCode();
-        Pattern p = Pattern.compile("/filestore/(\\d+)/(\\d+)(/?)");
+        Pattern p = Pattern.compile("(.+)/filestore/(\\d+)/(\\d+)(/?)");
         Matcher m = p.matcher(pageCode);
         List<Long> irFileIds = new ArrayList<Long>();
         List<Long> irFileVersionIds = new ArrayList<Long>();
@@ -183,7 +183,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public void assertDeniedAccess(List<Long> irFileIds, List<Long> irFileVersionIds) {
         for (int i = 0; i < irFileIds.size(); i++) {
-            String pth = getBaseUrl() + "/filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
+            String pth = getBaseUrl() + "filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
             int status = gotoPageWithoutErrorCheck(pth);
             logger.info(pth + ":" + status + " -" + getCurrentUrlPath());
             assertEquals("should not be allowed", 403, status);
@@ -192,7 +192,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public void assertLoginPrompt(List<Long> irFileIds, List<Long> irFileVersionIds) {
         for (int i = 0; i < irFileIds.size(); i++) {
-            String pth = getBaseUrl() + "/filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
+            String pth = getBaseUrl() + "filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
             int status = gotoPageWithoutErrorCheck(pth);
             logger.info(pth + ":" + status + " -" + getCurrentUrlPath());
             assertFalse("Should always be a login prompt", getCurrentUrlPath().equals(pth));
@@ -201,7 +201,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public void assertAllowedToViewIRVersionIds(List<Long> irFileIds, List<Long> irFileVersionIds) {
         for (int i = 0; i < irFileIds.size(); i++) {
-            String pth = getBaseUrl() + "/filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
+            String pth = getBaseUrl() + "filestore/" + irFileIds.get(i) + "/" + irFileVersionIds.get(i);
             int status = gotoPageWithoutErrorCheck(pth);
             logger.info(pth + ":" + status + " -" + getCurrentUrlPath());
             assertEquals("Should always be allowed", 200, status);

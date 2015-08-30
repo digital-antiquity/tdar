@@ -1010,8 +1010,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             if (StringUtils.isNotBlank(part) && StringUtils.isNumeric(part)) {
                 return Long.parseLong(part);
             }
+            int indexOf = url.indexOf("id=");
+            if (indexOf != -1) {
+                part = url.substring(indexOf+4);
+                if (StringUtils.isNumeric(part)) {
+                    return Long.parseLong(part);
+                }
+            }
         }
-        throw new TdarRecoverableRuntimeException("could not find tDAR ID in URL" + internalPage.getUrl().toString());
+        throw new TdarRecoverableRuntimeException("could not find tDAR ID in URL: " + internalPage.getUrl().toString());
     }
 
     public void assertCurrentUrlEquals(String url) {

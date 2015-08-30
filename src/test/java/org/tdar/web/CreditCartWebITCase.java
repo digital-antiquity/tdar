@@ -282,8 +282,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
      */
     @Test
     public void testCompletelyBogusEndpointRequest() {
-        String url = String.format("https://%s:%s/cart/process-external-payment-response", TestConfiguration.getInstance().getHostName(), TestConfiguration
-                .getInstance().getHttpsPort());
+        String url = String.format("https://%s:%s%s/cart/process-external-payment-response", CFG.getHostName(), CFG.getHttpsPort(), CFG.getContext());
         Pair<Integer, String> responsePair = SimpleHttpUtils.parseResponse(SimpleHttpUtils.post(url,
                 asList(SimpleHttpUtils.nameValuePair("foo", "bar"), SimpleHttpUtils.nameValuePair("ping", "pong"))));
         assertThat(responsePair.getFirst(), is(not(200)));
