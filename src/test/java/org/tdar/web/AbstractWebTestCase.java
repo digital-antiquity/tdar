@@ -186,11 +186,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         return null;
     }
 
-    public String pathToUrl(String localPath) {
+    public String pathToUrl(final String localPath_) {
+        String localPath = "";
+        if (StringUtils.isNotBlank(localPath_)) {
+            localPath = localPath_;
+        }
         String prefix = getBaseUrl();
         try {
             URL current = internalPage.getUrl();
-            prefix = String.format("%s://%s:%s%s", current.getProtocol(), current.getHost(), current.getPort(), TestConfiguration.getInstance().getContext());
+            prefix = String.format("%s://%s:%s%s", current.getProtocol(), current.getHost(), current.getPort(), CONFIG.getContext());
             logger.info("SETTING URL TO {}{}", prefix, localPath);
         } catch (Exception e) {
             logger.trace("{}", e);
@@ -199,6 +203,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         if (localPath.startsWith("//")) {
             localPath = localPath.substring(1);
         }
+        
 
         if (prefix.endsWith("/")) {
             while (localPath.startsWith("/")) {
@@ -206,6 +211,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             }
         }
 
+        if (StringUtils.isNotBlank(CONFIG.getContext()) && localPath.startsWith(CONFIG.getContext())) {
+            localPath = localPath.substring(CONFIG.getContext().length());
+        }
         String url = prefix + localPath;
         return url;
     }
@@ -1442,6 +1450,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
         reindex();
         logout();
+        logger.debug(url);
         gotoPage(url);
     }
 
@@ -1449,7 +1458,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/buildIndex");
         try {
-            URL url = new URL(getBaseUrl() + "/admin/searchindex/checkstatus?userId=" + getAdminUserId());
+            URL url = new URL(getBaseUrl() + "admin/searchindex/checkstatus?userId=" + getAdminUserId());
             internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
 
             logger.debug(getPageCode());
@@ -1470,7 +1479,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
                 count++;
             }
         } catch (Exception e) {
-            fail("exception in reindexing");
+            logger.error("exception in reindexing", e);
+            fail("exception in reindexing:" + e);
         }
     }
 
