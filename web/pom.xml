@@ -24,9 +24,9 @@
 	</properties>
 	<parent>
 		<groupId>org.tdar</groupId>
-		<artifactId>parent</artifactId>
+		<artifactId>base</artifactId>
 		<version>14-NEOLITHIC-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
 	<prerequisites>
@@ -357,6 +357,9 @@
 			<filter>${basedir}/src/main/release/profiles/${build.profile.id}/config.properties</filter>
 		</filters>
 		<testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
 			<testResource>
 				<directory>${basedir}/src/main/webapp</directory>
 				<filtering>true</filtering>
@@ -365,47 +368,8 @@
 					<include>WEB-INF/*.xml</include>
 				</includes>
 			</testResource>
-			<!-- <testResource> <directory>src/main/resources</directory> <filtering>true</filtering> 
-				</testResource> -->
-			<testResource>
-				<directory>${basedir}/src/test/resources</directory>
-			</testResource>
 		</testResources>
 		<plugins>
-			<plugin>
-				<artifactId>maven-remote-resources-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>process-test-resources</id>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<attachToTest>false</attachToTest>
-							<attachToMain>false</attachToMain>
-							<outputDirectory>target/test-resources</outputDirectory>
-							<resourceBundles>
-								<resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-					<execution>
-						<id>process-database-resources</id>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<attachToMain>false</attachToMain>
-							<attachToTest>false</attachToTest>
-							<outputDirectory>target/</outputDirectory>
-							<resourceBundles>
-								<resourceBundle>org.tdar:database:${project.version}</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>
@@ -447,62 +411,6 @@
 					<!--<webXml>${webXmlPath}</webXml> -->
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-
-					<!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
-
-					<!-- Welcome to Maven World, where 'no' means 'yes' and 'yes' means 
-						'no'! More info: https://jira.codehaus.org/browse/MCOMPILER-205 http://jira.codehaus.org/browse/MCOMPILER-209 -->
-					<useIncrementalCompilation>false</useIncrementalCompilation>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-maven-plugin</artifactId>
-				<configuration>
-					<username>${javax.persistence.jdbc.user}</username>
-					<password>${javax.persistence.jdbc.password}</password>
-					<url>${javax.persistence.jdbc.url}</url>
-					<driver>${javax.persistence.jdbc.driver}</driver>
-					<verbose>false</verbose>
-					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-				</configuration>
-				<executions>
-					<execution>
-						<!-- in the "test" context, drop the database contents, and reload 
-							it -->
-						<id>test-liquibase</id>
-						<configuration>
-							<changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
-							<skip>${skipTestLiquibase}</skip>
-						</configuration>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>dropAll</goal>
-							<goal>update</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>upgrade-liquibase</id>
-						<!-- if the liquibase profile is active (default context) run the upgrade -->
-						<configuration>
-							<changeLogFile>target/liquibase/changelog.xml</changeLogFile>
-							<skip>${skipUpgradeLiquibase}</skip>
-						</configuration>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>update</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
@@ -712,63 +620,7 @@
 						-DenableContextSwitchingConfig=true</argLine>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<failOnError>false</failOnError>
-					<findbugsXmlOutput>false</findbugsXmlOutput>
-					<onlyAnalyze>org.tdar.*</onlyAnalyze>
-					<includeTests>false</includeTests>
-					<excludeFilterFile>src/main/resources/validation_tools/findbugs-exclude.xml</excludeFilterFile>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
-				<dependencies>
-					<dependency>
-						<groupId>commons-lang</groupId>
-						<artifactId>commons-lang</artifactId>
-						<version>2.6</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.6</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.5.2</version>
-                
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.13</version>
-				<configuration>
-					<enableRSS>false</enableRSS>
-					<includes>**\/*.java</includes>
-					<enableRulesSummary>true</enableRulesSummary>
-					<configLocation>src/main/resources/validation_tools/check_style.xml</configLocation>
-					<consoleOutput>true</consoleOutput>
-				</configuration>
-			</plugin>
+
 			<plugin>
 				<!-- with this plugin we can do the following to push our war file out 
 					to the test server -->

@@ -15,15 +15,15 @@
 		<jetty.ssl.port>8443</jetty.ssl.port>
 		<jetty.stop.port>12919</jetty.stop.port>
 		<odata4j.version>0.7.0</odata4j.version>
-		<warfile.name>ROOT</warfile.name>
+		<warfile.name>tdar-odata</warfile.name>
 		<jersey.version>1.19</jersey.version>
 
 	</properties>
 	<parent>
 		<groupId>org.tdar</groupId>
-		<artifactId>parent</artifactId>
+		<artifactId>base</artifactId>
 		<version>14-NEOLITHIC-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
 	<prerequisites>
@@ -321,35 +321,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-clover2-plugin</artifactId>
-				<version>${clover.version}</version>
-				<configuration>
-					<license>${clover.license}</license>
-					<!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
-					<!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
-					<includes>
-						<include>**/*.java</include>
-					</includes>
-					<excludes>
-						<exclude>org/tdar/utils/sensorydata/*.java</exclude>
-						<exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
-						<exclude>**/PDFCombiner.java</exclude>
-						<exclude>**/PDFMergerUtility.java</exclude>
-						<exclude>**/CommandLineAPITool.java</exclude>
-						<exclude>**/FilesystemFilestore.java</exclude>
-						<exclude>**/PairtreeFilestoreMigrator.java</exclude>
-					</excludes>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>com.atlassian.clover</groupId>
-						<artifactId>clover</artifactId>
-						<version>${clover.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.5</version>
@@ -365,61 +336,6 @@
 					</webResources>
 					<!--<webXml>${webXmlPath}</webXml> -->
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-
-					<!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
-
-					<!-- Welcome to Maven World, where 'no' means 'yes' and 'yes' means 
-						'no'! More info: https://jira.codehaus.org/browse/MCOMPILER-205 http://jira.codehaus.org/browse/MCOMPILER-209 -->
-					<useIncrementalCompilation>false</useIncrementalCompilation>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-maven-plugin</artifactId>
-				<configuration>
-					<username>${javax.persistence.jdbc.user}</username>
-					<password>${javax.persistence.jdbc.password}</password>
-					<url>${javax.persistence.jdbc.url}</url>
-					<driver>${javax.persistence.jdbc.driver}</driver>
-					<verbose>false</verbose>
-					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-				</configuration>
-				<executions>
-					<execution>
-						<!-- in the "test" context, drop the database contents, and reload 
-							it -->
-						<id>test-liquibase</id>
-						<configuration>
-							<changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
-							<skip>${skipTestLiquibase}</skip>
-						</configuration>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>dropAll</goal>
-							<goal>update</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>upgrade-liquibase</id>
-						<!-- if the liquibase profile is active (default context) run the upgrade -->
-						<configuration>
-							<changeLogFile>target/liquibase/changelog.xml</changeLogFile>
-							<skip>${skipUpgradeLiquibase}</skip>
-						</configuration>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>update</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
@@ -524,15 +440,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.17</version>
 				<executions>
@@ -555,62 +462,6 @@
 					</systemPropertyVariables>
 					<argLine>${jvm.args}
 						-DenableContextSwitchingConfig=true</argLine>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<failOnError>false</failOnError>
-					<findbugsXmlOutput>false</findbugsXmlOutput>
-					<onlyAnalyze>org.tdar.*</onlyAnalyze>
-					<includeTests>false</includeTests>
-					<excludeFilterFile>src/main/resources/validation_tools/findbugs-exclude.xml</excludeFilterFile>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
-				<dependencies>
-					<dependency>
-						<groupId>commons-lang</groupId>
-						<artifactId>commons-lang</artifactId>
-						<version>2.6</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.6</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.5.2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.13</version>
-				<configuration>
-					<enableRSS>false</enableRSS>
-					<includes>**\/*.java</includes>
-					<enableRulesSummary>true</enableRulesSummary>
-					<configLocation>src/main/resources/validation_tools/check_style.xml</configLocation>
-					<consoleOutput>true</consoleOutput>
 				</configuration>
 			</plugin>
 			<plugin>
