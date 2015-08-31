@@ -21,7 +21,6 @@
 		<warfile.name>ROOT</warfile.name>
 		<skipWebTests>false</skipWebTests>
 		<skipSeleniumTests>false</skipSeleniumTests>
-
 	</properties>
 	<parent>
 		<groupId>org.tdar</groupId>
@@ -408,18 +407,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.glassfish</groupId>
-				<artifactId>maven-embedded-glassfish-plugin</artifactId>
-				<version>3.1.1</version>
-				<configuration>
-					<goalPrefix>glassfish</goalPrefix>
-					<app>target/ROOT</app>
-					<name>tDAR</name>
-					<port>8080</port>
-					<contextRoot>/</contextRoot>
-				</configuration>
-			</plugin>
-			<plugin>
 				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>keytool-maven-plugin</artifactId>
@@ -560,12 +547,13 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.version}</version>
 				<configuration>
-					<skip>install</skip>
 					<testClassesDirectory>${basedir}/src/test/resources/</testClassesDirectory>
 					<useTestClasspath>${use.test.classpath}</useTestClasspath>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<jettyXml>${basedir}/src/main/resources/jetty/jetty.xml,${basedir}/src/main/resources/jetty/jetty-ssl.xml,${basedir}/src/main/resources/jetty/jetty-https.xml,${basedir}/src/main/resources/jetty/jetty-http.xml</jettyXml>
 					<contextXml>${basedir}/src/main/resources/jetty/jetty-context.xml</contextXml>
+                    <excludedGoals>
+                    </excludedGoals>
 					<systemProperties>
 						<systemProperty>
 							<name>jetty.ssl.port</name>
@@ -762,6 +750,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
 				<version>2.5.2</version>
+                
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
