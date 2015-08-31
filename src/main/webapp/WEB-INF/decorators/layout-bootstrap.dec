@@ -51,7 +51,7 @@
     <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
     <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
     <#if qunit>
-        <link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css"></#if>
+        <link rel="stylesheet" href="<@s.url value="/includes/qunit-1.11.0.css"/>" type="text/css"></#if>
     <@header.css (webFilePreprocessingEnabled ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
@@ -242,7 +242,7 @@ ${head}
         <span class="statusMessage"></span>
     </div>
     <#if qunit>
-        <script src="/includes/qunit-1.11.0.js"></script>
+        <script src="<@s.url value="/includes/qunit-1.11.0.js"/>"></script>
     </#if>
 
     <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
