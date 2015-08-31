@@ -268,14 +268,6 @@
                 <configuration>
                     <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
                     <outputDirectory>${webapp.deploy.dir}</outputDirectory>
-                    <webResources>
-                        <resource>
-                            <directory>target/generated/webapp</directory>
-                            <targetPath>/</targetPath>
-                            <filtering>false</filtering>
-                        </resource>
-                    </webResources>
-                    <!--<webXml>${webXmlPath}</webXml> -->
                 </configuration>
             </plugin>
             <plugin>
@@ -323,7 +315,7 @@
                     <webApp>
                         <baseResource
                             implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-                            <resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/generated/webapp</resourcesAsCSV>
+                            <resourcesAsCSV>${basedir}/src/main/webapp</resourcesAsCSV>
                         </baseResource>
                     </webApp>
                     <stopPort>${jetty.stop.port}</stopPort>

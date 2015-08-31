@@ -37,4 +37,4 @@
  - remove the log4j.properties and replace it with a log4j2.properties
  - change scripts that expect tdar-2015-* to expect tdar.log for current tomcat log
  - move all resource folders in filestore to /filestore/resource/
- 
+ - before running, run "update databasechangelog set filename = replace(filename, 'src/main/db','target/liquibase');"
