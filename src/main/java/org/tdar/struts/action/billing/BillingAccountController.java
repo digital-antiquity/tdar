@@ -1,11 +1,6 @@
 package org.tdar.struts.action.billing;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -102,7 +97,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = VIEW_ID, type = "redirect"),
-                    @Result(name = INPUT, location = VIEW_ID, type = "redirect")
+                    @Result(name = INPUT, location = VIEW_ID)
             })
     @PostOnly
     @SkipValidation
@@ -113,7 +108,8 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             }
             accountService.updateQuota(getAccount());
         } catch (Throwable e) {
-            addActionErrorWithException(e.getMessage(), e);
+            addActionError(e.getMessage());
+            loadViewMetadata();
             return INPUT;
         }
         return SUCCESS;
@@ -207,6 +203,34 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         accountService.resetAccountTotalsToHaveOneFileLeft(getAccount());
         return SUCCESS;
     }
+
+
+    public String loadViewMetadata() {
+        setAccountGroup(accountService.getAccountGroup(getAccount()));
+        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
+        getResources().addAll(getAccount().getResources());
+        PersistableUtils.sortByUpdatedDate(getResources());
+        setInvoices(new ArrayList<>(getAccount().getInvoices()));
+        PersistableUtils.sortByCreatedDate(getInvoices());
+        Iterator<Invoice> iter = getInvoices().iterator();
+        while (iter.hasNext()) {
+            Invoice inv = iter.next();
+            if (inv.isModifiable()) {
+                iter.remove();
+            }
+        }
+
+        for (TdarUser au : getAuthorizedMembers()) {
+            String name = null;
+            if (au != null) {
+                name = au.getProperName();
+            }
+            getAuthorizedUsersFullNames().add(name);
+        }
+
+        return SUCCESS;
+    }
+
 
     @Override
     public Class<BillingAccount> getPersistableClass() {
