@@ -11,6 +11,8 @@ fi
 cd /home/tdar/tdar.src/
 hg pull
 hg update -C
+mvn clean install -DskipTests -Djetty.skip=true
+cd web
 #sudo rm /tmp/.wro4j/buildContext.properties
 #sudo rmdir /tmp/.wro4j/
 mvn clean compile war:war -Palpha,minify-web-resources,liquibase
