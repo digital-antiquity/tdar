@@ -1,4 +1,5 @@
 TDAR.leaflet = (function(console, $, ctx, L) {
+    "use strict";
 
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
@@ -6,7 +7,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
     var $body = $('body');
-	var _maps = new Array();
 
     var _tileProviders = {
         osm: {
@@ -30,7 +30,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             lng: 0
         },
         zoomLevel: 4,
-        tileProvider: 'mapbox',
+        leafletTileProvider: 'mapbox',
         maxBounds: [[[-85, -180.0], [85, 180.0]]],
         minZoom: 2,
         maxZoom: 17,
@@ -53,9 +53,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     };
 
     // -1 -- not initialized ; -2 -- bad rectangle ; 1 -- initialized ; 2 -- rectangle setup
+    //fixme: global _inialized unreliable if more than one map on page
+    //fixme: seems like you really want to track two things: 1) initialize status and 2) rectangle validity.  
     var _initialized = -1;
-    var _map;
-    var _dc;
 
     /**
      * Init the leaflet map, and bind it to the element
@@ -68,14 +68,16 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _bdata = $('body').data();
         var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
-        console.log(settings.leaflettileprovider);
 
-        console.log('creating L.map:', settings);
-        var map = L.map(elem).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
+        //console.log(settings.leaflettileprovider);
+
+        //console.log('creating L.map:', settings);
+        var map = L.map(elem, settings).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
+        //console.log('setting map obj on', $elem)
 		$elem.data("map",map);
 
-        var tp = _tileProviders[settings.tileProvider];
+        var tp = _tileProviders[settings.leafletTileProvider];
         var tile = L.tileLayer(tp.url, {
             maxZoom: settings.maxZoom,
             minZoom: settings.minZoom,
@@ -83,9 +85,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             id: settings.id,
             apiKey:settings.leafletApiKey
         });
-        console.log('adding tile to map');
+        //console.log('adding tile to map');
         tile.addTo(map);
-		_maps.push(map);
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
         return map;
@@ -143,10 +144,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      */
     function _initRectangle(map, minx, miny, maxx, maxy, rectangleSettings) {
         if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined && !isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
-            console.log(minx, maxx, miny, maxy);
+            //console.log(minx, maxx, miny, maxy);
             var poly = [[maxy, maxx], [miny, minx]];
             var rectangle = L.rectangle(poly, rectangleSettings).addTo(map);
-            console.log("fitToBounds:", rectangleSettings.fitToBounds);
+            //console.log("fitToBounds:", rectangleSettings.fitToBounds);
             if (rectangleSettings.fitToBounds) {
                 map.fitBounds(rectangle.getBounds());
             }
@@ -157,7 +158,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             return;
         }
         _initialized = -2;
-        console.log("check map init bounds [" + minx + "," + miny + "] [" + maxx + "," + maxy + "]");
+        //console.log("check map init bounds [" + minx + "," + miny + "] [" + maxx + "," + maxy + "]");
     }
 
     /**
@@ -216,8 +217,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             div.setAttribute("style", $el.attr("style"));
             $el.attr("style", "");
             var $mapDiv = $(div);
-            $mapDiv.data("leaflet-api-key", $el.data("leaflet-api-key"));
-            $mapDiv.data("tile-provider", $el.data("tile-provider"));
+
+            //merge  data attributes from parent container to the actual map container
+            $.extend($mapDiv.data(), $el.data());
+
             if ($mapDiv.height() == 0) {
                 $mapDiv.height(400);
             }
@@ -268,7 +271,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             // Initialise the draw control and pass it the FeatureGroup of editable layers
             var drawControl = new L.Control.Draw(options);
             map.addControl(drawControl);
-            _dc = drawControl;
+            $(div).data('drawControl', drawControl);
             _updateLayerFromFields($el, map, drawnItems, $mapDiv);
             map.addLayer(drawnItems);
 
@@ -318,6 +321,11 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 _enableRectangleCreate($mapDiv);
             });
 
+            //dirty the form if rectangle created, edited, or deleted
+            map.on('draw:created draw:edited draw:deleted', function(e){
+                $mapDiv.closest('form').FormNavigate('dirty');
+            });
+
 
             $(".locateCoordsButton", $el).click(function() {
                 var rec = _updateLayerFromFields($el, map, drawnItems, $mapDiv);
@@ -356,7 +364,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         // correct for bounding box being greater than 1 full world rotation
         if (Math.abs(b.getWest() - b.getEast()) > 360) {
             bnds = L.latLngBounds(L.latLng(b.getSouth(), -179.999999), L.latLng(b.getNorth(), 180.0000));
-            console.log("> 360:" + b.toBBoxString() + "  -->> ", bnds.toBBoxString());
+            //console.log("> 360:" + b.toBBoxString() + "  -->> ", bnds.toBBoxString());
         }
 
         // the change() watch deosn't always pay attention to these explicit calls
@@ -371,17 +379,13 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         return bnds;
     }
 
-
     function _isIntialized() {
         return _initialized;
     }
 
-    function _getDc() {
-        return _dc;
-    }
-	
 	function _getMaps() {
-		return _maps;
+        //note:  The author apologizes for the alternating meaning of the word "map" that follows.
+        return $('.leaflet-container').map(function(i, elem){return $(elem).data().map;});
 	}
 
     return {
@@ -390,8 +394,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         initResultsMaps: _initResultsMaps,
         initialized: _isIntialized,
         defaults: _defaults,
-		getMaps : _getMaps,
-        dc: _getDc
+        getMaps : _getMaps
     }
 })(console, jQuery, window, L);
 $(function() {
