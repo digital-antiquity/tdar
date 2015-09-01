@@ -40,6 +40,7 @@
         <!-- LICENSE:CC Attribution 3.0 Unported -->
         <js>/includes/jquery.orgChart/jquery.orgchart.js</js>
         <js>/components/leaflet/dist/leaflet.js</js>
+        <js>/includes/Leaflet.Sleep.js</js>
         <css>/components/leaflet/dist/leaflet.css</css>
         <js>/components/leaflet-draw/dist/leaflet.draw.js</js>
         <css>/components/leaflet-draw/dist/leaflet.draw.css</css>
@@ -78,7 +79,6 @@
         <js>/includes/bindWithDelay.js</js>
         <js>/js/maps/tdar.worldmap.js</js>
         <js>/js/maps/tdar.leaflet.js</js>
-        <js>/includes/Leaflet.Sleep.js</js>
         <!-- LICENSE: MIT -->
     </group>
     <group name="ng-integrate">
