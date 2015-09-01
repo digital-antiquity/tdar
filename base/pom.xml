@@ -321,9 +321,11 @@
                                 <configuration>
                                     <target>
                                         <copy
+                                            failOnError="false"
                                             file="src/main/resources/crowd.properties.template"
                                             tofile="src/main/resources/crowd.properties" />
                                         <copy
+                                            failOnError="false"
                                             file="src/main/resources/ldap.properties.template"
                                             tofile="src/main/resources/ldap.properties" />
                                         <copy
@@ -333,15 +335,18 @@
                                             file="src/main/resources/log4j2.xml.template"
                                             tofile="src/main/resources/log4j2.xml" />
                                         <copy
+                                            failOnError="false"
                                             file="src/main/resources/tdar.properties.template"
                                             tofile="src/main/resources/tdar.properties" />
                                         <copy
+                                            failOnError="false"
                                             file="src/main/resources/struts-local-settings.xml.template"
                                             tofile="src/main/resources/struts-local-settings.xml" />
                                         <copy
                                             file="src/main/resources/spring-local-settings.xml.template"
                                             tofile="src/main/resources/spring-local-settings.xml" />
                                         <copy
+                                            failOnError="false"
                                             file="src/main/resources/hibernate-ehcache.xml.template"
                                             tofile="src/main/resources/hibernate-ehcache.xml" />
                                         <echo
@@ -651,7 +656,7 @@
                 It should be run along with jetty:run which will setup the properties files 
                 correctly. Eventually, this will be built into the default "jetty" launch 
                 process and "deploy" process. Enabling this profile activates the liquibase.properties 
-                and sets skipUpgradeLiquibase=false which means that liquibase is processed 
+                and sets skipUpgradeLiquibase="false" which means that liquibase is processed 
                 during the setup process. -->
             <id>liquibase</id>
             <build>
@@ -713,7 +718,7 @@
         <profile>
             <!-- this profile is intended to reset liquibase's change log 
                 (if something gets out of sync) Enabling this profile activates the liquibase.properties 
-                and sets skipUpgradeLiquibase=false which means that liquibase is processed 
+                and sets skipUpgradeLiquibase="false" which means that liquibase is processed 
                 during the setup process. -->
             <id>changelogSync</id>
             <build>

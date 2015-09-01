@@ -1279,10 +1279,10 @@
             <build>
                 <!-- the properties defined in these files will be available 
                     for interpolation in all filtered resources -->
-                <filters>
+<!--                 <filters>
                     <filter>src/main/resources/hibernate.properties</filter>
                 </filters>
-            </build>
+ -->            </build>
             <properties>
                 <!-- These are the default passwords for running locally 
                     when developing -->
