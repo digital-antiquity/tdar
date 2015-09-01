@@ -31,7 +31,7 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
             throw new ServletException(getFailureMessage());
         }
 
-        setupContainer(container);
+//        setupContainer(container);
 		setupOpenSessionInViewFilter(container);
 
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
@@ -39,7 +39,7 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
         oaiPmh.setLoadOnStartup(1);
         oaiPmh.setInitParameter("javax.ws.rs.Application", "org.tdar.oai.server.JerseyResourceInitializer");
         oaiPmh.setInitParameter("jersey.config.server.provider.packages", "org.tdar.oai.server");
-        oaiPmh.addMapping("/oai-pmh/*");
+        oaiPmh.addMapping("/*");
     }
 
 }

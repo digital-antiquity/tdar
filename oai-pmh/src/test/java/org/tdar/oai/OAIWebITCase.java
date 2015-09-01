@@ -172,7 +172,7 @@ public class OAIWebITCase extends AbstractWebTest {
     }
 
     public String getBase() {
-        return getBaseUrl() + "oai-pmh/oai?verb=";
+        return getBaseUrl() + "oai?verb=";
     }
 
     // http://xmlunit.sourceforge.net/userguide/html/
