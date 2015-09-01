@@ -254,8 +254,8 @@ ${head}
     <#if qunit>
     <#-- close the test fixture div -->
     </div>
-    <script src="/test/js/tdar.commontest.js"></script>
-    <script src="/test/js<#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
+    <script src="<@s.url value="/test/js/tdar.commontest.js"/>"></script>
+    <script src="<@s.url value="/test/js"/><#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
     </#if>
 </#if>
     <#import "/${themeDir}/settings.ftl" as settings />

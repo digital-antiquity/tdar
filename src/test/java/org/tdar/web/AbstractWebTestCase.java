@@ -794,7 +794,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         }
     }
 
-    public void clickLinkByHref(String href) throws IOException {
+    public void clickLinkByHref(final String href_) throws IOException {
+        String href = href_;
+        if (StringUtils.isNotBlank(CONFIG.getContext()) && !StringUtils.startsWith(href, CONFIG.getContext())) {
+            href = CONFIG.getContext() + href;
+        }
         changePage(getHtmlPage().getAnchorByHref(href).click());
     }
 
@@ -1005,7 +1009,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         while (url.indexOf("/") != -1) {
             String part = url.substring(url.lastIndexOf("/"));
             part = part.replace("/", "");
-            url = url.substring(0, url.lastIndexOf("/"));
+//            url = url.substring(0, url.lastIndexOf("/"));
             logger.trace("evaluating {} : {}", url, part);
             if (StringUtils.isNotBlank(part) && StringUtils.isNumeric(part)) {
                 return Long.parseLong(part);

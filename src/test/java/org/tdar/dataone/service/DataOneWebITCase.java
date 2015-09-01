@@ -24,7 +24,7 @@ public class DataOneWebITCase extends AbstractWebTestCase {
 
     @Test
     public void ping() {
-        Assert.assertEquals(200,gotoPage("dataone/v1/monitor/ping"));
+        Assert.assertEquals(200,gotoPage("/dataone/v1/monitor/ping"));
     }
     @Test
     public void replica() throws ClientProtocolException, IOException {
@@ -35,9 +35,9 @@ public class DataOneWebITCase extends AbstractWebTestCase {
     
     @Test
     public void systemInfo() {
-        Assert.assertEquals(200, gotoPage("dataone/v1/"));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/"));
         logger.debug(getPageCode());
-        Assert.assertEquals(200, gotoPage("dataone/v1/node"));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/node"));
         logger.debug(getPageCode());
     }
 
@@ -63,12 +63,12 @@ public class DataOneWebITCase extends AbstractWebTestCase {
     
     @Test
     public void testGetObjects() {
-        Assert.assertEquals(200, gotoPage("dataone/v1/object?idFilter=" + TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?idFilter=" + TEST_DOI));
         // bad doi
-        Assert.assertEquals(200, gotoPage("dataone/v1/object?formatId=fake_formatasdasd"));
-        Assert.assertEquals(200, gotoPage("dataone/v1/object?"));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?formatId=fake_formatasdasd"));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?"));
         //YYYY-MM-DDTHH:MM:SS.mmm
-        Assert.assertEquals(200, gotoPage("dataone/v1/object?fromDate=2010-01-01T01:01:00.000"));
+        Assert.assertEquals(200, gotoPage("/dataone/v1/object?fromDate=2010-01-01T01:01:00.000"));
         //formatId??
     }
     
