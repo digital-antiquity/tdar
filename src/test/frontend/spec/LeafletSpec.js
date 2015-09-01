@@ -16,7 +16,7 @@ describe("LeafletSpec", function() {
             var options = null;
             var expectedVal = null;
             //var result = TDAR.leaflet.adminUsageStats(options);
-            console.log(TDAR.leaflet.initialized());
+            //console.log(TDAR.leaflet.initialized());
             //https://www.npmjs.com/package/jasmine-jquery-matchers
             expect(TDAR.leaflet.initialized()).toBeGreaterThan(-1); //fixme: implement this test
             expect($(".leaflet-container")).toHaveLength(1);
@@ -48,7 +48,7 @@ describe("LeafletSpec", function() {
             var options = null;
             var expectedVal = null;
             //var result = TDAR.leaflet.adminUsageStats(options);
-            console.log(TDAR.leaflet.initialized());
+            //console.log(TDAR.leaflet.initialized());
             //https://www.npmjs.com/package/jasmine-jquery-matchers
             expect(TDAR.leaflet.initialized()).toBeGreaterThan(-1); //fixme: implement this test
             expect($(".leaflet-container")).toHaveLength(1);
@@ -68,7 +68,7 @@ describe("LeafletSpec", function() {
             var options = null;
             var expectedVal = null;
             //var result = TDAR.leaflet.adminUsageStats(options);
-            console.log(TDAR.leaflet.initialized());
+            //console.log(TDAR.leaflet.initialized());
             //https://www.npmjs.com/package/jasmine-jquery-matchers
             expect(TDAR.leaflet.initialized()).toBeGreaterThan(-1); //fixme: implement this test
             expect($(".leaflet-container")).toHaveLength(1);
@@ -81,7 +81,7 @@ describe("LeafletSpec", function() {
             //the default tile provider is 'mapbox'.  Confirm that we can override this setting in body[data-leaflet-tile-provider] 
             loadFixtures("leaflet/leaflet-edit.html");
             TDAR.leaflet.initEditableLeafletMaps();
-            console.log('---------------')
+            //console.log('---------------')
             expect($('.mapdiv').data().map).toBeDefined()
             expect($('.mapdiv').data().map.options.leafletTileProvider).toBe('osm')
 

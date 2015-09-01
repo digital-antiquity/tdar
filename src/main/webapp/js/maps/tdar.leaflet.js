@@ -69,12 +69,12 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
 
-        console.log(settings.leaflettileprovider);
+        //console.log(settings.leaflettileprovider);
 
-        console.log('creating L.map:', settings);
+        //console.log('creating L.map:', settings);
         var map = L.map(elem, settings).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
-        console.log('setting map obj on', $elem)
+        //console.log('setting map obj on', $elem)
 		$elem.data("map",map);
 
         var tp = _tileProviders[settings.leafletTileProvider];
@@ -85,7 +85,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             id: settings.id,
             apiKey:settings.leafletApiKey
         });
-        console.log('adding tile to map');
+        //console.log('adding tile to map');
         tile.addTo(map);
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
@@ -144,10 +144,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      */
     function _initRectangle(map, minx, miny, maxx, maxy, rectangleSettings) {
         if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined && !isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
-            console.log(minx, maxx, miny, maxy);
+            //console.log(minx, maxx, miny, maxy);
             var poly = [[maxy, maxx], [miny, minx]];
             var rectangle = L.rectangle(poly, rectangleSettings).addTo(map);
-            console.log("fitToBounds:", rectangleSettings.fitToBounds);
+            //console.log("fitToBounds:", rectangleSettings.fitToBounds);
             if (rectangleSettings.fitToBounds) {
                 map.fitBounds(rectangle.getBounds());
             }
@@ -158,7 +158,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             return;
         }
         _initialized = -2;
-        console.log("check map init bounds [" + minx + "," + miny + "] [" + maxx + "," + maxy + "]");
+        //console.log("check map init bounds [" + minx + "," + miny + "] [" + maxx + "," + maxy + "]");
     }
 
     /**
@@ -364,7 +364,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         // correct for bounding box being greater than 1 full world rotation
         if (Math.abs(b.getWest() - b.getEast()) > 360) {
             bnds = L.latLngBounds(L.latLng(b.getSouth(), -179.999999), L.latLng(b.getNorth(), 180.0000));
-            console.log("> 360:" + b.toBBoxString() + "  -->> ", bnds.toBBoxString());
+            //console.log("> 360:" + b.toBBoxString() + "  -->> ", bnds.toBBoxString());
         }
 
         // the change() watch deosn't always pay attention to these explicit calls
