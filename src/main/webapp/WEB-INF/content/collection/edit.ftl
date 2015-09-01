@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
@@ -67,7 +68,6 @@
                 </div>
             </div>
 
-
         <#if editor>
             <div class="control-group" id="divSubmitter">
                 <label class="control-label">Owner</label>
@@ -83,7 +83,6 @@
                 </div>
             </div>
         </#if>
-
 
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge' title="Please enter the description " />
@@ -120,6 +119,7 @@
         <div class="glide" data-tiplabel="Browse and Display Options" data-tooltipcontent="#divBrowseOptionsTips">
             <h2>Browse and Display Options</h2>
 
+        
             <div class="control-group">
                 <label class="control-label">Hide this collection?</label>
 
@@ -130,7 +130,7 @@
                                                                              value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
                 </div>
             </div>
-
+    
             <@s.select labelposition='top' label='When Browsing Sort Resource By' name='resourceCollection.sortBy'
             listValue='label' list='%{sortOptions}' title="Sort resource by" />
 
