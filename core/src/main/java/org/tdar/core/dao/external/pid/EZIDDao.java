@@ -107,6 +107,9 @@ public class EZIDDao implements ExternalIDProvider {
 
     @Override
     public boolean isConfigured() {
+        if (httpclient == null)  {
+            return false;
+        }
         if (StringUtils.isNotBlank(getDOIProviderHostname()) && StringUtils.isNotBlank(getDOIShoulder()) &&
                 StringUtils.isNotBlank(getDOIProviderUsername()) && StringUtils.isNotBlank(getDOIProviderPassword())) {
             return true;
