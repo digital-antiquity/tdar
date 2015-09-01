@@ -81,6 +81,9 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
 
     @Override
     public void execute() {
+        if (!provider.isConfigured()) {
+            return;
+        }
         try {
             provider.connect();
             processBatch(getNextBatch());

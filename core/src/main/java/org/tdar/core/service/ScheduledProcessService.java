@@ -261,7 +261,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 		UpgradeTask upgradeTask = checkIfRun(process.getDisplayName());
 		if (process.isSingleRunProcess() && upgradeTask.hasRun()) {
 			logger.debug("process has already run once, removing {}", process);
-			getScheduledProcessQueue().remove(process);
+			getScheduledProcessQueue().remove(process.getClass());
 			return;
 		}
 		if (genericService.getActiveSessionCount() > config.getSessionCountLimitForBackgroundTasks()) {
@@ -269,6 +269,13 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             logCurrentState();
 			return;
 		}
+		
+		if (!process.isEnabled()) {
+            logger.debug("is not properly configured {}", process);
+            getScheduledProcessQueue().remove(process.getClass());
+            return;		    
+		}
+		
 		if (process instanceof AbstractPersistableScheduledProcess) {
 			logger.info("beginning {} startId: {}", process.getDisplayName(),
 					((AbstractPersistableScheduledProcess) process).getLastId());
