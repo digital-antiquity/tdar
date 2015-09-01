@@ -30,8 +30,7 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
         if (StringUtils.isNotBlank(getFailureMessage())) {
             throw new ServletException(getFailureMessage());
         }
-
-        setupContainer(container);
+//        setupContainer(container);
         setupOpenSessionInViewFilter(container);
 
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
@@ -39,7 +38,8 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
         dataOne.setLoadOnStartup(1);
         dataOne.setInitParameter("javax.ws.rs.Application", "org.tdar.dataone.server.JerseyResourceInitializer");
         dataOne.setInitParameter("jersey.config.server.provider.packages", "org.tdar.dataone.server");
-        dataOne.addMapping("/dataone/*");
+        dataOne.setInitParameter("jersey.config.servlet.provider.webapp", "true");
+        dataOne.addMapping("/*");
     }
 
 }

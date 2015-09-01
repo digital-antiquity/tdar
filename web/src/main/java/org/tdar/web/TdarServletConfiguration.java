@@ -14,12 +14,13 @@ import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
 import org.apache.struts2.dispatcher.ng.listener.StrutsListener;
 import org.apache.struts2.sitemesh.FreemarkerDecoratorServlet;
 import org.ebaysf.web.cors.CORSFilter;
+import org.geotools.resources.image.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
-import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 import org.tdar.core.configuration.SimpleAppConfiguration;
-import org.tdar.web.StaticContentServlet;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 
@@ -47,6 +48,17 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		if (!configuration.isProductionEnvironment()) {
 			onDevStartup(container);
 		}
+		
+      if (ImageUtilities.isMediaLibAvailable()) {
+              logger.info("JAI ImageIO available and configured");
+          } else {
+              logger.error("\n\n\t *** JAI-ImageIO is not properly installed with Native Libraries *** \n\t *** Instructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html *** \n\n");
+              if (configuration.isProductionEnvironment()) {
+                  throw new IllegalStateException("cannot start up in production without JAI");
+              }
+          }
+
+		
 		setupContainer(container);
         container.addListener(StrutsListener.class);
 

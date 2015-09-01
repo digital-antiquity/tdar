@@ -18,7 +18,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 
 import net.sf.ehcache.constructs.web.ShutdownListener;
 
-
 public abstract class AbstractServletConfiguration {
 
     public static final String ALL_PATHS = "/*";
@@ -31,10 +30,10 @@ public abstract class AbstractServletConfiguration {
     EnumSet<DispatcherType> strutsDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR);
 
     protected TdarConfiguration configuration = TdarConfiguration.getInstance();
-	private String failureMessage;
+    private String failureMessage;
 
     public AbstractServletConfiguration(String msg) {
-    	logger.debug(msg);
+        logger.debug(msg);
         try {
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {
@@ -44,28 +43,29 @@ public abstract class AbstractServletConfiguration {
 
     }
 
-	public String getFailureMessage() {
-		return failureMessage;
-	}
+    public String getFailureMessage() {
+        return failureMessage;
+    }
 
-	public void setFailureMessage(String failureMessage) {
-		this.failureMessage = failureMessage;
-	}
+    public void setFailureMessage(String failureMessage) {
+        this.failureMessage = failureMessage;
+    }
 
-	public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
-		return TdarAppConfiguration.class;
-	}
+    public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+        return TdarAppConfiguration.class;
+    }
 
-	protected void setupContainer(ServletContext container) {
-		AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+    protected void setupContainer(ServletContext container) {
+        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(getConfigurationClass());
         container.addListener(new ContextLoaderListener(rootContext));
         container.addListener(RequestContextListener.class);
 
         container.addListener(ShutdownListener.class);
-	}
-	protected void setupOpenSessionInViewFilter(ServletContext container) {
+    }
+
+    protected void setupOpenSessionInViewFilter(ServletContext container) {
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
-	}
+    }
 }

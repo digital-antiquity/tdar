@@ -138,14 +138,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         initializeStopWords();
         intializeCouponCodes();
 
-        if (ImageUtilities.isMediaLibAvailable()) {
-            logger.info("JAI ImageIO available and configured");
-        } else {
-            logger.error("\n\n\t *** JAI-ImageIO is not properly installed with Native Libraries *** \n\t *** Instructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html *** \n\n");
-            if (isProductionEnvironment()) {
-                throw new IllegalStateException("cannot start up in production without JAI");
-            }
-        }
 
         if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
             throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");

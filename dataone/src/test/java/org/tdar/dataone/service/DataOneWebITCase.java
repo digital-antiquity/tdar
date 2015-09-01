@@ -23,21 +23,21 @@ public class DataOneWebITCase extends AbsractWebTest {
 
     @Test
     public void replica() throws ClientProtocolException, IOException {
-        getRecord("/dataone/v1/replica/" + TEST_DOI);
-        getRecord("/dataone/v1/replica/" + TEST_DOI_META);
+        getRecord("/v1/replica/" + TEST_DOI);
+        getRecord("/v1/replica/" + TEST_DOI_META);
 
     }
 
     @Test
     public void ping() {
-        Assert.assertEquals(200,gotoPage("/dataone/v1/monitor/ping"));
+        Assert.assertEquals(200,gotoPage("/v1/monitor/ping"));
     }
 
     @Test
     public void systemInfo() {
-        Assert.assertEquals(200, gotoPage("/dataone/v1/"));
+        Assert.assertEquals(200, gotoPage("/v1/"));
         logger.debug(getPageCode());
-        Assert.assertEquals(200, gotoPage("/dataone/v1/node"));
+        Assert.assertEquals(200, gotoPage("/v1/node"));
         logger.debug(getPageCode());
     }
 
@@ -48,8 +48,8 @@ public class DataOneWebITCase extends AbsractWebTest {
 
     @Test
     public void testObject() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-        getRecord("/dataone/v1/object/" + TEST_DOI);
-        getRecord("/dataone/v1/object/" + TEST_DOI_META);
+        getRecord("/v1/object/" + TEST_DOI);
+        getRecord("/v1/object/" + TEST_DOI_META);
         
     }
 
@@ -68,18 +68,18 @@ public class DataOneWebITCase extends AbsractWebTest {
     
     @Test
     public void testGetObjects() {
-        Assert.assertEquals(200, gotoPage("/dataone/v1/object?idFilter=" + TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/v1/object?idFilter=" + TEST_DOI));
         // bad doi
-        Assert.assertEquals(200, gotoPage("/dataone/v1/object?formatId=fake_formatasdasd"));
-        Assert.assertEquals(200, gotoPage("/dataone/v1/object?"));
+        Assert.assertEquals(200, gotoPage("/v1/object?formatId=fake_formatasdasd"));
+        Assert.assertEquals(200, gotoPage("/v1/object?"));
         //YYYY-MM-DDTHH:MM:SS.mmm
-        Assert.assertEquals(200, gotoPage("/dataone/v1/object?fromDate=2010-01-01T01:01:00.000"));
+        Assert.assertEquals(200, gotoPage("/v1/object?fromDate=2010-01-01T01:01:00.000"));
         //formatId??
     }
     
     @Test
     public void testObjectHead() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-        String path = "/dataone/v1/object/" + TEST_DOI;
+        String path = "/v1/object/" + TEST_DOI;
         HttpHead getMethod = new HttpHead(TestConfiguration.getInstance().getBaseSecureUrl() + path);
         CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
         HttpResponse httpResponse = httpClient.execute(getMethod);
@@ -94,25 +94,25 @@ public class DataOneWebITCase extends AbsractWebTest {
     @Test
     public void testLog() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
         testObject();
-        Assert.assertEquals(200, gotoPage("/dataone/v1/log?idFilter=" + TEST_DOI));
-        Assert.assertEquals(200, gotoPage("/dataone/v1/log?event=READ"));
-        Assert.assertEquals(200, gotoPage("/dataone/v1/log?fromDate=2010-01-01T01:01:00.000"));
+        Assert.assertEquals(200, gotoPage("/v1/log?idFilter=" + TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/v1/log?event=READ"));
+        Assert.assertEquals(200, gotoPage("/v1/log?fromDate=2010-01-01T01:01:00.000"));
         //test with date ... YYYY-MM-DDTHH:MM:SS.mmm
         
     }
 
     @Test
     public void testChecksum() {
-        Assert.assertEquals(200,  gotoPage("/dataone/v1/checksum/"+ TEST_DOI));
+        Assert.assertEquals(200,  gotoPage("/v1/checksum/"+ TEST_DOI));
     }
     @Test
     public void testMeta() {
-        Assert.assertEquals(200, gotoPage("/dataone/v1/meta/"+ TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/v1/meta/"+ TEST_DOI));
         logger.debug(getPageCode());
     }
     @Test
     public void testMetaIvalid() {
-        Assert.assertEquals(404, gotoPage("/dataone/v1/meta/a"+ TEST_DOI));
+        Assert.assertEquals(404, gotoPage("/v1/meta/a"+ TEST_DOI));
         logger.debug(getPageCode());
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
@@ -32,6 +33,7 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(basePackages = { "org.tdar" }, excludeFilters = {})
 @ImportResource(value = { "classpath:/spring-local-settings.xml" })
+@Configuration
 public class SimpleAppConfiguration implements Serializable {
 
     private static final long serialVersionUID = 2190713147269025044L;
