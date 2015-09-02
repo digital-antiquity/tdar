@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +52,8 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.search.SearchIndexService;
+
+import com.google.common.collect.Sets;
 
 /**
  * 
@@ -107,7 +108,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private Set<Class<? extends ScheduledProcess>> scheduledProcessQueue = new LinkedHashSet<>();
+	private Set<Class<? extends ScheduledProcess>> scheduledProcessQueue = Sets.newConcurrentHashSet();
 	private ApplicationContext applicationContext;
 
 	/**
