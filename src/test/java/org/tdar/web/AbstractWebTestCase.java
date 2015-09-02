@@ -1009,14 +1009,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         while (url.indexOf("/") != -1) {
             String part = url.substring(url.lastIndexOf("/"));
             part = part.replace("/", "");
-//            url = url.substring(0, url.lastIndexOf("/"));
+            url = url.substring(0, url.lastIndexOf("/"));
             logger.trace("evaluating {} : {}", url, part);
             if (StringUtils.isNotBlank(part) && StringUtils.isNumeric(part)) {
                 return Long.parseLong(part);
             }
-            int indexOf = url.indexOf("id=");
+            int indexOf = part.indexOf("id=");
             if (indexOf != -1) {
-                part = url.substring(indexOf+4);
+                part = part.substring(indexOf+4);
                 if (StringUtils.isNumeric(part)) {
                     return Long.parseLong(part);
                 }
