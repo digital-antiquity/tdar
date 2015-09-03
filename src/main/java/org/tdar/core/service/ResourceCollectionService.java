@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -201,6 +202,40 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().delete(resourceCollection);
     }
 
+
+    /**
+     * Remove entries from provided list of AuthorizedUsers that contain duplicate User values. Retained
+     * AuthorizedUsers will always have equal or greater permissions relative to the removed duplicate items.
+     * 
+     * @param authorizedUsers
+     */
+    @Transactional(readOnly=false)
+    public void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
+        logger.trace("incoming " + authorizedUsers);
+        Map<Long, AuthorizedUser> bestMap = new HashMap<>();
+        Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
+        while (iterator.hasNext()) {
+            AuthorizedUser incoming = iterator.next();
+            if ((incoming == null) || (incoming.getUser() == null)) {
+                continue;
+            }
+            Long user = incoming.getUser().getId();
+
+            AuthorizedUser existing = bestMap.get(user);
+            logger.trace(incoming + " <==>" + existing);
+            if (existing != null) {
+                if (existing.getGeneralPermission().getEffectivePermissions() >= incoming.getGeneralPermission().getEffectivePermissions()) {
+                    continue;
+                }
+            }
+            bestMap.put(user, incoming);
+        }
+
+        authorizedUsers.clear();
+        authorizedUsers.addAll(bestMap.values());
+        logger.trace("outgoing" + authorizedUsers);
+
+    }
     /**
      * Save the incoming @link AuthorizedUser entries for the @link ResourceCollection resolving as needed, avoiding duplicates
      * 
@@ -218,7 +253,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.debug("incoming authorized users (start): {}", resourceCollection.getAuthorizedUsers());
 
 
-        ResourceCollection.normalizeAuthorizedUsers(incomingUsers);
+        normalizeAuthorizedUsers(incomingUsers);
         CollectionRightsComparator comparator = new CollectionRightsComparator(getDao().getUsersFromDb(resourceCollection), incomingUsers);
         if (comparator.rightsDifferent()) {
             for (AuthorizedUser user : comparator.getAdditions()) {

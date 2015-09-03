@@ -7,14 +7,11 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -710,44 +707,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setUpdater(TdarUser updater) {
         this.updater = updater;
-    }
-
-    public void normalizeAuthorizedUsers() {
-        normalizeAuthorizedUsers(authorizedUsers);
-    }
-
-    /**
-     * Remove entries from provided list of AuthorizedUsers that contain duplicate User values. Retained
-     * AuthorizedUsers will always have equal or greater permissions relative to the removed duplicate items.
-     * 
-     * @param authorizedUsers
-     */
-    public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
-        Logger staticLogger = LoggerFactory.getLogger(ResourceCollection.class);
-        staticLogger.trace("incoming " + authorizedUsers);
-        Map<Long, AuthorizedUser> bestMap = new HashMap<>();
-        Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
-        while (iterator.hasNext()) {
-            AuthorizedUser incoming = iterator.next();
-            if ((incoming == null) || (incoming.getUser() == null)) {
-                continue;
-            }
-            Long user = incoming.getUser().getId();
-
-            AuthorizedUser existing = bestMap.get(user);
-            staticLogger.trace(incoming + " <==>" + existing);
-            if (existing != null) {
-                if (existing.getGeneralPermission().getEffectivePermissions() >= incoming.getGeneralPermission().getEffectivePermissions()) {
-                    continue;
-                }
-            }
-            bestMap.put(user, incoming);
-        }
-
-        authorizedUsers.clear();
-        authorizedUsers.addAll(bestMap.values());
-        staticLogger.trace("outgoing" + authorizedUsers);
-
     }
 
     @XmlTransient

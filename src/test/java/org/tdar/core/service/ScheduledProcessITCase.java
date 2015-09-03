@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -311,5 +313,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
             createAndSaveNewPerson("test-user@tdar.org", "-tdar2");
             salesforce.execute();
         }
+    }
+
+    @Test
+    @Ignore("still haven't figured out how to access task registrar")
+    public void testCronList() {
+        List<String> cronEntries = scheduledProcessService.getCronEntries();
+        assertThat(cronEntries, is( not( nullValue())));
+        assertThat(cronEntries, is( not( empty())));
     }
 }

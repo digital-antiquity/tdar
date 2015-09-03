@@ -289,16 +289,4 @@ public class CodingSheet extends InformationResource implements SupportsResource
         this.generated = generated;
     }
 
-    @Override
-    public String getAdditonalKeywords() {
-        StringBuilder sb = new StringBuilder();
-        if (getCategoryVariable() != null) {
-            sb.append(getCategoryVariable().getLabel()).append(' ');
-            if (getCategoryVariable().getParent() != null) {
-                sb.append(getCategoryVariable().getParent().getLabel());
-            }
-        }
-        return sb.toString();
-    }
-
 }

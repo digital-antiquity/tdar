@@ -51,7 +51,7 @@
             </div>
             <div class="span4">
                 <h3><a href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">
-                <img src="<@s.url value="/images/r4/bulk.png"/>" style="vertical-align:text-bottom">
+                <img src="<@s.url value="/images/r4/bulk.png"/>" alt='Bulk Upload' title="Bulk Upload" style="vertical-align:text-bottom">
                 Bulk Upload</a></h3>
                 Useful for uploading groups of resources with similar metadata at once.  Complete an excel file template that includes the filename, title, date, 
                 and other basic information and then upload your files.                

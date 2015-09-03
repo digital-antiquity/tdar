@@ -459,11 +459,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         setAllowedToViewConfidentialFiles(authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getPersistable()));
         initializeFileProxies();
-        try {
-            datasetService.assignMappedDataForInformationResource(getResource());
-        } catch (Exception e) {
-            getLogger().error("could not attach additional dataset data to resource", e);
-        }
     }
 
     private void initializeFileProxies() {

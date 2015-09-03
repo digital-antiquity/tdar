@@ -63,9 +63,13 @@ import org.tdar.core.service.external.session.SessionData;
 public class TdarAppConfiguration implements Serializable, SchedulingConfigurer, AsyncConfigurer {
 
     private static final long serialVersionUID = 6038273491995542363L;
+    public static final int SCHEDULER_POOL_SIZE = 2;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    private ScheduledTaskRegistrar taskRegistrar;
+
 
     public TdarAppConfiguration() {
         logger.debug("Initializing tDAR Application Context");
@@ -161,6 +165,12 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(taskScheduler());
+        this.taskRegistrar = taskRegistrar;
+    }
+
+    @Bean
+    public ScheduledTaskRegistrar getTaskRegistrar() {
+        return this.taskRegistrar;
     }
 
     @Bean
@@ -175,7 +185,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer,
 
     @Bean(destroyMethod = "shutdown")
     public Executor taskScheduler() {
-        return Executors.newScheduledThreadPool(2);
+        return Executors.newScheduledThreadPool(SCHEDULER_POOL_SIZE);
     }
 
     @Override

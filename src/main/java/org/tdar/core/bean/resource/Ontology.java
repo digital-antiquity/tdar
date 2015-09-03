@@ -193,16 +193,4 @@ public class Ontology extends InformationResource implements SupportsResource {
         return idMap.get(id);
     }
 
-    @Override
-    public String getAdditonalKeywords() {
-        StringBuilder sb = new StringBuilder();
-        if (getCategoryVariable() != null) {
-            sb.append(getCategoryVariable().getLabel()).append(" ");
-            if (getCategoryVariable().getParent() != null) {
-                sb.append(getCategoryVariable().getParent().getLabel());
-            }
-        }
-        return sb.toString();
-    }
-
 }

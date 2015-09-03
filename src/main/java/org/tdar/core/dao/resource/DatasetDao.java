@@ -83,11 +83,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return tdarDataImportDatabase.normalizeTableOrColumnNames(name);
     }
 
-    public void assignMappedDataForInformationResource(InformationResource resource) {
+    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource) {
         String key = resource.getMappedDataKeyValue();
         DataTableColumn column = resource.getMappedDataKeyColumn();
         if (StringUtils.isBlank(key) || (column == null)) {
-            return;
+            return null;
         }
         final DataTable table = column.getDataTable();
         ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
@@ -101,8 +101,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             }
         };
 
-        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTableCaseInsensitive(column, key, resultSetExtractor);
-        resource.setRelatedDatasetData(dataTableQueryResults);
+        return tdarDataImportDatabase.selectAllFromTableCaseInsensitive(column, key, resultSetExtractor);
     }
 
     public boolean canLinkDataToOntology(Dataset dataset) {
