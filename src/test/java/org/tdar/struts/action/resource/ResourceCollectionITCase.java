@@ -592,7 +592,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
         List<AuthorizedUser> authusers = new ArrayList<>(Arrays.asList(user1Viewer, user1Modifier, user2));
         int origCount = authusers.size();
-        ResourceCollection.normalizeAuthorizedUsers(authusers);
+        resourceCollectionService.normalizeAuthorizedUsers(authusers);
         int newCount = authusers.size();
         assertThat(newCount, lessThan(origCount));
     }
