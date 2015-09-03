@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 /**
  * Helper class which is able to autowire a specified class. It holds a static reference to the {@link org
  * .springframework.context.ApplicationContext}.
+ * 
+ * http://guylabs.ch/2014/02/22/autowiring-pring-beans-in-hibernate-jpa-entity-listeners/
  */
 @Service
 public final class AutowireHelper implements ApplicationContextAware {
