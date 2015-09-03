@@ -199,7 +199,6 @@
 	<tdar:inheritingTemporalInformation>false
 	</tdar:inheritingTemporalInformation>
 	<tdar:projectRef>:-1</tdar:projectRef>
-	<tdar:relatedDatasetData />
 	<tdar:resourceLanguage>FNGLISH</tdar:resourceLanguage>
 	<tdar:bookTitle></tdar:bookTitle>
 	<tdar:documentType>BOOK</tdar:documentType>

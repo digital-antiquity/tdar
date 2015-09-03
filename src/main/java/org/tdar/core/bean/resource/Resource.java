@@ -65,6 +65,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.DynamicBoost;
@@ -128,6 +129,8 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
+import org.tdar.search.index.bridge.LatLongClassBridge;
+import org.tdar.search.index.bridge.ResourceClassBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
@@ -171,6 +174,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "resource_type_index", columnList = "resource_type"),
         @Index(name = "idx_created", columnList = "date_created")
 })
+@ClassBridge(impl = ResourceClassBridge.class)
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -565,35 +569,6 @@ public class Resource implements Persistable,
         // sb.append(getAdditionalUsersWhoCanModify());
         logger.trace("effectiveUsers:" + users);
         return users;
-    }
-
-    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
-    @IndexedEmbedded
-    @XmlTransient
-    public List<Long> getSharedCollectionsContaining() {
-        Set<Long> collectionIds = new HashSet<Long>();
-        for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.isShared()) {
-                collectionIds.add(collection.getId());
-                collectionIds.addAll(collection.getParentIds());
-            }
-        }
-        logger.trace("partOfPublicResourceCollection:" + collectionIds);
-        return new ArrayList<Long>(collectionIds);
-    }
-
-    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS)
-    @IndexedEmbedded
-    @XmlTransient
-    public List<Long> getDirectSharedResourceIds() {
-        Set<Long> collectionIds = new HashSet<>();
-        for (ResourceCollection rc : getSharedResourceCollections()) {
-            collectionIds.add(rc.getId());
-        }
-        // probably pointless
-        List<Long> idList = new ArrayList<Long>(collectionIds);
-        Collections.sort(idList);
-        return idList;
     }
 
     @IndexedEmbedded
