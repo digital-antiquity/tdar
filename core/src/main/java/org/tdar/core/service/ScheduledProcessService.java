@@ -33,6 +33,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.config.CronTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.util.UpgradeTask;
@@ -86,7 +87,7 @@ import com.google.common.collect.Sets;
  * @author Adam Brin
  */
 @Service
-public class ScheduledProcessService implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
+public class ScheduledProcessService implements ApplicationListener<ContextRefreshedEvent>, SchedulingConfigurer, ApplicationContextAware {
 
 	private static final long ONE_HOUR_MS = 3600000;
 	private static final long ONE_MIN_MS = 60000;
@@ -425,15 +426,21 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         }
     }
 
-    public void setTaskRegistrar(ScheduledTaskRegistrar taskRegistrar) {
-        this.taskRegistrar = taskRegistrar;
-    }
-
-
     public List<String> getCronEntries() {
         return taskRegistrar.getCronTaskList()
                 .stream()
                 .map(t -> t.getExpression())
                 .collect(Collectors.toList());
     }
+
+    /**
+     * We don't actually perform configuration here.  Instead we implement the SchedulingConfigurer to gain access
+     * to the taskRegistrar so we can interrogate it later
+     * @param taskRegistrar
+     */
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        this.taskRegistrar = taskRegistrar;
+    }
+
 }

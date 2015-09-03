@@ -30,19 +30,9 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ScheduledTaskRegistrar taskRegistrar;
-
-
-
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(taskScheduler());
-        this.taskRegistrar = taskRegistrar;
-    }
-
-    @Bean
-    public ScheduledTaskRegistrar getTaskRegistrar() {
-        return this.taskRegistrar;
     }
 
 

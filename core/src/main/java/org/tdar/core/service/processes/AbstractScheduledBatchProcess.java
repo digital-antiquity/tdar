@@ -26,7 +26,7 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
 
     private static final long serialVersionUID = -334767596935956563L;
 
-    protected final List<Pair<P, Throwable>> errors = new ArrayList<Pair<P, Throwable>>();
+    protected final List<Pair<P, Throwable>> errors = new ArrayList<>();
 
     @Autowired
     // this seems really weird to have @Autowired fields in beans...
@@ -93,7 +93,7 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
         int endIndex = Math.min(queue.size(), getBatchSize());
         List<Long> sublist = queue.subList(0, endIndex);
         // make a copy of the batch first
-        ArrayList<Long> batch = new ArrayList<Long>(sublist);
+        ArrayList<Long> batch = new ArrayList<>(sublist);
         // sublist is a view of the backing list, clearing it modifies the
         // backing list.
         sublist.clear();
@@ -113,7 +113,7 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
                 process(entity);
             } catch (Throwable exception) {
                 logger.warn("Unable to process entity " + entity, exception);
-                errors.add(new Pair<P, Throwable>(entity, exception));
+                errors.add(new Pair<>(entity, exception));
             }
             Thread.yield();
         }
