@@ -260,11 +260,6 @@ public class SearchIndexService {
                 fullTextSession.purge(item.getClass(), item.getId());
             }
 
-            if (item instanceof InformationResource) {
-                InformationResource ir = (InformationResource) item;
-                datasetDao.assignMappedDataForInformationResource(ir);
-            }
-
             if (item instanceof Project) {
                 Project project = (Project) item;
                 if (null == project.getCachedInformationResources()) {

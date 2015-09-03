@@ -491,6 +491,11 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         return toReturn;
     }
 
+    @Transactional(readOnly=true)
+    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource) {
+        return getDao().getMappedDataForInformationResource(resource);
+    }
+    
     /**
      * Using the existing column map, we try and find a matching @link DataTableColumn, if we do, we copy the values off of the
      * existing column before returning.
@@ -676,15 +681,6 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
             }
         }
         return relationships;
-    }
-
-    /*
-     * Updates the transient Mapped Data for an @link InformationResource based on the linked @link DataTableColumn and data row in the tdar data database. The
-     * row entry will be loaded into the Map<> entry on the InformationResource so it can be indexed and displayed on the View layer
-     */
-    @Transactional
-    public void assignMappedDataForInformationResource(InformationResource resource) {
-        getDao().assignMappedDataForInformationResource(resource);
     }
 
     /*

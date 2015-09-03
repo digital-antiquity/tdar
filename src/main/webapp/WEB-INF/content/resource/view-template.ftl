@@ -505,8 +505,8 @@
     </#if>
 
 <#--emit additional dataset metadata as a list of key/value pairs  -->
-    <#if !resource.resourceType.project && resource.relatedDatasetData?has_content >
-        <#assign map = resource.relatedDatasetData />
+    <#if mappedData?has_content >
+        <#assign map = mappedData />
         <#if map?? && !map.empty>
         <h3>Additional Metadata</h3>
             <#list map?keys as key>

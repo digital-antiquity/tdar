@@ -241,9 +241,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         if (doc instanceof Project) {
             ((Project) doc).setCachedInformationResources(null);
         }
-        if (doc instanceof InformationResource) {
-            ((InformationResource) doc).getRelatedDatasetData().clear();
-        }
     }
 
     @Test

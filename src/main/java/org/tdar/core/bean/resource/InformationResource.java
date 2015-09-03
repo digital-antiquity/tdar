@@ -296,9 +296,9 @@ public abstract class InformationResource extends Resource {
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String mappedDataKeyValue;
 
-    @Transient
-    @XmlTransient
-    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<>();
+//    @Transient
+//    @XmlTransient
+//    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<>();
 
     public Language getMetadataLanguage() {
         return metadataLanguage;
@@ -834,38 +834,6 @@ public abstract class InformationResource extends Resource {
         return getFilesWithRestrictions(true);
     }
 
-    @Override
-    @XmlTransient
-    public String getAdditonalKeywords() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getCopyLocation()).append(" ").append(date);
-        if (getResourceProviderInstitution() != null) {
-            sb.append(" ").append(getResourceProviderInstitution().getName());
-        }
-        sb.append(" ").append(getPublisherName());
-        sb.append(" ").append(getDoi());
-        if (MapUtils.isNotEmpty(relatedDatasetData)) {
-            for (String v : relatedDatasetData.values()) {
-                sb.append(v);
-                sb.append(" ");
-            }
-        }
-
-        if (CollectionUtils.isNotEmpty(getActiveInformationResourceFiles())) {
-            for (InformationResourceFile file : getActiveInformationResourceFiles()) {
-                sb.append(file.getFilename());
-                sb.append(" ");
-                sb.append(file.getDescription());
-                sb.append(" ");
-            }
-        }
-
-        if (getProject() != Project.NULL) {
-            sb.append(getProject().getTitle());
-            sb.append(" ");
-        }
-        return sb.toString();
-    }
 
     @Transient
     @XmlTransient
@@ -897,15 +865,15 @@ public abstract class InformationResource extends Resource {
         this.mappedDataKeyValue = mappedDataKeyValue;
     }
 
-    @Field(norms = Norms.YES, store = Store.NO)
-    @FieldBridge(impl = StringMapBridge.class)
-    public Map<DataTableColumn, String> getRelatedDatasetData() {
-        return relatedDatasetData;
-    }
-
-    public void setRelatedDatasetData(Map<DataTableColumn, String> relatedDatasetData) {
-        this.relatedDatasetData = relatedDatasetData;
-    }
+//    @Field(norms = Norms.YES, store = Store.NO)
+//    @FieldBridge(impl = StringMapBridge.class)
+//    public Map<DataTableColumn, String> getRelatedDatasetData() {
+//        return relatedDatasetData;
+//    }
+//
+//    public void setRelatedDatasetData(Map<DataTableColumn, String> relatedDatasetData) {
+//        this.relatedDatasetData = relatedDatasetData;
+//    }
 
     @Transient
     @XmlTransient

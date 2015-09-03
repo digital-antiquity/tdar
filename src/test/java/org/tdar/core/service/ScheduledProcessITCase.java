@@ -316,7 +316,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Ignore("still haven't figured out how to access task registrar");
+    @Ignore("still haven't figured out how to access task registrar")
     public void testCronList() {
         List<String> cronEntries = scheduledProcessService.getCronEntries();
         assertThat(cronEntries, is( not( nullValue())));

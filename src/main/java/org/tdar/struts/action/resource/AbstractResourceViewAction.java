@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlTransient;
@@ -34,6 +35,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.StatusCode;
@@ -127,6 +129,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<ResourceCollection> viewableResourceCollections;
 
     private String schemaOrgJsonLD;
+
+    private Map<DataTableColumn, String> mappedData;
 
     private void initializeResourceCreatorProxyLists() {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
@@ -418,7 +422,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
             try {
-                datasetService.assignMappedDataForInformationResource(informationResource);
+                setMappedData(datasetService.getMappedDataForInformationResource(informationResource));
             } catch (Exception e) {
                 getLogger().error("could not attach additional dataset data to resource", e);
             }
@@ -514,6 +518,14 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     public void setResourceCitation(ResourceCitationFormatter resourceCitation) {
         this.resourceCitation = resourceCitation;
+    }
+
+    public Map<DataTableColumn, String> getMappedData() {
+        return mappedData;
+    }
+
+    public void setMappedData(Map<DataTableColumn, String> mappedData) {
+        this.mappedData = mappedData;
     }
 
 }
