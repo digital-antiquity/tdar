@@ -150,12 +150,15 @@ public class SmtpManager extends AbstractManager {
             sendMultipartMessage(message, mp, appendEvent.getThrown().getMessage());
         } catch (final MessagingException e) {
             LOGGER.error("Error occurred while sending e-mail notification.", e);
+            e.printStackTrace();
             throw new LoggingException("Error occurred while sending email", e);
         } catch (final IOException e) {
             LOGGER.error("Error occurred while sending e-mail notification.", e);
+            e.printStackTrace();
             throw new LoggingException("Error occurred while sending email", e);
         } catch (final RuntimeException e) {
             LOGGER.error("Error occurred while sending e-mail notification.", e);
+            e.printStackTrace();
             throw new LoggingException("Error occurred while sending email", e);
         }
     }
