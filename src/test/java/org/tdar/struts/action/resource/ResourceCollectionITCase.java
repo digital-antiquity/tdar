@@ -127,13 +127,14 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 ErrorHandling.VALIDATE_SKIP_ERRORS);
         logger.debug("collections: {}", image.getResourceCollections());
         
-//        assertNotEquals(test.getId(), image.getSharedCollectionsContaining().get(0));
+        List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        assertFalse(extractIds.contains(test.getId()));
         image.getResourceCollections().clear();
         resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS);
         logger.debug("collections: {}", image.getResourceCollections());
-//        assertEquals(test.getId(), image.getSharedCollectionsContaining().get(0));
-        fail("Fixme");
+        extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        assertTrue(extractIds.contains(test.getId()));
     }
 
     @Test
