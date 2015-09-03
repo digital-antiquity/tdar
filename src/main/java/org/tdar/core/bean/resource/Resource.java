@@ -461,6 +461,15 @@ public class Resource implements Persistable,
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @JoinTable(name = "public_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @IndexedEmbedded(depth = 2)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    private Set<ResourceCollection> publicResourceCollections = new LinkedHashSet<ResourceCollection>();
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     @IndexedEmbedded
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
@@ -1927,5 +1936,13 @@ public class Resource implements Persistable,
 
     public void setFormattedDescription(String formattedDescription) {
         this.formattedDescription = formattedDescription;
+    }
+
+    public Set<ResourceCollection> getPublicResourceCollections() {
+        return publicResourceCollections;
+    }
+
+    public void setPublicResourceCollections(Set<ResourceCollection> publicResourceCollections) {
+        this.publicResourceCollections = publicResourceCollections;
     }
 }

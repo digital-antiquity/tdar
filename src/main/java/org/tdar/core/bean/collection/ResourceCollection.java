@@ -185,6 +185,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
+    @XmlTransient
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "publicResourceCollections", targetEntity = Resource.class)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
+    private Set<Resource> publicResources = new LinkedHashSet<Resource>();
+
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
      * field when it only really needs to get at the Ids for proper logging.
@@ -845,6 +851,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Transient
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
+    }
+
+    public Set<Resource> getPublicResources() {
+        return publicResources;
+    }
+
+    public void setPublicResources(Set<Resource> publicResources) {
+        this.publicResources = publicResources;
     }
 
 }

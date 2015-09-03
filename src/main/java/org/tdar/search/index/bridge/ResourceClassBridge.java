@@ -2,6 +2,7 @@ package org.tdar.search.index.bridge;
 
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -76,12 +77,15 @@ public class ResourceClassBridge implements FieldBridge {
     private void indexCollectionRelationships(Document document, LuceneOptions luceneOptions, Resource resource) {
         Set<Long> collectionIds = new HashSet<Long>();
         Set<Long> directCollectionIds = new HashSet<Long>();
-        for (ResourceCollection collection : resource.getResourceCollections()) {
+        Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
+        collections.addAll(resource.getPublicResourceCollections());
+        for (ResourceCollection collection : collections) {
             if (collection.isShared()) {
                 directCollectionIds.add(collection.getId());
                 collectionIds.addAll(collection.getParentIds());
             }
         }
+        
         for (Long dc : directCollectionIds) {
             Field field = new Field(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, dc.toString(), luceneOptions.getStore(), luceneOptions.getIndex(),
                     luceneOptions.getTermVector());

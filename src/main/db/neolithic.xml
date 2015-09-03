@@ -1125,4 +1125,14 @@
             <column name="date_expires" type='date'/>
         </addColumn>
     </changeSet>
+    <changeSet id="neolithic-9" author="abrin">
+        <createTable tableName="public_collection_resource">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="collection_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
