@@ -271,7 +271,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             }
         }
         if (whiteLabelCollections.size() > 1) {
-            getLogger().error("resource #{} belongs to more than one whitelabel collection: {}", resource.getId(), whiteLabelCollections);
+            getLogger().warn("resource #{} belongs to more than one whitelabel collection: {}", resource.getId(), whiteLabelCollections);
         }
 
         if (CollectionUtils.isNotEmpty(whiteLabelCollections)) {
