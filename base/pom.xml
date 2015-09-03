@@ -88,13 +88,7 @@
 						<include>**/*.java</include>
 					</includes>
 					<excludes>
-						<exclude>org/tdar/utils/sensorydata/*.java</exclude>
-						<exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
-						<exclude>**/PDFCombiner.java</exclude>
 						<exclude>**/PDFMergerUtility.java</exclude>
-						<exclude>**/CommandLineAPITool.java</exclude>
-						<exclude>**/FilesystemFilestore.java</exclude>
-						<exclude>**/PairtreeFilestoreMigrator.java</exclude>
 					</excludes>
 				</configuration>
 				<dependencies>
