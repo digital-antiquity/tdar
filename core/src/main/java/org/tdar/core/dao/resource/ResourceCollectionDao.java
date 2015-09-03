@@ -31,6 +31,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.Status;
@@ -201,7 +202,12 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      */
     public List<DownloadAuthorization> getDownloadAuthorizations(InformationResourceFileVersion informationResourceFileVersion, String apiKey,
             String referrer) {
-        List<Long> sharedCollectionIds = informationResourceFileVersion.getInformationResourceFile().getInformationResource().getSharedCollectionsContaining();
+        InformationResource ir = informationResourceFileVersion.getInformationResourceFile().getInformationResource();
+        Set<Long> sharedCollectionIds = new HashSet<>();
+        for (ResourceCollection rc : ir.getSharedResourceCollections()) {
+            sharedCollectionIds.add(rc.getId());
+            sharedCollectionIds.addAll(rc.getParentIds());
+        }
         if (CollectionUtils.isEmpty(sharedCollectionIds)) {
             return Collections.EMPTY_LIST;
         }

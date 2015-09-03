@@ -333,10 +333,6 @@ public class ImportService {
         if (incomingResource instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) incomingResource;
 
-            if (CollectionUtils.isNotEmpty(informationResource.getRelatedDatasetData().keySet())) {
-                throw new APIException(MessageHelper.getMessage("importService.related_dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
-            }
-
             if (PersistableUtils.isNotNullOrTransient(informationResource.getMappedDataKeyColumn())) {
                 throw new APIException(MessageHelper.getMessage("importService.related_dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
             }

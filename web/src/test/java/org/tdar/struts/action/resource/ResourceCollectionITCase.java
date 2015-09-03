@@ -5,11 +5,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,12 +126,15 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS);
         logger.debug("collections: {}", image.getResourceCollections());
-        assertNotEquals(test.getId(), image.getSharedCollectionsContaining().get(0));
+        
+        List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        assertFalse(extractIds.contains(test.getId()));
         image.getResourceCollections().clear();
         resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS);
         logger.debug("collections: {}", image.getResourceCollections());
-        assertEquals(test.getId(), image.getSharedCollectionsContaining().get(0));
+        extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        assertTrue(extractIds.contains(test.getId()));
     }
 
     @Test
@@ -594,7 +593,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
         List<AuthorizedUser> authusers = new ArrayList<>(Arrays.asList(user1Viewer, user1Modifier, user2));
         int origCount = authusers.size();
-        ResourceCollection.normalizeAuthorizedUsers(authusers);
+        resourceCollectionService.normalizeAuthorizedUsers(authusers);
         int newCount = authusers.size();
         assertThat(newCount, lessThan(origCount));
     }

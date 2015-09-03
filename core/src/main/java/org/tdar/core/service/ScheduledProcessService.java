@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -29,6 +31,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.util.UpgradeTask;
@@ -412,4 +416,24 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 			}
 		}
 	}
+
+    @Transactional
+    public void queueTask(Class<? extends ScheduledProcess> class1) {
+        ScheduledProcess process = scheduledProcessMap.get(class1);
+        if (process != null) {
+            scheduledProcessQueue.add(process);
+        }
+    }
+
+    public void setTaskRegistrar(ScheduledTaskRegistrar taskRegistrar) {
+        this.taskRegistrar = taskRegistrar;
+    }
+
+
+    public List<String> getCronEntries() {
+        return taskRegistrar.getCronTaskList()
+                .stream()
+                .map(t -> t.getExpression())
+                .collect(Collectors.toList());
+    }
 }

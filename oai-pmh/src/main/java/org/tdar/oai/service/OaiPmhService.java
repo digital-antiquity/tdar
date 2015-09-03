@@ -289,9 +289,12 @@ public class OaiPmhService {
 		// iso_utc
 		record.setHeader(header);
 		if (resource instanceof Resource) {
-			for (Long id : ((Resource) resource).getSharedCollectionsContaining()) {
-				header.getSetSpec().add(Long.toString(id));
-			}
+            for (ResourceCollection rc : ((Resource) resource).getSharedResourceCollections()) {
+                header.getSetSpec().add(Long.toString(rc.getId()));
+                for (Long pid : rc.getParentIds()) {
+                header.getSetSpec().add(Long.toString(pid));
+                }
+            }
 		}
 		if (includeRecords) {
 			MetadataType metadata = new MetadataType();

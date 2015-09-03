@@ -53,7 +53,6 @@
             <tdar:minimumLongitude>-107.8473258</tdar:minimumLongitude>
         </tdar:latitudeLongitudeBox>
     </tdar:latitudeLongitudeBoxes>
-    <tdar:relatedDatasetData />
     <tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage>
     <tdar:resourceProviderInstitution></tdar:resourceProviderInstitution>
     <tdar:resourceType>DATASET</tdar:resourceType>

@@ -265,19 +265,6 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    // FIXME: ADD IS?N
-
-
-    @Override
-    public String getAdditonalKeywords() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").
-                append(" ").append(getIssn()).append(" ").append(getIsbn()).append(" ").append(getPublisher()).append(" ").
-                append(getSeriesName());
-        return sb.toString();
-    }
-
-
     public DegreeType getDegree() {
         return degree;
     }

@@ -65,6 +65,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.DynamicBoost;
@@ -128,6 +129,8 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
+import org.tdar.search.index.bridge.LatLongClassBridge;
+import org.tdar.search.index.bridge.ResourceClassBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
@@ -171,6 +174,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "resource_type_index", columnList = "resource_type"),
         @Index(name = "idx_created", columnList = "date_created")
 })
+@ClassBridge(impl = ResourceClassBridge.class)
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -565,35 +569,6 @@ public class Resource implements Persistable,
         // sb.append(getAdditionalUsersWhoCanModify());
         logger.trace("effectiveUsers:" + users);
         return users;
-    }
-
-    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
-    @IndexedEmbedded
-    @XmlTransient
-    public List<Long> getSharedCollectionsContaining() {
-        Set<Long> collectionIds = new HashSet<Long>();
-        for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.isShared()) {
-                collectionIds.add(collection.getId());
-                collectionIds.addAll(collection.getParentIds());
-            }
-        }
-        logger.trace("partOfPublicResourceCollection:" + collectionIds);
-        return new ArrayList<Long>(collectionIds);
-    }
-
-    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS)
-    @IndexedEmbedded
-    @XmlTransient
-    public List<Long> getDirectSharedResourceIds() {
-        Set<Long> collectionIds = new HashSet<>();
-        for (ResourceCollection rc : getSharedResourceCollections()) {
-            collectionIds.add(rc.getId());
-        }
-        // probably pointless
-        List<Long> idList = new ArrayList<Long>(collectionIds);
-        Collections.sort(idList);
-        return idList;
     }
 
     @IndexedEmbedded
@@ -1365,81 +1340,6 @@ public class Resource implements Persistable,
             coverageDates = new LinkedHashSet<CoverageDate>();
         }
         return coverageDates;
-    }
-
-    public String getAdditonalKeywords() {
-        return "";
-    }
-
-    private transient String keywords = null;
-
-    @SuppressWarnings("unchecked")
-    @Fields({
-            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
-            @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
-            @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
-    @XmlTransient
-    public String getKeywords() {
-        if (isReadyToIndex() && (keywords != null)) {
-            return keywords;
-        }
-        // note, consider using a transient field here, as the getter is called
-        // multiple items (once for each @Field annotation)
-        logger.trace("get keyword contents: {}", getId());
-        StringBuilder sb = new StringBuilder();
-        sb.append(getTitle()).append(" ").append(getDescription()).append(" ").append(getAdditonalKeywords()).append(" ");
-
-        Collection<Keyword> kwds = getAllActiveKeywords();
-
-        for (Keyword kwd : kwds) {
-            if (kwd.isDeleted()) {
-                continue;
-            }
-            if (kwd instanceof HierarchicalKeyword) {
-                for (String label : ((HierarchicalKeyword<?>) kwd).getParentLabelList()) {
-                    sb.append(label).append(" ");
-                }
-            }
-            sb.append(kwd.getLabel()).append(" ");
-            for (Keyword syn : (Set<Keyword>) kwd.getSynonyms()) {
-                sb.append(syn.getLabel()).append(" ");
-            }
-        }
-
-        for (ResourceNote note : getActiveResourceNotes()) {
-            sb.append(note.getNote()).append(" ");
-        }
-        for (ResourceCreator creator : getActiveResourceCreators()) {
-            if (creator.getCreator().isDeleted()) {
-                continue;
-            }
-            sb.append(creator.getCreator().getName()).append(" ");
-            sb.append(creator.getCreator().getProperName()).append(" ");
-        }
-        for (ResourceAnnotation ann : getActiveResourceAnnotations()) {
-            sb.append(ann.getPairedValue()).append(" ");
-        }
-
-        for (ResourceCollection coll : getSharedResourceCollections()) {
-            if (!coll.isHidden()) {
-                sb.append(coll.getName()).append(" ");
-            }
-        }
-
-        for (RelatedComparativeCollection rcc : getActiveRelatedComparativeCollections()) {
-            sb.append(rcc.getText()).append(" ");
-        }
-
-        for (SourceCollection src : getActiveSourceCollections()) {
-            sb.append(src.getText()).append(" ");
-        }
-
-        if (readyToIndex) {
-            keywords = sb.toString();
-        } else {
-            return sb.toString();
-        }
-        return keywords;
     }
 
     @XmlTransient
