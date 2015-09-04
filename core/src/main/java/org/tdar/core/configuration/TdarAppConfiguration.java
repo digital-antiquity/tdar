@@ -25,16 +25,47 @@ import org.tdar.core.dao.external.pid.ExternalIDProvider;
 public class TdarAppConfiguration extends IntegrationAppConfiguration implements Serializable {
 
     private static final long serialVersionUID = 6038273491995542363L;
-    public static final int SCHEDULER_POOL_SIZE = 2;
 
-    @Transient
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Override
-    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(taskScheduler());
+    public TdarAppConfiguration() {
+        logger.debug("Initializing tDAR Application Context");
     }
 
+    @Bean
+    // @Value("#{'${my.list.of.strings}'.split(',')}")
+    public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
+        FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
+        List<String> templateLoaderPaths = new ArrayList<>();
+        templateLoaderPaths.add("classpath:/freemarker-templates");
+        templateLoaderPaths.add("file:/WEB-INF/freemarker-templates");
+        templateLoaderPaths.add("classpath:/WEB-INF/content");
+        templateLoaderPaths.add("classpath:src/main/webapp");
+        templateLoaderPaths.add("file:src/main/webapp");
+        templateLoaderPaths.add("classpath:/freemarker-templates-test");
+        templateLoaderPaths.add("classpath:/templates");
+        templateLoaderPaths.add("file:/templates");
+        freemarkerConfig.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[0]));
+        return freemarkerConfig;
+    }
+
+    @Bean(name = "AuthenticationProvider")
+    public AuthenticationProvider getAuthProvider() throws IOException {
+        return new CrowdRestDao();
+    }
+
+    @Bean(name = "DoiProvider")
+    public ExternalIDProvider getIdProvider() throws IOException {
+        return new EZIDDao();
+    }
+
+    @Bean
+    public ThreadPoolTaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+        pool.setCorePoolSize(2);
+        pool.setMaxPoolSize(5);
+        pool.setThreadNamePrefix("pool-");
+        pool.setWaitForTasksToCompleteOnShutdown(true);
+        return pool;
+    }
 
     @Bean
     public SimpleCacheManager cacheManager() {
@@ -45,32 +76,6 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
 
     protected Collection<? extends Cache> getCachesToLoad() {
         return new ArrayList<>();
-
-    @Bean(destroyMethod = "shutdown")
-    public Executor taskScheduler() {
-        return Executors.newScheduledThreadPool(SCHEDULER_POOL_SIZE);
-    }
-
-    @Override
-    public Executor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(5);
-        executor.setQueueCapacity(50);
-        executor.setThreadNamePrefix("async-");
-        executor.initialize();
-        return executor;
-    }
-
-    @Override
-    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new AsyncUncaughtExceptionHandler() {
-
-            @Override
-            public void handleUncaughtException(Throwable ex, Method method, Object... params) {
-                logger.error("exception in async: {} {} ", method, params);
-            }
-        };
     }
 
 }

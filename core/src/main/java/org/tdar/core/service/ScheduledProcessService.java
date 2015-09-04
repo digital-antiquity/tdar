@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -31,9 +30,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.config.CronTask;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.util.UpgradeTask;
@@ -115,6 +113,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private Set<Class<? extends ScheduledProcess>> scheduledProcessQueue = Sets.newConcurrentHashSet();
 	private ApplicationContext applicationContext;
+    private ScheduledTaskRegistrar taskRegistrar;
 
 	/**
 	 * Once a week, on Sundays, generate some static, cached stats for use by
@@ -417,14 +416,6 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 			}
 		}
 	}
-
-    @Transactional
-    public void queueTask(Class<? extends ScheduledProcess> class1) {
-        ScheduledProcess process = scheduledProcessMap.get(class1);
-        if (process != null) {
-            scheduledProcessQueue.add(process);
-        }
-    }
 
     public List<String> getCronEntries() {
         return taskRegistrar.getCronTaskList()
