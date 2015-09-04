@@ -35,7 +35,6 @@ public class TdarWebAppConfiguration extends TdarAppConfiguration implements Sch
 	@Override
 	public Collection<? extends Cache> getCachesToLoad() {
 		List<Cache> caches = new ArrayList<>();
-        caches.add(new ConcurrentMapCache("rssFeed"));
         caches.add(new ConcurrentMapCache(Caches.RSS_FEED));
         caches.add(new ConcurrentMapCache(Caches.BROWSE_DECADE_COUNT_CACHE));
         caches.add(new ConcurrentMapCache(Caches.BROWSE_YEAR_COUNT_CACHE));
