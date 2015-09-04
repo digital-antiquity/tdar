@@ -112,7 +112,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -125,11 +124,8 @@ import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
-import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.ResourceClassBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MathUtils;
@@ -1944,5 +1940,15 @@ public class Resource implements Persistable,
 
     public void setPublicResourceCollections(Set<ResourceCollection> publicResourceCollections) {
         this.publicResourceCollections = publicResourceCollections;
+    }
+
+    public Collection<? extends ResourceCollection> getVisiblePublicResourceCollections() {
+        Set<ResourceCollection> collections = new LinkedHashSet<ResourceCollection>();
+        for (ResourceCollection collection : getPublicResourceCollections()) {
+            if (collection.isShared() && !collection.isHidden()) {
+                collections.add(collection);
+            }
+        }
+        return collections;
     }
 }
