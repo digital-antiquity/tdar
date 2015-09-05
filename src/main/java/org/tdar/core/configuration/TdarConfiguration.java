@@ -949,7 +949,7 @@ public class TdarConfiguration {
     }
 
     public String getStaticContext() {
-        return assistant.getStringProperty("static.context", "/tdar");
+        return assistant.getStringProperty("static.context", "");
     }
 
 }
