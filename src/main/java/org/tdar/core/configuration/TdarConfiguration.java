@@ -334,7 +334,7 @@ public class TdarConfiguration {
     }
     
     public String getContextPath() {
-        return "/tdar";
+        return "";
     }
     
 

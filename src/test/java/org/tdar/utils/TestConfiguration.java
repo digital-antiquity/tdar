@@ -97,7 +97,7 @@ public class TestConfiguration {
     }
 
     public String getContext() {
-        return assistant.getStringProperty("tdar.context.path", "/tdar");
+        return assistant.getStringProperty("tdar.context.path", "");
     }
 
     public int getPort() {
