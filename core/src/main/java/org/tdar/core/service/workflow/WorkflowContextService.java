@@ -35,21 +35,27 @@ public class WorkflowContextService {
 
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
     private TargetDatabase tdarDataImportDatabase;
-    @Autowired
     private InformationResourceFileVersionService informationResourceFileVersionService;
-    @Autowired
     private GenericDao genericDao;
-    @Autowired
     private SerializationService serializationService;
+    private DatasetService datasetService;
+    private OntologyService ontologyService;
+    private CodingSheetService codingSheetService;
 
     @Autowired
-    private DatasetService datasetService;
-    @Autowired
-    private OntologyService ontologyService;
-    @Autowired
-    private CodingSheetService codingSheetService;
+    public WorkflowContextService(TargetDatabase tdarDataImportDatabase, InformationResourceFileVersionService informationResourceFileVersionService,
+            GenericDao genericDao, SerializationService serializationService, DatasetService datasetService,
+            OntologyService ontologyService, CodingSheetService codingSheetService) {
+        this.tdarDataImportDatabase = tdarDataImportDatabase;
+        this.informationResourceFileVersionService = informationResourceFileVersionService;
+        this.genericDao = genericDao;
+        this.datasetService = datasetService;
+        this.serializationService = serializationService;
+        this.ontologyService = ontologyService;
+        this.codingSheetService = codingSheetService;
+
+    }
 
     /**
      * This method takes a workflow context once it's been generated and persists it back into tDAR. It will remove all existing derivatives, then

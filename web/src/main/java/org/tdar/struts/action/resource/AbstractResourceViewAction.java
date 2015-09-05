@@ -90,9 +90,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
 
     @Autowired
-    private transient DatasetService datasetService;
-
-    @Autowired
     private transient AuthorizationService authorizationService;
 
     @Autowired
@@ -422,7 +419,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
             try {
-                setMappedData(datasetService.getMappedDataForInformationResource(informationResource));
+                setMappedData(resourceService.getMappedDataForInformationResource(informationResource));
             } catch (Exception e) {
                 getLogger().error("could not attach additional dataset data to resource", e);
             }

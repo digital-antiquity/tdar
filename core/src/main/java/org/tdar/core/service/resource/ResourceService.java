@@ -45,6 +45,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
@@ -66,7 +67,6 @@ import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.ImmutableScrollableCollection;
@@ -98,8 +98,6 @@ public class ResourceService extends GenericService {
     @Autowired
     private BillingAccountDao accountDao;
 
-    @Autowired
-    private AuthorizationService authenticationAndAuthorizationService;
     @Autowired
     private GeoSearchService geoSearchService;
 
@@ -258,6 +256,12 @@ public class ResourceService extends GenericService {
     public List<HomepageGeographicCache> getISOGeographicCounts() {
         logger.debug("requesting homepage cache");
         return datasetDao.getISOGeographicCounts();
+    }
+
+    
+    @Transactional(readOnly=true)
+    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource) {
+        return datasetDao.getMappedDataForInformationResource(resource);
     }
 
     /**

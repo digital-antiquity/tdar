@@ -491,10 +491,6 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         return toReturn;
     }
 
-    @Transactional(readOnly=true)
-    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource) {
-        return getDao().getMappedDataForInformationResource(resource);
-    }
     
     /**
      * Using the existing column map, we try and find a matching @link DataTableColumn, if we do, we copy the values off of the

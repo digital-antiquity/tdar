@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.AutowireHelper;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -33,7 +34,7 @@ import org.tdar.utils.DataUtil;
 @Component
 public class ResourceClassBridge implements FieldBridge {
 
-    DatasetService datasetService;
+    ResourceService resourceService;
 
     ResourceCollectionService resourceCollectionService;
 
@@ -43,8 +44,8 @@ public class ResourceClassBridge implements FieldBridge {
     }
 
     @Autowired
-    public void setDatasetService(DatasetService datasetService) {
-        this.datasetService = datasetService;
+    public void setResourceService(ResourceService resourceService) {
+        this.resourceService = resourceService;
     }
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -55,11 +56,11 @@ public class ResourceClassBridge implements FieldBridge {
 
     @Override
     public void set(String arg0, Object value, Document doc, LuceneOptions luceneOptions) {
-        if (datasetService == null) {
+        if (resourceService == null) {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this); 
         }
-        if (datasetService == null) {
-            AutowireHelper.autowire(this, datasetService, resourceCollectionService); 
+        if (resourceService == null) {
+            AutowireHelper.autowire(this, resourceService, resourceCollectionService); 
         }
 
         Resource resource = (Resource) value;
@@ -99,7 +100,7 @@ public class ResourceClassBridge implements FieldBridge {
 
         Map<DataTableColumn, String> data = null;
         if (resource instanceof InformationResource) {
-            data = datasetService.getMappedDataForInformationResource((InformationResource) resource);
+            data = resourceService.getMappedDataForInformationResource((InformationResource) resource);
             indexTdarDataDatabaseValues(doc, luceneOptions, data);
         }
 

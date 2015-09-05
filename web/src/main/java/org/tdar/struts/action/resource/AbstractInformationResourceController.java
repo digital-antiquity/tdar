@@ -92,9 +92,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private transient EntityService entityService;
 
     @Autowired
-    private transient DatasetService datasetService;
-
-    @Autowired
     private transient ProjectService projectService;
 
     @Autowired
