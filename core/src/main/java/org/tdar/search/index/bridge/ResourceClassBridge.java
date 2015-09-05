@@ -33,10 +33,8 @@ import org.tdar.utils.DataUtil;
 @Component
 public class ResourceClassBridge implements FieldBridge {
 
-    @Autowired
     DatasetService datasetService;
 
-    @Autowired
     ResourceCollectionService resourceCollectionService;
 
     @Autowired

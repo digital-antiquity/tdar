@@ -134,7 +134,7 @@ public class RssService implements Serializable {
         return VALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
-    @CacheEvict(allEntries = true, value = "rssFeed")
+    @CacheEvict(allEntries = true, value = Caches.RSS_FEED)
     public void evictRssCache() {
 
     }
