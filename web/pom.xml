@@ -461,6 +461,7 @@
                    <id>exec-npm-install</id>
                    <phase>generate-sources</phase>
                    <configuration>
+                       <!-- note - npm, bower, karma and other tools are installed globally on build -->
                      <executable>npm</executable>
                      <arguments>
                        <argument>install</argument>
