@@ -1001,7 +1001,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         as the first column in each row of the data table
 -->
 
-    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false>
+    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="">
     <div class="well tdar-widget" id="divSearchFilters"> <#--you are in a span9, but assume span8 so we fit inside well -->
 
         <div class="row" >
@@ -1009,14 +1009,14 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <@s.textfield theme="tdar" name="_tdar.query" id="query" cssClass='span8'
                     placeholder="Enter a full or partial title to filter results" />
                 <div>
-                    <button type="button" class="btn btn-mini pull-left" id="btnToggleFilters" data-toggle="collapse" data-target="#divAdvancedFilters">
+                    <button type="button" class="btn btn-mini pull-left" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
                         More/Less options...
                     </button>
                     <div class="pull-right">
 
                         <#if limitToCollection>
                             <label class="checkbox" style="font-weight:normal; ">
-                                <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded">
+                                <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded${idAddition}">
                                 Show only selected resources
                             </label>
                         </#if>
@@ -1026,12 +1026,12 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             </div>
         </div>
 
-        <div id="divAdvancedFilters" class="collapse">
+        <div id="divAdvancedFilters${idAddition}" class="collapse">
 
             <div class="row">
                 <div class="span4">
-                    <label class="" for="project-selector">Project</label>
-                    <select id="project-selector" name="_tdar.project" class="input-block-level">
+                    <label class="" for="project-selector${idAddition}">Project</label>
+                    <select id="project-selector${idAddition}" name="_tdar.project" class="input-block-level">
                         <option value="" selected='selected'>All Editable Projects</option>
                         <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
                             <optgroup label="Projects">
@@ -1054,7 +1054,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 </div>
 
                 <div class="span4">
-                    <label class="" for="collection-selector">Collection</label>
+                    <label class="" for="collection-selector${idAddition}">Collection</label>
                     <#local selectedId=-1/>
                     <#-- limit to just this collection
                     <#if namespace=='/collection' && (id!-1) != -1>
@@ -1062,7 +1062,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     </#if>
                     -->
                     <div class="">
-                        <select name="_tdar.collection" id="collection-selector" class="input-block-level">
+                        <select name="_tdar.collection" id="collection-selector${idAddition}" class="input-block-level">
                             <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
                             <@s.iterator value='allResourceCollections' var='rc'>
                                 <option value="${rc.id?c}" title="${rc.name!""?html}"
@@ -1078,13 +1078,13 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
                 <div class="span4">
                     <label class="">Status</label>
-                    <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
+                    <@s.select theme="tdar" id="statuses${idAddition}" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
                     list='%{statuses}' cssClass="input-block-level"/>
                 </div>
 
                 <div class="span4">
                     <label class="">Resource Type</label>
-                    <@s.select theme="tdar" id="resourceTypes" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
+                    <@s.select theme="tdar" id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
                     listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
                 </div>
 
@@ -1110,7 +1110,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <div class="row">
         <div class="span9">
 
-            <table class="display table table-striped table-bordered tableFormat" id="resource_datatable">
+            <table class="display table table-striped table-bordered tableFormat" id="resource_datatable${idAddition}">
                 <colgroup>
                     <#if selectable>
                         <col style="width:10%"></#if>
