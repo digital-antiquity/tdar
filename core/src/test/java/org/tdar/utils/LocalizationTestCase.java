@@ -124,7 +124,7 @@ public class LocalizationTestCase {
     @Test
     public void testNonEscapedApostrophes() throws IOException, ClassNotFoundException {
 
-        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] { "properties" }, true);
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("target/classes/Locales"), new String[] { "properties" }, true);
         while (iterateFiles.hasNext()) {
             File file = iterateFiles.next();
             LineIterator it = FileUtils.lineIterator(file, "UTF-8");
@@ -154,7 +154,7 @@ public class LocalizationTestCase {
     }
 
     private void searchPropsFileForPattern(Pattern pattern) throws IOException {
-        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] { "properties" }, true);
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("target/classes/Locales"), new String[] { "properties" }, true);
         while (iterateFiles.hasNext()) {
             File file = iterateFiles.next();
             LineIterator it = FileUtils.lineIterator(file, "UTF-8");
