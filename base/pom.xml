@@ -46,6 +46,19 @@
                 <version>1.5</version>
                 <executions>
                     <execution>
+                        <id>process-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <attachToTest>false</attachToTest>
+                            <attachToMain>true</attachToMain>
+                            <resourceBundles>
+                                <resourceBundle>org.tdar:locales:${project.version}</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>process-test-resources</id>
                         <goals>
                             <goal>process</goal>

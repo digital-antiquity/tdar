@@ -10,10 +10,6 @@
 
 	<properties>
 		<servlet.api.version>3.0.1</servlet.api.version>
-		<jetty.version>9.2.7.v20150116</jetty.version>
-		<jetty.port>8080</jetty.port>
-		<jetty.ssl.port>8443</jetty.ssl.port>
-		<jetty.stop.port>12919</jetty.stop.port>
 		<odata4j.version>0.7.0</odata4j.version>
 		<warfile.name>tdar-odata</warfile.name>
 		<jersey.version>1.19</jersey.version>
@@ -21,9 +17,9 @@
 	</properties>
 	<parent>
 		<groupId>org.tdar</groupId>
-		<artifactId>base</artifactId>
+		<artifactId>web-base</artifactId>
 		<version>14-NEOLITHIC-SNAPSHOT</version>
-		<relativePath>../base/pom.xml</relativePath>
+		<relativePath>../web-base/pom.xml</relativePath>
 	</parent>
 
 	<prerequisites>
@@ -297,30 +293,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>keytool-maven-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<id>generateKeyPair</id>
-						<goals>
-							<goal>generateKeyPair</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<keystore>${basedir}/src/main/resources/jetty/jetty-ssl.keystore</keystore>
-					<dname>cn=localhost</dname>
-					<keypass>jetty6</keypass>
-					<skipIfExist>true</skipIfExist>
-					<storepass>jetty6</storepass>
-					<alias>jetty6</alias>
-					<keyalg>RSA</keyalg>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.5</version>
@@ -336,76 +308,6 @@
 					</webResources>
 					<!--<webXml>${webXmlPath}</webXml> -->
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty.version}</version>
-				<configuration>
-					<testClassesDirectory>${basedir}/src/test/resources/</testClassesDirectory>
-					<useTestClasspath>${use.test.classpath}</useTestClasspath>
-					<scanIntervalSeconds>10</scanIntervalSeconds>
-					<jettyXml>${basedir}/src/main/resources/jetty/jetty.xml,${basedir}/src/main/resources/jetty/jetty-ssl.xml,${basedir}/src/main/resources/jetty/jetty-https.xml,${basedir}/src/main/resources/jetty/jetty-http.xml</jettyXml>
-					<contextXml>${basedir}/src/main/resources/jetty/jetty-context.xml</contextXml>
-					<systemProperties>
-						      
-						<systemProperty>
-							       
-							<name>jetty.ssl.port</name>
-							       
-							<value>${jetty.ssl.port}</value>
-							     
-						</systemProperty>
-						      
-						<systemProperty>
-							       
-							<name>maven.rootDir</name>
-							       
-							<value>${basedir}</value>
-							     
-						</systemProperty>
-						<systemProperty>
-							<name>jetty.port</name>
-							<value>${jetty.port}</value>
-						</systemProperty>
-						<!-- <systemProperty> <name>log4j.configuration</name> <value>file:${basedir}/src/main/resources/log4j.xml</value> 
-							</systemProperty> -->
-						<systemProperty>
-							<name>slf4j</name>
-							<value>true</value>
-						</systemProperty>
-					</systemProperties>
-					<contextPath>/</contextPath>
-					<webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>
-					<scanIntervalSeconds>0</scanIntervalSeconds>
-					<stopKey>tdar</stopKey>
-					<webApp>
-						<baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-							<resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/generated/webapp</resourcesAsCSV>
-						</baseResource>
-					</webApp>
-					<stopPort>${jetty.stop.port}</stopPort>
-				</configuration>
-				<executions>
-					<execution>
-						<id>start-jetty</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>start</goal>
-						</goals>
-						<configuration>
-							<scanIntervalSeconds>0</scanIntervalSeconds>
-							<daemon>true</daemon>
-						</configuration>
-					</execution>
-					<execution>
-						<id>stop-jetty</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
