@@ -407,7 +407,6 @@
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
     </dependencies>
-
     <profiles>
         <profile>
             <id>test</id>

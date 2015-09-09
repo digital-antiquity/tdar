@@ -11,6 +11,7 @@
 		<jetty.port>8080</jetty.port>
 		<jetty.ssl.port>8443</jetty.ssl.port>
 		<jetty.stop.port>12919</jetty.stop.port>
+        <skipJetty>true</skipJetty>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -52,6 +53,7 @@
     				<artifactId>jetty-maven-plugin</artifactId>
     				<version>${jetty.version}</version>
     				<configuration>
+                        <skip>${skipJetty}</skip>
     					<testClassesDirectory>${basedir}/src/test/resources/</testClassesDirectory>
     					<useTestClasspath>${use.test.classpath}</useTestClasspath>
     					<scanIntervalSeconds>10</scanIntervalSeconds>
