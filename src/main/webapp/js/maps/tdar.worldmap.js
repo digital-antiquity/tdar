@@ -183,16 +183,30 @@ TDAR.worldmap = (function(console, $, ctx) {
     function _drawDataGraph(name, id) {
 		var $div = $("#mapgraphdata");
         //style='height:"+($mapDiv.height() - 50)+"px'
-        $("#mapGraphHeader").html(name);
+        if (name == undefined ) {
+            $("#mapGraphHeader").html("");
+        } else {
+            $("#mapGraphHeader").html(name);
+        }
 		
         var mapdata = _getMapdata($mapDiv.parent());
-		var filter = mapdata.filter(function(d) {return d.code == id});
+		var filter =[];
 		var data = [];
-		filter.forEach(function(row){
-			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-				data.push([row.label, row.count]);				
-			}
-		});
+        if (id != undefined) {
+            filter = mapdata.filter(function(d) {return d.code == id});;  
+      		filter.forEach(function(row){
+      			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
+      				data.push([row.label, row.count]);				
+      			}
+      		});
+        } else {
+            var json  = JSON.parse($("#homepageResourceCountCache").text());
+            json.forEach(function(row) {
+      			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
+      				data.push([row.label, row.count]);				
+      			}                
+            });
+        }
 
 		var obj = {
 			bindto: '#mapgraphpie',
@@ -205,13 +219,24 @@ TDAR.worldmap = (function(console, $, ctx) {
                     show : false
                 }
             },
+            donut: {
+                label: {
+                    show: false
+                }
+            },
             tooltip: {
               format: {
                 value: function (value, ratio, id, index) { return  value + " ("+ (ratio * 100.00).toFixed(2) +"%)"; }
               }
             },
             legend: {
-                    position: 'right'
+                    position: 'right',
+                inset: {
+                    anchor: 'top-left',
+                  x: 20,
+                  y: 0,
+                  step: 4
+                }
             },
             size: {
               height: ($div.height() * 3/5)
@@ -243,6 +268,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (stateLayer != undefined) {
             map.removeLayer(stateLayer);
         }
+        _drawDataGraph();
     }
 
     function _highlightFeature(e) {
