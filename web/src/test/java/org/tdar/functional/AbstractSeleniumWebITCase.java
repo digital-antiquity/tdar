@@ -38,7 +38,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,7 +63,6 @@ import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -298,7 +296,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected enum Browser {
-        FIREFOX, CHROME, SAFARI, IE, PHANTOMJS;
+        FIREFOX, CHROME, SAFARI, IE;
     }
 
     @Before
@@ -387,11 +385,6 @@ public abstract class AbstractSeleniumWebITCase {
                 if (TdarConfiguration.getInstance().isHttpsEnabled()) {
                     fail("please disable https before testing this");
                 }
-                break;
-            case PHANTOMJS:
-                driver = new PhantomJSDriver(
-                        ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
-                        configureCapabilities(DesiredCapabilities.phantomjs()));
                 break;
             default:
                 break;

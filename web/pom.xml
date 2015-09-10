@@ -14,7 +14,6 @@
 		<apache.cxf.version>3.1.1</apache.cxf.version>
 		<wro4j.version>1.7.8</wro4j.version>
 		<display.port></display.port>
-		<warfile.name>ROOT</warfile.name>
 		<skipWebTests>false</skipWebTests>
 		<skipSeleniumTests>false</skipSeleniumTests>
         <skipJetty>false</skipJetty>
@@ -72,43 +71,16 @@
 			<version>3.1</version>
 			<!-- LICENSE: APACHE 1.1 -->
 		</dependency>
-
-		<dependency>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>keytool-api</artifactId>
-			<version>1.5</version>
-			<!-- LICENSE: APACHE 2.0 -->
-		</dependency>
 		<dependency>
 			<groupId>com.jgeppert.struts2.bootstrap</groupId>
 			<artifactId>struts2-bootstrap-plugin</artifactId>
 			<version>1.7.0</version>
 			<!-- LICENSE: APACHE 2.0 -->
 		</dependency>
-
-		<dependency>
-			<groupId>jtidy</groupId>
-			<artifactId>jtidy</artifactId>
-			<version>4aug2000r7-dev</version>
-			<!-- LICENSE: MIT VARIENT -->
-		</dependency>
 		<dependency>
 			<groupId>net.tanesha.recaptcha4j</groupId>
 			<artifactId>recaptcha4j</artifactId>
 			<version>0.0.7</version>
-			<!-- LICENSE: APACHE 2.0 -->
-		</dependency>
-		<!-- Log4J e-mail throttling: https://github.com/reaktor/log4j-email-throttle -->
-		<dependency>
-			<groupId>fi.reaktor.log4j</groupId>
-			<artifactId>log4j-email-throttle</artifactId>
-			<version>1.0.0</version>
-			<exclusions>
-			    <exclusion>
-			        <artifactId>log4j</artifactId>
-			        <groupId>log4j</groupId>
-			    </exclusion>
-			</exclusions>
 			<!-- LICENSE: APACHE 2.0 -->
 		</dependency>
 
@@ -125,30 +97,6 @@
 			    </exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>stax</groupId>
-			<artifactId>stax-api</artifactId>
-			<version>1.0.1</version>
-			<!-- LICENSE: APACHE 2.0 -->
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.htmlunit</groupId>
-			<artifactId>htmlunit</artifactId>
-			<version>2.18</version>
-			<scope>test</scope>
-			<!-- LICENSE: APACHE 2.0 -->
-			<exclusions>
-				<exclusion>
-					<artifactId>httpclient</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>httpmime</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- /these are required for htmlunit 2.10 -->
 		<dependency>
 			<groupId>org.apache.struts</groupId>
@@ -186,46 +134,6 @@
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-convention-plugin</artifactId>
 			<!-- LICENSE: APACHE 2.0 -->
-		</dependency>
-		<dependency>
-			<groupId>javax.el</groupId>
-			<artifactId>javax.el-api</artifactId>
-			<version>2.2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>nu.validator</groupId>
-			<artifactId>validator</artifactId>
-			<version>15.6.29</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>httpcore</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>httpclient</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-				    <artifactId>log4j</artifactId>
-				    <groupId>log4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.web</groupId>
-			<artifactId>javax.el</artifactId>
-			<version>2.2.6</version>
-		</dependency>
-		<!-- Servlet & Jsp -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet.api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
 		</dependency>
 		<!-- CXF for web-services endpoint -->
 		<dependency>
@@ -283,19 +191,6 @@
 			<!-- LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.arquillian.extension</groupId>
-			<artifactId>arquillian-phantom-driver</artifactId>
-			<version>1.1.4.Final</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>junit</artifactId>
-					<groupId>junit</groupId>
-				</exclusion>
-			</exclusions>
-			<!-- LICENSE: APACHE 2.0 -->
-		</dependency>
-		<dependency>
 			<groupId>ro.isdc.wro4j</groupId>
 			<artifactId>wro4j-core</artifactId>
 			<version>${wro4j.version}</version>
@@ -311,7 +206,7 @@
 
 
 	<build>
-		<finalName>${warfile.name}</finalName>
+		<finalName>tdar-web</finalName>
 		<resources>
 			<!-- We only want a small set of files to be filtered. NOTE: These files 
 				are NOT read into maven properties for interpolation, they are just the set 
@@ -372,8 +267,6 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
-					<!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
-					<outputDirectory>${webapp.deploy.dir}</outputDirectory>
 					<webResources>
 						<resource>
 							<directory>target/generated/webapp</directory>
@@ -488,8 +381,8 @@
                    <autoWatch>false</autoWatch>
                    <singleRun>true</singleRun>
                    <colors>true</colors>
-                   <skipKarma>false</skipKarma>
-                   <skipTests>false</skipTests>
+                   <skipKarma>${maven.test.skip}</skipKarma>
+                   <skipTests>${maven.test.skip}</skipTests>
                    <karmaFailureIgnore>false</karmaFailureIgnore>
                </configuration>
            </plugin>
@@ -638,30 +531,6 @@
 	</build>
 
 	<profiles>
-		<profile>
-			<id>production</id>
-			<properties>
-				<webapp.deploy.dir>/home/tdar/app</webapp.deploy.dir>
-				<maven.test.skip>true</maven.test.skip>
-				<maven.createDB.skip>true</maven.createDB.skip>
-			</properties>
-		</profile>
-		<profile>
-			<id>alpha</id>
-			<properties>
-				<webapp.deploy.dir>/home/tdar/app</webapp.deploy.dir>
-				<maven.test.skip>true</maven.test.skip>
-				<maven.createDB.skip>true</maven.createDB.skip>
-			</properties>
-			<build>
-				<plugins>
-					<!-- <plugin> <groupId>org.apache.tomcat.maven</groupId> <artifactId>tomcat7-maven-plugin</artifactId> 
-						<version>2.0</version> <configuration> <url>http://localhost:8080/manager/text</url> 
-						<server>alpha</server> <path>/ROOT##${maven.build.timestamp}</path> <update>true</update> 
-						</configuration> </plugin> -->
-				</plugins>
-			</build>
-		</profile>
 		<profile>
 			<id>minify-web-resources</id>
 			<build>

@@ -11,7 +11,6 @@
 	<properties>
 		<servlet.api.version>3.0.1</servlet.api.version>
 		<odata4j.version>0.7.0</odata4j.version>
-		<warfile.name>tdar-odata</warfile.name>
 		<jersey.version>1.19</jersey.version>
         <skipJetty>false</skipJetty>
 	</properties>
@@ -62,60 +61,6 @@
 			<version>2.5.1</version>
 			<scope>test</scope>
 			<!-- LICENSE: MIT/BSD VARIENT -->
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>keytool-api</artifactId>
-			<version>1.5</version>
-			<!-- LICENSE: APACHE 2.0 -->
-		</dependency>
-		<dependency>
-			<groupId>fi.reaktor.log4j</groupId>
-			<artifactId>log4j-email-throttle</artifactId>
-			<version>1.0.0</version>
-			<!-- LICENSE: APACHE 2.0 -->
-			<exclusions>
-			    <exclusion>
-			        <artifactId>log4j</artifactId>
-			        <groupId>log4j</groupId>
-			    </exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.htmlunit</groupId>
-			<artifactId>htmlunit</artifactId>
-			<version>2.18</version>
-			<scope>test</scope>
-			<!-- LICENSE: APACHE 2.0 -->
-			<exclusions>
-				<exclusion>
-					<artifactId>httpclient</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>httpmime</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>javax.el</groupId>
-			<artifactId>javax.el-api</artifactId>
-			<version>2.2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet.api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
 		</dependency>
 		<!-- OData (odata4j) Stuff: Begin -->
 		<dependency>
@@ -200,7 +145,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>${warfile.name}</finalName>
+		<finalName>tdar-odata</finalName>
 		<resources>
 			<!-- We only want a small set of files to be filtered. NOTE: These files 
 				are NOT read into maven properties for interpolation, they are just the set 
@@ -298,7 +243,7 @@
 				<version>2.5</version>
 				<configuration>
 					<!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
-					<outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                    <!-- <outputDirectory>${webapp.deploy.dir}</outputDirectory> -->
 					<webResources>
 						<resource>
 							<directory>target/generated/webapp</directory>
@@ -391,30 +336,6 @@
 	</build>
 
 	<profiles>
-		<profile>
-			<id>production</id>
-			<properties>
-				<webapp.deploy.dir>/home/tdar/app</webapp.deploy.dir>
-				<maven.test.skip>true</maven.test.skip>
-				<maven.createDB.skip>true</maven.createDB.skip>
-			</properties>
-		</profile>
-		<profile>
-			<id>alpha</id>
-			<properties>
-				<webapp.deploy.dir>/home/tdar/app</webapp.deploy.dir>
-				<maven.test.skip>true</maven.test.skip>
-				<maven.createDB.skip>true</maven.createDB.skip>
-			</properties>
-			<build>
-				<plugins>
-					<!-- <plugin> <groupId>org.apache.tomcat.maven</groupId> <artifactId>tomcat7-maven-plugin</artifactId> 
-						<version>2.0</version> <configuration> <url>http://localhost:8080/manager/text</url> 
-						<server>alpha</server> <path>/ROOT##${maven.build.timestamp}</path> <update>true</update> 
-						</configuration> </plugin> -->
-				</plugins>
-			</build>
-		</profile>
 		<profile>
 			<id>test</id>
 			<build>
