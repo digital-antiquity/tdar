@@ -196,7 +196,7 @@
             console.log(jsonData);
             var httpPromise = $http({
                 method : "POST",
-                url : path,
+                url : TDAR.uri(path),
                 data : $.param({
                     integration : JSON.stringify(jsonData)
                 }),
@@ -227,7 +227,7 @@
 
             var httpPromise = $http({
                 method : "GET",
-                url : '/api/integration/view?id=' + id
+                url :TDAR.uri( '/api/integration/view?id=' + id)
             });
 
             httpPromise.success(function(data) {
@@ -431,9 +431,9 @@
             missingTableIds = _dedupe(missingTableIds);
 
             if (missingTableIds.length > 0) {
-                var httpPromise = $http.get('/api/integration/table-details?' + $.param({
+                var httpPromise = $http.get(TDAR.uri('/api/integration/table-details?' + $.param({
                     dataTableIds : missingTableIds
-                }, true));
+                }, true)));
 
                 httpPromise.success(function(data) {
 
@@ -489,9 +489,9 @@
             ontologyIds = _dedupe(ontologyIds);
 
             if (ontologyIds.length > 0) {
-                var httpPromise = $http.get('/api/integration/ontology-details?' + $.param({
+                var httpPromise = $http.get(TDAR.uri('/api/integration/ontology-details?' + $.param({
                     ontologyIds : ontologyIds
-                }, true));
+                }, true)));
 
                 httpPromise.success(function(data) {
                     console.log(data);
@@ -531,9 +531,9 @@
             console.log("starting integration:");
             var integrationJson = self._dumpObject(integration);
             
-            var httpPromise = $http.get('/api/integration/integrate?' + $.param({
+            var httpPromise = $http.get(TDAR.uri('/api/integration/integrate?' + $.param({
                 integration : integrationJson
-            }, true));
+            }, true)));
 
             httpPromise.success(function(data) {
                 futureData.resolve(data);
@@ -568,7 +568,7 @@
                 timeout: _futureCancel.promise
             };
 
-            $http.get(url, config).success(function(rawData_) {
+            $http.get(TDAR.uri(url), config).success(function(rawData_) {
                 _futureCancel = null;
                 var rawData = rawData_;
                 if (prefix !== undefined) {
@@ -687,7 +687,7 @@
 
             var httpPromise = $http({
                 method: 'POST',
-                url: '/api/integration/node-participation',
+                url: TDAR.uri('/api/integration/node-participation'),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 data: postData
             });
@@ -715,7 +715,7 @@
             //FIXME: refactor struts action to accept 'Content-type: application/json'. This is the angular default.
             $http({
                 method: 'POST',
-                url: '/api/integration/integrate',
+                url: TDAR.uri('/api/integration/integrate'),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 data: $.param({integration: JSON.stringify(_dumpObject(integration))})
             })

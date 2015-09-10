@@ -51,7 +51,7 @@
     <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
     <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
     <#if qunit>
-        <link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css"></#if>
+        <link rel="stylesheet" href="<@s.url value="/includes/qunit-1.11.0.css"/>" type="text/css"></#if>
     <@header.css (webFilePreprocessingEnabled ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
@@ -81,8 +81,8 @@ ${head}
 
         </script>
     </#if>
-    <#if base != ''>
-    <base href="<@s.url value=''/>">
+    <#if contextPath?has_content>
+    <base id="basePath" href="<@s.url value='/'/>">
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
@@ -242,7 +242,7 @@ ${head}
         <span class="statusMessage"></span>
     </div>
     <#if qunit>
-        <script src="/includes/qunit-1.11.0.js"></script>
+        <script src="<@s.url value="/includes/qunit-1.11.0.js"/>"></script>
     </#if>
 
     <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
@@ -254,8 +254,8 @@ ${head}
     <#if qunit>
     <#-- close the test fixture div -->
     </div>
-    <script src="/test/js/tdar.commontest.js"></script>
-    <script src="/test/js<#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
+    <script src="<@s.url value="/test/js/tdar.commontest.js"/>"></script>
+    <script src="<@s.url value="/test/js"/><#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
     </#if>
 </#if>
     <#import "/${themeDir}/settings.ftl" as settings />

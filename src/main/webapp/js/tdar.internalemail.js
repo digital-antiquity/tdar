@@ -17,7 +17,7 @@
         });
         $("#followup-send").click(function(e) {
 
-            var url = "/email/deliver"; // the script where you handle the form input.
+            var url = TDAR.uri( "/email/deliver"); // the script where you handle the form input.
             var $modal = $("#emailStatusModal");
             var $success = $(".success", $modal);
             var $error = $(".error", $modal);

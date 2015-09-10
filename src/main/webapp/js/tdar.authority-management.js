@@ -15,7 +15,7 @@ TDAR.authority = function () {
     var g_settingsMap = {
         person: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: '/lookup/person',
+            sAjaxSource: TDAR.uri() + 'lookup/person',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -33,7 +33,7 @@ TDAR.authority = function () {
         },
         institution: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: '/lookup/institution',
+            sAjaxSource: TDAR.uri() + 'lookup/institution',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -54,7 +54,7 @@ TDAR.authority = function () {
         },
         keyword: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: '/lookup/keyword',
+            sAjaxSource: TDAR.uri() + 'lookup/keyword',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
