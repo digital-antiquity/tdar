@@ -244,6 +244,12 @@ Common macros used in multiple contexts
 
              <div id="worldmap" style="height:350px" data-max="">
              </div>
+
+             <div id="mapgraphdata" style="width:100%">
+                 <h5 id="mapGraphHeader"></h5>
+                 <div id='mapgraphpie'>                 
+                 </div>
+             </div>
     </div>
 	<script>
 	$(function() {

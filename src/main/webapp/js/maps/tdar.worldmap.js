@@ -172,7 +172,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 //            _loadStateData();
         }
 
-        _drawDataGraph(event);
+        _drawDataGraph(event.target.feature.properties.name, event.target.feature.id);
 		
         if (event.target.feature.id != 'RUS') {
             map.fitBounds(event.target.getBounds());
@@ -180,15 +180,13 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
     }
     
-    function _drawDataGraph(event) {
+    function _drawDataGraph(name, id) {
 		var $div = $("#mapgraphdata");
-		if ($div.length == 0) {
-			$div = $("<div id='mapgraphdata' style='left:"+$mapDiv.width()+"px;height:"+($mapDiv.height() - 10)+"px'></div>");
-			$mapDiv.parent().append($div);
-		}
-		$div.html("<h5>" + event.target.feature.properties.name + "</h5><div id='mapgraphpie' style='height:"+($mapDiv.height() - 50)+"px'></div>");
+        //style='height:"+($mapDiv.height() - 50)+"px'
+        $("#mapGraphHeader").html(name);
+		
         var mapdata = _getMapdata($mapDiv.parent());
-		var filter = mapdata.filter(function(d) {return d.code == event.target.feature.id});
+		var filter = mapdata.filter(function(d) {return d.code == id});
 		var data = [];
 		filter.forEach(function(row){
 			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
@@ -196,15 +194,28 @@ TDAR.worldmap = (function(console, $, ctx) {
 			}
 		});
 
-		$(".mapcontainer").mouseleave(function(){
-			$("#mapgraphdata").remove();
-		});
 		var obj = {
 			bindto: '#mapgraphpie',
 		    data: {
 		        columns: data,
 		        type : 'pie',
-		    }			
+		    },
+            pie: {
+                label: {
+                    show : false
+                }
+            },
+            tooltip: {
+              format: {
+                value: function (value, ratio, id, index) { return  value + " ("+ (ratio * 100.00).toFixed(2) +"%)"; }
+              }
+            },
+            legend: {
+                    position: 'right'
+            },
+            size: {
+              height: ($div.height() * 3/5)
+            }
 		};
 		var c3colors = $("#c3colors");
 		if (c3colors.length > 0) {
