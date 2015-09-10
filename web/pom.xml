@@ -362,30 +362,6 @@
                  </execution> -->
                </executions>
            </plugin>
-           
-            <plugin>
-               <groupId>com.kelveden</groupId>
-               <artifactId>maven-karma-plugin</artifactId>
-               <version>1.6</version>
-               <executions>
-                   <execution>
-                       <phase>test</phase>
-                       <goals>
-                           <goal>start</goal>
-                       </goals>
-                   </execution>
-               </executions>
-               <configuration>
-                   <configFile>karma.conf.js</configFile>
-                   <browsers>PhantomJS</browsers>
-                   <autoWatch>false</autoWatch>
-                   <singleRun>true</singleRun>
-                   <colors>true</colors>
-                   <skipKarma>${maven.test.skip}</skipKarma>
-                   <skipTests>${maven.test.skip}</skipTests>
-                   <karmaFailureIgnore>false</karmaFailureIgnore>
-               </configuration>
-           </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -679,6 +655,29 @@
 							</execution>
 						</executions>
 					</plugin>
+            <plugin>
+               <groupId>com.kelveden</groupId>
+               <artifactId>maven-karma-plugin</artifactId>
+               <version>1.6</version>
+               <executions>
+                   <execution>
+                       <phase>test</phase>
+                       <goals>
+                           <goal>start</goal>
+                       </goals>
+                   </execution>
+               </executions>
+               <configuration>
+                   <configFile>karma.conf.js</configFile>
+                   <browsers>PhantomJS</browsers>
+                   <autoWatch>false</autoWatch>
+                   <singleRun>true</singleRun>
+                   <colors>true</colors>
+                   <skipKarma>${maven.test.skip}</skipKarma>
+                   <skipTests>${maven.test.skip}</skipTests>
+                   <karmaFailureIgnore>false</karmaFailureIgnore>
+               </configuration>
+           </plugin>
 				</plugins>
 			</build>
 			<properties>

@@ -8,12 +8,9 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.integration.DataIntegrationService;
-import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
@@ -37,15 +34,6 @@ public class IntegrationAction extends AbstractIntegrationAction {
 
     @Autowired
     private transient DataIntegrationService dataIntegrationService;
-
-    @Autowired
-    private transient IntegrationWorkflowService integrationWorkflowService;
-
-    @Autowired
-    private transient ResourceService resourceService;
-
-    @Autowired
-    private transient GenericDao genericDao;
 
     private Long ticketId;
     private String integration;

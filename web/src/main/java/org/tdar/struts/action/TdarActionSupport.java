@@ -35,9 +35,7 @@ import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -156,11 +154,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient FileSystemResourceService filesystemResourceService;
-    @Autowired
     private transient WebFileSystemResourceService webFilesystemResourceService;
-    @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
+
     @Autowired
     private transient AuthorizationService authorizationService;
 

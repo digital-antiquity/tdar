@@ -51,7 +51,7 @@
                             <goal>process</goal>
                         </goals>
                         <configuration>
-                            <attachToTest>false</attachToTest>
+                            <attachToTest>true</attachToTest>
                             <attachToMain>true</attachToMain>
                             <resourceBundles>
                                 <resourceBundle>org.tdar:locales:${project.version}</resourceBundle>

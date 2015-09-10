@@ -2,6 +2,8 @@ package org.tdar.struts.action;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.jaxp13.Validator;
@@ -190,10 +194,8 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
 
         // FIXME: needs to be a better way to handle this
         TextProviderFactory textProviderFactory = new TextProviderFactory();
-        String bundle = "Locales/tdar-messages";
 
-        LocalizedTextUtil.addDefaultResourceBundle(bundle);
-        factory.setTextProvider(textProviderFactory.createInstance(ResourceBundle.getBundle(bundle), (LocaleProvider) controller));
+        factory.setTextProvider(textProviderFactory.createInstance(getResourceBundle(), (LocaleProvider) controller));
 
         configurationManager.addContainerProvider(new XWorkConfigurationProvider());
         configurationManager.getConfiguration().getContainer().inject(factory);
@@ -202,6 +204,35 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         context.setValueStack(stack);
         ActionContext.setContext(context);
         return controller;
+    }
+
+    private ResourceBundle getResourceBundle() {
+        /*
+         * NOTE: some issues encountered with finding the locale keys properly from the module
+         */
+        ResourceBundle bundle = loadLocale();
+        if (bundle != null) {
+            return bundle;
+        }
+        try {
+            String bundleName = "target/maven-shared-archive-resources/Locales";
+            FileUtils.copyDirectory(new File(bundleName), new File("target/classes/Locales"));
+        } catch (Exception e) {
+        }
+        // default
+
+        return bundle;
+    }
+
+    private ResourceBundle loadLocale() {
+        try {
+        String bundleName = "Locales/tdar-messages";
+        ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
+        LocalizedTextUtil.addDefaultResourceBundle(bundleName);
+        return bundle;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     protected void init(TdarActionSupport controller, TdarUser user) {
@@ -256,7 +287,6 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         list.add(null);
         return list;
     }
-
 
     public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
         this.httpServletRequest = httpServletRequest;
