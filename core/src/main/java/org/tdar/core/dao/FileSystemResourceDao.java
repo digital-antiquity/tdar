@@ -40,7 +40,7 @@ public class FileSystemResourceDao {
     ResourceLoader resourceLoader;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/ROOT/";
+    private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/tdar-web/";
     private XPathFactory xPathFactory = XPathFactory.newInstance();
 
 
