@@ -757,16 +757,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = false)
     public void reconcileIncomingResourcesForCollectionWithoutRights(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove) {
-        Set<Resource> resources = persistable.getPublicResources();
+        Set<Resource> resources = persistable.getUnmanagedResources();
 
         // FIXME: check that there's no overlap with existing resources
         for (Resource resource : resourcesToAdd) {
-            resource.getPublicResourceCollections().add(persistable);
+            resource.getUnmanagedResourceCollections().add(persistable);
             resources.add(resource);
         }
 
         for (Resource resource : resourcesToRemove) {
-            resource.getPublicResourceCollections().remove(persistable);
+            resource.getUnmanagedResourceCollections().remove(persistable);
             resources.remove(resource);
         }
         saveOrUpdate(persistable);

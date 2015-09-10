@@ -78,7 +78,7 @@ public class ResourceClassBridge implements FieldBridge {
         Set<Long> collectionIds = new HashSet<Long>();
         Set<Long> directCollectionIds = new HashSet<Long>();
         Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
-        collections.addAll(resource.getPublicResourceCollections());
+        collections.addAll(resource.getUnmanagedResourceCollections());
         for (ResourceCollection collection : collections) {
             if (collection.isShared()) {
                 directCollectionIds.add(collection.getId());

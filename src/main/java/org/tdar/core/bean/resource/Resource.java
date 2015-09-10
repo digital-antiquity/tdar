@@ -459,12 +459,12 @@ public class Resource implements Persistable,
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
-    @JoinTable(name = "public_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 2)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    private Set<ResourceCollection> publicResourceCollections = new LinkedHashSet<ResourceCollection>();
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
+    private Set<ResourceCollection> unmanagedResourceCollections = new LinkedHashSet<ResourceCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     @IndexedEmbedded
@@ -1934,17 +1934,17 @@ public class Resource implements Persistable,
         this.formattedDescription = formattedDescription;
     }
 
-    public Set<ResourceCollection> getPublicResourceCollections() {
-        return publicResourceCollections;
+    public Set<ResourceCollection> getUnmanagedResourceCollections() {
+        return unmanagedResourceCollections;
     }
 
-    public void setPublicResourceCollections(Set<ResourceCollection> publicResourceCollections) {
-        this.publicResourceCollections = publicResourceCollections;
+    public void setUnmanagedResourceCollections(Set<ResourceCollection> publicResourceCollections) {
+        this.unmanagedResourceCollections = publicResourceCollections;
     }
 
-    public Collection<? extends ResourceCollection> getVisiblePublicResourceCollections() {
+    public Collection<? extends ResourceCollection> getVisibleUnmanagedResourceCollections() {
         Set<ResourceCollection> collections = new LinkedHashSet<ResourceCollection>();
-        for (ResourceCollection collection : getPublicResourceCollections()) {
+        for (ResourceCollection collection : getUnmanagedResourceCollections()) {
             if (collection.isShared() && !collection.isHidden()) {
                 collections.add(collection);
             }

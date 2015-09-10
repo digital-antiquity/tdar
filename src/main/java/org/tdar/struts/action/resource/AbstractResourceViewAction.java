@@ -389,11 +389,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
         // if nobody logged in, just get the shared+visible collections
         Set<ResourceCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
-        collections.addAll(getResource().getVisiblePublicResourceCollections());
+        collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
         if (isAuthenticated()) {
             Set<ResourceCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
-            all.addAll(getResource().getPublicResourceCollections());
+            all.addAll(getResource().getUnmanagedResourceCollections());
             for (ResourceCollection resourceCollection : all) {
                 if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
                     collections.add(resourceCollection);
