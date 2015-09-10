@@ -54,6 +54,7 @@ import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.TestConfiguration;
 
 import com.opensymphony.xwork2.Action;
 
@@ -294,8 +295,12 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         String openUrl = controller.getOpenUrl();
         logger.debug(openUrl);
+        String baseUrl = TestConfiguration.getInstance().getBaseUrl();
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() -2);
+        }
         assertEquals(
-                "ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/http://localhost:8180&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:unknown&amp;rft.genre=unknown&amp;rft.title=2008+New+Philadelphia+Archaeology+Report%2C+Chapter+3%2C+Block+3%2C+Lot+4",
+                "ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/"+baseUrl+"&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:unknown&amp;rft.genre=unknown&amp;rft.title=2008+New+Philadelphia+Archaeology+Report%2C+Chapter+3%2C+Block+3%2C+Lot+4",
                 openUrl);
     }
 

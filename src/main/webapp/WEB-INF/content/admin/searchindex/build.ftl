@@ -26,7 +26,7 @@
 
         function startIndex() {
 
-            var url = "<@s.url value="buildIndex"/>?userId=${authenticatedUser.id?c}&";
+            var url = "<@s.url value="/admin/searchindex/buildIndex"/>?userId=${authenticatedUser.id?c}&";
             var indx = 0;
             $('input[type=checkbox]:checked').each(function () {
                 url += "&indexesToRebuild[" + indx + "]=" + $(this).val();
@@ -62,7 +62,7 @@
         }        
         function updateProgress() {
         console.log("updateProgress");
-            var url = "<@s.url value="checkstatus"/>?userId=${authenticatedUser.id?c}&";
+            var url = "<@s.url value="/admin/searchindex/checkstatus"/>?userId=${authenticatedUser.id?c}&";
             $.post(url, function (data) {
                 _checkStatus(data);
             });

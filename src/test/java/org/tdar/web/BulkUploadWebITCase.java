@@ -286,7 +286,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresentIgnoreCase("Bulk Upload Status");
         // logger.info(getPageCode());
         assertTextPresentInCode("The upload process is complete");
-        String statusPage = "/batch/checkstatus?ticketId=" + ticketId;
+        String statusPage = "batch/checkstatus?ticketId=" + ticketId;
         loadStatusPage(statusPage);
         int count = 0;
         // fixme: parse this json and get the actual number,

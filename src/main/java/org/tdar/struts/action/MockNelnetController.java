@@ -86,7 +86,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     }
 
     private void sendResponse() throws TdarActionException {
-        String url = String.format("https://%s:%s/cart/process-external-payment-response", getHostName(), getHttpsPort());
+        String url = String.format("https://%s:%s%s/cart/process-external-payment-response", getHostName(), getHttpsPort(),getContextPath());
 
         HttpPost postReq = new HttpPost(url);
         getLogger().info(url);

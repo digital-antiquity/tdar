@@ -2,7 +2,7 @@
 <!DOCTYPE urlrewrite
         PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"
         "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
-<urlrewrite>
+<urlrewrite >
     <rule>
         <name>XML Namespace Document</name>
         <note>

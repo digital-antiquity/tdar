@@ -20,6 +20,8 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.PairtreeFilestore;
 
+import com.hp.hpl.jena.sparql.pfunction.library.container;
+
 /**
  * $Id$
  * 
@@ -325,8 +327,16 @@ public class TdarConfiguration {
         if (getPort() != DEFAULT_PORT) {
             base += ":" + getPort();
         }
+        if (StringUtils.isNotBlank(getContextPath())) {
+            base += getContextPath();
+        }
         return base;
     }
+    
+    public String getContextPath() {
+        return "";
+    }
+    
 
     public String getStaticContentBaseUrl() {
         String base = "http://" + getStaticContentHost();
@@ -340,6 +350,9 @@ public class TdarConfiguration {
         String base = "https://" + getHostName();
         if (getHttpsPort() != HTTPS_PORT_DEFAULT) {
             base += ":" + getHttpsPort();
+        }
+        if (StringUtils.isNotBlank(getContextPath())) {
+            base += getContextPath();
         }
         return base;
     }
@@ -933,6 +946,10 @@ public class TdarConfiguration {
         this.configurationFile = configFile.getName();
         filestore = loadFilestore();
         initPersonalFilestorePath();
+    }
+
+    public String getStaticContext() {
+        return assistant.getStringProperty("static.context", "");
     }
 
 }

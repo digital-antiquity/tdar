@@ -186,11 +186,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         return null;
     }
 
-    public String pathToUrl(String localPath) {
+    public String pathToUrl(final String localPath_) {
+        String localPath = "";
+        if (StringUtils.isNotBlank(localPath_)) {
+            localPath = localPath_;
+        }
         String prefix = getBaseUrl();
         try {
             URL current = internalPage.getUrl();
-            prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+            prefix = String.format("%s://%s:%s%s", current.getProtocol(), current.getHost(), current.getPort(), CONFIG.getContext());
             logger.info("SETTING URL TO {}{}", prefix, localPath);
         } catch (Exception e) {
             logger.trace("{}", e);
@@ -199,6 +203,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         if (localPath.startsWith("//")) {
             localPath = localPath.substring(1);
         }
+        
 
         if (prefix.endsWith("/")) {
             while (localPath.startsWith("/")) {
@@ -206,6 +211,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             }
         }
 
+        if (StringUtils.isNotBlank(CONFIG.getContext()) && localPath.startsWith(CONFIG.getContext())) {
+            localPath = localPath.substring(CONFIG.getContext().length());
+        }
         String url = prefix + localPath;
         return url;
     }
@@ -786,7 +794,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         }
     }
 
-    public void clickLinkByHref(String href) throws IOException {
+    public void clickLinkByHref(final String href_) throws IOException {
+        String href = href_;
+        if (StringUtils.isNotBlank(CONFIG.getContext()) && !StringUtils.startsWith(href, CONFIG.getContext())) {
+            href = CONFIG.getContext() + href;
+        }
         changePage(getHtmlPage().getAnchorByHref(href).click());
     }
 
@@ -1002,8 +1014,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             if (StringUtils.isNotBlank(part) && StringUtils.isNumeric(part)) {
                 return Long.parseLong(part);
             }
+            int indexOf = part.indexOf("id=");
+            if (indexOf != -1) {
+                part = part.substring(indexOf+4);
+                if (StringUtils.isNumeric(part)) {
+                    return Long.parseLong(part);
+                }
+            }
         }
-        throw new TdarRecoverableRuntimeException("could not find tDAR ID in URL" + internalPage.getUrl().toString());
+        throw new TdarRecoverableRuntimeException("could not find tDAR ID in URL: " + internalPage.getUrl().toString());
     }
 
     public void assertCurrentUrlEquals(String url) {
@@ -1109,7 +1128,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     private int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
         int code = 0;
         WebClient client = getWebClient();
-        String url = getBaseUrl() + "/upload/upload";
+        String url = getBaseUrl() + "upload/upload";
+        logger.debug("uploadUrl: {}", url);
         try {
             WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
             List<NameValuePair> parms = new ArrayList<NameValuePair>();
@@ -1249,7 +1269,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             toReturn.put(INVOICE_ID, getValue(INVOICE_ID));
             assertCurrentUrlContains("process-payment-request");
             clickLinkWithText("Click Here To Begin Payment Process");
-            URL polingUrl = new URL(getBaseUrl() + "/cart/" + toReturn.get(INVOICE_ID) + "/polling-check");
+            URL polingUrl = new URL(getBaseUrl() + "cart/" + toReturn.get(INVOICE_ID) + "/polling-check");
             String response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
             checkInput(NelnetTransactionItem.getInvoiceIdKey(), toReturn.get(INVOICE_ID));
@@ -1441,6 +1461,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
         reindex();
         logout();
+        logger.debug(url);
         gotoPage(url);
     }
 
@@ -1448,7 +1469,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/buildIndex");
         try {
-            URL url = new URL(getBaseUrl() + "/admin/searchindex/checkstatus?userId=" + getAdminUserId());
+            URL url = new URL(getBaseUrl() + "admin/searchindex/checkstatus?userId=" + getAdminUserId());
             internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
 
             logger.debug(getPageCode());
@@ -1469,7 +1490,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
                 count++;
             }
         } catch (Exception e) {
-            fail("exception in reindexing");
+            logger.error("exception in reindexing", e);
+            fail("exception in reindexing:" + e);
         }
     }
 

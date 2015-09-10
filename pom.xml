@@ -1954,7 +1954,6 @@
                                 <exclude>**/functional/**</exclude>
                                 <exclude>**/web/*</exclude>
                             </excludes>
-                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
                         </configuration>
@@ -1976,7 +1975,6 @@
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
                             <skip>${skipWebTests}</skip>
-                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -1996,7 +1994,6 @@
                             <includes>
                                 <include>**/functional/**</include>
                             </includes>
-                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         </configuration>
                     </execution>
                 </executions>

@@ -9,7 +9,7 @@
     <p>
         Please click the link below to start your dataset integration.
     </p>
-        <a href="integrate">Start Now</a>
+        <a href="<@s.url value="/workspace/integrate"/>">Start Now</a>
 
 </div>
 
