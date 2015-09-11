@@ -139,7 +139,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             fillColor:"#FEEFE",
             fillOpacity: 1
         };
-        $.getJSON("/js/maps/USA.json", function(data) {
+        $.getJSON(TDAR.uri("/js/maps/USA.json"), function(data) {
             stateLayer = new L.GeoJSON(data, {
                 style: usStyle,
                 onEachFeature: function(feature, layer_) {
@@ -180,6 +180,8 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
     }
     
+    var allData = new Array();
+    
     function _drawDataGraph(name, id) {
 		var $div = $("#mapgraphdata");
         //style='height:"+($mapDiv.height() - 50)+"px'
@@ -200,12 +202,25 @@ TDAR.worldmap = (function(console, $, ctx) {
       			}
       		});
         } else {
-            var json  = JSON.parse($("#homepageResourceCountCache").text());
-            json.forEach(function(row) {
+            if (allData.length == 0) {
+                var tmp = {};
+            mapdata.forEach(function(row) {
       			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-      				data.push([row.label, row.count]);				
-      			}                
+                    var t = 0;
+                    if (parseInt(tmp[row.resourceType])) {
+                        t = parseInt(tmp[row.resourceType]);
+                    }
+                    tmp[row.resourceType] = t + row.count;
+      			}
             });
+
+            for (var type in tmp) {
+              if (tmp.hasOwnProperty(type)) {
+                  allData.push([ type , tmp[type]]);
+              }
+            };
+        }
+        data = allData;
         }
 
 		var obj = {
