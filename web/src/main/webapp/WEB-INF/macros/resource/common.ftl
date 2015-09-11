@@ -115,7 +115,7 @@ Common macros used in multiple contexts
         <#local _current = (currentUrl!'/') >
         <#if returnUrl != ''><#local _current = returnUrl /></#if>
         <#if _current == '/' || currentUrl?starts_with('/login')>
-        <a class="${class}" href="/login" rel="nofollow">Log In</a>
+        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow">Log In</a>
         <#else>
         <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
         </#if>
@@ -243,6 +243,12 @@ Common macros used in multiple contexts
         </script>
 
              <div id="worldmap" style="height:350px" data-max="">
+             </div>
+
+             <div id="mapgraphdata" style="width:100%">
+                 <h5 id="mapGraphHeader"></h5>
+                 <div id='mapgraphpie'>                 
+                 </div>
              </div>
     </div>
 	<script>

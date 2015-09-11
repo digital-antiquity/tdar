@@ -305,6 +305,22 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return String.format("%s/%s", getHostedFileStoreLocation(), "sitemap");
     }
 
+    public String getBaseUrl() {
+        String base = "http://" + getHostName();
+        if (getPort() != DEFAULT_PORT) {
+            base += ":" + getPort();
+        }
+        if (StringUtils.isNotBlank(getContextPath())) {
+            base += getContextPath();
+        }
+        return base;
+    }
+    
+    public String getContextPath() {
+        return "";
+    }
+    
+
     public String getStaticContentBaseUrl() {
         String base = "http://" + getStaticContentHost();
         if (getStaticContentPort() != DEFAULT_PORT) {
@@ -317,6 +333,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         String base = "https://" + getHostName();
         if (getHttpsPort() != HTTPS_PORT_DEFAULT) {
             base += ":" + getHttpsPort();
+        }
+        if (StringUtils.isNotBlank(getContextPath())) {
+            base += getContextPath();
         }
         return base;
     }
@@ -880,5 +899,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     @Override
 	protected ConfigurationAssistant getAssistant() {
     	return assistant;
+    }
+
+    public String getStaticContext() {
+        return assistant.getStringProperty("static.context", "");
     }
 }

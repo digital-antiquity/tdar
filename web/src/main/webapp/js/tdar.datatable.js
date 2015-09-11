@@ -25,7 +25,7 @@ TDAR.datatable = function() {
             requestCallback : doNothingCallback,
             selectableRows : false,
             rowSelectionCallback : doNothingCallback,
-            "sAjaxSource" : '/lookup/resource',
+            "sAjaxSource" : TDAR.uri( 'lookup/resource'),
             "sAjaxDataProp" : 'resources',
             "bJQueryUI" : false,
             "sScrollY" : "350px",
@@ -299,7 +299,7 @@ TDAR.datatable = function() {
         var $dataTable = $('#resource_datatable');
         _registerLookupDataTable({
             tableSelector : '#resource_datatable',
-            sAjaxSource : '/lookup/resource',
+            sAjaxSource : TDAR.uri( 'lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -562,7 +562,7 @@ TDAR.datatable = function() {
     function _registerUserLookupDatatable() {
         var settings = {
             tableSelector : '#dataTable',
-            sAjaxSource : '/lookup/person',
+            sAjaxSource : TDAR.uri() + 'lookup/person',
             "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             sPaginationType : "bootstrap",
             "bLengthChange" : true,
@@ -693,7 +693,7 @@ TDAR.datatable = function() {
                 "sName" : "id_row_tdar",
                 "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
                 "fnRender" : function(obj) {
-                    return '<a href="/' + namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] +
+                    return '<a href="' + TDAR.uri() + namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] +
                             '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                 }
             });

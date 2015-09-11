@@ -112,7 +112,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -125,11 +124,8 @@ import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
-import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.ResourceClassBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MathUtils;
@@ -460,6 +456,15 @@ public class Resource implements Persistable,
     @IndexedEmbedded(depth = 2)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @IndexedEmbedded(depth = 2)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
+    private Set<ResourceCollection> unmanagedResourceCollections = new LinkedHashSet<ResourceCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     @IndexedEmbedded
@@ -1927,5 +1932,23 @@ public class Resource implements Persistable,
 
     public void setFormattedDescription(String formattedDescription) {
         this.formattedDescription = formattedDescription;
+    }
+
+    public Set<ResourceCollection> getUnmanagedResourceCollections() {
+        return unmanagedResourceCollections;
+    }
+
+    public void setUnmanagedResourceCollections(Set<ResourceCollection> publicResourceCollections) {
+        this.unmanagedResourceCollections = publicResourceCollections;
+    }
+
+    public Collection<? extends ResourceCollection> getVisibleUnmanagedResourceCollections() {
+        Set<ResourceCollection> collections = new LinkedHashSet<ResourceCollection>();
+        for (ResourceCollection collection : getUnmanagedResourceCollections()) {
+            if (collection.isShared() && !collection.isHidden()) {
+                collections.add(collection);
+            }
+        }
+        return collections;
     }
 }

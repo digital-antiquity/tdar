@@ -189,7 +189,7 @@
         var url= "/cart/" + invoiceid + "/polling-check";
 
         $.ajax({
-            url: url,
+            url: TDAR.uri(url),
             dataType: 'json',
             type: 'POST',
             xhrFields: { withCredentials: true },
@@ -200,7 +200,7 @@
                 } else {
                     $("#polling-status").html("done: " + data.transactionStatus);
                     if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
-                        window.document.location = "/dashboard";
+                        window.document.location = TDAR.uri("/dashboard");
                     }
                 }
                 if (data.errors != undefined && data.errors != "") {

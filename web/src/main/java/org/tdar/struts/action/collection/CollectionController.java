@@ -90,6 +90,8 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private List<Long> toRemove = new ArrayList<>();
     private List<Long> toAdd = new ArrayList<>();
+    private List<Long> publicToRemove = new ArrayList<>();
+    private List<Long> publicToAdd = new ArrayList<>();
     private List<Project> allSubmittedProjects;
     private File file;
     private String fileContentType;
@@ -139,8 +141,13 @@ public class CollectionController extends AbstractPersistableController<Resource
         List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
+
+        List<Resource> publicResourcesToRemove = resourceService.findAll(Resource.class, publicToRemove);
+        List<Resource> publicResourcesToAdd = resourceService.findAll(Resource.class, publicToAdd);
+        getLogger().debug("toAdd: {}", resourcesToAdd);
+        getLogger().debug("toRemove: {}", resourcesToRemove);
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
-                resourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
+                resourcesToRemove, publicResourcesToAdd, publicResourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -551,5 +558,21 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setOwner(TdarUser owner) {
         this.owner = owner;
+    }
+
+    public List<Long> getPublicToAdd() {
+        return publicToAdd;
+    }
+
+    public void setPublicToAdd(List<Long> publicToAdd) {
+        this.publicToAdd = publicToAdd;
+    }
+
+    public List<Long> getPublicToRemove() {
+        return publicToRemove;
+    }
+
+    public void setPublicToRemove(List<Long> publicToRemove) {
+        this.publicToRemove = publicToRemove;
     }
 }

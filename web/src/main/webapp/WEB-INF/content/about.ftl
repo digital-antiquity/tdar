@@ -80,7 +80,7 @@
     
             <#if rssEntries?has_content>
                 <ul>
-                    <#assign maxEntries =5 />
+                    <#assign maxEntries =6 />
                     <#list rssEntries as entry>
                         <#assign maxEntries = maxEntries -1 />
                         <#if maxEntries == 0>

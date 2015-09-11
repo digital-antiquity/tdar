@@ -157,13 +157,31 @@
         </div>
             <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection"/>
 
-        <div class="glide" id="divResourcesSesction" data-tiplabel="Add/Remove Resources" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
+        <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
-            <h2>Add/Remove Resources</h2>
+            <h2>Share Resources with other users</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.resources?size > 0)>
             <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection>
+            </@edit.resourceDataTable>
+
+            <div id="divNoticeContainer" style="display:none">
+                <div id="divAddProjectToCollectionNotice" class="alert">
+                    <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNotice">×</button>
+                    <em>Reminder:</em> Adding projects to a collection does not include the resources within a project.
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="glide" id="divPublicResourcesSesction" data-tiplabel="Include Other Resources" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
+                    in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
+                    of results.">
+            <h2>Include other resources (display only)</h2>
+            <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
+            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection idAddition="public">
             </@edit.resourceDataTable>
 
             <div id="divNoticeContainer" style="display:none">
@@ -213,6 +231,7 @@
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
+                TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents

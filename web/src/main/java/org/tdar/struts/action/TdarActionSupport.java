@@ -509,9 +509,13 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             port = ":" + getTdarConfiguration().getStaticContentPort();
         }
 
-        return String.format("%s//%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port);
+        return String.format("%s//%s%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port,getStaticContext());
     }
     
+    private String getStaticContext() {
+        return getTdarConfiguration().getStaticContext();
+    }
+
     /**
      * Return the default/suggested base url for static content (trailing slash removed, if present)
      * 

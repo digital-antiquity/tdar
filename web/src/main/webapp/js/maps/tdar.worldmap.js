@@ -64,7 +64,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 
         // load map data
         //FIXME: consider embedding data for faster rendering
-        $.getJSON("/js/maps/world.json", function(data) {
+        $.getJSON(TDAR.uri("/js/maps/world.json"), function(data) {
             hlayer = new L.GeoJSON(data, {
                 style: myStyle,
                 onEachFeature: function(feature, layer_) {
@@ -139,7 +139,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             fillColor:"#FEEFE",
             fillOpacity: 1
         };
-        $.getJSON("/js/maps/USA.json", function(data) {
+        $.getJSON(TDAR.uri("/js/maps/USA.json"), function(data) {
             stateLayer = new L.GeoJSON(data, {
                 style: usStyle,
                 onEachFeature: function(feature, layer_) {
@@ -172,7 +172,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 //            _loadStateData();
         }
 
-        _drawDataGraph(event);
+        _drawDataGraph(event.target.feature.properties.name, event.target.feature.id);
 		
         if (event.target.feature.id != 'RUS') {
             map.fitBounds(event.target.getBounds());
@@ -180,31 +180,82 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
     }
     
-    function _drawDataGraph(event) {
+    var allData = new Array();
+    
+    function _drawDataGraph(name, id) {
 		var $div = $("#mapgraphdata");
-		if ($div.length == 0) {
-			$div = $("<div id='mapgraphdata' style='left:"+$mapDiv.width()+"px;height:"+($mapDiv.height() - 10)+"px'></div>");
-			$mapDiv.parent().append($div);
-		}
-		$div.html("<h5>" + event.target.feature.properties.name + "</h5><div id='mapgraphpie' style='height:"+($mapDiv.height() - 50)+"px'></div>");
+        //style='height:"+($mapDiv.height() - 50)+"px'
+        if (name == undefined ) {
+            $("#mapGraphHeader").html("");
+        } else {
+            $("#mapGraphHeader").html(name);
+        }
+		
         var mapdata = _getMapdata($mapDiv.parent());
-		var filter = mapdata.filter(function(d) {return d.code == event.target.feature.id});
+		var filter =[];
 		var data = [];
-		filter.forEach(function(row){
-			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-				data.push([row.label, row.count]);				
-			}
-		});
+        if (id != undefined) {
+            filter = mapdata.filter(function(d) {return d.code == id});;  
+      		filter.forEach(function(row){
+      			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
+      				data.push([row.label, row.count]);				
+      			}
+      		});
+        } else {
+            if (allData.length == 0) {
+                var tmp = {};
+            mapdata.forEach(function(row) {
+      			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
+                    var t = 0;
+                    if (parseInt(tmp[row.resourceType])) {
+                        t = parseInt(tmp[row.resourceType]);
+                    }
+                    tmp[row.resourceType] = t + row.count;
+      			}
+            });
 
-		$(".mapcontainer").mouseleave(function(){
-			$("#mapgraphdata").remove();
-		});
+            for (var type in tmp) {
+              if (tmp.hasOwnProperty(type)) {
+                  allData.push([ type , tmp[type]]);
+              }
+            };
+        }
+        data = allData;
+        }
+
 		var obj = {
 			bindto: '#mapgraphpie',
 		    data: {
 		        columns: data,
 		        type : 'pie',
-		    }			
+		    },
+            pie: {
+                label: {
+                    show : false
+                }
+            },
+            donut: {
+                label: {
+                    show: false
+                }
+            },
+            tooltip: {
+              format: {
+                value: function (value, ratio, id, index) { return  value + " ("+ (ratio * 100.00).toFixed(2) +"%)"; }
+              }
+            },
+            legend: {
+                    position: 'right',
+                inset: {
+                    anchor: 'top-left',
+                  x: 20,
+                  y: 0,
+                  step: 4
+                }
+            },
+            size: {
+              height: ($div.height() * 3/5)
+            }
 		};
 		var c3colors = $("#c3colors");
 		if (c3colors.length > 0) {
@@ -232,6 +283,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (stateLayer != undefined) {
             map.removeLayer(stateLayer);
         }
+        _drawDataGraph();
     }
 
     function _highlightFeature(e) {

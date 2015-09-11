@@ -96,6 +96,10 @@ public class TestConfiguration {
         return assistant.getIntProperty("tdar.https.port", 8143);
     }
 
+    public String getContext() {
+        return assistant.getStringProperty("tdar.context.path", "");
+    }
+
     public int getPort() {
         return assistant.getIntProperty("tdar.http.port", 8180);
     }
@@ -149,7 +153,7 @@ public class TestConfiguration {
     }
 
     public String getBaseUrl() {
-        return String.format("http://%s:%s/", getHostName(), getPort());
+        return String.format("http://%s:%s%s/", getHostName(), getPort(), getContext());
     }
 
     public String getUsername(String user) {
@@ -167,7 +171,7 @@ public class TestConfiguration {
     }
 
     public String getBaseSecureUrl() {
-        return String.format("https://%s:%s/", getHostName(), getHttpsPort());
+        return String.format("https://%s:%s%s/", getHostName(), getHttpsPort(), getContext());
     }
 
     public String getChromeApplicationPath() {
