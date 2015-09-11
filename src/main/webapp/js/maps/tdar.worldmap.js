@@ -95,7 +95,7 @@ TDAR.worldmap = (function(console, $, ctx) {
                 '<i style="width:10px;height:10px;display:inline-block;background:' + _getColor(grades[i] + 1) + '">&nbsp;</i> ';
             }
             console.log(max);
-            legnd.innerHTML += " <span>"+max+"</span> ";
+            legnd.innerHTML += " <span>"+TDAR.common.formatNumber(max)+"</span> ";
             $(div).append(legnd);
             return div;
         };
@@ -186,7 +186,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 		var $div = $("#mapgraphdata");
         //style='height:"+($mapDiv.height() - 50)+"px'
         if (name == undefined ) {
-            $("#mapGraphHeader").html("");
+            $("#mapGraphHeader").html("Worldwide");
         } else {
             $("#mapGraphHeader").html(name);
         }
@@ -195,7 +195,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 		var filter =[];
 		var data = [];
         if (id != undefined) {
-            filter = mapdata.filter(function(d) {return d.code == id});;  
+            filter = mapdata.filter(function(d) {return d.code == id});  
       		filter.forEach(function(row){
       			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
       				data.push([row.label, row.count]);				
@@ -207,10 +207,10 @@ TDAR.worldmap = (function(console, $, ctx) {
             mapdata.forEach(function(row) {
       			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
                     var t = 0;
-                    if (parseInt(tmp[row.resourceType])) {
-                        t = parseInt(tmp[row.resourceType]);
+                    if (parseInt(tmp[row.label])) {
+                        t = parseInt(tmp[row.label]);
                     }
-                    tmp[row.resourceType] = t + row.count;
+                    tmp[row.label] = t + row.count;
       			}
             });
 
@@ -241,10 +241,26 @@ TDAR.worldmap = (function(console, $, ctx) {
             },
             tooltip: {
               format: {
-                value: function (value, ratio, id, index) { return  value + " ("+ (ratio * 100.00).toFixed(2) +"%)"; }
+                value: function (value, ratio, id, index) { return  TDAR.common.formatNumber(value) + " ("+ (ratio * 100.00).toFixed(2) +"%)"; }
               }
             },
-            legend: {
+            size: {
+              height: ($div.height() * 3/5)
+            }
+		};
+		if ($div.data("mode") == 'vertical') {
+            obj.legend =  {
+                    position: 'bottom',
+                inset: {
+                    anchor: 'top-left',
+                  x: 20,
+                  y: 0,
+                  step: 4
+                }
+            };
+            obj.size.height= '300px';
+		} else {
+		    obj.legend =  {
                     position: 'right',
                 inset: {
                     anchor: 'top-left',
@@ -252,11 +268,9 @@ TDAR.worldmap = (function(console, $, ctx) {
                   y: 0,
                   step: 4
                 }
-            },
-            size: {
-              height: ($div.height() * 3/5)
-            }
-		};
+            };
+		}
+		
 		var c3colors = $("#c3colors");
 		if (c3colors.length > 0) {
 			var c3colorsobj = JSON.parse(c3colors.html());
@@ -296,7 +310,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             }
         }
 
-        $("#data").html(layer.feature.properties.name + ": " + cnt);
+        $("#data").html(layer.feature.properties.name + ": " + TDAR.common.formatNumber(cnt));
         if (overlay === true) {
             return false;
         }

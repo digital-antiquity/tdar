@@ -70,10 +70,7 @@
 <#if !archiveFileEnabled>
     
     <div class="row">
-        <div class="span6 map">
-            <h3>${siteAcronym} Worldwide</h3>
             <@common.renderWorldMap />
-        </div>
         <div class="span6 news">
     
             <h3><a href="${newsUrl}">What's New at ${siteAcronym}?</a></h3>
