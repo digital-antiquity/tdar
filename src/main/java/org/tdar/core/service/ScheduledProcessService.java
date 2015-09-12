@@ -104,6 +104,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private LinkedHashSet<ScheduledProcess> scheduledProcessQueue = new LinkedHashSet<>();
     private boolean hasRunStartupProcesses;
 
+    // * Spring scheduling cron expressions: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
+
     /**
      * Once a week, on Sundays, generate some static, cached stats for use by the admin area and general system
      */
@@ -180,7 +182,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Log Account Usage History
      */
     // * Spring scheduling cron expressions: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
-    @Scheduled(cron = "0 1 1 * * *")
+    @Scheduled(cron = "0 0 1 1 * *")
     public void cronUpdateAccountUsageHistory() {
         logger.info("updating account usage history");
         queue(scheduledProcessMap.get(AccountUsageHistoryLoggingTask.class));

@@ -24,12 +24,16 @@ public class DownloadFile implements Serializable {
     private String originalFilename;
     private Long informationResourceId;
     private Long informationResourceFileId;
+    private boolean derivative = false;
 
     public DownloadFile(File file, String string, InformationResourceFileVersion irFileVersion) {
         this.setFile(file);
         this.originalFilename = string;
         this.informationResourceId = irFileVersion.getInformationResourceId();
         this.informationResourceFileId = irFileVersion.getInformationResourceFileId();
+        if (irFileVersion.isDerivative()) {
+            setDerivative(true);
+        }
     }
 
     public InputStream getInputStream() throws Exception {
@@ -76,5 +80,13 @@ public class DownloadFile implements Serializable {
 
     public void setInformationResourceFileId(Long informationResourceFileId) {
         this.informationResourceFileId = informationResourceFileId;
+    }
+
+    public boolean isDerivative() {
+        return derivative;
+    }
+
+    public void setDerivative(boolean derivative) {
+        this.derivative = derivative;
     }
 }
