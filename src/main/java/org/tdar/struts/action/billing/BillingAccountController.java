@@ -1,6 +1,7 @@
 package org.tdar.struts.action.billing;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -15,6 +16,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingAccountGroup;
@@ -73,6 +75,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @Autowired
     private transient AuthorizationService authorizationService;
 
+
     @SkipValidation
     @Action(value = CHOOSE, results = {
             @Result(name = SUCCESS, location = "select-account.ftl"),
@@ -86,7 +89,8 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
             throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
         }
-        setAccounts(accountService.listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+        setAccounts(accountService
+                .listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             return SUCCESS;
         }
@@ -97,22 +101,56 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = VIEW_ID, type = "redirect"),
-                    @Result(name = INPUT, location = VIEW_ID)
+                    @Result(name = INPUT, location = "view.ftl")
             })
     @PostOnly
     @SkipValidation
     public String createCouponCode() throws TdarActionException {
-        try {
-            for (int i = 0; i < quantity; i++) {
-                accountService.generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
-            }
-            accountService.updateQuota(getAccount());
-        } catch (Throwable e) {
-            addActionError(e.getMessage());
+        validateCouponCode();
+
+        if(hasActionErrors()) {
             loadViewMetadata();
             return INPUT;
         }
+        for (int i = 0; i < quantity; i++) {
+            accountService.generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
+        }
+        accountService.updateQuota(getAccount());
         return SUCCESS;
+    }
+
+    private void validateCouponCode() {
+        getLogger().debug("validating coupon:: files:{}  mb:{}  expires:{}", getNumberOfFiles(), getNumberOfMb(), getExipres());
+        long mb = getNumberOfMb() != null ? getNumberOfMb() : 0;
+        long files = getNumberOfFiles() != null ? getNumberOfFiles() : 0;
+
+        // account required
+        if(PersistableUtils.isTransient(getAccount())) {
+            addActionError(getText("accountService.account_is_null"));
+        }
+
+        // either space or files required
+        if(mb <= 0 && files <= 0) {
+            addActionError(getText("accountService.specify_either_space_or_files"));
+        }
+
+        // date required
+        // date must be in the future (Think, McFly, think!)
+        if(getExipres() == null) {
+            addActionError(getText("invoiceService.coupon_expiration_invalid"));
+        } else {
+            DateTime d = new DateTime(getExipres());
+            if(d.isBefore(null)) {
+                addActionError(getText("invoiceService.coupon_expiration_invalid"));
+            }
+        }
+
+        if(hasActionErrors()) {
+            getLogger().info("coupon is not valid: errors:{}", getActionErrors());
+
+        } else {
+            getLogger().info("coupon appears to be valid");
+        }
     }
 
     @Override
