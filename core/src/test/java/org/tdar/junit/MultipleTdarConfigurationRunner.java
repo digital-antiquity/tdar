@@ -25,15 +25,6 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         super(klass);
     }
 
-    // @Override
-    // protected Description describeChild(FrameworkMethod method) {
-    // if (method.getAnnotation(RunWithTdarConfiguration.class) != null &&
-    // method.getAnnotation(Ignore.class) == null) {
-    // return describeTest(method);
-    // }
-    // return super.describeChild(method);
-    // }
-
     private Description describeTest(FrameworkMethod method) {
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
         try {

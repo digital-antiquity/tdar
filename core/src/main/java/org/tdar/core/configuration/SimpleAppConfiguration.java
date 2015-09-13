@@ -1,7 +1,10 @@
 package org.tdar.core.configuration;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -19,6 +22,10 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
@@ -32,7 +39,7 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(basePackages = { "org.tdar" }, excludeFilters = {})
-@ImportResource(value = { "classpath:/spring-local-settings.xml" })
+@ImportResource(value = { "classpath:spring-local-settings.xml" })
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
@@ -83,5 +90,24 @@ public class SimpleAppConfiguration implements Serializable {
     @Bean(name = "processManager")
     public ProcessManager processManager() {
         return new BaseProcessManager();
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+        PropertySourcesPlaceholderConfigurer placeholder = new PropertySourcesPlaceholderConfigurer();
+        String CONFIG_DIR = System.getenv("TDAR_CONFIG_PATH");
+        List<Resource> resources = new ArrayList<>();
+        String[] propertyFiles = { "hibernate.properties" };
+        for (String propertyFile : propertyFiles) {
+            if (CONFIG_DIR == null) {
+                ClassPathResource resource = new ClassPathResource(propertyFile);
+                resources.add(resource);
+            } else {
+                FileSystemResource resource = new FileSystemResource(new File(CONFIG_DIR, propertyFile));
+                resources.add(resource);
+            }
+        }
+        placeholder.setLocations(resources.toArray(new Resource[0]));
+        return placeholder;
     }
 }

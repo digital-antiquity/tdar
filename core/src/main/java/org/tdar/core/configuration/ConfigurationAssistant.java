@@ -76,11 +76,16 @@ public class ConfigurationAssistant implements Serializable {
     }
 
     @SuppressWarnings("resource")
-    public InputStream toInputStream(String resource) {
+    public InputStream toInputStream(final String resource) {
         // first try to read it as a file
         InputStream stream = null;
-
+        String CONFIG_DIR = System.getenv("TDAR_CONFIG_PATH");
         try {
+            if (CONFIG_DIR != null) {
+                File file = new File(CONFIG_DIR,resource);
+                return new FileInputStream(file);
+            }
+
             File file = new File(resource);
             if (file.isFile()) {
                 stream = new FileInputStream(file);
