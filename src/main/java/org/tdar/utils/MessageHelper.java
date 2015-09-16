@@ -2,10 +2,7 @@ package org.tdar.utils;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,7 +43,7 @@ public class MessageHelper implements Serializable, TextProvider {
      */
     public static String getMessage(String key) {
         if (checkKey(key)) {
-            return getInstance().getBundle().getString(key);
+            return MessageFormat.format(getInstance().getBundle().getString(key), Collections.emptyList());
         }
         return key;
     }
@@ -85,6 +82,13 @@ public class MessageHelper implements Serializable, TextProvider {
         return key;
     }
 
+    /**
+     * Return either the localized message specified by lookup, or (if lookup contains whitespace) return the
+     * provided lookup string.
+     *
+     * @param lookup
+     * @return
+     */
     private static String getKey(String lookup) {
         String key = lookup;
         if (!StringUtils.contains(lookup, " ")) {
