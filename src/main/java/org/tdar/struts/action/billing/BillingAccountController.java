@@ -130,6 +130,19 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             addActionError(getText("accountService.specify_either_space_or_files"));
         }
 
+        // coupon must not exceed remaining files or remaining space
+        if(getAccount().getAvailableNumberOfFiles() < files) {
+            addActionError(getText("accountService.not_enough_space_or_files"));
+        } else if(getAccount().getAvailableSpaceInMb() < mb) {
+            addActionError(getText("accountService.not_enough_space_or_files"));
+        }
+
+
+        // but not both
+        if(mb > 0 && files > 0) {
+            addActionError(getText("accountService.specify_either_space_or_files"));
+        }
+
         // date required
         // date must be in the future (Think, McFly, think!)
         if(getExipres() == null) {
