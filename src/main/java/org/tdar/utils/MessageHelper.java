@@ -42,10 +42,8 @@ public class MessageHelper implements Serializable, TextProvider {
      * Returns the message in the active ResourceBundle/language for the specified key; if no key is found in the bundle, the key is returned.
      */
     public static String getMessage(String key) {
-        if (checkKey(key)) {
-            return MessageFormat.format(getInstance().getBundle().getString(key), Collections.emptyList());
-        }
-        return key;
+        String msg = getString(key);
+        return MessageFormat.format(msg, Collections.emptyList());
     }
 
     public static String getMessage(String lookup, List<?> formatKeys) {
@@ -59,8 +57,8 @@ public class MessageHelper implements Serializable, TextProvider {
         if (logger.isTraceEnabled()) {
             logger.trace("Calling getMessage: {}, {}", lookup, formatKeys);
         }
-        String key = getKey(lookup);
-        return MessageFormat.format(key, formatKeys);
+        String fmt = getString(lookup);
+        return MessageFormat.format(fmt, formatKeys);
     }
 
     /*
@@ -70,35 +68,33 @@ public class MessageHelper implements Serializable, TextProvider {
         if (logger.isTraceEnabled()) {
             logger.trace("Calling getMessage: {}, {}", lookup, formatKeys);
         }
-        String key = getKey(lookup);
-        return MessageFormat.format(key, formatKeys);
+        String fmt = getString(lookup);
+        return MessageFormat.format(fmt, formatKeys);
     }
 
     /*
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
     public static String getMessage(String lookup, Locale locale) {
-        String key = getKey(lookup);
-        return key;
+        return getMessage(lookup);
     }
 
+
     /**
-     * Return either the localized message specified by lookup, or (if lookup contains whitespace) return the
-     * provided lookup string.
-     *
-     * @param lookup
+     * Return the format string specified by the provided lookup key, or return the lookup key if no string exists with that key
+     * @param key
      * @return
      */
-    private static String getKey(String lookup) {
-        String key = lookup;
-        if (!StringUtils.contains(lookup, " ")) {
-            key = getMessage(lookup);
-            if (StringUtils.isBlank(key)) {
-                logger.error("looked for localization key: {}, but not found", lookup);
-                key = lookup;
+    private static String getString(String key ) {
+        String str = key;
+        if(checkKey(key)) {
+            str = getInstance().getBundle().getString(key);
+        } else {
+            if (!StringUtils.contains(key, " ")) {
+                logger.error("localization key not found: {}", key);
             }
         }
-        return key;
+        return str;
     }
 
     private ResourceBundle getBundle() {
