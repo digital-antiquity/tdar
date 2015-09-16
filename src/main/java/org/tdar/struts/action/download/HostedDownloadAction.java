@@ -86,8 +86,19 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
         if (PersistableUtils.isNullOrTransient(informationResourceFile)) {
             addActionError(getText("downloadController.specify_what_to_download"));
         }
-    }
 
+        // Don't allow hosted download for files that belong to deleted resources
+        if(informationResourceFile.getInformationResource().isDeleted()) {
+            getLogger().warn("attempt to download file associated with deleted resource: {}", informationResourceFile);
+            addActionError("hostedDownloadController.invalid_request");
+        }
+
+        // Don't allow hosted download of deleted files
+        if(informationResourceFile.isDeleted()) {
+            getLogger().warn("attempt to download deleted file: {}", informationResourceFile);
+            addActionError("hostedDownloadController.invalid_request");
+        }
+    }
     public Long getInformationResourceFileId() {
         return informationResourceFileId;
     }
