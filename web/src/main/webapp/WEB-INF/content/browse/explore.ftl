@@ -30,11 +30,7 @@
 <br/>
 
 <div class="row">    
-    <div class="span9 map">
-        <!-- fixme styling -->
-        <h3 style="">${siteAcronym} Worldwide</h3>
-        <@common.renderWorldMap />
-    </div>
+        <@common.renderWorldMap mode='vertical'/>
 </div>
 
 <div class="row">

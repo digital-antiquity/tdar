@@ -218,7 +218,9 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
         logger.debug("messages: {}", controller.getActionErrors());
-        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
+        logger.debug("looking for {}", MessageHelper.getMessage("accountService.not_enough_space_or_files") );
+        assertTrue(controller.getActionErrors()
+                .contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
     }
 
     @Test
@@ -231,7 +233,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         // controller.setNumberOfFiles(1000L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
-        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.cannot_generate_a_coupon_for_nothing")));
+        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
     }
 
     @Test
