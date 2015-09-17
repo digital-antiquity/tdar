@@ -310,6 +310,7 @@
         <profile>
             <id>setup-new-instance</id>
             <build>
+				<defaultGoal>process-resources</defaultGoal>
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>

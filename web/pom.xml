@@ -505,6 +505,7 @@
 		<profile>
 			<id>minify-web-resources</id>
 			<build>
+            <defaultGoal>run</defaultGoal>
 				<plugins>
 					<plugin>
 						<groupId>ro.isdc.wro4j</groupId>
