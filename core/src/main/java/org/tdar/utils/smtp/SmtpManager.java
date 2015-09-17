@@ -146,8 +146,11 @@ public class SmtpManager extends AbstractManager {
 
             final InternetHeaders headers = getHeaders(contentType, encoding);
             final MimeMultipart mp = getMimeMultipart(encodedBytes, headers);
-
-            sendMultipartMessage(message, mp, appendEvent.getThrown().getMessage());
+            String message2 =  "no message";
+            if (appendEvent != null && appendEvent.getThrown() != null && appendEvent.getMessage() != null) {
+                message2 = appendEvent.getThrown().getMessage();
+            }
+            sendMultipartMessage(message, mp, message2);
         } catch (final MessagingException e) {
             LOGGER.error("Error occurred while sending e-mail notification.", e);
             e.printStackTrace();
