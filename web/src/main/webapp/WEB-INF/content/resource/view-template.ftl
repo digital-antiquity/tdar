@@ -89,7 +89,7 @@
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 <hr class="dbl">
-    <#list viewableResourceCollections>
+    <#list viewableResourceCollections![]>
 	    <h3>This Resource is Part of the Following Collections</h3>
 		<p>
 	    <ul class="inline">

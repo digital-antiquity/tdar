@@ -38,6 +38,17 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertNull(p);
     }
 
+    
+    @Test
+    @Rollback
+    public void testPersonSimiar() {
+        genericService.save(new Person("S.", "Wells", null));
+        genericService.save(new Person("S", "Wells", null));
+        List<Person> findSimilarPeople = entityService.findSimilarPeople(new TdarUser("Susan J.", "Wells", "S@b,com"));
+        logger.debug("people: {}", findSimilarPeople);
+        assertTrue(findSimilarPeople.size() == 3);
+    }
+    
     @Test
     @Rollback
     public void testFindByExample() {

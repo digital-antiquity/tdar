@@ -170,6 +170,17 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     /**
+     * Find people with a similar name (for suggesting we merge)
+     * 
+     * @param person
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public List<Person> findSimilarPeople(TdarUser person) {
+        return getDao().findSimilarPeople(person);
+    }
+    
+    /**
      * Find a Person by their full name (guessing about how to split the name into parts)
      * 
      * @param fullName

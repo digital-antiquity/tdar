@@ -152,7 +152,8 @@ public interface TdarNamedQueries {
     String UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE = "resourceCollection.updateResourcesToActice";
     String USERS_IN_COLLECTION = "query.users.in.collection";
     String COLLECTION_TIME_LIMITED_IDS = "query.collection_time_limited";
-
+    String QUERY_SIMILAR_PEOPLE = "query.similar_people";
+    
     // raw SQL/HQL queries
 
     /**

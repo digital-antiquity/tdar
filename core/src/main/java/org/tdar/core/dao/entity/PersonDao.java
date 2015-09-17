@@ -1,6 +1,7 @@
 package org.tdar.core.dao.entity;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,6 +60,18 @@ public class PersonDao extends Dao.HibernateBase<Person> {
             query.setMaxResults(num);
         }
         return query.list();
+    }
+
+    public List<Person> findSimilarPeople(TdarUser user) {
+        List<Person> people = new ArrayList<>();
+        String initial = user.getFirstName().substring(0, 1).toUpperCase();
+        Query query = getCurrentSession().getNamedQuery(QUERY_SIMILAR_PEOPLE);
+        query.setParameter("firstName", user.getFirstName());
+        query.setParameter("lastName", user.getLastName());
+        query.setParameter("initial", initial);
+        query.setParameter("initial2", initial + ".");
+        people.addAll(query.list());
+        return people;
     }
 
     /**
