@@ -34,6 +34,7 @@ import com.opensymphony.xwork2.Preparable;
                 }
         ),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
 public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable {
