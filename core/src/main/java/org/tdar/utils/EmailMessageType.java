@@ -44,7 +44,7 @@ public enum EmailMessageType implements Localizable, HasLabel {
     public static List<EmailMessageType> valuesWithoutConfidentialFiles() {
         ArrayList<EmailMessageType> types = new ArrayList<EmailMessageType>();
         for (EmailMessageType type : values()) {
-            if (type != REQUEST_ACCESS) {
+            if (type != REQUEST_ACCESS && type != MERGE_PEOPLE) {
                 types.add(type);
             }
         }
