@@ -8,6 +8,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.ParameterAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/email")
 @Component
 @Scope("prototype")
-public class EmailController extends AuthenticationAware.Base implements Preparable {
+public class EmailController extends AuthenticationAware.Base implements Preparable, ParameterAware {
 
     private static final long serialVersionUID = 2598289601940169922L;
 
@@ -57,13 +58,15 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     private Email email;
 
+    private Map<String, String[]> params;
+
     @Action(value = "deliver", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
             @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" })
     })
     @PostOnly
     public String execute() {
-        setEmail(emailService.constructEmail(from, to, resource, subject, messageBody, type));
+        setEmail(emailService.constructEmail(from, to, resource, subject, messageBody, type, params));
         jsonResult.put("status", "QUEUED");
 
         return SUCCESS;
@@ -193,6 +196,11 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     public void setEmail(Email email) {
         this.email = email;
+    }
+
+    @Override
+    public void setParameters(Map<String, String[]> arg0) {
+        this.params = arg0;
     }
 
 }

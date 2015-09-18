@@ -150,7 +150,12 @@ public class EmailService {
     }
 
     @Transactional(readOnly = false)
-    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type) {
+    public Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody, EmailMessageType type) {
+        return constructEmail(from, to, resource, subject, messageBody, type, null);
+    }
+
+    @Transactional(readOnly = false)
+    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type,  Map<String, String[]> params) {
         Email email = new Email();
         genericDao.markWritable(email);
         email.setFrom(CONFIG.getDefaultFromEmail());
@@ -171,6 +176,7 @@ public class EmailService {
         map.put("baseUrl", CONFIG.getBaseUrl());
         map.put("siteAcronym", CONFIG.getSiteAcronym());
         map.put("serviceProvider", CONFIG.getServiceProvider());
+        map.putAll(params);
         if (resource != null) {
             map.put("resource", resource);
         }

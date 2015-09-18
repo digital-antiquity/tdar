@@ -353,7 +353,7 @@
         <h3>Are any of these you?</h3>
 	<ul>
 		<#items as sug>
-	<li><input type="checkbox" name="merge" value="${sug.id?c}"><@s.a value="${sug.detailUrl}">${sug.properName}</@s.a></li>
+	<li><input type="checkbox" name="merge" value="${sug.id?c}-${sug.properName}"><@s.a value="${sug.detailUrl}">${sug.properName}</@s.a></li>
 		</#items>
 	</ul>
 	<form>
