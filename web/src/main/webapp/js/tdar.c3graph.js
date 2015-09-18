@@ -219,6 +219,11 @@ TDAR.c3graph = (function(console, $, ctx) {
 				data: {
 					type: 'pie',
 				},
+	            tooltip: {
+	                format: {
+	                  value: function (value, ratio, id, index) { return  TDAR.common.formatNumber(value) + " ("+ (ratio * 100.00).toFixed(2) +"%)"; }
+	                }
+	              }
 			}
 			var data = new Array();
 			var $table = $($parent.data("table"));
