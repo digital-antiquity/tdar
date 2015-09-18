@@ -49,12 +49,12 @@
 		<dependency>
 			<groupId>org.tdar</groupId>
 			<artifactId>core</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.tdar</groupId>
 			<artifactId>core</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

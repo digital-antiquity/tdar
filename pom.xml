@@ -27,7 +27,6 @@
 
 
     <properties>
-        <version>14-NEOLITHIC-SNAPSHOT</version>
         <hibernate.version>4.3.10.Final</hibernate.version>
         <hibernate.search.version>4.5.3.Final</hibernate.search.version>
         <spring.framework.version>4.2.1.RELEASE</spring.framework.version>
