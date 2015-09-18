@@ -11,8 +11,7 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -28,6 +27,9 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 @EnableCaching
 @EnableScheduling
 @Configuration
+@ImportResource(value = {"classpath:spring-local-settings.xml",
+        "classpath:META-INF/cxf/cxf.xml",
+        "classpath:META-INF/cxf/cxf-servlet.xml"})
 public class TdarWebAppConfiguration extends TdarAppConfiguration implements SchedulingConfigurer, AsyncConfigurer {
 
 	private static final long serialVersionUID = 3444580855012578739L;
