@@ -371,5 +371,80 @@
 				<jetty.stop.port>12920</jetty.stop.port>
 			</properties>
 		</profile>
+
+        <profile>
+            <id>setup-new-instance</id>
+            <build>
+				<defaultGoal>process-resources</defaultGoal>
+                <plugins>
+		            <plugin>
+		                <artifactId>maven-remote-resources-plugin</artifactId>
+		                <version>1.5</version>
+		                <executions>
+		                    <execution>
+		                        <id>process-resources</id>
+		                        <goals>
+		                            <goal>process</goal>
+		                        </goals>
+		                        <configuration>
+		                            <attachToTest>true</attachToTest>
+		                            <attachToMain>true</attachToMain>
+									<outputDirectory>${project.build.directory}/templates</outputDirectory>
+		                            <resourceBundles>
+		                                <resourceBundle>org.tdar:templates:${project.version}</resourceBundle>
+		                            </resourceBundles>
+		                        </configuration>
+		                    </execution>
+		                </executions>
+		            </plugin>
+					
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/crowd.properties.template"
+                                            tofile="src/main/resources/crowd.properties" />
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/ldap.properties.template"
+                                            tofile="src/main/resources/ldap.properties" />
+                                        <copy
+                                            file="target/templates/hibernate.properties.template"
+                                            tofile="src/main/resources/hibernate.properties" />
+                                        <copy
+                                            file="target/templates/log4j2.xml.template"
+                                            tofile="src/main/resources/log4j2.xml" />
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/tdar.properties.template"
+                                            tofile="src/main/resources/tdar.properties" />
+                                        <copy
+                                            file="target/templates/spring-local-settings.xml.template"
+                                            tofile="src/main/resources/spring-local-settings.xml" />
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/hibernate-ehcache.xml.template"
+                                            tofile="src/main/resources/hibernate-ehcache.xml" />
+                                        <echo
+                                            message="the following can be used to grab all of the config files into a tar from an existing repo" />
+                                        <echo
+                                            message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
 	</profiles>
 </project>

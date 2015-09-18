@@ -306,63 +306,6 @@
     	</pluginManagement>
 	</build>
 	<profiles>
-
-        <profile>
-            <id>setup-new-instance</id>
-            <build>
-				<defaultGoal>process-resources</defaultGoal>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <copy
-                                            failOnError="false"
-                                            file="src/main/resources/crowd.properties.template"
-                                            tofile="src/main/resources/crowd.properties" />
-                                        <copy
-                                            failOnError="false"
-                                            file="src/main/resources/ldap.properties.template"
-                                            tofile="src/main/resources/ldap.properties" />
-                                        <copy
-                                            file="src/main/resources/hibernate.properties.template"
-                                            tofile="src/main/resources/hibernate.properties" />
-                                        <copy
-                                            file="src/main/resources/log4j2.xml.template"
-                                            tofile="src/main/resources/log4j2.xml" />
-                                        <copy
-                                            failOnError="false"
-                                            file="src/main/resources/tdar.properties.template"
-                                            tofile="src/main/resources/tdar.properties" />
-                                        <copy
-                                            failOnError="false"
-                                            file="src/main/resources/struts-local-settings.xml.template"
-                                            tofile="src/main/resources/struts-local-settings.xml" />
-                                        <copy
-                                            file="src/main/resources/spring-local-settings.xml.template"
-                                            tofile="src/main/resources/spring-local-settings.xml" />
-                                        <copy
-                                            failOnError="false"
-                                            file="src/main/resources/hibernate-ehcache.xml.template"
-                                            tofile="src/main/resources/hibernate-ehcache.xml" />
-                                        <echo
-                                            message="the following can be used to grab all of the config files into a tar from an existing repo" />
-                                        <echo
-                                            message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>liquibase-export</id>
             <!-- mvn -Pliquibase-export clean compile -->

@@ -7,6 +7,8 @@
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
+		<!-- config templates -->
+        <module>templates</module>
         <!-- contains shared "test" files -->
         <module>test-resources</module>
         <!-- contains all "liquibase" settings and config files -->
