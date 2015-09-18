@@ -22,6 +22,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -404,5 +405,8 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 		this.statusData = statusData;
 	}
 
+	public List<Person> getUserSuggestions() {
+	    return entityService.findSimilarPeople(getAuthenticatedUser());
+	}
 
 }

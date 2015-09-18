@@ -330,25 +330,43 @@
         </div>
     </#list>
 
-    <#if resourcesWithErrors?has_content>
+    <#list resourcesWithErrors![]>
     <div class="alert-error alert">
         <h3><@s.text name="dashboard.archiving_heading"/></h3>
 
         <p><@common.localText "dashboard.archiving_errors", serviceProvider, serviceProvider /> </p>
         <ul>
-            <#list resourcesWithErrors as resource>
+            <#items as resource>
                 <li>
                     <a href="<@s.url value="${resource.detailUrl}" />">${resource.title}:
                         <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.filename!"unknown"}</#list>
                     </a>
                 </li>
-            </#list>
+            </#items>
         </ul>
     </div>
-    </#if>
+    </#list>
 
+<#--
+	<#list userSuggestions>
+    <div class="alert-error alert">
+        <h3>Are any of these you?</h3>
+	<ul>
+		<#items as sug>
+	<li><input type="checkbox" name="merge" value="${sug.id?c}"><@s.a value="${sug.detailUrl}">${sug.properName}</@s.a></li>
+		</#items>
+	</ul>
+	<form>
+	<!-- fixme - send email via email-controller 
+		construct list of people; contruct url for -- dedup /admin/authority-management/select-authority?selectedDupeIds=...&entityType=PERSON ->
+	<button name="yes" class="button btn">Yes</button>
+	<button name="no"  class="button btn">No</button>
+	</form>
+    </div>
+	</#list>
+-->
 
-    <#if overdrawnAccounts?has_content>
+    <#list overdrawnAccounts![]>
     <div class="alert-error alert">
         <h3><@s.text name="dashboard.overdrawn_title"/></h3>
 
@@ -356,14 +374,14 @@
             <a href="<@s.url value="/cart/add"/>"><@s.text name="dashboard.overdrawn_purchase_link_text" /></a>
         </p>
         <ul>
-            <#list overdrawnAccounts as account>
+            <#items as account>
                 <li>
                     <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
                 </li>
-            </#list>
+            </#items>
         </ul>
     </div>
-    </#if>
+    </#list>
 
     <@common.ie8Warning />
 </#macro>

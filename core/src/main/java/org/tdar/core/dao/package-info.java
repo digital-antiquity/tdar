@@ -532,7 +532,7 @@
                 query = "select au from ResourceCollection rc inner join rc.authorizedUsers as au where rc.id=:id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SIMILAR_PEOPLE,
-                query = "select p.id from Person p where lastName like :lastName and (firstName like :firstName or firstName like :initial or firstName like :initial2 ) and status='ACTIVE' and p.id not in (select id from TdarUser)"),
+                query = "select p from Person p where lower(lastName) like lower(:lastName) and (lower(firstName) like lower(:firstName) or lower(firstName) like lower(:initial) or lower(firstName) like lower(:initial2) ) and status='ACTIVE' and p.id not in (select id from TdarUser)"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS,
                 query = "select rc.id from ResourceCollection rc inner join rc.authorizedUsers as au where au.dateExpires != null and au.dateExpires < now()")
