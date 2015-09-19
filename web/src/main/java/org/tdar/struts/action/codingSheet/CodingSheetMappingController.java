@@ -21,7 +21,6 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
@@ -55,8 +54,6 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     public static final String SAVE_MAPPING = "save-mapping";
     public static final String MAPPING = "mapping";
 
-    @Autowired
-    private transient CodingSheetService codingSheetService;
     @Autowired
     private transient AuthorizationService authorizationService;
 

@@ -221,11 +221,11 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     }
 
     public Date getExipres() {
-        return expires;
+        return getExpires();
     }
 
     public void setExipres(Date exipres) {
-        this.expires = exipres;
+        this.setExpires(exipres);
     }
 
     public Integer getQuantity() {
@@ -242,6 +242,14 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
 
     public void setInvoices(List<Invoice> invoices) {
         this.invoices = invoices;
+    }
+
+    public Date getExpires() {
+        return expires;
+    }
+
+    public void setExpires(Date expires) {
+        this.expires = expires;
     }
 
 }

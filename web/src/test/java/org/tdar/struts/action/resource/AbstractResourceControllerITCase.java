@@ -22,6 +22,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.billing.BillingAccountController;
+import org.tdar.struts.action.billing.CouponCreationAction;
 
 import com.opensymphony.xwork2.Action;
 
@@ -57,7 +58,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     }
 
     public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, BillingAccount account, Invoice invoice) throws TdarActionException {
-        BillingAccountController controller = setupContrllerForCoupon(account, invoice);
+        CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
         try {
@@ -68,7 +69,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         return controller.getAccount().getCoupons().iterator().next().getCode();
     }
 
-    public BillingAccountController setupContrllerForCoupon(BillingAccount account, Invoice invoice) throws TdarActionException {
+    public CouponCreationAction setupControllerForCoupon(BillingAccount account, Invoice invoice) throws TdarActionException {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
         genericService.saveOrUpdate(invoice);
@@ -93,12 +94,12 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
             seen = true;
         }
         assertFalse(seen);
-        controller = generateNewInitializedController(BillingAccountController.class);
-        controller.setId(account.getId());
-        controller.prepare();
-        controller.setQuantity(1);
-        controller.setServletRequest(getServletPostRequest());
-        return controller;
+        CouponCreationAction controllerc = generateNewInitializedController(CouponCreationAction.class);
+        controllerc.setId(account.getId());
+        controllerc.prepare();
+        controllerc.setQuantity(1);
+        controllerc.setServletRequest(getServletPostRequest());
+        return controllerc;
     }
 
 }

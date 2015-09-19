@@ -22,8 +22,10 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.billing.BillingAccountController;
+import org.tdar.struts.action.billing.CouponCreationAction;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
 
@@ -156,8 +158,9 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testAddingInvoiceToNewAccount() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         BillingAccount account = createAccount(getUser());
-        BillingAccountController controller = setupContrllerForCoupon(account, invoice);
-        String save = controller.save();
+        CouponCreationAction controller = setupControllerForCoupon(account, invoice);
+        controller.setNumberOfFiles(1L);
+        String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
         assertEquals(Action.SUCCESS, save);
         Long accountId = controller.getId();
@@ -213,12 +216,17 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         BillingAccount account = createAccount(getUser());
-        BillingAccountController controller = setupContrllerForCoupon(account, invoice);
+        CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1000L);
-        String save = controller.createCouponCode();
-        Long id = controller.getAccount().getId();
+        try {
+            controller.validate();
+            String save = controller.createCouponCode();
+            Long id = controller.getAccount().getId();
+        } catch (TdarRecoverableRuntimeException e) {
+            logger.error("{}", e, e);
+        }
         logger.debug("messages: {}", controller.getActionErrors());
-        logger.debug("looking for {}", MessageHelper.getMessage("accountService.not_enough_space_or_files") );
+        logger.debug("looking for {}", MessageHelper.getMessage("accountService.not_enough_space_or_files"));
         assertTrue(controller.getActionErrors()
                 .contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
     }
@@ -229,10 +237,15 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         BillingAccount account = createAccount(getUser());
-        BillingAccountController controller = setupContrllerForCoupon(account, invoice);
+        CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         // controller.setNumberOfFiles(1000L);
-        String save = controller.createCouponCode();
-        Long id = controller.getAccount().getId();
+        try {
+            controller.validate();
+            String save = controller.createCouponCode();
+            Long id = controller.getAccount().getId();
+        } catch (TdarRecoverableRuntimeException e) {
+            logger.error("{}", e, e);
+        }
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
     }
 
@@ -242,11 +255,16 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         BillingAccount account = createAccount(getUser());
-        BillingAccountController controller = setupContrllerForCoupon(account, invoice);
+        CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
         controller.setNumberOfMb(1L);
-        String save = controller.createCouponCode();
-        Long id = controller.getAccount().getId();
+        try {
+            controller.validate();
+            String save = controller.createCouponCode();
+            Long id = controller.getAccount().getId();
+        } catch (TdarRecoverableRuntimeException e) {
+            logger.error("{}", e, e);
+        }
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
     }
 
@@ -255,7 +273,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testCreateCouponValid() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         BillingAccount account = createAccount(getUser());
-        BillingAccountController controller = setupContrllerForCoupon(account, invoice);
+        CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         Long files = controller.getAccount().getAvailableNumberOfFiles();
         controller.setNumberOfFiles(1L);
         boolean seen = false;

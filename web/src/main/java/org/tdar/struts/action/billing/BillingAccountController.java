@@ -1,12 +1,14 @@
 package org.tdar.struts.action.billing;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -31,7 +33,6 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
@@ -56,12 +57,10 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     private List<TdarUser> authorizedMembers = new ArrayList<>();
     private Long accountGroupId;
     private String name;
-    private Integer quantity = 1;
-    private String description;
-
-    private Long numberOfFiles = 0L;
-    private Long numberOfMb = 0L;
     private Date expires = new DateTime().plusYears(1).toDate();
+
+
+    private String description;
     private String ownerProperName;
     private TdarUser owner;
 
@@ -92,75 +91,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return NEW_ACCOUNT;
     }
 
-    @Action(value = "create-code",
-            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, location = VIEW_ID, type = "redirect"),
-                    @Result(name = INPUT, location = "view.ftl")
-            })
-    @PostOnly
-    @SkipValidation
-    public String createCouponCode() throws TdarActionException {
-        validateCouponCode();
-
-        if(hasActionErrors()) {
-            loadViewMetadata();
-            return INPUT;
-        }
-        for (int i = 0; i < quantity; i++) {
-            accountService.generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
-        }
-        accountService.updateQuota(getAccount());
-        return SUCCESS;
-    }
-
-    private void validateCouponCode() {
-        getLogger().debug("validating coupon:: files:{}  mb:{}  expires:{}", getNumberOfFiles(), getNumberOfMb(),
-                getExipres());
-        long mb = getNumberOfMb() != null ? getNumberOfMb() : 0;
-        long files = getNumberOfFiles() != null ? getNumberOfFiles() : 0;
-
-        // account required
-        if(PersistableUtils.isTransient(getAccount())) {
-            addActionError(getText("accountService.account_is_null"));
-        }
-
-        // either space or files required
-        if(mb <= 0 && files <= 0) {
-            addActionError(getText("accountService.specify_either_space_or_files"));
-        }
-
-        // coupon must not exceed remaining files or remaining space
-        if(getAccount().getAvailableNumberOfFiles() < files) {
-            addActionError(getText("accountService.not_enough_space_or_files"));
-        } else if(getAccount().getAvailableSpaceInMb() < mb) {
-            addActionError(getText("accountService.not_enough_space_or_files"));
-        }
-
-
-        // but not both
-        if(mb > 0 && files > 0) {
-            addActionError(getText("accountService.specify_either_space_or_files"));
-        }
-
-        // date required
-        // date must be in the future (Think, McFly, think!)
-        if(getExipres() == null) {
-            addActionError(getText("invoiceService.coupon_expiration_invalid"));
-        } else {
-            DateTime d = new DateTime(getExipres());
-            if(d.isBefore(null)) {
-                addActionError(getText("invoiceService.coupon_expiration_invalid"));
-            }
-        }
-
-        if(hasActionErrors()) {
-            getLogger().info("coupon is not valid: errors:{}", getActionErrors());
-
-        } else {
-            getLogger().info("coupon appears to be valid");
-        }
-    }
 
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
@@ -355,38 +285,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         this.resources = resources;
     }
 
-    public Long getNumberOfFiles() {
-        return numberOfFiles;
-    }
-
-    public void setNumberOfFiles(Long numberOfFiles) {
-        this.numberOfFiles = numberOfFiles;
-    }
-
-    public Long getNumberOfMb() {
-        return numberOfMb;
-    }
-
-    public void setNumberOfMb(Long numberOfMb) {
-        this.numberOfMb = numberOfMb;
-    }
-
-    public Date getExipres() {
-        return expires;
-    }
-
-    public void setExipres(Date exipres) {
-        this.expires = exipres;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     @Override
     public String loadEditMetadata() throws TdarActionException {
         setOwner(getPersistable().getOwner());
@@ -430,6 +328,16 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     public void setOwner(TdarUser owner) {
         this.owner = owner;
+    }
+
+
+    public Date getExpires() {
+        return expires;
+    }
+
+
+    public void setExpires(Date expires) {
+        this.expires = expires;
     }
 
     
