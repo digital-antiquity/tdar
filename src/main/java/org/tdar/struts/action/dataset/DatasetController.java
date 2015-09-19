@@ -75,4 +75,8 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         return true;
     }
 
+    @Override
+    public Integer getMaxUploadFilesPerRecord() {
+        return 1;
+    }
 }

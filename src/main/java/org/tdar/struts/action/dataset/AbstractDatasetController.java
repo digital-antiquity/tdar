@@ -20,8 +20,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
-import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
@@ -33,9 +31,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private static final long serialVersionUID = 6368347724977529964L;
 
     @Autowired
-    private transient AuthorizationService authorizationService;
-
-    @Autowired
     private transient DatasetService datasetService;
 
     @Autowired
@@ -43,9 +38,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     @Autowired
     private transient OntologyService ontologyService;
-
-    @Autowired
-    private transient SerializationService serializationService;
 
     // column metadata incoming data
     // Each list contains some specific piece of metadata for the given data table, where
