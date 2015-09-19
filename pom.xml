@@ -96,9 +96,26 @@
     </dependencyManagement>
     <repositories>
         <repository>
-            <id>virtualcommons.internal</id>
-            <name>ASU Archiva Proxy</name>
-            <url>http://dev.commons.asu.edu/archiva/repository/internal/</url>
+            <id>internal</id>
+            <name>Archiva Managed Internal Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>Archiva Managed Snapshot Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>imageJ</id>
@@ -115,11 +132,6 @@
             <id>jboss</id>
             <name>JBoss Maven Repository</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>codehaus</id>
-            <name>Codehaus Repository</name>
-            <url>http://repository.codehaus.org/</url>
         </repository>
         <repository>
             <snapshots>
@@ -2776,4 +2788,17 @@
             <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-svn</archive>
         </mailingList>
     </mailingLists>
+
+    <distributionManagement>
+        <repository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+        </repository>
+        <snapshotRepository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
