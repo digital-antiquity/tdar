@@ -548,7 +548,7 @@
             shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
             jpeg: ["jpg", "jpeg", "jpw", "jgw"],
             tiff: ["tif", "tiff", "tfw"],
-            image: ["jpg", "jpeg", "jpw", "jgw", "tfw", "aux", "ovr", "rrd", "aux.xml", "mxd", "lyr"]
+            image: ["jpg", "jpeg", "jpw", "jgw", "tfw", "aux", "ovr", "rrd", "aux.xml", "mxd"]
         };
 
         var requiredFiles = {
