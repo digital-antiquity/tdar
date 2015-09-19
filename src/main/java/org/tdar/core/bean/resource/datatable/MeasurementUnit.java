@@ -25,6 +25,7 @@ public enum MeasurementUnit implements HasLabel, Localizable {
     MILLILITER("milliliter", "ml"),
     CUBIC_CM("cubic centimeter", "cc"),
     LITRE("liter", "l"),
+    DEGREE_LATITUDE("degree lat/long","deg"),
     PARTS_PER_MILLION("parts per million", "ppm"),
     YEAR("year", "year");
 
