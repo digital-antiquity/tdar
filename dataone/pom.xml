@@ -38,6 +38,18 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <repositories>
+            <repository>
+            <id>dataone.org</id>
+            <url>http://dev-testing.dataone.org/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 	<!-- 3rd party dependencies and libraries -->
 	<dependencies>

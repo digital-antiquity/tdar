@@ -91,9 +91,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <!-- <repository> <id>virtualcommons.internal</id> <name>ASU Archiva 
-            Proxy</name> <url>http://dev.commons.asu.edu/archiva/repository/internal/</url> 
-            </repository> -->
         <repository>
             <id>imageJ</id>
             <name>ImageJ Repository</name>
@@ -117,13 +114,6 @@
             <id>central</id>
             <name>libs-release</name>
             <url>http://repo.springsource.org/libs-release</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>jcenter</id>
-            <url>http://dl.bintray.com/abrin/maven/</url>
         </repository>
         <repository>
             <id>repository.springframework.milestone</id>
@@ -156,18 +146,6 @@
             </releases>
         </repository>
         <repository>
-            <id>dataone.org</id>
-            <url>http://dev-testing.dataone.org/maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-
-        <repository>
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
             <url>http://download.osgeo.org/webdav/geotools/</url>
@@ -177,9 +155,6 @@
             <id>Laughing Panda</id>
             <url>http://maven.laughingpanda.org/maven2</url>
         </repository>
-        <!-- <repository> <id>dataone.org</id> <url>http://dev-testing.dataone.org/maven</url> 
-            <releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled> 
-            </snapshots> </repository> -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
