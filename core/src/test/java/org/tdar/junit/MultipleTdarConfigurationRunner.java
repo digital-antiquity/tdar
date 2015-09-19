@@ -1,6 +1,5 @@
 package org.tdar.junit;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -13,9 +12,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
-
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
 public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
@@ -46,7 +42,6 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         return description;
     }
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
 
     @Override
     protected void runChild(final FrameworkMethod method, RunNotifier notifier) {
@@ -72,19 +67,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         setConfiguration(method, currentConfig);
     }
 
-    private void setConfiguration(final FrameworkMethod method, String config) {
-        Class<?> testClass = getTestClass().getJavaClass();
-        if (WebTestCase.class.isAssignableFrom(testClass)) {
-            try {
-                // if we tried to change the baseUrl, this could break stuff
-                String url = TdarConfiguration.getInstance().getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;
-                logger.info("LOADING CONFIG : " + url);
-                webClient.getPage(url);
-            } catch (Exception e) {
-                logger.warn("Exception {}", e);
-                Assert.fail(e.getMessage());
-            }
-        }
+    protected void setConfiguration(final FrameworkMethod method, String config) {
         TdarConfiguration.getInstance().setConfigurationFile(config);
     }
 

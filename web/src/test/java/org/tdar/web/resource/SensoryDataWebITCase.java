@@ -6,16 +6,16 @@ import java.util.HashMap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 
-@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWith(MultipleWebTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 

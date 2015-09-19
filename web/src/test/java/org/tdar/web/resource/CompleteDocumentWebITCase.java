@@ -19,6 +19,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -28,11 +29,10 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
-@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWith(MultipleWebTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public HashMap<String, String> docValMap;

@@ -5,13 +5,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
-@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWith(MultipleWebTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 

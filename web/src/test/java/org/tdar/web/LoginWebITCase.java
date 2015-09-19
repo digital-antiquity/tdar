@@ -5,16 +5,15 @@ package org.tdar.web;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
  * 
  */
-@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWith(MultipleWebTdarConfigurationRunner.class)
 public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test

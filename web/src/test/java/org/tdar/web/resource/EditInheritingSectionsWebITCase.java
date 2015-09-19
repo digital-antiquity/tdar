@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -23,6 +20,9 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 

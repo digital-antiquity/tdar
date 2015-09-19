@@ -2,13 +2,11 @@ package org.tdar.web;
 
 import java.io.File;
 
-
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.configuration.TdarConfiguration;
-
-import org.junit.Assert;
 
 public class StaticContentWebITCase extends AbstractIntegrationTestCase {
 

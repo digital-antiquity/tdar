@@ -1317,6 +1317,18 @@ public abstract class AbstractSeleniumWebITCase {
         cachedPageText = null;
         return previousHandle;
     }
+    
+    public Keys getMetaKey(TestConfiguration.OS os) {
+        switch (os) {
+            case OSX:
+                return Keys.COMMAND;
+            case UNIX:
+                return Keys.META;
+            default:
+                return Keys.CONTROL;
+            
+        }
+    }
 
     /**
      * Spawn a new browser window using the same webdriver instance. Note that the active window handle does not change after this method creates
@@ -1327,7 +1339,7 @@ public abstract class AbstractSeleniumWebITCase {
      * @return handle of new window.
      */
     public String spawnWindow() {
-        return spawnWindow(Keys.chord(OS.CURRENT.getMetaKey(), "n"));
+        return spawnWindow(Keys.chord(getMetaKey(TestConfiguration.OS.CURRENT), "n"));
     }
 
     /**
@@ -1339,7 +1351,7 @@ public abstract class AbstractSeleniumWebITCase {
     public String spawnPrivateWindow() {
         if (currentBrowser != Browser.FIREFOX)
             fail("not implemented for " + currentBrowser);
-        return spawnWindow(Keys.chord(TestConfiguration.OS.CURRENT.getMetaKey(), "P"));
+        return spawnWindow(Keys.chord(getMetaKey(TestConfiguration.OS.CURRENT), "P"));
     }
 
     /**

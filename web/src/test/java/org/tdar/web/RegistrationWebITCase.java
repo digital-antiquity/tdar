@@ -5,14 +5,14 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * @author Adam Brin
  * 
  */
-@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWith(MultipleWebTdarConfigurationRunner.class)
 public class RegistrationWebITCase extends AbstractWebTestCase {
 
     @Test

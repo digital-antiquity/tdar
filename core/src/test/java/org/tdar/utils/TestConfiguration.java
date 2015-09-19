@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.ConfigurationAssistant;
@@ -243,11 +242,10 @@ public class TestConfiguration {
     public enum OS {
         WINDOWS,
         LINUX,
-        OSX(Keys.COMMAND),
-        UNIX(Keys.META),
+        OSX,
+        UNIX,
         TRS_80;
 
-        private Keys metaKey;
 
         public static OS CURRENT;
         static {
@@ -264,20 +262,6 @@ public class TestConfiguration {
         }
 
         OS() {
-            setMetaKey(Keys.CONTROL);
         }
-
-        OS(Keys metaKey) {
-            this.setMetaKey(metaKey);
-        }
-
-        public Keys getMetaKey() {
-            return metaKey;
-        }
-
-        public void setMetaKey(Keys metaKey) {
-            this.metaKey = metaKey;
-        }
-
     }
 }
