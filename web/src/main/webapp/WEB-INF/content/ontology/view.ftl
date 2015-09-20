@@ -2,6 +2,12 @@
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/${themeDir}/settings.ftl" as settings />
     <#macro head>
+    <script id="ontId" type="application/json" >
+    <#noescape>
+    ${json}
+    </#noescape>
+    </script>
+
     <style>
     div.orgChart div.hasChildren {
         background-color: #${settings.barColors[1]};
@@ -24,6 +30,7 @@
     }
         
     </style>
+    
     </#macro>
 
 
@@ -38,11 +45,21 @@
         </#if>
     <h3>Ontology</h3>
 
+<#if orgchart!false>
     <div id="ontologyViewer" class="" style="overflow:scroll;height:400px;">
         <div id="ontologyViewerPan" style="width:100%;">
 
         </div>
     </div>
+    <#else>
+    <form class="pull-right">
+    <input type="search" id="search" placeholder="search"/>
+    </form>
+    <div id="d3" class="d3tree" style="height:600px">
+    
+    </div>
+</#if>
+    
     <div id="divHints">
         <em>Click on a node to expand children</em>
     </div>

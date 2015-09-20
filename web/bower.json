@@ -5,7 +5,6 @@
   "dependencies": {
     "DataTables": "~1.9.4",
     "bootstrap": "~2.3.2",
-    "jqplot-bower": "1.0.8",
     "jquery": "~1.10.2",
     "jquery-file-upload": "8.6.1",
     "jquery-validation": "~1.8.1",

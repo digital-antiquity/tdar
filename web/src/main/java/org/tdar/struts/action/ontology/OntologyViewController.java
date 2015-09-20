@@ -1,6 +1,11 @@
 package org.tdar.struts.action.ontology;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,12 +21,13 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.resource.CodingSheetService;
-import org.tdar.core.service.resource.OntologyNodeService;
-import org.tdar.core.service.resource.OntologyService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.OntologyNodeWrapper;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 @Component
 @Scope("prototype")
@@ -35,12 +41,9 @@ public class OntologyViewController extends AbstractOntologyViewAction {
 
     public static final String REDIRECT_IRI = "redirect_iri";
     private static final long serialVersionUID = -826507251116794622L;
+
     @Autowired
-    private transient OntologyNodeService ontologyNodeService;
-    @Autowired
-    private transient OntologyService ontologyService;
-    @Autowired
-    private transient CodingSheetService codingSheetService;
+    private SerializationService serializationService;
 
     @Override
     public void prepare() throws TdarActionException {
@@ -48,6 +51,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
         // prepare calls handleSlug
         // handle slug will check if there's an IRI that's in a slug (fallback from older behavior)
         getLogger().trace("{} -- {}", getNode(), getRedirectIri());
+
         if (getRedirectIri() != null && getNode() == null) {
             abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", Arrays.asList(getIri())));
         }
@@ -71,7 +75,61 @@ public class OntologyViewController extends AbstractOntologyViewAction {
         if (getRedirectIri() != null) {
             return REDIRECT_IRI;
         }
+        buildJson();
         return super.view();
+    }
+
+    private String json = "";
+
+    private void buildJson() {
+        List<OntologyNode> nodes = getOntology().getSortedOntologyNodes();
+        Collections.reverse(nodes);
+        Map<Long, OntologyNodeWrapper> tree = new HashMap<>();
+        OntologyNodeWrapper root = null;
+        for (OntologyNode node : nodes) {
+            OntologyNodeWrapper value = new OntologyNodeWrapper(node);
+            if (!node.getIndex().contains(".")) {
+                root = value;
+            }
+            tree.put(node.getId(), value);
+        }
+        for (OntologyNode node : nodes) {
+            for (OntologyNode c : nodes) {
+                if (c == node) {
+                    continue;
+                }
+
+                if (c.isChildOf(node)) {
+                    OntologyNodeWrapper e = tree.get(c.getId());
+                    if (c.getParentNode() != null) {
+                        int cIndex = StringUtils.countMatches(c.getParentNode().getIndex(), ".");
+                        int index_ = StringUtils.countMatches(node.getIndex(), ".");
+                        if (cIndex > index_) {
+                            continue;
+                        } else {
+                            OntologyNodeWrapper wrap = tree.get(c.getParentNode().getId());
+                            wrap.getChildren().remove(e);
+                            if (wrap.getChildren().isEmpty()) {
+                                wrap.setChildren(null);
+                            }
+                        }
+                    }
+                    c.setParentNode(node);
+                    OntologyNodeWrapper wrapper = tree.get(node.getId());
+                    if (wrapper.getChildren() == null) {
+                        wrapper.setChildren(new ArrayList<>());
+                    }
+                    wrapper.getChildren().add(e);
+                }
+            }
+        }
+
+        try {
+            setJson(serializationService.convertToJson(root));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -118,5 +176,13 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     @Override
     public Class<Ontology> getPersistableClass() {
         return Ontology.class;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 }
