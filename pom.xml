@@ -135,6 +135,13 @@
             <url>https://repository.jboss.org/nexus/content/repositories/public/</url>
         </repository>
         <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>jcenter</id>
+            <url>http://dl.bintray.com/abrin/maven/</url>
+        </repository>
+        <repository>
             <id>atlassian-m2-repository</id>
             <url>https://m2proxy.atlassian.com/repository/public/</url>
             <snapshots>
