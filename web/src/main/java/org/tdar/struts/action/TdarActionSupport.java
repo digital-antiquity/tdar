@@ -747,10 +747,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             if (StringUtils.isBlank(s.getSlug()) && StringUtils.isBlank(a.getSlug())) {
                 return true;
             }
-            logger.debug("action: {}, slug: {}", getActionName(), a.getSlug());
-            if (Objects.equals(getActionName(), a.getSlug())) {
-                return true;
-            }
+//            logger.debug("action: {}, slug: {}", getActionName(), a.getSlug());
+//            if (Objects.equals(getActionName(), a.getSlug())) {
+//                return true;
+//            }
             
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
                 getLogger().trace("slug mismatch - wanted:{}   got:{}", s.getSlug(), a.getSlug());
