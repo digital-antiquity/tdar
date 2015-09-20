@@ -145,7 +145,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     private Invoice setupAccountWithCouponForFiles(long numFilesForCoupon, long numberOfFilesForInvoice) throws TdarActionException {
         BillingAccount account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
         Invoice invoice_ = account.getInvoices().iterator().next();
-        String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_);
+        String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_,getAdminUser());
         InvoiceController controller = generateNewInitializedController(InvoiceController.class);
         Long invoiceId = createAndTestInvoiceQuantity(controller, numberOfFilesForInvoice, code);
         Invoice invoice = genericService.find(Invoice.class, invoiceId);

@@ -17,6 +17,7 @@ import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
@@ -58,7 +59,11 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     }
 
     public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, BillingAccount account, Invoice invoice) throws TdarActionException {
-        CouponCreationAction controller = setupControllerForCoupon(account, invoice);
+        return createCouponForAccount(numberOfFiles, numberOfMb, account, invoice,null);
+    }
+    
+    public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, BillingAccount account, Invoice invoice, TdarUser user) throws TdarActionException {
+        CouponCreationAction controller = setupControllerForCoupon(account, invoice, user);
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
         try {
@@ -70,6 +75,10 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     }
 
     public CouponCreationAction setupControllerForCoupon(BillingAccount account, Invoice invoice) throws TdarActionException {
+        return setupControllerForCoupon(account, invoice,null);
+    }
+    
+    public CouponCreationAction setupControllerForCoupon(BillingAccount account, Invoice invoice, TdarUser user) throws TdarActionException {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
         genericService.saveOrUpdate(invoice);
@@ -77,7 +86,12 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         logger.info("{}", invoice);
 
         assertTrue(invoice.getNumberOfFiles() > 0);
-        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        BillingAccountController controller = null;
+        if (user != null ) {
+            controller = generateNewInitializedController(BillingAccountController.class, user);
+        } else {
+            controller = generateNewInitializedController(BillingAccountController.class);
+        }
         controller.setInvoiceId(invoice.getId());
         controller.setId(account.getId());
         controller.setName("test");
@@ -95,6 +109,11 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         }
         assertFalse(seen);
         CouponCreationAction controllerc = generateNewInitializedController(CouponCreationAction.class);
+        if (user != null ) {
+            controllerc = generateNewInitializedController(CouponCreationAction.class, user);
+        } else {
+            controllerc = generateNewInitializedController(CouponCreationAction.class);
+        }
         controllerc.setId(account.getId());
         controllerc.prepare();
         controllerc.setQuantity(1);
