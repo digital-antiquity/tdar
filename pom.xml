@@ -118,6 +118,12 @@
             </snapshots>
         </repository>
         <repository>
+            <id>virtualcommons.internal</id>
+            <name>ASU Archiva Proxy</name>
+            <url>http://dev.commons.asu.edu/archiva/repository/internal/</url>
+        </repository>
+        
+        <repository>
             <id>imageJ</id>
             <name>ImageJ Repository</name>
             <url>http://maven.imagej.net/content/repositories/releases</url>
