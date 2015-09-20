@@ -301,6 +301,3 @@ TDAR.d3tree = (function(console, $, ctx) {
         init : _init
     }
 })(console, jQuery, window);
-$(function() {
-    TDAR.d3tree.init();    
-});

@@ -58,6 +58,12 @@
     <div id="d3" class="d3tree" style="height:600px">
     
     </div>
+    <script>
+    $(function() {
+    TDAR.d3tree.init();    
+});
+    
+    </script>
 </#if>
     
     <div id="divHints">
