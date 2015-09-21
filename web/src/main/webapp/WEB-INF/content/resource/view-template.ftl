@@ -188,7 +188,7 @@
 
     <#if resource.resourceType.dataTableSupported>
         <#if (resource.dataTables?has_content)>
-            <#if resource.viewable && authenticated >
+            <#if resource.viewable && authenticated && (resource.publicallyAccessible || ableToViewConfidentialFiles)>
             <h3>Browse the Data Set</h3>
 
                 <#if (resource.dataTables?size > 1)>
@@ -217,6 +217,10 @@
                 <#if tdarConfiguration.xmlExportEnabled>
                 <p class="faims_xml_logo"><a href="<@s.url value="/dataset/xml?dataTableId=${dataTable.id?c}"/>" target="_blank">XML</a></p>
                 </#if>
+			<#else>
+
+	            <p><@view.embargoCheck /></p>
+
             </#if>
 
         <h3>Data Set Structure</h3>

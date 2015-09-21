@@ -59,7 +59,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     private String name;
     private Date expires = new DateTime().plusYears(1).toDate();
 
-
     private String description;
     private String ownerProperName;
     private TdarUser owner;
@@ -68,7 +67,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     private transient BillingAccountService accountService;
     @Autowired
     private transient AuthorizationService authorizationService;
-
 
     @SkipValidation
     @Action(value = CHOOSE, results = {
@@ -90,7 +88,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         }
         return NEW_ACCOUNT;
     }
-
 
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
@@ -158,7 +155,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return SUCCESS;
     }
 
-
     public String loadViewMetadata() {
         setAccountGroup(accountService.getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
@@ -176,7 +172,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return SUCCESS;
     }
 
-    //This is temporary until we break out CreateCouponCodeAction
+    // This is temporary until we break out CreateCouponCodeAction
     public List<Invoice> getInvoices() {
         List<Invoice> invoices = new ArrayList<>(getAccount().getInvoices());
         PersistableUtils.sortByCreatedDate(invoices);
@@ -189,7 +185,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         }
         return invoices;
     }
-
 
     @Override
     public Class<BillingAccount> getPersistableClass() {
@@ -304,7 +299,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return Arrays.asList(Status.ACTIVE, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE, Status.DELETED);
     }
 
-    
     private void setupOwnerField() {
         if (PersistableUtils.isNotNullOrTransient(getOwner()) && StringUtils.isNotBlank(getOwner().getProperName())) {
             if (getOwner().getFirstName() != null && getOwner().getLastName() != null)
@@ -330,15 +324,12 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         this.owner = owner;
     }
 
-
     public Date getExpires() {
         return expires;
     }
-
 
     public void setExpires(Date expires) {
         this.expires = expires;
     }
 
-    
 }
