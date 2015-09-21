@@ -95,6 +95,7 @@ public class HomepageSupportingController extends AuthenticationAware.Base {
     @SkipValidation
     public String robots() {
         File file = new File(getTdarConfiguration().getSitemapDir(), sitemapFile);
+        getLogger().debug("WHATEVER");
         if (!file.exists()) {
             setSitemapFile("sitemap1.xml.gz");
         }
