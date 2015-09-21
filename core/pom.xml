@@ -23,9 +23,9 @@
         <geotools.version>13.1</geotools.version>
         <tika.version>1.10</tika.version>
         <batik.version>1.7</batik.version>
-        <jackson.version>2.6.1</jackson.version>
-        <http-components.version>4.4.1</http-components.version>
-        <http-client.version>4.5</http-client.version>
+        <jackson.version>2.6.2</jackson.version>
+        <http-components.version>4.4.3</http-components.version>
+        <http-client.version>4.5.1</http-client.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
