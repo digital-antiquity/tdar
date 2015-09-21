@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,13 +32,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,6 +64,10 @@ import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -88,7 +93,6 @@ import org.tdar.functional.util.LoggingStopWatch;
 import org.tdar.functional.util.TdarExpectedConditions;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.TestConfiguration;
-import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
@@ -214,10 +218,21 @@ public abstract class AbstractSeleniumWebITCase {
 
         @Override
         public void onException(Throwable throwable, WebDriver driver) {
+            getBrowserConsoleLogEntries(driver);
             if (!throwable.getMessage().contains("n is null")) {
-                logger.error("hey there was an error", ExceptionUtils.getRootCause(throwable));
+                logger.error("hey there was an error", throwable, throwable);
             }
             takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
+        }
+
+        private void getBrowserConsoleLogEntries(WebDriver driver) {
+            LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
+            for (LogEntry entry : logEntries) {
+               if (entry.getLevel() == Level.SEVERE ) {
+                   logger.error("Browser: " + new Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
+               }
+                //do something useful with the data
+            }
         }
 
         @Override
@@ -325,6 +340,8 @@ public abstract class AbstractSeleniumWebITCase {
         if (StringUtils.isNotBlank(xvfbPort)) {
             environment.put("DISPLAY", xvfbPort);
         }
+        LoggingPreferences logPrefs = new LoggingPreferences();
+        logPrefs.enable(LogType.BROWSER, Level.ALL);
         currentBrowser = browser;
         switch (browser) {
             case FIREFOX:
@@ -346,9 +363,12 @@ public abstract class AbstractSeleniumWebITCase {
                 // Use this to disable Acrobat plugin for previewing PDFs in Firefox (if you have Adobe reader installed on your computer)
                 profile.setPreference("plugin.scan.Acrobat", "99.0");
                 profile.setPreference("plugin.scan.plid.all", false);
+                DesiredCapabilities caps = DesiredCapabilities.firefox();
+                caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
                 // profile.setPreference("browser.download.dir","c:\\downloads");
-                driver = new FirefoxDriver(fb, profile);
+                driver = new FirefoxDriver(fb, profile, caps);
+
                 break;
             case CHROME:
                 // http://peter.sh/experiments/chromium-command-line-switches

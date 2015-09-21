@@ -146,7 +146,6 @@
             <url>https://m2proxy.atlassian.com/repository/public/</url>
             <snapshots>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
