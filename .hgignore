@@ -46,9 +46,11 @@ syntax: regexp
 ^src/main/db/log\.txt$
 
 syntax: regexp
-^src/main/resources/jetty-ssl\.keystore$
+^(.+)/?src/main/resources/jetty/jetty-ssl.keystore$
 syntax: regexp
 ^src/test/resources/jetty-ssl\.keystore$
+syntax: regexp
+^src/main/resources/jetty-ssl\.keystore$
 syntax: regexp
 ^src/main/resources/jetty/jetty-ssl\.keystore$
 syntax: regexp
