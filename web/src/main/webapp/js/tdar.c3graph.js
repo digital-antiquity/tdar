@@ -209,6 +209,20 @@ TDAR.c3graph = (function(console, $, ctx) {
 			var source = JSON.parse($($parent.data("columns")).html());
 			cdata.data.columns = source;
 		}
+        /*
+		if ($parent.data("yaxis") && $parent.data("yaxis") === 'log') {
+            if (cdata.axis == undefined) {
+                cdata.axis = {};
+            }
+            if (cdata.axis.y == undefined) {
+                cdata.axis.y = {};
+            }
+        
+            cdata.axis.y.tick = {
+                     format: function (d) { return Math.pow(10,d).toFixed(2); }
+            };
+        }
+        */
 	}
 
 	var _initPieChart = function() {

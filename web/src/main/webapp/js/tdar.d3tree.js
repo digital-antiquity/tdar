@@ -21,6 +21,11 @@ TDAR.d3tree = (function(console, $, ctx) {
    var panBoundary = 20; // Within 20px from edges will pan when dragging.
     
     function _init() {
+        root = JSON.parse($("#ontId").text());
+        
+        if (!root || !root.children) {
+            return;
+        }
 	div = d3.select("#d3")
 		.append("div") // declare the tooltip div
 		.attr("class", "tooltip")
@@ -43,7 +48,6 @@ TDAR.d3tree = (function(console, $, ctx) {
         .append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-        root = JSON.parse($("#ontId").text());
         		root.x0 = height / 2;
         		root.y0 = 0;
         		_initParents(root);
