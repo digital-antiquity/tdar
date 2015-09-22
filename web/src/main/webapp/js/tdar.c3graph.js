@@ -14,10 +14,24 @@ TDAR.c3graph = {};
  */
 TDAR.c3graph = (function(console, $, ctx) {
 	"use strict";
+    
+    
+    var _getColors = function () {
+    	var c3colors = $("#c3colors");
+    	var c3colorsobj = undefined; 
+
+    	if (c3colors.length > 0) {
+            c3colorsobj = JSON.parse(c3colors.html());
+    	}
+        return c3colorsobj;
+    }
+    
+    
     /**
      * To create a bar-graph, look for a class of "barChart" on divs.  
      */
 	var _initBarChart = function() {
+        var c3colors = _getColors();
 		$(".barChart").each(function() {
 			var $parent = $(this);
 			var $table = $($parent.data("table"));
@@ -36,6 +50,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 					labels: {
 						show: true
 					},
+                    color: function(c,d) {
+                        return c3colors[d.index];
+                    }
 				},
 				legend: {
 					hide: true
@@ -181,14 +198,12 @@ TDAR.c3graph = (function(console, $, ctx) {
 		}
 		var id = "#" + $parent.attr("id");
 		cdata.bindto = id;
-		
-		var c3colors = $("#c3colors");
-		if (c3colors.length > 0) {
-			var c3colorsobj = JSON.parse(c3colors.html());
-			cdata.color = {};
-			cdata.color.pattern = c3colorsobj;
-		}
-
+		var c3colors = _getColors();
+    	if (c3colors) {
+    		cdata.color = {};
+    		cdata.color.pattern = c3colors;
+    	}
+        
 		var clickname = $parent.data("click");
 		if ($.isFunction(window[clickname])) {
 			console.log(window[clickname]);
