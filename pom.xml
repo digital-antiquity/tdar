@@ -564,7 +564,7 @@
                         <artifactId>versions-maven-plugin</artifactId>
                         <version>2.1</version>
                         <configuration>
-                            <newVersion>13.5.${hg.version.as_dir}-MUNSELL</newVersion>
+                            <newVersion>14.0.${hg.version.as_dir}-NEOLITHIC</newVersion>
                         </configuration>
                         <executions>
                             <execution>
