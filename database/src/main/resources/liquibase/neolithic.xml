@@ -1136,6 +1136,13 @@
         </createTable>
     </changeSet>
     <changeSet id="neolithic-10" author="abrin">
-    <renameTable newTableName="unmanaged_collection_resource" oldTableName="public_collection_resource"/>
+        <renameTable newTableName="unmanaged_collection_resource" oldTableName="public_collection_resource"/>
     </changeSet>
+    <changeSet id="neolithic-11" author="abrin">
+        <update tableName="information_resource">
+            <column name="date_created_normalized" valueComputed="2010"></column>
+            <where>date_created_normalized = 2020</where>
+        </update>
+    </changeSet>
+    
 </databaseChangeLog>
