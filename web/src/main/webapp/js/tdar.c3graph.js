@@ -13,7 +13,7 @@ TDAR.c3graph = {};
  * 
  */
 TDAR.c3graph = (function(console, $, ctx) {
-
+	"use strict";
     /**
      * To create a bar-graph, look for a class of "barChart" on divs.  
      */
@@ -33,7 +33,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 					tooltip: {
 						show: false
 					},
-					labels: true,
+					labels: {
+						show: true
+					},
 				},
 				legend: {
 					hide: true
@@ -199,7 +201,7 @@ TDAR.c3graph = (function(console, $, ctx) {
 			cdata.data.json = source;
 			cdata.data.keys = {};
 			cdata.data.keys.x = $parent.data('x');
-			
+			// cdata.data.names = {'label' : 'label'};
 			if ($parent.data('values')) {
 				cdata.data.keys.value = $parent.data('values').split(",");
 			}
@@ -209,7 +211,6 @@ TDAR.c3graph = (function(console, $, ctx) {
 			var source = JSON.parse($($parent.data("columns")).html());
 			cdata.data.columns = source;
 		}
-        /*
 		if ($parent.data("yaxis") && $parent.data("yaxis") === 'log') {
             if (cdata.axis == undefined) {
                 cdata.axis = {};
@@ -221,9 +222,30 @@ TDAR.c3graph = (function(console, $, ctx) {
             cdata.axis.y.tick = {
                      format: function (d) { return Math.pow(10,d).toFixed(2); }
             };
+			
+			var key = $parent.data("values");
+			// take the JSON value and convert it to the Log(10) value
+			if (cdata.data.json && key) {
+				cdata.data.json.forEach(function(r) {
+					r[key] = Math.log(r[key]) / Math.LN10;
+				});
+			}
+			
+			if (cdata.data.labels == undefined) {
+				cdata.data.labels = {};
+			}
+
+			if (cdata.data.labels.format == undefined) {
+				cdata.data.labels.format = {};
+			}
+
+			cdata.data.labels.format[$parent.data('values')] = _reverseLog;
+			console.log(cdata.data.labels);
         }
-        */
+
 	}
+	
+	var _reverseLog = function(d,id){console.log(id, Math.pow(10,d));return Math.pow(10,d).toFixed(0);};
 
 	var _initPieChart = function() {
 		$(".pieChart").each(function() {
