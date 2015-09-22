@@ -41,7 +41,7 @@
 
 <h2>Browse By Decade</h2>
 
-<div id="timelineGraph" style="height:400px" data-source="#timelineData" class="areaChart" data-x="label" data-values="count">
+<div id="timelineGraph" style="height:400px" data-source="#timelineData" class="areaChart" data-x="label" data-values="count" data-yAxis="log">
 
 </div>
 

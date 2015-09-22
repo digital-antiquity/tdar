@@ -79,7 +79,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 						x: 'label',
 						value: ['count']
 					},
-					labels: true
+					labels: {
+					    show: true
+					}
 				},
 				legend: {
 					hide: true
@@ -169,7 +171,7 @@ TDAR.c3graph = (function(console, $, ctx) {
 				cdata.data.x = 'Date';
 			}
 			_initJson($parent, cdata);
-			varchart = c3.generate(cdata);
+			var chart = c3.generate(cdata);
 		});
 	};
 
@@ -245,7 +247,7 @@ TDAR.c3graph = (function(console, $, ctx) {
 
 	}
 	
-	var _reverseLog = function(d,id){console.log(id, Math.pow(10,d));return Math.pow(10,d).toFixed(0);};
+	var _reverseLog = function(d,id){ return Math.pow(10,d).toFixed(0);};
 
 	var _initPieChart = function() {
 		$(".pieChart").each(function() {

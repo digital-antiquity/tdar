@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,7 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
 import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
@@ -98,7 +101,7 @@ public class ExploreController extends AbstractLookupController {
         setInvestigationTypes(genericKeywordService.findAllWithCache(InvestigationType.class));
         setCultureKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
-        setTimelineData(serializationService.convertToJson(informationResourceService.findResourcesByDecade()));
+        setupTimelineData();
         setScholarData(informationResourceService.findResourceCountsByYear());
 
         List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
@@ -116,6 +119,18 @@ public class ExploreController extends AbstractLookupController {
             getLogger().debug("parse exception", pe);
         }
         return SUCCESS;
+    }
+
+    private void setupTimelineData() throws IOException {
+        List<BrowseDecadeCountCache> findResourcesByDecade = new ArrayList<>(informationResourceService.findResourcesByDecade());
+        Iterator<BrowseDecadeCountCache> iterator = findResourcesByDecade.iterator();
+        while (iterator.hasNext()) {
+            BrowseDecadeCountCache decade = iterator.next();
+            if (decade.getKey() < 1 || decade.getKey() > DateTime.now().getYear()) {
+                iterator.remove();
+            }
+        }
+        setTimelineData(serializationService.convertToJson(findResourcesByDecade));
     }
 
     public List<SiteTypeKeyword> getSiteTypeKeywords() {
