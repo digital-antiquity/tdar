@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>The Digital Archaeological Record (web-base)</name>
     <properties>
-        <jetty.version>9.2.7.v20150116</jetty.version>
+        <jetty.version>9.3.0.v20150612</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>

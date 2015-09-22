@@ -312,14 +312,14 @@
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
                 </exclusion>
-				<exclusion>
-		            <groupId>org.slf4j</groupId>
-		            <artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -340,14 +340,14 @@
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
                 </exclusion>
-				<exclusion>
-		            <groupId>org.slf4j</groupId>
-		            <artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -357,9 +357,9 @@
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-geojson</artifactId>
-          <version>${geotools.version}</version>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+            <version>${geotools.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <dependency>
@@ -476,7 +476,25 @@
                     <artifactId>javassist</artifactId>
                     <groupId>javassist</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-commons</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>5.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>5.0.4</version>
         </dependency>
         <!-- freemarker -->
         <dependency>
@@ -749,16 +767,16 @@
             <groupId>edu.asu.lib</groupId>
             <artifactId>jaxb-document-api</artifactId>
             <version>1.0.3</version>
-			<exclusions>
-				<exclusion>
-		            <groupId>org.slf4j</groupId>
-		            <artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -1042,7 +1060,7 @@
                     </execution>
                 </executions>
             </plugin>
-			
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -1152,10 +1170,9 @@
             <build>
                 <!-- the properties defined in these files will be available 
                     for interpolation in all filtered resources -->
-<!--                 <filters>
-                    <filter>src/main/resources/hibernate.properties</filter>
-                </filters>
- -->            </build>
+                <!-- <filters> <filter>src/main/resources/hibernate.properties</filter> 
+                    </filters> -->
+            </build>
             <properties>
                 <!-- These are the default passwords for running locally 
                     when developing -->
