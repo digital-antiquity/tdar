@@ -62,6 +62,7 @@
         <js>/js/tdar.d3tree.js</js>
         <css>/css/tdar.homepage.css</css>
         <css>/css/tdar.d3tree.css</css>
+        <css>/css/tdar.c3graph.css</css>
         <css>/css/tdar.leaflet.css</css>
         <css>/css/tdar.worldmap.css</css>
         <css>/css/tdar.datatablemapping.css</css>
