@@ -261,6 +261,9 @@ public class DataOneService implements DataOneConstants {
             // contstruct the metadata/response
             if (entry.getType() != EntryType.FILE) {
                 InformationResource resource = genericService.find(InformationResource.class, entry.getPersistableId());
+                if (resource == null) {
+                    continue;
+                }
                 if (entry.getType() == EntryType.D1) {
                     object = constructD1FormatObject(resource);
                 }
