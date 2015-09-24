@@ -26,8 +26,8 @@ import org.tdar.dataone.bean.LogEntryImpl;
 @Component
 public class DataOneDao {
 
-    private static final String LIST_OBJECT_QUERY = "select external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type) union " +
-                                                    "select external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
+    private static final String LIST_OBJECT_QUERY = "select external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type!='PROJECT' and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type) union " +
+                                                    "select external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type!='PROJECT' and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

@@ -152,15 +152,15 @@ public class SmtpManager extends AbstractManager {
             }
             sendMultipartMessage(message, mp, message2);
         } catch (final MessagingException e) {
-            LOGGER.error("Error occurred while sending e-mail notification.", e);
+            LOGGER.error("Error occurred while sending e-mail notification.", e, e);
             e.printStackTrace();
-            throw new LoggingException("Error occurred while sending email", e);
+            throw new LoggingException("Error occurred while sending email");
         } catch (final IOException e) {
-            LOGGER.error("Error occurred while sending e-mail notification.", e);
+            LOGGER.error("Error occurred while sending e-mail notification.", e, e);
             e.printStackTrace();
             throw new LoggingException("Error occurred while sending email", e);
         } catch (final RuntimeException e) {
-            LOGGER.error("Error occurred while sending e-mail notification.", e);
+            LOGGER.error("Error occurred while sending e-mail notification.", e, e);
             e.printStackTrace();
             throw new LoggingException("Error occurred while sending email", e);
         }

@@ -68,16 +68,14 @@ import edu.asu.lib.jaxb.JaxbDocumentWriter;
 @org.springframework.stereotype.Service
 public class DataOneService implements DataOneConstants {
 
-
-
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     DataOneConfiguration D1CONFIG = DataOneConfiguration.getInstance();
 
-     @Autowired
-     private GenericService genericService;
+    @Autowired
+    private GenericService genericService;
 
     @Autowired
     private DataOneDao dataOneDao;
@@ -88,8 +86,9 @@ public class DataOneService implements DataOneConstants {
     @Autowired
     private InformationResourceService informationResourceService;
 
-    /** 
+    /**
      * Create an OAI-ORE Resource Map this will include all versions of the files and metadata that get exposed to DataOne.
+     * 
      * @param ir
      * @return
      * @throws OREException
@@ -98,7 +97,7 @@ public class DataOneService implements DataOneConstants {
      * @throws JDOMException
      * @throws IOException
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public String createResourceMap(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         OaiOreResourceMapGenerator generator = new OaiOreResourceMapGenerator(ir, false);
         return generator.generate();
@@ -107,9 +106,10 @@ public class DataOneService implements DataOneConstants {
     /**
      * Formulates a NodeResponse
      * https://releases.dataone.org/online/api-documentation-v1.2.0/apis/MN_APIs.html#MNCore.getCapabilities
+     * 
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Node getNodeResponse() {
         Node node = new Node();
         node.setBaseURL(CONFIG.getBaseSecureUrl() + DATAONE);
@@ -166,6 +166,7 @@ public class DataOneService implements DataOneConstants {
 
     /**
      * Generate a service entry
+     * 
      * @param name
      * @param version
      * @param available
@@ -192,7 +193,7 @@ public class DataOneService implements DataOneConstants {
      * @param request
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Log getLogResponse(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, HttpServletRequest request) {
         Log log = new Log();
 
@@ -246,7 +247,9 @@ public class DataOneService implements DataOneConstants {
      * @throws JAXBException
      */
     @Transactional(readOnly = true)
-    public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count) throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
+    public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException,
+            JAXBException {
         ObjectList list = new ObjectList();
         list.setCount(count);
         list.setStart(start);
@@ -261,7 +264,7 @@ public class DataOneService implements DataOneConstants {
             // contstruct the metadata/response
             if (entry.getType() != EntryType.FILE) {
                 InformationResource resource = genericService.find(InformationResource.class, entry.getPersistableId());
-                if (resource == null) {
+                if (resource == null || StringUtils.isBlank(resource.getExternalId())) {
                     continue;
                 }
                 if (entry.getType() == EntryType.D1) {
@@ -271,18 +274,19 @@ public class DataOneService implements DataOneConstants {
                     object = constructMetadataFormatObject(resource);
                 }
             }
-            info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
             info.setDateSysMetadataModified(entry.getDateUpdated());
             info.setFormatId(DataOneUtils.contentTypeToD1Format(entry.getType(), entry.getContentType()));
             info.setIdentifier(DataOneUtils.createIdentifier(entry.getFormattedIdentifier()));
-            info.setSize(BigInteger.valueOf(object.getSize()));
+            if (object != null) {
+                info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
+                info.setSize(BigInteger.valueOf(object.getSize()));
+            }
             list.getObjectInfoList().add(info);
         }
         // matching count of list to match # of results per test
         list.setCount(list.getObjectInfoList().size());
         return list;
     }
-
 
     /**
      * Gets DataOne System metadata for a given id. The ID will be a tDAR DOI with a suffix that specifies a metadata object, a resource, or a file
@@ -334,18 +338,20 @@ public class DataOneService implements DataOneConstants {
 
     /**
      * generate the LDAP-style rights entry for the rights holder (likely change from tDAR's sysadmin)
+     * 
      * @return
      */
     private Subject getRightsHolder() {
-        return DataOneUtils.createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
+        return DataOneUtils.createSubject(String.format("CN=%s,O=TDAR,DC=org", CONFIG.getSystemAdminEmail()));
     }
 
     /**
      * generate the LDAP-style rights entry for the sysadmin
+     * 
      * @return
      */
     private Subject getSystemUserLdap() {
-        return DataOneUtils.createSubject(String.format("CN=%s,O=TDAR,DC=org",CONFIG.getSystemAdminEmail()));
+        return DataOneUtils.createSubject(String.format("CN=%s,O=TDAR,DC=org", CONFIG.getSystemAdminEmail()));
     }
 
     /**
@@ -407,6 +413,7 @@ public class DataOneService implements DataOneConstants {
 
     /**
      * Create an ObjectResponseContainer from a resource and the identifier for a file
+     * 
      * @param partIdentifier
      * @param ir
      * @return
@@ -431,17 +438,19 @@ public class DataOneService implements DataOneConstants {
 
     /**
      * Create an ObjectResponseContainer for a metadata request
+     * 
      * @param ir
      * @return
      * @throws JAXBException
      * @throws UnsupportedEncodingException
      * @throws NoSuchAlgorithmException
      */
-    private ObjectResponseContainer constructMetadataFormatObject(InformationResource ir) throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    private ObjectResponseContainer constructMetadataFormatObject(InformationResource ir)
+            throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException {
         ObjectResponseContainer resp = setupResponse(ir);
         resp.setContentType(XML_CONTENT_TYPE);
         resp.setType(EntryType.TDAR);
-//        ModsDocument modsDoc = ModsTransformer.transformAny(ir);
+        // ModsDocument modsDoc = ModsTransformer.transformAny(ir);
         DublinCoreDocument modsDoc = DcTransformer.transformAny(ir);
         resp.setObjectFormat(META);
         StringWriter sw = new StringWriter();
@@ -454,7 +463,7 @@ public class DataOneService implements DataOneConstants {
     }
 
     /**
-     * Create an ObjectResponseContainer for a DataOne ResourceMap 
+     * Create an ObjectResponseContainer for a DataOne ResourceMap
      * 
      * @param ir
      * @return
@@ -480,7 +489,8 @@ public class DataOneService implements DataOneConstants {
     }
 
     /**
-     * setup a ObjectResponseContainer from a resource 
+     * setup a ObjectResponseContainer from a resource
+     * 
      * @param ir
      * @return
      */

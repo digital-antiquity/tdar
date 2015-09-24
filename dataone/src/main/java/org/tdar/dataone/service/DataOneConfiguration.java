@@ -39,7 +39,7 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     }
     String TDAR_DOI = "doi:10.6067";
     String MN_NAME = "urn:node:tdar";
-    String MN_NAME_TEST = "urn:node:tdar_test";
+    String MN_NAME_TEST = "urn:node:tdarTest";
 
     public String getMemberNodeIdentifier() {
         return assistant.getStringProperty("member.node.id", MN_NAME);
