@@ -15,6 +15,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
@@ -38,6 +39,8 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
         WorkflowContext wc = new WorkflowContext();
+        wc.setFilestore(TdarConfiguration.getInstance().getFilestore());
+        wc.setInformationResourceId(123456789L);
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF), store);
         InformationResourceFileVersion supportingFile = generateAndStoreVersion(Geospatial.class, "untitled.tfw", new File(TestConstants.TEST_GEOTIFF_TFW),
                 store);

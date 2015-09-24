@@ -141,7 +141,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 createJpegDerivative(version, ijSource, filename, SMALL, false);
                 Thread.yield();
             } catch (Throwable e) {
-                getLogger().error("Failed to create jpeg derivative", e);
+                getLogger().error("Failed to create ({}) jpeg derivative", sourceFile, e);
                 throw new TdarRecoverableRuntimeException("imageThumbnailTask.processingError", e);
             }
         }

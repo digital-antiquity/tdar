@@ -53,7 +53,12 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
             TextProvider provider) {
         IntegrationSaveResult result = new IntegrationSaveResult();
         result.setStatus(IntegrationSaveResult.ERROR);
+        if (data == null) {
+            result.getErrors().add(provider.getText("integrationWorkflowService.data_missing"));
+            return result;
+        }
         try {
+            logger.debug("{}",data);
             validateWorkflow(data, provider);
             persistable.markUpdated(authUser);
             data.copyValuesToBean(persistable, json);
@@ -70,6 +75,9 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
 
     @Transactional(readOnly = true)
     public void validateWorkflow(IntegrationWorkflowWrapper data, TextProvider provider) throws IntegrationDeserializationException {
+        if (data == null) {
+            return;
+        }
         data.validate(ontologyNodeDao, provider);
     }
 

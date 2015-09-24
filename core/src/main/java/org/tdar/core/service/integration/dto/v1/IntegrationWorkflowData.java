@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -191,7 +192,11 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
 
     private Long getOntologyId(DataTableColumnDTO dtc) {
         try {
-            return dtc.getPersistable().getDefaultCodingSheet().getDefaultOntology().getId();
+            CodingSheet defaultCodingSheet = dtc.getPersistable().getDefaultCodingSheet();
+            if (defaultCodingSheet == null || defaultCodingSheet.getDefaultOntology() == null) {
+                return null;
+            }
+            return defaultCodingSheet.getDefaultOntology().getId();
         } catch (NullPointerException npe) {
             logger.debug("null pointer getting ontology id", npe);
         }
