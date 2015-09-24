@@ -49,10 +49,7 @@ TDAR.c3graph = (function(console, $, ctx) {
 					},
 					labels: {
 						show: true
-					},
-                    color: function(c,d) {
-                        return c3colors[d.index];
-                    }
+					}
 				},
 				legend: {
 					hide: true
@@ -75,11 +72,18 @@ TDAR.c3graph = (function(console, $, ctx) {
 					}
 				}
 			};
+			if (c3colors != undefined && c3colors.length > 0) {
+			    cdata.data.color = function(c,d) {
+			        return c3colors[d.index];
+			    }
+			}
+
+			
 			_initJson($parent, cdata);
 			var chart = c3.generate(cdata);
 		});
 	};
-
+	
 	/**
 	 * Create area chart
 	 */
