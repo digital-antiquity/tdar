@@ -222,10 +222,11 @@ public class SearchService {
         logger.trace("completed hibernate hydration ");
 
         List<Indexable> toReturn = convertProjectedResultIntoObjects(resultHandler, projections, list);
-        Object searchMetadata[] = { resultHandler.getMode(), q.getQuery(), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
+        Object searchMetadata[] = { resultHandler.getMode(), StringUtils.left(q.getQuery().toString(), 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                 lucene, (System.currentTimeMillis() - num),
                 ftq.getResultSize(),
                 resultHandler.getStartRecord() };
+        logger.trace("query: {} ", q.getQuery());
         logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
 
         if (resultHandler.getStartRecord() > ftq.getResultSize()) {

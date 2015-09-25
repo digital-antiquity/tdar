@@ -45,6 +45,7 @@ public class DateAnalyzerTest {
             "40/4/2011",
             "1-Feb-03",
             "2/1",
+            "August 1993",
             "personal communication, email 2/23/08"
     };
 

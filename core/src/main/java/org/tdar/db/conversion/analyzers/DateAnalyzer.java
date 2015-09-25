@@ -83,9 +83,18 @@ public class DateAnalyzer implements ColumnAnalyzer {
                 result = null;
             }
 
+            // partial date's not helpful because we end up doing an implicit cast in postgres
+            
+            // removing partial date 2/2
             if (value.matches("(\\d+)(\\-|/)(\\d+)")) {
                 return null;
             }
+
+            // removing partial date August 93
+            if (value.matches("^(\\w+)\\s(\\d+)$")) {
+                return null;
+            }
+
             logger.trace("== result: {} ", result);
         }
         return result;
