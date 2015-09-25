@@ -36,6 +36,9 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
     public String convert(SerializationService ss, Creator<?> creator, String imageUrl) throws IOException {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
+        if (creator == null) {
+            return ss.convertToJson(jsonLd);
+        }
         jsonLd.put(CONTEXT, SCHEMA_ORG);
         jsonLd.put(TYPE, "Organization");
         if (StringUtils.isNotBlank(creator.getUrl())) {

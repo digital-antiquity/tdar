@@ -2,9 +2,12 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -20,11 +23,29 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.utils.MessageHelper;
 
+
 public class PdfServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     PdfService pdfService;
 
+    @Before
+    public void setup() {
+        /** setup for jUnit
+         */
+        File f = new File("target/tdar-web/WEB-INF/themes/tdar/cover_page.pdf");
+        if (!f.exists()) {
+            File dir = new File("target/tdar-web/WEB-INF/themes/tdar/");
+            dir.mkdirs();
+            try {
+                FileUtils.copyFile(new File("src/main/webapp/WEB-INF/themes/tdar/cover_page.pdf"), f);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } 
+        }
+    }
+    
     @Test
     @Rollback(true)
     public void testPDFCoversheet() throws Exception {
@@ -32,7 +53,6 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
         // THIS TEST WILL FAIL IF RUN IN ECLIPSE WITHOUT DOING A VERIFY FIRST (it needs access to includes)
         File f = new File(TestConstants.TEST_DOCUMENT_DIR, "1-01.PDF");
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-
         InformationResourceFileVersion originalVersion = generateAndStoreVersion(Document.class, "1-01.PDF", f, store);
 
         // setup document
