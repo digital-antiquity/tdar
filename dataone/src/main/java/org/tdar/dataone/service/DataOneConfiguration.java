@@ -70,4 +70,12 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
 	protected ConfigurationAssistant getAssistant() {
 		return assistant;
 	}
+
+    public String getContactSubject() {
+        return assistant.getStringProperty("contact.subject","CN=Adam Brin A29701,O=Arizona State University,C=US,DC=cilogon,DC=org");
+    }
+
+    public String getSubject() {
+        return assistant.getStringProperty("dataone.subject","CN=urn:node:mnTDAR,DC=dataone,DC=org");
+    }
 }

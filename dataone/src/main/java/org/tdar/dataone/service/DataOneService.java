@@ -22,6 +22,7 @@ import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Log;
 import org.dataone.service.types.v1.Node;
 import org.dataone.service.types.v1.NodeReference;
+import org.dataone.service.types.v1.NodeReplicationPolicy;
 import org.dataone.service.types.v1.NodeState;
 import org.dataone.service.types.v1.NodeType;
 import org.dataone.service.types.v1.ObjectInfo;
@@ -130,11 +131,20 @@ public class DataOneService implements DataOneConstants {
         addService(MN_STORAGE, VERSION, Boolean.FALSE, services);
         addService(MN_REPLICATION, VERSION, Boolean.FALSE, services);
 
+        NodeReplicationPolicy nrp = new NodeReplicationPolicy();
+        nrp.setSpaceAllocated(BigInteger.valueOf(1024));
+        node.setNodeReplicationPolicy(nrp);
+        
         node.setServices(services);
         node.setState(NodeState.UP);
         List<Subject> list = new ArrayList<>();
-        list.add(DataOneUtils.createSubject(CONFIG.getSystemAdminEmail()));
+        list.add(DataOneUtils.createSubject(D1CONFIG.getContactSubject()));
         node.setContactSubjectList(list);
+
+        List<Subject> subjectList = new ArrayList<>();
+        list.add(DataOneUtils.createSubject(D1CONFIG.getSubject()));
+        node.setSubjectList(subjectList);
+
         Synchronization sync = new Synchronization();
         sync.setLastCompleteHarvest(new Date(0));
         node.getContactSubjectList().add(getSystemUserLdap());
@@ -145,11 +155,12 @@ public class DataOneService implements DataOneConstants {
         schedule.setMin("*");
         schedule.setMon("*");
         schedule.setSec("*");
-        schedule.setWday("*");
+        schedule.setWday("?");
         schedule.setYear("*");
-        schedule.setWday("6");
+//        schedule.setWday("6");
         sync.setSchedule(schedule);
         node.setSynchronization(sync);
+        node.setSynchronize(true);
         // node.setSynchronize();
         node.setType(NodeType.MN);
         return node;
