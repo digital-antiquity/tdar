@@ -212,7 +212,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public String view() throws TdarActionException {
         String result = super.view();
         if (SUCCESS.equals(result) && isWhiteLabelCollection()) {
-            showNavSearchBox = false;
+            if (isSearchHeaderEnabled()) {
+                showNavSearchBox = false;
+            }
             result = CollectionViewAction.SUCCESS_WHITELABEL;
         }
         return result;
