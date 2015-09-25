@@ -288,10 +288,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
         for (Long id : ids) {
             toReturn.add(resultMap.get(id));
         }
-        if (logger.isDebugEnabled()) {
-            time = System.currentTimeMillis() - time;
-            logger.debug("Query: {} ; generation: {} ", queryTime, time);
-        }
+        time = System.currentTimeMillis() - time;
+        logger.trace("Query: {} ; generation: {} ", queryTime, time);
+
         return toReturn;
     }
 
