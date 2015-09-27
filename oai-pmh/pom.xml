@@ -39,18 +39,24 @@
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
-        <dependency>
-            <groupId>org.tdar</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tdar</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.tdar</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+			<exclusions>
+			    <exclusion>
+			        <artifactId>hibernate-search</artifactId>
+			        <groupId>org.hibernate</groupId>
+			    </exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.tdar</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>

@@ -57,6 +57,12 @@
 			<groupId>org.tdar</groupId>
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+			    <exclusion>
+			        <artifactId>hibernate-search</artifactId>
+			        <groupId>org.hibernate</groupId>
+			    </exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.tdar</groupId>

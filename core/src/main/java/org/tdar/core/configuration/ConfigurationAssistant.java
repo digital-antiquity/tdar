@@ -29,6 +29,8 @@ import org.tdar.core.exception.ConfigurationFileException;
 public class ConfigurationAssistant implements Serializable {
 
     private static final long serialVersionUID = -9093022080387404606L;
+    public static final String DEFAULT_CONFIG_PATH = "TDAR_CONFIG_PATH";
+
 
     private final Properties properties;
     private final transient static Logger logger = LoggerFactory.getLogger(ConfigurationAssistant.class);
@@ -79,7 +81,7 @@ public class ConfigurationAssistant implements Serializable {
     public InputStream toInputStream(final String resource) {
         // first try to read it as a file
         InputStream stream = null;
-        String CONFIG_DIR = System.getenv("TDAR_CONFIG_PATH");
+        String CONFIG_DIR = System.getenv(getConfigPath());
         try {
             if (CONFIG_DIR != null) {
                 File file = new File(CONFIG_DIR,resource);
@@ -194,4 +196,9 @@ public class ConfigurationAssistant implements Serializable {
     public void setProperty(String key, String value) {
         properties.setProperty(key, value);
     }
+
+    public static String getConfigPath() {
+        return DEFAULT_CONFIG_PATH;
+    }
+    
 }

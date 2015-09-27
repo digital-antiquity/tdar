@@ -368,22 +368,6 @@
 
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search</artifactId>
-            <version>${hibernate.search.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-core-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-mapper-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>5.1.2.FINAL</version>
             <!-- LICENSE: LGPL 2.1 -->

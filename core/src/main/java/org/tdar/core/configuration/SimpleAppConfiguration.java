@@ -95,7 +95,7 @@ public class SimpleAppConfiguration implements Serializable {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer placeholder = new PropertySourcesPlaceholderConfigurer();
-        String CONFIG_DIR = System.getenv("TDAR_CONFIG_PATH");
+        String CONFIG_DIR = System.getenv(ConfigurationAssistant.getConfigPath());
         List<Resource> resources = new ArrayList<>();
         String[] propertyFiles = { "hibernate.properties" };
         for (String propertyFile : propertyFiles) {
