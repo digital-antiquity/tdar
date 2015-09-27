@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -221,7 +220,6 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
     }
 
-    @Component("documentDcTransformer")
     public static class DocumentTransformer extends InformationResourceTransformer<Document> {
 
         @Override
