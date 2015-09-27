@@ -2792,6 +2792,12 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>packageForBamboo</id>
+            <build>
+                <directory>target/package</directory>
+            </build>
+        </profile>
     </profiles>
 
     <scm>
