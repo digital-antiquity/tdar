@@ -14,7 +14,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.lucene.queryParser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +126,7 @@ public class OaiPmhService {
 	 * @throws ParseException
 	 */
 	public ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, OAIMetadataFormat metadataPrefix,
-			OAIResumptionToken resumptionToken, ListResponse response) throws OAIException, ParseException {
+			OAIResumptionToken resumptionToken, ListResponse response) throws OAIException {
 		ResumptionTokenType token = null;
 		Long collectionId = null;
 		// start record number (cursor)
@@ -225,7 +224,7 @@ public class OaiPmhService {
 	 */
 	private OaiSearchResult populateResult(OAIRecordType recordType, 
 			OAIMetadataFormat metadataFormat, Date effectiveFrom, Date effectiveUntil, int startRecord,
-			ListResponse response, Long collectionId) throws ParseException, OAIException {
+			ListResponse response, Long collectionId) throws OAIException {
 		boolean includeRecords = false;
 		if (response instanceof ListRecordsType) {
 			includeRecords = true;
@@ -424,7 +423,7 @@ public class OaiPmhService {
 	 */
 	 @Transactional(readOnly = true)
 	public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat,
-			OAIResumptionToken resumptionToken) throws OAIException, ParseException {
+			OAIResumptionToken resumptionToken) throws OAIException {
 		ListRecordsType response = new ListRecordsType();
 		ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
 		response.setResumptionToken(token);
@@ -445,7 +444,7 @@ public class OaiPmhService {
 	 */
 	 @Transactional(readOnly = true)
 	public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat,
-			OAIResumptionToken resumptionToken) throws OAIException, ParseException {
+			OAIResumptionToken resumptionToken) throws OAIException {
 		ListIdentifiersType response = new ListIdentifiersType();
 		ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
 		response.setResumptionToken(token);

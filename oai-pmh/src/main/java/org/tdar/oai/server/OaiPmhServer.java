@@ -12,12 +12,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.oai.exception.OAIException;
 import org.tdar.core.service.GenericService;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.bean.OAIResumptionToken;
@@ -37,6 +34,7 @@ import org.tdar.oai.bean.generated.oai._2_0.OAIPMHtype;
 import org.tdar.oai.bean.generated.oai._2_0.ObjectFactory;
 import org.tdar.oai.bean.generated.oai._2_0.RequestType;
 import org.tdar.oai.bean.generated.oai._2_0.VerbType;
+import org.tdar.oai.exception.OAIException;
 import org.tdar.oai.service.OaiPmhService;
 import org.tdar.utils.MessageHelper;
 
@@ -78,7 +76,6 @@ public class OaiPmhServer {
      * @param until_
      * @param resumptionToken_
      * @return
-     * @throws ParseException
      */
     @Produces("application/xml")
     @GET
@@ -90,7 +87,7 @@ public class OaiPmhServer {
             @QueryParam("set") String set,
             @QueryParam("from") String from_,
             @QueryParam("until") String until_,
-            @QueryParam("resumptionToken") String resumptionToken_) throws ParseException {
+            @QueryParam("resumptionToken") String resumptionToken_) {
         genericService.markReadOnly();
         OAIPMHtype response = new OAIPMHtype();
 
@@ -166,10 +163,9 @@ public class OaiPmhServer {
      * @param until_
      * @param response
      * @throws OAIException
-     * @throws ParseException
      */
     @Transactional(readOnly = true)
-    public void execute(String set, String from_, String until_, OAIPMHtype response) throws OAIException, ParseException {
+    public void execute(String set, String from_, String until_, OAIPMHtype response) throws OAIException {
         String message;
 
         switch (verb) {
