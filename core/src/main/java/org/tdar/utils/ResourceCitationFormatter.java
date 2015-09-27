@@ -24,6 +24,25 @@ public class ResourceCitationFormatter implements Serializable {
         this.resource = resource;
     }
 
+    public String getFullCitation() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getFormattedTitleInfo()).append(". ");
+        String auth = getFormattedAuthorList();
+        if (StringUtils.isNotBlank(auth)) {
+            sb.append(auth);
+        }
+        String src = getFormattedSourceInformation();
+        if (StringUtils.isNotBlank(src)) {
+            sb.append(src);
+        }
+        sb.append(" ( ").append(resource.getId()).append(") ");
+        if (StringUtils.isNotBlank(resource.getExternalId())) {
+            sb.append("; ");
+            sb.append(resource.getExternalId());
+        }
+        return sb.toString();
+    }
+    
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
         appendIfNotBlank(sb, resource.getTitle(), "", "");
