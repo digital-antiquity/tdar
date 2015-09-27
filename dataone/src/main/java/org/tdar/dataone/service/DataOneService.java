@@ -54,10 +54,9 @@ import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.dao.DataOneDao;
-import org.tdar.transform.DcTransformer;
+import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.utils.PersistableUtils;
 
-import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
 
 /**
@@ -462,7 +461,7 @@ public class DataOneService implements DataOneConstants {
         resp.setContentType(XML_CONTENT_TYPE);
         resp.setType(EntryType.TDAR);
         // ModsDocument modsDoc = ModsTransformer.transformAny(ir);
-        DublinCoreDocument modsDoc = DcTransformer.transformAny(ir);
+        ExtendedDublinCoreDocument modsDoc = ExtendedDcTransformer.transformAny(ir);
         resp.setObjectFormat(META);
         StringWriter sw = new StringWriter();
         JaxbDocumentWriter.write(modsDoc, sw, true);
