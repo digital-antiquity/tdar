@@ -99,6 +99,7 @@
         </#items>
 		</ul>
 		</p>
+		<hr/>
         </#list>
 <h2>Summary</h2>
     <@common.description resource.description />
