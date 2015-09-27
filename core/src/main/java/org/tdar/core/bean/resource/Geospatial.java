@@ -8,7 +8,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.FieldLength;
 
 /**
@@ -21,7 +20,7 @@ import org.tdar.core.bean.FieldLength;
  * @version $Revision: 543$
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "geospatial")
 @XmlRootElement(name = "geospatial")
 public class Geospatial extends Dataset {

@@ -19,23 +19,15 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "tdar_user")
 @XmlRootElement(name = "user")
 @Check(constraints = "username <> ''")
@@ -45,7 +37,7 @@ public class TdarUser extends Person {
 
     @Column(unique = true, nullable = true)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
-    @Field(name = QueryFieldNames.USERNAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    //@Field(name = QueryFieldNames.USERNAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     private String username;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
@@ -63,8 +55,8 @@ public class TdarUser extends Person {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "affiliation", length = FieldLength.FIELD_LENGTH_255)
-    @Field(norms = Norms.NO, store = Store.YES)
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field(norms = Norms.NO, store = Store.YES)
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private UserAffiliation affiliation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -191,8 +183,8 @@ public class TdarUser extends Person {
         this.username = username;
     }
 
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    //@Field
+    //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @JsonView(JsonAdminLookupFilter.class)
     @Override
     public boolean isRegistered() {

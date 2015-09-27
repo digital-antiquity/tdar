@@ -2,7 +2,6 @@ package org.tdar.core.bean.keyword;
 
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
 public enum KeywordType implements Localizable {
@@ -37,31 +36,31 @@ public enum KeywordType implements Localizable {
         return MessageHelper.formatLocalizableKey(this);
     }
 
-    public String getSearchDescriptionKey() {
-        return "searchParameters." + getFieldName();
-    }
+//    public String getSearchDescriptionKey() {
+//        return "searchParameters." + getFieldName();
+//    }
 
-    public String getFieldName() {
-        switch (this) {
-            case CULTURE_KEYWORD:
-                return QueryFieldNames.ACTIVE_CULTURE_KEYWORDS;
-            case INVESTIGATION_TYPE:
-                return QueryFieldNames.ACTIVE_INVESTIGATION_TYPES;
-            case GEOGRAPHIC_KEYWORD:
-                return QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS;
-            case MATERIAL_TYPE:
-                return QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS;
-            case OTHER_KEYWORD:
-                return QueryFieldNames.ACTIVE_OTHER_KEYWORDS;
-            case SITE_NAME_KEYWORD:
-                return QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS;
-            case SITE_TYPE_KEYWORD:
-                return QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS;
-            case TEMPORAL_KEYWORD:
-                return QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS;
-        }
-        return null;
-    }
+//    public String getFieldName() {
+//        switch (this) {
+//            case CULTURE_KEYWORD:
+//                return QueryFieldNames.ACTIVE_CULTURE_KEYWORDS;
+//            case INVESTIGATION_TYPE:
+//                return QueryFieldNames.ACTIVE_INVESTIGATION_TYPES;
+//            case GEOGRAPHIC_KEYWORD:
+//                return QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS;
+//            case MATERIAL_TYPE:
+//                return QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS;
+//            case OTHER_KEYWORD:
+//                return QueryFieldNames.ACTIVE_OTHER_KEYWORDS;
+//            case SITE_NAME_KEYWORD:
+//                return QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS;
+//            case SITE_TYPE_KEYWORD:
+//                return QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS;
+//            case TEMPORAL_KEYWORD:
+//                return QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS;
+//        }
+//        return null;
+//    }
 
     public String getInheritanceToggleField() {
         switch (this) {

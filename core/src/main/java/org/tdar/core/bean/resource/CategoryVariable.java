@@ -21,12 +21,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -52,8 +49,8 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
-    @Field
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String label;
@@ -68,7 +65,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     private CategoryType type;
 
     @ManyToOne
-    // @IndexedEmbedded(depth=1)
+    // //@IndexedEmbedded(depth=1)
     private CategoryVariable parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)

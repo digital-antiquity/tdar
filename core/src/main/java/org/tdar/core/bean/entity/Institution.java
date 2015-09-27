@@ -22,23 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Resolution;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -54,7 +42,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "institution", indexes = {
         @Index(name = "institution_name_key", columnList = "name")
 })
-@Indexed(index = "Institution")
+//@Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
 @Check(constraints = "email <> ''")
@@ -83,7 +71,7 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     private Institution parentInstitution;
 
     @Column(unique = true, nullable = true)
-    @Field(name = "inst_email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    //@Field(name = "inst_email", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
@@ -96,14 +84,14 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
 
     @Override
     @XmlElement
-    // FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
-    @Fields({
-            @Field(name = "name_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-            @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name = QueryFieldNames.NAME_TOKEN),
-            @Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
-                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    })
+    // FIXME: this seemingly conflicts w/ //@Field annotations on Creator.getName(). Figure out which declaration is working
+    //@Fields({
+            //@Field(name = "name_auto", norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
+            //@Field(analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            //@Field(name = QueryFieldNames.NAME_TOKEN),
+            //@Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
+//                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+//    })
     public String getName() {
         if (parentInstitution != null) {
             return parentInstitution.getName() + " : " + name;
@@ -121,7 +109,7 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     }
 
     @Transient
-    @Field(name = "acronym", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    //@Field(name = "acronym", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     public String getAcronym() {
         Pattern p = Pattern.compile(ACRONYM_REGEX);
         Matcher m = p.matcher(getName());
@@ -179,8 +167,8 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     }
 
     @Override
-    @Field(norms = Norms.NO, store = Store.YES)
-    @DateBridge(resolution = Resolution.MILLISECOND)
+    //@Field(norms = Norms.NO, store = Store.YES)
+//    @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {
         return super.getDateUpdated();
     }

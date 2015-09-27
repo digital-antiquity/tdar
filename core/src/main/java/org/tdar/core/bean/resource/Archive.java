@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.entity.TdarUser;
 
 /**
@@ -13,7 +12,7 @@ import org.tdar.core.bean.entity.TdarUser;
  * @author Martin Paulo
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "archive")
 @XmlRootElement(name = "archive")
 public class Archive extends InformationResource {

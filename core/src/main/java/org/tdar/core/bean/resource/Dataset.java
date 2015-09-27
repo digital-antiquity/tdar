@@ -18,19 +18,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonIntegrationFilter;
@@ -46,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @version $Rev$
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "dataset")
 @XmlRootElement(name = "dataset")
 public class Dataset extends InformationResource {
@@ -85,7 +77,7 @@ public class Dataset extends InformationResource {
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
-    @IndexedEmbedded
+    //@IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -110,7 +102,7 @@ public class Dataset extends InformationResource {
         this.dataTables = dataTables;
     }
 
-    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     // @Transient
     @JsonView({ JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class })
     public IntegratableOptions getIntegratableOptions() {

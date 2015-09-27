@@ -45,23 +45,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Resolution;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,11 +77,6 @@ import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.util.UrlUtils;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -118,7 +102,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  *         lookup.
  */
 @Entity
-@Indexed(index = "Collection")
+//@Indexed(index = "Collection")
 @Table(name = "collection", indexes = {
         @Index(name = "collection_parent_id_idx", columnList = "parent_id"),
         @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
@@ -158,16 +142,16 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private static final long serialVersionUID = -5308517783896369040L;
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
     private transient Float score;
-    private transient Explanation explanation;
+//    private transient Explanation explanation;
 
     @Column
     @JsonView(JsonLookupFilter.class)
-    @Fields({
-            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class) ),
-            @Field(name = QueryFieldNames.COLLECTION_NAME),
-            @Field(name = QueryFieldNames.COLLECTION_NAME_PHRASE, norms = Norms.NO, store = Store.NO,
-                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) ),
-    })
+    //@Fields({
+            //@Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class) ),
+            //@Field(name = QueryFieldNames.COLLECTION_NAME),
+            //@Field(name = QueryFieldNames.COLLECTION_NAME_PHRASE, norms = Norms.NO, store = Store.NO,
+//                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) ),
+//    })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -216,8 +200,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
-    @Field(name = QueryFieldNames.COLLECTION_TYPE)
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    //@Field(name = QueryFieldNames.COLLECTION_TYPE)
+    //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Enumerated(EnumType.STRING)
     @Column(name = "collection_type", length = FieldLength.FIELD_LENGTH_255)
     @NotNull
@@ -229,7 +213,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JoinColumn(name = "owner_id", nullable = false)
     private TdarUser owner;
 
@@ -242,11 +226,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @NotNull
     private Date dateCreated;
 
-    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Column(nullable = false, name = "date_updated")
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    @DateBridge(resolution = Resolution.MILLISECOND)
+//    @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;
 
     @ManyToOne
@@ -260,7 +244,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
-    @Field
+    //@Field
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
 
@@ -303,11 +287,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.name = name;
     }
 
-    @Fields({
-            @Field,
-            @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
-                    impl = TdarCaseSensitiveStandardAnalyzer.class) )
-    })
+    //@Fields({
+            //@Field,
+            //@Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = //@Analyzer(
+//                    impl = TdarCaseSensitiveStandardAnalyzer.class) )
+//    })
     @Override
     @JsonView(JsonLookupFilter.class)
     public String getDescription() {
@@ -373,7 +357,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return hidden;
     }
 
-    @Field
+    //@Field
     @XmlTransient
     public boolean isTopLevel() {
         if ((getParent() == null) || (getParent().isHidden() == true)) {
@@ -471,18 +455,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
-    @Transient
-    @XmlTransient
-    public Explanation getExplanation() {
-        return explanation;
-    }
-
-    @Override
-    public void setExplanation(Explanation ex) {
-        this.explanation = ex;
-    }
-
-    @Override
     public String toString() {
         return String.format("%s Resource collection %s: %s (creator: %s)", getType(), getId(), getName(), owner);
     }
@@ -498,10 +470,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     /*
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
      */
-    @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
+    //@Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
     @Transient
     @ElementCollection
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public List<Long> getUsersWhoCanModify() {
         return toUserList(GeneralPermissions.MODIFY_RECORD);
     }
@@ -520,18 +492,18 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return users;
     }
 
-    @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
+    //@Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
     @Transient
     @ElementCollection
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public List<Long> getUsersWhoCanAdminister() {
         return toUserList(GeneralPermissions.ADMINISTER_GROUP);
     }
 
-    @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
+    //@Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
     @Transient
     @ElementCollection
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public List<Long> getUsersWhoCanView() {
         return toUserList(GeneralPermissions.VIEW_ALL);
     }
@@ -617,7 +589,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return false;
     }
 
-    @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Override
     public String getTitleSort() {
         if (getTitle() == null) {
@@ -626,11 +598,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
-    @Fields({
-            @Field,
-            @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
-                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) )
-    })
+    //@Fields({
+            //@Field,
+            //@Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
+//                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) )
+//    })
     // @Boost(1.5f)
     @Override
     public String getTitle() {
@@ -749,9 +721,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * whether it should be there
      */
     @Transient
-    @Field(name = QueryFieldNames.COLLECTION_TREE)
+    //@Field(name = QueryFieldNames.COLLECTION_TREE)
     @ElementCollection
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public Set<Long> getParentIds() {
         return parentIds;
     }
@@ -773,9 +745,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
 
-    @Fields({
-            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) ),
-            @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class) ) })
+    //@Fields({
+            //@Field(name = QueryFieldNames.ALL_PHRASE, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class) ),
+            //@Field(name = QueryFieldNames.ALL, analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class) ) })
     public String getAllFieldSearch() {
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ");

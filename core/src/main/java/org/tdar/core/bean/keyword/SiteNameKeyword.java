@@ -13,11 +13,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 
 /**
  * Lists the name of the site in the resource
@@ -27,7 +22,7 @@ import org.tdar.search.query.QueryFieldNames;
  */
 @Entity
 @Table(name = "site_name_keyword")
-@Indexed(index = "Keyword")
+//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteNameKeyword")
 @Cacheable
@@ -49,7 +44,7 @@ public class SiteNameKeyword extends UncontrolledKeyword.Base<SiteNameKeyword> {
         this.synonyms = synonyms;
     }
 
-    @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class))
+    //@Field(name = QueryFieldNames.SITE_CODE, analyzer = //@Analyzer(impl = SiteCodeTokenizingAnalyzer.class))
     public String getSiteCode() {
         return getLabel();
     }

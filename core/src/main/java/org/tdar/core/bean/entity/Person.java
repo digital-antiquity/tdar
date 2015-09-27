@@ -16,24 +16,11 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Resolution;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonIdNameFilter;
@@ -52,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
-@Indexed(index = "Person")
+//@Indexed(index = "Person")
 @XmlRootElement(name = "person")
 @Check(constraints = "email <> ''")
 public class Person extends Creator<Person> implements Comparable<Person>, Dedupable<Person>, Validatable {
@@ -65,17 +52,17 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
     @BulkImportField(key = "CREATOR_LNAME", order = 2)
-    @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name = QueryFieldNames.LAST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-            @Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
+    //@Fields({ //@Field(name = QueryFieldNames.LAST_NAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            //@Field(name = QueryFieldNames.LAST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
+            //@Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
     @BulkImportField(key = "CREATOR_FNAME", order = 1)
-    @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name = QueryFieldNames.FIRST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-            @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
+    //@Fields({ //@Field(name = QueryFieldNames.FIRST_NAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            //@Field(name = QueryFieldNames.FIRST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
+            //@Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String firstName;
@@ -85,7 +72,7 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     private String orcidId;
 
     @Column(unique = true, nullable = true)
-    @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    //@Field(name = "email", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(key = "EMAIL", order = 3)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
@@ -94,7 +81,7 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
     private Boolean emailPublic = Boolean.FALSE;
 
-    @IndexedEmbedded(depth = 1)
+    //@IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(key = "CREATOR_PERSON_INSTITUTION", order = 50)
     @JsonView(JsonLookupFilter.class)
@@ -127,11 +114,11 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
      */
     @Override
     @Transient
-    @Fields({
-            @Field(name = QueryFieldNames.NAME_TOKEN),
-            @Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
-                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    })
+    //@Fields({
+            //@Field(name = QueryFieldNames.NAME_TOKEN),
+            //@Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
+//                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+//    })
     @JsonView(JsonLookupFilter.class)
     public String getName() {
         return lastName + ", " + firstName;
@@ -357,8 +344,8 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     }
 
     @Override
-    @Field(norms = Norms.NO, store = Store.YES)
-    @DateBridge(resolution = Resolution.MILLISECOND)
+    //@Field(norms = Norms.NO, store = Store.YES)
+//    @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {
         return super.getDateUpdated();
     }

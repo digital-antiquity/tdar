@@ -92,8 +92,8 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     int getPrevPageStartRecord();
 
-//    @SuppressWarnings("rawtypes")
-//    List<FacetGroup<? extends Enum>> getFacetFields();
+    @SuppressWarnings("rawtypes")
+    List<FacetGroup<? extends Enum>> getFacetFields();
 
     int getDefaultRecordsPerPage();
 

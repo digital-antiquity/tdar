@@ -35,19 +35,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Resolution;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,11 +58,6 @@ import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.util.UrlUtils;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -178,22 +163,22 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @DocumentId
+//    @DocumentId
     @JsonView(JsonLookupFilter.class)
-    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+    //@Field(store = Store.YES, analyzer = //@Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     private Long id = -1L;
     /*
      * @Boost(.5f)
      * 
-     * @IndexedEmbedded
+     * //@IndexedEmbedded
      * 
      * @ManyToOne()
      * 
      * @JoinColumn(name = "updater_id")
      * private Person updatedBy;
      */
-    @Field(norms = Norms.NO, store = Store.YES)
-    @DateBridge(resolution = Resolution.MILLISECOND)
+    //@Field(norms = Norms.NO, store = Store.YES)
+//    @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated", nullable = false)
     @NotNull
@@ -208,8 +193,8 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     @JsonView(JsonLookupFilter.class)
-    @Field(norms = Norms.NO, store = Store.YES)
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field(norms = Norms.NO, store = Store.YES)
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
 
     @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, targetEntity=Creator.class, orphanRemoval=true)
@@ -239,7 +224,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     private Set<Address> addresses = new LinkedHashSet<>();
 
     private transient Float score = -1f;
-    private transient Explanation explanation;
     private transient boolean readyToIndex = true;
     private transient Integer maxHeight;
     private transient Integer maxWidth;
@@ -249,20 +233,20 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
     @Override
-    @Fields({ @Field(name = "name", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name = "name_kwd", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-            @Field(name = QueryFieldNames.CREATOR_NAME_SORT, norms = Norms.NO, store = Store.YES) })
+    //@Fields({ //@Field(name = "name", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            //@Field(name = "name_kwd", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
+            //@Field(name = QueryFieldNames.CREATOR_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @JsonView(JsonLookupFilter.class)
     public abstract String getName();
 
-    @Fields({ @Field(name = QueryFieldNames.PROPER_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name = QueryFieldNames.PROPER_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-    })
+    //@Fields({ //@Field(name = QueryFieldNames.PROPER_NAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            //@Field(name = QueryFieldNames.PROPER_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
+//    })
     @JsonView(JsonLookupFilter.class)
     public abstract String getProperName();
 
-    @Fields({ @Field(name = "institution", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            @Field(name = "institution_kwd", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    //@Fields({ //@Field(name = "institution", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            //@Field(name = "institution_kwd", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     @JsonView(JsonLookupFilter.class)
     public String getInstitutionName() {
         if (getCreatorType() == CreatorType.PERSON) {
@@ -366,18 +350,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Override
     public void setScore(Float score) {
         this.score = score;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public Explanation getExplanation() {
-        return explanation;
-    }
-
-    @Override
-    public void setExplanation(Explanation explanation) {
-        this.explanation = explanation;
     }
 
     @Transient

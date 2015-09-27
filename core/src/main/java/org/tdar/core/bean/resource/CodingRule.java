@@ -16,8 +16,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
@@ -44,7 +42,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
-    @ContainedIn
+//    @ContainedIn
     private CodingSheet codingSheet;
 
     @Column(nullable = false)
@@ -52,7 +50,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     private String code;
 
     @Column(nullable = false)
-    @Field
+    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String term;
 

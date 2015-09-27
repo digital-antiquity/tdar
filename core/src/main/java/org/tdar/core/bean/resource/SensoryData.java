@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
@@ -30,7 +29,7 @@ import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
 /**

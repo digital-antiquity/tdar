@@ -45,10 +45,10 @@ import org.tdar.core.service.pdf.PDFMergeTask;
 import org.tdar.core.service.pdf.PDFMergeWrapper;
 import org.tdar.core.service.pdf.PdfFontHelper;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.utils.AsciiTransliterator;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.ResourceCitationFormatter;
 
+import com.ibm.icu.text.Transliterator;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -367,8 +367,9 @@ public class PdfService {
      * @return
      */
     private String transliterate(String utf8Text) {
-        AsciiTransliterator transliterator = new AsciiTransliterator();
-        String text = transliterator.process(utf8Text).trim();
+        Transliterator instance = Transliterator.getInstance("NFD; [:Nonspacing Mark:] Remove; NFC.");
+        logger.error("check that I work properly");
+        String text = instance.transliterate(utf8Text);
         return text;
     }
 

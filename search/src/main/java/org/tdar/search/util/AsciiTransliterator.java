@@ -5,9 +5,6 @@ import java.io.StringReader;
 
 import javax.persistence.Transient;
 
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
-import org.apache.lucene.analysis.KeywordTokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

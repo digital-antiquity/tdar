@@ -54,7 +54,6 @@ import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
-import org.tdar.core.service.search.SearchIndexService;
 
 import com.google.common.collect.Sets;
 
@@ -94,16 +93,14 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     TdarConfiguration config = TdarConfiguration.getInstance();
 
-    private transient final SearchIndexService searchIndexService;
     private transient final GenericService genericService;
     private transient final RssService rssService;
     private transient final AuthenticationService authenticationService;
     private transient final ProcessManager manager;
 
     @Autowired
-    public ScheduledProcessService(SearchIndexService sis, @Qualifier("genericService") GenericService gs,
+    public ScheduledProcessService(@Qualifier("genericService") GenericService gs,
             RssService rss, AuthenticationService auth, @Qualifier("processManager") ProcessManager pm) {
-        this.searchIndexService = sis;
         this.genericService = gs;
         this.rssService = rss;
         this.authenticationService = auth;
@@ -160,15 +157,6 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         if (config.shouldRunPeriodicEvents()) {
             rssService.evictRssCache();
         }
-    }
-
-    /**
-     * Tell Lucene to Optimize it's indexes
-     */
-    @Scheduled(cron = "16 0 0 * * SUN")
-    public void cronOptimizeSearchIndexes() {
-        logger.info("Optimizing indexes");
-        searchIndexService.optimizeAll();
     }
 
     /**

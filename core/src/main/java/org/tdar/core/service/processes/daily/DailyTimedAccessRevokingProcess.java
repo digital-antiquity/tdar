@@ -14,7 +14,6 @@ import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
-import org.tdar.core.service.search.SearchIndexService;
 
 /**
  * $Id$
@@ -39,8 +38,8 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
 
-    @Autowired
-    private transient SearchIndexService searchIndexService;
+//    @Autowired
+//    private transient SearchIndexService searchIndexService;
 
     @Override
     public String getDisplayName() {
@@ -82,7 +81,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
         }
         if (changed) {
             resourceCollectionService.saveOrUpdate(persistable);
-            searchIndexService.index(persistable);
+//            searchIndexService.index(persistable);
         }
     }
     

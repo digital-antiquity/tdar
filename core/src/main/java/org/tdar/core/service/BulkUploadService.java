@@ -52,7 +52,6 @@ import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
@@ -93,9 +92,6 @@ public class BulkUploadService {
 
     @Autowired
     private BillingAccountService accountService;
-
-    @Autowired
-    private SearchIndexService searchIndexService;
 
     @Autowired
     private FileAnalyzer analyzer;
@@ -281,7 +277,8 @@ public class BulkUploadService {
     private void reindexProject(Long projectId, AsyncUpdateReceiver updateReciever) {
         try {
             if (PersistableUtils.isNotNullOrTransient(projectId)) {
-                boolean exceptions = searchIndexService.indexProject(projectId);
+                logger.debug("REINDEX !!! ");
+                boolean exceptions = false;// searchIndexService.indexProject(projectId);
                 if (exceptions) {
                     throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
                 }

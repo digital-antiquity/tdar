@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 
@@ -23,7 +22,7 @@ import org.tdar.core.bean.FieldLength;
  * @author Martin Paulo
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "audio")
 @XmlRootElement(name = "audio")
 public class Audio extends InformationResource {

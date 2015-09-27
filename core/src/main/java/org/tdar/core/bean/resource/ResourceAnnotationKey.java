@@ -13,21 +13,13 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -43,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Table(name = "resource_annotation_key")
-@Indexed(index = "AnnotationKey")
+//@Indexed(index = "AnnotationKey")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.ResourceAnnotationKey")
 @Cacheable
 public class ResourceAnnotationKey extends Persistable.Base implements Indexable, HasLabel {
@@ -62,7 +54,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     private ResourceAnnotationDataType annotationDataType;
 
     @Column(length = FieldLength.FIELD_LENGTH_128, unique = true, nullable = false)
-    @Fields({ @Field(name = "annotationkey_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
+    //@Fields({ //@Field(name = "annotationkey_auto", norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)) })
     @Length(max = FieldLength.FIELD_LENGTH_128)
     @JsonView(JsonLookupFilter.class)
     private String key;
@@ -72,7 +64,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     private String formatString;
 
     private transient Float score = -1f;
-    private transient Explanation explanation;
     private transient boolean readyToIndex = true;
 
     @Transient
@@ -147,18 +138,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     @Override
     public void setScore(Float score) {
         this.score = score;
-    }
-
-    @Transient
-    @XmlTransient
-    @Override
-    public Explanation getExplanation() {
-        return explanation;
-    }
-
-    @Override
-    public void setExplanation(Explanation explanation) {
-        this.explanation = explanation;
     }
 
     @Transient

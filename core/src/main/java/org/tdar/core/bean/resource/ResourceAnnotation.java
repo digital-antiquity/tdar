@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -55,11 +54,11 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
-    @Field
+    //@Field
     @JsonView(JsonLookupFilter.class)
     private String value;
 
-    @Field
+    //@Field
     public String getPairedValue() {
         return getResourceAnnotationKey().getKey() + ":" + getValue();
     }

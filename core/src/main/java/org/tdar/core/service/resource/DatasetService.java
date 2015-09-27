@@ -38,7 +38,6 @@ import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -66,7 +65,6 @@ import org.tdar.core.service.resource.dataset.DatasetChangeLogger;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
@@ -91,9 +89,6 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
 
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
-
-    @Autowired
-    private SearchIndexService searchIndexService;
 
     @Autowired
     private ResourceService resourceService;
@@ -734,7 +729,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         remapColumnsWithoutIndexing(columns, project);
         if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL) {
-            searchIndexService.indexProject(project);
+            logger.error("REINDEX !!!");
         }
     }
 

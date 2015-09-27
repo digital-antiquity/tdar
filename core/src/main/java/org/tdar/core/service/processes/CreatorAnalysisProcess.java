@@ -5,9 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
-import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,11 +16,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.ImmutableScrollableCollection;
-import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")
@@ -30,8 +26,8 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 
     private static final long serialVersionUID = 581887107336388520L;
 
-    @Autowired
-    private transient SearchService searchService;
+//    @Autowired
+//    private transient SearchService searchService;
 
     @Autowired
     private transient EntityService entityService;
@@ -124,29 +120,30 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
             if (!creator.isActive()) {
                 continue;
             }
-            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
-            Set<Long> resourceIds = new HashSet<>();
-            try {
-                FullTextQuery search = searchService.search(query);
-                // change to ID only projection
-                // search.setProjection(arg0)
-                ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
-                total = search.getResultSize();
-                if (total == 0) {
-                    continue;
-                }
-                while (results.next()) {
-                    Resource resource = (Resource) results.get()[0];
-                    resourceIds.add(resource.getId());
-                }
-            } catch (Exception e) {
-                getLogger().warn("Exception", e);
-            }
-            try {
-                generateLogEntry(resourceIds, creator, total, userIdsToIgnoreInLargeTasks);
-            } catch (Exception e) {
-                getLogger().warn("Exception", e);
-            }
+            throw new TdarRecoverableRuntimeException();
+//            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
+//            Set<Long> resourceIds = new HashSet<>();
+//            try {
+//                FullTextQuery search = searchService.search(query);
+//                // change to ID only projection
+//                // search.setProjection(arg0)
+//                ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
+//                total = search.getResultSize();
+//                if (total == 0) {
+//                    continue;
+//                }
+//                while (results.next()) {
+//                    Resource resource = (Resource) results.get()[0];
+//                    resourceIds.add(resource.getId());
+//                }
+//            } catch (Exception e) {
+//                getLogger().warn("Exception", e);
+//            }
+//            try {
+//                generateLogEntry(resourceIds, creator, total, userIdsToIgnoreInLargeTasks);
+//            } catch (Exception e) {
+//                getLogger().warn("Exception", e);
+//            }
         }
     }
 

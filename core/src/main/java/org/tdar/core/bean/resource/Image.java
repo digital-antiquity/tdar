@@ -5,8 +5,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.search.annotations.Indexed;
-
 /**
  * $Id$
  * <p>
@@ -17,7 +15,7 @@ import org.hibernate.search.annotations.Indexed;
  * @version $Revision: 543$
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "image")
 @XmlRootElement(name = "image")
 public class Image extends InformationResource {

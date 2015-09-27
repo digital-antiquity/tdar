@@ -46,7 +46,6 @@ import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.search.ReservedSearchParameters;
 import org.tdar.utils.PersistableUtils;
 
 /*
@@ -143,30 +142,6 @@ public class AuthorizationService implements Accessible {
             allowed.add(Status.DUPLICATE);
         }
         return allowed;
-    }
-
-    /*
-     * The @link AdvancedSearchController's ReservedSearchParameters is a proxy object for handling advanced boolean searches. We initialize it with the search
-     * parameters
-     * that are AND-ed with the user's search to ensure appropriate search results are returned (such as a Resource's @link Status).
-     */
-    public void initializeReservedSearchParameters(ReservedSearchParameters reservedSearchParameters, TdarUser user) {
-        reservedSearchParameters.setAuthenticatedUser(user);
-        reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
-        Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
-        List<Status> statuses = reservedSearchParameters.getStatuses();
-        statuses.removeAll(Collections.singletonList(null));
-
-        if (CollectionUtils.isEmpty(statuses)) {
-            statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        }
-
-        statuses.retainAll(allowedSearchStatuses);
-        reservedSearchParameters.setStatuses(statuses);
-        if (statuses.isEmpty()) {
-            throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
-        }
-
     }
 
     /**
