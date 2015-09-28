@@ -58,6 +58,7 @@ import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.utils.PersistableUtils;
 
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
+import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
 /**
  * The service backing DataOne controllers
@@ -461,7 +462,7 @@ public class DataOneService implements DataOneConstants {
         resp.setContentType(XML_CONTENT_TYPE);
         resp.setType(EntryType.TDAR);
         // ModsDocument modsDoc = ModsTransformer.transformAny(ir);
-        ExtendedDublinCoreDocument modsDoc = ExtendedDcTransformer.transformAny(ir);
+        QualifiedDublinCoreDocument modsDoc = ExtendedDcTransformer.transformAny(ir);
         resp.setObjectFormat(META);
         StringWriter sw = new StringWriter();
         JaxbDocumentWriter.write(modsDoc, sw, true);
