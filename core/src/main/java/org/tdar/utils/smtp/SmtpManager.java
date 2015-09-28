@@ -36,6 +36,7 @@ import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.core.util.NetUtils;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * Manager for sending SMTP events.
@@ -152,14 +153,16 @@ public class SmtpManager extends AbstractManager {
             }
             sendMultipartMessage(message, mp, message2);
         } catch (final MessagingException e) {
+            LOGGER.warn(ExceptionUtils.getStackTrace(e));
             LOGGER.error("Error occurred while sending e-mail notification.", e, e);
-            e.printStackTrace();
             throw new LoggingException("Error occurred while sending email");
         } catch (final IOException e) {
+            LOGGER.warn(ExceptionUtils.getStackTrace(e));
             LOGGER.error("Error occurred while sending e-mail notification.", e, e);
             e.printStackTrace();
             throw new LoggingException("Error occurred while sending email", e);
         } catch (final RuntimeException e) {
+            LOGGER.warn(ExceptionUtils.getStackTrace(e));
             LOGGER.error("Error occurred while sending e-mail notification.", e, e);
             e.printStackTrace();
             throw new LoggingException("Error occurred while sending email", e);
