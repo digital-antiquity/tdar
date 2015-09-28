@@ -261,11 +261,11 @@ TDAR.autocomplete = (function () {
      * @private
      */
     function _disable($parent) {
-        //fixme: "disable" function is broken in jquery ui 1.8.23, but jquery 1.9 introduces bootstrap incompatibility - find a workaround
-        //$parent.find(".ui-autocomplete-input").autocomplete("disable");
-        $parent.find(".ui-autocomplete-input").each(function () {
-            $(this).data("autocomplete").disabled = true;
-        });
+        //fixme: commenting out for now. disable() must be called on actual autocomplete, not merely a parent of one.
+        ////$parent.find(".ui-autocomplete-input").autocomplete("disable");
+        //$parent.find(".ui-autocomplete-input").each(function () {
+        //    $(this).data("autocomplete").disabled = true;
+        //});
     }
 
     /**
@@ -274,9 +274,7 @@ TDAR.autocomplete = (function () {
      * @private
      */
     function _enable($parent) {
-        $parent.find(".ui-autocomplete-input").each(function () {
-            $(this).data("autocomplete").disabled = false;
-        });
+        //$parent.autocomplete("enable");
     }
 
     /**
@@ -316,12 +314,6 @@ TDAR.autocomplete = (function () {
         var autoResult = $elements.autocomplete({
             source: function (request, response) {
                 var $elem = $(this.element);
-
-                //workaround for broken "disable" functionality in jquery-ui 1.8.x
-                if ($elem.data("autocomplete").disabled) {
-                    response();
-                    return;
-                }
 
                 //is another ajax request in flight?
                 var oldResponseHolder = $elem.data('responseHolder');
@@ -457,8 +449,7 @@ TDAR.autocomplete = (function () {
                 //if user selects 'create new' option, add it to the new item cache and stop trying to find matches.
                 if (ui.item.isNewItem) {
                     var $parent = $($elem.attr("autocompleteparentelement"));
-                    cache.register($parent.get());
-                    _disable($parent);
+                    //$parent.autocomplete("disable");
 
                 }
             },
@@ -480,7 +471,7 @@ TDAR.autocomplete = (function () {
         if (options.customRender != undefined) {
             autoResult.each(function (idx, elem) {
                 // handle custom rendering of result
-                $(elem).data("autocomplete")._renderItem = options.customRender;
+                $(elem).autocomplete("instance")._renderItem = options.customRender;
             });
         }
 
