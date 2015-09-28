@@ -94,7 +94,7 @@
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>${clover.version}</version>
 				<configuration>
-					<license>${clover.license}</license>
+                    <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
 					<!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
 					<!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
 					<includes>

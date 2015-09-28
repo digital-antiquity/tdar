@@ -55,12 +55,6 @@
             to the command line -->
         <build.profile.id>default</build.profile.id>
         <clover.version>4.0.6</clover.version>
-        <clover.license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
-		                        mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
-		                        rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
-		                        umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
-		                        mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-		                        bZloaUUnmm]]></clover.license>
         <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
     </properties>
 
