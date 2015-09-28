@@ -78,4 +78,5 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     public String getSubject() {
         return assistant.getStringProperty("dataone.subject","CN=urn:node:mnTDAR,DC=dataone,DC=org");
     }
+
 }

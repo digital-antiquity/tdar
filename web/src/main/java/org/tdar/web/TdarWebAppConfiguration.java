@@ -85,5 +85,10 @@ public class TdarWebAppConfiguration extends TdarAppConfiguration implements Sch
 	public Executor taskScheduler() {
 		return Executors.newScheduledThreadPool(2);
 	}
-	
+
+    @Override
+    public boolean disableHibernateSearch() {
+        return false;
+    }
+
 }
