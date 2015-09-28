@@ -154,18 +154,18 @@ public class SmtpManager extends AbstractManager {
             sendMultipartMessage(message, mp, message2);
         } catch (final MessagingException e) {
             LOGGER.warn(ExceptionUtils.getStackTrace(e));
-            LOGGER.error("Error occurred while sending e-mail notification.", e, e);
-            throw new LoggingException("Error occurred while sending email");
+            LOGGER.error("Error occurred while sending e-mail notification (a).", e, e);
+            throw new LoggingException("Error occurred while sending email (a)");
         } catch (final IOException e) {
             LOGGER.warn(ExceptionUtils.getStackTrace(e));
-            LOGGER.error("Error occurred while sending e-mail notification.", e, e);
+            LOGGER.error("Error occurred while sending e-mail notification (b).", e, e);
             e.printStackTrace();
-            throw new LoggingException("Error occurred while sending email", e);
+            throw new LoggingException("Error occurred while sending email (b)", e);
         } catch (final RuntimeException e) {
             LOGGER.warn(ExceptionUtils.getStackTrace(e));
-            LOGGER.error("Error occurred while sending e-mail notification.", e, e);
+            LOGGER.error("Error occurred while sending e-mail notification. (c)", e, e);
             e.printStackTrace();
-            throw new LoggingException("Error occurred while sending email", e);
+            throw new LoggingException("Error occurred while sending email (c)", e);
         }
     }
 
