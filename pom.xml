@@ -360,7 +360,7 @@
                 right logging source; this allows us to pipe hibernate into slf4j -->
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.1.4.GA</version>
+            <version>3.2.0.Final</version>
         </dependency>
 
         <dependency>
@@ -393,8 +393,9 @@
                     <plugin>
                         <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>maven-clover2-plugin</artifactId>
+                        <version>${clover.version}</version>
                         <configuration>
-                            <license>${clover.license}</license>
+                            <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>

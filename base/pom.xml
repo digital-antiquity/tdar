@@ -95,14 +95,13 @@
 				<version>${clover.version}</version>
 				<configuration>
                     <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
-					<!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
-					<!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
 					<includes>
 						<include>**/*.java</include>
 					</includes>
 					<excludes>
 						<exclude>**/PDFMergerUtility.java</exclude>
 					</excludes>
+                    <scope>test</scope>
 				</configuration>
 				<dependencies>
 					<dependency>

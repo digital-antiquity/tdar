@@ -55,6 +55,7 @@ public class SimpleAppConfiguration implements Serializable {
          * * commons-logging and other logging options can also produce conflicts.
          */
         System.setProperty("org.jboss.logging.provider", "slf4j");
+
     }
 
     @Bean(name = "sessionFactory")
