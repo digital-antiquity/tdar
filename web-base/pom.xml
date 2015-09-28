@@ -12,6 +12,7 @@
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
         <skipJetty>true</skipJetty>
+        <jersey.version>2.22</jersey.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>

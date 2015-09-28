@@ -467,6 +467,7 @@ public class DataOneService implements DataOneConstants {
         StringWriter sw = new StringWriter();
         JaxbDocumentWriter.write(modsDoc, sw, true);
         String metaXml = sw.toString();
+        logger.trace(metaXml);
         resp.setSize(metaXml.getBytes(UTF_8).length);
         resp.setReader(new StringReader(metaXml));
         resp.setChecksum(DataOneUtils.checksumString(metaXml));
