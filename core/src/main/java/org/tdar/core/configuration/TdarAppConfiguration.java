@@ -76,4 +76,8 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
         return new ArrayList<>();
     }
 
+    public boolean disableHibernateSearch() {
+        return false;
+    }
+
 }
