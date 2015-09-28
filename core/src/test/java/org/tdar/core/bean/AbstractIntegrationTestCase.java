@@ -38,9 +38,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.Cache;
@@ -120,8 +120,6 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
@@ -172,10 +170,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected EntityService entityService;
     @Autowired
     protected InformationResourceService informationResourceService;
-    @Autowired
-    protected SearchIndexService searchIndexService;
-    @Autowired
-    protected SearchService searchService;
     @Autowired
     protected BookmarkedResourceService bookmarkedResourceService;
     @Autowired

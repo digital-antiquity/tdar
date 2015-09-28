@@ -1,4 +1,4 @@
-package org.tdar.core.search;
+package org.tdar.search;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;

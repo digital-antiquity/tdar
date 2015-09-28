@@ -79,7 +79,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     // obliterate hibernate caches(1st level, 2nd level, and query cache), then return the current session
     Session cleanSession() {
         evictCache();
-        searchIndexService.flushToIndexes();
+//        searchIndexService.flushToIndexes();
         Cache cache = sessionFactory.getCache();
         cache.evictEntityRegions();
         cache.evictCollectionRegions();

@@ -1,10 +1,11 @@
-package org.tdar.utils;
+package org.tdar;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.search.util.AsciiTransliterator;
 
 public class AsciiTransliteratorTest {
     private Logger logger = LoggerFactory.getLogger(getClass());

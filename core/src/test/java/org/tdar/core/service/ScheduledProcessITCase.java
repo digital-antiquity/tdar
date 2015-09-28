@@ -116,11 +116,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     ScheduledProcessService scheduledProcessService;
 
-    @Test
-    @Rollback
-    public void testOptimize() {
-        searchIndexService.optimizeAll();
-    }
 
     @Test
     @Rollback
@@ -267,9 +262,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    @Ignore("FIXME:disabled for searching")
     public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
-        searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
         pap.setDaysToRun(3000);
         pap.execute();
         pap.cleanup();

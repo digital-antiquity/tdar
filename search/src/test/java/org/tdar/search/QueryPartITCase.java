@@ -1,4 +1,4 @@
-package org.tdar.core.search;
+package org.tdar.search;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,13 +6,13 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 
-public class QueryPartITCase extends AbstractIntegrationTestCase {
+public class QueryPartITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Before
     public void before() {
