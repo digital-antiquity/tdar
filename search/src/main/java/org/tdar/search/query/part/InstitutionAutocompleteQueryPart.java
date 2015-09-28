@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.entity.Institution;
 
 public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution> {

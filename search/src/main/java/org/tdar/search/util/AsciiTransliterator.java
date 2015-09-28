@@ -1,10 +1,13 @@
-package org.tdar.utils;
+package org.tdar.search.util;
 
 import java.io.IOException;
 import java.io.StringReader;
 
 import javax.persistence.Transient;
 
+import org.apache.lucene.analysis.core.KeywordTokenizer;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +33,7 @@ public class AsciiTransliterator {
         {
             try
             {
-                keywordTokenizer.reset(new StringReader(line));
+                keywordTokenizer.reset();
                 if (asciiFoldingFilter.incrementToken())
                 {
                     return new String(termAttribute.buffer());

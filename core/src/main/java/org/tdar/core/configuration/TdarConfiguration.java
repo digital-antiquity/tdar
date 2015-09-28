@@ -50,7 +50,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     private Filestore filestore;
 
-    private Set<String> stopWords = new HashSet<>();
+    private List<String> stopWords = new ArrayList<>();
     private List<String> couponCodes = new ArrayList<>();
 
     private String configurationFile;
@@ -464,7 +464,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return dir;
     }
 
-    public Set<String> getStopWords() {
+    public List<String> getStopWords() {
         if (CollectionUtils.isEmpty(stopWords)) {
             initializeStopWords();
         }

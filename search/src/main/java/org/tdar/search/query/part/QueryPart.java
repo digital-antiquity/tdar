@@ -1,6 +1,6 @@
 package org.tdar.search.query.part;
 
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 
 import com.opensymphony.xwork2.TextProvider;
 

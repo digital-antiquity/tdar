@@ -5,9 +5,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -35,7 +36,27 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     public HydrateableKeywordQueryPart(KeywordType type, List<K> fieldValues_) {
         setOperator(Operator.OR);
         setActualClass((Class<K>) type.getKeywordClass());
-        setFieldName(type.getFieldName());
+        String name = null;
+        switch (type) {
+            case CULTURE_KEYWORD:
+                name = QueryFieldNames.ACTIVE_CULTURE_KEYWORDS;
+            case INVESTIGATION_TYPE:
+                name = QueryFieldNames.ACTIVE_INVESTIGATION_TYPES;
+            case GEOGRAPHIC_KEYWORD:
+                name = QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS;
+            case MATERIAL_TYPE:
+                name = QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS;
+            case OTHER_KEYWORD:
+                name = QueryFieldNames.ACTIVE_OTHER_KEYWORDS;
+            case SITE_NAME_KEYWORD:
+                name = QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS;
+            case SITE_TYPE_KEYWORD:
+                name = QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS;
+            case TEMPORAL_KEYWORD:
+                name = QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS;
+            
+        }
+        setFieldName(name);
         setFieldValues(fieldValues_);
     }
 

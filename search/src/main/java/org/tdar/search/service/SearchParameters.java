@@ -1,4 +1,4 @@
-package org.tdar.core.service.search;
+package org.tdar.search.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
@@ -462,7 +462,7 @@ public class SearchParameters {
         }
         HydrateableKeywordQueryPart hydrateableKeywordQueryPart = new HydrateableKeywordQueryPart(type, kwdValues);
         hydrateableKeywordQueryPart.setIncludeChildren(!explore);
-        hydrateableKeywordQueryPart.setDisplayName(support.getText(type.getSearchDescriptionKey()));
+        hydrateableKeywordQueryPart.setDisplayName(support.getText(type.getLocaleKey()));
         return hydrateableKeywordQueryPart;
     }
 

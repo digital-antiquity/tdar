@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.hibernate.search.bridge.FieldBridge;
-import org.hibernate.search.bridge.LuceneOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Resource;
@@ -21,13 +19,12 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.search.index.field.LazyReaderField;
 
 /**
  * @author Adam Brin
  * 
  */
-public class PersistentReaderBridge implements FieldBridge {
+public class PersistentReaderBridge  {
 
     private List<URI> input;
     protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
@@ -39,8 +36,8 @@ public class PersistentReaderBridge implements FieldBridge {
      * org.hibernate.search.bridge.LuceneOptions)
      */
     @SuppressWarnings("unchecked")
-    @Override
-    public void set(String name, Object value, Document document, LuceneOptions luceneOptions) {
+//    @Override
+    public void set(String name, Object value, Document document) {
 
         if (name.equals("informationResources.content")) {
             logger.trace("not indexing {}", name);
@@ -64,8 +61,8 @@ public class PersistentReaderBridge implements FieldBridge {
                     }
                 }
             }
-            LazyReaderField field = new LazyReaderField(name, input, luceneOptions.getStore(), luceneOptions.getIndex(), luceneOptions.getBoost());
-            document.add(field);
+//            LazyReaderField field = new LazyReaderField(name, input, luceneOptions.getStore(), luceneOptions.getIndex(), luceneOptions.getBoost());
+//            document.add(field);
         }
 
     }

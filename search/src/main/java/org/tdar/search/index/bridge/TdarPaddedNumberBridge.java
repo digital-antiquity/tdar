@@ -1,6 +1,5 @@
 package org.tdar.search.index.bridge;
 
-import org.hibernate.search.bridge.StringBridge;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 
 /**
@@ -14,9 +13,9 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
  * @version $Rev$
  * 
  */
-public class TdarPaddedNumberBridge implements StringBridge {
+public class TdarPaddedNumberBridge {
 
-    @Override
+//    @Override
     public String objectToString(Object object) {
         if (object == null) {
             return "";

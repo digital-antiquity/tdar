@@ -4,10 +4,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
-import org.hibernate.search.bridge.FieldBridge;
-import org.hibernate.search.bridge.LuceneOptions;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.DataUtil;
 
 /**
@@ -21,10 +18,9 @@ import org.tdar.utils.DataUtil;
  * @version $Rev$
  * 
  */
-public class StringMapBridge implements FieldBridge {
+public class StringMapBridge {
 
-    @Override
-    public void set(String name, Object value, Document doc, LuceneOptions opts) {
+    public void set(String name, Object value, Document doc) {
         if (value == null) {
             return;
         }
@@ -44,7 +40,7 @@ public class StringMapBridge implements FieldBridge {
             if (keyName == null || StringUtils.isBlank(mapValue)) {
                 continue;
             }
-            opts.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + mapValue, doc);
+//            opts.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + mapValue, doc);
         }
     }
 
