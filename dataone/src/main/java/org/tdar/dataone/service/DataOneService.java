@@ -141,13 +141,13 @@ public class DataOneService implements DataOneConstants {
         list.add(DataOneUtils.createSubject(D1CONFIG.getContactSubject()));
         node.setContactSubjectList(list);
 
-        List<Subject> subjectList = new ArrayList<>();
-        list.add(DataOneUtils.createSubject(D1CONFIG.getSubject()));
-        node.setSubjectList(subjectList);
+//        List<Subject> subjectList = new ArrayList<>();
+//        list.add(DataOneUtils.createSubject(D1CONFIG.getSubject()));
+//        node.setSubjectList(subjectList);
 
         Synchronization sync = new Synchronization();
         sync.setLastCompleteHarvest(new Date(0));
-        node.getContactSubjectList().add(getSystemUserLdap());
+//        node.getContactSubjectList().add(getSystemUserLdap());
         sync.setLastHarvested(new Date());
         Schedule schedule = new Schedule();
         schedule.setHour("2");
