@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.tdar</groupId>
+    <artifactId>deploy</artifactId>
+    <version>14.0.0-NEOLITHIC-SNAPSHOT</version>
+
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.10</version>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>get</goal>
+                                </goals>
+                                <configuration>
+                                    <artifact>org.tdar:web:${project.version}:war</artifact>
+                                    <destination>target</destination>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!--  http://examples.javacodegeeks.com/enterprise-java/maven/how-to-deploy-maven-based-war-file-to-tomcat-example/  -->
+                        <groupId>org.apache.tomcat.maven</groupId>
+                        <artifactId>tomcat7-maven-plugin</artifactId>
+                        <version>2.3-SNAPSHOT</version>
+                        <configuration>
+                            <url>http://www.mydomain.com:1234/mymanager</url>
+                            <path>/</path>
+                            <warFile>target/tdar-web.war</warFile>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
