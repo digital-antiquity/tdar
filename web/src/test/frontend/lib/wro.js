@@ -5,43 +5,57 @@
     var fs = require('fs');
     var xml2js = require('xml2js');
     var path = require('path');
-    var deasync = require('deasync');
+    var xmldoc = require('xmldoc');
 
     //transform the parsed object from list<group> into map<groupName, group>
-    function _transform(obj) {
-         var wro = obj.groups.group.reduce(function(prev, current){
-             var group = {
-                 name: current["$"].name, //xml2js places attribute values in  the "$" field
-                 cssFiles: current.css,
-                 jsFiles: current.js,
-                 groupRef: current["group-ref"]
-             };
-             prev[group.name]=group;
-             return prev;
-         }, {});
-         
-         //handle groupRefs
-         Object.keys(wro).forEach(function(groupName) {
-             var group = wro[groupName];
-             if(group.groupRef) {
-                 group.groupRef = wro[group.groupRef];
-             }
-         });
-        return wro;
-    }
-    
-    function _parse(data, cb){
-        var parser = xml2js.Parser();
-        parser.parseString(data, function(err, obj){
-            if(err) {cb(err); return}
+    function _transform(xdoc) {
+        // we need to make two passes through the groups
+        // pass 1: transform each group into new data structure that is easier to work with
+        var groupDict = xdoc.children.reduce(function(prev, group, i){
+            console.log('encountered child: %s', group.attr.name);
 
-            cb(null, _transform(obj));
+            //tranform each group into object w/ three 'buckets' that hold list of js/css/group-ref names.
+            var obj = {
+                jsFiles:[],
+                cssFiles:[],
+                groupRef:[]
+            };
+
+            var transformedGroup = group.children
+                .reduce(function(prev, item, i){
+                    //divvy up each entry in the group into one of the three buckets
+                    ({
+                        'js': prev.jsFiles,
+                        'css': prev.cssFiles,
+                        'group-ref': prev.groupRef
+                    })[item.name].push(item.val);
+                    return prev;
+                }, obj);
+
+            prev[group.attr.name] = transformedGroup;
+            return prev;
+        }, {});
+
+        //pass 2: resolve any group-ref references
+        Object.keys(groupDict).forEach(function(groupName){
+            var group = groupDict[groupName]
+            if(group.groupRef.length === 1) {
+                var refName = group.groupRef[0];
+                group.groupRef = groupDict[refName];
+            } else {
+                delete group.groupRef
+            }
         });
+        return groupDict;
+    }
+
+    function _parse(str) {
+        var doc = new xmldoc.XmlDocument(str);
+        return _transform(doc);
     }
     
     module.exports = {
-        parse: _parse,
-        parseSync: deasync(_parse)
+        parse: _parse
     }
 
 })();

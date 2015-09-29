@@ -8,7 +8,7 @@ var fs = require("fs");
 function buildFilesFromWro(profile) {
     if(!profile) profile = 'default'
     var xmldata = fs.readFileSync("src/main/resources/wro.xml", "utf-8");
-    var wroconfig = wro.parseSync(xmldata);
+    var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles
             .concat(wroconfig[profile].jsFiles)
@@ -33,7 +33,7 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                {pattern: "src/main/webapp/components/jquery/jquery.js", watched: false},
+                {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},

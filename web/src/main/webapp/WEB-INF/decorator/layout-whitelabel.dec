@@ -6,9 +6,9 @@
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 
-<#global jquery_version="1.10.2">
-<#global jquery_ui_version="1.8.23">
-<#global jquery_ui_css_version="1.9.2">
+<#global jquery_version="1.11.3">
+<#global jquery_ui_version="1.11.4">
+<#global jquery_ui_css_version="1.11.4">
 
 <#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
      This is a less-than ideal solution, but seems to be the best that we have. -->
@@ -37,14 +37,14 @@
 
 <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <#if useCDN>
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/smoothness/jquery-ui.min.css">
     <#else>
-        <link href="/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='/includes/jquery-ui-${jquery_ui_css_version}/development-bundle/themes/base/jquery-ui.css'>
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link rel="stylesheet" type="text/css" href='${staticHost}/includes/jquery-ui-${jquery_ui_css_version}/jquery-ui.min.css'>
     </#if>
 
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
@@ -58,11 +58,11 @@
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
     <#if useCDN>
-        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
     <#else>
-        <script src="/includes/jquery-${jquery_version}.js"></script>
-        <script src="/includes/jquery-ui-${jquery_ui_version}/ui/minified/jquery-ui.min.js"></script>
+        <script src="${staticHost}/includes/jquery-${jquery_version}.min.js"></script>
+        <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}/jquery-ui.min.js"></script>
     </#if>
     <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
     <#include "/${themeDir}/head.dec" />
@@ -212,13 +212,13 @@ ${head}
     </footer>
 
     <#if useCDN>
-        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
-        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script>
-        <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js"></script>
+        <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <#else>
-        <script src="/includes/jquery.validate-1.11.1/jquery.validate.js"></script>
-        <script src="/includes/jquery.validate-1.11.1/additional-methods.js"></script>
-        <script src="/includes/bootstrap-2.32/js/bootstrap.js"></script>
+        <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
+        <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
+        <script src="${staticHost}/includes/bootstrap-2.32/js/bootstrap.js"></script>
     </#if>
 
 
