@@ -7,13 +7,14 @@
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
-		<!-- config templates -->
+        <!-- config templates -->
         <module>templates</module>
         <!-- contains shared "test" files -->
         <module>test-resources</module>
         <!-- contains all "liquibase" settings and config files -->
         <module>database</module>
-        <!-- contains shared config and setup for all other modules, depends on "database" and "test" -->
+        <!-- contains shared config and setup for all other modules, depends 
+            on "database" and "test" -->
         <module>locales</module>
         <module>base</module>
         <!-- tdar "core" files -->
@@ -421,13 +422,13 @@
                         </executions>
                     </plugin>
                     <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-release-plugin</artifactId>
-                      <version>2.5.2</version>
-                      <configuration>
-                         <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <releaseProfiles>release</releaseProfiles>
-                      </configuration>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.2</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <releaseProfiles>release</releaseProfiles>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -535,6 +536,23 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <activation>
+                <property>
+                    <name>java.vendor</name>
+                    <value>Oracle Corporation</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.4.2</version>
+                    <scope>system</scope>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>updateVersion</id>
