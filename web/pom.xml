@@ -263,7 +263,7 @@
 				<configuration>
 					<webResources>
 						<resource>
-							<directory>target/generated/webapp</directory>
+							<directory>${project.build.directory}/generated/webapp</directory>
 							<targetPath>/</targetPath>
 							<filtering>false</filtering>
 						</resource>
