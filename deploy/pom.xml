@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>deploy</artifactId>
-    <version>14.0.0-NEOLITHIC-BETA1</version>
+    <version>14.0.0-NEOLITHIC-SNAPSHOT</version>
 
     <repositories>
         <repository>

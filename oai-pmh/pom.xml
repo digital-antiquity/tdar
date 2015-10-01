@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.tdar</groupId>
 		<artifactId>web-base</artifactId>
-		<version>14.0.0-NEOLITHIC-BETA1</version>
+		<version>14.0.0-NEOLITHIC-SNAPSHOT</version>
 		<relativePath>../web-base/pom.xml</relativePath>
 	</parent>
 
