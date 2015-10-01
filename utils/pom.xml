@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>utils</artifactId>
 	<packaging>jar</packaging>
-	<name>The Digital Archaeological Record (Utils)</name>
+	<name>tDAR (Utils)</name>
 
 	<properties>
 		<servlet.api.version>3.0.1</servlet.api.version>
@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.tdar</groupId>
 		<artifactId>base</artifactId>
-		<version>14.0.0-NEOLITHIC-SNAPSHOT</version>
+		<version>14.0.0-NEOLITHIC-BETA1</version>
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 

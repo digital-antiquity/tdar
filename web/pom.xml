@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>web</artifactId>
 	<packaging>war</packaging>
-	<name>The Digital Archaeological Record (web)</name>
+	<name>tDAR (web)</name>
 
 	<properties>
 		<struts2.version>2.3.24.1</struts2.version>
@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.tdar</groupId>
 		<artifactId>web-base</artifactId>
-		<version>14.0.0-NEOLITHIC-SNAPSHOT</version>
+		<version>14.0.0-NEOLITHIC-BETA1</version>
 		<relativePath>../web-base/pom.xml</relativePath>
 	</parent>
 

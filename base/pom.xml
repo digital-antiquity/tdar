@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>base</artifactId>
     <packaging>pom</packaging>
-    <name>The Digital Archaeological Record (base)</name>
+    <name>tDAR (base)</name>
 
     <properties>
         <hibernate.version>4.3.10.Final</hibernate.version>
@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>parent</artifactId>
-        <version>14.0.0-NEOLITHIC-SNAPSHOT</version>
+        <version>14.0.0-NEOLITHIC-BETA1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
