@@ -160,7 +160,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         BillingAccount account = createAccount(getUser());
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
-        String save = controller.createCouponCode();
+        String save = controller.execute();
         Long id = controller.getAccount().getId();
         assertEquals(Action.SUCCESS, save);
         Long accountId = controller.getId();
@@ -220,7 +220,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setNumberOfFiles(1000L);
         try {
             controller.validate();
-            String save = controller.createCouponCode();
+            String save = controller.execute();
             Long id = controller.getAccount().getId();
         } catch (TdarRecoverableRuntimeException e) {
             logger.error("{}", e, e);
@@ -241,7 +241,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         // controller.setNumberOfFiles(1000L);
         try {
             controller.validate();
-            String save = controller.createCouponCode();
+            String save = controller.execute();
             Long id = controller.getAccount().getId();
         } catch (TdarRecoverableRuntimeException e) {
             logger.error("{}", e, e);
@@ -260,7 +260,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setNumberOfMb(1L);
         try {
             controller.validate();
-            String save = controller.createCouponCode();
+            String save = controller.execute();
             Long id = controller.getAccount().getId();
         } catch (TdarRecoverableRuntimeException e) {
             logger.error("{}", e, e);
@@ -278,7 +278,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setNumberOfFiles(1L);
         boolean seen = false;
         try {
-            String save = controller.createCouponCode();
+            String save = controller.execute();
             Long id = controller.getAccount().getId();
         } catch (Exception e) {
             seen = true;
