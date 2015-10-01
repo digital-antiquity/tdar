@@ -45,6 +45,7 @@ public class SimpleAppConfiguration implements Serializable {
 
     private static final long serialVersionUID = 2190713147269025044L;
     public transient Logger logger = LoggerFactory.getLogger(getClass());
+    public static transient Logger staticLogger = LoggerFactory.getLogger(SimpleAppConfiguration.class);
 
     public SimpleAppConfiguration() {
         /*
@@ -104,7 +105,8 @@ public class SimpleAppConfiguration implements Serializable {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer placeholder = new PropertySourcesPlaceholderConfigurer();
-        String CONFIG_DIR = System.getenv(ConfigurationAssistant.getConfigPath());
+        String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
+        staticLogger.debug("USING CONFIG PATH:" + CONFIG_DIR);
         List<Resource> resources = new ArrayList<>();
         String[] propertyFiles = { "hibernate.properties" };
         for (String propertyFile : propertyFiles) {
