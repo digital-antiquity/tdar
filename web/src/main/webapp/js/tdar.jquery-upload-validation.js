@@ -313,7 +313,7 @@
          * @returns {boolean} true if all validation rules passed. Otherwise false.
          */
         validate: function () {
-            console.log("validating %s   rulecount:%s", this.fileupload, this.rules.length);
+            //console.log("validating %s   rulecount:%s", this.fileupload, this.rules.length);
             var self = this;
             this.suggestions = [];
             this.errors = [];
@@ -353,7 +353,7 @@
                     } else {
                         $.each(files, function (idx, file) {
                             var valid = method(file, files, rule.settings);
-                            console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
+                            //console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
                             if (!valid) {
                                 var error = {
                                     "file": file,
@@ -426,7 +426,7 @@
          *                      "\{3\}": idx, index of the row in the file table
          */
         addMethod: function (name, method, message) {
-            console.log("addMethod name:%s   method:%s    message:%s", name, typeof method, message);
+            //console.log("addMethod name:%s   method:%s    message:%s", name, typeof method, message);
             this.methods[name] = method;
             if (message) {
                 this.messages[name] = $.validator.format(message);
@@ -495,7 +495,7 @@
          * @param file
          */
         highlight: function (file) {
-            console.log("highlighting: %s", file.filename);
+            //console.log("highlighting: %s", file.filename);
             file.context.removeClass(this.okayClass).addClass(this.errorClass);
         },
 
@@ -505,7 +505,7 @@
          * @param file
          */
         unhighlight: function (file) {
-            console.log("unhighlighting: %s", file.filename);
+            //console.log("unhighlighting: %s", file.filename);
             file.context.removeClass(this.errorClass).addClass(this.okayClass);
         },
 

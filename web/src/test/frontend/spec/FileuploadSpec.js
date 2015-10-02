@@ -1,59 +1,254 @@
-/* global describe, it, expect */
-describe("tests for TDAR.fileupload methods", function() {  
+/* global describe, it, xit, expect, beforeEach, afterEach, loadFixtures */
+(function(){
+    "use strict";
 
-xit("should work when we call registerUpload", function() {
-   var options = null;
-   var expectedVal = null;
+    var helper, fileValidator;
 
-   //var result = TDAR.fileupload.registerUpload(options);
-   expect(true).toBe(false); //fixme: implement this test
-});
+    function _mockFile(name) {
+        var stats = _fakestats(name);
+        var file = {
+            action: "ADD",
+            name: name,
+            thumbnail_url: null,
+            delete_url: null,
+            delete_type: "DELETE"
+        };
 
-xit("should work when we call updateFileAction", function() {
-   var elemInRow = null;
-   var expectedVal = null;
+        return $.extend(file, stats);
+    }
 
-   //var result = TDAR.fileupload.updateFileAction(elemInRow);
-   expect(true).toBe(false); //fixme: implement this test
-});
+    function _fakestats(str) {
+        var i, id = "", size = 0;
+        if (str === "" || str == undefined) {
+            return 0;
+        }
+        for (var i = 0; i < str.length; i++) {
+            var code = str[i].charCodeAt(0);
+            id += code;
+            size += code;
+        }
+        //not sure id is necessary for this mock, since we wouldn't get it from the uploadController.upload() response
+        // json return {"fileId": id, "size": size};
+        return {"size": size}
+    };
 
-xit("should work when we call getRowId", function() {
-   var expectedVal = null;
 
-   //var result = TDAR.fileupload.getRowId();
-   expect(true).toBe(false); //fixme: implement this test
-});
+    function _mockUpload(filename) {
+        var mockFile = _mockFile(filename);
+        var ctx = helper.context;
+        var fnDone = $(ctx).fileupload('option', 'done');
+        fnDone.call(ctx, null, {result: {files: [mockFile]}});
+    }
 
-xit("should work when we call getRowVisibility", function() {
-   var expectedVal = null;
 
-   //var result = TDAR.fileupload.getRowVisibility();
-   expect(true).toBe(false); //fixme: implement this test
-});
 
-xit("should work when we call FileuploadValidator", function() {
-   var formId = null;
-   var settings = null;
-   var expectedVal = null;
+    describe ("validation rules", function() {
+        "use strict";
 
-   //var result = TDAR.fileupload.FileuploadValidator(formId, settings);
-   expect(true).toBe(false); //fixme: implement this test
-});
 
-xit("should work when we call addDataTableValidation", function() {
-   var validator = null;
-   var expectedVal = null;
+        beforeEach(function() {
+            loadFixtures("document-add-form.html", "fileupload-templates.html");
 
-   //var result = TDAR.fileupload.addDataTableValidation(validator);
-   expect(true).toBe(false); //fixme: implement this test
-});
+            //register the fileupload widget & validator
+            helper = TDAR.fileupload.registerUpload({
+                informationResourceId: -1,
+                acceptFileTypes: /\.[a-z]+$/i,
+                formSelector: "#metadataForm",
+                inputSelector: '#fileAsyncUpload'
+            });
 
-xit("should work when we call addGisValidation", function() {
-   var validator = null;
-   var expectedVal = null;
+            fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
+        });
 
-   //var result = TDAR.fileupload.addGisValidation(validator);
-   expect(true).toBe(false); //fixme: implement this test
-});
+        afterEach(function() {
 
-});
+        });
+
+        it("sanity checks", function() {
+            //sanity check: did we set up the fixtures right?
+            expect($j('#metadataForm')).toHaveLength(1);
+            expect($j('#fileAsyncUpload')).toHaveLength(1);
+            expect(helper).toBeDefined();
+            expect(fileValidator).toBeDefined();
+        });
+
+        it("validation rule: required w/ no files", function() {
+            fileValidator.addRule("required");
+            expect(fileValidator.validate()).toBe(false);
+        })
+
+        it("validation rule: required w/ file", function() {
+            fileValidator.addRule("required");
+            _mockUpload("foo.doc");
+            expect(fileValidator.validate()).toBe(true);
+        })
+
+        it("should validate when required-files is a 'suggestion', not a rule ", function() {
+            fileValidator.addSuggestion("required");
+            expect(fileValidator.validate()).toBe(true);
+            expect(fileValidator.suggestions.length).toBe(1);
+
+            // now add a file and see if suggestion goes away
+            _mockUpload("foo.doc");
+            fileValidator.validate();
+            expect(fileValidator.suggestions.length).toBe(0);
+        });
+
+        it("should require at least one .foo file", function() {
+            fileValidator.addRule("required", {extension: "foo"}, "you must upload at least one .foo file");
+            _mockUpload("foo.baz");
+            expect(fileValidator.validate()).toBe(false);
+
+            _mockUpload("foo.foo");
+            expect(fileValidator.validate()).toBe(true);
+        });
+
+        it("ignores validation rule if when-condition is false", function() {
+            // if the when-condition is false,  validator shouldn't apply 'required' rule
+            fileValidator.addRule("required", {
+                extension: "jpg", when: function() {
+                    return false
+                }
+            });
+            expect(fileValidator.validate()).toBe(true);
+        })
+
+        it("applies validation rule if when-condition is true", function() {
+            // if the when-condition is false,  validator shouldn't apply 'required' rule
+            fileValidator.addRule("required", {
+                extension: "jpg", when: function() {
+                    return true
+                }
+            });
+            expect(fileValidator.validate()).toBe(false);
+
+            _mockUpload("image.jpg");
+            expect(fileValidator.validate()).toBe(true);
+        })
+
+        it("disallows dupes when dupes rule applied", function() {
+            fileValidator.addRule("nodupes");
+            _mockUpload("foo.tiff");
+            _mockUpload("foo.tiff");
+            expect(fileValidator.validate()).toBe(false);
+        });
+
+        //module("gis scenarios", gis);
+
+    });
+
+    describe("gis tests", function() {
+
+        beforeEach(function() {
+            loadFixtures("document-add-form.html", "fileupload-templates.html");
+
+            //register the fileupload widget & validator
+            helper = TDAR.fileupload.registerUpload({
+                informationResourceId: -1,
+                acceptFileTypes: /\.[a-z]+$/i,
+                formSelector: "#metadataForm",
+                inputSelector: '#fileAsyncUpload'
+            });
+
+            fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
+            fileValidator.addRule("nodupes");
+            TDAR.fileupload.addGisValidation(fileValidator);
+        });
+
+        afterEach(function() {
+
+        });
+
+        var ok = function(isTrue, ignoredMessage) {
+            expect(isTrue).toBe(true);
+        }
+
+
+
+        it("no files whatsoever", function () {
+            it(fileValidator.validate());
+        });
+
+        it("multiple base filenames", function () {
+            _mockUpload("foo.shp");
+            _mockUpload("foo.shx");
+            _mockUpload("foo.dbf");
+            _mockUpload("foo.tiff");
+            _mockUpload("bar.tfw");
+            // should be invalid because files do not have the same basename
+            expect(fileValidator.validate()).toBe(false);
+        });
+
+        it("adf files excluded from basename rule", function () {
+            _mockUpload("chunky-peanut-butter.shp");
+            _mockUpload("chunky-peanut-butter.shx");
+            _mockUpload("chunky-peanut-butter.dbf");
+            _mockUpload("chunky-peanut-butter.tiff");
+            _mockUpload("chunky-peanut-butter.tfw");
+            _mockUpload("grape-jelly.adf");
+            // should be valid because adf files are excluded from the same-basename requirement
+            expect(fileValidator.validate()).toBe(true);
+        });
+
+        it("multiple image files should be invalid because only one GIS image file allowed", function () {
+            _mockUpload("fancyfile.tiff");
+            _mockUpload("fancyfile.jpeg");
+            expect(fileValidator.validate()).toBe(false);
+        });
+
+        //construct tests for all optional/required file types
+        (function () {
+            var files = {
+                optional: {
+                    shapefile: ["sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
+                    jpeg: ["jpw"],
+                    tiff: ["tfw"],
+                    image: ["aux", "aux.xml"]
+                },
+
+                required: {
+                    shapefile: [
+                        ["shp", "shx", "dbf"]
+                    ],
+                    jpeg: ["jpg", "jpeg"],
+                    tiff: ["tif", "tiff"],
+                    image: ["jpg", "jpeg", "tif", "tiff"]
+                }
+            };
+
+            $.each(files.optional, function (gistype, extensions) {
+
+                var optexts = files.optional[gistype];
+                var reqexts = files.required[gistype];
+                $.each(optexts, function (oidx, optext) {
+                    $.each(reqexts, function (ridx, reqext) {
+                        //if reqext is array,  add all elements to the form
+                        var exts = typeof reqext === "string" ? [reqext] : reqext;
+
+                        it("validator should return false if ." + optext + " file present without " + exts.join(", ") + " file present", function () {
+                            ok(helper.validFiles().length === 0);
+
+                            var filename = "basename." + optext;
+
+                            //now add an optional file
+                            _mockUpload(filename);
+
+                            expect(fileValidator.validate()).toBe(false);
+
+                            //now add the required file(s)
+                            $.each(exts, function (idx, ext) {
+                                _mockUpload("basename." + ext);
+                            });
+
+                            ok(fileValidator.validate(), "form should be valid because all required files present");
+                        });
+
+                    });
+                });
+
+            });
+        })();
+    });
+})();
+
+
