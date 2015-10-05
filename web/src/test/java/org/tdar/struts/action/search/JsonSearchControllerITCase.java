@@ -75,7 +75,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(document);
         String xml = setupGeoJsonCall(document, GeoRssMode.ENVELOPE);
         logger.debug(xml);
-        assertTrue(xml.contains("coordinate\" : [ [ 57.89149735271034, 84.37156598282918 ], [ 57.89149735271034, -131.484375 ], [ 27.0703125, -131.484375 ], [ 27.0703125, 84.37156598282918 ], [ 57.89149735271034, 84.37156598282918 ] ]"));
+        assertTrue(xml.contains("coordinates\" : [ [ [ 57.89149735271034, 84.37156598282918 ], [ 57.89149735271034, -131.484375 ], [ 27.0703125, -131.484375 ], [ 27.0703125, 84.37156598282918 ], [ 57.89149735271034, 84.37156598282918 ] ] ]"));
     }
 
     @Test
