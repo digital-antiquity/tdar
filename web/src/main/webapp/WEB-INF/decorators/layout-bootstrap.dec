@@ -18,7 +18,6 @@
 <#else>
     <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
     <#import "/WEB-INF/macros/header.ftl" as header>
-    <#global qunit = (Parameters.qunit)??  && !production>
     <#assign uri = request.requestURI />
     <#assign bodyid = 'alt' />
     <#if (homepage!false)>
@@ -50,8 +49,6 @@
 
     <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
     <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
-    <#if qunit>
-        <link rel="stylesheet" href="<@s.url value="/includes/qunit-1.11.0.css"/>" type="text/css"></#if>
     <@header.css (webFilePreprocessingEnabled ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
@@ -91,10 +88,6 @@ ${head}
       <#if authenticatedUser?has_content>data-currentTime="1" </#if>
       <#if ngApplicationName?has_content>ng-cloak</#if>>
 
-    <#if qunit>
-    <div id="qunit"></div>
-    <div id="qunit-fixture">
-    </#if>
     <div class="container">
         <div class="row">
             <header class="span12">
@@ -242,22 +235,13 @@ ${head}
         <strong class="statusLabel"></strong>
         <span class="statusMessage"></span>
     </div>
-    <#if qunit>
-        <script src="<@s.url value="/includes/qunit-1.11.0.js"/>"></script>
-    </#if>
 
-    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
+    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) >
         <script type="text/javascript">
             TDAR.loadScript('https://${jiraScriptLink}');
         </script>
     </#if>
 
-    <#if qunit>
-    <#-- close the test fixture div -->
-    </div>
-    <script src="<@s.url value="/test/js/tdar.commontest.js"/>"></script>
-    <script src="<@s.url value="/test/js"/><#if namespace != '/'>${namespace}</#if>/${actionName}.qunit.js"></script>
-    </#if>
 </#if>
     <#import "/${themeDir}/settings.ftl" as settings />
 <script id="c3colors">

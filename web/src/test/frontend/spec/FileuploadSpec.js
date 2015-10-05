@@ -75,13 +75,13 @@
         it("validation rule: required w/ no files", function() {
             fileValidator.addRule("required");
             expect(fileValidator.validate()).toBe(false);
-        })
+        });
 
         it("validation rule: required w/ file", function() {
             fileValidator.addRule("required");
             _mockUpload("foo.doc");
             expect(fileValidator.validate()).toBe(true);
-        })
+        });
 
         it("should validate when required-files is a 'suggestion', not a rule ", function() {
             fileValidator.addSuggestion("required");
@@ -135,6 +135,40 @@
 
         //module("gis scenarios", gis);
 
+        //create custom validation rule that says that filename must contain "foo".
+        it("add custom rule", function() {
+            var oldRuleCount = Object.keys(fileValidator.rules).length;
+            var oldMethodCount = Object.keys(fileValidator.methods).length;
+
+            fileValidator.addMethod("must-have-foo", function(file, files) {
+                return file.filename.indexOf("foo") > -1;
+            }, "This file does not contain the word 'foo'");
+
+            fileValidator.addRule("must-have-foo");
+
+            // method should be added
+            expect(Object.keys(fileValidator.methods).length).toBe(oldMethodCount + 1);
+
+            // rule should be added
+            expect(fileValidator.rules.length).toBe(oldRuleCount + 1);
+
+            //'upload' file that doesn't conform to the rule
+            _mockUpload("flowers.jpg");
+
+            // validation should fail because file does not contain 'foo'" );
+            expect(fileValidator.validate()).toBe(false);
+
+            // expecting validation error;
+            expect(fileValidator.errors.map(function(err){return err.message})).toContain("This file does not contain the word 'foo'");
+
+            //click delete button on the offending file
+            var $btn = $(fileValidator.errors[0].file.context).find(".delete-button");
+            // sanity check that we found the delete button
+            expect($btn.length).toBeGreaterThan(0);
+            $btn.click();
+            // fileupload widget should be valid again because we've deleted the offending file
+            expect(fileValidator.validate()).toBe(true);
+        });
     });
 
     describe("gis tests", function() {
@@ -154,16 +188,6 @@
             fileValidator.addRule("nodupes");
             TDAR.fileupload.addGisValidation(fileValidator);
         });
-
-        afterEach(function() {
-
-        });
-
-        var ok = function(isTrue, ignoredMessage) {
-            expect(isTrue).toBe(true);
-        }
-
-
 
         it("no files whatsoever", function () {
             it(fileValidator.validate());
@@ -196,6 +220,9 @@
             expect(fileValidator.validate()).toBe(false);
         });
 
+
+
+
         //construct tests for all optional/required file types
         (function () {
             var files = {
@@ -226,7 +253,7 @@
                         var exts = typeof reqext === "string" ? [reqext] : reqext;
 
                         it("validator should return false if ." + optext + " file present without " + exts.join(", ") + " file present", function () {
-                            ok(helper.validFiles().length === 0);
+                            expect(helper.validFiles().length).toBe(0);
 
                             var filename = "basename." + optext;
 
@@ -240,7 +267,8 @@
                                 _mockUpload("basename." + ext);
                             });
 
-                            ok(fileValidator.validate(), "form should be valid because all required files present");
+                            // form should be valid because all required files present
+                            expect(fileValidator.validate()).toBe(true);
                         });
 
                     });

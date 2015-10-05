@@ -461,7 +461,6 @@
          * @returns {{methodName: *, method: *, settings: (*|{}), message: *, suggestion: boolean}}
          */
         addRule: function (methodName, settings, customMessage) {
-            //console.debug("add rule: %s", methodName);
             var message = this.messages[methodName];
             if (customMessage) {
                 message = $.validator.format(customMessage);

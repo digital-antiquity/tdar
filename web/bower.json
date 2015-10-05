@@ -14,7 +14,6 @@
     "angular-modal-service": "0.4.0",
     "d3": "~3.5.6",
     "c3": "~0.4.10",
-    "qunit": "1.11.0",
     "DataTablesPlugins": "https://github.com/DataTables/Plugins.git#1.0.1"
   },
   "homepage": "https://bitbucket.org/tdar/tdar.src",

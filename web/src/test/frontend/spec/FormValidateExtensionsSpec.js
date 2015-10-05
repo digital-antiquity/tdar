@@ -140,7 +140,7 @@
             // we should still only have two files after replace operation
             expect($filesContainer.find("tr").length).toBe(2);
         });
-        
+
     });
 
 
