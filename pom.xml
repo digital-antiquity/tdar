@@ -475,8 +475,9 @@
                                     <exportAntProperties>true</exportAntProperties>
                                     <target>
                                         <mkdir dir="target" />
-                                        <mkdir dir="target/generated" />
-                                        <mkdir dir="target/generated/webapp" />
+                                        <mkdir dir="${project.build.directory}"/>
+                                        <mkdir dir="${project.build.directory}/generated" />
+                                        <mkdir dir="${project.build.directory}/generated/webapp" />
                                         <mkdir
                                             dir="target/generated/webapp-test" />
                                         <!--<rmdir dir="src/main/webapp/wro" 
@@ -540,8 +541,7 @@
         <profile>
             <activation>
                 <property>
-                    <name>java.vendor</name>
-                    <value>Oracle Corporation</value>
+                    <name>!ignoreabc</name>
                 </property>
             </activation>
             <dependencies>
