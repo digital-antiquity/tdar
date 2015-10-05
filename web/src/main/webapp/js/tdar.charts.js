@@ -101,7 +101,7 @@
                     placement : 'outsideGrid'
                 },
                 series : seriesLabels,
-                animate : !$.jqplot.use_excanvas,
+                animate : true,
                 seriesDefaults : {
                     renderer : $.jqplot.BarRenderer,
                     pointLabels : {
@@ -155,9 +155,8 @@
                 return;
             }
             var _defaults = {
-                // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
                 title : props.title,
-                animate : !$.jqplot.use_excanvas,
+                animate : true,
                 gridPadding: {top: 5, right:0, bottom:30, left:0},
                 seriesDefaults : {
                     renderer : $.jqplot.BarRenderer,
@@ -254,16 +253,15 @@
             });
 
             var _defaults = {
-                // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
                 fontSize : 10,
                 title : props.title,
-                animate : !$.jqplot.use_excanvas,
+                animate : true,
                 gridPadding: {top: 30, right:0, bottom:0, left:0},
                 seriesDefaults : {
                     renderer : jQuery.jqplot.PieRenderer,
                     rendererOptions : {
                         fill : true,
-                        animate : !$.jqplot.use_excanvas,
+                        animate : true,
                         showDataLabels : false,
                         // Add a margin to seperate the slices.
                         sliceMargin : 0,
@@ -332,7 +330,7 @@
 
             var _defaults = {
                 title : props.title,
-                animate : !$.jqplot.use_excanvas,
+                animate : true,
                 seriesColors : props.seriesColors,
                 axes : {
                     xaxis : {},
