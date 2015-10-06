@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -46,6 +48,7 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
+    private static final String HIBERNATE_PROPERTIES = "hibernate.properties";
     private static final long serialVersionUID = 2190713147269025044L;
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     public static transient Logger staticLogger = LoggerFactory.getLogger(SimpleAppConfiguration.class);
@@ -63,12 +66,15 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean(name = "sessionFactory")
-    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws FileNotFoundException, IOException {
+    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws FileNotFoundException, IOException, URISyntaxException {
         Properties properties = new Properties();
-        File file = new File("hibernate.properties");
+        
+        URL resource = getClass().getClassLoader().getResource(HIBERNATE_PROPERTIES);
+        logger.trace("{}", resource);
+        File file = new File(resource.toURI());
         String dir = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
         if (dir != null) {
-            file = new File(dir, "hibernate.properties");
+            file = new File(dir, HIBERNATE_PROPERTIES);
         }
         properties.load(new FileReader(file));
 
@@ -101,7 +107,7 @@ public class SimpleAppConfiguration implements Serializable {
 
     @Bean
     @Primary
-    public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException, FileNotFoundException, IOException {
+    public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException, FileNotFoundException, IOException, URISyntaxException {
         HibernateTransactionManager hibernateTransactionManager = new HibernateTransactionManager(getSessionFactory(dataSource));
         return hibernateTransactionManager;
     }
@@ -117,7 +123,7 @@ public class SimpleAppConfiguration implements Serializable {
         String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
         staticLogger.debug("USING CONFIG PATH:" + CONFIG_DIR);
         List<Resource> resources = new ArrayList<>();
-        String[] propertyFiles = { "hibernate.properties" };
+        String[] propertyFiles = { HIBERNATE_PROPERTIES };
         for (String propertyFile : propertyFiles) {
             if (CONFIG_DIR == null) {
                 ClassPathResource resource = new ClassPathResource(propertyFile);
