@@ -2,6 +2,9 @@ package org.tdar.core.configuration;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +63,14 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean(name = "sessionFactory")
-    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) {
+    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws FileNotFoundException, IOException {
         Properties properties = new Properties();
+        File file = new File("hibernate.properties");
+        String dir = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
+        if (dir != null) {
+            file = new File(dir, "hibernate.properties");
+        }
+        properties.load(new FileReader(file));
 
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
         builder.scanPackages(new String[] { "org.tdar" });
@@ -92,7 +101,7 @@ public class SimpleAppConfiguration implements Serializable {
 
     @Bean
     @Primary
-    public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException {
+    public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException, FileNotFoundException, IOException {
         HibernateTransactionManager hibernateTransactionManager = new HibernateTransactionManager(getSessionFactory(dataSource));
         return hibernateTransactionManager;
     }
