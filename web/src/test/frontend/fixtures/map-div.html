@@ -1,0 +1,60 @@
+            <div id='editmapv3' class="tdar-map-large google-map"
+                 data-tiplabel="Geographic Coordinates"
+                 data-tooltipcontent="#geoHelpDiv"
+                    ></div>
+            <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip">
+                <br/>
+<div class="control-group">
+<label class="control-label"></label>
+<div class="controls">
+<label class="checkbox "
+for="viewCoordinatesCheckbox" >Enter / View Coordinates
+
+<input type="checkbox" name="_tdar.viewCoordinatesCheckbox" value="true" id="viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);"/><input type="hidden" id="__checkbox_viewCoordinatesCheckbox" name="__checkbox__tdar.viewCoordinatesCheckbox" value="true" /></label></div>
+</div>
+
+                <div id='explicitCoordinatesDiv' style='text-align:center;'>
+                    <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;">
+                        <tr>
+                            <td></td>
+                            <td>
+<input type="text" name="latitudeLongitudeBoxes[0].maximumLatitude" size="14" value="" id="maxy" class="float latLong ne-lat" title="Please enter a valid Maximum Latitude"/>                                <input type="text" id='d_maxy' placeholder="Latitude (max)" class="ne-lat-display span2"/>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="width:33%;text-align:center">
+<input type="text" name="latitudeLongitudeBoxes[0].minimumLongitude" size="14" value="" id="minx" class="float latLong sw-lng" title="Please enter a valid Minimum Longitude"/>                                <input type="text" id='d_minx' placeholder="Longitude (min)" class="sw-lng-display span2"/>
+                            </td>
+                            <td style="width:33%;text-align:center">
+                                <input type="button" id="locate" value="Locate" class="btn locateCoordsButton"/>
+                            </td>
+                            <td style="width:33%;text-align:center">
+<input type="text" name="latitudeLongitudeBoxes[0].maximumLongitude" size="14" value="" id="maxx" class="float latLong ne-lng" title="Please enter a valid Maximum Longitude"/>                                <input type="text" id='d_maxx' placeholder="Longitude (max)" class="ne-lng-display span2"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+<input type="text" name="latitudeLongitudeBoxes[0].minimumLatitude" size="14" value="" id="miny" class="float latLong sw-lat" title="Please enter a valid Minimum Latitude"/>                                <input type="text" id="d_miny" placeholder="Latitude (min)" class="sw-lat-display span2"/>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+    <div id="divManualCoordinateEntryTip" class="hidden">
+        <h2>Manually Enter Coordinates</h2>
+
+        <div>
+            Click the Locate button after entering the longitude-latitude pairs in the respective input fields to draw a box on the map and zoom to it.
+            <br/>Examples:
+            <ul>
+                <li>40&deg;44'55"N</li>
+                <li>53 08 50N</li>
+                <li>-73.9864</li>
+            </ul>
+            <aside><p><strong>Note:</strong> to protect site security, tDAR obfuscates all bounding boxes, bounding boxes smaller than 1 mile. This
+                'edit' view will
+                always show the exact coordinates.</p></aside>
+        </div>
+    </div>
