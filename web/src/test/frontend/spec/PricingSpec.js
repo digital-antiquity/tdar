@@ -1,6 +1,14 @@
 /* global describe, it, expect */
 describe("tests for TDAR.pricing methods", function() {  
 
+    it("test init", function() {
+       var expectedVal = null;
+       loadFixtures("pricing.html");
+       expect(TDAR.pricing.initPricing).toExist(); 
+       TDAR.pricing.initPricing($('#MetadataForm')[0], "/cart/api");
+    });
+
+
 xit("should work when we call initPricing", function() {
    var form = null;
    var ajaxUrl = null;

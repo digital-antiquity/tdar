@@ -17,6 +17,7 @@
 		<skipWebTests>false</skipWebTests>
 		<skipSeleniumTests>false</skipSeleniumTests>
         <skipJetty>false</skipJetty>
+        <skipKarma>false</skipKarma>
 	</properties>
 	<parent>
 		<groupId>org.tdar</groupId>
@@ -669,8 +670,8 @@
                    <autoWatch>false</autoWatch>
                    <singleRun>true</singleRun>
                    <colors>true</colors>
-                   <skipKarma>${maven.test.skip}</skipKarma>
-                   <skipTests>${maven.test.skip}</skipTests>
+                   <skipKarma>${skipKarma}</skipKarma>
+                   <skipTests>${skipKarma}</skipTests>
                    <karmaFailureIgnore>false</karmaFailureIgnore>
                </configuration>
            </plugin>
