@@ -1,6 +1,10 @@
 package org.tdar.web;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
@@ -8,10 +12,17 @@ import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.orm.hibernate4.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -54,9 +65,37 @@ public abstract class AbstractServletConfiguration {
     public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
         return TdarAppConfiguration.class;
     }
+    
+    public void initialize(ConfigurableApplicationContext applicationContext) {
+        // PropertySourcesPlaceholderConfigurer placeholder = new PropertySourcesPlaceholderConfigurer();
+        // applicationContext.add
+        ConfigurableEnvironment env_ = applicationContext.getEnvironment();
+        String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
+        logger.debug("USING CONFIG PATH:" + CONFIG_DIR);
+        List<Resource> resources = new ArrayList<>();
+        String[] propertyFiles = { "hibernate.properties" };
+        for (String propertyFile : propertyFiles) {
+            try {
+                if (CONFIG_DIR == null) {
+                    ClassPathResource resource = new ClassPathResource(propertyFile);
+                    resources.add(resource);
+                    env_.getPropertySources().addFirst(new ResourcePropertySource(resource));
+                } else {
+                    FileSystemResource resource = new FileSystemResource(new File(CONFIG_DIR, propertyFile));
+                    resources.add(resource);
+                    env_.getPropertySources().addFirst(new ResourcePropertySource(resource));
+                }
+            } catch (IOException ioe) {
+                logger.error("IOE: {}", ioe, ioe);
+            }
+        }
+        // placeholder.setLocations(resources.toArray(new Resource[0]));
+    }
+
 
     protected void setupContainer(ServletContext container) {
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+//        initialize(rootContext);
         rootContext.register(getConfigurationClass());
         container.addListener(new ContextLoaderListener(rootContext));
         container.addListener(RequestContextListener.class);
