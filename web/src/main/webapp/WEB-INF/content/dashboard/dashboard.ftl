@@ -382,7 +382,6 @@
     </div>
     </#list>
 
-    <@common.ie8Warning />
 </#macro>
 
 </#escape>
