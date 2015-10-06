@@ -114,11 +114,6 @@
 
                             }
                         }
-//                        var line = TDAR.common.sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1}</td><td class='red'>${2}</td></tr>",
-//                                TDAR.common.formatNumber(total_files),
-//                                TDAR.common.humanFileSize(total_mb * 1024*1024),
-//                                TDAR.common.formatNumber(subtotal));
-//                        $est.append(line);
                     }
                 },
                 error: function (xhr, txtStatus, errorThrown) {
@@ -130,7 +125,7 @@
 
         _setupPaymentMethodPivot();
 
-        console.log("appying rules");
+        //console.log("appying rules");
         var validator = $(form).validate({
             rules: {
                 "invoice.otherReason": {
@@ -162,7 +157,7 @@
                 $element.after($error);
             }
         });
-        console.log("validtor:", validator);
+        //console.log("validtor:", validator);
     };
 
     /**
