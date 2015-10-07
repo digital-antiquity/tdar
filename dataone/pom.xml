@@ -41,7 +41,7 @@
     <repositories>
             <repository>
             <id>dataone.org</id>
-            <url>http://dev-testing.dataone.org/maven</url>
+            <url>http://maven.dataone.org/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -115,7 +115,7 @@
  		<dependency>
 			<groupId>org.dataone</groupId>
 			<artifactId>d1_libclient_java</artifactId>
-			<version>1.3.1</version>
+			<version>1.3.2</version>
 			<type>jar</type>
 			<!-- LICENSE: APACHE 2.0 -->
 			<exclusions>
