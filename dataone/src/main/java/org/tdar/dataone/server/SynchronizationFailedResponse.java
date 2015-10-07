@@ -29,7 +29,7 @@ public class SynchronizationFailedResponse extends AbstractDataOneResponse {
     @Produces("text/plain")
     public Response synchronizationFailed(@QueryParam("message") String message) {
         setupResponseContext(response);
-        logger.error(message);
+        logger.debug(message);
         return Response.ok().build();
     }
 
