@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -40,6 +42,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.processes.manager.BaseProcessManager;
 import org.tdar.core.service.processes.manager.ProcessManager;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -64,6 +68,32 @@ public class SimpleAppConfiguration implements Serializable {
         System.setProperty("org.jboss.logging.provider", "slf4j");
 
     }
+    
+    @Autowired
+    private Environment env;
+
+/*    @Bean(name = "tdarMetadataDataSource")
+    public DataSource tdarMetadataDataSource() {
+        logger.debug(env.toString());
+        logger.debug(env.getProperty("javax.persistence.jdbc.driver"));
+        try {
+            ComboPooledDataSource ds = new ComboPooledDataSource();
+            ds.setDriverClass(env.getRequiredProperty("javax.persistence.jdbc.driver"));
+            ds.setJdbcUrl(env.getRequiredProperty("javax.persistence.jdbc.url"));
+            ds.setUser(env.getRequiredProperty("javax.persistence.jdbc.user"));
+            ds.setPassword(env.getRequiredProperty("javax.persistence.jdbc.password"));
+            ds.setAcquireIncrement(5);
+            ds.setIdleConnectionTestPeriod(60);
+            ds.setMaxPoolSize(env.getRequiredProperty("tdarmetadata.maxConnections", Integer.class));
+            ds.setMaxStatements(50);
+            ds.setMinPoolSize(env.getRequiredProperty("tdarmetadata.minConnections", Integer.class));
+            return ds;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+*/
 
     @Bean(name = "sessionFactory")
     public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws FileNotFoundException, IOException, URISyntaxException {

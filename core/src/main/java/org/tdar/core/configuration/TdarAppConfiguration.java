@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.support.SimpleCacheManager;
@@ -79,5 +81,25 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
     public boolean disableHibernateSearch() {
         return false;
     }
+    
+/*    @Bean(name = "tdarGeoDataSource")
+    public DataSource tdarGeoDataSource() {
+        try {
+            ComboPooledDataSource ds = new ComboPooledDataSource();
+            ds.setDriverClass(env.getRequiredProperty("javax.persistence.jdbc.driver"));
+            ds.setJdbcUrl(env.getRequiredProperty("javax.persistence.jdbc.url"));
+            ds.setUser(env.getRequiredProperty("javax.persistence.jdbc.user"));
+            ds.setPassword(env.getRequiredProperty("javax.persistence.jdbc.password"));
+            ds.setAcquireIncrement(5);
+            ds.setIdleConnectionTestPeriod(60);
+            ds.setMaxPoolSize(env.getRequiredProperty("tdardata.maxConnections", Integer.class));
+            ds.setMaxStatements(50);
+            ds.setMinPoolSize(env.getRequiredProperty("tdardata.minConnections", Integer.class));
+            return ds;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+*/
 
 }
