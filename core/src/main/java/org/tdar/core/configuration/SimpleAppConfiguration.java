@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
@@ -49,7 +48,11 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(basePackages = { "org.tdar" }, excludeFilters = {})
-@PropertySource("${TDAR_CONFIG_PATH:classpath:}/hibernate.properties")
+
+@PropertySource(value="hibernate.properties", ignoreResourceNotFound=true)
+@PropertySource(value="classpath:hibernate.properties", ignoreResourceNotFound=true)
+@PropertySource(value="file://${TDAR_CONFIG_PATH}/hibernate.properties", ignoreResourceNotFound=true)
+
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
@@ -100,12 +103,16 @@ public class SimpleAppConfiguration implements Serializable {
         
         URL resource = getClass().getClassLoader().getResource(HIBERNATE_PROPERTIES);
         logger.trace("{}", resource);
-        File file = new File(resource.toURI());
+        File file = null;
+        if (resource != null) {
+            file = new File(resource.toURI());
+            properties.load(new FileReader(file));
+        }
         String dir = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
         if (dir != null) {
             file = new File(dir, HIBERNATE_PROPERTIES);
+            properties.load(new FileReader(file));
         }
-        properties.load(new FileReader(file));
 
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
         builder.scanPackages(new String[] { "org.tdar" });
