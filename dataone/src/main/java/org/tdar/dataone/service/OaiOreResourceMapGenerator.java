@@ -71,6 +71,8 @@ public class OaiOreResourceMapGenerator implements Serializable {
         ResourceMapFactory rmf = ResourceMapFactory.getInstance();
         ResourceMap resourceMap = rmf.createResourceMap(id, idMap);
         String rdfXml = convertToXml(resourceMap);
+        // for TESTING ONLY
+        rdfXml = rdfXml.replace("cn.dataone.org", "cn-sandbox.test.dataone.org");
         return rdfXml;
     }
 
