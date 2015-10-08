@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("tests for TDAR.internalEmailForm methods", function() {  
     beforeEach(function(){
-       loadFixtures("emailspec.html");
+       loadFixtures("request-correction-form.html");
     });
 
     it("test init", function(done) {
