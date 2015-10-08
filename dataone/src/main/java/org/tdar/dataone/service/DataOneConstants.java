@@ -8,7 +8,7 @@ interface DataOneConstants {
     static final String D1_FORMAT = "format=d1rem";
     static final String D1_RESOURCE_MAP_FORMAT = "http://www.openarchives.org/ore/terms";
     static final String D1_MODS_FORMAT = "http://loc.gov/mods/v3";
-    static final String D1_DC_FORMAT = "http://dublincore.org/schemas/xmls/qdc/2008/02/11/qualifieddc.xsd";
+    static final String D1_DC_FORMAT = "http://ns.dataone.org/metadata/schema/onedcx/v1.0/onedcx_v1.0.xsd";
     static final String MN_REPLICATION = "MNREplication";
     static final String MN_STORAGE = "MNStorage";
     static final String MN_AUTHORIZATION = "MNAuthorization";
