@@ -49,7 +49,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(basePackages = { "org.tdar" }, excludeFilters = {})
-@PropertySource("classpath:hibernate.properties")
+@PropertySource("${TDAR_CONFIG_PATH:classpath:}/hibernate.properties")
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
