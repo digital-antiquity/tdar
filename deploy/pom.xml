@@ -7,8 +7,19 @@
 
     <repositories>
         <repository>
+            <id>internal-repo</id>
+            <url>https://dev.tdar.org/archiva/repository/snapshots</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
             <id>snapshots-repo</id>
-            <url>https://dev.tdar.org/archiva/repository/internal</url>
+            <url>https://dev.tdar.org/archiva/repository/snapshots</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

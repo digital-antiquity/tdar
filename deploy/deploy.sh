@@ -18,14 +18,18 @@ fi
 
 hg pull
 hg update 
-mvn clean package -Pprepare
+mvn clean package -Pprepare -q
 handleError
 sudo service tomcat7 stop
 
-mvn package -PupdateDB
+mvn package -PupdateDB -q
 handleError
 
-mkdir old/
+if [ ! -e "old" ]
+then
+  mkdir old/
+fi
+
 cp $TDIR/*.war old/
 sudo rm -Rrf /home/tdar/app/*
 cp target/web.war $TDIR/ROOT.war
