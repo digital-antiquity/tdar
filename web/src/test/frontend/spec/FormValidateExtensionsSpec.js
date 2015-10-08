@@ -1,5 +1,5 @@
 /* global describe, jasmine, $, $j, beforeEach, afterEach, it, xit, loadFixtures */
-(function(){
+xdescribe("form validation suite - root", function(){
     "use strict";
 
     var helper, fileValidator;
@@ -209,4 +209,4 @@
 
 
     });
-})();
+});

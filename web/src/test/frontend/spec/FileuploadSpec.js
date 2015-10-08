@@ -1,5 +1,5 @@
 /* global describe, it, xit, expect, beforeEach, afterEach, loadFixtures */
-(function(){
+xdescribe("fileupload suite - root", function(){
     "use strict";
 
     var helper, fileValidator;
@@ -224,7 +224,7 @@
 
 
         //construct tests for all optional/required file types
-        (function () {
+        describe("supplemental files that require essential files", function () {
             var files = {
                 optional: {
                     shapefile: ["sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
@@ -242,39 +242,47 @@
                     image: ["jpg", "jpeg", "tif", "tiff"]
                 }
             };
-
-            $.each(files.optional, function (gistype, extensions) {
-
-                var optexts = files.optional[gistype];
-                var reqexts = files.required[gistype];
-                $.each(optexts, function (oidx, optext) {
-                    $.each(reqexts, function (ridx, reqext) {
-                        //if reqext is array,  add all elements to the form
-                        var exts = typeof reqext === "string" ? [reqext] : reqext;
-
-                        it("validator should return false if ." + optext + " file present without " + exts.join(", ") + " file present", function () {
-                            expect(helper.validFiles().length).toBe(0);
-
-                            var filename = "basename." + optext;
-
-                            //now add an optional file
-                            _mockUpload(filename);
-
-                            expect(fileValidator.validate()).toBe(false);
-
-                            //now add the required file(s)
-                            $.each(exts, function (idx, ext) {
-                                _mockUpload("basename." + ext);
-                            });
-
-                            // form should be valid because all required files present
-                            expect(fileValidator.validate()).toBe(true);
-                        });
-
-                    });
-                });
-
+            
+            it("sbn file requires esential shapefiles", function(){
+                //expect(helper.validFiles().length).toBe(0);
+                //_mockUpload("base.sbn");
+                
             });
-        })();
+
+            // $.each(files.optional, function (gistype, extensions) {
+
+            //     var optexts = files.optional[gistype];
+            //     var reqexts = files.required[gistype];
+            //     $.each(optexts, function (oidx, optext) {
+            //         $.each(reqexts, function (ridx, reqext) {
+            //             //if reqext is array,  add all elements to the form
+            //             var exts = typeof reqext === "string" ? [reqext] : reqext;
+
+            //             it("validator should return false if ." + optext + " file present without " + exts.join(", ") + " file present", function () {
+            //                 expect(helper.validFiles().length).toBe(0);
+
+            //                 var filename = "basename." + optext;
+
+            //                 //now add an optional file
+            //                 _mockUpload(filename);
+
+            //                 expect(fileValidator.validate()).toBe(false);
+
+            //                 //now add the required file(s)
+            //                 $.each(exts, function (idx, ext) {
+            //                     _mockUpload("basename." + ext);
+            //                 });
+
+            //                 // form should be valid because all required files present
+            //                 expect(fileValidator.validate()).toBe(true);
+            //             });
+
+            //         });
+            //     });
+
+            // });
+            
+            
+        });
     });
-})();
+});
