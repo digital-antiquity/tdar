@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -48,7 +49,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(basePackages = { "org.tdar" }, excludeFilters = {})
-@ImportResource(value = { "classpath:spring-local-settings.xml" })
+@PropertySource("hibernate.properties")
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
@@ -70,9 +71,9 @@ public class SimpleAppConfiguration implements Serializable {
     }
     
     @Autowired
-    private Environment env;
+    protected Environment env;
 
-/*    @Bean(name = "tdarMetadataDataSource")
+    @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {
         logger.debug(env.toString());
         logger.debug(env.getProperty("javax.persistence.jdbc.driver"));
@@ -92,8 +93,6 @@ public class SimpleAppConfiguration implements Serializable {
             throw new RuntimeException(e);
         }
     }
-
-*/
 
     @Bean(name = "sessionFactory")
     public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws FileNotFoundException, IOException, URISyntaxException {

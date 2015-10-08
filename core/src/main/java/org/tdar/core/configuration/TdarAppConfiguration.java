@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
@@ -20,6 +21,9 @@ import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
+@ImportResource(value = { "classpath:spring-local-settings.xml" })
 @Configuration
 @EnableCaching
 public class TdarAppConfiguration extends IntegrationAppConfiguration implements Serializable {
@@ -82,7 +86,7 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
         return false;
     }
     
-/*    @Bean(name = "tdarGeoDataSource")
+   @Bean(name = "tdarGeoDataSource")
     public DataSource tdarGeoDataSource() {
         try {
             ComboPooledDataSource ds = new ComboPooledDataSource();
@@ -100,6 +104,5 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
             throw new RuntimeException(e);
         }
     }
-*/
 
 }
