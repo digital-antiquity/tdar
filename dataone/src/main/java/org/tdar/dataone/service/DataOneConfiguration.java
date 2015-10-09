@@ -24,7 +24,6 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
 
     private String configurationFile;
 
-
     public String getConfigurationFile() {
         return configurationFile;
     }
@@ -37,6 +36,7 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
         System.setProperty("java.awt.headless", "true");
         setConfigurationFile(configurationFile);
     }
+
     String TDAR_DOI = "doi:10.6067";
     String MN_NAME = "urn:node:tdar";
     String MN_NAME_TEST = "urn:node:tdarTest";
@@ -58,7 +58,7 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
         } catch (ConfigurationFileException cfe) {
             logger.warn("could not load dataOne.properties (using defaults)");
         } catch (Exception e) {
-            logger.error("could not load dataOne.properties (using defaults)",e);
+            logger.error("could not load dataOne.properties (using defaults)", e);
         }
     }
 
@@ -66,17 +66,20 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
         return INSTANCE;
     }
 
-	@Override
-	protected ConfigurationAssistant getAssistant() {
-		return assistant;
-	}
+    @Override
+    protected ConfigurationAssistant getAssistant() {
+        return assistant;
+    }
 
     public String getContactSubject() {
-        return assistant.getStringProperty("contact.subject","CN=Adam Brin A29701,O=Arizona State University,C=US,DC=cilogon,DC=org");
+        return assistant.getStringProperty("contact.subject", "CN=Adam Brin A29701,O=Arizona State University,C=US,DC=cilogon,DC=org");
     }
 
     public String getSubject() {
-        return assistant.getStringProperty("dataone.subject","CN=urn:node:mnTestTDAR,DC=dataone,DC=org");
+        return assistant.getStringProperty("dataone.subject", "CN=urn:node:mnTDAR,DC=dataone,DC=org");
     }
 
+    public boolean isProduction() {
+        return false;
+    }
 }
