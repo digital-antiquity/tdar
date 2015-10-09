@@ -37,11 +37,11 @@ public class DataOneDao {
 
     public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, String formatId, String identifier, ObjectList list) {
         SQLQuery query = setupListObjectQuery(start, end, formatId, identifier);
+
+        list.setTotal(query.list().size());
         if (list.getCount() == 0) {
             return new ArrayList<>();
         }
-
-        list.setTotal(query.list().size());
 
         query = setupListObjectQuery(start, end, formatId, identifier);
         query.setMaxResults(list.getCount());
@@ -77,11 +77,11 @@ public class DataOneDao {
     @SuppressWarnings("unchecked")
     public List<LogEntryImpl> findLogFiles(Date fromDate, Date toDate, Event event, String idFilter, int start, int count, Log log) {
         Query query = setupQuery(fromDate, toDate, event, idFilter);
+        // FIXME: find better way to handle pagination
+        log.setTotal(query.list().size());
         if (count == 0) {
             return new ArrayList<>();
         }
-        // FIXME: find better way to handle pagination
-        log.setTotal(query.list().size());
 
         query = setupQuery(fromDate, toDate, event, idFilter);
 
