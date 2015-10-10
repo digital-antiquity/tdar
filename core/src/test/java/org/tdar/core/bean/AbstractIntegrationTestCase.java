@@ -219,7 +219,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         genericService.delete(genericService.findAll(Email.class));
         sendEmailProcess.setAllIds(null);
-        ((MockMailSender) emailService.getMailSender()).getMessages().clear();
+        if (emailService.getMailSender() instanceof MockMailSender) {
+            ((MockMailSender) emailService.getMailSender()).getMessages().clear();
+        }
         String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));

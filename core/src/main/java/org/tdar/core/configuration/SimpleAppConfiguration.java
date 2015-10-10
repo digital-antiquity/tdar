@@ -22,8 +22,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
@@ -38,6 +40,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.processes.manager.BaseProcessManager;
@@ -47,11 +50,17 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@ComponentScan(basePackages = { "org.tdar" }, excludeFilters = {})
+@ComponentScan(basePackages = { "org.tdar" },
+        excludeFilters = {
+                @Filter(type = FilterType.ASSIGNABLE_TYPE,
+                        value = {
+                                SimpleAppConfiguration.class
+                        })
+        })
 
-@PropertySource(value="hibernate.properties", ignoreResourceNotFound=true)
-@PropertySource(value="classpath:hibernate.properties", ignoreResourceNotFound=true)
-@PropertySource(value="file://${TDAR_CONFIG_PATH}/hibernate.properties", ignoreResourceNotFound=true)
+@PropertySource(value = "hibernate.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:hibernate.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file://${TDAR_CONFIG_PATH}/hibernate.properties", ignoreResourceNotFound = true)
 
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
@@ -62,6 +71,8 @@ public class SimpleAppConfiguration implements Serializable {
     public static transient Logger staticLogger = LoggerFactory.getLogger(SimpleAppConfiguration.class);
 
     public SimpleAppConfiguration() {
+        logger.debug("Initializing Simple Application Context");
+
         /*
          * tDAR primarily uses the SLF4j fascade for all logging of the application, but then filters that through to log4j2 on the backend.
          * This does produce some complexities with Hibernate. These issues are related to the following:
@@ -72,7 +83,7 @@ public class SimpleAppConfiguration implements Serializable {
         System.setProperty("org.jboss.logging.provider", "slf4j");
 
     }
-    
+
     @Autowired
     protected Environment env;
 
@@ -98,9 +109,10 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean(name = "sessionFactory")
-    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws FileNotFoundException, IOException, URISyntaxException {
+    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource)
+            throws FileNotFoundException, IOException, URISyntaxException {
         Properties properties = new Properties();
-        
+
         URL resource = getClass().getClassLoader().getResource(HIBERNATE_PROPERTIES);
         logger.trace("{}", resource);
         File file = null;
@@ -141,9 +153,33 @@ public class SimpleAppConfiguration implements Serializable {
         return new SessionData();
     }
 
+    
+    @Bean
+    // @Value("#{'${my.list.of.strings}'.split(',')}")
+    public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
+        FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
+        List<String> templateLoaderPaths = extracted();
+        freemarkerConfig.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[0]));
+        return freemarkerConfig;
+    }
+
+    protected List<String> extracted() {
+        List<String> templateLoaderPaths = new ArrayList<>();
+        templateLoaderPaths.add("classpath:/freemarker-templates");
+        templateLoaderPaths.add("file:/WEB-INF/freemarker-templates");
+        templateLoaderPaths.add("classpath:/WEB-INF/content");
+        templateLoaderPaths.add("classpath:src/main/webapp");
+        templateLoaderPaths.add("file:src/main/webapp");
+        templateLoaderPaths.add("classpath:/freemarker-templates-test");
+        templateLoaderPaths.add("classpath:/templates");
+        templateLoaderPaths.add("file:/templates");
+        return templateLoaderPaths;
+    }
+
     @Bean
     @Primary
-    public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException, FileNotFoundException, IOException, URISyntaxException {
+    public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource)
+            throws PropertyVetoException, FileNotFoundException, IOException, URISyntaxException {
         HibernateTransactionManager hibernateTransactionManager = new HibernateTransactionManager(getSessionFactory(dataSource));
         return hibernateTransactionManager;
     }

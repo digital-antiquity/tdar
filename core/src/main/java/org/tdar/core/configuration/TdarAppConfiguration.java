@@ -24,7 +24,7 @@ import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
-@Configuration
+@Configuration()
 @EnableCaching
 public class TdarAppConfiguration extends IntegrationAppConfiguration implements Serializable {
 
@@ -34,22 +34,6 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
         logger.debug("Initializing tDAR Application Context");
     }
 
-    @Bean
-    // @Value("#{'${my.list.of.strings}'.split(',')}")
-    public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
-        FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
-        List<String> templateLoaderPaths = new ArrayList<>();
-        templateLoaderPaths.add("classpath:/freemarker-templates");
-        templateLoaderPaths.add("file:/WEB-INF/freemarker-templates");
-        templateLoaderPaths.add("classpath:/WEB-INF/content");
-        templateLoaderPaths.add("classpath:src/main/webapp");
-        templateLoaderPaths.add("file:src/main/webapp");
-        templateLoaderPaths.add("classpath:/freemarker-templates-test");
-        templateLoaderPaths.add("classpath:/templates");
-        templateLoaderPaths.add("file:/templates");
-        freemarkerConfig.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[0]));
-        return freemarkerConfig;
-    }
 
     @Bean(name = "AuthenticationProvider")
     public AuthenticationProvider getAuthProvider() throws IOException {
