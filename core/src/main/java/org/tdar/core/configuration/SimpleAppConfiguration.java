@@ -89,20 +89,8 @@ public class SimpleAppConfiguration implements Serializable {
 
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {
-        logger.debug(env.toString());
-        logger.debug(env.getProperty("javax.persistence.jdbc.driver"));
         try {
-            ComboPooledDataSource ds = new ComboPooledDataSource();
-            ds.setDriverClass(env.getRequiredProperty("javax.persistence.jdbc.driver"));
-            ds.setJdbcUrl(env.getRequiredProperty("javax.persistence.jdbc.url"));
-            ds.setUser(env.getRequiredProperty("javax.persistence.jdbc.user"));
-            ds.setPassword(env.getRequiredProperty("javax.persistence.jdbc.password"));
-            ds.setAcquireIncrement(5);
-            ds.setIdleConnectionTestPeriod(60);
-            ds.setMaxPoolSize(env.getRequiredProperty("tdarmetadata.maxConnections", Integer.class));
-            ds.setMaxStatements(50);
-            ds.setMinPoolSize(env.getRequiredProperty("tdarmetadata.minConnections", Integer.class));
-            return ds;
+            return configureDataSource("tdarmetadata");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -153,7 +141,6 @@ public class SimpleAppConfiguration implements Serializable {
         return new SessionData();
     }
 
-    
     @Bean
     // @Value("#{'${my.list.of.strings}'.split(',')}")
     public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
@@ -208,4 +195,42 @@ public class SimpleAppConfiguration implements Serializable {
         placeholder.setLocations(resources.toArray(new Resource[0]));
         return placeholder;
     }
+
+    protected DataSource configureDataSource(String prefix) throws PropertyVetoException {
+        ComboPooledDataSource ds = new ComboPooledDataSource();
+
+        String driver_ = ".persistence.jdbc.driver";
+        String url_ = ".persistence.jdbc.url";
+        String user_ = ".persistence.jdbc.user";
+        String password_ = ".persistence.jdbc.password";
+        ds.setDriverClass(getProperty(prefix, driver_));
+        ds.setJdbcUrl(getProperty(prefix, url_));
+        ds.setUser(getProperty(prefix, user_));
+        ds.setPassword(getProperty(prefix, password_));
+
+        ds.setAcquireIncrement(env.getProperty(prefix + ".acquireIncrement", Integer.class, 5));
+        ds.setPreferredTestQuery(env.getProperty(prefix + ".preferredTestQuery", String.class, "select 1"));
+        ds.setMaxIdleTime(env.getProperty(prefix + ".maxIdleTime", Integer.class, 600));
+        ds.setIdleConnectionTestPeriod(env.getProperty(prefix + ".idleConnectionTestPeriod", Integer.class, 300));
+        ds.setMaxStatements(env.getProperty(prefix + ".maxStatements", Integer.class, 100));
+        ds.setTestConnectionOnCheckin(env.getProperty(prefix + ".testConnectionOnCheckin", Boolean.class, true));
+        ds.setMaxPoolSize(env.getProperty(prefix + ".maxConnections", Integer.class, 10));
+        ds.setMinPoolSize(env.getProperty(prefix + ".minConnections", Integer.class, 1));
+        return ds;
+    }
+
+    /**
+     * Allow for the override of the default connection properties (good for postGIS)
+     * @param prefix
+     * @param val_
+     * @return
+     */
+    private String getProperty(String prefix, String val_) {
+        String val = env.getProperty(prefix + val_);
+        if (val == null) {
+            val = env.getRequiredProperty("javax" + val_);
+        }
+        return val;
+    }
+
 }
