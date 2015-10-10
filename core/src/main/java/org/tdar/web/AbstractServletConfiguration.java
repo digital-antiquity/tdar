@@ -10,6 +10,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.ServletContext;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -65,37 +66,9 @@ public abstract class AbstractServletConfiguration {
     public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
         return TdarAppConfiguration.class;
     }
-    
-    public void initialize(ConfigurableApplicationContext applicationContext) {
-        // PropertySourcesPlaceholderConfigurer placeholder = new PropertySourcesPlaceholderConfigurer();
-        // applicationContext.add
-        ConfigurableEnvironment env_ = applicationContext.getEnvironment();
-        String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
-        logger.debug("USING CONFIG PATH:" + CONFIG_DIR);
-        List<Resource> resources = new ArrayList<>();
-        String[] propertyFiles = { "hibernate.properties" };
-        for (String propertyFile : propertyFiles) {
-            try {
-                if (CONFIG_DIR == null) {
-                    ClassPathResource resource = new ClassPathResource(propertyFile);
-                    resources.add(resource);
-                    env_.getPropertySources().addFirst(new ResourcePropertySource(resource));
-                } else {
-                    FileSystemResource resource = new FileSystemResource(new File(CONFIG_DIR, propertyFile));
-                    resources.add(resource);
-                    env_.getPropertySources().addFirst(new ResourcePropertySource(resource));
-                }
-            } catch (IOException ioe) {
-                logger.error("IOE: {}", ioe, ioe);
-            }
-        }
-        // placeholder.setLocations(resources.toArray(new Resource[0]));
-    }
-
 
     protected void setupContainer(ServletContext container) {
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-//        initialize(rootContext);
         rootContext.register(getConfigurationClass());
         container.addListener(new ContextLoaderListener(rootContext));
         container.addListener(RequestContextListener.class);

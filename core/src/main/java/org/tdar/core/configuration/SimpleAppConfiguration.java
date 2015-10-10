@@ -50,6 +50,8 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+// NOTE: this exclude filter is to ensure that we don't instantiate every @Configuration by default. @Configuration is a subclass of @Component, so the
+// autowiring happens by default w/o this
 @ComponentScan(basePackages = { "org.tdar" },
         excludeFilters = {
                 @Filter(type = FilterType.ASSIGNABLE_TYPE,
@@ -57,15 +59,14 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
                                 SimpleAppConfiguration.class
                         })
         })
-
-@PropertySource(value = "hibernate.properties", ignoreResourceNotFound = true)
-@PropertySource(value = "classpath:hibernate.properties", ignoreResourceNotFound = true)
+@PropertySource(value = SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:" + SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
 @PropertySource(value = "file://${TDAR_CONFIG_PATH}/hibernate.properties", ignoreResourceNotFound = true)
 
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
-    private static final String HIBERNATE_PROPERTIES = "hibernate.properties";
+    protected static final String HIBERNATE_PROPERTIES = "hibernate.properties";
     private static final long serialVersionUID = 2190713147269025044L;
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     public static transient Logger staticLogger = LoggerFactory.getLogger(SimpleAppConfiguration.class);
@@ -178,26 +179,14 @@ public class SimpleAppConfiguration implements Serializable {
         return new BaseProcessManager();
     }
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer placeholder = new PropertySourcesPlaceholderConfigurer();
-        String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
-        staticLogger.debug("USING CONFIG PATH:" + CONFIG_DIR);
-        List<Resource> resources = new ArrayList<>();
-        String[] propertyFiles = { HIBERNATE_PROPERTIES };
-        for (String propertyFile : propertyFiles) {
-            if (CONFIG_DIR == null) {
-                ClassPathResource resource = new ClassPathResource(propertyFile);
-                resources.add(resource);
-            } else {
-                FileSystemResource resource = new FileSystemResource(new File(CONFIG_DIR, propertyFile));
-                resources.add(resource);
-            }
-        }
-        placeholder.setLocations(resources.toArray(new Resource[0]));
-        return placeholder;
-    }
-
+    /**
+     * Configure the dataSource by using the dataSource prefix (tdardata, tdarmetadata, tdargis); for jpa properties, the defaults of javax.persistance.jdbc.
+     * can be swapped in.
+     * 
+     * @param prefix
+     * @return
+     * @throws PropertyVetoException
+     */
     protected DataSource configureDataSource(String prefix) throws PropertyVetoException {
         ComboPooledDataSource ds = new ComboPooledDataSource();
 
@@ -223,6 +212,7 @@ public class SimpleAppConfiguration implements Serializable {
 
     /**
      * Allow for the override of the default connection properties (good for postGIS)
+     * 
      * @param prefix
      * @param val_
      * @return
