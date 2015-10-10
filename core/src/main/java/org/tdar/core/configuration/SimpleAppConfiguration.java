@@ -82,6 +82,8 @@ public class SimpleAppConfiguration implements Serializable {
          */
         System.setProperty("org.jboss.logging.provider", "slf4j");
 
+        System.setProperty("java.awt.headless", "true");
+
     }
 
     @Autowired
