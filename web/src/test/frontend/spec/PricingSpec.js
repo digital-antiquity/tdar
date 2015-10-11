@@ -1,34 +1,35 @@
-/* global describe, it, expect */
-describe("tests for TDAR.pricing methods", function() {  
+/* global describe, it, xit, expect, beforeEach, loadFixtures, TDAR */
+describe("tests for TDAR.pricing methods", function() {
 
-xit("should work when we call initPricing", function() {
-   var form = null;
-   var ajaxUrl = null;
-   var expectedVal = null;
+    beforeEach(function(){
+        loadFixtures("pricing.html");
+    });
 
-   //var result = TDAR.pricing.initPricing(form, ajaxUrl);
-   expect(true).toBe(false); //fixme: implement this test
-});
+    it("initializes pricing page", function() {
+        var expectedVal = null;
+        expect(TDAR.pricing.initPricing).toBeDefined();
+        TDAR.pricing.initPricing($('#MetadataForm')[0], "/cart/api");
+    });
 
-xit("should work when we call updateProgress", function() {
-   var expectedVal = null;
 
-   //var result = TDAR.pricing.updateProgress();
-   expect(true).toBe(false); //fixme: implement this test
-});
+    it("should work when we call updateProgress", function() {
+        var expectedVal = null;
 
-xit("should work when we call initPolling", function() {
-   var expectedVal = null;
+        //var result = TDAR.pricing.updateProgress();
+    });
 
-   //var result = TDAR.pricing.initPolling();
-   expect(true).toBe(false); //fixme: implement this test
-});
+    xit("should work when we call initPolling", function() {
+        var expectedVal = null;
 
-xit("should work when we call initBillingChoice", function() {
-   var expectedVal = null;
+        //var result = TDAR.pricing.initPolling();
+        expect(true).toBe(false); //fixme: implement this test
+    });
 
-   //var result = TDAR.pricing.initBillingChoice();
-   expect(true).toBe(false); //fixme: implement this test
-});
+    xit("should work when we call initBillingChoice", function() {
+        var expectedVal = null;
+
+        //var result = TDAR.pricing.initBillingChoice();
+        expect(true).toBe(false); //fixme: implement this test
+    });
 
 });

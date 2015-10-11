@@ -85,11 +85,6 @@ h2.totalRecords {
     margin: 0;
 }
 
-.lt-ie8 .searchresults aside label {
-    float: left;
-    margin-top: 1px;
-}
-
 .searchresults aside label.checked {
     color: #7a1501;
 }

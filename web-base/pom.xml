@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>web-base</artifactId>
     <packaging>pom</packaging>
-    <name>The Digital Archaeological Record (web-base)</name>
+    <name>tDAR (web-base)</name>
     <properties>
         <jetty.version>9.3.3.v20150827</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
         <skipJetty>true</skipJetty>
+        <jersey.version>2.22</jersey.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>

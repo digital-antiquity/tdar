@@ -67,7 +67,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
         try {
-            assertEquals(Action.SUCCESS, controller.createCouponCode());
+            assertEquals(Action.SUCCESS, controller.execute());
         } catch (Exception e) {
             logger.warn("{}", e);
         }

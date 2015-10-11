@@ -7,8 +7,6 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        ">
 
-    <import resource="pooling/c3p0.xml" />
-    <!-- <import resource="pooling/dbcp.xml" /> -->
 
     <!-- If we want the MockAuthentication Service activated set the property 
         "enableMockAuth" via JVM command line for the test like so: -DenableMockAuth=true -->

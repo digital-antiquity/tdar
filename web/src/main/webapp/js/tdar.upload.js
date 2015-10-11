@@ -314,7 +314,7 @@ TDAR.fileupload = (function (TDAR, $) {
             "UNDELETE": "Undelete"
         }[$btnDelete.data("type")]);
 
-        console.log("destroy called. context:%s", data.context[0]);
+        //console.log("destroy called. context:%s", data.context[0]);
     };
 
     //FIXME: this could/should be replaced with a "suggestion" validation rule

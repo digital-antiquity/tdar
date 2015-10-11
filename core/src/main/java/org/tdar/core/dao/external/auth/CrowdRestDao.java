@@ -1,5 +1,7 @@
 package org.tdar.core.dao.external.auth;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 
 import com.atlassian.crowd.embedded.api.PasswordCredential;
@@ -56,6 +59,8 @@ import com.atlassian.crowd.service.client.CrowdClient;
  */
 // @Service
 public class CrowdRestDao extends BaseAuthenticationProvider {
+    private static final String CROWD_PROPERTIES = "crowd.properties";
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private CrowdClient securityServerClient;
@@ -68,7 +73,14 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         Properties properties = new Properties();
         // leveraging factory method over spring autowiring
         // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
-        properties.load(getClass().getClassLoader().getResourceAsStream("crowd.properties"));
+        String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
+        File dir = new File(CONFIG_DIR);
+        File conf = new File(dir,CROWD_PROPERTIES);
+        if (dir.exists() && conf.exists()) {
+           properties.load(new FileReader(conf));
+        } else{ 
+            properties.load(getClass().getClassLoader().getResourceAsStream(CROWD_PROPERTIES));
+        }
         init(properties);
     }
 

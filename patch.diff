@@ -1,0 +1,402 @@
+# HG changeset patch
+# User Adam Brin <abrin@digitalantiquity.org>
+# Date 1443728576 25200
+#      Thu Oct 01 12:42:56 2015 -0700
+# Node ID 8581fd57f4893e2fd9b147f927d60d4e3cbd2be1
+# Parent  e2750ef5ae13c805dd9371e98062c12ada333d36
+first pass at deploy script
+
+diff --git a/base/pom.xml b/base/pom.xml
+--- a/base/pom.xml
++++ b/base/pom.xml
+@@ -14,7 +14,6 @@
+         <poi.version>3.12</poi.version>
+         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
+             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
+-        <!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
+         <apache.cxf.version>3.1.2</apache.cxf.version>
+         <jena.version>2.13.0</jena.version>
+         <exec-maven-version>1.3.2</exec-maven-version>
+diff --git a/core/pom.xml b/core/pom.xml
+--- a/core/pom.xml
++++ b/core/pom.xml
+@@ -15,7 +15,6 @@
+         <poi.version>3.13</poi.version>
+         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
+             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
+-        <!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
+         <apache.cxf.version>3.1.3</apache.cxf.version>
+         <jena.version>2.13.0</jena.version>
+         <exec-maven-version>1.3.2</exec-maven-version>
+diff --git a/dataone/src/main/resources/spring-tag.xml b/dataone/src/main/resources/spring-tag.xml
+new file mode 100644
+--- /dev/null
++++ b/dataone/src/main/resources/spring-tag.xml
+@@ -0,0 +1,162 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<beans xmlns="http://www.springframework.org/schema/beans"
++	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
++	xmlns:util="http://www.springframework.org/schema/util"
++	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
++    	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
++    	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
++	<!-- This map maps terms to site type label. Primary key IDs are not used
++		because they can vary across databases, should be safe as labels are 
++		marked as unique. 
++		
++		// FROM MDA Archaeological Thesaurus
++		-->
++	<util:map id="siteTypeTermMap">
++		<entry>
++			<key>
++				<value>AGRICULTURE_AND_SUBSISTENCE</value>
++			</key>
++			<list>
++				<value>Agricultural or Herding</value>
++				<value>Fish trap / weir</value>
++				<value>Hunting / Trapping</value>
++				<value>Fence</value>
++				<value>Burned rock midden</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>CIVIL</value>
++			</key>
++			<list>
++				<value>Non-Domestic Structures</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>COMMERCIAL</value>
++			</key>
++			<list>
++				<value>Commercial or Industrial Structures</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>DEFENCE</value>
++			</key>
++			<list>
++				<value>Military structure</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>DOMESTIC</value>
++			</key>
++			<list>
++				<value>Domestic Structure or Architectural Complex</value>
++				<value>Great House / Big House</value>
++				<value>Kiva / Great Kiva</value>
++				<value>Palace</value>
++				<value>Structure</value>
++				<value>Midden</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>RELIGIOUS_RITUAL_AND_FUNERARY</value>
++			</key>
++			<list>
++				<value>Funerary and Burial Structures or Features</value>
++				<value>Church / religious structure</value>
++				<value>Temple</value>
++				<value>Rock Art</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>HEALTH_AND_WELFARE</value>
++			</key>
++			<list>
++				<value>Sweat house / sweat lodge</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>INDUSTRIAL</value>
++			</key>
++			<list>
++				<value>Commercial or Industrial Structures</value>
++				<value>Mine</value>
++				<value>Quarry</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>MARITIME</value>
++			</key>
++			<list>
++				<value>Water-related</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>MONUMENT_BY_FORM</value>
++			</key>
++			<list>
++				<value>Cave</value>
++				<value>Rock shelter</value>
++				<value>Shade structure / ramada</value>
++				<value>Platform mound</value>
++				<value>Shell mound</value>
++				<value>Terrace</value>
++				<value>Mound / Earthwork</value>
++				<value>Palisade</value>
++				<value>Plaza</value>
++				<value>Pyrimid</value>
++				<value>Kiln</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>RECREATIONAL</value>
++			</key>
++			<list>
++				<value>Ball Court</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>TRANSPORT</value>
++			</key>
++			<list>
++				<value>Road, Trail, and Related Structures or Features</value>
++				<value>Stairway</value>
++				<value>Submerged aircraft</value>
++				<value>Shipwreck</value>
++			</list>
++		</entry>
++		<entry>
++			<key>
++				<value>WATER_SUPPLY_AND_DRAINAGE</value>
++			</key>
++			<list>
++				<value>Canal or canal feature</value>
++				<value>Reservoir</value>
++				<value>Water control feature</value>
++			</list>
++		</entry>
++	</util:map>
++
++	<bean id="siteTypeQueryMapper" class="org.tdar.tag.SiteTypeQueryMapper">
++		<property name="tagTermMap" ref="siteTypeTermMap" />
++	</bean>
++
++	<bean id="tagGateway" class="org.tdar.tag.TagGateway">
++		<property name="version" value="0.8" />
++		<property name="siteTypeQueryMapper" ref="siteTypeQueryMapper" />
++	</bean>
++
++	<jaxws:endpoint id="tagGatewayEndpoint" implementor="#tagGateway"
++		address="/TagGatewayService" />
++
++</beans>
+diff --git a/deploy/deploy.sh b/deploy/deploy.sh
+new file mode 100755
+--- /dev/null
++++ b/deploy/deploy.sh
+@@ -0,0 +1,36 @@
++#!/usr/bin/sh
++echoerr() { echo "$@" 1>&2; }
++
++TDIR=/home/tdar/app/
++
++
++handleError () 
++{
++if [ $? -ne 0 ] 
++  then
++   echoerr "==============================================="
++   echoerr "|               BUILD FAILED                  |"
++   echoerr "|             SKIPPING  DEPLOY                |"
++   echoerr "==============================================="
++   exit 1
++fi
++}
++
++hg pull
++hg update 
++mvn clean package -Pprepare
++handleError
++sudo service tomcat7 stop
++
++mvn package -PupdateDB
++handleError
++
++mkdir old/
++cp $TDIR/*.war old/
++sudo rm -Rrf /home/tdar/app/*
++cp target/web.war $TDIR/ROOT.war
++cp target/dataone.war $TDIR/dataone.war
++cp target/oai-pmh.war $TDIR/oai-pmh.war
++sudo service tomcat7 start
++
++
+diff --git a/deploy/pom.xml b/deploy/pom.xml
+--- a/deploy/pom.xml
++++ b/deploy/pom.xml
+@@ -4,43 +4,148 @@
+     <groupId>org.tdar</groupId>
+     <artifactId>deploy</artifactId>
+     <version>14.0.0-NEOLITHIC-BETA1</version>
++    <repositories>
++        <repository>
++            <id>snapshots-repo</id>
++            <url>https://dev.tdar.org/archiva/repository/internal</url>
++            <releases>
++                <enabled>true</enabled>
++            </releases>
++            <snapshots>
++                <enabled>true</enabled>
++            </snapshots>
++        </repository>
++    </repositories>
++    <properties>
++        <postgresql.jdbc.version>9.4-1203-jdbc42</postgresql.jdbc.version>
++    </properties>
++    <dependencies>
++        <dependency>
++            <groupId>org.postgresql</groupId>
++            <artifactId>postgresql</artifactId>
++            <version>${postgresql.jdbc.version}</version>
++            <!-- LICENSE: BSD -->
++        </dependency>
++    </dependencies>
+ 
+     <profiles>
+         <profile>
+-            <id>deploy</id>
++            <id>prepare</id>
+             <build>
+                 <plugins>
+                     <plugin>
++                        <artifactId>maven-remote-resources-plugin</artifactId>
++                        <version>1.5</version>
++                        <executions>
++                            <execution>
++                                <id>process-database-resources</id>
++                                <goals>
++                                    <goal>process</goal>
++                                </goals>
++                                <configuration>
++                                    <attachToMain>false</attachToMain>
++                                    <attachToTest>false</attachToTest>
++                                    <outputDirectory>target/</outputDirectory>
++                                    <resourceBundles>
++                                        <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
++                                    </resourceBundles>
++                                </configuration>
++                            </execution>
++                        </executions>
++                    </plugin>
++                    <plugin>
+                         <groupId>org.apache.maven.plugins</groupId>
+                         <artifactId>maven-dependency-plugin</artifactId>
+                         <version>2.10</version>
+                         <executions>
+                             <execution>
+-                                <id>copy-dependencies</id>
++                                <id>copy-dependencies1</id>
+                                 <phase>package</phase>
+                                 <goals>
+                                     <goal>get</goal>
+                                 </goals>
+                                 <configuration>
+                                     <artifact>org.tdar:web:${project.version}:war</artifact>
+-                                    <destination>target</destination>
++                                    <destination>target/web.war</destination>
++                                </configuration>
++                            </execution>
++                            <execution>
++                                <id>copy-dependencies2</id>
++                                <phase>package</phase>
++                                <goals>
++                                    <goal>get</goal>
++                                </goals>
++                                <configuration>
++                                    <artifact>org.tdar:dataone:${project.version}:war</artifact>
++                                    <destination>target/dataone.war</destination>
++                                </configuration>
++                            </execution>
++                            <execution>
++                                <id>copy-dependencies3</id>
++                                <phase>package</phase>
++                                <goals>
++                                    <goal>get</goal>
++                                </goals>
++                                <configuration>
++                                    <artifact>org.tdar:oai-pmh:${project.version}:war</artifact>
++                                    <destination>target/oai-pmh.war</destination>
++                                </configuration>
++                            </execution>
++                        </executions>
++                    </plugin>
++                </plugins>
++            </build>
++        </profile>
++
++
++        <profile>
++            <id>updateDB</id>
++            <build>
++                <plugins>
++                    <plugin>
++                        <groupId>org.codehaus.mojo</groupId>
++                        <artifactId>properties-maven-plugin</artifactId>
++                        <version>1.0-alpha-1</version>
++                        <executions>
++                            <execution>
++                                <phase>initialize</phase>
++                                <goals>
++                                    <goal>read-project-properties</goal>
++                                </goals>
++                                <configuration>
++                                    <files>
++                                        <file>hibernate.properties</file>
++                                    </files>
+                                 </configuration>
+                             </execution>
+                         </executions>
+                     </plugin>
+                     <plugin>
+-                        <!--  http://examples.javacodegeeks.com/enterprise-java/maven/how-to-deploy-maven-based-war-file-to-tomcat-example/  -->
+-                        <groupId>org.apache.tomcat.maven</groupId>
+-                        <artifactId>tomcat7-maven-plugin</artifactId>
+-                        <version>2.3-SNAPSHOT</version>
++                        <groupId>org.liquibase</groupId>
++                        <artifactId>liquibase-maven-plugin</artifactId>
+                         <configuration>
+-                            <url>http://www.mydomain.com:1234/mymanager</url>
+-                            <path>/</path>
+-                            <warFile>target/tdar-web.war</warFile>
++                            <username>${javax.persistence.jdbc.user}</username>
++                            <password>${javax.persistence.jdbc.password}</password>
++                            <url>${javax.persistence.jdbc.url}</url>
++                            <driver>${javax.persistence.jdbc.driver}</driver>
++                            <verbose>false</verbose>
++                            <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                         </configuration>
++                        <executions>
++                            <execution>
++                                <id>upgrade-liquibase</id>
++                                <configuration>
++                                    <changeLogFile>target/liquibase/changelog.xml</changeLogFile>
++                                </configuration>
++                                <phase>process-resources</phase>
++                                <goals>
++                                    <goal>update</goal>
++                                </goals>
++                            </execution>
++                        </executions>
+                     </plugin>
+                 </plugins>
+             </build>
+         </profile>
+     </profiles>
+-</project>
+\ No newline at end of file
++</project>

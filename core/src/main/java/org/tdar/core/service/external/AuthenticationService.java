@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
@@ -451,7 +452,7 @@ public class AuthenticationService {
         return incoming;
     }
 
-    @Autowired
+    @Autowired(required=false)
     @Qualifier("AuthenticationProvider")
     public void setProvider(AuthenticationProvider provider) {
         this.provider = provider;

@@ -4,9 +4,13 @@ import java.beans.PropertyVetoException;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class IntegrationAppConfiguration extends SimpleAppConfiguration {
 
@@ -19,5 +23,14 @@ public class IntegrationAppConfiguration extends SimpleAppConfiguration {
 		DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(dataSource);
 		return dataSourceTransactionManager;
 	}
+
+	@Bean(name = "tdarDataImportDataSource")
+    public DataSource tdarDataDataSource() {
+        try {
+            return configureDataSource("tdardata");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

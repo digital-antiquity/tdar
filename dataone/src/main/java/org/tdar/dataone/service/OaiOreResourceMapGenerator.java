@@ -31,6 +31,7 @@ import org.tdar.dataone.bean.ListObjectEntry;
 
 /**
  * Generates an OAI-ORE ResourceMap based on an InformationResource
+ * 
  * @author abrin
  *
  */
@@ -39,10 +40,10 @@ public class OaiOreResourceMapGenerator implements Serializable {
     private static final long serialVersionUID = 2404227515880634632L;
     private InformationResource ir;
     private boolean includeFiles;
-    
+
     public OaiOreResourceMapGenerator(InformationResource ir2, boolean b) {
         this.ir = ir2;
-        this.includeFiles =b;
+        this.includeFiles = b;
     }
 
     public String generate() throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
@@ -71,11 +72,15 @@ public class OaiOreResourceMapGenerator implements Serializable {
         ResourceMapFactory rmf = ResourceMapFactory.getInstance();
         ResourceMap resourceMap = rmf.createResourceMap(id, idMap);
         String rdfXml = convertToXml(resourceMap);
+        if (!DataOneConfiguration.getInstance().isProduction()) {
+            rdfXml = rdfXml.replace("cn.dataone.org", "cn-sandbox.test.dataone.org");
+        }
         return rdfXml;
     }
 
-    /** 
+    /**
      * Convert the ResourceMap to XML based on the Dryad method
+     * 
      * @param resourceMap
      * @return
      * @throws ORESerialiserException

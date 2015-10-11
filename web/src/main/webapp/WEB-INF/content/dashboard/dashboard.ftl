@@ -347,25 +347,24 @@
     </div>
     </#list>
 
-<#--
+<#if showUserSuggestions!false>
 	<#list userSuggestions>
     <div class="alert-error alert">
         <h3>Are any of these you?</h3>
-	<ul>
-		<#items as sug>
-	<li><input type="checkbox" name="merge" value="${sug.id?c}-${sug.properName}"><@s.a value="${sug.detailUrl}">${sug.properName}</@s.a></li>
-		</#items>
-	</ul>
-	<form>
-	<!-- fixme - send email via email-controller 
-		construct list of people; contruct url for -- dedup /admin/authority-management/select-authority?selectedDupeIds=...&entityType=PERSON ->
-	<button name="yes" class="button btn">Yes</button>
-	<button name="no"  class="button btn">No</button>
-	</form>
+		<ul class="unstyled">
+			<#items as sug>
+				<li><input type="checkbox" name="merge" value="${sug.id?c}-${sug.properName}">&nbsp;<@s.a value="${sug.detailUrl}">${sug.properName}</@s.a></li>
+			</#items>
+		</ul>
+		<form>
+		<!-- fixme - send email via email-controller 
+			construct list of people; contruct url for -- dedup /admin/authority-management/select-authority?selectedDupeIds=...&entityType=PERSON -->
+		<button name="yes" class="button btn">Yes</button>
+		<button name="no"  class="button btn">No</button>
+		</form>
     </div>
 	</#list>
--->
-
+</#if>
     <#list overdrawnAccounts![]>
     <div class="alert-error alert">
         <h3><@s.text name="dashboard.overdrawn_title"/></h3>
@@ -383,7 +382,6 @@
     </div>
     </#list>
 
-    <@common.ie8Warning />
 </#macro>
 
 </#escape>

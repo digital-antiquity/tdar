@@ -81,7 +81,7 @@ public class ConfigurationAssistant implements Serializable {
     public InputStream toInputStream(final String resource) {
         // first try to read it as a file
         InputStream stream = null;
-        String CONFIG_DIR = System.getenv(getConfigPath());
+        String CONFIG_DIR = System.getenv(DEFAULT_CONFIG_PATH);
         try {
             if (CONFIG_DIR != null) {
                 File file = new File(CONFIG_DIR,resource);
@@ -197,8 +197,4 @@ public class ConfigurationAssistant implements Serializable {
         properties.setProperty(key, value);
     }
 
-    public static String getConfigPath() {
-        return DEFAULT_CONFIG_PATH;
-    }
-    
 }

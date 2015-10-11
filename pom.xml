@@ -7,13 +7,14 @@
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
-		<!-- config templates -->
+        <!-- config templates -->
         <module>templates</module>
         <!-- contains shared "test" files -->
         <module>test-resources</module>
         <!-- contains all "liquibase" settings and config files -->
         <module>database</module>
-        <!-- contains shared config and setup for all other modules, depends on "database" and "test" -->
+        <!-- contains shared config and setup for all other modules, depends 
+            on "database" and "test" -->
         <module>locales</module>
         <module>base</module>
         <!-- tdar "core" files -->
@@ -33,9 +34,12 @@
         <hibernate.version>4.3.10.Final</hibernate.version>
         <hibernate.search.version>4.5.3.Final</hibernate.search.version>
         <spring.framework.version>4.2.1.RELEASE</spring.framework.version>
-        <postgresql.jdbc.version>9.4-1201-jdbc41</postgresql.jdbc.version>
+        <postgresql.jdbc.version>9.4-1203-jdbc42</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
         <liquibase.version>3.3.2</liquibase.version>
+        <maven.compiler.version>3.3</maven.compiler.version>
+        <surefire-failsafe.version>2.18.1</surefire-failsafe.version>
+        <antrun.version>1.8</antrun.version>
         <jvm.args>-Xms256m -Xmx3072m</jvm.args>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,13 +56,7 @@
         <!-- Be warned: Eclipse may have a different active profile in play 
             to the command line -->
         <build.profile.id>default</build.profile.id>
-        <clover.version>4.0.4</clover.version>
-        <clover.license><![CDATA[NQoQrArmcFqnDlAnPUOntuQSQpNTLrjUQbxPKTUCRGLwXe
-		                        mi2K4GmdlIZXHlkIo6S>epcT2KclzV6H9YiHR6feWFo20m
-		                        rprMsxRnPRNOrnQROQMTTmorOoMoQQmpPRvSwxvqutsTWv
-		                        umxSSSWTsTwTuWStQUwsVXUSTnMNnmqmUUnqnmmnommmmm
-		                        mUUnqnmmnommmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-		                        bZloaUUnmm]]></clover.license>
+        <clover.version>4.0.6</clover.version>
         <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
     </properties>
 
@@ -176,7 +174,7 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -364,7 +362,7 @@
                 right logging source; this allows us to pipe hibernate into slf4j -->
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.1.4.GA</version>
+            <version>3.2.0.Final</version>
         </dependency>
 
         <dependency>
@@ -397,8 +395,9 @@
                     <plugin>
                         <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>maven-clover2-plugin</artifactId>
+                        <version>${clover.version}</version>
                         <configuration>
-                            <license>${clover.license}</license>
+                            <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
@@ -424,13 +423,13 @@
                         </executions>
                     </plugin>
                     <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-release-plugin</artifactId>
-                      <version>2.5.2</version>
-                      <configuration>
-                         <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <releaseProfiles>release</releaseProfiles>
-                      </configuration>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.2</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <releaseProfiles>release</releaseProfiles>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -466,7 +465,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
+                        <version>${antrun.version}</version>
                         <executions>
                             <execution>
                                 <phase>validate</phase>
@@ -477,9 +476,9 @@
                                     <exportAntProperties>true</exportAntProperties>
                                     <target>
                                         <mkdir dir="target" />
-                                        <mkdir dir="target/generated" />
-                                        <mkdir dir="target/generated/db" />
-                                        <mkdir dir="target/generated/webapp" />
+                                        <mkdir dir="${project.build.directory}"/>
+                                        <mkdir dir="${project.build.directory}/generated" />
+                                        <mkdir dir="${project.build.directory}/generated/webapp" />
                                         <mkdir
                                             dir="target/generated/webapp-test" />
                                         <!--<rmdir dir="src/main/webapp/wro" 
@@ -541,13 +540,29 @@
             </build>
         </profile>
         <profile>
+            <activation>
+                <property>
+                    <name>!ignoreabc</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.4.2</version>
+                    <scope>system</scope>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>updateVersion</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>versions-maven-plugin</artifactId>
-                        <version>2.1</version>
+                        <version>2.2</version>
                         <configuration>
                             <newVersion>14.0.${hg.version.as_dir}-NEOLITHIC</newVersion>
                         </configuration>

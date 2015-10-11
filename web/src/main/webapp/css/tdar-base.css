@@ -201,14 +201,6 @@ header nav, header form {
     height: 100px;
 }
 
-.lt-ie8 header nav {
-    padding-left: 235px;
-}
-
-.lt-ie8 body.logged-in header nav {
-    padding-left: 60px;
-}
-
 header nav ul, header nav li {
     margin: 0;
     padding: 0;
@@ -714,14 +706,6 @@ h2 {
 .sub-col-lft {
     clear: left;
     margin-left: 0;
-}
-
-.lt-ie8 .sub-col-rht {
-    float: right;
-}
-
-.lt-ie8 .sub-col p {
-    width: 350px;
 }
 
 #alt aside h3 {

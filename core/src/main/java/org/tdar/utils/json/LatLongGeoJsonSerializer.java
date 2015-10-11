@@ -74,13 +74,15 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
         switch (value.getMode()) {
             case ENVELOPE:
                 jgen.writeStringField("type", "Polygon");
-                jgen.writeFieldName("coordinate");
+                jgen.writeFieldName("coordinates");
+                jgen.writeStartArray();
                 jgen.writeStartArray();
                 writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
                 writeArrayEntry(value.getMinLatitude(), value.getMaxLongitude(), jgen);
                 writeArrayEntry(value.getMaxLatitude(), value.getMaxLongitude(), jgen);
                 writeArrayEntry(value.getMaxLatitude(), value.getMinLongitude(), jgen);
                 writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
+                jgen.writeEndArray();
                 jgen.writeEndArray();
                 break;
             case POINT:

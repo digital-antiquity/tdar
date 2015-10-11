@@ -58,7 +58,8 @@ public class CouponCreationAction extends AuthenticationAware.Base implements Pr
                     @Result(name = INPUT, location = "error.ftl")
             })
     @PostOnly
-    public String createCouponCode() throws TdarActionException {
+    @Override
+    public String execute() throws TdarActionException {
 
         for (int i = 0; i < quantity; i++) {
             accountService.generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExpires());

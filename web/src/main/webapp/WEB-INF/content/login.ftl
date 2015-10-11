@@ -20,8 +20,7 @@ vim:sts=2:sw=2:filetype=jsp
 <h1>Log in to ${siteAcronym}</h1>
 
 <div class="well">
-    <@common.ie8Warning />
-<@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal}">
+<@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal">
 	<@auth.loginWarning />
     <@auth.login>    
     <@s.hidden name="url" />
