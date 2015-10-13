@@ -1,7 +1,8 @@
 <body>
 <title>Bulk Upload Status</title>
 
-<div>
+<div id="divUploadStatus"
+        data-async-url="<@s.url value="checkstatus"><@s.param name="ticketId" value="${ticketId?c}" /></@s.url>">
     <h3>Bulk Upload Status (this may take some time)</h3>
 
     <div>
@@ -39,15 +40,9 @@
 </div>
 <#if ticketId??>
 <script type="text/javascript">
-    var asyncUrl = "<@s.url value="checkstatus"><@s.param name="ticketId" value="${ticketId?c}" /></@s.url>";
-    //stop pinging for info when the process is done
-    var gPercentDone = 0;
-    var TIMEOUT = 1000 / 2; //2fps is all we need.
-    $(document).ready(function () {
-        $("#progressbar").progressbar({value: 0});
-        setTimeout(TDAR.bulk.updateProgress, TIMEOUT);
-    });
-
+    $(function(){
+        TDAR.bulk.init($('#divUploadStatus'));
+    })
 </script>
 </#if>
 
