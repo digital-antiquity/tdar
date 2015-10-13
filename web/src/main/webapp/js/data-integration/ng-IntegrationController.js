@@ -237,7 +237,8 @@
                 return false;
             }
 
-            
+
+            //all columns in an integration must be mapped
             var validMappedIntegrationColumns = integration.getIntegrationColumns().every(function(col) {
                 var allColumnsMapped = col.selectedDataTableColumns.length === integration.dataTables.length;
                 if(!allColumnsMapped) {
@@ -245,8 +246,21 @@
                 }
                 return allColumnsMapped;
             });
-            
-            return validMappedIntegrationColumns;
+            if(!validMappedIntegrationColumns) {
+                return false
+            }
+
+            // for every 'count column', at least one column selection must be non-null
+            var validCountColumns = integration.getCountColumns().every(function(col){
+                return col.dataTableColumnSelections.some(function(dtcs){
+                   return dtcs.dataTableColumn !== null
+                });
+            });
+            if(!validCountColumns) {
+                return false;
+            }
+
+            return true;
         }
 
         $scope.isMinimallyValid = function() {
