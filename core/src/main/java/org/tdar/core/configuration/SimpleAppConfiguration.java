@@ -71,8 +71,6 @@ public class SimpleAppConfiguration implements Serializable {
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     public static transient Logger staticLogger = LoggerFactory.getLogger(SimpleAppConfiguration.class);
 
-    ConfigurationAssistant configurationAssistant = new ConfigurationAssistant();
-
     public SimpleAppConfiguration() {
         logger.debug("Initializing Simple Application Context");
 
@@ -113,9 +111,9 @@ public class SimpleAppConfiguration implements Serializable {
             file = new File(resource.toURI());
             properties.load(new FileReader(file));
         }
-        File dir = configurationAssistant.getConfigPath();
-        file = new File(dir, HIBERNATE_PROPERTIES);
-        if(file.exists()) {
+        String dir = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
+        if (dir != null) {
+            file = new File(dir, HIBERNATE_PROPERTIES);
             properties.load(new FileReader(file));
         }
 

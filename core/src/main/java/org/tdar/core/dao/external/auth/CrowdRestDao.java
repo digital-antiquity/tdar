@@ -69,18 +69,14 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     private Properties crowdProperties;
     private String passwordResetURL;
 
-    private ConfigurationAssistant configurationAssistant = new ConfigurationAssistant();
-
     public CrowdRestDao() throws IOException {
         Properties properties = new Properties();
         // leveraging factory method over spring autowiring
         // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
-
-        //String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
-        //File dir = new File(CONFIG_DIR);
-
-        File conf = new File(configurationAssistant.getConfigPath(), CROWD_PROPERTIES);
-        if ( conf.exists()) {
+        String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
+        File dir = new File(CONFIG_DIR);
+        File conf = new File(dir,CROWD_PROPERTIES);
+        if (dir.exists() && conf.exists()) {
            properties.load(new FileReader(conf));
         } else{ 
             properties.load(getClass().getClassLoader().getResourceAsStream(CROWD_PROPERTIES));
