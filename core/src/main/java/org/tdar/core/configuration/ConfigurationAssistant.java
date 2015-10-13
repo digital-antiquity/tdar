@@ -31,7 +31,6 @@ public class ConfigurationAssistant implements Serializable {
     private static final long serialVersionUID = -9093022080387404606L;
     public static final String DEFAULT_CONFIG_PATH = "TDAR_CONFIG_PATH";
 
-
     private final Properties properties;
     private final transient static Logger logger = LoggerFactory.getLogger(ConfigurationAssistant.class);
 
@@ -77,19 +76,20 @@ public class ConfigurationAssistant implements Serializable {
         }
     }
 
-    @SuppressWarnings("resource")
-    public InputStream toInputStream(final String resource) {
+    public static InputStream toInputStream(final String resource) {
         // first try to read it as a file
         InputStream stream = null;
         String CONFIG_DIR = System.getenv(DEFAULT_CONFIG_PATH);
         try {
             if (CONFIG_DIR != null) {
-                File file = new File(CONFIG_DIR,resource);
-                return new FileInputStream(file);
+                File file = new File(CONFIG_DIR, resource);
+                if (file.exists()) {
+                    return new FileInputStream(file);
+                }
             }
 
             File file = new File(resource);
-            if (file.isFile()) {
+            if (file.isFile() && file.exists()) {
                 stream = new FileInputStream(file);
             } else {
                 stream = getResourceAsStream(resource);
@@ -102,8 +102,8 @@ public class ConfigurationAssistant implements Serializable {
         return stream;
     }
 
-    public InputStream getResourceAsStream(String path) {
-        InputStream stream = getClass().getResourceAsStream(path);
+    public static InputStream getResourceAsStream(String path) {
+        InputStream stream = ConfigurationAssistant.class.getResourceAsStream(path);
         if (stream == null) {
             stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         }
