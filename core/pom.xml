@@ -475,6 +475,14 @@
                     <artifactId>javassist</artifactId>
                     <groupId>javassist</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>asm</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>asm-commons</artifactId>
+                    <groupId>asm</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -487,6 +495,12 @@
             <artifactId>asm</artifactId>
             <version>5.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
+            <version>5.0.4</version>
+        </dependency>
+
         <!-- freemarker -->
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -846,6 +860,10 @@
                 <exclusion>
                     <artifactId>httpmime</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>asm-debug-all</artifactId>
+                    <groupId>org.ow2.asm</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
