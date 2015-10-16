@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import javax.naming.Name;
@@ -14,17 +16,22 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.ldap.AuthenticationException;
 import org.springframework.ldap.NameNotFoundException;
+import org.springframework.ldap.NamingException;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapOperations;
+import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapUtils;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarRuntimeException;
 
 /**
  * We know that the Spring LDAP code is tested by SpringSource. We simply need to test that our interface between tdar and that code works as we expect it to.
@@ -63,34 +70,36 @@ public class SpringLdapDaoTest {
         context.assertIsSatisfied();
     }
 
-    private Expectations getAuthenticationExpectation(final String password, final String ldapFilter, final boolean returnValue) {
+    private Expectations getAuthenticationExpectation(final String password, final String ldapFilter, final Class<? extends Exception> clss) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         return new Expectations() {
             {
                 LdapQueryBuilder query  = LdapQueryBuilder.query();
                 query.base(LdapUtils.emptyLdapName());
                 query.filter(ldapFilter);
-                oneOf(template).authenticate(query, password);
-                will(returnValue(returnValue));
+                oneOf(template).authenticate(with(any(query.getClass())), with(same(password)));
+                if (clss != null) {
+                    will(throwException(clss.newInstance()));
+                }
             }
         };
     }
 
     @Test
-    public void willReturnValidResultOnSuccessfullAuthentication() {
+    public void willReturnValidResultOnSuccessfullAuthentication() throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         final String password = "password";
         final String username = "name";
         final String ldapFilter = "(&(objectclass=inetOrgPerson)(uid=" + username + "))";
-        context.checking(getAuthenticationExpectation(password, ldapFilter, true));
+        context.checking(getAuthenticationExpectation(password, ldapFilter, null));
         assertTrue(AuthenticationResultType.VALID.equals(dao.authenticate(null, null, username, password).getType()));
         context.assertIsSatisfied();
     }
 
     @Test
-    public void willReturnInvalidPasswordOnUnsuccessfullAuthentication() {
+    public void willReturnInvalidPasswordOnUnsuccessfullAuthentication() throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         String password = "password";
         String username = "name";
         String ldapFilter = "(&(objectclass=inetOrgPerson)(uid=" + username + "))";
-        context.checking(getAuthenticationExpectation(password, ldapFilter, false));
+        context.checking(getAuthenticationExpectation(password, ldapFilter, AuthenticationException.class));
         assertTrue(AuthenticationResultType.INVALID_PASSWORD.equals(dao.authenticate(null, null, username, password).getType()));
         context.assertIsSatisfied();
     }
@@ -166,7 +175,7 @@ public class SpringLdapDaoTest {
         final String[] groups = { "agroup", "bgroup" };
         context.checking(new Expectations() {
             {
-                oneOf(template).search(with(any(LdapName.class)), with(any(String.class)), with(any(AttributesMapper.class)));
+                oneOf(template).search(with(any(LdapQuery.class)), with(any(AttributesMapper.class)));
                 will(returnValue(Arrays.asList(groups)));
             }
         });
