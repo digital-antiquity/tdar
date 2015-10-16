@@ -54,9 +54,9 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
 
     protected final LdapOperations ldapTemplate;
     private String passwordResetURL;
-    private String baseDN;
-    private String userRDN;
-    private String groupDN;
+    private String baseDN = "";
+    private String userRDN = "";
+    private String groupDN = "";
 
     public SpringLdapDao() {
         ldapTemplate = null;
@@ -365,10 +365,10 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             return ldapTemplate.search(query, getContextMapper());
         }
 
-        private LdapQueryBuilder buildQuery(Filter filter) {
+        protected LdapQueryBuilder buildQuery(Filter filter) {
             LdapQueryBuilder query  = LdapQueryBuilder.query();
-            query.filter(filter);
             query.base(LdapUtils.emptyLdapName());
+            query.filter(filter);
             return query;
         }
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import javax.naming.Name;
+import javax.naming.ldap.LdapName;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -18,8 +19,9 @@ import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapOperations;
+import org.springframework.ldap.query.LdapQueryBuilder;
+import org.springframework.ldap.support.LdapUtils;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
@@ -64,7 +66,10 @@ public class SpringLdapDaoTest {
     private Expectations getAuthenticationExpectation(final String password, final String ldapFilter, final boolean returnValue) {
         return new Expectations() {
             {
-                oneOf(template).authenticate(DistinguishedName.EMPTY_PATH, ldapFilter, password);
+                LdapQueryBuilder query  = LdapQueryBuilder.query();
+                query.base(LdapUtils.emptyLdapName());
+                query.filter(ldapFilter);
+                oneOf(template).authenticate(query, password);
                 will(returnValue(returnValue));
             }
         };
@@ -161,7 +166,7 @@ public class SpringLdapDaoTest {
         final String[] groups = { "agroup", "bgroup" };
         context.checking(new Expectations() {
             {
-                oneOf(template).search(with(any(DistinguishedName.class)), with(any(String.class)), with(any(AttributesMapper.class)));
+                oneOf(template).search(with(any(LdapName.class)), with(any(String.class)), with(any(AttributesMapper.class)));
                 will(returnValue(Arrays.asList(groups)));
             }
         });
