@@ -97,7 +97,7 @@ public class SimpleAppConfiguration implements Serializable {
             throws FileNotFoundException, IOException, URISyntaxException {
         Properties properties = new Properties();
 
-        properties.load(ConfigurationAssistant.getResourceAsStream(HIBERNATE_PROPERTIES));
+        properties.load(ConfigurationAssistant.toInputStream(HIBERNATE_PROPERTIES));
 
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
         builder.scanPackages(new String[] { "org.tdar" });

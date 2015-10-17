@@ -72,7 +72,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         Properties properties = new Properties();
         // leveraging factory method over spring autowiring
         // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
-        InputStream inputStream = ConfigurationAssistant.getResourceAsStream(CROWD_PROPERTIES);
+        InputStream inputStream = ConfigurationAssistant.toInputStream(CROWD_PROPERTIES);
         properties.load(inputStream);
         init(properties);
     }
