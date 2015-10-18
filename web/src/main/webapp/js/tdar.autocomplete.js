@@ -77,7 +77,8 @@ TDAR.autocomplete = (function () {
             return values;
         },
 
-        search: null
+        //by default search does nothing
+        search: function _noop(){return []}
     };
 
     /**
