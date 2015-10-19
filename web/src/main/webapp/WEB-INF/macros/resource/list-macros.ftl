@@ -209,7 +209,9 @@
                         <p class="project">${resource.project.title}</p>
                     </#if>
                     <p class="abstract">
-                        <span class="pull-right small">[tDAR id: ${_rid}]</span>
+                        <span class="pull-right small">[tDAR id: ${_rid}]
+                        <#-- for comparing resources - points to /resource/compare?id=??&id=... -->
+                        <#-- <br><span class="compare">compare:</span><input type="checkbox" name='id' style="margin-top:-2px" /></span> -->
                         <@common.truncate _desc length />
                     </p>
                 </div>
