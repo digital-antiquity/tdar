@@ -217,12 +217,13 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
 
         submitForm();
-        logger.trace(getText());
-        assertTrue(getText().contains(JONES));
-        assertTrue(getText().contains(INDIANA));
-        assertTrue(getText().contains("UC"));
-        assertTrue(getText().contains(LOBLAW));
-        assertTrue(StringUtils.containsIgnoreCase(getText(), UNIVERSITY_OF_TEST));
+        String text = getText();
+        logger.trace(text);
+        assertTrue(text.contains(JONES));
+        assertTrue(text.contains(INDIANA));
+        assertTrue(text.contains("UC"));
+        assertTrue(text.contains(LOBLAW));
+        assertTrue(StringUtils.containsIgnoreCase(text, UNIVERSITY_OF_TEST));
     }
 
     @Test
