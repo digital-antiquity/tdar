@@ -206,6 +206,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         waitForPageload();
         find(By.linkText("Collection")).click();
         waitForPageload();
+        applyEditPageHacks();
         TestConfiguration config = TestConfiguration.getInstance();
 
         Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));

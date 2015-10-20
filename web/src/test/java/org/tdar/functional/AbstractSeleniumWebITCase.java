@@ -1501,4 +1501,46 @@ public abstract class AbstractSeleniumWebITCase {
         return new WebElementSelection(elements, getDriver());
     }
 
+
+    public void setStyle(WebElement elem, String property, Object value) {
+        executeJavascript("arguments[0].style[arguments[1]]=arguments[2]", elem, property, value);
+    }
+
+    public void setStyle(WebElementSelection selection, String property, Object value) {
+        for (WebElement element : selection) {
+            setStyle(element, property, value);
+        }
+    }
+
+    /**
+     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
+     * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
+     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
+     */
+    public void clearFileInputStyles() {
+        //todo: we removed this back in rev 94d504cf5128:7082 as workaround to FirefoxDriver bug.
+        //      Try removing the workaround and seeing if the firefoxdriver bug is fixed.
+        WebElement input = find("#fileAsyncUpload").first();
+        showAsyncFileInput(input);
+    }
+
+    /**
+     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
+     * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
+     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
+     *
+     * @param input
+     *            the actual file input element (not the div that renders the jquery file upload widget)
+     */
+    public void showAsyncFileInput(WebElement input) {
+        setStyle(input, "position", "static");
+        setStyle(input, "top", "auto");
+        setStyle(input, "right", "auto");
+        setStyle(input, "margin", 0);
+        setStyle(input, "opacity", 1);
+        setStyle(input, "transform", "none");
+        setStyle(input, "direction", "ltr");
+        setStyle(input, "cursor", "auto");
+    }
+
 }

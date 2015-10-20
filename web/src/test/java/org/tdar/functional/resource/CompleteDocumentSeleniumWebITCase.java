@@ -257,6 +257,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         assertEquals("count of edit buttons", 1, find(By.partialLinkText("EDIT")).size());
         find(By.partialLinkText("EDIT")).click();
+        applyEditPageHacks();
         expandAllTreeviews();
 
         String NEW_START_DATE = "100";
@@ -361,6 +362,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         // go to the edit page and ensure (some) of the form fields and values that we originally created are still present
         find(By.partialLinkText("EDIT")).click();
+        applyEditPageHacks();
         expandAllTreeviews();
         logger.debug("----now on edit page----");
         logger.trace(find("body").getText());
