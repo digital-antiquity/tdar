@@ -54,10 +54,20 @@ then
         /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
 fi
 
-# sudo rm /tmp/.wro4j/buildContext.properties
-# sudo rmdir /tmp/.wro4j/
 
-mvn clean compile war:war -Pproduction,minify-web-resources,liquibase
+cd /home/tdar/tdar.src/
+hg pull
+hg update -C
+mvn clean install -DskipTests -Djetty.skip=true
+cd web
+#sudo rm /tmp/.wro4j/buildContext.properties
+#sudo rmdir /tmp/.wro4j/
+mvn clean compile war:war -Palpha,minify-web-resources,liquibase
+cd ../dataone/
+mvn clean compile war:war 
+cd ../oai-pmh/
+mvn clean compile war:war 
+
 if [ $? -ne 0 ] 
   then
    echoerr "==============================================="
@@ -66,7 +76,15 @@ if [ $? -ne 0 ]
    echoerr "==============================================="
    exit 1
   else
-    sudo service tomcat7 stop
-    sudo rm -Rrf ~tdar/app/ROOT
-    sudo service tomcat7 restart
+      sudo service tomcat7 stop
+      cd ../web/
+      sudo cp target/tdar-web.war ~tdar/app/ROOT.war
+      sudo rm -Rrf ~tdar/app/ROOT
+      cd ../oai-pmh/
+      sudo cp target/tdar-oai-pmh.war ~tdar/app/oai-pmh.war
+      sudo rm -Rrf ~tdar/app/oai-pmh
+      cd ../dataone/
+      sudo cp target/tdar-dataone.war ~tdar/app/dataone.war
+      sudo rm -Rrf ~tdar/app/dataone
+      sudo service tomcat7 restart
 fi
