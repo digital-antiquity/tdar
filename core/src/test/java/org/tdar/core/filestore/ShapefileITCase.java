@@ -58,7 +58,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
     public void testGeoTiffCombined() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
-        WorkflowContext wc = new WorkflowContext();
+        WorkflowContext wc = new WorkflowContext(store, 11115L);
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF_COMBINED),
                 store);
         wc.getOriginalFiles().add(originalFile);
@@ -71,7 +71,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
     public void testKml() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
-        WorkflowContext wc = new WorkflowContext();
+        WorkflowContext wc = new WorkflowContext(store, 11114L);
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "doc.kml", new File(TestConstants.TEST_KML),
                 store);
         wc.getOriginalFiles().add(originalFile);
@@ -84,7 +84,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
     public void testPolyShapeWithData() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
-        WorkflowContext wc = new WorkflowContext();
+        WorkflowContext wc = new WorkflowContext(store, 11113L);
         String name = "Occ_3l";
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
@@ -103,7 +103,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
     public void testGeoTiffAUX() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
-        WorkflowContext wc = new WorkflowContext();
+        WorkflowContext wc = new WorkflowContext(store, 11112L);
         String name = "CAmpusMap1950new";
         String string = TestConstants.TEST_GEOTIFF_DIR + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".tif", new File(string + ".tif"), store);
@@ -120,7 +120,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
     public void testFAIMSKML() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
-        WorkflowContext wc = new WorkflowContext();
+        WorkflowContext wc = new WorkflowContext(store, 11111L);
         String name = "Tracklog";
         String string = TestConstants.TEST_ROOT_DIR + TestConstants.TEST_GIS_DIR + "/kml/" + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".kml", new File(string + ".kml"), store);
@@ -137,7 +137,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
     public void testExtendedDataKml() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
-        WorkflowContext wc = new WorkflowContext();
+        WorkflowContext wc = new WorkflowContext(store, 11110L);
         String name = "extendedData";
         String string = TestConstants.TEST_ROOT_DIR + TestConstants.TEST_GIS_DIR + "/kml/" + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".kml", new File(string + ".kml"), store);

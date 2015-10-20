@@ -65,6 +65,13 @@ public final class WorkflowContext implements Serializable {
 
     private boolean isErrorFatal;
 
+    public WorkflowContext() {}
+    
+    public WorkflowContext(Filestore store, long l) {
+        this.filestore = store;
+        this.informationResourceId = l;
+    }
+    
     /**
      * <b>Don't use</b>: currently not yet implemented!
      */
