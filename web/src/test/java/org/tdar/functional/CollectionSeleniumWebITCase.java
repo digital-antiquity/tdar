@@ -48,6 +48,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         loginAdmin();
         gotoPage(url);
         assertPageViewable(titles);
+        applyEditPageHacks();
         addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
         logout();
         // make sure unauthenticated user cannot see
@@ -62,6 +63,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         // change view permission
         loginAdmin();
         gotoEdit(url);
+        applyEditPageHacks();
         setFieldByName("resourceCollection.hidden", "false");
         submitForm();
         logout();
@@ -88,6 +90,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, true);
         gotoEdit(url);
+        applyEditPageHacks();
+
         WebElementSelection select = find(By.id("collection-selector"));
         url = getCurrentUrl();
         logger.debug("url:{}", url);
@@ -120,6 +124,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String url = setupCollectionForTest(titles, false);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
         gotoPage("/project/" + _139 + "/edit");
+        applyEditPageHacks();
         setFieldByName("status", Status.DELETED.name());
         submitForm();
         logout();

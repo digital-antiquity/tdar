@@ -63,9 +63,13 @@ public class GisFileReaderTask extends AbstractTask {
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
         File workingOriginal = new File(workingDir, file.getName());
+        InformationResourceFileVersion original = null;
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
+            if(version.isPrimaryFile()) {
+                original = version;
+            }
         }
 
         String extension = FilenameUtils.getExtension(file.getName());
@@ -98,18 +102,12 @@ public class GisFileReaderTask extends AbstractTask {
                 List<GridCoverage> sources = tiffCov.getSources();
 
                 File geoJson = new File(System.getProperty("java.io.tmpdir"), FilenameUtils.getBaseName(file.getName()) + ".json");
-                Hints hints = new Hints( Hints.CRS, DefaultGeographicCRS.WGS84 );
 
                 FeatureJSON fjson = new FeatureJSON();
                 StringWriter writer = new StringWriter();
                 fjson.writeCRS(tiffCov.getCoordinateReferenceSystem(), writer);
                 Envelope env = tiffCov.getEnvelope();
-                BasicFactories factories = new BasicFactories(hints);
-//                PrimitiveFactory primitiveFactory =factories.getPrimitiveFactory(DefaultGeographicCRS.WGS84);
-//                env.getLowerCorner().getCoordinateReferenceSystem();
-                // Transform using 10 sample points around the envelope
                 ReferencedEnvelope re = new ReferencedEnvelope(env);
-                ReferencedEnvelope wgs84Env = re.transform(DefaultGeographicCRS.WGS84, false);
                 Polygon geometry = JTS.toGeometry(re);
                 getLogger().debug("{}", geometry);
                 DefaultFeatureCollection collection = new DefaultFeatureCollection(null, null);
@@ -120,7 +118,9 @@ public class GisFileReaderTask extends AbstractTask {
                     FileWriter fwriter = new FileWriter(geoJson);
                     fjson.writeFeatureCollection(collection, fwriter);
                     IOUtils.closeQuietly(fwriter);
-                    addDerivativeFile(getWorkflowContext().getOriginalFiles().get(0), geoJson, VersionType.GEOJSON);
+                    if (original != null) {
+                        addDerivativeFile(original, geoJson, VersionType.GEOJSON);
+                    }
                 } catch (IOException e) {
                     getLogger().error("could not convert dataset to GeoJSON", e);
                 }
