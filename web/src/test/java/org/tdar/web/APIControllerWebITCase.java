@@ -142,7 +142,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        String text = FileUtils.readFileToString(new File("src/test/resources/xml/record-with-collections.xml"));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
         builder.addTextBody("record", text);
 
         post.setEntity(builder.build());
