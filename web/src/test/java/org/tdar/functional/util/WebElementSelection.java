@@ -36,15 +36,14 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
  * 
  */
 public class WebElementSelection implements Iterable<WebElement> {
-    private final List<WebElement> elements;
     private static final List<String> FORM_ELEMENT_NAMES = Arrays.asList("input", "textarea", "button", "select", "keygen", "output", "progress", "meter");
 
-    public final Logger logger = LoggerFactory.getLogger(getClass());
-
-    WebDriver driver;
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    private List<WebElement> elements = new ArrayList<>();
+    private WebDriver driver;
+    private By locator = null;
 
     public WebElementSelection(List<WebElement> webElements, WebDriver driver) {
-        elements = new ArrayList<WebElement>();
         if (webElements != null) {
             elements.addAll(webElements);
         }
@@ -52,16 +51,22 @@ public class WebElementSelection implements Iterable<WebElement> {
     }
 
     public WebElementSelection(WebElement webElement, WebDriver driver) {
-        elements = new ArrayList<WebElement>();
         if (webElement != null) {
             elements.add(webElement);
         }
         this.driver = driver;
     }
 
+    public WebElementSelection(WebDriver driver, By locator) {
+        this.driver = driver;
+        this.locator = locator;
+        this.elements = driver.findElements(locator);
+    }
+
     private WebElementSelection(WebDriver driver) {
         this(Collections.<WebElement> emptyList(), driver);
     }
+
 
     @Override
     public Iterator<WebElement> iterator() {
@@ -73,7 +78,11 @@ public class WebElementSelection implements Iterable<WebElement> {
      */
     public WebElement first() {
         if (CollectionUtils.isEmpty(elements)) {
-            throw new TdarRecoverableRuntimeException("First called on empty set of elements");
+            if(locator == null) {
+                throw new IllegalStateException("cannot call first() on empty selection");
+            } else {
+                throw new IllegalStateException("cannot call first() on empty selection (locator:" + this.locator + ")");
+            }
         }
         return iterator().next();
     }

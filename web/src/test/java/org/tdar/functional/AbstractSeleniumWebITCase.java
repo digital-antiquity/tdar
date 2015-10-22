@@ -704,12 +704,11 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public WebElementSelection find(By by) {
-        WebElementSelection selection = new WebElementSelection(driver.findElements(by), driver);
+        WebElementSelection selection = new WebElementSelection(driver, by);
         logger.trace("criteria:{}\t  size:{}", by, selection.size());
         return selection;
     }
 
-    // FIXME: select() seems more appropriate, given the ways you can select stuff. Or, since we're aping jquery.. just $()?
     /**
      * Create a selection out of one or more.
      * 
