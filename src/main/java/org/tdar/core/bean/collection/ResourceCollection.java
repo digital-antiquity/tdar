@@ -126,7 +126,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
         @Index(name = "collection_updater_id_idx", columnList = "updater_id")
 })
-@XmlRootElement(name = "ResourceCollection")
+@XmlRootElement(name = "resourceCollection")
 @XmlSeeAlso(WhiteLabelCollection.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
